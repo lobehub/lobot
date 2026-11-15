@@ -1,30 +1,19 @@
 /**
- * Shared tool filtering logic used across both runtime (ToolsEngine)
- * and display layer (selectors)
+ * Platform filtering for an agent's tool list in the display layer.
  */
-import { AuvManifest } from '@lobechat/builtin-tool-auv';
-import { LocalSystemManifest } from '@lobechat/builtin-tool-local-system';
-import { isToolEnabledByFeatureFlags } from '@lobechat/builtin-tools/featureGates';
 import { isDesktop } from '@lobechat/const';
+import { AuvIdentifier, LocalSystemIdentifier } from '@lobechat/const/builtinTools';
 
-import { getServerConfigStoreState } from '@/store/serverConfig';
+/** These tools call Electron IPC on the device, so a plain web client never offers them. */
+const DESKTOP_ONLY_TOOLS = new Set<string>([AuvIdentifier, LocalSystemIdentifier]);
 
 /**
  * Check if a tool should be enabled based on platform-specific constraints
  * @param toolId - The tool identifier to check
  * @returns true if the tool should be enabled, false otherwise
  */
-export const shouldEnableTool = (toolId: string): boolean => {
-  // Feature-flagged tools (e.g. builtin-dashboard) are not listed or offered while off.
-  if (!isToolEnabledByFeatureFlags(toolId, getServerConfigStoreState()?.featureFlags)) return false;
-
-  // These executors call Electron IPC and cannot run in a plain web client.
-  if (toolId === LocalSystemManifest.identifier || toolId === AuvManifest.identifier) {
-    return isDesktop;
-  }
-
-  return true;
-};
+export const shouldEnableTool = (toolId: string): boolean =>
+  !DESKTOP_ONLY_TOOLS.has(toolId) || isDesktop;
 
 /**
  * Filter tool IDs based on platform constraints

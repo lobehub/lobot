@@ -42,7 +42,6 @@ import { serverConfigSelectors, useServerConfigStore } from '@/store/serverConfi
 import { getRuntimeErrorMessage } from '@/utils/locale/runtimeErrorMessage';
 
 import ChatInvalidAPIKey from './ChatInvalidApiKey';
-import { readClientLlmWait } from './clientLlmWait';
 import { type DedicatedErrorCardType, isDedicatedErrorCardType } from './dedicatedErrorCards';
 import { isHeterogeneousAgentStatusGuideError } from './heterogeneous';
 import { useHeterogeneousAutoRetry } from './useHeterogeneousAutoRetry';
@@ -148,11 +147,6 @@ const DeprecatedModelError = dynamic(() => import('./DeprecatedModelError'), {
 const QuotaLimitError = dynamic(() => import('./QuotaLimitError'), { loading, ssr: false });
 
 const TraceIdError = dynamic(() => import('./TraceIdError'), { loading, ssr: false });
-
-const ClientLlmWaitingCard = dynamic(() => import('./ClientLlmWaitingCard'), {
-  loading,
-  ssr: false,
-});
 
 // `UnknownChatFetchError` is excluded: its localized copy is a generic
 // "unknown error" message, so the trace-id report UI is strictly more useful.
@@ -533,19 +527,6 @@ const ErrorMessageExtra = memo<ErrorExtraProps>(
       return <HeterogeneousAgentStatusGuide {...guideProps} />;
     }
 
-    // A run parked in `waiting_for_client` is still alive: show what it waits
-    // for and let this device take it, not a final error.
-    const clientLlmWait = readClientLlmWait(error);
-    if (clientLlmWait) {
-      return (
-        <ClientLlmWaitingCard
-          expiresAt={clientLlmWait.expiresAt}
-          id={data.id}
-          provider={clientLlmWait.provider}
-        />
-      );
-    }
-
     if (enableBusinessFeatures && businessChatErrorMessageExtra)
       return businessChatErrorMessageExtra;
 
@@ -596,24 +577,11 @@ const ErrorMessageExtra = memo<ErrorExtraProps>(
         }
 
         case AgentRuntimeErrorType.ExceededContextWindow: {
-          return (
-            <ExceededContextWindowError
-              canCompact={canCreate}
-              id={data.id}
-              parentId={retryScopeId}
-            />
-          );
+          return <ExceededContextWindowError />;
         }
 
         case AgentRuntimeErrorType.RequestBodyTooLarge: {
-          return (
-            <ExceededContextWindowError
-              canCompact={canCreate}
-              id={data.id}
-              parentId={retryScopeId}
-              reason={'requestBodyTooLarge'}
-            />
-          );
+          return <ExceededContextWindowError reason={'requestBodyTooLarge'} />;
         }
 
         case AgentRuntimeErrorType.NoOpenAIAPIKey: {

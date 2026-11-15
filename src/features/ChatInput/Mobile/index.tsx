@@ -9,13 +9,10 @@ import { memo } from 'react';
 import ChatInputNotice from '@/features/ChatInput/ChatInputNotice';
 import ComposerExpandButton from '@/features/ChatInput/components/ComposerExpandButton';
 import { useChatInputStore } from '@/features/ChatInput/store';
-import dynamic from '@/libs/next/dynamic';
 
 import ActionBar from '../ActionBar';
 import InputEditor from '../InputEditor';
 import SendArea from '../SendArea';
-
-const FilePreview = dynamic(() => import('./FilePreview'), { ssr: false });
 
 const styles = stylex.create({
   fullscreen: {
@@ -35,13 +32,9 @@ const styles = stylex.create({
 
 const DesktopChatInput = memo(() => {
   const [slashMenuRef, expand] = useChatInputStore((s) => [s.slashMenuRef, s.expand]);
-  const leftActions = useChatInputStore((s) => s.leftActions);
-
-  const fileNode = leftActions.flat().includes('fileUpload') && <FilePreview />;
 
   return (
     <>
-      {!expand && fileNode}
       <Flexbox
         className={stylex.props(expand && styles.fullscreen).className}
         gap={8}
@@ -54,7 +47,7 @@ const DesktopChatInput = memo(() => {
           footer={
             <ChatInputActionBar
               left={<div />}
-              right={<SendArea hideContextWindow={false} />}
+              right={<SendArea />}
               style={{
                 paddingRight: 8,
               }}
@@ -85,7 +78,6 @@ const DesktopChatInput = memo(() => {
             />
           }
         >
-          {expand && fileNode}
           <InputEditor defaultRows={1} />
         </ChatInput>
       </Flexbox>

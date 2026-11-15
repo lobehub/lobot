@@ -22,8 +22,6 @@ import { type MessageAction } from './slices/message/action';
 import { messageSlice } from './slices/message/action';
 import { type MessageEditingAction } from './slices/messageState/action';
 import { messageEditingSlice } from './slices/messageState/action';
-import { type ToolAction } from './slices/tool/action';
-import { toolSlice } from './slices/tool/action';
 import { type VirtuaListAction } from './slices/virtuaList/action';
 import { virtuaListSlice } from './slices/virtuaList/action';
 
@@ -35,7 +33,6 @@ export type Store = State &
   InputAction &
   MessageAction &
   MessageEditingAction &
-  ToolAction &
   VirtuaListAction;
 
 // Alias for backward compatibility
@@ -83,6 +80,5 @@ export const createStoreAction: CreateStore =
     ...inputSlice(...params),
     ...messageSlice(...params),
     ...messageEditingSlice(...params),
-    ...toolSlice(...params),
     ...virtuaListSlice(...params),
   });

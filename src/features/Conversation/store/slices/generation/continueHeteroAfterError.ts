@@ -9,8 +9,6 @@ import { type Store as ConversationStore } from '../../action';
 import {
   ensureEffectiveAgencyAccess,
   getEffectiveAgencyConfig,
-  resolveHeteroRunContext,
-  runHeterogeneousFromExistingMessage,
   settleGenerationEntry,
 } from './heteroRun';
 
@@ -43,7 +41,7 @@ export const continueHeteroAfterError = async (
       : undefined,
   );
   const heterogeneousProvider = agencyConfig?.heterogeneousProvider;
-  const runtimeType = selectRuntimeType({
+  selectRuntimeType({
     boundDeviceId: agencyConfig?.boundDeviceId,
     executionTarget: agencyConfig?.executionTarget,
     heterogeneousProvider,
@@ -56,14 +54,10 @@ export const continueHeteroAfterError = async (
     ? topicSelectors.getTopicById(context.topicId)(useChatStore.getState())
     : undefined;
 
-  // In-process runs resolve the resumable session against this desktop's cwd.
-  // A device/sandbox run (`gateway`) resolves it on the server against the
-  // executing device — the same path the scheduled rate-limit resume takes —
-  // so here it only matters that the topic has a session at all.
-  const hasResumableSession =
-    runtimeType === 'hetero'
-      ? !!agentId && !!resolveHeteroRunContext(chatStore, context, agentId).resumeSessionId
-      : runtimeType === 'gateway' && !!topic?.metadata?.heteroSessionId;
+  // The server resolves the resumable session against the executing device —
+  // the same path the scheduled rate-limit resume takes — so here it only
+  // matters that the topic has a session at all.
+  const hasResumableSession = !!agentId && !!topic?.metadata?.heteroSessionId;
 
   // Nothing to continue from: the failed step IS the group's head (the run
   // died before producing a second step, so no work was preserved anyway), or
@@ -102,37 +96,21 @@ export const continueHeteroAfterError = async (
     // Chaining off the run's tail (not off the user message) keeps the new
     // steps inside the same assistantGroup, so the bubble grows instead of
     // being replaced.
-    if (runtimeType === 'gateway') {
-      // `parentMessageId` makes the server resume the existing chain and the
-      // device's CLI session instead of starting a fresh user turn. Forwarding
-      // the wrapper op lets the gateway settle it at the phase-1 handoff and
-      // wire its abort signal — otherwise a socket that drops before
-      // `onComplete` leaves the turn stuck in `regenerate` and blocks retry.
-      await chatStore.executeGatewayAgent({
-        context,
-        message: HETERO_CONTINUE_PROMPT,
-        onComplete: () =>
-          settleGenerationEntry(chatStore, operationId, () =>
-            hooks.onRegenerateComplete?.(groupMessageId),
-          ),
-        parentMessageId: continueParentId,
-        parentOperationId: operationId,
-      });
-      return;
-    }
-
-    await runHeterogeneousFromExistingMessage(chatStore, {
+    // `parentMessageId` makes the server resume the existing chain and the
+    // device's CLI session instead of starting a fresh user turn. Forwarding
+    // the wrapper op lets the gateway settle it at the phase-1 handoff and
+    // wire its abort signal — otherwise a socket that drops before
+    // `onComplete` leaves the turn stuck in `regenerate` and blocks retry.
+    await chatStore.executeGatewayAgent({
       context,
-      continuesRun: true,
-      heterogeneousProvider,
+      message: HETERO_CONTINUE_PROMPT,
+      onComplete: () =>
+        settleGenerationEntry(chatStore, operationId, () =>
+          hooks.onRegenerateComplete?.(groupMessageId),
+        ),
       parentMessageId: continueParentId,
       parentOperationId: operationId,
-      prompt: HETERO_CONTINUE_PROMPT,
     });
-
-    settleGenerationEntry(chatStore, operationId, () =>
-      hooks.onRegenerateComplete?.(groupMessageId),
-    );
   } catch (error) {
     // Settle the wrapper op on failure — see delAndRegenerateMessage.
     chatStore.failOperation(operationId, {

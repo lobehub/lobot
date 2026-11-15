@@ -3,7 +3,6 @@ import { Flexbox } from '@lobehub/ui';
 import { memo, useCallback, useMemo } from 'react';
 
 import DragUploadZone, { useUploadFiles } from '@/components/DragUploadZone';
-import { actionMap } from '@/features/ChatInput/ActionBar/config';
 import { ActionBarContext } from '@/features/ChatInput/ActionBar/context';
 import {
   COMPACT_ACTION_BAR_CONTEXT,
@@ -25,8 +24,6 @@ import CopilotModelSelect from './CopilotModelSelect';
 import PageAgentUnavailableAlert from './PageAgentUnavailableAlert';
 import CopilotToolbar from './Toolbar';
 import Welcome from './Welcome';
-
-const Search = actionMap['search'];
 
 const EMPTY_LEFT_ACTIONS: [] = [];
 
@@ -64,7 +61,6 @@ const Conversation = memo(() => {
       <ActionBarContext value={COMPACT_ACTION_BAR_CONTEXT}>
         <Flexbox horizontal align={'center'} gap={2}>
           <AgentSelectorAction onAgentChange={handleAgentChange} />
-          <Search />
         </Flexbox>
       </ActionBarContext>
     ),

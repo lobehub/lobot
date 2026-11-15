@@ -59,17 +59,6 @@ const mockState = {
       type: 'customPlugin',
     },
   ],
-  builtinTools: [
-    {
-      type: 'builtin',
-      identifier: 'builtin-1',
-      manifest: {
-        identifier: 'builtin-1',
-        api: [{ name: 'builtin-api-1' }],
-        meta: { title: 'Builtin 1', description: 'Builtin 1 description' },
-      } as ToolManifest,
-    },
-  ],
   pluginInstallLoading: {
     'plugin-1': false,
     'plugin-2': true,
@@ -115,18 +104,6 @@ describe('toolSelectors', () => {
     it('should return the correct list of tool metadata', () => {
       const result = toolSelectors.metaList(mockState);
       expect(result).toEqual([
-        {
-          author: 'LobeHub',
-          identifier: 'test-skill',
-          meta: { avatar: '🧪', description: 'A test skill', title: 'Test Skill' },
-          type: 'builtin',
-        },
-        {
-          type: 'builtin',
-          author: 'LobeHub',
-          identifier: 'builtin-1',
-          meta: { title: 'Builtin 1', description: 'Builtin 1 description' },
-        },
         {
           author: 'Test Author',
           createdAt: '2024-01-01',
@@ -200,9 +177,6 @@ describe('toolSelectors', () => {
       expect(toolSelectors.isToolHasUI('plugin-1')(mockState)).toBe(false);
     });
 
-    it('should return true if the tool has UI', () => {
-      expect(toolSelectors.isToolHasUI('builtin-1')(mockState)).toBe(true);
-    });
 
     it('should return false if the tool does not exist', () => {
       expect(toolSelectors.isToolHasUI('non-existent')(mockState)).toBe(false);

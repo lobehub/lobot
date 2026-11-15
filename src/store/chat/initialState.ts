@@ -3,8 +3,6 @@ import { type ChatAIChatState } from './slices/agentRun/initialState';
 import { initialAiChatState } from './slices/agentRun/initialState';
 import { type ChatAIAgentState } from './slices/aiAgent/initialState';
 import { initialAiAgentState } from './slices/aiAgent/initialState';
-import { type ChatToolState } from './slices/builtinTool/initialState';
-import { initialToolState } from './slices/builtinTool/initialState';
 import { type ChatMessageState } from './slices/message/initialState';
 import { initialMessageState } from './slices/message/initialState';
 import { type ChatOperationState } from './slices/operation/initialState';
@@ -21,7 +19,6 @@ import { initialVoiceMessageState } from './slices/voiceMessage/initialState';
 export type ChatStoreState = ChatTopicState &
   ChatMessageState &
   ChatAIChatState &
-  ChatToolState &
   ChatThreadState &
   ChatPortalState &
   ChatAIAgentState &
@@ -32,7 +29,6 @@ export const initialState: ChatStoreState = {
   ...initialMessageState,
   ...initialAiChatState,
   ...initialTopicState,
-  ...initialToolState,
   ...initialThreadState,
   ...initialChatPortalState,
   ...initialOperationState,

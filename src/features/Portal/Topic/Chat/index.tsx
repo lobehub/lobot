@@ -124,7 +124,7 @@ const TopicChat = memo(() => {
       ) : isHeterogeneousAgent ? (
         <HeterogeneousChatInput />
       ) : (
-        <ChatInput leftActions={['typo']} rightActions={['contextWindow']} />
+        <ChatInput leftActions={['typo']} />
       )}
     </ConversationProvider>
   );

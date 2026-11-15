@@ -1,4 +1,4 @@
-import { BUILTIN_AGENT_SLUGS } from '@lobechat/builtin-agents';
+import { BUILTIN_AGENT_SLUGS } from '@lobechat/const/builtinAgents';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -1,4 +1,4 @@
-import type { EditedFileEntry } from '@lobechat/builtin-tools/fileEditScan';
+import type { EditedFileEntry } from '@/features/Conversation/operationArtifacts/fileEditScan';
 
 export interface EditedFilesTotals {
   linesAdded: number;

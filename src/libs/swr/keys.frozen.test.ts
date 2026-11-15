@@ -61,7 +61,6 @@ const LEGACY_SWR_KEYS = [
   'evalKeys.testCaseDetail',
   'evalKeys.testCases',
   'fileKeys.ttsFile',
-  'gatewayKeys.clientLlmWaits',
   'gatewayKeys.reconnect',
   'globalKeys.latestVersion',
   'globalKeys.serverVersion',

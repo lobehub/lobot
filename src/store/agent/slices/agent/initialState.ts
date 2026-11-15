@@ -1,7 +1,6 @@
 import type { AgentContextDocument } from '@lobechat/context-engine';
 import type { PartialDeep } from 'type-fest';
 
-import { type AgentSettingsInstance } from '@/features/AgentSetting';
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 import { type AvailableAgentItem } from '@/services/agent';
 import { type AgentItem } from '@/types/agent';
@@ -34,7 +33,6 @@ export interface AgentSliceState {
    * agent is made public again).
    */
   agentNotFoundMap: Record<string, boolean>;
-  agentSettingInstance?: AgentSettingsInstance | null;
   /** Replica view of user-chosen slugs: `slug → agent id`. */
   agentSlugIdMap: Record<string, string>;
   /** Replica bookkeeping of `agentSlugIdMap`. */

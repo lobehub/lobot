@@ -523,7 +523,7 @@ describe('ErrorMessageExtra', () => {
     expect(screen.getByText('dynamic')).toBeInTheDocument();
   });
 
-  it('offers context compaction for an oversized request body', () => {
+  it('explains an oversized request body', () => {
     render(
       <ErrorMessageExtra
         error={{ message: 'response.RequestBodyTooLarge' }}
@@ -535,51 +535,10 @@ describe('ErrorMessageExtra', () => {
     );
 
     expect(screen.getByText('dynamic')).toBeInTheDocument();
-    expect(dynamicComponentPropsMock).toHaveBeenCalledWith({
-      canCompact: true,
-      id: 'msg-request-too-large',
-      reason: 'requestBodyTooLarge',
-    });
+    expect(dynamicComponentPropsMock).toHaveBeenCalledWith({ reason: 'requestBodyTooLarge' });
   });
 
-  it('withholds context compaction from members who can only view the conversation', () => {
-    resourceAccessMock.canUseResource = false;
 
-    render(
-      <ErrorMessageExtra
-        error={{ message: 'response.RequestBodyTooLarge' }}
-        data={{
-          error: { type: AgentRuntimeErrorType.RequestBodyTooLarge } as any,
-          id: 'msg-request-too-large',
-        }}
-      />,
-    );
-
-    expect(dynamicComponentPropsMock).toHaveBeenCalledWith(
-      expect.objectContaining({ canCompact: false, reason: 'requestBodyTooLarge' }),
-    );
-  });
-
-  it('lets context compaction retry the group parent when the error is a nested block', () => {
-    render(
-      <ErrorMessageExtra
-        error={{ message: 'response.RequestBodyTooLarge' }}
-        retryScopeId="group-parent"
-        data={{
-          error: { type: AgentRuntimeErrorType.RequestBodyTooLarge } as any,
-          id: 'group-child-block',
-        }}
-        onRegenerate={vi.fn()}
-      />,
-    );
-
-    expect(dynamicComponentPropsMock).toHaveBeenCalledWith({
-      canCompact: true,
-      id: 'group-child-block',
-      parentId: 'group-parent',
-      reason: 'requestBodyTooLarge',
-    });
-  });
 
   it('renders the auth guide when the refreshed error is missing type but still carries session code', () => {
     render(

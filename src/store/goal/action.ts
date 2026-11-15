@@ -669,19 +669,15 @@ export class GoalActionImpl {
    * own afterwards as its Work Tasks settle, so this is a nudge rather than the
    * loop the surface used to hold open.
    */
-  /** The goal's own planning-model provider, so the relay covers the model it plans on. */
-  #planningProvider = (goalId: string) =>
-    this.#get().goalGraphById[goalId]?.goal.config?.provider ?? undefined;
-
   advanceGoal = async (goalId: string): Promise<GoalTickResult> => {
-    const result = await goalService.advance(goalId, this.#planningProvider(goalId));
+    const result = await goalService.advance(goalId);
     await this.refreshGoalGraph(goalId);
     return result;
   };
 
   /** Exactly one coordinator step, for a caller that wants to inspect a single move. */
   tickGoal = async (goalId: string): Promise<GoalTickResult> => {
-    const result = await goalService.tick(goalId, this.#planningProvider(goalId));
+    const result = await goalService.tick(goalId);
     await this.refreshGoalGraph(goalId);
     return result;
   };

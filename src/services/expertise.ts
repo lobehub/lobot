@@ -1,14 +1,4 @@
-import { lambdaClient, withLlmRelay } from '@/libs/trpc/client';
-import { oneShotRelay, type OneShotRelayHandle } from '@/services/llmRelay';
-import { useUserStore } from '@/store/user';
-import { systemAgentSelectors } from '@/store/user/selectors';
-
-/**
- * Drafting runs server-side on the `expertise` system agent; a model only this
- * device reaches is relayed back to this tab (one-shot relay).
- */
-const runOnExpertiseModel = <T>(request: (relay?: OneShotRelayHandle) => Promise<T>) =>
-  oneShotRelay.run(systemAgentSelectors.expertise(useUserStore.getState()).provider, request);
+import { lambdaClient } from '@/libs/trpc/client';
 
 export type ExpertiseOverview = Awaited<
   ReturnType<typeof lambdaClient.expertise.listByAgent.query>
@@ -64,20 +54,11 @@ class ExpertiseService {
   draftRule = async (input: {
     brief: string;
     groups: { gate: string; id: string; title: string }[];
-  }) =>
-    runOnExpertiseModel((relay) =>
-      lambdaClient.expertise.draftRule.mutate(input, withLlmRelay(relay)),
-    );
+  }) => lambdaClient.expertise.draftRule.mutate(input);
 
-  draftRuleGroup = async (brief: string) =>
-    runOnExpertiseModel((relay) =>
-      lambdaClient.expertise.draftRuleGroup.mutate({ brief }, withLlmRelay(relay)),
-    );
+  draftRuleGroup = async (brief: string) => lambdaClient.expertise.draftRuleGroup.mutate({ brief });
 
-  distillRules = async (input: DistillInput) =>
-    runOnExpertiseModel((relay) =>
-      lambdaClient.expertise.distillRules.mutate(input, withLlmRelay(relay)),
-    );
+  distillRules = async (input: DistillInput) => lambdaClient.expertise.distillRules.mutate(input);
 
   commitDistilledRules = async (input: CommitDistilledInput) =>
     lambdaClient.expertise.commitDistilledRules.mutate(input);
@@ -88,9 +69,7 @@ class ExpertiseService {
     lambdaClient.expertise.updateRule.mutate({ lessonId, ...patch });
 
   judgeRuleDirections = async (lessonIds: string[]) =>
-    runOnExpertiseModel((relay) =>
-      lambdaClient.expertise.judgeRuleDirections.mutate({ lessonIds }, withLlmRelay(relay)),
-    );
+    lambdaClient.expertise.judgeRuleDirections.mutate({ lessonIds });
 
   reorderRule = async (domainId: string, lessonId: string, beforeId: string | null) =>
     lambdaClient.expertise.reorderRule.mutate({ beforeId, domainId, lessonId });
@@ -124,10 +103,7 @@ class ExpertiseService {
     agentId: string;
     brief: string;
     currentDraft?: ExpertiseDomainDraft;
-  }) =>
-    runOnExpertiseModel((relay) =>
-      lambdaClient.expertise.draftDomain.mutate(params, withLlmRelay(relay)),
-    );
+  }) => lambdaClient.expertise.draftDomain.mutate(params);
 
   createDomain = async (params: ExpertiseDomainDraft & { agentId: string; brief: string }) =>
     lambdaClient.expertise.createDomain.mutate(params);

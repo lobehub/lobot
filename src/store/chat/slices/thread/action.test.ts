@@ -6,7 +6,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { cacheScope, createReplicaState } from '@/libs/replica';
 import { aiChatService } from '@/services/aiChat';
-import { chatService } from '@/services/chat';
 import { threadService } from '@/services/thread';
 import { type ThreadItem } from '@/types/topic';
 import { ThreadStatus, ThreadType } from '@/types/topic';
@@ -38,13 +37,6 @@ vi.mock('@/services/thread', () => ({
     getThreads: vi.fn(),
     removeThread: vi.fn(),
     updateThread: vi.fn(),
-  },
-}));
-
-// Mock chatService
-vi.mock('@/services/chat', () => ({
-  chatService: {
-    fetchPresetTaskResult: vi.fn(),
   },
 }));
 
@@ -635,7 +627,6 @@ describe('thread action', () => {
 
       // Structured generation, not a chat completion — the raw text used to be
       // written straight to the title, which leaked `{"title":"..."}`.
-      expect(chatService.fetchPresetTaskResult).not.toHaveBeenCalled();
       expect((aiChatService.generateJSON as Mock).mock.calls[0][0]).toMatchObject({
         metadata: { trigger: RequestTrigger.ThreadTitle },
         schema: { name: 'topic_title' },
@@ -718,7 +709,6 @@ describe('thread action', () => {
         await result.current.summaryThreadTitle('thread-id', []);
       });
 
-      expect(chatService.fetchPresetTaskResult).not.toHaveBeenCalled();
     });
   });
 

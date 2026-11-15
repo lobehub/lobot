@@ -1,8 +1,8 @@
-import { getAgentTemplatesSWRKey } from '@lobechat/builtin-tool-web-onboarding/agentMarketplace';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 
 import { fetchOnboardingAgentTemplates } from '@/services/agentMarketplace';
+import { getAgentTemplatesSWRKey } from '@/services/agentMarketplace/agentTemplates';
 
 const agentTemplatesSWRConfig = {
   dedupingInterval: 60_000,

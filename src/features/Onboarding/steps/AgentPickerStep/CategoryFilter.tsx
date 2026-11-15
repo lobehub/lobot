@@ -1,7 +1,8 @@
-import type { MarketplaceCategory } from '@lobechat/builtin-tool-web-onboarding/agentMarketplace';
 import { cx } from '@lobehub/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+
+import type { MarketplaceCategory } from '@/services/agentMarketplace/types';
 
 import { CATEGORY_LABEL_KEYS } from './categoryLabels';
 import { styles } from './style';

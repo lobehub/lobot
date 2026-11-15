@@ -4,15 +4,12 @@ import { memo } from 'react';
 
 import ChatInputCredits from '@/business/client/features/ChatInputCredits';
 import { useBusinessAgentModeSync } from '@/business/client/hooks/useBusinessAgentMode';
-import { SkeletonBar } from '@/components/Skeleton';
 import { useAgentStore } from '@/store/agent';
 import { agentByIdSelectors } from '@/store/agent/selectors';
 
-import ContextWindow from '../ActionBar/Token';
 import { useAgentId } from '../hooks/useAgentId';
 import { useChatInputResourceAccess } from '../hooks/useChatInputResourceAccess';
 import { useEffectiveAgentMode } from '../hooks/useEffectiveAgentMode';
-import { useChatInputStore } from '../store';
 import ApprovalMode from './ApprovalMode';
 import { resolveControlBarView } from './resolveControlBarView';
 import WorkspaceControls from './WorkspaceControls';
@@ -37,18 +34,11 @@ const styles = stylex.create({
   rightGroup: { flex: 'none' },
 });
 
-interface ControlBarSkeletonProps {
-  /** Mirror the right-pinned context-window pill only when the loaded bar renders it. */
-  showContextWindow?: boolean;
-}
-
 /**
- * Same-height stand-in for the control bar: the 28px row with, when configured,
- * the context-window pill pinned right. The pill size follows the settled DOM
- * (context-window tag ~89x24), so the composer does not move when the real
- * controls replace it.
+ * Same-height stand-in for the control bar (the 28px row), so the composer does
+ * not move when the real controls replace it.
  */
-export const ControlBarSkeleton = ({ showContextWindow }: ControlBarSkeletonProps) => (
+export const ControlBarSkeleton = () => (
   <Flexbox
     aria-busy
     horizontal
@@ -57,7 +47,6 @@ export const ControlBarSkeleton = ({ showContextWindow }: ControlBarSkeletonProp
     justify={'space-between'}
   >
     <div />
-    {showContextWindow && <SkeletonBar height={22} radius={4} width={88} />}
   </Flexbox>
 );
 
@@ -67,9 +56,6 @@ const ControlBar = memo(() => {
   // mounted with the composer, so it keeps the business mode sync alive.
   useBusinessAgentModeSync(agentId);
   const { canShowControls, isAccessLoading } = useChatInputResourceAccess();
-  const showContextWindow = useChatInputStore((s) =>
-    s.rightActions.flat().includes('contextWindow'),
-  );
 
   const isLoading = useAgentStore((s) => agentByIdSelectors.isAgentConfigLoadingById(agentId)(s));
   const { isAgentRuntimeMode, isPreferenceLoading } = useEffectiveAgentMode(agentId);
@@ -83,7 +69,7 @@ const ControlBar = memo(() => {
   });
 
   if (view === 'hidden') return null;
-  if (view === 'skeleton') return <ControlBarSkeleton showContextWindow={showContextWindow} />;
+  if (view === 'skeleton') return <ControlBarSkeleton />;
 
   return (
     <Flexbox
@@ -110,7 +96,6 @@ const ControlBar = memo(() => {
       >
         <ChatInputCredits />
         {isAgentRuntimeMode && <ApprovalMode />}
-        {showContextWindow && <ContextWindow />}
       </Flexbox>
     </Flexbox>
   );

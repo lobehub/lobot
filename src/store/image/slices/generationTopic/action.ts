@@ -1,17 +1,11 @@
-import { chainSummaryGenerationTitle } from '@lobechat/prompts';
-import { RequestTrigger } from '@lobechat/types';
 import isEqual from 'fast-deep-equal';
 
 import { LOADING_FLAT } from '@/const/message';
 import { createReplicaSlice, type ReplicaLens, type ReplicaSyncResult } from '@/libs/replica';
 import { type UpdateTopicValue } from '@/server/routers/lambda/generationTopic';
-import { chatService } from '@/services/chat';
 import { generationTopicService } from '@/services/generationTopic';
 import { type StoreSetter } from '@/store/types';
-import { useUserStore } from '@/store/user';
-import { systemAgentSelectors, userGeneralSettingsSelectors } from '@/store/user/selectors';
 import { type ImageGenerationTopic } from '@/types/generation';
-import { merge } from '@/utils/merge';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { type ImageStore } from '../../store';
@@ -128,8 +122,6 @@ export class GenerationTopicActionImpl {
     internal_updateGenerationTopicLoading(topicId, true);
     internal_updateGenerationTopicTitleInSummary(topicId, LOADING_FLAT);
 
-    let output = '';
-
     // Helper function to generate fallback title from prompts
     const generateFallbackTitle = () => {
       // Extract title from the first prompt content
@@ -144,43 +136,15 @@ export class GenerationTopicActionImpl {
       return title;
     };
 
-    const generationTopicAgentConfig = systemAgentSelectors.generationTopic(
-      useUserStore.getState(),
-    );
-    // Auto generate topic title from prompt by AI
-    await chatService.fetchPresetTaskResult({
-      params: merge(
-        generationTopicAgentConfig,
-        chainSummaryGenerationTitle(
-          prompts,
-          'image',
-          userGeneralSettingsSelectors.currentResponseLanguage(useUserStore.getState()),
-        ),
-      ),
-      onError: async () => {
-        const fallbackTitle = generateFallbackTitle();
-        internal_updateGenerationTopicTitleInSummary(topicId, fallbackTitle);
-        // Update the topic with fallback title
-        await this.#get().internal_updateGenerationTopic(topicId, { title: fallbackTitle });
-      },
-      onFinish: async (text) => {
-        await this.#get().internal_updateGenerationTopic(topicId, { title: text });
-      },
-      onLoadingChange: (loading) => {
-        internal_updateGenerationTopicLoading(topicId, loading);
-      },
-      onMessageHandle: (chunk) => {
-        switch (chunk.type) {
-          case 'text': {
-            output += chunk.text;
-            internal_updateGenerationTopicTitleInSummary(topicId, output);
-          }
-        }
-      },
-      trigger: RequestTrigger.GenerationTopicTitle,
-    });
+    const title = generateFallbackTitle();
+    internal_updateGenerationTopicTitleInSummary(topicId, title);
+    try {
+      await this.#get().internal_updateGenerationTopic(topicId, { title });
+    } finally {
+      internal_updateGenerationTopicLoading(topicId, false);
+    }
 
-    return output;
+    return title;
   };
 
   internal_createGenerationTopic = async (): Promise<string> => {

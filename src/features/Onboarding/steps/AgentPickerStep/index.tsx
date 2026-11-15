@@ -1,10 +1,5 @@
 'use client';
 
-import type {
-  AgentTemplate,
-  MarketplaceCategory,
-} from '@lobechat/builtin-tool-web-onboarding/agentMarketplace';
-import { getTemplatesByCategoryPriority } from '@lobechat/builtin-tool-web-onboarding/agentMarketplace';
 import { Button, cssVar, Flexbox, Text } from '@lobehub/ui';
 import { Undo2Icon } from 'lucide-react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -12,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router';
 
 import { useOnboardingAgentTemplates } from '@/hooks/useOnboardingAgentTemplates';
+import { getTemplatesByCategoryPriority } from '@/services/agentMarketplace/agentTemplates';
+import type { AgentTemplate, MarketplaceCategory } from '@/services/agentMarketplace/types';
 import { installMarketplaceAgents } from '@/services/installMarketplaceAgents';
 import {
   trackOnboardingCompleted,

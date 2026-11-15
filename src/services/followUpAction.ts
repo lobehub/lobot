@@ -1,7 +1,6 @@
 import type { FollowUpExtractInput, FollowUpExtractResult } from '@lobechat/types';
 
-import { lambdaClient, withLlmRelay } from '@/libs/trpc/client';
-import { oneShotRelay } from '@/services/llmRelay';
+import { lambdaClient } from '@/libs/trpc/client';
 
 class FollowUpActionService {
   /**
@@ -13,12 +12,7 @@ class FollowUpActionService {
   ): Promise<FollowUpExtractResult | null> {
     try {
       // A device-only model is relayed back to this tab (one-shot relay).
-      const result = await oneShotRelay.run(
-        input.modelConfig?.provider,
-        (relay) =>
-          lambdaClient.followUpAction.extract.mutate(input, { signal, ...withLlmRelay(relay) }),
-        { signal },
-      );
+      const result = await lambdaClient.followUpAction.extract.mutate(input, { signal });
       return result;
     } catch (err) {
       // TRPC wraps DOMException in TRPCClientError, so check both the raw error

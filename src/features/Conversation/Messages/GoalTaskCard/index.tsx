@@ -1,6 +1,5 @@
 'use client';
 
-import type { OperationGoal } from '@lobechat/builtin-tools/operationArtifacts';
 import { Flexbox, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
@@ -10,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import { formatGoalCost } from '@/features/AgentGoals/GoalProgress';
 import GoalStatusGlyph from '@/features/AgentGoals/GoalStatusGlyph';
+import type { OperationGoal } from '@/features/Conversation/operationArtifacts';
 import RunningGlyph from '@/features/Home/components/RunningGlyph';
 import { useChatStore } from '@/store/chat';
 

@@ -3,31 +3,14 @@ import { type StateCreator } from 'zustand/vanilla';
 import { type ChatStore } from '@/store/chat/store';
 import { flattenActions } from '@/store/utils/flattenActions';
 
-import { type PluginInternalsAction } from './internals';
-import { PluginInternalsActionImpl } from './internals';
 import { type PluginOptimisticUpdateAction } from './optimisticUpdate';
 import { PluginOptimisticUpdateActionImpl } from './optimisticUpdate';
-import { type PluginTypesAction } from './pluginTypes';
-import { PluginTypesActionImpl } from './pluginTypes';
-import { type PluginPublicApiAction } from './publicApi';
-import { PluginPublicApiActionImpl } from './publicApi';
-import { type PluginWorkflowAction } from './workflow';
-import { PluginWorkflowActionImpl } from './workflow';
 
-export type ChatPluginAction = PluginPublicApiAction &
-  PluginOptimisticUpdateAction &
-  PluginTypesAction &
-  PluginWorkflowAction &
-  PluginInternalsAction;
+export type ChatPluginAction = PluginOptimisticUpdateAction;
 
 /**
- * Combined plugin action interface
- * Aggregates all plugin-related actions
- */
-
-/**
- * Combined plugin action creator
- * Merges all plugin action modules
+ * Plugin action creator: optimistic updates to the tool fields of persisted
+ * messages. Tools themselves run on the server.
  */
 export const chatPlugin: StateCreator<
   ChatStore,
@@ -38,11 +21,4 @@ export const chatPlugin: StateCreator<
   ...params: Parameters<
     StateCreator<ChatStore, [['zustand/devtools', never]], [], ChatPluginAction>
   >
-) =>
-  flattenActions<ChatPluginAction>([
-    new PluginPublicApiActionImpl(...params),
-    new PluginOptimisticUpdateActionImpl(...params),
-    new PluginTypesActionImpl(...params),
-    new PluginWorkflowActionImpl(...params),
-    new PluginInternalsActionImpl(...params),
-  ]);
+) => flattenActions<ChatPluginAction>([new PluginOptimisticUpdateActionImpl(...params)]);

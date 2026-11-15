@@ -1,7 +1,3 @@
-import {
-  formatBrowserMcpShortLabel,
-  formatLinearMcpShortLabel,
-} from '@lobechat/builtin-tool-claude-code/client/labels';
 import { getGoalCommand, isGoalCommandFailed } from '@lobechat/shared-tool-ui/goal-command';
 import type { ChatToolPayloadWithResult } from '@lobechat/types';
 import { formatDuration } from '@lobechat/utils';
@@ -23,6 +19,8 @@ import {
   WORKFLOW_PROSE_SOURCE_MIN_CHARS,
   WORKFLOW_TRUNCATE_WORD_BOUNDARY_MIN_RATIO,
 } from './constants';
+import { formatBrowserMcpShortLabel } from './toolLabels/browserMcpLabels';
+import { formatLinearMcpShortLabel } from './toolLabels/linearMcpLabels';
 
 export const areWorkflowToolsComplete = (tools: ChatToolPayloadWithResult[]): boolean => {
   const collapsible = tools.filter((t) => t.intervention?.status !== 'pending');

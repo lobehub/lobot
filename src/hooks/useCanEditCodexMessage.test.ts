@@ -60,15 +60,6 @@ describe('useCanEditCodexMessage', () => {
   });
 
   /** @example Device support does not bypass an API binding restricted to local execution. */
-  it('preserves the existing API-binding runtime guard', () => {
-    state.agencyConfig = {
-      boundDeviceId: 't647-device',
-      executionTarget: 'device',
-      heterogeneousProvider: { authMode: 'api', type: 'codex' },
-    };
-    /** @example A rejected runtime configuration never exposes Edit. */
-    expect(useCanEditCodexMessage('agent', 'topic')).toBe(false);
-  });
 
   /** @example Shared preference loading must settle before an action becomes available. */
   it('waits for effective preferences', () => {

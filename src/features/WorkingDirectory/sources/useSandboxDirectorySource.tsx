@@ -1,6 +1,6 @@
 'use client';
 
-import type { SandboxDrive } from '@lobechat/builtin-tool-cloud-sandbox';
+import type { SandboxDrive } from '@lobechat/const/builtinTools';
 import { ActionIcon, confirmModal, DropdownMenu, Icon, Tag, toast } from '@lobehub/ui';
 import { FolderGit2Icon, MoreHorizontalIcon, PencilIcon, Trash2Icon } from 'lucide-react';
 import { useMemo } from 'react';

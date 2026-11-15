@@ -6,8 +6,7 @@
     ".": "./src/index.ts",
     "./channel": "./src/chains/channel.ts",
     "./fileSystem": "./src/prompts/fileSystem/index.ts",
-    "./textWindow": "./src/textWindow/index.ts",
-    "./toolResult": "./src/toolResult/index.ts"
+    "./textWindow": "./src/textWindow/index.ts"
   },
   "main": "./src/index.ts",
   "scripts": {

@@ -1,7 +1,7 @@
-import type { OperationEditedFile } from '@lobechat/builtin-tools/operationArtifacts';
 import { useCallback } from 'react';
 
 import { isDesktop } from '@/const/version';
+import type { OperationEditedFile } from '@/features/Conversation/operationArtifacts';
 import { resolveExecutionTarget } from '@/helpers/executionTarget';
 import { useIsGatewayModeEnabled } from '@/helpers/gatewayMode';
 import { useEffectiveAgencyConfig } from '@/hooks/useEffectiveAgencyConfig';

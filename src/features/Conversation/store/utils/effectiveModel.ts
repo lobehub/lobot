@@ -1,4 +1,4 @@
-import { isCollaborativeBuiltinAgentRow } from '@lobechat/builtin-agents';
+import { isCollaborativeBuiltinAgentRow } from '@lobechat/const/builtinAgents';
 import type {
   AgentItem,
   AgentModelOverride,

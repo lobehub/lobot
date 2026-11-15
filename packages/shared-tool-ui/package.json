@@ -3,16 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "exports": {
-    ".": "./src/index.ts",
     "./ask-user": "./src/AskUserQuestion/index.ts",
     "./components": "./src/components/index.ts",
     "./goal-command": "./src/utils/goalCommand.ts",
-    "./inspectors": "./src/Inspector/index.ts",
-    "./inspectors/github-labels": "./src/Inspector/GitHub/labels.ts",
     "./inspectors/linear-labels": "./src/Inspector/Linear/labels.ts",
     "./pending-hotkeys": "./src/pendingHotkeys.ts",
-    "./renders": "./src/Render/index.ts",
-    "./secret-input": "./src/SecretInput/index.ts",
     "./styles": "./src/styles.ts"
   },
   "dependencies": {

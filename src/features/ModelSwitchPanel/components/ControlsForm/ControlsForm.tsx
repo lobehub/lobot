@@ -1,3 +1,7 @@
+import {
+  resolveDefaultEnableAdaptiveThinkingForModel,
+  resolveDefaultThinkingLevelForModel,
+} from '@lobechat/model-runtime/utils/modelExtendParams';
 import type { LobeAgentChatConfig } from '@lobechat/types';
 import { Flexbox, Switch } from '@lobehub/ui';
 import { Form, type FormFieldProps, useForm, useWatch } from '@lobehub/ui/form';
@@ -10,10 +14,6 @@ import { Trans, useTranslation } from 'react-i18next';
 import InfoTooltip from '@/components/InfoTooltip';
 import { useAgentId } from '@/features/ChatInput/hooks/useAgentId';
 import { useUpdateAgentConfig } from '@/features/ChatInput/hooks/useUpdateAgentConfig';
-import {
-  resolveDefaultEnableAdaptiveThinkingForModel,
-  resolveDefaultThinkingLevelForModel,
-} from '@/services/chat/mecha/modelParamsResolver';
 import { useAgentStore } from '@/store/agent';
 import { agentByIdSelectors, chatConfigByIdSelectors } from '@/store/agent/selectors';
 import { aiModelSelectors, useAiInfraStore } from '@/store/aiInfra';

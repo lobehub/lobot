@@ -5,7 +5,6 @@ import { beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest'
 
 import { agentSkillService, type EnsureMarketSkillResult } from '@/services/skill';
 import { initialState } from '@/store/tool/initialState';
-import { builtinToolSelectors } from '@/store/tool/selectors';
 import {
   AGENT_SKILL_LIST_KEY,
   agentSkillListResource,
@@ -26,7 +25,6 @@ vi.mock('i18next', async (importOriginal) => ({
 const installedAll = (ids: string[]): EnsureMarketSkillResult[] =>
   ids.map((identifier) => ({ identifier, status: 'installed' }));
 
-const builtinToolId = builtinToolSelectors.installedAllMetaList(initialState)[0].identifier;
 const connectorItem = getConnectorCatalog({ composio: true, lobehub: true })[0];
 const connectorId =
   connectorItem.type === 'lobehub'
@@ -100,7 +98,6 @@ describe('ensureAgentMarketSkills', () => {
     ]);
 
     await ensureAgentMarketSkills([
-      builtinToolId,
       connectorId,
       'installed-market',
       'my-own-skill',
@@ -123,7 +120,7 @@ describe('ensureAgentMarketSkills', () => {
   });
 
   it('sends nothing when every identifier is already resolved locally', async () => {
-    expect(await ensureAgentMarketSkills([builtinToolId, connectorId])).toEqual([]);
+    expect(await ensureAgentMarketSkills([connectorId])).toEqual([]);
     expect(ensureFromMarket).not.toHaveBeenCalled();
   });
 

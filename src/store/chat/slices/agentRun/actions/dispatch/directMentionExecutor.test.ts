@@ -41,9 +41,8 @@ describe('toDirectMentionThreadTitle', () => {
 
 describe('executeDirectMention', () => {
   it('refreshes the mentioned agent transcripts so an open thread panel shows the reply', async () => {
-    const { ClientSubAgentTransport } =
-      await import('@/store/chat/agents/transports/ClientSubAgentTransport');
-    vi.spyOn(ClientSubAgentTransport.prototype, 'execSubAgent').mockResolvedValue({
+    const { ServerSubAgentTask } = await import('./serverSubAgentTask');
+    vi.spyOn(ServerSubAgentTask.prototype, 'run').mockResolvedValue({
       result: 'reply',
       success: true,
       threadId: 'thd_1',
@@ -62,7 +61,6 @@ describe('executeDirectMention', () => {
         context: { agentId: 'agt_lobe', topicId: 'tpc_1' },
         instruction: '<mention name="小雯" id="agt_xw" />你能干什么',
         parentOperationId: 'op_send',
-        runtimeType: 'gateway',
         sourceMessageId: 'msg_src',
         targetAgentId: 'agt_xw',
       },
@@ -73,8 +71,7 @@ describe('executeDirectMention', () => {
   });
 
   it('shows the running thread at once and streams the child while it runs', async () => {
-    const { ClientSubAgentTransport } =
-      await import('@/store/chat/agents/transports/ClientSubAgentTransport');
+    const { ServerSubAgentTask } = await import('./serverSubAgentTask');
     const stopWatching = vi.fn();
     const store = {
       associateMessageWithOperation: vi.fn(),
@@ -86,7 +83,7 @@ describe('executeDirectMention', () => {
       startOperation: vi.fn(() => ({ operationId: 'op_client' })),
       watchSubAgentRun: vi.fn(() => stopWatching),
     };
-    vi.spyOn(ClientSubAgentTransport.prototype, 'execSubAgent').mockImplementation(async function (
+    vi.spyOn(ServerSubAgentTask.prototype, 'run').mockImplementation(async function (
       this: any,
     ) {
       this.options.onDispatched({
@@ -107,7 +104,6 @@ describe('executeDirectMention', () => {
         context: { agentId: 'agt_lobe', topicId: 'tpc_1' },
         instruction: '<mention name="小雯" id="agt_xw" />你能干什么',
         parentOperationId: 'op_send',
-        runtimeType: 'gateway',
         sourceMessageId: 'msg_src',
         targetAgentId: 'agt_xw',
       },
@@ -131,61 +127,5 @@ describe('executeDirectMention', () => {
       token: 'child-ticket',
     });
     expect(stopWatching).toHaveBeenCalled();
-  });
-
-  describe('without a Gateway (the tab runs the agent itself)', () => {
-    const run = async () => {
-      const { aiAgentService } = await import('@/services/aiAgent');
-      vi.spyOn(aiAgentService, 'createClientTaskThread').mockResolvedValue({
-        threadId: 'thd_1',
-        threadMessages: [],
-        userMessageId: 'msg_task',
-      } as any);
-      vi.spyOn(aiAgentService, 'updateClientTaskThreadStatus').mockResolvedValue({} as any);
-      const store = {
-        associateMessageWithOperation: vi.fn(),
-        completeOperation: vi.fn(),
-        dbMessagesMap: {},
-        executeClientAgent: vi.fn().mockResolvedValue(undefined),
-        internal_dispatchMessage: vi.fn(),
-        optimisticUpdateMessageContent: vi.fn().mockResolvedValue(undefined),
-        refreshMessages: vi.fn().mockResolvedValue(undefined),
-        refreshThreads: vi.fn().mockResolvedValue(undefined),
-        replaceMessages: vi.fn(),
-        startOperation: vi.fn(() => ({ operationId: 'op_client' })),
-      };
-
-      await executeDirectMention(
-        {
-          context: { agentId: 'agt_lobe', topicId: 'tpc_1' },
-          instruction: '<mention name="小雯" id="agt_xw" />帮我查一下天气',
-          parentOperationId: 'op_send',
-          runtimeType: 'client',
-          sourceMessageId: 'msg_src',
-          targetAgentId: 'agt_xw',
-        },
-        () => store as any,
-      );
-
-      return { store };
-    };
-
-    it('shows the running thread on the reply at once', async () => {
-      const { store } = await run();
-
-      expect(store.internal_dispatchMessage).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: 'msg_src',
-          type: 'updateMessage',
-          value: {
-            taskDetail: expect.objectContaining({
-              status: ThreadStatus.Processing,
-              threadId: 'thd_1',
-            }),
-          },
-        }),
-        { operationId: 'op_client' },
-      );
-    });
   });
 });

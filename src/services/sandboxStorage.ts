@@ -1,4 +1,4 @@
-import type { SandboxDrive } from '@lobechat/builtin-tool-cloud-sandbox';
+import type { SandboxDrive } from '@lobechat/const/builtinTools';
 import { markDefaultInstances } from '@lobechat/utils/environmentInstance';
 
 import { lambdaClient } from '@/libs/trpc/client';

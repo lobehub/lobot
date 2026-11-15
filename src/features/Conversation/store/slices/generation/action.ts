@@ -1,5 +1,3 @@
-import { AgentManagementIdentifier } from '@lobechat/builtin-tool-agent-management';
-import { collectHeteroAttachedFiles } from '@lobechat/heterogeneous-agents';
 import { shouldDropUnsupportedClaudeAssistantPrefill } from '@lobechat/model-runtime/providers/anthropic/modelId';
 import type { ConversationContext } from '@lobechat/types';
 import { toast } from '@lobehub/ui';
@@ -15,18 +13,8 @@ import { topicService } from '@/services/topic';
 import { useChatStore } from '@/store/chat';
 import { topicSelectors } from '@/store/chat/selectors';
 import { selectRuntimeType } from '@/store/chat/slices/agentRun/actions/dispatch/agentDispatcher';
-import {
-  parseMentionedAgentsFromEditorData,
-  parseSelectedSkillsFromEditorData,
-  parseSelectedToolsFromEditorData,
-} from '@/store/chat/slices/agentRun/actions/entries/commandBus';
-import { ensureFullHistoryForClientRun } from '@/store/chat/slices/agentRun/actions/entries/ensureFullHistoryForClientRun';
 import { operationSelectors } from '@/store/chat/slices/operation/selectors';
 import { INPUT_LOADING_OPERATION_TYPES } from '@/store/chat/slices/operation/types';
-import {
-  mergeAgentRuntimeInitialContexts,
-  resolveActiveTopicDocumentInitialContext,
-} from '@/store/chat/utils/activeTopicDocumentContext';
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';
 
 import { type Store as ConversationStore } from '../../action';
@@ -36,44 +24,12 @@ import { MAX_HETERO_AUTO_RETRIES } from './heteroRetryConfig';
 import {
   ensureEffectiveAgencyAccess,
   getEffectiveAgencyConfig,
-  runHeterogeneousFromExistingMessage,
   settleGenerationEntry,
 } from './heteroRun';
-
-const buildRetryInitialContext = (editorData: Record<string, any> | null | undefined) => {
-  const normalizedEditorData = editorData ?? undefined;
-  const selectedSkills = parseSelectedSkillsFromEditorData(normalizedEditorData);
-  const selectedTools = parseSelectedToolsFromEditorData(normalizedEditorData);
-  const mentionedAgents = parseMentionedAgentsFromEditorData(normalizedEditorData);
-
-  const effectiveSelectedTools =
-    mentionedAgents.length > 0 &&
-    !selectedTools.some((tool) => tool.identifier === AgentManagementIdentifier)
-      ? [...selectedTools, { identifier: AgentManagementIdentifier, name: 'Agent Management' }]
-      : selectedTools;
-
-  const hasInitialContext =
-    effectiveSelectedTools.length > 0 || selectedSkills.length > 0 || mentionedAgents.length > 0;
-
-  if (!hasInitialContext) return undefined;
-
-  return {
-    initialContext: {
-      ...(selectedSkills.length > 0 ? { selectedSkills } : undefined),
-      ...(effectiveSelectedTools.length > 0
-        ? { selectedTools: effectiveSelectedTools }
-        : undefined),
-      ...(mentionedAgents.length > 0 ? { mentionedAgents } : undefined),
-    },
-    phase: 'init' as const,
-  };
-};
 
 export {
   ensureEffectiveAgencyAccess,
   getEffectiveAgencyConfig,
-  resolveHeteroRunContext,
-  runHeterogeneousFromExistingMessage,
   settleGenerationEntry,
 } from './heteroRun';
 
@@ -148,11 +104,6 @@ const regenerateUserMessageFromSource = async (
   });
 
   try {
-    const initialContext = mergeAgentRuntimeInitialContexts(
-      await resolveActiveTopicDocumentInitialContext(context),
-      buildRetryInitialContext(item.editorData),
-    );
-
     // Get context messages up to and including the target message
     const contextMessages = displayMessages.slice(0, currentIndex + 1);
     if (contextMessages.length <= 0) {
@@ -204,18 +155,17 @@ const regenerateUserMessageFromSource = async (
         ? topicSelectors.getTopicById(context.topicId)(useChatStore.getState())
         : undefined,
     );
-    const heterogeneousProvider = agencyConfig?.heterogeneousProvider;
-    const runtimeType = selectRuntimeType({
+    selectRuntimeType({
       boundDeviceId: agencyConfig?.boundDeviceId,
       executionTarget: agencyConfig?.executionTarget,
-      heterogeneousProvider,
+      heterogeneousProvider: agencyConfig?.heterogeneousProvider,
       isGatewayMode: chatStore.isGatewayModeEnabled(context.agentId),
       isWorkspaceAgent,
       workspaceScoped,
     });
 
-    // ── Gateway mode: trigger server-side regeneration ──
-    if (runtimeType === 'gateway') {
+    // ── Trigger server-side regeneration ──
+    {
       // Hand the wrapper op off at phase-1 (`executeGatewayAgent` completes
       // `parentOperationId` once the child `execServerAgentRuntime` op is
       // running) — the documented interim-op contract this branch used to
@@ -241,46 +191,6 @@ const regenerateUserMessageFromSource = async (
 
       return;
     }
-
-    // ── Hetero mode: re-run the local CLI against the original user prompt ──
-    // Creates a fresh assistant row branched off the existing user message so
-    // the CC / Codex turn replaces the previous attempt without rewriting
-    // history, and resumes the same session id (when the cwd still matches)
-    // so prior context is preserved.
-    if (runtimeType === 'hetero' && heterogeneousProvider) {
-      await runHeterogeneousFromExistingMessage(chatStore, {
-        attachedFiles: collectHeteroAttachedFiles(item),
-        context,
-        heterogeneousProvider,
-        // Forward the original user message's images so regenerate re-runs
-        // the CLI with the same vision input as the first attempt. Without
-        // this, regenerate silently drops attachments (the send path reads
-        // imageList off the persisted user message; this path must too).
-        imageList: item.imageList,
-        parentMessageId: messageId,
-        parentOperationId: operationId,
-        prompt: item.content,
-      });
-      settleGenerationEntry(chatStore, operationId, () => hooks.onRegenerateComplete?.(messageId));
-      return;
-    }
-
-    // ── Client mode: run agent locally ──
-    const reloaded = await ensureFullHistoryForClientRun(context, chatStore.refreshMessages);
-    const fullMessages = reloaded
-      ? useChatStore.getState().messagesMap[messageMapKey(context)]
-      : undefined;
-    const fullIndex = fullMessages?.findIndex((m) => m.id === messageId) ?? -1;
-    await chatStore.executeClientAgent({
-      context,
-      initialContext,
-      messages: fullIndex >= 0 ? fullMessages!.slice(0, fullIndex + 1) : contextMessages,
-      parentMessageId: messageId,
-      parentMessageType: 'user',
-      parentOperationId: operationId,
-    });
-
-    settleGenerationEntry(chatStore, operationId, () => hooks.onRegenerateComplete?.(messageId));
   } catch (error) {
     chatStore.failOperation(operationId, {
       message: error instanceof Error ? error.message : String(error),
@@ -442,7 +352,6 @@ export interface GenerationAction {
    * Clear translate for a message
    * @deprecated Temporary bridge to ChatStore
    */
-  clearTranslate: (messageId: string) => Promise<void>;
 
   /**
    * Continue generation from a message.
@@ -566,7 +475,6 @@ export interface GenerationAction {
    * Translate a message
    * @deprecated Temporary bridge to ChatStore
    */
-  translateMessage: (messageId: string, targetLang: string) => Promise<void>;
 }
 
 export const generationSlice: StateCreator<
@@ -650,11 +558,6 @@ export const generationSlice: StateCreator<
     // Operations are now managed by ChatStore, nothing to clear locally
   },
 
-  clearTranslate: async (messageId: string) => {
-    const chatStore = useChatStore.getState();
-    await chatStore.clearTranslate(messageId);
-  },
-
   continueGeneration: async (groupMessageId: string) => {
     const { displayMessages } = get();
 
@@ -701,7 +604,7 @@ export const generationSlice: StateCreator<
         ? topicSelectors.getTopicById(context.topicId)(useChatStore.getState())
         : undefined,
     );
-    const runtimeType = selectRuntimeType({
+    selectRuntimeType({
       boundDeviceId: agencyConfig?.boundDeviceId,
       executionTarget: agencyConfig?.executionTarget,
       heterogeneousProvider: agencyConfig?.heterogeneousProvider,
@@ -709,12 +612,6 @@ export const generationSlice: StateCreator<
       isWorkspaceAgent,
       workspaceScoped,
     });
-
-    // Hetero CLIs (CC / Codex) have no "continue a cut-off response" primitive
-    // — each prompt is a fresh user turn from their perspective. Bail out
-    // rather than synthesize a fake "please continue" turn that would pollute
-    // the session and confuse the model. The button is a no-op in this mode.
-    if (runtimeType === 'hetero') return false;
 
     // Claude 4.6+/5 removed assistant prefill: a payload ending with an
     // assistant turn is rejected (400), and the model runtime strips trailing
@@ -735,39 +632,19 @@ export const generationSlice: StateCreator<
     });
 
     try {
-      // ── Gateway mode: branch a server-side run from the cut-off message ──
+      // ── Branch a server-side run from the cut-off message ──
       // `parentMessageId` triggers `resume: true` on the router, so the server
       // skips user-message creation and continues from the existing chain.
       // Empty prompt is intentional and matches the approve/reject resume path.
-      if (runtimeType === 'gateway') {
-        await chatStore.executeGatewayAgent({
-          context,
-          message: '',
-          onComplete: () =>
-            settleGenerationEntry(chatStore, operationId, () =>
-              hooks.onContinueComplete?.(displayMessageId),
-            ),
-          parentMessageId: dbMessageId,
-        });
-        return true;
-      }
-
-      // ── Client mode: run agent locally ──
-      const reloaded = await ensureFullHistoryForClientRun(context, chatStore.refreshMessages);
-      await chatStore.executeClientAgent({
+      await chatStore.executeGatewayAgent({
         context,
-        messages:
-          (reloaded && useChatStore.getState().messagesMap[messageMapKey(context)]) ||
-          displayMessages,
+        message: '',
+        onComplete: () =>
+          settleGenerationEntry(chatStore, operationId, () =>
+            hooks.onContinueComplete?.(displayMessageId),
+          ),
         parentMessageId: dbMessageId,
-        parentMessageType: message.role as 'assistant' | 'tool' | 'user',
-        parentOperationId: operationId,
       });
-
-      settleGenerationEntry(chatStore, operationId, () =>
-        hooks.onContinueComplete?.(displayMessageId),
-      );
-
       return true;
     } catch (error) {
       chatStore.failOperation(operationId, {
@@ -1089,10 +966,5 @@ export const generationSlice: StateCreator<
     if (hooks.onGenerationStop) {
       hooks.onGenerationStop();
     }
-  },
-
-  translateMessage: async (messageId: string, targetLang: string) => {
-    const chatStore = useChatStore.getState();
-    await chatStore.translateMessage(messageId, targetLang);
   },
 });

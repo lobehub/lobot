@@ -1,4 +1,4 @@
-import { deriveOperationEditedFiles } from '@lobechat/builtin-tools/operationArtifacts';
+import { deriveOperationEditedFiles } from '@/features/Conversation/operationArtifacts';
 import type { AssistantContentBlock, ChatToolPayloadWithResult } from '@lobechat/types';
 import { describe, expect, it } from 'vitest';
 

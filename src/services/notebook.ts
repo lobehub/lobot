@@ -1,5 +1,5 @@
-import { type DocumentType } from '@lobechat/builtin-tool-notebook';
 import type { AGENT_PLAN_FILE_TYPE } from '@lobechat/const';
+import { type NotebookDocumentType as DocumentType } from '@lobechat/const/builtinTools';
 
 import { lambdaClient } from '@/libs/trpc/client';
 

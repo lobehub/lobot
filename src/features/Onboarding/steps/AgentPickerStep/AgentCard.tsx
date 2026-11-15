@@ -1,8 +1,9 @@
-import type { AgentTemplate } from '@lobechat/builtin-tool-web-onboarding/agentMarketplace';
 import { Avatar, cx, Icon } from '@lobehub/ui';
 import { CheckIcon } from 'lucide-react';
 import type { KeyboardEvent } from 'react';
 import { memo, useCallback } from 'react';
+
+import type { AgentTemplate } from '@/services/agentMarketplace/types';
 
 import { styles } from './style';
 

@@ -1,28 +1,9 @@
+import type { BuiltinAgentSlug } from '@lobechat/const/builtinAgents';
 import type { LobeAgentAgencyConfig, LobeAgentChatConfig, LobeAgentConfig } from '@lobechat/types';
 
 import type { GroupSupervisorContext } from './agents/group-supervisor/type';
 
-/**
- * Builtin Agent Slugs - unique identifiers for builtin agents
- */
-export const BUILTIN_AGENT_SLUGS = {
-  agentBuilder: 'agent-builder',
-  groupAgentBuilder: 'group-agent-builder',
-  groupSupervisor: 'group-supervisor',
-  inbox: 'inbox',
-  nightlyReview: 'nightly-review',
-  onboardingUnderstanding: 'onboarding-understanding',
-  onboardingTaskRecommender: 'onboarding-task-recommender',
-  pageAgent: 'page-agent',
-  selfFeedbackIntent: 'self-feedback-intent',
-  selfReflection: 'self-reflection',
-  skillManagement: 'skill-management',
-  taskAgent: 'task-agent',
-  verifyAgent: 'verify-agent',
-  webOnboarding: 'web-onboarding',
-} as const;
-
-export type BuiltinAgentSlug = (typeof BUILTIN_AGENT_SLUGS)[keyof typeof BUILTIN_AGENT_SLUGS];
+export { BUILTIN_AGENT_SLUGS, type BuiltinAgentSlug } from '@lobechat/const/builtinAgents';
 
 /**
  * Persist Config - these fields will be stored in the database

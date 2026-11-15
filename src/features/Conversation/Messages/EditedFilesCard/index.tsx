@@ -1,7 +1,5 @@
 'use client';
 
-import type { EditedFileEntry } from '@lobechat/builtin-tools/fileEditScan';
-import type { OperationEditedFile } from '@lobechat/builtin-tools/operationArtifacts';
 import {
   FilePathDisplay,
   getFileLanguage,
@@ -24,6 +22,8 @@ import { type KeyboardEvent, memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FileIcon from '@/components/FileIcon';
+import type { OperationEditedFile } from '@/features/Conversation/operationArtifacts';
+import type { EditedFileEntry } from '@/features/Conversation/operationArtifacts/fileEditScan';
 
 import { summarizeEditedFilesTotals } from './deriveEditedFiles';
 import { useOpenEditedFile } from './useOpenEditedFile';

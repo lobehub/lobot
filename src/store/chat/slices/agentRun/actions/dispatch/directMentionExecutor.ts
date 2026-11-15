@@ -6,19 +6,14 @@ import {
   ThreadStatus,
 } from '@lobechat/types';
 
-import { aiAgentService } from '@/services/aiAgent';
-import { ClientSubAgentTransport } from '@/store/chat/agents/transports/ClientSubAgentTransport';
 import type { ChatStore } from '@/store/chat/store';
-import { messageMapKey } from '@/store/chat/utils/messageMapKey';
-import { aggregateSubagentMetrics } from '@/utils/subagentMetrics';
 
-import type { AgentRuntimeType } from './agentDispatcher';
+import { ServerSubAgentTask } from './serverSubAgentTask';
 
 interface DirectMentionExecutionParams {
   context: ConversationContext;
   instruction: string;
   parentOperationId: string;
-  runtimeType: Extract<AgentRuntimeType, 'client' | 'gateway'>;
   sourceMessageId: string;
   targetAgentId: string;
 }
@@ -62,8 +57,7 @@ export const executeDirectMention = async (
   params: DirectMentionExecutionParams,
   get: () => ChatStore,
 ): Promise<void> => {
-  const { context, instruction, parentOperationId, runtimeType, sourceMessageId, targetAgentId } =
-    params;
+  const { context, instruction, parentOperationId, sourceMessageId, targetAgentId } = params;
 
   if (!context.topicId) throw new Error('Direct mention requires a persisted topic');
 
@@ -74,7 +68,6 @@ export const executeDirectMention = async (
   });
   get().associateMessageWithOperation(sourceMessageId, operationId);
 
-  let clientThreadId: string | undefined;
   let stopWatching: (() => void) | undefined;
   const endWatching = () => {
     stopWatching?.();
@@ -99,93 +92,39 @@ export const executeDirectMention = async (
     );
 
   try {
-    let resultContent = '';
+    const topicId = context.topicId;
+    const transport = new ServerSubAgentTask(get, operationId, {
+      onDispatched: (dispatch) => {
+        showRunningThread(dispatch.threadId);
+        // The full-record panel resolves the thread's agent from this list.
+        void get().refreshThreads();
+        // Follow the child live, so its thread fills in as it streams.
+        if (!dispatch.token) return;
+        stopWatching = get().watchSubAgentRun({
+          assistantMessageId: dispatch.assistantMessageId,
+          context: {
+            agentId: targetAgentId,
+            scope: 'thread',
+            threadId: dispatch.threadId,
+            topicId,
+          },
+          operationId: dispatch.operationId,
+          token: dispatch.token,
+        });
+      },
+    });
+    const result = await transport.run({
+      agentId: targetAgentId,
+      instruction,
+      parentMessageId: sourceMessageId,
+      parentOperationId: operationId,
+      title: toDirectMentionThreadTitle(instruction),
+      topicId,
+    });
+    endWatching();
 
-    if (runtimeType === 'gateway') {
-      const topicId = context.topicId;
-      const transport = new ClientSubAgentTransport(get, operationId, {
-        onDispatched: (dispatch) => {
-          showRunningThread(dispatch.threadId);
-          // The full-record panel resolves the thread's agent from this list.
-          void get().refreshThreads();
-          // Follow the child live, so its thread fills in as it streams.
-          if (!dispatch.token) return;
-          stopWatching = get().watchSubAgentRun({
-            assistantMessageId: dispatch.assistantMessageId,
-            context: {
-              agentId: targetAgentId,
-              scope: 'thread',
-              threadId: dispatch.threadId,
-              topicId,
-            },
-            operationId: dispatch.operationId,
-            token: dispatch.token,
-          });
-        },
-      });
-      const result = await transport.execSubAgent({
-        agentId: targetAgentId,
-        instruction,
-        parentMessageId: sourceMessageId,
-        parentOperationId: operationId,
-        title: toDirectMentionThreadTitle(instruction),
-        topicId,
-      });
-      endWatching();
-
-      if (!result.success) throw new Error(result.error || 'Mentioned agent execution failed');
-      resultContent = result.result || '';
-    } else {
-      const task = await aiAgentService.createClientTaskThread({
-        agentId: targetAgentId,
-        instruction,
-        parentMessageId: sourceMessageId,
-        title: toDirectMentionThreadTitle(instruction),
-        topicId: context.topicId,
-      });
-      clientThreadId = task.threadId;
-      showRunningThread(task.threadId);
-
-      const threadContext: ConversationContext = {
-        ...context,
-        agentId: targetAgentId,
-        scope: 'sub_agent',
-        subAgentId: targetAgentId,
-        threadId: task.threadId,
-      };
-      get().replaceMessages(task.threadMessages, { context: threadContext });
-      void get().refreshThreads();
-
-      const runtimeResult = await get().executeClientAgent({
-        context: threadContext,
-        inPortalThread: true,
-        isSubAgent: true,
-        messages: task.threadMessages,
-        parentMessageId: task.userMessageId,
-        parentMessageType: 'user',
-        parentOperationId: operationId,
-      });
-      const threadMessages = get().dbMessagesMap[messageMapKey(threadContext)] || [];
-      const metrics = aggregateSubagentMetrics(threadMessages);
-      resultContent =
-        threadMessages.findLast((message) => message.role === 'assistant')?.content || '';
-
-      await aiAgentService.updateClientTaskThreadStatus({
-        completionReason: 'done',
-        metadata: {
-          totalCost: runtimeResult?.cost?.total,
-          totalMessages: threadMessages.length,
-          // `totalSteps` is the user-facing step metric: actual LLM calls.
-          // `totalLlmCalls` is the versioned continuation baseline.
-          totalLlmCalls: runtimeResult?.usage?.llm?.apiCalls,
-          totalSteps: runtimeResult?.usage?.llm?.apiCalls,
-          totalTokens: metrics.totalTokens,
-          totalToolCalls: metrics.toolCalls,
-        },
-        resultContent,
-        threadId: task.threadId,
-      });
-    }
+    if (!result.success) throw new Error(result.error || 'Mentioned agent execution failed');
+    const resultContent = result.result || '';
 
     await get().optimisticUpdateMessageContent(sourceMessageId, resultContent, undefined, {
       operationId,
@@ -197,16 +136,6 @@ export const executeDirectMention = async (
     get().completeOperation(operationId);
   } catch (error) {
     endWatching();
-    if (clientThreadId) {
-      await aiAgentService
-        .updateClientTaskThreadStatus({
-          completionReason: 'error',
-          error: getErrorMessage(error),
-          threadId: clientThreadId,
-        })
-        .catch(console.error);
-      void get().refreshThreads();
-    }
     void get().refreshMessages({ agentId: targetAgentId, topicId: context.topicId });
 
     await get()

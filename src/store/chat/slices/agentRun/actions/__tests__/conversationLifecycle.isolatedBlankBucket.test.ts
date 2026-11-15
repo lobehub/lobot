@@ -48,45 +48,6 @@ const agentId = TEST_IDS.SESSION_ID;
 const blankKey = messageMapKey({ agentId, scope: 'main', topicId: null });
 
 describe('isolated sends and the blank conversation bucket', () => {
-  it('empties the blank bucket once an isolated send has created its topic', async () => {
-    // The Home composer sends with `isolatedTopic` and shows the optimistic pair in
-    // the agent's blank bucket. Left there, the next blank send (e.g. a direct
-    // @Agent) adopted those rows as its new topic's messages, moving them out of
-    // the topic they had just been created in.
-    const newTopicId = TEST_IDS.NEW_TOPIC_ID;
-    vi.spyOn(aiChatService, 'sendMessageInServer').mockResolvedValue({
-      assistantMessageId: TEST_IDS.ASSISTANT_MESSAGE_ID,
-      isCreateNewTopic: true,
-      messages: [
-        createMockMessage({ id: TEST_IDS.USER_MESSAGE_ID, role: 'user', topicId: newTopicId }),
-        createMockMessage({
-          id: TEST_IDS.ASSISTANT_MESSAGE_ID,
-          role: 'assistant',
-          topicId: newTopicId,
-        }),
-      ],
-      topicId: newTopicId,
-      topics: { items: [{ id: newTopicId, title: 'Server Topic' }], total: 1 },
-      userMessageId: TEST_IDS.USER_MESSAGE_ID,
-    } as any);
-    const onTopicCreated = vi.fn();
-    const { result } = renderHook(() => useChatStore());
-
-    await act(async () => {
-      await result.current.sendMessage({
-        context: { agentId, isNew: true, isolatedTopic: true, scope: 'main' },
-        message: TEST_CONTENT.USER_MESSAGE,
-        onTopicCreated,
-      });
-    });
-
-    expect(onTopicCreated).toHaveBeenCalledWith(newTopicId);
-    expect(useChatStore.getState().dbMessagesMap[blankKey] ?? []).toEqual([]);
-    expect(
-      useChatStore.getState().dbMessagesMap[messageMapKey({ agentId, topicId: newTopicId })],
-    ).toHaveLength(2);
-  });
-
   it('clears only the blank bucket of the conversation the send came from', () => {
     const topicKey = messageMapKey({ agentId, topicId: TEST_IDS.TOPIC_ID });
     const leftover = createMockMessage({ id: 'leftover', role: 'user' });

@@ -1,9 +1,10 @@
-import { isCallSubAgentCall, stripSubAgentReference } from '@lobechat/builtin-tool-lobe-agent';
 import { type UIChatMessage } from '@lobechat/types';
 
 import { LOADING_FLAT } from '@/const/message';
 import { normalizeThinkTags, processWithArtifact } from '@/features/Conversation/utils/markdown';
 import { type FieldType } from '@/features/ShareModal/ShareText/type';
+
+import { isCallSubAgentCall, stripSubAgentReference } from './subAgentReference';
 
 interface MarkdownParams extends FieldType {
   messages: UIChatMessage[];

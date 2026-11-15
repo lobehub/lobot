@@ -1,4 +1,4 @@
-import type { TaskCompletedWindow } from '@lobechat/builtin-tool-task';
+import type { TaskCompletedWindow } from '@lobechat/const/builtinTools';
 import { normalizeTaskListFilter, type TaskListFilter, type TaskStatus } from '@lobechat/types';
 import { useMemo } from 'react';
 

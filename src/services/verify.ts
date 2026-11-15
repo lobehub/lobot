@@ -1,4 +1,3 @@
-import { DEFAULT_VERIFY_PLAN_PROVIDER } from '@lobechat/business-const';
 import type { AcceptanceVisibility } from '@lobechat/const/verify';
 import type {
   AcceptanceChecklistItem,
@@ -26,13 +25,7 @@ import type {
   VerifyRubricItem,
   VerifyRunItem,
 } from '@/database/schemas/verify';
-import { lambdaClient, withLlmRelay } from '@/libs/trpc/client';
-import { oneShotRelay } from '@/services/llmRelay';
-import { useUserStore } from '@/store/user';
-import { systemAgentSelectors } from '@/store/user/selectors';
-
-/** The `goal` system agent's provider: goal criteria / plans run on it server-side. */
-const goalModelProvider = () => systemAgentSelectors.goal(useUserStore.getState()).provider;
+import { lambdaClient } from '@/libs/trpc/client';
 
 /** Criterion row plus the judge instruction resolved from its linked document. */
 export type GoalCriterionWithInstruction = VerifyCriterionItem & { instruction?: string };
@@ -416,9 +409,7 @@ export class VerifyService {
    * generation runs on the pinned plan model.
    */
   generateDraftPlan = (input: GenerateDraftPlanInput): Promise<VerifyCheckItem[]> =>
-    oneShotRelay.run(DEFAULT_VERIFY_PLAN_PROVIDER, (relay) =>
-      lambdaClient.verify.generateDraftPlan.mutate(input, withLlmRelay(relay)),
-    ) as Promise<VerifyCheckItem[]>;
+    lambdaClient.verify.generateDraftPlan.mutate(input) as Promise<VerifyCheckItem[]>;
 
   updateDraftItems = (operationId: string, items: VerifyCheckItem[]): Promise<unknown> =>
     lambdaClient.verify.updateDraftItems.mutate({ items, operationId });
@@ -459,9 +450,7 @@ export class VerifyService {
     modelConfig: { model: string; provider: string };
     operationId: string;
   }): Promise<VerifyCheckResultItem[]> =>
-    oneShotRelay.run(input.modelConfig.provider, (relay) =>
-      lambdaClient.verify.executeVerify.mutate(input, withLlmRelay(relay)),
-    ) as Promise<VerifyCheckResultItem[]>;
+    lambdaClient.verify.executeVerify.mutate(input) as Promise<VerifyCheckResultItem[]>;
 
   submitDecision = (resultId: string, decision: VerifyUserDecision): Promise<unknown> =>
     lambdaClient.verify.submitDecision.mutate({ decision, resultId });
@@ -473,9 +462,7 @@ export class VerifyService {
     goal: string;
     maxCriteria?: number;
   }): Promise<VerifyCriterionDraft[]> =>
-    oneShotRelay.run(DEFAULT_VERIFY_PLAN_PROVIDER, (relay) =>
-      lambdaClient.verify.generateCriteria.mutate(input, withLlmRelay(relay)),
-    ) as Promise<VerifyCriterionDraft[]>;
+    lambdaClient.verify.generateCriteria.mutate(input) as Promise<VerifyCriterionDraft[]>;
 
   /** Draft the standing acceptance criteria used by the create-goal review step. */
   generateGoalCriteria = (input: {
@@ -483,9 +470,7 @@ export class VerifyService {
     goal: string;
     maxCriteria?: number;
   }): Promise<VerifyCriterionDraft[]> =>
-    oneShotRelay.run(goalModelProvider(), (relay) =>
-      lambdaClient.verify.generateGoalCriteria.mutate(input, withLlmRelay(relay)),
-    ) as Promise<VerifyCriterionDraft[]>;
+    lambdaClient.verify.generateGoalCriteria.mutate(input) as Promise<VerifyCriterionDraft[]>;
 
   /** Draft the title, instruction, and criteria used by the create-goal review step. */
   generateGoalPlan = (input: {
@@ -495,9 +480,7 @@ export class VerifyService {
   }): Promise<
     { criteria: VerifyCriterionDraft[]; instruction: string; title: string } | undefined
   > =>
-    oneShotRelay.run(goalModelProvider(), (relay) =>
-      lambdaClient.verify.generateGoalPlan.mutate(input, withLlmRelay(relay)),
-    ) as Promise<
+    lambdaClient.verify.generateGoalPlan.mutate(input) as Promise<
       { criteria: VerifyCriterionDraft[]; instruction: string; title: string } | undefined
     >;
 

@@ -34,8 +34,8 @@ describe('DevDock store', () => {
 
   it('switches between panels directly', () => {
     useDevDockStore.getState().togglePanel('feature-flags');
-    useDevDockStore.getState().togglePanel('render-gallery');
-    expect(useDevDockStore.getState().activePanelId).toBe('render-gallery');
+    useDevDockStore.getState().togglePanel('local-database');
+    expect(useDevDockStore.getState().activePanelId).toBe('local-database');
   });
 
   it('clamps panel height to the minimum', () => {

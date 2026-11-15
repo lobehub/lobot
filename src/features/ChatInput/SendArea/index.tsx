@@ -15,16 +15,7 @@ const mapActionsToItems = (keys: ActionKey[]) =>
     return <Render key={actionKey} />;
   });
 
-interface SendAreaProps {
-  /**
-   * Strip `contextWindow` from the rendered actions because a ControlBar below
-   * the composer hosts it instead. Composers without a ControlBar must pass
-   * `false` or the token indicator has nowhere to render.
-   */
-  hideContextWindow?: boolean;
-}
-
-const SendArea = memo<SendAreaProps>(({ hideContextWindow = true }) => {
+const SendArea = memo(() => {
   const { canShowControls } = useChatInputResourceAccess();
   const rightActions = useChatInputStore((s) => s.rightActions, isEqual);
   const activeAudioInputMode = useChatInputStore((s) => s.activeAudioInputMode);
@@ -34,14 +25,10 @@ const SendArea = memo<SendAreaProps>(({ hideContextWindow = true }) => {
     () =>
       canShowControls
         ? mapActionsToItems(
-            resolveSendAreaActionKeys(
-              rightActions as ActionKey[],
-              hideContextWindow,
-              activeAudioInputMode,
-            ),
+            resolveSendAreaActionKeys(rightActions as ActionKey[], activeAudioInputMode),
           )
         : [],
-    [activeAudioInputMode, canShowControls, hideContextWindow, rightActions],
+    [activeAudioInputMode, canShowControls, rightActions],
   );
 
   return (

@@ -1,11 +1,9 @@
 import {
   ImageGenerationApiName,
   ImageGenerationIdentifier,
-} from '@lobechat/builtin-tool-image-generation';
-import {
   WebOnboardingApiName,
   WebOnboardingIdentifier,
-} from '@lobechat/builtin-tool-web-onboarding';
+} from '@lobechat/const/builtinTools';
 import type { ChatToolPayloadWithResult } from '@lobechat/types';
 
 import { getMcpAppFromState } from '@/libs/mcp/mcpApp';

@@ -31,16 +31,4 @@ describe('aiAgentService.execAgentTask', () => {
 
   // Inside the `agent_llm_relay` rollout the tab offers to execute relayed LLM
   // calls; the server only relays to a run that carries this declaration.
-  it('declares this tab as an LLM relay executor when the rollout includes it', async () => {
-    const llmExecutor = { capabilities: ['llm_relay@1'], clientId: 'tab-1', providers: ['ollama'] };
-    mocks.llmExecutor.mockReturnValueOnce(llmExecutor);
-    mocks.execAgent.mockResolvedValueOnce({ success: true });
-
-    await aiAgentService.execAgentTask({ agentId: 'agt-1', prompt: 'hi' });
-
-    expect(mocks.execAgent).toHaveBeenCalledWith(
-      expect.objectContaining({ llmExecutor }),
-      undefined,
-    );
-  });
 });

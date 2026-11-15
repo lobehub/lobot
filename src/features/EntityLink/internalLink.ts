@@ -1,5 +1,5 @@
-import { BUILTIN_AGENT_SLUGS } from '@lobechat/builtin-agents';
 import { OFFICIAL_SITE, OFFICIAL_URL } from '@lobechat/const';
+import { BUILTIN_AGENT_SLUGS } from '@lobechat/const/builtinAgents';
 
 import { getIdFromIdentifier } from '@/utils/identifier';
 

@@ -1,4 +1,3 @@
-import { resolveCCSubagentType } from '@lobechat/builtin-tool-claude-code/client';
 import { agentDisplayName } from '@lobechat/types';
 import { cssVar, Flexbox, Icon, Tag, Text } from '@lobehub/ui';
 import isEqual from 'fast-deep-equal';
@@ -12,6 +11,8 @@ import { agentSelectors } from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
 import { portalThreadSelectors } from '@/store/chat/selectors';
 import { oneLineEllipsis } from '@/styles';
+
+import { resolveCCSubagentType } from './subagentTypes';
 
 const Active = memo(() => {
   const currentThread = useChatStore(portalThreadSelectors.portalCurrentThread, isEqual);

@@ -6,7 +6,6 @@ import {
   DownloadIcon,
   Edit,
   GitFork,
-  LanguagesIcon,
   ListChevronsDownUp,
   ListChevronsUpDown,
   ListRestart,
@@ -17,8 +16,6 @@ import {
 } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { localeOptions } from '@/locales/resources';
 
 type ActionBarItem = ActionIconGroupItemType & { sfSymbol?: SFSymbol };
 
@@ -36,7 +33,6 @@ interface ChatListActionsBar {
   fork: ActionBarItem;
   regenerate: ActionBarItem;
   share: ActionBarItem;
-  translate: ActionBarItem;
 }
 
 export const useChatListActionsBar = ({
@@ -129,15 +125,6 @@ export const useChatListActionsBar = ({
         key: 'share',
         label: t('share'),
         sfSymbol: 'square.and.arrow.up',
-      },
-      translate: {
-        children: localeOptions.map((i) => ({
-          key: i.value,
-          label: t(`lang.${i.value}`),
-        })),
-        icon: LanguagesIcon,
-        key: 'translate',
-        label: t('translate.action', { ns: 'chat' }),
       },
     }),
     [hasThread, isContinuing, isRegenerating, t],

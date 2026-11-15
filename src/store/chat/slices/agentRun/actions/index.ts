@@ -17,20 +17,14 @@ import {
 } from './state/serverOperationReconciliation';
 import { type StreamingStatesAction } from './state/streamingStates';
 import { StreamingStatesActionImpl } from './state/streamingStates';
-import { type ClientToolExecutionAction } from './transports/client/clientToolExecution';
-import { ClientToolExecutionActionImpl } from './transports/client/clientToolExecution';
-import { type StreamingExecutorAction } from './transports/client/streamingExecutor';
-import { StreamingExecutorActionImpl } from './transports/client/streamingExecutor';
 import { type GatewayAction } from './transports/gateway/gateway';
 import { GatewayActionImpl } from './transports/gateway/gateway';
 
-export type ChatAgentRunAction = ClientToolExecutionAction &
-  ConversationLifecycleAction &
+export type ChatAgentRunAction = ConversationLifecycleAction &
   ConversationControlAction &
   QuestionSubmissionAction &
   GatewayAction &
   ServerOperationReconciliationAction &
-  StreamingExecutorAction &
   StreamingStatesAction;
 
 export const chatAgentRun: StateCreator<
@@ -44,12 +38,10 @@ export const chatAgentRun: StateCreator<
   >
 ) =>
   flattenActions<ChatAgentRunAction>([
-    new ClientToolExecutionActionImpl(...params),
     new ConversationLifecycleActionImpl(...params),
     new ConversationControlActionImpl(...params),
     new QuestionSubmissionActionImpl(...params),
     new GatewayActionImpl(...params),
     new ServerOperationReconciliationActionImpl(...params),
-    new StreamingExecutorActionImpl(...params),
     new StreamingStatesActionImpl(...params),
   ]);

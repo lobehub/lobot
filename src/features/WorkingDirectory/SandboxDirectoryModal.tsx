@@ -1,6 +1,6 @@
 'use client';
 
-import type { SandboxDrive } from '@lobechat/builtin-tool-cloud-sandbox';
+import type { SandboxDrive } from '@lobechat/const/builtinTools';
 import {
   Center,
   createModal,

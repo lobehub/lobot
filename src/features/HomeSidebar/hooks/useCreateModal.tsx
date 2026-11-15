@@ -36,7 +36,7 @@ import {
   trackCreateAgentModalSkillSuggestionAction,
 } from './createAgentModalAnalytics';
 
-const RIGHT_ACTIONS: ActionKeys[] = ['model'];
+const RIGHT_ACTIONS: ActionKeys[] = [];
 const CREATE_MODAL_WIDTH = 'min(90vw, 760px)';
 const INSTALLED_SKILL_MODAL_WIDTH = 'min(90vw, 560px)';
 

@@ -13,8 +13,10 @@ const mockStartOperation = vi.fn(() => ({ operationId: 'test-op-id' }));
 const mockCompleteOperation = vi.fn();
 const mockAssociateMessageWithOperation = vi.fn();
 const mockFailOperation = vi.fn();
-const mockExecuteClientAgent = vi.fn();
-const mockIsGatewayModeEnabled = vi.fn(() => false);
+const mockExecuteGatewayAgent = vi.fn(async ({ onComplete }: { onComplete?: () => void }) => {
+  onComplete?.();
+});
+const mockIsGatewayModeEnabled = vi.fn(() => true);
 
 vi.mock('@/store/chat', () => ({
   useChatStore: {
@@ -23,7 +25,7 @@ vi.mock('@/store/chat', () => ({
   },
 }));
 
-const createContinueChatState = (executeClientAgent = mockExecuteClientAgent) => ({
+const createContinueChatState = (executeGatewayAgent = mockExecuteGatewayAgent) => ({
   dbMessagesMap: {},
   messagesMap: {},
   operations: {},
@@ -33,7 +35,7 @@ const createContinueChatState = (executeClientAgent = mockExecuteClientAgent) =>
   associateMessageWithOperation: mockAssociateMessageWithOperation,
   completeOperation: mockCompleteOperation,
   failOperation: mockFailOperation,
-  executeClientAgent,
+  executeGatewayAgent,
   isGatewayModeEnabled: mockIsGatewayModeEnabled,
 });
 
@@ -89,13 +91,12 @@ describe('Generation Actions', () => {
         type: 'continue',
       });
 
-      // Should call executeClientAgent with last child id as parentMessageId
-      expect(mockExecuteClientAgent).toHaveBeenCalledWith(
+      // The server branches a run from the last child of the group
+      expect(mockExecuteGatewayAgent).toHaveBeenCalledWith(
         expect.objectContaining({
           context,
+          message: '',
           parentMessageId: 'child-2', // last child's id
-          parentMessageType: 'assistantGroup',
-          parentOperationId: 'test-op-id',
         }),
       );
     });
@@ -127,7 +128,7 @@ describe('Generation Actions', () => {
 
       // Should not create operation if message is not assistantGroup
       expect(mockStartOperation).not.toHaveBeenCalled();
-      expect(mockExecuteClientAgent).not.toHaveBeenCalled();
+      expect(mockExecuteGatewayAgent).not.toHaveBeenCalled();
     });
 
     it('should not continue if assistantGroup has no children', async () => {
@@ -159,7 +160,7 @@ describe('Generation Actions', () => {
 
       // Should not create operation if no children
       expect(mockStartOperation).not.toHaveBeenCalled();
-      expect(mockExecuteClientAgent).not.toHaveBeenCalled();
+      expect(mockExecuteGatewayAgent).not.toHaveBeenCalled();
     });
 
     it('should call onBeforeContinue hook and respect false return', async () => {
@@ -198,14 +199,14 @@ describe('Generation Actions', () => {
       });
 
       expect(onBeforeContinue).toHaveBeenCalledWith('group-msg-1');
-      // Should not call executeClientAgent if hook returns false
-      expect(mockExecuteClientAgent).not.toHaveBeenCalled();
+      // Should not call executeGatewayAgent if hook returns false
+      expect(mockExecuteGatewayAgent).not.toHaveBeenCalled();
     });
 
     it('should call onContinueComplete hook after continuation', async () => {
       // Reset mock to ensure all required functions are available
       vi.mocked(await import('@/store/chat').then((m) => m.useChatStore.getState)).mockReturnValue(
-        createContinueChatState(mockExecuteClientAgent.mockResolvedValue(undefined)) as any,
+        createContinueChatState(mockExecuteGatewayAgent) as any,
       );
 
       const onContinueComplete = vi.fn();
@@ -267,7 +268,7 @@ describe('Generation Actions', () => {
 
       // Should not create operation if message not found
       expect(mockStartOperation).not.toHaveBeenCalled();
-      expect(mockExecuteClientAgent).not.toHaveBeenCalled();
+      expect(mockExecuteGatewayAgent).not.toHaveBeenCalled();
     });
   });
 

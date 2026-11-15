@@ -1,5 +1,5 @@
-import { LocalSystemIdentifier } from '@lobechat/builtin-tool-local-system';
 import { isDesktop } from '@lobechat/const';
+import { LocalSystemIdentifier } from '@lobechat/const/builtinTools';
 import { useCallback } from 'react';
 
 import type { DroppedLocalPath } from '@/components/DragUploadZone';

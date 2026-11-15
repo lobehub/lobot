@@ -22,8 +22,6 @@ const DEFAULT_MENU: MessageActionSlot[] = [
   'comments',
   'branching',
   'divider',
-  'translate',
-  'divider',
   'select',
   'divider',
   'regenerate',

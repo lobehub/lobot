@@ -9,23 +9,20 @@ import {
   Tag,
   toast,
 } from '@lobehub/ui';
-import { ChevronDown, ChevronsRight, ChevronUp, CopyIcon, TrashIcon } from 'lucide-react';
+import { ChevronDown, ChevronsRight, ChevronUp, CopyIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import BubblesLoading from '@/components/BubblesLoading';
-
-import { useConversationStore } from '../../../store';
 
 interface TranslateProps extends ChatTranslate {
   id: string;
   loading?: boolean;
 }
 
-const Translate = memo<TranslateProps>(({ content = '', from, to, id, loading }) => {
+const Translate = memo<TranslateProps>(({ content = '', from, to, loading }) => {
   const { t } = useTranslation('common');
   const [show, setShow] = useState(true);
-  const clearTranslate = useConversationStore((s) => s.clearTranslate);
 
   return (
     <Flexbox gap={8}>
@@ -45,14 +42,6 @@ const Translate = memo<TranslateProps>(({ content = '', from, to, id, loading })
             onClick={async () => {
               await copyToClipboard(content);
               toast.success(t('copySuccess'));
-            }}
-          />
-          <ActionIcon
-            icon={TrashIcon}
-            size={'small'}
-            title={t('translate.clear', { ns: 'chat' })}
-            onClick={() => {
-              clearTranslate(id);
             }}
           />
           <ActionIcon

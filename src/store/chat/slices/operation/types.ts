@@ -334,7 +334,7 @@ export interface QueuedMessage {
   filesPreview?: QueuedFile[];
   /** Mirrors SendMessageParams.forceRuntime so a queued task-topic follow-up
    *  keeps its gateway pin when the queue drains. */
-  forceRuntime?: 'client' | 'gateway' | 'hetero';
+  forceRuntime?: 'gateway';
   /**
    * The untracked heterogeneous run this follow-up was handed to the server
    * behind. A later refusal releases exactly that run's marker, so the local
@@ -392,7 +392,7 @@ export interface MergedQueuedMessage {
   editorData?: Record<string, any>;
   files: string[];
   filesPreview: QueuedFile[];
-  forceRuntime?: 'client' | 'gateway' | 'hetero';
+  forceRuntime?: 'gateway';
   metadata?: MessageMetadata;
 }
 

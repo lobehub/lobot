@@ -1,4 +1,4 @@
-import { projectCheckoutDirectory } from '@lobechat/builtin-tool-cloud-sandbox';
+import { projectCheckoutDirectory } from '@lobechat/const/builtinTools';
 import type { EnvironmentConfiguration } from '@lobechat/types';
 
 import type { SandboxSelection } from './useSandboxPlacement';

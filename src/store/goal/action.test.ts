@@ -483,28 +483,6 @@ describe('GoalAction', () => {
     expect(mutate).toHaveBeenCalled();
   });
 
-  it('relays the provider the goal actually plans on when advancing it', async () => {
-    vi.mocked(goalService.advance).mockResolvedValue({ ticks: 1 } as never);
-    vi.mocked(goalService.tick).mockResolvedValue({} as never);
-    useGoalStore.setState({
-      goalGraphById: {
-        'goal-1': graphWith('running', {
-          goal: {
-            config: { model: 'local-llm', provider: 'ollama' },
-            id: 'goal-1',
-            status: 'running',
-            title: 'Goal',
-          },
-        }),
-      },
-    });
-
-    await useGoalStore.getState().advanceGoal('goal-1');
-    await useGoalStore.getState().tickGoal('goal-1');
-
-    expect(goalService.advance).toHaveBeenCalledWith('goal-1', 'ollama');
-    expect(goalService.tick).toHaveBeenCalledWith('goal-1', 'ollama');
-  });
 
   describe('goal title', () => {
     const LONG_ASK = '继续并完成桌宠项目，在现有基础上完善 TTS 语音系统，补齐唤醒词与打断';

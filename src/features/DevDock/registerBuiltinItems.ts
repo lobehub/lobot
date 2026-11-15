@@ -10,7 +10,6 @@ import {
   GraduationCap,
   Languages,
   Layers3,
-  LayoutGrid,
   MemoryStick,
   RotateCw,
   Route,
@@ -42,14 +41,6 @@ export const registerBuiltinDevDockItems = () => {
       id: 'feature-flags',
       label: 'Feature Flags',
       load: () => import('@/features/DevFeatureFlagPanel'),
-      type: 'panel',
-    },
-    {
-      defaultPinned: true,
-      icon: LayoutGrid,
-      id: 'render-gallery',
-      label: 'Render Gallery',
-      load: () => import('@/features/DevPanel/RenderGallery'),
       type: 'panel',
     },
     {

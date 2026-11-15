@@ -1,9 +1,10 @@
+import type { AssistantContentBlock } from '@lobechat/types';
+import { useMemo } from 'react';
+
 import {
   deriveOperationGoals,
   type OperationGoal,
-} from '@lobechat/builtin-tools/operationArtifacts';
-import type { AssistantContentBlock } from '@lobechat/types';
-import { useMemo } from 'react';
+} from '@/features/Conversation/operationArtifacts';
 
 /**
  * Display-only Goal artifacts derived from one settled assistant group.

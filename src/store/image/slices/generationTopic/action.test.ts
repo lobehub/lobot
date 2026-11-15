@@ -5,7 +5,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createReplicaState } from '@/libs/replica';
 import type * as SwrModule from '@/libs/swr';
 import { mutate } from '@/libs/swr';
-import { chatService } from '@/services/chat';
 import { generationTopicService } from '@/services/generationTopic';
 import { type ImageStore, useImageStore } from '@/store/image';
 import { type ImageGenerationTopic } from '@/types/generation';
@@ -26,12 +25,6 @@ vi.mock('@/services/generationTopic', () => ({
     setTopicVisibility: vi.fn(),
     updateTopic: vi.fn(),
     updateTopicCover: vi.fn(),
-  },
-}));
-
-vi.mock('@/services/chat', () => ({
-  chatService: {
-    fetchPresetTaskResult: vi.fn(),
   },
 }));
 
@@ -214,36 +207,8 @@ describe('GenerationTopicAction', () => {
   });
 
   describe('summaryGenerationTopicTitle', () => {
-    it('should generate title using AI and update topic', async () => {
-      const { result } = renderHook(() => useImageStore());
-      const topicId = 'gt_topic_1';
-      const prompts = ['A beautiful sunset over mountains'];
-      const generatedTitle = 'Mountain Sunset Landscape';
 
-      act(() => {
-        seedTopics([{ id: topicId, title: 'Original Title' }] as ImageGenerationTopic[]);
-      });
-
-      vi.mocked(chatService.fetchPresetTaskResult).mockImplementation((params) => {
-        if (params.onFinish) {
-          params.onFinish(generatedTitle, { type: 'done' });
-        }
-        return Promise.resolve(undefined);
-      });
-
-      await act(async () => {
-        await result.current.summaryGenerationTopicTitle(topicId, prompts);
-      });
-
-      expect(chatService.fetchPresetTaskResult).toHaveBeenCalledWith(
-        expect.objectContaining({ trigger: RequestTrigger.GenerationTopicTitle }),
-      );
-      expect(generationTopicService.updateTopic).toHaveBeenCalledWith(topicId, {
-        title: generatedTitle,
-      });
-    });
-
-    it('should use fallback title when AI fails', async () => {
+    it('should title the topic from its first prompt', async () => {
       const { result } = renderHook(() => useImageStore());
       const topicId = 'gt_topic_1';
       const prompts = ['A beautiful sunset over mountains with clear sky'];
@@ -252,19 +217,11 @@ describe('GenerationTopicAction', () => {
         seedTopics([{ id: topicId, title: 'Original Title' }] as ImageGenerationTopic[]);
       });
 
-      vi.mocked(chatService.fetchPresetTaskResult).mockImplementation((params) => {
-        if (params.onError) {
-          params.onError(new Error('AI service failed'));
-        }
-        return Promise.resolve(undefined);
-      });
-
       await act(async () => {
         await result.current.summaryGenerationTopicTitle(topicId, prompts);
       });
 
-      expect(chatService.fetchPresetTaskResult).toHaveBeenCalled();
-      // Should call with fallback title (first 3 words, max 20 chars)
+      // First 3 words, max 20 chars (first 3 words, max 20 chars)
       expect(generationTopicService.updateTopic).toHaveBeenCalledWith(topicId, {
         title: 'A beautiful sunset',
       });
@@ -284,38 +241,6 @@ describe('GenerationTopicAction', () => {
       });
     });
 
-    it('should handle streaming text updates', async () => {
-      const { result } = renderHook(() => useImageStore());
-      const topicId = 'gt_topic_1';
-      const prompts = ['Test prompt'];
-
-      act(() => {
-        seedTopics([{ id: topicId, title: 'Original Title' }] as ImageGenerationTopic[]);
-      });
-
-      const updateTitleSpy = vi.spyOn(
-        result.current,
-        'internal_updateGenerationTopicTitleInSummary',
-      );
-
-      vi.mocked(chatService.fetchPresetTaskResult).mockImplementation((params) => {
-        if (params.onMessageHandle) {
-          params.onMessageHandle({ type: 'text', text: 'Streaming' });
-          params.onMessageHandle({ type: 'text', text: ' Title' });
-        }
-        if (params.onFinish) {
-          params.onFinish('Streaming Title', { type: 'done' });
-        }
-        return Promise.resolve(undefined);
-      });
-
-      await act(async () => {
-        await result.current.summaryGenerationTopicTitle(topicId, prompts);
-      });
-
-      expect(updateTitleSpy).toHaveBeenCalledWith(topicId, 'Streaming');
-      expect(updateTitleSpy).toHaveBeenCalledWith(topicId, 'Streaming Title');
-    });
   });
 
   describe('removeGenerationTopic', () => {

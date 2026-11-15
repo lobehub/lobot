@@ -1,4 +1,4 @@
-import type { VideoGenerationModelRef } from '@lobechat/builtin-tool-video-generation';
+import type { VideoGenerationModelRef } from '@lobechat/const/builtinTools';
 import debug from 'debug';
 
 import { lambdaClient } from '@/libs/trpc/client';

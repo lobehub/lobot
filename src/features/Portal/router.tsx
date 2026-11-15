@@ -16,7 +16,6 @@ import { FilePreview } from './FilePreview';
 import { HomeBody, HomeTitle } from './Home';
 import { LocalFile } from './LocalFile';
 import { MessageDetail } from './MessageDetail';
-import { Plugins } from './Plugins';
 import { Thread } from './Thread';
 import { Topic } from './Topic';
 import { TopicComments, TopicCommentThread } from './TopicComments';
@@ -35,7 +34,6 @@ const VIEW_COMPONENTS: Partial<Record<PortalViewType, PortalImpl>> = {
   [PortalViewType.FilePreview]: FilePreview,
   [PortalViewType.LocalFile]: LocalFile,
   [PortalViewType.MessageDetail]: MessageDetail,
-  [PortalViewType.ToolUI]: Plugins,
   [PortalViewType.Thread]: Thread,
   [PortalViewType.Topic]: Topic,
   [PortalViewType.TopicCommentThread]: TopicCommentThread,

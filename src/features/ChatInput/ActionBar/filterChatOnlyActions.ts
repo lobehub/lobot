@@ -1,23 +1,10 @@
 import type { ActionKey, ActionKeys } from './config';
 
-const CHAT_ONLY_ACTIONS = new Set<ActionKey>([
-  'agentMode',
-  'clear',
-  'fileUpload',
-  'history',
-  'mention',
-  'model',
-  'plus',
-  'promptTransform',
-  'typo',
-  'voiceDictation',
-]);
+const CHAT_ONLY_ACTIONS = new Set<ActionKey>(['typo', 'voiceDictation']);
 
 /**
- * Chat-only members (no configuration access) keep runtime preferences,
- * attachments, formatting and chat operations while configuration actions are
- * hidden. `model` stays as the text chip — it is policy-aware and renders an
- * inert label when the member cannot pick a model.
+ * Chat-only members (no configuration access) keep formatting and dictation
+ * while the remaining actions are hidden.
  */
 export const filterChatOnlyActions = (actions: ActionKeys[]): ActionKeys[] => {
   const visibleActions: ActionKeys[] = [];

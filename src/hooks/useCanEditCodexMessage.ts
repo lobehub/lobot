@@ -27,7 +27,7 @@ export const useCanEditCodexMessage = (agentId?: string, topicId?: string | null
   if (!agentId || isPreferenceLoading || agencyConfig?.heterogeneousProvider?.type !== 'codex')
     return false;
   try {
-    const runtime = selectRuntimeType({
+    selectRuntimeType({
       boundDeviceId: agencyConfig.boundDeviceId,
       executionTarget: agencyConfig.executionTarget,
       heterogeneousProvider: agencyConfig.heterogeneousProvider,
@@ -35,18 +35,15 @@ export const useCanEditCodexMessage = (agentId?: string, topicId?: string | null
       isWorkspaceAgent,
       workspaceScoped,
     });
-    if (runtime === 'hetero') return true;
 
-    // Resolve through the same target rules as Send, after its authorization guards.
-    return (
-      runtime === 'gateway' &&
-      !!agencyConfig.boundDeviceId &&
-      resolveExecutionTarget(agencyConfig, {
-        clientExecutionAvailable: isDesktop,
-        isHetero: true,
-        workspaceScoped,
-      }) === 'device'
-    );
+    // Resolve through the same target rules as Send, after its authorization guards:
+    // this desktop (`local`) or a bound device runs Codex, so its history is editable.
+    const target = resolveExecutionTarget(agencyConfig, {
+      clientExecutionAvailable: isDesktop,
+      isHetero: true,
+      workspaceScoped,
+    });
+    return target === 'local' || (!!agencyConfig.boundDeviceId && target === 'device');
   } catch {
     // Invalid effective runtime configurations cannot offer an executable edit action.
     return false;

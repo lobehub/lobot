@@ -1,4 +1,4 @@
-import { SANDBOX_DRIVE_ROOT } from '@lobechat/builtin-tool-cloud-sandbox';
+import { SANDBOX_DRIVE_ROOT } from '@lobechat/const/builtinTools';
 
 import type { SandboxSelection } from './useSandboxPlacement';
 

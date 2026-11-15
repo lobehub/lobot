@@ -29,8 +29,6 @@ const DEFAULT_MENU: MessageActionSlot[] = [
   'branching',
   'collapse',
   'divider',
-  'translate',
-  'divider',
   'share',
   'select',
   'divider',

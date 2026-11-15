@@ -85,53 +85,6 @@ describe('createGatewayEventHandler', () => {
     vi.spyOn(agentSignalBridge, 'emitClientAgentSignalSourceEvent').mockResolvedValue(undefined);
   });
 
-  it('normalizes tool_end isSuccess for Codex worktree side-effect hooks', async () => {
-    vi.spyOn(messageService, 'getMessages').mockResolvedValue([] as unknown as UIChatMessage[]);
-    const store = createStore();
-    const handler = createGatewayEventHandler(() => store, {
-      assistantMessageId: 'seed-msg',
-      context,
-      operationId: 'op-1',
-      runtimeType: 'hetero',
-    });
-
-    handler(
-      makeEvent('tool_end', {
-        isSuccess: true,
-        payload: {
-          toolCalling: {
-            apiName: 'command_execution',
-            arguments: JSON.stringify({
-              command:
-                'git worktree add -b feat/device-reconnect-button /repo-wt-device-reconnect abc123',
-            }),
-            id: 'command-1',
-            identifier: 'codex',
-            type: 'default',
-          },
-        },
-        result: { content: 'Preparing worktree (new branch feat/device-reconnect-button)' },
-        skipMessageFetch: true,
-        toolCallId: 'command-1',
-      } as any),
-    );
-    await flush();
-
-    expect(executorMocks.onAfterCall).toHaveBeenCalledWith({
-      apiName: 'command_execution',
-      identifier: 'codex',
-      params: {
-        command:
-          'git worktree add -b feat/device-reconnect-button /repo-wt-device-reconnect abc123',
-      },
-      result: {
-        content: 'Preparing worktree (new branch feat/device-reconnect-button)',
-        success: true,
-      },
-      toolCallId: 'command-1',
-      topicId: 'topic-1',
-    });
-  });
 
   it('inserts the assistant shell locally when stream_start carries the message seed (new server)', async () => {
     const store = createStore();

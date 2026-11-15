@@ -1,7 +1,12 @@
 import { isDesktop } from '@lobechat/const';
 
-import { shouldEnableBuiltinSkill } from './skillFilters';
 import { shouldEnableTool } from './toolFilters';
+
+/** Builtin skills the product drives itself; never listed to the user. */
+const USER_HIDDEN_BUILTIN_SKILLS = new Set<string>(['task']);
+
+/** Builtin skills that only work where the run can execute commands on a device. */
+const DEVICE_ONLY_BUILTIN_SKILLS = new Set<string>(['lobe-agent-browser']);
 
 export interface ToolAvailabilityInstalledPlugin {
   customParams?: {
@@ -23,13 +28,9 @@ export const isBuiltinSkillAvailableInCurrentEnv = (
   id: string,
   context: Omit<ToolAvailabilityContext, 'installedPlugins'> = {},
 ) => {
-  if (context.isDesktop === undefined) {
-    return shouldEnableBuiltinSkill(id);
-  }
-
-  return shouldEnableBuiltinSkill(id, {
-    canExecuteOnDevice: context.isDesktop ?? isDesktop,
-  });
+  if (USER_HIDDEN_BUILTIN_SKILLS.has(id)) return false;
+  if (DEVICE_ONLY_BUILTIN_SKILLS.has(id)) return context.isDesktop ?? isDesktop;
+  return true;
 };
 
 export const isInstalledPluginAvailableInCurrentEnv = (

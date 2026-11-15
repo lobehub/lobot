@@ -1,6 +1,6 @@
 'use client';
 
-import { BUILTIN_AGENT_SLUGS } from '@lobechat/builtin-agents';
+import { BUILTIN_AGENT_SLUGS } from '@lobechat/const/builtinAgents';
 import { type FC, memo, type PropsWithChildren } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';

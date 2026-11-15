@@ -1,10 +1,10 @@
-import type { InstallMarketplaceAgentSummary } from '@lobechat/builtin-tool-web-onboarding/agentMarketplace';
 import type { DiscoverAssistantDetail } from '@lobechat/types';
 import { customAlphabet } from 'nanoid/non-secure';
 
 import { getActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import { lambdaClient } from '@/libs/trpc/client';
 import { agentService } from '@/services/agent';
+import type { InstallMarketplaceAgentSummary } from '@/services/agentMarketplace/pickResult';
 import { discoverService } from '@/services/discover';
 import { ensureAgentMarketSkillsAndWarn } from '@/services/ensureAgentMarketSkills';
 import { marketApiService } from '@/services/marketApi';

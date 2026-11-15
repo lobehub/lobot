@@ -33,7 +33,6 @@ import {
   type ResumeApprovalParam,
   type ResumeToolResultParam,
 } from '@/services/aiAgent';
-import { getLlmExecutorDeclarationFor, getLlmRelayClientId } from '@/services/llmRelay';
 import { messageService } from '@/services/message';
 import { shareChatService } from '@/services/shareChat';
 import { topicService } from '@/services/topic';
@@ -86,6 +85,7 @@ import { gatewayRunOperationMetadata, isLocalStopNotice } from './runOperationMe
 import { isCompletedRuntimeEnd } from './runtimeEndReason';
 import * as serverSteerQueue from './serverSteerQueue';
 import { watchSubAgentRun, type WatchSubAgentRunParams } from './watchSubAgentRun';
+import { getGatewayClientId } from './clientId';
 
 const getGatewayServerConfig = () =>
   (typeof window !== 'undefined'
@@ -545,7 +545,7 @@ export class GatewayActionImpl {
     const client: GatewayConnection['client'] =
       muxClient ??
       this.createClient({
-        ...(!agentShareId && { clientId: getLlmRelayClientId() }),
+        ...(!agentShareId && { clientId: getGatewayClientId() }),
         gatewayUrl,
         ...(lastEventId && { lastEventId }),
         operationId,
@@ -1646,62 +1646,6 @@ export class GatewayActionImpl {
     return result;
   };
 
-  /**
-   * Pick up a run parked in `waiting_for_client` on this client: its next LLM
-   * call needs a provider only the user's device can reach, and no client was
-   * there to run it. The replayed call is delivered only to clients subscribed
-   * to the run's stream, so subscribe first (unless this tab already is), then
-   * ask the server to continue with this client as the executor.
-   *
-   * Resolves `false` when this client cannot run the provider or the run is no
-   * longer parked (another client already took it, it expired or was stopped).
-   */
-  continueClientLlmWait = async (params: {
-    agentId?: string;
-    assistantMessageId?: string;
-    operationId: string;
-    provider: string;
-    threadId?: string | null;
-    topicId?: string;
-  }): Promise<boolean> => {
-    const { agentId, assistantMessageId, operationId, provider, threadId, topicId } = params;
-    const llmExecutor = getLlmExecutorDeclarationFor(provider);
-    if (!llmExecutor) return false;
-
-    const isConnected = () => {
-      const status = this.#get().gatewayConnections[operationId]?.status;
-      return !!status && status !== 'disconnected';
-    };
-    if (!isConnected() && assistantMessageId && topicId) {
-      await this.reconnectToGatewayOperation({
-        agentId,
-        assistantMessageId,
-        operationId,
-        threadId,
-        topicId,
-      });
-    }
-    // A socket still handshaking when the call goes out is not counted as a
-    // recipient: claiming the wait then only re-parks the run. Leave it parked
-    // for a later attempt (or another client) instead.
-    const connected = await waitForGatewayConnected(
-      () => this.#get().gatewayConnections[operationId]?.status,
-    );
-    if (!connected) return false;
-
-    const { resumed } = await aiAgentService.resumeClientLlmWait({ llmExecutor, operationId });
-    // Whichever caller won (the conversation's card or the app-level pick-up),
-    // drop the waiting notice locally: the resumed step streams into this row
-    // and the server already cleared it.
-    if (resumed && assistantMessageId && agentId && topicId) {
-      this.#get().internal_dispatchMessage(
-        { id: assistantMessageId, type: 'updateMessage', value: { error: null } },
-        { conversationContext: { agentId, threadId, topicId } },
-      );
-    }
-    return resumed;
-  };
-
   /** Stream a sub-agent run this tab dispatched but does not drive; see `watchSubAgentRun`. */
   watchSubAgentRun = (params: WatchSubAgentRunParams): (() => void) =>
     watchSubAgentRun(this.#get, params, {
@@ -2619,16 +2563,3 @@ export type GatewayAction = Pick<GatewayActionImpl, keyof GatewayActionImpl>;
  * published its own `runningOperation` / `running` status.
  */
 const LOCAL_RUN_SETTLE_MIN_AGE_MS = 30_000;
-
-const GATEWAY_CONNECT_WAIT_MS = 5000;
-
-/** Resolve once the connection reads `connected`, or after a bounded wait. */
-const waitForGatewayConnected = async (
-  readStatus: () => ConnectionStatus | undefined,
-): Promise<boolean> => {
-  const deadline = Date.now() + GATEWAY_CONNECT_WAIT_MS;
-  while (readStatus() !== 'connected' && Date.now() < deadline) {
-    await new Promise((resolve) => setTimeout(resolve, 100));
-  }
-  return readStatus() === 'connected';
-};

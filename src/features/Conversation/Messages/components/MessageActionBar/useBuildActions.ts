@@ -17,7 +17,6 @@ import { restoreToInputAction } from './actions/restoreToInput';
 import { saveAsEvalCaseAction } from './actions/saveAsEvalCase';
 import { selectAction } from './actions/select';
 import { shareAction } from './actions/share';
-import { translateAction } from './actions/translate';
 import { type MessageActionContext } from './types';
 
 /**
@@ -55,7 +54,6 @@ export const useBuildActions = (
     saveAsEvalCase: saveAsEvalCaseAction.useBuild(ctx),
     select: selectAction.useBuild(ctx),
     share: shareAction.useBuild(ctx),
-    translate: translateAction.useBuild(ctx),
   };
 
   if (!canUseResource) {
@@ -67,7 +65,6 @@ export const useBuildActions = (
       'edit',
       'fork',
       'regenerate',
-      'translate',
     ]) {
       actions[key] = null;
     }

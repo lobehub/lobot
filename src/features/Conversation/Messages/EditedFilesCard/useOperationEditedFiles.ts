@@ -1,9 +1,10 @@
+import type { AssistantContentBlock } from '@lobechat/types';
+import { useMemo } from 'react';
+
 import {
   deriveOperationEditedFiles,
   type OperationEditedFile,
-} from '@lobechat/builtin-tools/operationArtifacts';
-import type { AssistantContentBlock } from '@lobechat/types';
-import { useMemo } from 'react';
+} from '@/features/Conversation/operationArtifacts';
 
 /**
  * Derived, non-persisted list of files edited across one assistant round.

@@ -1,4 +1,3 @@
-import { classifyEditedFile, getBasename } from '@lobechat/builtin-tools/fileEditScan';
 import {
   type ExternalWorkResourceType,
   type ListedWorkType,
@@ -33,6 +32,10 @@ import {
   PR_STATE_VISUAL,
   type PullRequestStateVisual,
 } from '@/features/AgentSidebar/Topic/List/Item/metaCardData';
+import {
+  classifyEditedFile,
+  getBasename,
+} from '@/features/Conversation/operationArtifacts/fileEditScan';
 
 import LinearIcon from './icons/LinearIcon';
 

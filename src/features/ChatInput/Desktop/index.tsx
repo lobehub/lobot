@@ -132,19 +132,14 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
     );
     const uploadContextKey = useChatInputUploadKey();
     const hasFiles = useFileStore(fileChatSelectors.chatUploadFileListHasItem(uploadContextKey));
-    const [slashMenuRef, expand, showTypoBar, editor, leftActions] = useChatInputStore((s) => [
+    const [slashMenuRef, expand, showTypoBar, editor] = useChatInputStore((s) => [
       s.slashMenuRef,
       s.expand,
       s.showTypoBar,
       s.editor,
-      s.leftActions,
     ]);
 
     const chatKey = useChatStore(chatSelectors.currentChatKey);
-
-    // The ControlBar (or the custom slot standing in for it) hosts the
-    // context-window token tag; without one, SendArea keeps it beside Send.
-    const hasControlBar = Boolean(controlBarSlot) || showControlBar;
 
     const setExpand = useChatInputStore((s) => s.setExpand);
     const skillDrop = useSkillDrop();
@@ -172,8 +167,7 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
       setExpand(false);
     }, [chatKey, editor, setExpand]);
 
-    const shouldShowContextContainer =
-      leftActions.flat().includes('fileUpload') || hasContextSelections || hasFiles;
+    const shouldShowContextContainer = hasContextSelections || hasFiles;
     const contextContainerNode = shouldShowContextContainer && <ContextContainer />;
 
     const loadingLeftSlot = isConfigLoading ? (
@@ -249,10 +243,10 @@ const DesktopChatInput = memo<DesktopChatInputProps>(
                   (sendAreaPrefix ? (
                     <Flexbox horizontal align={'center'} gap={6}>
                       {sendAreaPrefix}
-                      <SendArea hideContextWindow={hasControlBar} />
+                      <SendArea />
                     </Flexbox>
                   ) : (
-                    <SendArea hideContextWindow={hasControlBar} />
+                    <SendArea />
                   ))
                 }
               />

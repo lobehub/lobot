@@ -120,7 +120,7 @@ const ThreadChatContent = memo<ThreadChatContentProps>(
         {composerWritable && inputMode === 'default' && (
           <ChatInput
             leftActions={['typo', 'voiceDictation']}
-            rightActions={['voiceMessage', 'contextWindow']}
+            rightActions={['voiceMessage']}
             // A subtopic runs on the conversation it forked from: mode, device,
             // working directory and approval all come from there and are not
             // separately settable here. Rendering the bar anyway put a row of

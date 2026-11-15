@@ -4,7 +4,6 @@ import { useMemo } from 'react';
 import { useToolStore } from '@/store/tool';
 import {
   agentSkillsSelectors,
-  builtinToolSelectors,
   composioStoreSelectors,
   lobehubSkillStoreSelectors,
   pluginSelectors,
@@ -15,7 +14,6 @@ import type { ToolStore } from '@/store/tool/store';
 import type { ActionTagData } from './types';
 
 interface InstalledSources {
-  builtinSkills: ReturnType<typeof builtinToolSelectors.installedBuiltinSkills>;
   composioServers: ReturnType<typeof composioStoreSelectors.getServers>;
   customConnectors: ReturnType<typeof connectorSelectors.customConnectors>;
   installedPlugins: ReturnType<typeof pluginSelectors.installedPluginMetaList>;
@@ -25,7 +23,6 @@ interface InstalledSources {
 }
 
 const selectInstalledSources = (s: ToolStore): InstalledSources => ({
-  builtinSkills: builtinToolSelectors.installedBuiltinSkills(s),
   composioServers: composioStoreSelectors.getServers(s),
   customConnectors: connectorSelectors.customConnectors(s),
   installedPlugins: pluginSelectors.installedPluginMetaList(s),
@@ -35,11 +32,10 @@ const selectInstalledSources = (s: ToolStore): InstalledSources => ({
 });
 
 /**
- * Skills: builtinSkills, lobehubSkillServers, marketAgentSkills, userAgentSkills
+ * Skills: lobehubSkillServers, marketAgentSkills, userAgentSkills
  * Tools:  installedPlugins (excluding skill-type entries), composioServers
  */
 const buildInstalledSkillsAndTools = ({
-  builtinSkills,
   composioServers,
   customConnectors,
   installedPlugins,
@@ -52,17 +48,8 @@ const buildInstalledSkillsAndTools = ({
   // --- Build skill set (identifier → { label, icon }) ---
   const skillMap = new Map<string, { description?: string; icon?: string; label: string }>();
 
-  for (const item of builtinSkills) {
-    skillMap.set(item.identifier, {
-      description: item.description,
-      icon: item.avatar,
-      label: item.title || item.name || item.identifier,
-    });
-  }
   for (const item of lobehubSkillServers) {
-    if (!skillMap.has(item.identifier)) {
-      skillMap.set(item.identifier, { icon: item.icon, label: item.name || item.identifier });
-    }
+    skillMap.set(item.identifier, { icon: item.icon, label: item.name || item.identifier });
   }
   for (const item of marketAgentSkills) {
     if (!skillMap.has(item.identifier)) {
@@ -98,7 +85,7 @@ const buildInstalledSkillsAndTools = ({
   }
 
   for (const item of installedPlugins) {
-    // Skip entries that are actually skills (lobehub skill, agent skill, builtin skill)
+    // Skip entries that are actually skills (lobehub skill, agent skill)
     if (skillMap.has(item.identifier)) continue;
     if (!toolMap.has(item.identifier)) {
       toolMap.set(item.identifier, { icon: item.avatar, label: item.title || item.identifier });

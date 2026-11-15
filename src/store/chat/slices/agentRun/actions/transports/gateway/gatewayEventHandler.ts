@@ -2,28 +2,23 @@ import type {
   AgentInterventionRequestData,
   AgentInterventionResponseData,
   AgentStreamEvent,
-  LlmCancelData,
-  LlmExecuteData,
   MessagePatchData,
   StepCompleteData,
   StreamChunkData,
   StreamStartData,
   SubAgentProgressData,
   ToolEndData,
-  ToolExecuteData,
   ToolStartData,
   ToolStateChunkData,
 } from '@lobechat/agent-gateway-client';
 import { isSessionTerminalEvent } from '@lobechat/agent-gateway-client';
 import { normalizeHeterogeneousMessageError } from '@lobechat/heterogeneous-agents/errors';
 import { normalizeChatMessageError } from '@lobechat/model-runtime/errors';
-import type { BuiltinToolResult, ConversationContext, UIChatMessage } from '@lobechat/types';
+import type { ConversationContext, UIChatMessage } from '@lobechat/types';
 import { isClientLlmWaitableError } from '@lobechat/types';
 import { isRecord, pickNonEmptyString, toRecord } from '@lobechat/utils/object';
 
 import { readConversationMessages } from '@/helpers/conversationMessageRead';
-import { llmRelayExecutor } from '@/services/llmRelay';
-import type { RelayProtocolChunk } from '@/services/llmRelay/protocolChunks';
 import { messageService } from '@/services/message';
 import { didToolMutateWorkView, workService } from '@/services/work';
 import { emitClientAgentSignalSourceEvent } from '@/store/chat/slices/agentRun/actions/lifecycle/agentSignalBridge';
@@ -45,17 +40,6 @@ import {
 } from './runtimeEndReason';
 import { applyStepMetrics } from './stepMetrics';
 import { insertStreamStartSeeds, streamStartOperationMetadata } from './streamStartSeed';
-
-// Lazy-loaded to break the import cycle:
-//   gateway.ts → gatewayEventHandler.ts → executors/index.ts (which pulls in
-//   tool client barrels that import `@/store/chat/store`) → chat store
-//   creation → `new GatewayActionImpl(...)` while gateway.ts is still
-//   mid-evaluation, so the class binding is undefined.
-const loadGetExecutor = async () => {
-  const mod = await import('@/store/tool/slices/builtin/executors');
-  await mod.registerBuiltinToolExecutors();
-  return mod.getExecutor;
-};
 
 /**
  * Fetch messages from DB and replace them in the chat store's dbMessagesMap.
@@ -146,67 +130,6 @@ const preserveToolResultMessageIds = (
   return changed ? merged : toolsCalling;
 };
 
-interface ChatToolPayloadLike {
-  apiName?: unknown;
-  arguments?: unknown;
-  id?: unknown;
-  identifier?: unknown;
-}
-
-interface ToolPayloadIdentity {
-  apiName: string;
-  identifier: string;
-  params: unknown;
-  toolCallId?: string;
-}
-
-/**
- * Extract `{ identifier, apiName, params, toolCallId }` from a stream event's
- * tool payload. Returns `undefined` when the payload is malformed so the
- * caller can skip dispatch without throwing.
- */
-const readToolPayload = (
-  payload: ChatToolPayloadLike | undefined,
-): ToolPayloadIdentity | undefined => {
-  const identifier = typeof payload?.identifier === 'string' ? payload.identifier : undefined;
-  const apiName = typeof payload?.apiName === 'string' ? payload.apiName : undefined;
-  if (!identifier || !apiName) return undefined;
-
-  let params: unknown = payload?.arguments;
-  if (typeof params === 'string') {
-    try {
-      params = JSON.parse(params);
-    } catch {
-      params = {};
-    }
-  } else if (params == null) {
-    params = {};
-  }
-
-  const toolCallId = typeof payload?.id === 'string' ? payload.id : undefined;
-  return { apiName, identifier, params, toolCallId };
-};
-
-/**
- * Route a `tool_start` event to the executor's optional `onBeforeCall` hook so
- * tool packages can react before their own mutations dispatch (e.g.
- * optimistic UI). Fires for both client- and server-runtime tools.
- */
-const dispatchOnBeforeCall = async (
-  data: ToolStartData | undefined,
-  topicId?: string,
-): Promise<void> => {
-  const payload = data?.toolCalling as ChatToolPayloadLike | undefined;
-  const identity = readToolPayload(payload);
-  if (!identity) return;
-
-  const getExecutor = await loadGetExecutor();
-  const executor = getExecutor(identity.identifier);
-  if (!executor?.onBeforeCall) return;
-
-  await executor.onBeforeCall({ ...identity, topicId });
-};
-
 /**
  * Real gateway `tool_end` events ship `data.payload` as the
  * `{ parentMessageId, toolCalling }` wrapper, NOT a flat `ChatToolPayload`
@@ -215,6 +138,13 @@ const dispatchOnBeforeCall = async (
  * the flat shape so we tolerate test fixtures / future emission paths that
  * pass the payload directly.
  */
+interface ChatToolPayloadLike {
+  apiName?: unknown;
+  arguments?: unknown;
+  id?: unknown;
+  identifier?: unknown;
+}
+
 const unwrapToolPayload = (raw: unknown): ChatToolPayloadLike | undefined => {
   if (!raw || typeof raw !== 'object') return undefined;
   const wrapper = raw as { toolCalling?: unknown };
@@ -222,35 +152,6 @@ const unwrapToolPayload = (raw: unknown): ChatToolPayloadLike | undefined => {
     return wrapper.toolCalling as ChatToolPayloadLike;
   }
   return raw as ChatToolPayloadLike;
-};
-
-/**
- * Route a `tool_end` event to the executor's optional `onAfterCall` hook so
- * tool packages can react to their own mutations (e.g. invalidate store
- * caches) regardless of whether the tool ran client- or server-side.
- */
-const dispatchOnAfterCall = async (
-  data: ToolEndData | undefined,
-  topicId?: string,
-): Promise<void> => {
-  const identity = readToolPayload(unwrapToolPayload(data?.payload));
-  if (!identity) return;
-
-  const getExecutor = await loadGetExecutor();
-  const executor = getExecutor(identity.identifier);
-  if (!executor?.onAfterCall) return;
-
-  const result = (data?.result ?? {}) as BuiltinToolResult;
-
-  await executor.onAfterCall({
-    ...identity,
-    // Gateway/hetero tool_end events carry the terminal outcome beside
-    // `result`, while client-tool results already include `result.success`.
-    // Normalize both shapes so hook-only heterogeneous executors do not treat
-    // a successful shell command as failed and skip git/worktree side effects.
-    result: { ...result, success: result.success ?? data?.isSuccess },
-    topicId,
-  });
 };
 
 type GatewayMessageLike = { id: string; role?: string };
@@ -397,12 +298,6 @@ export const createGatewayEventHandler = (
     get().completeOperation(reasoningOperationId);
     reasoningOperationId = undefined;
   };
-
-  // Reply of the relayed LLM attempt this tab is executing (`llm_execute`),
-  // rendered from the local model output instead of the server's echo. Reset
-  // per call id: a re-dispatched attempt starts its reply over.
-  let relayRender:
-    { callId: string; content: string; messageId: string; reasoning: string } | undefined;
 
   // Sequential processing queue — ensures stream_chunk waits for stream_start's fetch
   let processingChain: Promise<void> = Promise.resolve();
@@ -553,55 +448,6 @@ export const createGatewayEventHandler = (
     toolStateBootstrapPromiseByCallId.set(data.toolCallId, trackedBootstrapPromise);
   };
 
-  /**
-   * Optimistic render of a relayed attempt this tab executes: the local model's
-   * text and reasoning land on the step's assistant message as they are
-   * produced, and the server's echo of the same output (`relayCallId`) is
-   * skipped. Tool calls, `stream_end` and the step's message patch still come
-   * from the server, so its final state overrides what was rendered here.
-   */
-  const applyLocalRelayOutput = (call: LlmExecuteData, chunk: RelayProtocolChunk) => {
-    const messageId = call.assistantMessageId;
-    if (!messageId || terminalState) return;
-    if (chunk.type !== 'text' && chunk.type !== 'reasoning') return;
-    if (typeof chunk.data !== 'string' || !chunk.data) return;
-
-    if (relayRender?.callId !== call.callId) {
-      relayRender = { callId: call.callId, content: '', messageId, reasoning: '' };
-    }
-    const isCurrent = messageId === currentAssistantMessageId;
-    hasStreamedContent = true;
-
-    if (chunk.type === 'text') {
-      relayRender.content += chunk.data;
-      if (isCurrent) {
-        endReasoningIfNeeded();
-        accumulatedContent = relayRender.content;
-      }
-      // The whole reply so far, not the delta: a chunk that raced ahead of
-      // `stream_start` (the message shell not in the store yet) is not lost.
-      get().internal_dispatchMessage(
-        { id: messageId, type: 'updateMessage', value: { content: relayRender.content } },
-        dispatchContext,
-      );
-      return;
-    }
-
-    relayRender.reasoning += chunk.data;
-    if (isCurrent) {
-      startReasoningIfNeeded();
-      accumulatedReasoning = relayRender.reasoning;
-    }
-    get().internal_dispatchMessage(
-      {
-        id: messageId,
-        type: 'updateMessage',
-        value: { reasoning: { content: relayRender.reasoning } },
-      },
-      dispatchContext,
-    );
-  };
-
   return (event: AgentStreamEvent) => {
     if (terminalState) return;
 
@@ -621,8 +467,6 @@ export const createGatewayEventHandler = (
     // same session once a client resumes it.
     if (isSessionTerminalEvent(event)) {
       terminalState = event.type === 'error' ? 'error' : 'completed';
-      // A relayed attempt this tab still runs for the run is moot now.
-      llmRelayExecutor.cancelOperation(event.operationId || gatewayOperationId);
     }
 
     switch (event.type) {
@@ -662,37 +506,9 @@ export const createGatewayEventHandler = (
           // current id.
           endReasoningIfNeeded();
 
-          // Reset accumulators for the new stream — unless this tab already
-          // rendered the step's relayed reply locally ahead of `stream_start`.
-          const localRelay =
-            relayRender && relayRender.messageId === currentAssistantMessageId
-              ? relayRender
-              : undefined;
-          accumulatedContent = localRelay?.content ?? '';
-          accumulatedReasoning = localRelay?.reasoning ?? '';
-          // Output that raced ahead of the shell inserted above was dispatched
-          // to a missing id (a no-op), and the server echo of it is skipped:
-          // put it on the message now.
-          if (localRelay?.content) {
-            get().internal_dispatchMessage(
-              {
-                id: localRelay.messageId,
-                type: 'updateMessage',
-                value: { content: localRelay.content },
-              },
-              dispatchContext,
-            );
-          }
-          if (localRelay?.reasoning) {
-            get().internal_dispatchMessage(
-              {
-                id: localRelay.messageId,
-                type: 'updateMessage',
-                value: { reasoning: { content: localRelay.reasoning } },
-              },
-              dispatchContext,
-            );
-          }
+          // Reset accumulators for the new stream.
+          accumulatedContent = '';
+          accumulatedReasoning = '';
           get().updateOperationMetadata(operationId, streamStartOperationMetadata(data));
 
           // Native gateway streams carry `assistantMessage.id` directly on
@@ -752,14 +568,6 @@ export const createGatewayEventHandler = (
         enqueue(async () => {
           const data = event.data as StreamChunkData | undefined;
           if (!data) return;
-
-          // Echo of a relayed attempt this tab ran: already rendered locally.
-          if (
-            (data.chunkType === 'text' || data.chunkType === 'reasoning') &&
-            llmRelayExecutor.ownsCall(data.relayCallId)
-          ) {
-            return;
-          }
 
           if (data.chunkType === 'text' && data.content) {
             // `lh hetero exec` coalesces main-agent text into full-text
@@ -931,9 +739,6 @@ export const createGatewayEventHandler = (
         // re-opens state delivery while the seq watermark remains monotonic, so
         // delayed snapshots from the previous lifecycle are still rejected.
         if (startedToolCallId) completedToolStateCallIds.delete(startedToolCallId);
-        enqueue(async () => {
-          await dispatchOnBeforeCall(data, context.topicId ?? undefined).catch(console.error);
-        });
         break;
       }
 
@@ -1090,47 +895,6 @@ export const createGatewayEventHandler = (
         break;
       }
 
-      case 'tool_execute': {
-        // Fire-and-forget: the client-side tool may take a long time, and we
-        // must keep processing other events (stream_chunk, tool_end, etc.) on
-        // the same WebSocket. `internal_executeClientTool` guarantees it never
-        // throws and always sends exactly one `tool_result` back.
-        //
-        // Use `gatewayOperationId` (server-side id, the key under
-        // `gatewayConnections`) so the action can look up the WS to reply on
-        // — NOT the local `operationId` used for `dispatchContext`.
-        const data = event.data as ToolExecuteData | undefined;
-        if (!data) break;
-        void get().internal_executeClientTool(data, {
-          localOperationId: operationId,
-          operationId: gatewayOperationId,
-        });
-        break;
-      }
-
-      case 'llm_execute': {
-        // The server hands this tab one LLM attempt for a provider only this
-        // device can reach. Started right away, not queued: the queue may be
-        // waiting on a DB read, and the claim deadline is 15 s. Its output is
-        // rendered through the queue so it keeps its order with stream_start.
-        const data = event.data as LlmExecuteData | undefined;
-        if (!data?.callId || context.agentShareId) break;
-        void llmRelayExecutor.execute(data, {
-          // A sub-agent's call rides this run's channel: this run ending ends it.
-          channelOperationId: event.operationId || gatewayOperationId,
-          onOutput: (chunk) => {
-            enqueue(() => applyLocalRelayOutput(data, chunk));
-          },
-        });
-        break;
-      }
-
-      case 'llm_cancel': {
-        const data = event.data as LlmCancelData | undefined;
-        if (data?.callId) llmRelayExecutor.cancel(data);
-        break;
-      }
-
       case 'tool_end': {
         const data = event.data as ToolEndData | undefined;
         const completedToolCallId =
@@ -1159,10 +923,7 @@ export const createGatewayEventHandler = (
             shouldRefreshWorkViews = true;
           }
 
-          await Promise.all([
-            maybeRefresh,
-            dispatchOnAfterCall(data, context.topicId ?? undefined).catch(console.error),
-          ]);
+          await maybeRefresh;
           // Message-backed summaries refresh with the normal tool payload. Lazy
           // Work views settle once at runtime-end when a mutating tool was seen.
         });

@@ -1,4 +1,4 @@
-import type { TaskCompletedWindow } from '@lobechat/builtin-tool-task';
+import type { TaskCompletedWindow } from '@lobechat/const/builtinTools';
 import type {
   CheckpointConfig,
   TaskAutomationMode,
@@ -8,13 +8,7 @@ import type {
   TaskStatus,
 } from '@lobechat/types';
 
-import { createWorkspaceLambdaClient, lambdaClient, withLlmRelay } from '@/libs/trpc/client';
-import { buildLlmExecutorDeclaration, oneShotRelay } from '@/services/llmRelay';
-import { useUserStore } from '@/store/user';
-import { systemAgentSelectors } from '@/store/user/selectors';
-
-/** The `goal` system agent's provider: task intent runs on it server-side. */
-const goalModelProvider = () => systemAgentSelectors.goal(useUserStore.getState()).provider;
+import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
 
 class TaskService {
   // ── Queries ──
@@ -111,10 +105,7 @@ class TaskService {
   analyzeIntent = async (params: {
     context?: string;
     instruction: string;
-  }): Promise<TaskIntentAnalysis> =>
-    oneShotRelay.run(goalModelProvider(), (relay) =>
-      lambdaClient.task.analyzeIntent.mutate(params, withLlmRelay(relay)),
-    );
+  }): Promise<TaskIntentAnalysis> => lambdaClient.task.analyzeIntent.mutate(params);
 
   /**
    * Rewrite the confirmed draft into the brief that gets executed, with the
@@ -125,10 +116,7 @@ class TaskService {
     answers: { answer: string; question: string }[];
     context?: string;
     instruction: string;
-  }): Promise<TaskInstructionSynthesis> =>
-    oneShotRelay.run(goalModelProvider(), (relay) =>
-      lambdaClient.task.synthesizeInstruction.mutate(params, withLlmRelay(relay)),
-    );
+  }): Promise<TaskInstructionSynthesis> => lambdaClient.task.synthesizeInstruction.mutate(params);
 
   create = async (params: {
     assigneeAgentId?: string;
@@ -307,10 +295,7 @@ class TaskService {
    * this tab runs is reason to stand by as its executor.
    */
   runReview = async (id: string, params?: { content?: string; topicId?: string }) =>
-    oneShotRelay.run(
-      () => buildLlmExecutorDeclaration()?.providers ?? [],
-      (relay) => lambdaClient.task.runReview.mutate({ id, ...params }, withLlmRelay(relay)),
-    );
+    lambdaClient.task.runReview.mutate({ id, ...params });
 
   pinDocument = async (taskId: string, documentId: string, pinnedBy?: string) =>
     lambdaClient.task.pinDocument.mutate({ documentId, pinnedBy, taskId });

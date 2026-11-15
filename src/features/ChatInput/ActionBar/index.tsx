@@ -19,7 +19,6 @@ const mapActionToItem = (actionKey: ActionKey) => {
   const Render = actionMap[actionKey];
 
   return {
-    alwaysDisplay: actionKey === 'contextWindow',
     children: <Render key={actionKey} />,
     key: actionKey,
   };

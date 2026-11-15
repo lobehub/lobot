@@ -93,7 +93,6 @@ export const useChatItemContextMenu = ({
     deleteMessage,
     regenerateUserMessage,
     regenerateAssistantMessage,
-    translateMessage,
     delAndRegenerateMessage,
     copyMessage,
     openThreadCreator,
@@ -106,7 +105,6 @@ export const useChatItemContextMenu = ({
     s.deleteMessage,
     s.regenerateUserMessage,
     s.regenerateAssistantMessage,
-    s.translateMessage,
     s.delAndRegenerateMessage,
     s.copyMessage,
     s.openThreadCreator,
@@ -136,7 +134,6 @@ export const useChatItemContextMenu = ({
       fork,
       regenerate,
       share,
-      translate,
     } = actionsBar;
 
     const withPermission = (items: MenuItem[]) =>
@@ -146,9 +143,7 @@ export const useChatItemContextMenu = ({
             if ('type' in item && item.type === 'divider') return item;
             if (['edit', 'del'].includes(String(item.key))) return { ...item, disabled: !canEdit };
             if (
-              ['branching', 'delAndRegenerate', 'fork', 'regenerate', 'translate'].includes(
-                String(item.key),
-              )
+              ['branching', 'delAndRegenerate', 'fork', 'regenerate'].includes(String(item.key))
             ) {
               return { ...item, disabled: !canCreate };
             }
@@ -170,7 +165,7 @@ export const useChatItemContextMenu = ({
       if (!inThread && !isGroupSession) list.push(fork);
       if (!inThread && !isGroupSession && isDevMode) list.push(branching);
 
-      list.push(divider, translate, divider, share, divider, regenerate, delAndRegenerate, del);
+      list.push(divider, share, divider, regenerate, delAndRegenerate, del);
 
       return withPermission(list.filter(Boolean) as MenuItem[]);
     }
@@ -202,7 +197,7 @@ export const useChatItemContextMenu = ({
 
       if (!inThread && isDevMode) list.push(branching);
 
-      list.push(divider, translate, divider, regenerate, del);
+      list.push(divider, regenerate, del);
 
       return withPermission(list.filter(Boolean) as MenuItem[]);
     }
@@ -311,12 +306,6 @@ export const useChatItemContextMenu = ({
           break;
         }
       }
-
-      if (action.keyPath?.[0] === 'translate') {
-        if (!canCreate) return;
-        const lang = action.keyPath.at(-1);
-        if (lang) translateMessage(id, lang);
-      }
     },
     [
       copyMessage,
@@ -340,7 +329,6 @@ export const useChatItemContextMenu = ({
       toggleMessageCollapsed,
       toggleMessageEditing,
       topic,
-      translateMessage,
     ],
   );
 

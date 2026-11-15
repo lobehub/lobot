@@ -5,11 +5,7 @@ import { t } from 'i18next';
 
 import { agentSkillService, type EnsureMarketSkillResult } from '@/services/skill';
 import { useToolStore } from '@/store/tool';
-import {
-  agentSkillsSelectors,
-  builtinToolSelectors,
-  pluginSelectors,
-} from '@/store/tool/selectors';
+import { agentSkillsSelectors, pluginSelectors } from '@/store/tool/selectors';
 import { agentSkillListResource } from '@/store/tool/slices/agentSkills/projection';
 import { connectorSelectors } from '@/store/tool/slices/connector';
 
@@ -43,7 +39,7 @@ const collectIdentifiers = (input: AgentPluginsInput): string[] => {
 
 /**
  * Identifiers the local catalog already resolves to something that is not a
- * Market skill to install: builtin tools and skills, installed plugins,
+ * Market skill to install: installed plugins,
  * connectors and, once the skills list is server-confirmed, installed Market
  * skills (a list hydrated from the persisted copy can miss what was installed
  * elsewhere, and the server answers `installed` for those anyway). A same-named skill from another
@@ -53,11 +49,6 @@ const getResolvedIdentifiers = (): Set<string> => {
   const state = useToolStore.getState();
   const resolved = new Set<string>();
 
-  for (const tool of builtinToolSelectors.installedAllMetaList(state))
-    resolved.add(tool.identifier);
-  for (const skill of builtinToolSelectors.installedBuiltinSkills(state)) {
-    resolved.add(skill.identifier);
-  }
   for (const plugin of pluginSelectors.installedPluginMetaList(state)) {
     resolved.add(plugin.identifier);
   }

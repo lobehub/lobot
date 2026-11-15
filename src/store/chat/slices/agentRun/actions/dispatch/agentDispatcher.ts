@@ -1,21 +1,14 @@
-import { isDesktop as defaultIsDesktop } from '@lobechat/const';
-import {
-  HETEROGENEOUS_PROVIDER_BINDING_LOCAL_ONLY_ERROR,
-  HETEROGENEOUS_PROVIDER_BINDING_PERSONAL_ONLY_ERROR,
-  isRemoteHeterogeneousType,
-} from '@lobechat/heterogeneous-agents';
+import { HETEROGENEOUS_PROVIDER_BINDING_PERSONAL_ONLY_ERROR } from '@lobechat/heterogeneous-agents';
 import { type DeviceExecutionTarget, type HeterogeneousProviderConfig } from '@lobechat/types';
-
-import { resolveExecutionTarget } from '@/helpers/executionTarget';
 
 /**
  * Which agent runtime should handle an operation.
  *
- * - `client`: in-browser AgentRuntime (default)
- * - `gateway`: cloud sandbox via Gateway WebSocket
- * - `hetero`: heterogeneous CLI agent (Claude Code, Codex, …) via desktop IPC or sandbox
+ * The desktop never runs an agent loop itself: every run goes through the
+ * Gateway, and a run that targets this machine is dispatched back to it as a
+ * device by the server.
  */
-export type AgentRuntimeType = 'client' | 'gateway' | 'hetero';
+export type AgentRuntimeType = 'gateway';
 
 /**
  * Unified intent for a non-hetero, non-group sub-agent invocation.
@@ -96,96 +89,23 @@ export interface RuntimeSelectionContext {
   workspaceScoped?: boolean;
 }
 
-interface SelectRuntimeTypeOptions {
-  /** Override of `isDesktop` for testability. Defaults to the build-time const. */
-  isDesktop?: boolean;
-}
-
 /**
  * Centralized "which runtime should run this agent operation" decision.
  *
- * The same priority is applied at every entry point (sendMessage, regenerate,
- * resume, continue, sub-agent dispatch, …) so adding a new entry point does
- * not require re-deriving the routing rules.
- *
- * Priority: `parentRuntime` > `hetero` (desktop only) > `gateway` > `client`.
- *
- * The agent's model provider is intentionally not an input. A provider only
- * this device can reach (local Ollama / LM Studio, a private base URL) still
- * runs on `gateway`: the server drives the loop and relays each LLM attempt
- * to the client that started the run (`agent_llm_relay`, see
- * `services/llmRelay`); tools, persistence and the loop stay on the server
- * rather than falling back to the client runtime.
+ * Every entry point (sendMessage, regenerate, resume, continue, sub-agent
+ * dispatch, …) asks the same question. A heterogeneous provider bound to an
+ * API key must still run where its credentials live, so that combination is
+ * rejected up front instead of being sent to the server.
  */
-export const selectRuntimeType = (
-  ctx: RuntimeSelectionContext,
-  { isDesktop = defaultIsDesktop }: SelectRuntimeTypeOptions = {},
-): AgentRuntimeType => {
-  if (ctx.heterogeneousProvider?.authMode === 'api') {
-    // Personal-scope invariant: Desktop main resolves the binding's providerId
-    // with NO workspace header (see `providerBindingPort`), while a workspace
-    // agent's binding was configured against workspace-scoped providers. The
-    // author (or an explicitly overriding member) CAN spawn a workspace agent
-    // in-process — `workspaceScoped` alone does not block them — so a colliding
-    // personal provider id (e.g. builtin `anthropic`) would silently supply
-    // different credentials. Reject before any IPC.
-    // The deployment-default API source uses deployment-owned credentials
-    // rather than a user provider id, so this guard stays on user-provider
-    // bindings only.
-    if (
-      ctx.heterogeneousProvider.apiConfig &&
-      ctx.heterogeneousProvider.apiConfig?.source !== 'server-default' &&
-      ctx.isWorkspaceAgent
-    ) {
-      throw new Error(HETEROGENEOUS_PROVIDER_BINDING_PERSONAL_ONLY_ERROR);
-    }
-    const target = resolveExecutionTarget(
-      {
-        boundDeviceId: ctx.boundDeviceId,
-        executionTarget: ctx.executionTarget,
-        heterogeneousProvider: ctx.heterogeneousProvider,
-      },
-      {
-        isHetero: true,
-        clientExecutionAvailable: isDesktop,
-        workspaceScoped: ctx.workspaceScoped,
-      },
-    );
-    if (target !== 'local' || (ctx.parentRuntime && ctx.parentRuntime !== 'hetero')) {
-      throw new Error(HETEROGENEOUS_PROVIDER_BINDING_LOCAL_ONLY_ERROR);
-    }
+export const selectRuntimeType = (ctx: RuntimeSelectionContext): AgentRuntimeType => {
+  if (
+    ctx.heterogeneousProvider?.authMode === 'api' &&
+    ctx.heterogeneousProvider.apiConfig &&
+    ctx.heterogeneousProvider.apiConfig.source !== 'server-default' &&
+    ctx.isWorkspaceAgent
+  ) {
+    throw new Error(HETEROGENEOUS_PROVIDER_BINDING_PERSONAL_ONLY_ERROR);
   }
 
-  if (ctx.parentRuntime) return ctx.parentRuntime;
-  // Notify-based platform agents (openclaw / hermes) use the gateway transport for both
-  // targets: `local` presets this desktop's personal device ID on the request, while
-  // `device` dispatches to the configured remote device. They do not implement the
-  // JSONL/session protocol consumed by the in-process `hetero` transport.
-  if (ctx.heterogeneousProvider && isRemoteHeterogeneousType(ctx.heterogeneousProvider.type)) {
-    return 'gateway';
-  }
-  // Local CLI hetero (Amp / Claude Code / Codex) — route by the resolved execution
-  // target (shared resolution with the server / the device switcher UI):
-  // `device` / `sandbox` need server-side dispatch; `local` runs in-process on
-  // the desktop. On web, unbound `local` resolves to sandbox when supported
-  // (otherwise the pending `none` state), while a desktop `local` selection
-  // synced with boundDeviceId resolves to device dispatch.
-  if (ctx.heterogeneousProvider) {
-    const target = resolveExecutionTarget(
-      {
-        boundDeviceId: ctx.boundDeviceId,
-        executionTarget: ctx.executionTarget,
-        heterogeneousProvider: ctx.heterogeneousProvider,
-      },
-      // on the client the desktop build IS where local execution is available
-      {
-        isHetero: true,
-        clientExecutionAvailable: isDesktop,
-        workspaceScoped: ctx.workspaceScoped,
-      },
-    );
-    return target === 'local' ? 'hetero' : 'gateway';
-  }
-  if (ctx.isGatewayMode) return 'gateway';
-  return 'client';
+  return 'gateway';
 };

@@ -12,10 +12,6 @@ import { type ChatStoreState } from './initialState';
 import { initialState } from './initialState';
 import { type ChatAgentRunAction } from './slices/agentRun/actions';
 import { chatAgentRun } from './slices/agentRun/actions';
-import { type ChatAIAgentAction } from './slices/aiAgent/actions';
-import { chatAiAgent } from './slices/aiAgent/actions';
-import { type ChatBuiltinToolAction } from './slices/builtinTool/actions';
-import { chatToolSlice } from './slices/builtinTool/actions';
 import { type ChatForwardAction, ChatForwardActionImpl } from './slices/forward/action';
 import { type ChatMessageAction } from './slices/message/actions';
 import { chatMessage } from './slices/message/actions';
@@ -31,8 +27,6 @@ import { type ChatTopicAction } from './slices/topic/action';
 import { ChatTopicActionImpl } from './slices/topic/action';
 import { subscribeJustArchivedTopic } from './slices/topic/justArchived';
 import { type ChatTopicShareAction, ChatTopicShareActionImpl } from './slices/topic/topicShare';
-import { type ChatTranslateAction } from './slices/translate/action';
-import { ChatTranslateActionImpl } from './slices/translate/action';
 import { type VoiceMessageAction } from './slices/voiceMessage/action';
 import { VoiceMessageActionImpl } from './slices/voiceMessage/action';
 
@@ -42,12 +36,9 @@ export type ChatStoreAction = ChatMessageAction &
   ChatAgentRunAction &
   ChatTopicAction &
   ChatTopicShareAction &
-  ChatTranslateAction &
   ChatPluginAction &
-  ChatBuiltinToolAction &
   ChatPortalAction &
   OperationActions &
-  ChatAIAgentAction &
   VoiceMessageAction &
   ResetableStore;
 
@@ -83,12 +74,9 @@ const createStore: StateCreator<ChatStore, [['zustand/devtools', never]]> = (
       chatAgentRun(...params),
       new ChatTopicActionImpl(...params),
       new ChatTopicShareActionImpl(...params),
-      new ChatTranslateActionImpl(...params),
-      chatToolSlice(...params),
       chatPlugin(...params),
       new ChatPortalActionImpl(...params),
       new OperationActionsImpl(...params),
-      chatAiAgent(...params),
       voiceMessageAction,
       new ChatStoreResetAction(...params, voiceMessageAction.disposeVoiceMessages),
     ]) as ChatStoreAction),

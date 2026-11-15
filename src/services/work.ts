@@ -1,4 +1,4 @@
-import { TaskApiName, TaskIdentifier } from '@lobechat/builtin-tool-task';
+import { TaskApiName, TaskIdentifier } from '@lobechat/const/builtinTools';
 import type {
   ListedWorkType,
   RegisterCanvasWorkParams,

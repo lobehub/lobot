@@ -1,7 +1,7 @@
-import { isGoalPrompt } from '@lobechat/builtin-tool-goal';
-import { deriveOperationGoals } from '@lobechat/builtin-tools/operationArtifacts';
+import { isGoalPrompt } from '@lobechat/const/builtinTools';
 import type { UIChatMessage } from '@lobechat/types';
 
+import { deriveOperationGoals } from '@/features/Conversation/operationArtifacts';
 import type { GoalListItem } from '@/services/goal';
 
 /** The tray is a pointer, not a list — past this the goal page's list is the right surface. */

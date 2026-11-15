@@ -1,10 +1,7 @@
-import {
-  type AgentTemplate,
-  MarketplaceCategory,
-} from '@lobechat/builtin-tool-web-onboarding/agentMarketplace';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { type AgentTemplate, MarketplaceCategory } from '@/services/agentMarketplace/types';
 import { peekOnboardingCallbackUrl, stashOnboardingCallbackUrl } from '@/utils/onboardingRedirect';
 
 import AgentPickerStep from './index';

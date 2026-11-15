@@ -1,7 +1,7 @@
 'use client';
 
-import type { SandboxDrive } from '@lobechat/builtin-tool-cloud-sandbox';
-import { SANDBOX_DRIVE_ROOT } from '@lobechat/builtin-tool-cloud-sandbox';
+import type { SandboxDrive } from '@lobechat/const/builtinTools';
+import { SANDBOX_DRIVE_ROOT } from '@lobechat/const/builtinTools';
 import { Button, Flexbox, Icon, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

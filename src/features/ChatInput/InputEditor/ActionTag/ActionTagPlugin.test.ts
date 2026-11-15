@@ -1,4 +1,4 @@
-import { isGoalPrompt } from '@lobechat/builtin-tool-goal';
+import { isGoalPrompt } from '@lobechat/const/builtinTools';
 import { AGENT_SKILLS_IDENTIFIER_PREFIX } from '@lobechat/const';
 import { describe, expect, it } from 'vitest';
 
