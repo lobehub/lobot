@@ -9,6 +9,11 @@ import { ContactListBody } from './index';
 
 const fetch = vi.hoisted(() => ({ error: undefined as unknown, mutate: vi.fn() }));
 const agentList = vi.hoisted(() => ({ init: false, items: [] as object[] }));
+const channels = vi.hoisted(() => ({ enabled: false }));
+const contacts = vi.hoisted(() => ({
+  listMap: {} as Record<string, object[]>,
+  requestsMap: {} as Record<string, object[]>,
+}));
 
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 vi.mock('@/business/client/hooks/useActiveWorkspaceSlug', () => ({
@@ -16,6 +21,19 @@ vi.mock('@/business/client/hooks/useActiveWorkspaceSlug', () => ({
 }));
 vi.mock('@/hooks/useActiveLocation', () => ({ useActiveLocation: () => ({ pathname: '/' }) }));
 vi.mock('@/hooks/useFetchAgentList', () => ({ useFetchAgentList: () => fetch }));
+vi.mock('@/features/Channels/useChannelsEnabled', () => ({
+  useChannelsEnabled: () => channels.enabled,
+}));
+vi.mock('@/store/contact', async (original) => ({
+  ...(await original<object>()),
+  contactActions: {
+    acceptRequest: vi.fn(),
+    declineRequest: vi.fn(),
+    useFetchList: vi.fn(),
+    useFetchRequests: vi.fn(),
+  },
+  useContactStore: (selector: (state: object) => unknown) => selector(contacts),
+}));
 vi.mock('@/store/home', () => ({
   useHomeStore: (selector: (state: object) => unknown) => selector({}),
 }));
@@ -39,6 +57,9 @@ vi.mock('@/components/AsyncError', () => ({
 }));
 
 beforeEach(() => {
+  channels.enabled = false;
+  contacts.listMap = {};
+  contacts.requestsMap = {};
   agentList.init = false;
   agentList.items = [];
   fetch.error = undefined;
@@ -93,5 +114,77 @@ describe('ContactListBody', () => {
       'href',
       '/agents/grp_1',
     );
+  });
+
+  it('lists people, shared Agents and incoming requests once Channels are on', () => {
+    channels.enabled = true;
+    agentList.init = true;
+    const owner = { avatar: null, fullName: 'Bob', id: 'u_bob', username: 'bob' };
+    contacts.listMap = {
+      all: [
+        { createdAt: new Date(), type: 'user', user: owner },
+        {
+          agent: {
+            agentId: 'agt_shared',
+            avatar: null,
+            backgroundColor: null,
+            description: null,
+            owner,
+            shareId: 's1',
+            slug: 'helper',
+            title: 'Bob Helper',
+          },
+          available: true,
+          createdAt: new Date(),
+          type: 'agent',
+        },
+      ],
+    };
+    contacts.requestsMap = {
+      all: [
+        {
+          createdAt: new Date(),
+          direction: 'incoming',
+          id: 'r1',
+          message: 'hi',
+          user: { avatar: null, fullName: 'Carol', id: 'u_carol', username: 'carol' },
+        },
+        {
+          createdAt: new Date(),
+          direction: 'outgoing',
+          id: 'r2',
+          message: null,
+          user: { avatar: null, fullName: 'Dan', id: 'u_dan', username: 'dan' },
+        },
+      ],
+    };
+
+    render(createElement(ContactListBody));
+
+    expect(screen.getByRole('link', { name: /Bob$/ })).toHaveAttribute(
+      'href',
+      '/agents/people/u_bob',
+    );
+    expect(screen.getByRole('link', { name: /Bob Helper/ })).toHaveAttribute(
+      'href',
+      '/agents/agt_shared',
+    );
+    expect(screen.getByRole('link', { name: /Carol/ })).toHaveAttribute(
+      'href',
+      '/agents/people/u_carol',
+    );
+    // Only requests waiting for my answer are listed.
+    expect(screen.queryByText('Dan')).not.toBeInTheDocument();
+  });
+
+  it('keeps people and requests out without Channels', () => {
+    agentList.init = true;
+    contacts.listMap = {
+      all: [{ createdAt: new Date(), type: 'user', user: { fullName: 'Bob', id: 'u_bob' } }],
+    };
+
+    render(createElement(ContactListBody));
+
+    expect(screen.queryByText('contacts.people')).not.toBeInTheDocument();
   });
 });

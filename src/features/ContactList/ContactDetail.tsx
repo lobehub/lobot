@@ -1,18 +1,15 @@
 'use client';
 
-import { cx, DropdownMenu, Empty, Flexbox, Icon, Skeleton, Text } from '@lobehub/ui';
-import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import { cx, DropdownMenu, Empty, Flexbox, Skeleton, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
-import type { LucideIcon } from 'lucide-react';
 import {
   MessageCircleIcon,
-  MoreHorizontalIcon,
   PencilLineIcon,
   Settings2Icon,
   UserRoundIcon,
   UserRoundXIcon,
 } from 'lucide-react';
-import { type CSSProperties, memo, type Ref } from 'react';
+import { type CSSProperties, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 
@@ -28,101 +25,12 @@ import NavHeader from '@/features/NavHeader';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import WorkspaceLink from '@/features/Workspace/WorkspaceLink';
 import { useCopyAgentIdMenuItem } from '@/hooks/useCopyAgentIdMenuItem';
+import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
 
+import { AVATAR_SIZE, COVER_HEIGHT, MenuTile, styles, TileContent } from './cardParts';
 import { ContactInfo } from './ContactInfo';
+import SharedAgentCard from './SharedAgentCard';
 import { type ContactCardState, useContactCard } from './useContactCard';
-
-const AVATAR_SIZE = 88;
-const COVER_HEIGHT = 144;
-
-const styles = stylex.create({
-  body: {
-    paddingBlockEnd: '48px',
-    paddingInline: '24px',
-    maxWidth: '520px',
-    width: '100%',
-    textAlign: 'center',
-  },
-  // The badge cover from the agents wall, widened into a profile header.
-  cover: {
-    position: 'relative',
-    overflow: 'hidden',
-    flexShrink: 0,
-    borderRadius: '12px',
-    height: `${COVER_HEIGHT}px`,
-    width: '100%',
-  },
-  // The avatar straddles the cover's bottom edge, as on the badge.
-  avatar: {
-    marginBlockStart: `-${AVATAR_SIZE / 2}px`,
-  },
-  actions: {
-    display: 'grid',
-    gridAutoColumns: 'minmax(0, 1fr)',
-    gridAutoFlow: 'column',
-    gap: '8px',
-    width: '100%',
-    marginBlockStart: '16px',
-  },
-  // An IM-profile action: icon over label, the whole tile clickable.
-  tile: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '4px',
-    paddingBlock: '12px',
-    paddingInline: '8px',
-    borderWidth: 0,
-    borderRadius: '12px',
-    fontFamily: 'inherit',
-    fontSize: '12px',
-    lineHeight: '18px',
-    color: cssVar.colorText,
-    textDecoration: 'none',
-    cursor: 'pointer',
-    backgroundColor: {
-      'default': cssVar.colorFillTertiary,
-      ':hover': cssVar.colorFillSecondary,
-    },
-    transitionProperty: 'background-color',
-    transitionDuration: '0.15s',
-  },
-  state: {
-    paddingBlock: '48px',
-    paddingInline: '24px',
-    maxWidth: '520px',
-    width: '100%',
-  },
-});
-
-const TileContent = ({ icon, label }: { icon: LucideIcon; label: string }) => (
-  <>
-    <Icon icon={icon} size={20} />
-    <span>{label}</span>
-  </>
-);
-
-// Takes the ref and props a DropdownMenu trigger hands its child.
-const MenuTile = ({
-  className,
-  label,
-  ref,
-  ...rest
-}: {
-  className?: string;
-  label: string;
-  ref?: Ref<HTMLButtonElement>;
-}) => (
-  <button
-    ref={ref}
-    type="button"
-    {...rest}
-    className={cx(stylex.props(styles.tile).className, className)}
-  >
-    <TileContent icon={MoreHorizontalIcon} label={label} />
-  </button>
-);
 
 const ContactCard = memo<Extract<ContactCardState, { status: 'ready' }>>(
   ({ canEdit, chatUrl, item, manageUrl, profileUrl, role, slug, title }) => {
@@ -230,6 +138,10 @@ ContactCard.displayName = 'ContactCard';
 const ContactDetail = memo<{ id: string }>(({ id }) => {
   const { t } = useTranslation('common');
   const card = useContactCard(id);
+  // Not one of mine: it may be another person's Agent added through its share.
+  contactActions.useFetchList(card.status === 'missing');
+  const shared = useContactStore(contactSelectors.agentById(id));
+  if (card.status === 'missing' && shared) return <SharedAgentCard contact={shared} />;
 
   switch (card.status) {
     case 'ready': {

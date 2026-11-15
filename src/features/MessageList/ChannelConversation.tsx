@@ -8,13 +8,15 @@ import * as stylex from '@stylexjs/stylex';
 import { HashIcon } from 'lucide-react';
 import { memo } from 'react';
 
+import AgentAvatar from '@/components/AgentAvatar';
+import UserAvatar from '@/components/UserAvatar';
 import { useChannelMenu } from '@/features/Channels/useChannelMenu';
 import GroupAvatar from '@/features/GroupAvatar';
 import ProjectAvatar from '@/features/Projects/ProjectAvatar';
 import { projectListItemSelector, useProjectStore } from '@/store/project';
 
 import ConversationRow from './ConversationRow';
-import { channelPreview } from './conversations';
+import { channelPreview, directCounterpart } from './conversations';
 import { AVATAR_SIZE, styles } from './style';
 
 interface ChannelConversationProps {
@@ -23,7 +25,10 @@ interface ChannelConversationProps {
   channel: ChannelListItem;
 }
 
-/** A group Channel as one more conversation, ordered with the Agents by its latest message. */
+/**
+ * A group Channel as one more conversation, ordered with the Agents by its latest message. A
+ * conversation with another person, or with someone's shared Agent, wears that counterpart.
+ */
 const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, channel }) => {
   const menuItems = useChannelMenu();
   // A Channel grouped under a project wears that project's logo; a standalone one pictures
@@ -35,6 +40,35 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
       <Icon color={cssVar.colorTextSecondary} icon={HashIcon} size={9} />
     </span>
   );
+
+  const counterpart = directCounterpart(channel);
+
+  if (counterpart)
+    return (
+      <ConversationRow
+        closeOnReselect
+        active={active}
+        activeAt={activeAt}
+        contextMenuItems={menuItems(channel)}
+        preview={channelPreview(channel)}
+        title={counterpart.name || channel.title}
+        unread={channel.unreadCount}
+        url={CHANNEL_URL(channel.id)}
+        avatar={
+          counterpart.actorType === 'agent' ? (
+            <AgentAvatar
+              agentId={counterpart.id}
+              avatar={counterpart.avatar}
+              background={counterpart.backgroundColor || undefined}
+              name={counterpart.name}
+              size={AVATAR_SIZE}
+            />
+          ) : (
+            <UserAvatar avatar={counterpart.avatar} name={counterpart.name} size={AVATAR_SIZE} />
+          )
+        }
+      />
+    );
 
   return (
     <ConversationRow

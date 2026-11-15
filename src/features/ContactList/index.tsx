@@ -17,13 +17,15 @@ import {
 } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import isEqual from 'fast-deep-equal';
-import { ArrowDownUpIcon, Pin, PinOff, UserRoundPlusIcon } from 'lucide-react';
+import { ArrowDownUpIcon, Pin, PinOff, UserRoundPlusIcon, UserRoundSearchIcon } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
 import AsyncError from '@/components/AsyncError';
 import { DESKTOP_HEADER_ICON_SMALL_SIZE } from '@/const/layoutTokens';
+import { openAddContactModal } from '@/features/AddContactModal';
+import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { AgentModalProvider } from '@/features/HomeSidebar/Body/Agent/ModalProvider';
 import { useCreateMenuItems } from '@/features/HomeSidebar/hooks';
 import { AVATAR_SIZE, ConversationRow, ListHeader } from '@/features/MessageList';
@@ -33,6 +35,7 @@ import { NAV_PANEL_CONTACTS_KEY } from '@/features/NavPanel/railRouteKey';
 import SideBarLayout from '@/features/NavPanel/SideBarLayout';
 import { useActiveLocation } from '@/hooks/useActiveLocation';
 import { useFetchAgentList } from '@/hooks/useFetchAgentList';
+import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 import { useHomeStore } from '@/store/home';
@@ -40,6 +43,7 @@ import { homeAgentListSelectors } from '@/store/home/selectors';
 
 import { CONTACT_URL } from './const';
 import ContactAvatar from './ContactAvatar';
+import { PersonRow, RequestRow, SharedAgentRow } from './ExternalRows';
 import { CONTACT_SORT_BYS, groupContacts } from './sortContacts';
 import { styles } from './style';
 
@@ -47,7 +51,9 @@ const useActiveRouteId = () => {
   const { pathname } = useActiveLocation();
   const slug = useActiveWorkspaceSlug();
   const segments = pathname.split('/').filter(Boolean);
-  const [root, id] = slug && segments[0] === slug ? segments.slice(1) : segments;
+  const [root, id, personId] = slug && segments[0] === slug ? segments.slice(1) : segments;
+  // A person's card lives under `/agents/people/:userId`.
+  if (root === 'agents' && id === 'people') return personId;
 
   return root === 'agents' || root === 'agent' || root === 'group' ? id : undefined;
 };
@@ -92,6 +98,13 @@ const Body = memo(() => {
   const items = useHomeStore(homeAgentListSelectors.allAgents, isEqual);
   const activeRouteId = useActiveRouteId();
   const sortBy = useGlobalStore(systemStatusSelectors.contactListSortBy);
+  // People and other people's Agents belong to the Channel experience.
+  const channelsEnabled = useChannelsEnabled();
+  contactActions.useFetchList(channelsEnabled);
+  contactActions.useFetchRequests(channelsEnabled);
+  const people = useContactStore((s) => contactSelectors.people(s) ?? [], isEqual);
+  const sharedAgents = useContactStore((s) => contactSelectors.agents(s) ?? [], isEqual);
+  const requests = useContactStore(contactSelectors.incomingRequests, isEqual);
   const updateSystemStatus = useGlobalStore((s) => s.updateSystemStatus);
 
   const { agents, groups, pinned } = useMemo(
@@ -119,12 +132,81 @@ const Body = memo(() => {
       <SkeletonList paddingBlock={8} />
     );
 
+  const renderAgents = (list: SidebarAgentItem[]) =>
+    list.map((item) => <Contact active={item.id === activeRouteId} item={item} key={item.id} />);
   const sections = [
+    // Requests waiting for an answer lead; the section is left out when there are none.
+    ...(requests.length > 0
+      ? [
+          {
+            count: requests.length,
+            key: 'requests',
+            render: () =>
+              requests.map((request) => (
+                <RequestRow
+                  active={request.user.id === activeRouteId}
+                  key={request.id}
+                  request={request}
+                />
+              )),
+            title: t('contacts.requests'),
+          },
+        ]
+      : []),
     // Pinned contacts lead, like the Messages list; the section is left out until one is pinned.
-    ...(pinned.length > 0 ? [{ items: pinned, key: 'pinned', title: t('contacts.pinned') }] : []),
+    ...(pinned.length > 0
+      ? [
+          {
+            count: pinned.length,
+            key: 'pinned',
+            render: () => renderAgents(pinned),
+            title: t('contacts.pinned'),
+          },
+        ]
+      : []),
+    ...(channelsEnabled
+      ? [
+          {
+            count: people.length,
+            key: 'people',
+            render: () =>
+              people.map((item) => (
+                <PersonRow active={item.user.id === activeRouteId} item={item} key={item.user.id} />
+              )),
+            title: t('contacts.people'),
+          },
+        ]
+      : []),
     // Groups next: there are few, and they would sink below every agent.
-    { items: groups, key: 'groups', title: t('contacts.groups') },
-    { items: agents, key: 'agents', title: t('navPanel.agent') },
+    {
+      count: groups.length,
+      key: 'groups',
+      render: () => renderAgents(groups),
+      title: t('contacts.groups'),
+    },
+    {
+      count: agents.length,
+      key: 'agents',
+      render: () => renderAgents(agents),
+      title: t('navPanel.agent'),
+    },
+    ...(sharedAgents.length > 0
+      ? [
+          {
+            count: sharedAgents.length,
+            key: 'sharedAgents',
+            render: () =>
+              sharedAgents.map((item) => (
+                <SharedAgentRow
+                  active={item.agent.agentId === activeRouteId}
+                  item={item}
+                  key={item.agent.agentId}
+                />
+              )),
+            title: t('contacts.sharedAgents'),
+          },
+        ]
+      : []),
   ];
 
   // The standard sidebar accordion (same as the home sidebar sections), so
@@ -133,7 +215,7 @@ const Body = memo(() => {
     <Flexbox paddingBlock={'4px 12px'} paddingInline={4}>
       <AccordionRoot
         // Listed up front so a section that appears later, like the first pin, opens expanded.
-        defaultValue={['pinned', 'groups', 'agents']}
+        defaultValue={['requests', 'pinned', 'people', 'groups', 'agents', 'sharedAgents']}
         indicatorPlacement={'inline'}
         style={{ gap: 8 }}
       >
@@ -146,7 +228,7 @@ const Body = memo(() => {
                     {section.title}
                   </Text>
                   <Text fontSize={11} type={'secondary'}>
-                    {section.items.length}
+                    {section.count}
                   </Text>
                 </Flexbox>
               </AccordionTrigger>
@@ -171,12 +253,10 @@ const Body = memo(() => {
             </AccordionHeader>
             <AccordionPanel>
               <Flexbox gap={1} paddingBlock={1} paddingInline={2}>
-                {section.items.length === 0 ? (
+                {section.count === 0 ? (
                   <div {...stylex.props(styles.empty)}>{t('contacts.empty')}</div>
                 ) : (
-                  section.items.map((item) => (
-                    <Contact active={item.id === activeRouteId} item={item} key={item.id} />
-                  ))
+                  section.render()
                 )}
               </Flexbox>
             </AccordionPanel>
@@ -194,7 +274,24 @@ export { Body as ContactListBody };
 const Header = memo(() => {
   const { t } = useTranslation('common');
   const { createTopLevelMenuItems, isLoading } = useCreateMenuItems();
-  const createItems = useMemo(() => createTopLevelMenuItems(), [createTopLevelMenuItems]);
+  const channelsEnabled = useChannelsEnabled();
+  const createItems = useMemo(
+    () => [
+      ...(channelsEnabled
+        ? [
+            {
+              icon: <Icon icon={UserRoundSearchIcon} />,
+              key: 'addContact',
+              label: t('contacts.add'),
+              onClick: () => openAddContactModal(),
+            },
+            { type: 'divider' as const },
+          ]
+        : []),
+      ...createTopLevelMenuItems(),
+    ],
+    [channelsEnabled, createTopLevelMenuItems, t],
+  );
 
   return (
     <ListHeader

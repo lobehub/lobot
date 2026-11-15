@@ -359,6 +359,11 @@ export interface ChannelListItem {
   memberAvatars?: ChannelAvatarMember[];
   /** Unread messages, Threads included, that @mention the caller; set by the Channel list. */
   mentionCount?: number;
+  /**
+   * On a conversation between two people, the other person (relative to the viewer), who is also
+   * the only entry of `memberAvatars`; null otherwise.
+   */
+  peerUserId?: string | null;
   /** The project the channel is grouped under; null for a standalone channel. */
   projectId: string | null;
   /**
@@ -367,6 +372,11 @@ export interface ChannelListItem {
    */
   replyJobs?: ChannelReplyJob[];
   sequence: number;
+  /**
+   * A direct conversation with another person's Agent, reached through the caller's contact entry
+   * and its share; pictured by `memberAvatars`, since the caller has no sidebar row for it.
+   */
+  sharedAgent?: boolean;
   status: ChannelStatus;
   title: string;
   /** Main-channel messages the caller has not read; set by the Channel list. */

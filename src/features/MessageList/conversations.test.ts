@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildConversationEntries,
   buildConversationSections,
+  directCounterpart,
   formatConversationTime,
   inboxActivity,
   latestActivity,
@@ -343,5 +344,34 @@ describe('latestActivity', () => {
       new Date('2026-10-07'),
     );
     expect(latestActivity(undefined, undefined)).toBeUndefined();
+  });
+});
+
+describe('directCounterpart', () => {
+  const person = {
+    actorType: 'user' as const,
+    avatar: null,
+    backgroundColor: null,
+    id: 'u_bob',
+    name: 'Bob',
+  };
+  const agent = {
+    actorType: 'agent' as const,
+    avatar: '🤖',
+    backgroundColor: null,
+    id: 'agt_1',
+    name: 'Helper',
+  };
+
+  it('pictures the other person of a conversation between people', () => {
+    expect(directCounterpart({ memberAvatars: [person], peerUserId: 'u_bob' })).toBe(person);
+  });
+
+  it('pictures the shared Agent of a direct conversation with it', () => {
+    expect(directCounterpart({ memberAvatars: [agent], sharedAgent: true })).toBe(agent);
+  });
+
+  it('leaves groups to their own avatar', () => {
+    expect(directCounterpart({ memberAvatars: [person, agent] })).toBeUndefined();
   });
 });

@@ -9,10 +9,13 @@ import { useParams } from 'react-router';
 import NotFound from '@/components/404';
 import { RouteLoading } from '@/components/Skeleton/RouteSegment';
 import { EntityLinkHostProvider } from '@/features/EntityLink/host';
+import { directCounterpart } from '@/features/MessageList/conversations';
 import NavHeader from '@/features/NavHeader';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 import { useChatStore } from '@/store/chat';
 import { serverConfigSelectors, useServerConfigStore } from '@/store/serverConfig';
+import { useUserStore } from '@/store/user';
+import { userProfileSelectors } from '@/store/user/selectors';
 
 import { AgentProfilePanel } from './AgentProfilePanel';
 import { isChannelGone, visibleChannelDetail } from './channelAccess';
@@ -23,6 +26,7 @@ import { DirectAgentRole } from './DirectAgentRole';
 import { MEMBER_FLOAT_BREAKPOINT, MemberPanel } from './MemberPanel';
 import { MemberStatus } from './MemberStatus';
 import { openTopic } from './openTopic';
+import { channelTitle } from './peerTitle';
 import { CHANNEL_ENTITY_PORTAL_SCOPE, PortalPanel } from './PortalPanel';
 import { type ReplyTopic, ReplyTopicPanel } from './ReplyTopicPanel';
 import { styles } from './styles';
@@ -50,6 +54,8 @@ function EnabledChannelPage() {
   );
   const directAgentId = (detail?.channel ?? listItem)?.agentId ?? undefined;
   const isDirect = !!directAgentId;
+  const isPeer = !!(detail?.channel ?? listItem)?.peerUserId;
+  const viewerId = useUserStore(userProfileSelectors.userId);
   const directAgent = detail?.channel.agentId
     ? detail.members.find((member) => member.agentId === detail.channel.agentId)
     : undefined;
@@ -87,9 +93,11 @@ function EnabledChannelPage() {
           ) : (
             <Flexbox horizontal align="center" gap={8}>
               {/* A direct conversation is titled by its Agent's name alone, like an IM chat. */}
-              {!isDirect && <Hash color={cssVar.colorTextDescription} size={16} />}
+              {!isDirect && !isPeer && <Hash color={cssVar.colorTextDescription} size={16} />}
               <Text ellipsis weight={500}>
-                {detail?.channel.title || listItem?.title}
+                {detail
+                  ? channelTitle(detail, viewerId)
+                  : listItem && (directCounterpart(listItem)?.name || listItem.title)}
               </Text>
               {directAgentId && <DirectAgentRole agentId={directAgentId} />}
               {detail?.channel.status === 'archived' && <Tag size="small">{t('archived')}</Tag>}

@@ -251,3 +251,15 @@ export const formatConversationTime = (date: Date, now: Date = new Date()): stri
   if (date.getFullYear() === now.getFullYear()) return `${date.getMonth() + 1}/${date.getDate()}`;
   return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
 };
+
+/**
+ * Who a conversation is with when it pictures one counterpart instead of "#": the other person,
+ * or another person's shared Agent. The server lists that counterpart as the only avatar.
+ */
+export const directCounterpart = (
+  channel: Pick<ChannelListItem, 'memberAvatars' | 'peerUserId' | 'sharedAgent'>,
+) => {
+  if (!channel.peerUserId && !channel.sharedAgent) return undefined;
+  const actorType = channel.peerUserId ? 'user' : 'agent';
+  return channel.memberAvatars?.find((member) => member.actorType === actorType);
+};

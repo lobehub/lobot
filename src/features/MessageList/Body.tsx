@@ -130,14 +130,18 @@ const Body = memo(() => {
       new Map(
         channelsEnabled
           ? (allChannels ?? [])
-              .filter((channel) => channel.agentId && !channel.projectId)
+              .filter((channel) => channel.agentId && !channel.sharedAgent && !channel.projectId)
               .map((channel) => [channel.agentId!, channel] as const)
           : [],
       ),
     [allChannels, channelsEnabled],
   );
   const { archived, channels } = useMemo(() => {
-    const groups = channelsEnabled ? (allChannels ?? []).filter((channel) => !channel.agentId) : [];
+    // Another person's shared Agent has no Agent row of mine, so its direct Channel lists like a
+    // group; so does a conversation with another person.
+    const groups = channelsEnabled
+      ? (allChannels ?? []).filter((channel) => !channel.agentId || channel.sharedAgent)
+      : [];
     const isHidden = (channel: (typeof groups)[number]) =>
       channel.status === 'archived' && channel.id !== activeRouteId;
     return {

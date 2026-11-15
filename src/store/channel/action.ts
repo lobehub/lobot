@@ -119,6 +119,16 @@ class ChannelActionImpl {
     if (channelId) await this.#refreshAfterWrite(this.refreshList);
     return channelId ?? undefined;
   };
+  /** The personal conversation with a contact; the server requires the mutual relation. */
+  openPeer = async (userId: string) => {
+    const existing = useChannelStore
+      .getState()
+      .listMap.all?.find((channel) => channel.peerUserId === userId);
+    if (existing) return existing.id;
+    const channelId = await channelService.openPeer(userId);
+    await this.#refreshAfterWrite(this.refreshList);
+    return channelId;
+  };
   remove = async (channelId: string) => {
     const scope = cacheScope.get();
     // Optimistically hide the row; failure restores it. Keep the open conversation

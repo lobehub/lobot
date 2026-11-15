@@ -27,6 +27,7 @@ import { isCurrentUserMember } from './memberName';
 import { channelTimeFormatters, presentChannelTimeline } from './messagePresentation';
 import { presentOutgoingMessage, timelineTail } from './outgoing';
 import { OutgoingStatus } from './OutgoingStatus';
+import { channelTitle } from './peerTitle';
 import { ReplyActivity } from './ReplyActivity';
 import type { ReplyTopic } from './ReplyTopicPanel';
 import { styles } from './styles';
@@ -278,7 +279,9 @@ const Timeline = ({
                 placeholder={
                   threadId
                     ? t('threadComposer')
-                    : t(direct ? 'directComposer' : 'composer', { name: detail.channel.title })
+                    : t(direct || detail.channel.peerUserId ? 'directComposer' : 'composer', {
+                        name: channelTitle(detail, userId),
+                      })
                 }
                 onCancelReply={() => reply.clear()}
                 onQueue={(message) => {
