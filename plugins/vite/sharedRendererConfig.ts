@@ -91,7 +91,6 @@ const isNodePackage = (id: string, packageName: string) => {
 
 const DEVTOOLS_SOURCE_SEGMENTS = [
   '/src/business/client/registerDevDockItems.ts',
-  '/src/features/AgentMockDevtools/',
   '/src/features/Conversation/ChatList/components/AutoScroll/DebugInspector.tsx',
   '/src/features/DevDock/',
   '/src/features/DevFeatureFlagPanel/',

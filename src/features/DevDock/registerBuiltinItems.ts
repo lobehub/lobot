@@ -2,7 +2,6 @@ import {
   Activity,
   AppWindow,
   ArrowUpDown,
-  Bot,
   Cpu,
   Database,
   Flag,
@@ -36,14 +35,6 @@ const subscribeGlobal = (listener: () => void) => useGlobalStore.subscribe(liste
 
 export const registerBuiltinDevDockItems = () => {
   const items: DevDockItem[] = [
-    {
-      defaultPinned: true,
-      icon: Bot,
-      id: 'agent-mock',
-      label: 'Agent Mock',
-      load: () => import('@/features/AgentMockDevtools'),
-      type: 'panel',
-    },
     {
       badge: FlagOverrideBadge,
       defaultPinned: true,
