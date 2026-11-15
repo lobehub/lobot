@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import AgentAvatar from '@/components/AgentAvatar';
 import UserAvatar from '@/components/UserAvatar';
 import { AGENT_CONTACT_URL, PERSON_CONTACT_URL } from '@/features/ContactList/const';
+import { useMessageSharedAgent } from '@/features/ContactList/useMessageSharedAgent';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { contactService } from '@/services/contact';
 import { contactActions } from '@/store/contact';
@@ -22,6 +23,7 @@ const ResultAction = memo<{ result: ContactSearchResult }>(({ result }) => {
   const navigate = useWorkspaceAwareNavigate();
   const [relation, setRelation] = useState(result.relation);
   const [pending, setPending] = useState(false);
+  const { message: messageAgent, opening } = useMessageSharedAgent(close);
 
   const run = async (action: () => Promise<unknown>) => {
     setPending(true);
@@ -36,33 +38,47 @@ const ResultAction = memo<{ result: ContactSearchResult }>(({ result }) => {
   };
 
   if (result.type === 'agent') {
-    if (relation === 'none')
-      return (
-        <Button
-          loading={pending}
-          size={'small'}
-          type={'primary'}
-          onClick={() =>
-            run(async () => {
-              await contactActions.addAgent(result.agent.shareId);
-              setRelation('contact');
-              toast.success(t('contacts.agent.added'));
-            })
-          }
-        >
-          {t('contacts.agent.add')}
-        </Button>
-      );
-    return (
+    // Messaging needs nothing but the live share; contacts are an optional bookmark.
+    const message = (
       <Button
+        loading={opening}
         size={'small'}
-        onClick={() => {
-          close();
-          navigate(AGENT_CONTACT_URL(result.agent.agentId));
-        }}
+        type={'primary'}
+        onClick={() => void messageAgent(result.agent)}
       >
-        {t('contacts.viewProfile')}
+        {t('contacts.sendMessage')}
       </Button>
+    );
+    if (relation === 'self') return message;
+    return (
+      <Flexbox horizontal gap={8}>
+        {relation === 'none' ? (
+          <Button
+            loading={pending}
+            size={'small'}
+            onClick={() =>
+              run(async () => {
+                await contactActions.addAgent(result.agent.shareId);
+                setRelation('contact');
+                toast.success(t('contacts.agent.added'));
+              })
+            }
+          >
+            {t('contacts.agent.add')}
+          </Button>
+        ) : (
+          <Button
+            size={'small'}
+            onClick={() => {
+              close();
+              navigate(AGENT_CONTACT_URL(result.agent.agentId));
+            }}
+          >
+            {t('contacts.viewProfile')}
+          </Button>
+        )}
+        {message}
+      </Flexbox>
     );
   }
 

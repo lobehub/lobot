@@ -27,6 +27,7 @@ import { contactActions, contactSelectors, useContactStore } from '@/store/conta
 
 import { AVATAR_SIZE, styles, TileContent } from './cardParts';
 import { AGENT_CONTACT_URL } from './const';
+import { useMessageSharedAgent } from './useMessageSharedAgent';
 
 const AGENT_ROW_AVATAR = 32;
 
@@ -53,6 +54,7 @@ const SharedAgentRow = memo<{ agent: ContactAgentProfile }>(({ agent }) => {
   const navigate = useWorkspaceAwareNavigate();
   const added = useContactStore((s) => !!contactSelectors.agentById(agent.agentId)(s));
   const { pending, run } = usePendingAction();
+  const { message, opening } = useMessageSharedAgent();
   const title = agent.title || t('untitledAgent', { ns: 'chat' });
 
   return (
@@ -74,20 +76,29 @@ const SharedAgentRow = memo<{ agent: ContactAgentProfile }>(({ agent }) => {
           </Text>
         )}
       </Flexbox>
-      {added ? (
-        <Button size={'small'} onClick={() => navigate(AGENT_CONTACT_URL(agent.agentId))}>
-          {t('contacts.viewProfile')}
-        </Button>
-      ) : (
+      <Flexbox horizontal gap={8}>
+        {added ? (
+          <Button size={'small'} onClick={() => navigate(AGENT_CONTACT_URL(agent.agentId))}>
+            {t('contacts.viewProfile')}
+          </Button>
+        ) : (
+          <Button
+            loading={!!pending}
+            size={'small'}
+            onClick={() => run('add', () => contactActions.addAgent(agent.shareId))}
+          >
+            {t('contacts.agent.add')}
+          </Button>
+        )}
         <Button
-          loading={!!pending}
+          loading={opening}
           size={'small'}
           type={'primary'}
-          onClick={() => run('add', () => contactActions.addAgent(agent.shareId))}
+          onClick={() => void message(agent)}
         >
-          {t('contacts.agent.add')}
+          {t('contacts.sendMessage')}
         </Button>
-      )}
+      </Flexbox>
     </Flexbox>
   );
 });
