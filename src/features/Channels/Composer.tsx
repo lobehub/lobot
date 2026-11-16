@@ -118,6 +118,14 @@ export function Composer({
   const userId = useUserStore(userProfileSelectors.userId);
   const [content, setContent] = useState('');
   const [busy, setBusy] = useState(false);
+  /** Bumped as each send settles, so the input takes the caret back for the next message. */
+  const [settledSends, setSettledSends] = useState(0);
+  useEffect(() => {
+    // The input locks while a send is busy and drops focus; reclaim only that dropped focus,
+    // never a control the user moved to meanwhile. Runs after the unlock reaches the DOM.
+    const active = document.activeElement;
+    if (settledSends && (!active || active === document.body)) editor.focus();
+  }, [editor, settledSends]);
   const sending = useRef(false);
   const previousDocument = useRef('');
   const [error, setError] = useState('');
@@ -221,6 +229,7 @@ export function Composer({
     } finally {
       sending.current = false;
       setBusy(false);
+      setSettledSends((count) => count + 1);
     }
   };
   const preview = attachments.items.length > 0 && (
@@ -405,6 +414,9 @@ export function Composer({
                 shape="round"
                 size={28}
                 type="primary"
+                // A press would move focus onto the button, which unmounts once the input
+                // clears and leaves focus on <body>; keep the caret in the input instead.
+                onMouseDown={(event) => event.preventDefault()}
                 onSend={() => void send()}
               />
             )}
