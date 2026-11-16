@@ -4,7 +4,9 @@ import dayjs from 'dayjs';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { isPrivateWorkspaceDevice } from '@/features/DeviceManager/deviceVisibility';
 import { getDeviceIcon } from '@/features/DeviceManager/getDeviceIcon';
+import { PrivateDeviceSettingsLink } from '@/features/DeviceManager/PrivateDeviceNotice';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 import { useDeviceList } from '@/store/device/useDeviceList';
 
@@ -28,54 +30,84 @@ function Hint() {
   );
 }
 
+interface DeviceRowProps {
+  deviceId: string;
+  onChange?: () => void;
+  /**
+   * Show the device only when the viewer's list explains why the Agent cannot use it: the
+   * viewer's own private device, or one not shared with them. For a reply blocked for a reason
+   * other than its device being offline, presence alone would not say why.
+   */
+  restrictedOnly?: boolean;
+  retry?: ReactNode;
+  waiting?: boolean;
+}
+
 /**
  * A device, what the device gateway sees of it now, and a way to move the Agent elsewhere.
  * Only a waiting reply starts once its device is online; a failed one never does.
+ *
+ * A private workspace device runs only its enroller's requests. Its owner sees it online while
+ * other members' replies on it wait or fail, so the row says why and links to the device's
+ * page in LobeHub, where it can be published to the workspace.
  */
-function DeviceRow({
-  deviceId,
-  onChange,
-  retry,
-  waiting,
-}: {
-  deviceId: string;
-  onChange?: () => void;
-  retry?: ReactNode;
-  waiting?: boolean;
-}) {
+function DeviceRow({ deviceId, onChange, restrictedOnly, retry, waiting }: DeviceRowProps) {
   const { t } = useTranslation('channel');
   const devices = useDeviceList({ refreshInterval: 15_000 });
   const state = blockedDeviceState(deviceId, devices.data, devices.isConfirmed);
+  const privateDevice =
+    'device' in state && isPrivateWorkspaceDevice(state.device) ? state.device : undefined;
+  if (restrictedOnly && !privateDevice && state.kind !== 'missing') return null;
+
   const name = 'device' in state ? deviceLabel(state.device) : t('environment.unavailableDevice');
   const presence =
     state.kind === 'online'
-      ? t(waiting ? 'blockedDevice.online' : 'blockedDevice.connected')
+      ? // Only the owner's own replies start on a private device; others' never will.
+        t(
+          waiting && !privateDevice && !restrictedOnly
+            ? 'blockedDevice.online'
+            : 'blockedDevice.connected',
+        )
       : state.kind === 'offline'
         ? t('blockedDevice.offline', { time: dayjs(state.device.lastSeen).fromNow() })
         : state.kind === 'missing'
-          ? t('blockedDevice.missing')
+          ? t('blockedDevice.notShared')
           : t('environment.checkingDevice');
 
   return (
-    <Flexbox horizontal align="center" gap={8} style={{ paddingInlineStart: waiting ? INDENT : 0 }}>
-      <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
-        <Flexbox horizontal align="center" gap={6} style={{ minWidth: 0 }}>
-          <span aria-hidden style={{ display: 'inline-flex', flexShrink: 0 }}>
-            {getDeviceIcon('device' in state ? state.device.platform : null, 12)}
-          </span>
-          <Text ellipsis fontSize={12} title={name}>
-            {name}
+    <Flexbox gap={6} style={{ paddingInlineStart: waiting ? INDENT : 0 }}>
+      <Flexbox horizontal align="center" gap={8}>
+        <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
+          <Flexbox horizontal align="center" gap={6} style={{ minWidth: 0 }}>
+            <span aria-hidden style={{ display: 'inline-flex', flexShrink: 0 }}>
+              {getDeviceIcon('device' in state ? state.device.platform : null, 12)}
+            </span>
+            <Text ellipsis fontSize={12} title={name}>
+              {name}
+            </Text>
+          </Flexbox>
+          <Text
+            fontSize={12}
+            role="status"
+            type={state.kind === 'online' ? 'success' : 'secondary'}
+          >
+            {presence}
           </Text>
         </Flexbox>
-        <Text fontSize={12} role="status" type={state.kind === 'online' ? 'success' : 'secondary'}>
-          {presence}
-        </Text>
+        {retry}
+        {onChange && (
+          <Button size="small" style={{ flexShrink: 0 }} onClick={onChange}>
+            {t('blockedDevice.change')}
+          </Button>
+        )}
       </Flexbox>
-      {retry}
-      {onChange && (
-        <Button size="small" style={{ flexShrink: 0 }} onClick={onChange}>
-          {t('blockedDevice.change')}
-        </Button>
+      {privateDevice && (
+        <Flexbox horizontal align="center" gap={8}>
+          <Text fontSize={12} style={{ flex: 1, minWidth: 0 }} type="warning">
+            {t('blockedDevice.private')}
+          </Text>
+          <PrivateDeviceSettingsLink device={privateDevice} />
+        </Flexbox>
       )}
     </Flexbox>
   );
@@ -86,26 +118,17 @@ function ChannelEnvironmentDevice({
   channelId,
   fallback,
   member,
-  onChange,
-  retry,
-  waiting,
-}: {
+  ...row
+}: Omit<DeviceRowProps, 'deviceId'> & {
   channelId: string;
   fallback: ReactNode;
   member: ChannelPublicMember;
-  onChange: () => void;
-  retry?: ReactNode;
-  waiting?: boolean;
 }) {
   channelActions.useFetchAgentEnvironment(channelId, member.id);
   const deviceId = useChannelStore(
     (s) => channelSelectors.agentEnvironment({ channelId, memberId: member.id })(s)?.deviceId,
   );
-  return deviceId ? (
-    <DeviceRow deviceId={deviceId} retry={retry} waiting={waiting} onChange={onChange} />
-  ) : (
-    fallback
-  );
+  return deviceId ? <DeviceRow deviceId={deviceId} {...row} /> : fallback;
 }
 
 /**
@@ -119,15 +142,14 @@ export function BlockedDevice({
   deviceId,
   manageable,
   member,
+  restrictedOnly,
   retry,
   waiting,
-}: {
+}: Pick<DeviceRowProps, 'restrictedOnly' | 'retry' | 'waiting'> & {
   channelId: string;
   deviceId?: string | null;
   manageable?: boolean;
   member?: ChannelPublicMember;
-  retry?: ReactNode;
-  waiting?: boolean;
 }) {
   const { close } = usePopoverContext();
   const change =
@@ -137,7 +159,8 @@ export function BlockedDevice({
           openChannelAgentEnvironment(channelId, member);
         }
       : undefined;
-  const fallback = waiting ? (
+  // A reply blocked for another reason must not promise it starts once the device connects.
+  const fallback = restrictedOnly ? null : waiting ? (
     <Hint />
   ) : retry ? (
     <Flexbox horizontal justify="flex-end">
@@ -145,17 +168,15 @@ export function BlockedDevice({
     </Flexbox>
   ) : null;
 
-  if (deviceId)
-    return <DeviceRow deviceId={deviceId} retry={retry} waiting={waiting} onChange={change} />;
+  const row = { onChange: change, restrictedOnly, retry, waiting };
+  if (deviceId) return <DeviceRow deviceId={deviceId} {...row} />;
   if (change && member)
     return (
       <ChannelEnvironmentDevice
         channelId={channelId}
         fallback={fallback}
         member={member}
-        retry={retry}
-        waiting={waiting}
-        onChange={change}
+        {...row}
       />
     );
   return fallback;

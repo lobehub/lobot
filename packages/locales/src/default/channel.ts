@@ -89,6 +89,8 @@ export default {
     'This Agent’s device is offline. Reconnect the device, or remove the Agent.',
   'environment.inherited.deviceUnavailable':
     'This Agent’s device is unavailable in the current space. Change it in the Agent’s settings, or remove the Agent.',
+  'environment.privateDevicesHint':
+    'Private devices run only your own replies, so a Channel Agent can’t use them. Publish one to the workspace in its device settings to choose it here.',
   'environment.directoryUnavailable':
     'Could not verify the directory. Check the device connection and choose the directory again.',
   'environment.executionRequired':
@@ -272,9 +274,11 @@ export default {
   'blockedDevice.connected': 'Connected',
   'blockedDevice.hint':
     "The reply starts on its own once the Agent's device connects to the device gateway.",
-  'blockedDevice.missing': 'Not among the devices you can see',
+  'blockedDevice.notShared':
+    'Not shared with you. It may be another member’s private device; ask its owner to publish it to the workspace.',
   'blockedDevice.offline': 'Offline · last connected {{time}}',
   'blockedDevice.online': 'Connected · starting shortly',
+  'blockedDevice.private': 'Your private device: replies other members ask for can’t run on it.',
   'activity.many': '{{count}} members are working…',
   'activity.one': '{{name}} · {{status}}',
   'activity.parallel': 'Working on {{count}} things…',

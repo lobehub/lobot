@@ -1,10 +1,18 @@
+import { Button, Flexbox, Select, Text } from '@lobehub/ui';
 import type { DeviceListItem } from '@lobot/types';
-import { Button, Select, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { FolderOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import AsyncError from '@/components/AsyncError';
+import {
+  isPrivateWorkspaceDevice,
+  privateDevicesSettingsUrl,
+} from '@/features/DeviceManager/deviceVisibility';
+import {
+  DeviceSettingsLink,
+  PrivateDeviceSettingsLink,
+} from '@/features/DeviceManager/PrivateDeviceNotice';
 import { openPickWorkingDirModal } from '@/features/WorkingDirectory';
 import type { DeviceListResult } from '@/store/device/useDeviceList';
 
@@ -20,6 +28,41 @@ export const deviceLabel = (device: DeviceListItem) =>
 
 type DraftControls = ReturnType<typeof useChannelAgentDraft>;
 
+/** The option text for a device: why it cannot be picked, or its presence. */
+const useDeviceOptionLabel = (isConfirmed: boolean) => {
+  const { t } = useTranslation(['channel', 'device']);
+  return (device: DeviceListItem) => {
+    const suffix = isPrivateWorkspaceDevice(device)
+      ? t('visibility.private.badge', { ns: 'device' })
+      : !isConfirmed || device.onlineUnknown
+        ? t('environment.checkingDevice')
+        : device.online
+          ? ''
+          : t('offline');
+    return suffix ? `${deviceLabel(device)} · ${suffix}` : deviceLabel(device);
+  };
+};
+
+/**
+ * Private devices are listed but cannot run a Channel Agent: other members' requests never reach
+ * them. Points the owner at where to publish them, the device itself when there is only one.
+ */
+const PrivateDevicesHint = ({ devices }: { devices: DeviceListItem[] }) => {
+  const { t } = useTranslation('channel');
+  return (
+    <Flexbox horizontal align="center" gap={8}>
+      <Text fontSize={12} style={{ flex: 1, minWidth: 0 }} type="secondary">
+        {t('environment.privateDevicesHint')}
+      </Text>
+      {devices.length === 1 ? (
+        <PrivateDeviceSettingsLink device={devices[0]} />
+      ) : (
+        <DeviceSettingsLink href={privateDevicesSettingsUrl()} />
+      )}
+    </Flexbox>
+  );
+};
+
 /** Device and working directory for one Agent in one Channel. */
 export const EnvironmentFields = ({
   controls: { change, changeDevice, draft },
@@ -31,6 +74,8 @@ export const EnvironmentFields = ({
   name: string;
 }) => {
   const { t } = useTranslation('channel');
+  const optionLabel = useDeviceOptionLabel(devices.isConfirmed);
+  const privateDevices = (devices.data ?? []).filter(isPrivateWorkspaceDevice);
   const missingDevice =
     draft.deviceId && !devices.data?.some((item) => item.deviceId === draft.deviceId);
   const canChooseDirectory =
@@ -65,12 +110,13 @@ export const EnvironmentFields = ({
               !device.online ||
               !!device.onlineUnknown ||
               (device.scope === 'workspace' && device.visibility !== 'public'),
-            label: `${deviceLabel(device)}${!devices.isConfirmed || device.onlineUnknown ? ` · ${t('environment.checkingDevice')}` : device.online ? '' : ` · ${t('offline')}`}`,
+            label: optionLabel(device),
             value: device.deviceId,
           })),
         ]}
         onChange={changeDevice}
       />
+      {privateDevices.length > 0 && <PrivateDevicesHint devices={privateDevices} />}
       {draft.deviceId && (
         <Button
           aria-label={t('environment.directoryLabel', { name })}

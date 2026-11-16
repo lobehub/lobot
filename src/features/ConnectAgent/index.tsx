@@ -43,7 +43,9 @@ import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspace
 import AsyncError from '@/components/AsyncError';
 import CommandLine from '@/components/CommandLine';
 import { DOWNLOAD_URL } from '@/const/url';
+import { isPrivateWorkspaceDevice } from '@/features/DeviceManager/deviceVisibility';
 import { getDeviceIcon } from '@/features/DeviceManager/getDeviceIcon';
+import { PrivateDeviceNotice } from '@/features/DeviceManager/PrivateDeviceNotice';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { deviceService } from '@/services/device';
 import { useAgentStore } from '@/store/agent';
@@ -419,7 +421,7 @@ export const ConnectAgentContent = memo<ConnectAgentContentProps>(
     showOpenChat = true,
     visibility,
   }) => {
-    const { t } = useTranslation('chat');
+    const { t } = useTranslation(['chat', 'device']);
     const { close, setCanDismissByClickOutside } = useModalContext();
     const navigate = useWorkspaceAwareNavigate();
     const storeCreateAgent = useAgentStore((s) => s.createAgent);
@@ -817,7 +819,6 @@ export const ConnectAgentContent = memo<ConnectAgentContentProps>(
                           icon={getDeviceIcon(device.platform, 18)}
                           key={device.deviceId}
                           offline={!device.online}
-                          subtitle={device.hostname || device.deviceId}
                           title={deviceLabel(device)}
                           statusText={
                             isDevicePresenceUnknown(device)
@@ -825,6 +826,11 @@ export const ConnectAgentContent = memo<ConnectAgentContentProps>(
                               : device.online
                                 ? t('connectAgent.create.online')
                                 : t('connectAgent.create.offline')
+                          }
+                          subtitle={
+                            isPrivateWorkspaceDevice(device)
+                              ? `${t('visibility.private.badge', { ns: 'device' })} · ${device.hostname || device.deviceId}`
+                              : device.hostname || device.deviceId
                           }
                           onClick={() => pickTarget({ device, kind: 'device' })}
                         />
@@ -879,6 +885,11 @@ export const ConnectAgentContent = memo<ConnectAgentContentProps>(
                 </Button>
               )}
           </Flexbox>
+
+          {/* Others cannot use an Agent on a private device; say so before it is created. */}
+          {target.kind === 'device' && isPrivateWorkspaceDevice(target.device) && (
+            <PrivateDeviceNotice device={target.device} name={targetLabel} />
+          )}
 
           {scanning && (
             <Flexbox gap={6}>
