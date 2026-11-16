@@ -56,7 +56,6 @@ venv/
 node_modules/
 *.lock
 package-lock.json
-!scripts/security-policy-runtime/package-lock.json
 bun.lockb
 .pnpm-store/
 
@@ -135,10 +134,6 @@ docker-compose/dev/data/
 
 # Migration scripts data
 .elasticsearch-reindex/
-scripts/clerk-to-betterauth/test/*.csv
-scripts/clerk-to-betterauth/test/*.json
-scripts/clerk-to-betterauth/prod/*.csv
-scripts/clerk-to-betterauth/prod/*.json
 
 # Misc
 ./packages/lobe-ui
