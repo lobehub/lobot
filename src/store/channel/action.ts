@@ -123,8 +123,11 @@ class ChannelActionImpl {
    * The direct conversation with another person's Agent, from its share; no contact entry or
    * friendship is needed. Reuses a listed conversation with that Agent.
    */
-  openShared = async (share: { agentId: string; shareId: string }) => {
-    const existing = channelSelectors.directByAgent(share.agentId)(useChannelStore.getState());
+  openShared = async (share: { agentId?: string; shareId: string }) => {
+    // A link from outside (`lobot://`) knows only the share; the server finds the conversation.
+    const existing = share.agentId
+      ? channelSelectors.directByAgent(share.agentId)(useChannelStore.getState())
+      : undefined;
     if (existing) return existing.id;
     const channelId = await channelService.openShared(share.shareId);
     if (channelId) await this.#refreshAfterWrite(this.refreshList);

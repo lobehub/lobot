@@ -26,6 +26,7 @@ import RemoteServerConfigCtr from './RemoteServerConfigCtr';
 import RemoteServerSyncCtr from './RemoteServerSyncCtr';
 import RendererOtaCtr from './RendererOtaCtr';
 import ScreenCaptureCtr from './ScreenCaptureCtr';
+import SharedAgentLinkCtr from './SharedAgentLinkCtr';
 import ShellCommandCtr from './ShellCommandCtr';
 import ShortcutController from './ShortcutCtr';
 import SystemController from './SystemCtr';
@@ -61,6 +62,7 @@ export const controllerIpcConstructors = [
   RemoteServerConfigCtr,
   RemoteServerSyncCtr,
   ScreenCaptureCtr,
+  SharedAgentLinkCtr,
   ShellCommandCtr,
   ShortcutController,
   SystemController,

@@ -37,6 +37,7 @@ import { useActiveNavKey } from '@/features/NavPanel/useActiveNavKey';
 import { useImLayout, useSyncImLayoutHint } from '@/features/NavRail/useImLayout';
 import { wrapStyles } from '@/features/NavRail/wrapStyle';
 import { DndContextWrapper } from '@/features/ResourceManager/DndContextWrapper';
+import SharedAgentLinkBridge from '@/features/SharedAgentLinkBridge';
 import WorkspaceRail from '@/features/WorkspaceRail';
 import { usePlatform } from '@/hooks/usePlatform';
 import CmdkLazy from '@/layout/GlobalProvider/CmdkLazy';
@@ -74,6 +75,7 @@ const Layout: FC = () => {
         <TabCacheBridges />
         <Suspense fallback={null}>
           <DesktopNavigationBridge />
+          <SharedAgentLinkBridge />
           <DesktopFileMenuBridge />
           <DesktopBrowserGatewayBridge />
           <OverlaySnapshotPublisher />

@@ -179,9 +179,10 @@ const getProtocolScheme = () => {
     }
     return scheme;
   }
-  if (isCanary) return 'lobehub-canary';
-  if (isNightly) return 'lobehub-nightly';
-  return 'lobehub';
+  // Lobot owns `lobot://`, so it never races the LobeHub desktop app for `lobehub://`.
+  if (isCanary) return 'lobot-canary';
+  if (isNightly) return 'lobot-nightly';
+  return 'lobot';
 };
 
 const protocolScheme = getProtocolScheme();

@@ -14,28 +14,24 @@ export type AppChannel = 'stable' | 'beta' | 'nightly';
  */
 const getSchemeOverride = () => getDesktopEnv().DESKTOP_PROTOCOL_SCHEME?.toLowerCase();
 
+/** Lobot's own scheme, so it never races the LobeHub desktop app for `lobehub://`. */
+const BASE_SCHEME = 'lobot';
+
 export const getProtocolScheme = (): string => {
-  // A distribution owns its scheme outright. The heuristics below only know
-  // upstream's names, so a renamed build would fall through to `lobehub` and
-  // fight an official install on the same machine for its deep links.
+  // A distribution owns its scheme outright; the build and the main process read the same value.
   const override = getSchemeOverride();
   if (override) return override;
 
-  // In Electron environment, version can be determined in multiple ways
-  const bundleId = app.name;
-  const appPath = app.getPath('exe');
+  // Otherwise derive the channel from the bundle identifier, then the executable path.
+  for (const hint of [app.name, app.getPath('exe')]) {
+    const value = hint?.toLowerCase() ?? '';
+    if (value.includes('nightly')) return `${BASE_SCHEME}-nightly`;
+    if (value.includes('canary')) return `${BASE_SCHEME}-canary`;
+    if (value.includes('beta')) return `${BASE_SCHEME}-beta`;
+  }
+  if (app.name?.includes('dev') || app.getPath('exe')?.includes('dev')) return `${BASE_SCHEME}-dev`;
 
-  // Determine by bundle identifier
-  if (bundleId?.toLowerCase().includes('nightly')) return 'lobehub-nightly';
-  if (bundleId?.toLowerCase().includes('beta')) return 'lobehub-beta';
-  if (bundleId?.includes('dev')) return 'lobehub-dev';
-
-  // Determine by executable file path
-  if (appPath?.toLowerCase().includes('nightly')) return 'lobehub-nightly';
-  if (appPath?.toLowerCase().includes('beta')) return 'lobehub-beta';
-  if (appPath?.includes('dev')) return 'lobehub-dev';
-
-  return 'lobehub';
+  return BASE_SCHEME;
 };
 
 export const getVersionInfo = (): { channel: AppChannel; protocolScheme: string } => {
@@ -114,7 +110,14 @@ export const parseProtocolUrl = (url: string): ProtocolUrlParsed | null => {
     const parsedUrl = new URL(url);
 
     // Support multiple protocol schemes
-    const validProtocols = ['lobehub:', 'lobehub-dev:', 'lobehub-nightly:', 'lobehub-beta:'];
+    const validProtocols = [
+      ...['', '-dev', '-nightly', '-beta', '-canary'].map((suffix) => `${BASE_SCHEME}${suffix}:`),
+      // Upstream's names, for links generated before Lobot had its own scheme.
+      'lobehub:',
+      'lobehub-dev:',
+      'lobehub-nightly:',
+      'lobehub-beta:',
+    ];
     const override = getSchemeOverride();
     if (override) validProtocols.push(`${override}:`);
     if (!validProtocols.includes(parsedUrl.protocol)) {
@@ -165,10 +168,10 @@ export function generateRFCProtocolUrl(params: {
   marketId?: string;
   /** MCP Schema object */
   schema: McpSchema;
-  /** Protocol scheme (default: lobehub) */
+  /** Protocol scheme (default: lobot) */
   scheme?: string;
 }): string {
-  const { id, schema, marketId, scheme = 'lobehub' } = params;
+  const { id, schema, marketId, scheme = BASE_SCHEME } = params;
 
   // Validate schema.identifier matches id
   if (schema.identifier !== id) {

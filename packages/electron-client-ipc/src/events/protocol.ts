@@ -16,4 +16,10 @@ export interface ProtocolBroadcastEvents {
     /** MCP Schema object */
     schema: McpInstallSchema;
   }) => void;
+
+  /**
+   * A `lobot://channel/open-shared` link arrived; the renderer takes it with
+   * `sharedAgentLink.takePending`, so a link that came before it listened still opens.
+   */
+  sharedAgentLinkReceived: () => void;
 }

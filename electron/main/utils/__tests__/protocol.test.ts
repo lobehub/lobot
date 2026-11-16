@@ -37,7 +37,7 @@ describe('Protocol', () => {
         marketId: 'higress',
       });
 
-      expect(url).toMatch(/^lobehub:\/\/plugin\/install\?/);
+      expect(url).toMatch(/^lobot:\/\/plugin\/install\?/);
       expect(url).toContain('id=edgeone-mcp');
       expect(url).toContain('marketId=higress');
 
@@ -72,7 +72,7 @@ describe('Protocol', () => {
         marketId: 'smithery',
       });
 
-      expect(url).toMatch(/^lobehub:\/\/plugin\/install\?/);
+      expect(url).toMatch(/^lobot:\/\/plugin\/install\?/);
       expect(url).toContain('id=awesome-api');
       expect(url).toContain('marketId=smithery');
     });
@@ -211,6 +211,30 @@ describe('Protocol', () => {
     });
   });
 
+  describe('Lobot’s own scheme', () => {
+    const setApp = async (name: string, exe: string) => {
+      const { app } = await import('electron');
+      Object.assign(app, { name });
+      vi.mocked(app.getPath).mockImplementation((key: string) =>
+        key === 'exe' ? exe : `/mock/${key}`,
+      );
+    };
+
+    it('defaults to lobot, never the LobeHub app’s lobehub', async () => {
+      await setApp('Lobot', '/Applications/Lobot.app/Contents/MacOS/Lobot');
+      expect(getProtocolScheme()).toBe('lobot');
+    });
+
+    it.each([
+      ['Lobot Nightly', 'lobot-nightly'],
+      ['Lobot Canary', 'lobot-canary'],
+      ['Lobot Beta', 'lobot-beta'],
+    ])('names the %s channel', async (name, scheme) => {
+      await setApp(name, `/Applications/${name}.app`);
+      expect(getProtocolScheme()).toBe(scheme);
+    });
+  });
+
   describe('distribution scheme override', () => {
     it('uses the configured scheme instead of the channel heuristics', () => {
       desktopEnv.DESKTOP_PROTOCOL_SCHEME = 'acme';
@@ -235,6 +259,19 @@ describe('Protocol', () => {
         action: 'install',
         urlType: 'plugin',
       });
+    });
+
+    it('parses Lobot’s own scheme, e.g. opening a shared Agent', () => {
+      expect(
+        parseProtocolUrl(
+          'lobot://channel/open-shared?share=https%3A%2F%2Fapp.lobehub.com%2Fa%2Fhelper',
+        ),
+      ).toMatchObject({
+        action: 'open-shared',
+        params: { share: 'https://app.lobehub.com/a/helper' },
+        urlType: 'channel',
+      });
+      expect(parseProtocolUrl('lobot-canary://channel/open-shared?share=helper')).toBeTruthy();
     });
 
     it('still rejects schemes that are neither upstream nor configured', () => {
