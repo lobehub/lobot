@@ -1,4 +1,4 @@
-import type { ContactItem, ContactRequestItem } from '@lobechat/types';
+import type { ContactItem, ContactRequestItem, ContactSearchResult } from '@lobechat/types';
 import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
 
@@ -14,6 +14,9 @@ export interface ContactState {
   profileReplica: ReplicaState<ContactUserProfileData>;
   requestsMap: Record<string, ContactRequestItem[]>;
   requestsReplica: ReplicaState<ContactRequestItem[]>;
+  /** By share id, handle or link: what it resolves to, e.g. for a `lobot://` link. */
+  shareMap: Record<string, ContactSearchResult[]>;
+  shareReplica: ReplicaState<ContactSearchResult[]>;
 }
 
 export const initialState: ContactState = {
@@ -23,6 +26,8 @@ export const initialState: ContactState = {
   profileReplica: createReplicaState(),
   requestsMap: {},
   requestsReplica: createReplicaState(),
+  shareMap: {},
+  shareReplica: createReplicaState(),
 };
 
 export const useContactStore = createWithEqualityFn<ContactState>()(

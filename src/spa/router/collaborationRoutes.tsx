@@ -36,6 +36,15 @@ export const collaborationRoutes: RouteObject[] = [
         handle: { meta: agentsRouteMeta },
         path: 'people/:userId',
       },
+      {
+        element: dynamicElement(
+          () => import('@/routes/(main)/agents/shared/[share]'),
+          'Desktop > Contacts > Shared Agent',
+          { preloadId: 'agents' },
+        ),
+        handle: { meta: agentsRouteMeta },
+        path: 'shared/:share',
+      },
     ],
     errorElement: <ErrorBoundary resetPath=".." />,
     path: 'agents',

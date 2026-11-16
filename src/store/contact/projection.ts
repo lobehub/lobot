@@ -1,4 +1,4 @@
-import type { ContactItem, ContactRequestItem } from '@lobechat/types';
+import type { ContactItem, ContactRequestItem, ContactSearchResult } from '@lobechat/types';
 
 import { defineReplica } from '@/libs/replica';
 import { contactService, type ContactUserProfileData } from '@/services/contact';
@@ -24,6 +24,15 @@ export const contactProfileResource = defineReplica<{ userId: string }, ContactU
   fetcher: ({ userId }) => contactService.userProfile(userId),
   key: ({ userId }) => userId,
   name: 'contactProfile',
+  storage: 'memory',
+  version: 1,
+});
+
+/** A shared Agent reached by its share id, handle or link, with my relation to it. */
+export const contactShareResource = defineReplica<{ share: string }, ContactSearchResult[]>({
+  fetcher: ({ share }) => contactService.search(share),
+  key: ({ share }) => share,
+  name: 'contactShare',
   storage: 'memory',
   version: 1,
 });

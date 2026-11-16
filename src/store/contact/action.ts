@@ -1,9 +1,14 @@
-import type { ContactItem, ContactRequestItem } from '@lobechat/types';
+import type { ContactItem, ContactRequestItem, ContactSearchResult } from '@lobechat/types';
 
 import { createReplicaSlice, recordLens } from '@/libs/replica';
 import { contactService, type ContactUserProfileData } from '@/services/contact';
 
-import { contactListResource, contactProfileResource, contactRequestsResource } from './projection';
+import {
+  contactListResource,
+  contactProfileResource,
+  contactRequestsResource,
+  contactShareResource,
+} from './projection';
 import { type ContactState, useContactStore } from './store';
 
 const REQUESTS_REFRESH_MS = 60_000;
@@ -31,12 +36,21 @@ class ContactActionImpl {
     view: recordLens<ContactState, ContactUserProfileData>('profileMap'),
   });
 
+  readonly #share = createReplicaSlice(contactShareResource, {
+    actionPrefix: 'contact/share',
+    get: useContactStore.getState,
+    set: useContactStore.setState,
+    stateKey: 'shareReplica',
+    view: recordLens<ContactState, ContactSearchResult[]>('shareMap'),
+  });
+
   useFetchList = (enabled = true) => this.#list.useSync({}, { enabled });
   /** No push yet: incoming requests are polled so the badge appears without a reload. */
   useFetchRequests = (enabled = true) =>
     this.#requests.useSync({}, { enabled, refreshInterval: REQUESTS_REFRESH_MS });
   useFetchProfile = (userId: string | undefined) =>
     this.#profile.useSync(userId ? { userId } : null);
+  useFetchShare = (share: string | undefined) => this.#share.useSync(share ? { share } : null);
 
   /** A committed write must not read as failed because its refresh did. */
   #refresh = async (profileUserId?: string) => {
@@ -75,6 +89,9 @@ class ContactActionImpl {
   addAgent = async (share: string) => {
     const agent = await contactService.addAgent(share);
     await this.#refresh(agent.owner.id);
+    // A profile opened from the share shows the new relation.
+    for (const key of Object.keys(useContactStore.getState().shareMap))
+      await this.#share.fetch({ share: key }, { fresh: true }).catch(() => undefined);
     return agent;
   };
   removeAgent = async (agentId: string) => {
