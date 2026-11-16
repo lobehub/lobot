@@ -63,7 +63,12 @@ const showNotification = (options) => {
 
   const { sender, ...rest } = options;
   const payload = { ...rest, id };
-  if (sender?.name) payload.sender = { conversationId: sender.conversationId, name: sender.name };
+  if (sender?.name)
+    payload.sender = {
+      conversationId: sender.conversationId,
+      groupName: sender.groupName,
+      name: sender.name,
+    };
   const avatar = decodeAvatar(sender?.avatarDataUrl);
 
   return new Promise((resolve) => {

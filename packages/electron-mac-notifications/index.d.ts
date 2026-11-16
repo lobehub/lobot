@@ -1,6 +1,8 @@
 export interface MacNotificationSender {
   avatarDataUrl?: string;
   conversationId: string;
+  /** Names a group conversation, kept as the banner title above the sender. */
+  groupName?: string;
   name: string;
 }
 

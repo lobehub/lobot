@@ -37,6 +37,11 @@ export interface DesktopNotificationSender {
    */
   avatarDataUrl?: string;
   conversationId: string;
+  /**
+   * Names a group conversation. macOS then keeps it as the banner title with the sender's
+   * avatar, instead of titling the banner by the sender.
+   */
+  groupName?: string;
   name: string;
 }
 

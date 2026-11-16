@@ -104,7 +104,8 @@ static Napi::Value Setup(const Napi::CallbackInfo &info) {
 
 static void ShowWithAuthorization(NSString *identifier, NSString *title, NSString *body, bool silent,
                                   NSString *soundName, NSString *senderName,
-                                  NSString *conversationId, NSData *avatarData) {
+                                  NSString *conversationId, NSString *groupName,
+                                  NSData *avatarData) {
   UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
   [center requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionSound |
                                            UNAuthorizationOptionBadge)
@@ -139,11 +140,29 @@ static void ShowWithAuthorization(NSString *identifier, NSString *title, NSStrin
                                                             image:avatar
                                                 contactIdentifier:nil
                                                  customIdentifier:conversationId];
+        // A group conversation keeps its own name as the title (the sender's avatar still leads);
+        // macOS only treats it as a group when it has a name and more than one recipient.
+        NSArray<INPerson *> *recipients = nil;
+        INSpeakableString *speakableGroupName = nil;
+        if (groupName.length > 0) {
+          INPerson *me = [[INPerson alloc] initWithPersonHandle:[[INPersonHandle alloc]
+                                                                    initWithValue:@"me"
+                                                                             type:INPersonHandleTypeUnknown]
+                                                 nameComponents:nil
+                                                    displayName:nil
+                                                          image:nil
+                                              contactIdentifier:nil
+                                               customIdentifier:nil
+                                                           isMe:YES
+                                                 suggestionType:INPersonSuggestionTypeNone];
+          recipients = @[ me, sender ];
+          speakableGroupName = [[INSpeakableString alloc] initWithSpokenPhrase:groupName];
+        }
         INSendMessageIntent *intent =
-            [[INSendMessageIntent alloc] initWithRecipients:nil
+            [[INSendMessageIntent alloc] initWithRecipients:recipients
                                         outgoingMessageType:INOutgoingMessageTypeOutgoingMessageText
                                                     content:body
-                                         speakableGroupName:nil
+                                         speakableGroupName:speakableGroupName
                                      conversationIdentifier:conversationId ?: identifier
                                                 serviceName:nil
                                                      sender:sender
@@ -206,11 +225,13 @@ static Napi::Value Show(const Napi::CallbackInfo &info) {
       [options[@"sender"] isKindOfClass:[NSDictionary class]] ? options[@"sender"] : nil;
   NSString *senderName = senderDict[@"name"];
   NSString *conversationId = senderDict[@"conversationId"];
+  NSString *groupName =
+      [senderDict[@"groupName"] isKindOfClass:[NSString class]] ? senderDict[@"groupName"] : nil;
 
   EnsureDelegateInstalled();
   dispatch_async(dispatch_get_main_queue(), ^{
     ShowWithAuthorization(identifier, title, body, silent, soundName, senderName, conversationId,
-                          avatarData);
+                          groupName, avatarData);
   });
   return env.Undefined();
 }

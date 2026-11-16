@@ -18,8 +18,14 @@ vi.mock('@/store/chat/utils/desktopNotification', () => ({
   buildNotificationBody: (content: string | undefined, fallback: string) => content || fallback,
   buildNotificationSender: vi.fn(),
 }));
+vi.mock('@/store/chat/utils/notificationAvatar', () => ({
+  renderAvatarToDataUrl: vi.fn(
+    async (_key: string, meta: { avatar: string }) => `png:${meta.avatar}`,
+  ),
+}));
 
-const { buildChannelBanner } = await import('./notify');
+const { buildChannelBanner, buildDirectSender, buildGroupSender } = await import('./notify');
+const { buildNotificationSender } = await import('@/store/chat/utils/desktopNotification');
 
 const channel = (extra: Partial<ChannelListItem> = {}) =>
   ({
@@ -66,5 +72,92 @@ describe('buildChannelBanner', () => {
       body: 'preview',
       title: 'notification.mentioned(channel=Marketing)',
     });
+  });
+});
+
+describe('buildDirectSender', () => {
+  const agentMessage = {
+    author: { avatar: 'https://cdn/deck.png', id: 'agt_shared', name: 'Deck Deck', type: 'agent' },
+  } as Pick<ChannelPublicMessage, 'author'>;
+
+  it('stays a plain banner for a group Channel', async () => {
+    expect(await buildDirectSender(channel(), agentMessage)).toBeUndefined();
+  });
+
+  it("uses the agent store for the user's own Agent", async () => {
+    vi.mocked(buildNotificationSender).mockResolvedValueOnce({
+      avatarDataUrl: 'png:own',
+      conversationId: 'agt_1',
+      name: 'Sanjo',
+    });
+    expect(
+      await buildDirectSender(channel({ agentId: 'agt_1', title: 'Sanjo' }), undefined),
+    ).toEqual({ avatarDataUrl: 'png:own', conversationId: 'chn_1', name: 'Sanjo' });
+  });
+
+  it("pictures a shared Agent the agent store doesn't know with the Channel's avatar", async () => {
+    vi.mocked(buildNotificationSender).mockResolvedValueOnce(undefined);
+    expect(
+      await buildDirectSender(
+        channel({ agentId: 'agt_shared', sharedAgent: true, title: 'Deck Deck' }),
+        agentMessage,
+      ),
+    ).toEqual({
+      avatarDataUrl: 'png:https://cdn/deck.png',
+      conversationId: 'chn_1',
+      name: 'Deck Deck',
+    });
+  });
+
+  it('falls back to the list avatar when the message page could not load', async () => {
+    vi.mocked(buildNotificationSender).mockResolvedValueOnce(undefined);
+    expect(
+      await buildDirectSender(
+        channel({
+          agentId: 'agt_shared',
+          memberAvatars: [
+            {
+              actorType: 'agent',
+              avatar: '🦊',
+              backgroundColor: '#fff',
+              id: 'agt_shared',
+              name: 'Deck Deck',
+            },
+          ],
+          title: 'Deck Deck',
+        }),
+        undefined,
+      ),
+    ).toEqual({ avatarDataUrl: 'png:🦊', conversationId: 'chn_1', name: 'Deck Deck' });
+  });
+});
+
+describe('buildGroupSender', () => {
+  it('pictures the author and keeps the banner title as the group name', async () => {
+    expect(
+      await buildGroupSender(
+        channel(),
+        { author: { avatar: 'https://cdn/ann.png', id: 'u2', name: 'Ann', type: 'user' } },
+        'Marketing',
+      ),
+    ).toEqual({
+      avatarDataUrl: 'png:https://cdn/ann.png',
+      conversationId: 'chn_1',
+      groupName: 'Marketing',
+      name: 'Ann',
+    });
+  });
+
+  it('names the author even without an avatar', async () => {
+    expect(await buildGroupSender(channel(), message('Ann'), 'Marketing')).toEqual({
+      avatarDataUrl: undefined,
+      conversationId: 'chn_1',
+      groupName: 'Marketing',
+      name: 'Ann',
+    });
+  });
+
+  it('stays a plain banner when the message page could not load', async () => {
+    expect(await buildGroupSender(channel(), undefined, 'Marketing')).toBeUndefined();
   });
 });
