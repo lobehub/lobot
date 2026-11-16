@@ -6,6 +6,7 @@ import { CheckIcon, XIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type { WorkspaceMemberWithProfile } from '@/business/client/hooks/useWorkspaceMembers';
 import AgentAvatar from '@/components/AgentAvatar';
 import UserAvatar from '@/components/UserAvatar';
 import { personName } from '@/features/AddContactModal/result';
@@ -29,6 +30,41 @@ export const PersonRow = memo<{ active: boolean; item: ContactUserItem }>(({ act
 });
 
 PersonRow.displayName = 'ContactPersonRow';
+
+const ROLE_KEYS = {
+  admin: 'workspace.member.roles.admin',
+  member: 'workspace.member.roles.member',
+  owner: 'workspace.member.roles.owner',
+  viewer: 'workspace.member.roles.viewer',
+} as const;
+
+/** The `setting` key naming a workspace role; an unknown role reads as a plain member. */
+export const workspaceRoleKey = (role: string) =>
+  ROLE_KEYS[role as keyof typeof ROLE_KEYS] ?? ROLE_KEYS.member;
+
+/** A member of the active workspace: someone to message there, contact or not. */
+export const MemberRow = memo<{ active: boolean; member: WorkspaceMemberWithProfile }>(
+  ({ active, member }) => {
+    const { t } = useTranslation('setting');
+    const name = personName({
+      fullName: member.user?.fullName ?? null,
+      username: member.user?.username ?? null,
+    });
+    return (
+      <ConversationRow
+        singleLine
+        active={active}
+        avatar={<UserAvatar avatar={member.user?.avatar} name={name} size={AVATAR_SIZE} />}
+        // Plain members are the default; only the other roles are worth a label.
+        tag={member.role === 'member' ? undefined : t(workspaceRoleKey(member.role))}
+        title={name}
+        url={PERSON_CONTACT_URL(member.userId)}
+      />
+    );
+  },
+);
+
+MemberRow.displayName = 'ContactMemberRow';
 
 /** Another person's Agent added through its share; dimmed while the share is paused. */
 export const SharedAgentRow = memo<{ active: boolean; item: ContactAgentItem }>(

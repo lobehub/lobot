@@ -16,6 +16,8 @@ import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 
+import { useActiveWorkspace } from '@/business/client/hooks/useActiveWorkspace';
+import { useWorkspaceMembers } from '@/business/client/hooks/useWorkspaceMembers';
 import AgentAvatar from '@/components/AgentAvatar';
 import AsyncError from '@/components/AsyncError';
 import UserAvatar from '@/components/UserAvatar';
@@ -27,6 +29,7 @@ import { contactActions, contactSelectors, useContactStore } from '@/store/conta
 
 import { AVATAR_SIZE, styles, TileContent } from './cardParts';
 import { AGENT_CONTACT_URL } from './const';
+import { workspaceRoleKey } from './ExternalRows';
 import { useMessageSharedAgent } from './useMessageSharedAgent';
 
 const AGENT_ROW_AVATAR = 32;
@@ -107,11 +110,15 @@ SharedAgentRow.displayName = 'SharedAgentRow';
 
 /**
  * A person's card: who they are, what to do given our relation (request, accept, message,
- * remove), and, once we are contacts, the Agents they share.
+ * remove), and, once we are contacts, the Agents they share. A fellow member of the active
+ * workspace can be messaged there whether or not we are contacts.
  */
 const PersonCard = memo<{ userId: string }>(({ userId }) => {
   const { t } = useTranslation('common');
+  const { t: tSetting } = useTranslation('setting');
   const navigate = useWorkspaceAwareNavigate();
+  const workspace = useActiveWorkspace();
+  const member = useWorkspaceMembers().find((item) => item.userId === userId);
   const { error } = contactActions.useFetchProfile(userId);
   contactActions.useFetchRequests();
   const profile = useContactStore(contactSelectors.profile(userId));
@@ -156,21 +163,35 @@ const PersonCard = memo<{ userId: string }>(({ userId }) => {
         {name}
       </Text>
       {user.username && <Text type={'secondary'}>@{user.username}</Text>}
+      {workspace && member && (
+        <Text fontSize={12} type={'secondary'}>
+          {t('contacts.person.memberOf', {
+            role: tSetting(workspaceRoleKey(member.role)),
+            workspace: workspace.name,
+          })}
+        </Text>
+      )}
 
       {relation === 'request_received' && request?.message && (
         <Text type={'secondary'}>“{request.message}”</Text>
       )}
 
       <div {...stylex.props(styles.actions)}>
+        {/* A contact in the personal space; a fellow member in a workspace. */}
+        {(workspace ? !!member : relation === 'contact') && (
+          <button
+            disabled={!!pending}
+            type="button"
+            onClick={message}
+            {...stylex.props(styles.tile)}
+          >
+            <TileContent icon={MessageCircleIcon} label={t('contacts.sendMessage')} />
+          </button>
+        )}
         {relation === 'contact' && (
-          <>
-            <button type="button" onClick={message} {...stylex.props(styles.tile)}>
-              <TileContent icon={MessageCircleIcon} label={t('contacts.sendMessage')} />
-            </button>
-            <button type="button" onClick={remove} {...stylex.props(styles.tile)}>
-              <TileContent icon={UserRoundMinusIcon} label={t('contacts.person.remove')} />
-            </button>
-          </>
+          <button type="button" onClick={remove} {...stylex.props(styles.tile)}>
+            <TileContent icon={UserRoundMinusIcon} label={t('contacts.person.remove')} />
+          </button>
         )}
         {relation === 'none' && (
           <button

@@ -10,6 +10,7 @@ import { ContactListBody } from './index';
 const fetch = vi.hoisted(() => ({ error: undefined as unknown, mutate: vi.fn() }));
 const agentList = vi.hoisted(() => ({ init: false, items: [] as object[] }));
 const channels = vi.hoisted(() => ({ enabled: false }));
+const workspace = vi.hoisted(() => ({ activeId: null as string | null, members: [] as object[] }));
 const contacts = vi.hoisted(() => ({
   listMap: {} as Record<string, object[]>,
   requestsMap: {} as Record<string, object[]>,
@@ -19,6 +20,16 @@ vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => k
 vi.mock('@/business/client/hooks/useActiveWorkspaceSlug', () => ({
   useActiveWorkspaceSlug: () => null,
 }));
+vi.mock('@/business/client/hooks/useActiveWorkspaceId', () => ({
+  useActiveWorkspaceId: () => workspace.activeId,
+}));
+vi.mock('@/business/client/hooks/useWorkspaceMembers', () => ({
+  useWorkspaceMembers: () => workspace.members,
+}));
+vi.mock('@/store/user', () => ({
+  useUserStore: (selector: (state: object) => unknown) => selector({}),
+}));
+vi.mock('@/store/user/selectors', () => ({ userProfileSelectors: { userId: () => 'u_me' } }));
 vi.mock('@/hooks/useActiveLocation', () => ({ useActiveLocation: () => ({ pathname: '/' }) }));
 vi.mock('@/hooks/useFetchAgentList', () => ({ useFetchAgentList: () => fetch }));
 vi.mock('@/features/Channels/useChannelsEnabled', () => ({
@@ -57,6 +68,8 @@ vi.mock('@/components/AsyncError', () => ({
 }));
 
 beforeEach(() => {
+  workspace.activeId = null;
+  workspace.members = [];
   channels.enabled = false;
   contacts.listMap = {};
   contacts.requestsMap = {};
@@ -192,5 +205,37 @@ describe('ContactListBody', () => {
     render(createElement(ContactListBody));
 
     expect(screen.queryByText('contacts.people')).not.toBeInTheDocument();
+  });
+
+  it('lists the workspace’s other members, with their role unless a plain member', () => {
+    channels.enabled = true;
+    agentList.init = true;
+    workspace.activeId = 'ws_team';
+    workspace.members = [
+      { role: 'owner', user: { fullName: 'Me' }, userId: 'u_me' },
+      { role: 'admin', user: { fullName: 'Ada' }, userId: 'u_ada' },
+      { role: 'member', user: { username: 'bo' }, userId: 'u_bo' },
+    ];
+
+    render(createElement(ContactListBody));
+
+    expect(screen.getByText('contacts.members')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Ada' })).toHaveAttribute(
+      'href',
+      '/agents/people/u_ada',
+    );
+    expect(screen.getByText('workspace.member.roles.admin')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'bo' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Me' })).not.toBeInTheDocument();
+    expect(screen.queryByText('workspace.member.roles.member')).not.toBeInTheDocument();
+  });
+
+  it('has no members section in the personal space', () => {
+    channels.enabled = true;
+    agentList.init = true;
+
+    render(createElement(ContactListBody));
+
+    expect(screen.queryByText('contacts.members')).not.toBeInTheDocument();
   });
 });

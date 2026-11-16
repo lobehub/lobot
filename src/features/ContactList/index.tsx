@@ -21,7 +21,9 @@ import { ArrowDownUpIcon, Pin, PinOff, UserRoundPlusIcon } from 'lucide-react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import { useActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
+import { useWorkspaceMembers } from '@/business/client/hooks/useWorkspaceMembers';
 import AsyncError from '@/components/AsyncError';
 import { DESKTOP_HEADER_ICON_SMALL_SIZE } from '@/const/layoutTokens';
 import { openAddContactModal } from '@/features/AddContactModal';
@@ -38,10 +40,12 @@ import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 import { useHomeStore } from '@/store/home';
 import { homeAgentListSelectors } from '@/store/home/selectors';
+import { useUserStore } from '@/store/user';
+import { userProfileSelectors } from '@/store/user/selectors';
 
 import { CONTACT_URL } from './const';
 import ContactAvatar from './ContactAvatar';
-import { PersonRow, RequestRow, SharedAgentRow } from './ExternalRows';
+import { MemberRow, PersonRow, RequestRow, SharedAgentRow } from './ExternalRows';
 import { CONTACT_SORT_BYS, groupContacts } from './sortContacts';
 import { styles } from './style';
 
@@ -103,6 +107,14 @@ const Body = memo(() => {
   const people = useContactStore((s) => contactSelectors.people(s) ?? [], isEqual);
   const sharedAgents = useContactStore((s) => contactSelectors.agents(s) ?? [], isEqual);
   const requests = useContactStore(contactSelectors.incomingRequests, isEqual);
+  // In a workspace, its members can be messaged there without being contacts.
+  const inWorkspace = !!useActiveWorkspaceId();
+  const myId = useUserStore(userProfileSelectors.userId);
+  const allMembers = useWorkspaceMembers();
+  const members = useMemo(
+    () => allMembers.filter((member) => member.userId !== myId),
+    [allMembers, myId],
+  );
   const updateSystemStatus = useGlobalStore((s) => s.updateSystemStatus);
 
   const { agents, groups, pinned } = useMemo(
@@ -184,6 +196,23 @@ const Body = memo(() => {
           },
         ]
       : []),
+    ...(channelsEnabled && inWorkspace
+      ? [
+          {
+            count: members.length,
+            key: 'members',
+            render: () =>
+              members.map((member) => (
+                <MemberRow
+                  active={member.userId === activeRouteId}
+                  key={member.userId}
+                  member={member}
+                />
+              )),
+            title: t('contacts.members'),
+          },
+        ]
+      : []),
     // Groups next: there are few, and they would sink below every agent.
     {
       count: groups.length,
@@ -205,7 +234,7 @@ const Body = memo(() => {
     <Flexbox paddingBlock={'4px 12px'} paddingInline={4}>
       <AccordionRoot
         // Listed up front so a section that appears later, like the first pin, opens expanded.
-        defaultValue={['requests', 'pinned', 'people', 'groups', 'agents']}
+        defaultValue={['requests', 'pinned', 'people', 'members', 'groups', 'agents']}
         indicatorPlacement={'inline'}
         style={{ gap: 8 }}
       >

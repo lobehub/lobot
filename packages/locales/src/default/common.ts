@@ -461,10 +461,12 @@ export default {
   'contacts.agent.byOwner': 'Shared by {{name}}',
   'contacts.agent.remove': 'Remove from contacts',
   'contacts.agent.unavailable': 'The owner stopped sharing this Agent',
+  'contacts.members': 'Members',
   'contacts.people': 'People',
   'contacts.person.accept': 'Accept',
   'contacts.person.cancel': 'Withdraw request',
   'contacts.person.decline': 'Decline',
+  'contacts.person.memberOf': '{{role}} in {{workspace}}',
   'contacts.person.remove': 'Remove contact',
   'contacts.person.remove.confirm':
     'Remove {{name}}? You will both leave each other’s contacts and can no longer message each other. Your conversation history stays.',
