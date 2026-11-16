@@ -12,7 +12,7 @@ export default {
   'people.searchMore': 'Showing the first 50 members. Search to find more.',
   'receipt.errorReason': 'Failure reason',
   'receipt.deviceUnreachable':
-    "The device this Agent runs on is offline, so the reply couldn't start. Reconnect the device or switch to another one, then send again.",
+    "The device this Agent runs on is offline, so the reply couldn't start. Reconnect the device or switch to another one, then retry.",
   'receipt.errorUnavailable':
     'No detailed reason was recorded. Check the Agent’s model and device settings before sending again.',
   'sort.by': 'Sort by',
@@ -157,6 +157,7 @@ export default {
   'routing.receiving': 'Agents receiving your message…',
   'routing.unassigned': 'No Agent picked this up. Mention one to get a reply.',
   'receipt.failedHint': 'Mention it again to retry.',
+  'receipt.retry': 'Retry',
   'receipt.worktree': 'Working in its own worktree · {{branch}}',
   'recipients.all': 'All {{count}} Agents will reply',
   'recipients.named': '{{names}} will reply',
@@ -183,6 +184,7 @@ export default {
   'blocked.unavailable': 'Agent unavailable',
   'blocked.workspace_changed': 'Workspace changed',
   'blockedDevice.change': 'Change device',
+  'blockedDevice.connected': 'Connected',
   'blockedDevice.hint':
     "The reply starts on its own once the Agent's device connects to the device gateway.",
   'blockedDevice.missing': 'Not among the devices you can see',

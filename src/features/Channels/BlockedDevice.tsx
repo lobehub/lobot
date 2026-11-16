@@ -28,15 +28,20 @@ function Hint() {
   );
 }
 
-/** A device, what the device gateway sees of it now, and a way to move the Agent elsewhere. */
+/**
+ * A device, what the device gateway sees of it now, and a way to move the Agent elsewhere.
+ * Only a waiting reply starts once its device is online; a failed one never does.
+ */
 function DeviceRow({
   deviceId,
-  indent,
   onChange,
+  retry,
+  waiting,
 }: {
   deviceId: string;
-  indent?: boolean;
   onChange?: () => void;
+  retry?: ReactNode;
+  waiting?: boolean;
 }) {
   const { t } = useTranslation('channel');
   const devices = useDeviceList({ refreshInterval: 15_000 });
@@ -44,7 +49,7 @@ function DeviceRow({
   const name = 'device' in state ? deviceLabel(state.device) : t('environment.unavailableDevice');
   const presence =
     state.kind === 'online'
-      ? t('blockedDevice.online')
+      ? t(waiting ? 'blockedDevice.online' : 'blockedDevice.connected')
       : state.kind === 'offline'
         ? t('blockedDevice.offline', { time: dayjs(state.device.lastSeen).fromNow() })
         : state.kind === 'missing'
@@ -52,7 +57,7 @@ function DeviceRow({
           : t('environment.checkingDevice');
 
   return (
-    <Flexbox horizontal align="center" gap={8} style={{ paddingInlineStart: indent ? INDENT : 0 }}>
+    <Flexbox horizontal align="center" gap={8} style={{ paddingInlineStart: waiting ? INDENT : 0 }}>
       <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
         <Flexbox horizontal align="center" gap={6} style={{ minWidth: 0 }}>
           <span aria-hidden style={{ display: 'inline-flex', flexShrink: 0 }}>
@@ -66,6 +71,7 @@ function DeviceRow({
           {presence}
         </Text>
       </Flexbox>
+      {retry}
       {onChange && (
         <Button size="small" style={{ flexShrink: 0 }} onClick={onChange}>
           {t('blockedDevice.change')}
@@ -79,20 +85,22 @@ function DeviceRow({
 function ChannelEnvironmentDevice({
   channelId,
   fallback,
-  indent,
   member,
   onChange,
+  retry,
+  waiting,
 }: {
   channelId: string;
   fallback: ReactNode;
-  indent?: boolean;
   member: ChannelPublicMember;
   onChange: () => void;
+  retry?: ReactNode;
+  waiting?: boolean;
 }) {
   const environment = channelActions.useFetchAgentEnvironment(channelId, member.id);
   const deviceId = environment.data?.deviceId;
   return deviceId ? (
-    <DeviceRow deviceId={deviceId} indent={indent} onChange={onChange} />
+    <DeviceRow deviceId={deviceId} retry={retry} waiting={waiting} onChange={onChange} />
   ) : (
     fallback
   );
@@ -101,19 +109,22 @@ function ChannelEnvironmentDevice({
 /**
  * The device a reply waits for or failed to reach, under the reply's row. The job names the
  * device when the server knows it; otherwise an admin's view reads the Channel's own setting.
- * `waiting` replies that name no device say they start once the device connects.
+ * `waiting` replies that name no device say they start once the device connects; a failed one
+ * offers `retry` beside the device, or on its own when no device can be shown.
  */
 export function BlockedDevice({
   channelId,
   deviceId,
   manageable,
   member,
+  retry,
   waiting,
 }: {
   channelId: string;
   deviceId?: string | null;
   manageable?: boolean;
   member?: ChannelPublicMember;
+  retry?: ReactNode;
   waiting?: boolean;
 }) {
   const { close } = usePopoverContext();
@@ -124,16 +135,24 @@ export function BlockedDevice({
           openChannelAgentEnvironment(channelId, member);
         }
       : undefined;
-  const fallback = waiting ? <Hint /> : null;
+  const fallback = waiting ? (
+    <Hint />
+  ) : retry ? (
+    <Flexbox horizontal justify="flex-end">
+      {retry}
+    </Flexbox>
+  ) : null;
 
-  if (deviceId) return <DeviceRow deviceId={deviceId} indent={waiting} onChange={change} />;
+  if (deviceId)
+    return <DeviceRow deviceId={deviceId} retry={retry} waiting={waiting} onChange={change} />;
   if (change && member)
     return (
       <ChannelEnvironmentDevice
         channelId={channelId}
         fallback={fallback}
-        indent={waiting}
         member={member}
+        retry={retry}
+        waiting={waiting}
         onChange={change}
       />
     );

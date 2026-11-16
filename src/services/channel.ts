@@ -76,6 +76,9 @@ class ChannelService {
   remove = (channelId: string) => lambdaClient.channel.remove.mutate({ channelId });
   removeThread = (channelId: string, threadId: string) =>
     lambdaClient.channel.removeThread.mutate({ channelId, threadId });
+  /** Queues a reply that could not reach its device again; it waits for the device if offline. */
+  retryJob = (channelId: string, jobId: string) =>
+    lambdaClient.channel.retryJob.mutate({ channelId, jobId });
   send = (input: {
     channelId: string;
     content: string;

@@ -44,4 +44,38 @@ describe('BlockedDevice', () => {
     render(createElement(BlockedDevice, { channelId: 'chn_1', deviceId: 'dev_1', waiting: true }));
     expect(rowIndent()).toBe(32);
   });
+
+  it('does not promise a failed reply will start once its device is online', () => {
+    render(createElement(BlockedDevice, { channelId: 'chn_1', deviceId: 'dev_1' }));
+    expect(screen.getByText('blockedDevice.connected')).toBeTruthy();
+    expect(screen.queryByText('blockedDevice.online')).toBeNull();
+  });
+
+  it('tells a waiting reply it starts once its device is online', () => {
+    render(createElement(BlockedDevice, { channelId: 'chn_1', deviceId: 'dev_1', waiting: true }));
+    expect(screen.getByText('blockedDevice.online')).toBeTruthy();
+  });
+
+  it('puts a failed reply’s retry beside its device', () => {
+    render(
+      createElement(BlockedDevice, {
+        channelId: 'chn_1',
+        deviceId: 'dev_1',
+        retry: createElement('button', {}, 'retry'),
+      }),
+    );
+    expect(screen.getByText('retry').parentElement).toBe(
+      screen.getByText('lobehub M4 Pro').closest('[style*="padding-inline-start"]'),
+    );
+  });
+
+  it('still offers retry when no device can be shown', () => {
+    render(
+      createElement(BlockedDevice, {
+        channelId: 'chn_1',
+        retry: createElement('button', {}, 'retry'),
+      }),
+    );
+    expect(screen.getByText('retry')).toBeTruthy();
+  });
 });

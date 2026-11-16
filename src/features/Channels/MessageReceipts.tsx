@@ -65,6 +65,7 @@ export function ReplyDetail({
   const openAgent = useOpenReplyAgent(agentId, close);
   const deviceFailure = isDeviceFailure(job);
   const [stopping, setStopping] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const [error, setError] = useState<unknown>();
   const stop = async () => {
     setStopping(true);
@@ -78,6 +79,30 @@ export function ReplyDetail({
       setStopping(false);
     }
   };
+  const retry = async () => {
+    setRetrying(true);
+    setError(undefined);
+    try {
+      await channelActions.retryJob(channelId, job);
+    } catch (cause) {
+      console.error('Failed to retry Channel reply', cause);
+      setError(cause);
+    } finally {
+      setRetrying(false);
+    }
+  };
+  // Whoever may stop a reply may retry it. A failed run still being released cannot start again.
+  const retryButton = job.canStop && !job.writerHeld && (
+    <Button
+      loading={retrying}
+      size="small"
+      style={{ flexShrink: 0 }}
+      type="primary"
+      onClick={() => void retry()}
+    >
+      {t('receipt.retry')}
+    </Button>
+  );
   return (
     <Flexbox gap={8}>
       <Flexbox horizontal align="center" gap={8}>
@@ -160,6 +185,7 @@ export function ReplyDetail({
           deviceId={job.deviceId}
           manageable={manageable}
           member={member}
+          retry={retryButton || undefined}
         />
       )}
       {error !== undefined && <AsyncError error={error} variant="inline" />}
