@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { changeEmail, listAccounts } from './auth-client.desktop';
+import { changeEmail, listAccounts } from './auth-client';
 
 afterEach(() => {
   vi.unstubAllGlobals();

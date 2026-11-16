@@ -14,7 +14,7 @@ interface AuthProvidersData {
 const fetchAuthProvidersData = async (): Promise<AuthProvidersData> => {
   const { accountInfo, listAccounts } = await import('@/libs/better-auth/auth-client');
   const result = await listAccounts();
-  const accounts = result.data || [];
+  const accounts: { accountId: string; providerId: string }[] = result.data || [];
   const hasPasswordAccount = accounts.some((account) => account.providerId === 'credential');
   const providers = await Promise.all(
     accounts
