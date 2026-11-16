@@ -10,7 +10,7 @@ const EMPTY_READINGS: QuotaLimitReading[] = [];
 const EMPTY_TURNS: UsageTurn[] = [];
 const EMPTY_WINDOW_ROWS: QuotaWindowRow[] = [];
 
-export interface QuotaCalendarHistory {
+interface QuotaCalendarHistory {
   /** The server (or a failed first read) says the provider has no such account. */
   accountUnavailable: boolean;
   /** Nothing to draw yet: no account resolved, or no history the server has settled. */

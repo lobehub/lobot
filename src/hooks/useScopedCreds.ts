@@ -1,7 +1,7 @@
 import { type UserCredSummary } from '@lobechat/types';
 
 import { type ContextCredSummary } from '@/helpers/claudeCodeTokenCred';
-import { mutate, useClientDataSWR } from '@/libs/swr';
+import { useClientDataSWR } from '@/libs/swr';
 import { lambdaClient } from '@/libs/trpc/client';
 
 /**
@@ -26,10 +26,3 @@ export const usePersonalCreds = () =>
     const result = await lambdaClient.market.creds.list.query();
     return (result.data ?? []) as UserCredSummary[];
   });
-
-/** Revalidate both credential lists in every workspace context. */
-export const refreshScopedCreds = () =>
-  mutate(
-    (key: unknown) =>
-      Array.isArray(key) && [CREDS_FOR_CONTEXT_SWR_KEY, PERSONAL_CREDS_SWR_KEY].includes(key[0]),
-  );

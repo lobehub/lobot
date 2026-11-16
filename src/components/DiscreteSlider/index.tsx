@@ -40,14 +40,14 @@ const styles = stylex.create({
   slider: { width: '100%', paddingInline: '6px' },
 });
 
-export interface DiscreteSliderOption {
+interface DiscreteSliderOption {
   ariaLabel?: string;
   label: ReactNode;
   style?: CSSProperties;
   value: number;
 }
 
-export interface DiscreteSliderProps extends Omit<
+interface DiscreteSliderProps extends Omit<
   SliderProps,
   'defaultValue' | 'max' | 'min' | 'onChange' | 'onChangeComplete' | 'step' | 'value'
 > {

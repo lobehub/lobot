@@ -10,7 +10,7 @@ const execPromise = promisify(exec);
 /**
  * Node.js runtime
  */
-export const nodeBinary: BinarySpec = defineCommandBinary('node', {
+const nodeBinary: BinarySpec = defineCommandBinary('node', {
   description: 'Node.js - JavaScript runtime',
   priority: 1,
 });
@@ -18,7 +18,7 @@ export const nodeBinary: BinarySpec = defineCommandBinary('node', {
 /**
  * NPM package manager
  */
-export const npmBinary: BinarySpec = defineCommandBinary('npm', {
+const npmBinary: BinarySpec = defineCommandBinary('npm', {
   description: 'npm - Node.js package manager',
   priority: 2,
 });
@@ -27,7 +27,7 @@ export const npmBinary: BinarySpec = defineCommandBinary('npm', {
  * Python runtime
  * Tries python3 (Unix) first, then python (cross-platform)
  */
-export const pythonBinary: BinarySpec = {
+const pythonBinary: BinarySpec = {
   description: 'Python - programming language runtime',
   async detect(): Promise<BinaryStatus> {
     const commands = platform() === 'win32' ? ['python', 'py'] : ['python3', 'python'];
@@ -66,7 +66,7 @@ export const pythonBinary: BinarySpec = {
 /**
  * Bun runtime
  */
-export const bunBinary: BinarySpec = defineCommandBinary('bun', {
+const bunBinary: BinarySpec = defineCommandBinary('bun', {
   description: 'Bun - fast JavaScript runtime and package manager',
   priority: 4,
 });
@@ -74,7 +74,7 @@ export const bunBinary: BinarySpec = defineCommandBinary('bun', {
 /**
  * Bunx package runner
  */
-export const bunxBinary: BinarySpec = defineCommandBinary('bunx', {
+const bunxBinary: BinarySpec = defineCommandBinary('bunx', {
   description: 'bunx - Bun package runner for executing npm packages',
   priority: 5,
 });
@@ -82,7 +82,7 @@ export const bunxBinary: BinarySpec = defineCommandBinary('bunx', {
 /**
  * pnpm package manager
  */
-export const pnpmBinary: BinarySpec = defineCommandBinary('pnpm', {
+const pnpmBinary: BinarySpec = defineCommandBinary('pnpm', {
   description: 'pnpm - fast, disk space efficient package manager',
   priority: 6,
 });
@@ -90,7 +90,7 @@ export const pnpmBinary: BinarySpec = defineCommandBinary('pnpm', {
 /**
  * uv Python package manager
  */
-export const uvBinary: BinarySpec = defineCommandBinary('uv', {
+const uvBinary: BinarySpec = defineCommandBinary('uv', {
   description: 'uv - extremely fast Python package manager',
   priority: 7,
 });
@@ -99,7 +99,7 @@ export const uvBinary: BinarySpec = defineCommandBinary('uv', {
  * LobeHub CLI
  * Tries lobehub, lobe, lh in order; validates via --help output containing "LobeHub"
  */
-export const lobehubBinary: BinarySpec = {
+const lobehubBinary: BinarySpec = {
   description: 'LobeHub CLI - manage and connect to LobeHub services',
   async detect(): Promise<BinaryStatus> {
     const commands = ['lobehub', 'lobe', 'lh'];

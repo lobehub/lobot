@@ -48,9 +48,9 @@ const emit = (name: string, properties: Record<string, unknown>): void => {
   }
 };
 
-export type OnboardingFlow = 'agent' | 'classic' | 'common' | 'web';
+type OnboardingFlow = 'agent' | 'classic' | 'common' | 'web';
 
-export type OnboardingStep =
+type OnboardingStep =
   | 'agentpicker'
   | 'chief_agent'
   | 'connect_apps'
@@ -66,7 +66,7 @@ export type OnboardingStep =
   | 'telemetry'
   | 'welcome';
 
-export interface OnboardingStepPayload extends Record<string, unknown> {
+interface OnboardingStepPayload extends Record<string, unknown> {
   flow: OnboardingFlow;
   onboarding_session_id?: string;
   onboarding_version?: number;
@@ -75,13 +75,13 @@ export interface OnboardingStepPayload extends Record<string, unknown> {
   stepIndex?: number;
 }
 
-export interface OnboardingStartedPayload extends Record<string, unknown> {
+interface OnboardingStartedPayload extends Record<string, unknown> {
   flow: Exclude<OnboardingFlow, 'common'>;
   onboarding_session_id: string;
   onboarding_version: number;
 }
 
-export interface OnboardingCompletedPayload extends Record<string, unknown> {
+interface OnboardingCompletedPayload extends Record<string, unknown> {
   flow: Exclude<OnboardingFlow, 'common'>;
   onboarding_session_id?: string;
   onboarding_version?: number;
@@ -89,7 +89,7 @@ export interface OnboardingCompletedPayload extends Record<string, unknown> {
   targetUrl?: string;
 }
 
-export type OnboardingUnderstandingProgressPhase =
+type OnboardingUnderstandingProgressPhase =
   | 'collecting-sources'
   | 'generating-understanding'
   | 'generating-detailed-persona'
@@ -98,18 +98,18 @@ export type OnboardingUnderstandingProgressPhase =
   | 'partial'
   | 'failed';
 
-export type OnboardingUnderstandingStepStatus = 'pending' | 'running' | 'completed' | 'failed';
+type OnboardingUnderstandingStepStatus = 'pending' | 'running' | 'completed' | 'failed';
 
-export type OnboardingUnderstandingTerminalStatus = 'completed' | 'partial' | 'failed';
+type OnboardingUnderstandingTerminalStatus = 'completed' | 'partial' | 'failed';
 
-export interface OnboardingUnderstandingStartedPayload extends Record<string, unknown> {
+interface OnboardingUnderstandingStartedPayload extends Record<string, unknown> {
   flow: Exclude<OnboardingFlow, 'common'>;
   onboarding_session_id: string;
   onboarding_version: number;
   understanding_session_id: string;
 }
 
-export interface OnboardingUnderstandingProgressPayload extends Record<string, unknown> {
+interface OnboardingUnderstandingProgressPayload extends Record<string, unknown> {
   collect_sources_status: OnboardingUnderstandingStepStatus;
   detailed_persona_status: OnboardingUnderstandingStepStatus;
   flow: Exclude<OnboardingFlow, 'common'>;
@@ -121,7 +121,7 @@ export interface OnboardingUnderstandingProgressPayload extends Record<string, u
   understanding_status: OnboardingUnderstandingStepStatus;
 }
 
-export interface OnboardingUnderstandingCompletedPayload extends Record<string, unknown> {
+interface OnboardingUnderstandingCompletedPayload extends Record<string, unknown> {
   duration_ms?: number;
   flow: Exclude<OnboardingFlow, 'common'>;
   onboarding_session_id: string;
@@ -134,7 +134,7 @@ export interface OnboardingUnderstandingCompletedPayload extends Record<string, 
   understanding_session_id: string;
 }
 
-export interface OnboardingProfilePayload extends Record<string, unknown> {
+interface OnboardingProfilePayload extends Record<string, unknown> {
   flow: Exclude<OnboardingFlow, 'common'>;
   onboarding_session_id: string;
   onboarding_version: number;
@@ -210,7 +210,7 @@ export const trackOnboardingProfileConfirmed = (payload: OnboardingProfilePayloa
   });
 };
 
-export interface MarketplaceShownPayload {
+interface MarketplaceShownPayload {
   categoryHints: string[];
   requestId: string;
 }
@@ -222,7 +222,7 @@ export const trackOnboardingMarketplaceShown = (payload: MarketplaceShownPayload
   });
 };
 
-export interface MarketplacePickedPayload {
+interface MarketplacePickedPayload {
   categoryHints: string[];
   requestId: string;
   selectedTemplateIds: string[];

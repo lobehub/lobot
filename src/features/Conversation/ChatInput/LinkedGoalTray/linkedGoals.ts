@@ -31,7 +31,7 @@ export const selectLinkedGoals = (
   return goals.filter(({ goal }) => !carded.has(goal.id)).slice(0, MAX_LINKED_GOALS);
 };
 
-export type LinkedGoalConfirmState = 'checking' | 'confirmed' | 'failed';
+type LinkedGoalConfirmState = 'checking' | 'confirmed' | 'failed';
 
 /**
  * How trustworthy a tray row's status is. A row restored from storage paints

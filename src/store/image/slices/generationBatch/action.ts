@@ -28,7 +28,7 @@ const n = setNamespace('generationBatch');
  * through `generationBatchSelectors` and treat `mutate` as an alias of
  * `revalidate`.
  */
-export interface GenerationBatchesSyncResult extends ReplicaSyncResult {
+interface GenerationBatchesSyncResult extends ReplicaSyncResult {
   data?: GenerationBatch[];
   /** A request is in flight and this topic has never loaded. */
   isLoading: boolean;
@@ -40,7 +40,7 @@ type Setter = StoreSetter<ImageStore>;
 export const createGenerationBatchSlice = (set: Setter, get: () => ImageStore, _api?: unknown) =>
   new GenerationBatchActionImpl(set, get, _api);
 
-export class GenerationBatchActionImpl {
+class GenerationBatchActionImpl {
   readonly #batches;
   readonly #get: () => ImageStore;
 

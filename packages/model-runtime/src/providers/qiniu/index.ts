@@ -4,7 +4,7 @@ import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { processMultiProviderModelList } from '../../utils/modelParse';
 
-export const params = {
+const params = {
   apiKey: 'placeholder-to-avoid-error',
   baseURL: 'https://openai.qiniu.com/v1',
   debug: {

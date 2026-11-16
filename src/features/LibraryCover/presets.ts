@@ -4,9 +4,9 @@
  * library without one gets a preset picked from its id, so every card has a
  * stable, distinct cover from the moment it is created.
  */
-export const COVER_PRESET_PREFIX = 'preset:';
+const COVER_PRESET_PREFIX = 'preset:';
 
-export interface LibraryCoverPreset {
+interface LibraryCoverPreset {
   background: string;
   id: string;
 }
@@ -36,7 +36,7 @@ const hashSeed = (seed: string): number => {
 export const defaultCoverPreset = (seed: string): LibraryCoverPreset =>
   LIBRARY_COVER_PRESETS[hashSeed(seed) % LIBRARY_COVER_PRESETS.length];
 
-export type ResolvedLibraryCover =
+type ResolvedLibraryCover =
   { background: string; kind: 'preset'; presetId: string } | { kind: 'image'; url: string };
 
 /** What a stored cover value renders as; unknown or empty values fall back to the default. */

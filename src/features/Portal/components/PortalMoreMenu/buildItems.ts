@@ -5,7 +5,7 @@ import { createElement } from 'react';
 
 import { type PortalMoreMenuConfig } from './types';
 
-export type PortalMoreMenuLabelKey =
+type PortalMoreMenuLabelKey =
   | 'moreMenu.copyId'
   | 'moreMenu.copyIdSuccess'
   | 'moreMenu.copyLink'

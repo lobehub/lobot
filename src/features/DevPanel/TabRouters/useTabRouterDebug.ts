@@ -30,7 +30,7 @@ export interface TabRouterRow {
   title?: string;
 }
 
-export interface TabRouterDebug {
+interface TabRouterDebug {
   cap: number;
   liveCount: number;
   orphanIds: string[];

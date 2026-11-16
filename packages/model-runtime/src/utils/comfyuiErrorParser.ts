@@ -1,7 +1,7 @@
 import type { ILobeAgentRuntimeErrorType } from '../types/error';
 import { AgentRuntimeErrorType } from '../types/error';
 
-export interface ComfyUIError {
+interface ComfyUIError {
   code?: number | string;
   details?: any;
   message: string;
@@ -12,7 +12,7 @@ export interface ComfyUIError {
   userGuidance?: string;
 }
 
-export interface ParsedError {
+interface ParsedError {
   error: ComfyUIError;
   errorType: ILobeAgentRuntimeErrorType;
 }
@@ -22,7 +22,7 @@ export interface ParsedError {
  * @param message - Original error message
  * @returns Cleaned error message
  */
-export function cleanComfyUIErrorMessage(message: string): string {
+function cleanComfyUIErrorMessage(message: string): string {
   return message
     .replaceAll(/^\*\s*/gm, '') // Remove leading asterisks and spaces (multiline)
     .replaceAll('\\n', '\n') // Convert escaped newlines

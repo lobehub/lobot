@@ -29,7 +29,7 @@ const MEDIA_PREFIXES = ['audio', 'image', 'video'];
  * - `'all'` — the category does not constrain this table (no condition),
  * - `'none'` — the category can never match rows of this table.
  */
-export type CategoryFilterResult = SQL | 'all' | 'none';
+type CategoryFilterResult = SQL | 'all' | 'none';
 
 /**
  * Uploaded document files: any `text/*` file plus office / pdf style

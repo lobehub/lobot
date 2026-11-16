@@ -5,7 +5,7 @@ import { MemoryTypeSchema } from './common';
 /**
  * Preference origin context
  */
-export const OriginContextSchema = z.object({
+const OriginContextSchema = z.object({
   actor: z.string().describe("Who stated the preference; use 'User' for the user"),
   applicableWhen: z.string().nullable().describe('Conditions where this preference applies'),
   notApplicableWhen: z.string().nullable().describe('Conditions where it does not apply'),
@@ -16,7 +16,7 @@ export const OriginContextSchema = z.object({
 /**
  * Application context for preferences
  */
-export const AppContextSchema = z.object({
+const AppContextSchema = z.object({
   app: z.string().nullable().describe('App or product name this applies to'),
   feature: z.string().nullable(),
   route: z.string().nullable(),
@@ -26,7 +26,7 @@ export const AppContextSchema = z.object({
 /**
  * Preference-specific fields
  */
-export const WithPreferenceSchema = z.object({
+const WithPreferenceSchema = z.object({
   appContext: AppContextSchema.nullable().describe(
     'Application/surface specific preference, if any',
   ),
@@ -76,20 +76,3 @@ export const PreferenceMemoryItemSchema = z.object({
   title: z.string().describe('Brief descriptive title'),
   withPreference: WithPreferenceSchema,
 });
-
-/**
- * Preference memory extraction result
- */
-export const PreferenceMemorySchema = z.object({
-  memories: z
-    .array(PreferenceMemoryItemSchema)
-    .describe(
-      'Array of extracted preference memory items, could be empty if decided no relevant preference to extract',
-    ),
-});
-
-export type OriginContext = z.infer<typeof OriginContextSchema>;
-export type AppContext = z.infer<typeof AppContextSchema>;
-export type WithPreference = z.infer<typeof WithPreferenceSchema>;
-export type PreferenceMemoryItem = z.infer<typeof PreferenceMemoryItemSchema>;
-export type PreferenceMemory = z.infer<typeof PreferenceMemorySchema>;

@@ -13,7 +13,7 @@ export type ProjectListItem = Omit<ProjectListRow, 'coordinatorAgent'> &
   Partial<Pick<ProjectListRow, 'coordinatorAgent'>>;
 export type ProjectDetail = ProjectDetailResponse['data'];
 /** Folder-card content of one project; a project with no row has none of it yet. */
-export type ProjectOverview = ProjectOverviewResponse['data'][number];
+type ProjectOverview = ProjectOverviewResponse['data'][number];
 /** Overviews by project id. */
 export type ProjectOverviewMap = Record<string, ProjectOverview>;
 

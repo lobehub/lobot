@@ -3,7 +3,7 @@ import { memo } from 'react';
 
 import { type ProjectAvatarSource, toProjectAvatarProps } from './seed';
 
-export interface ProjectAvatarProps extends ProjectAvatarSource {
+interface ProjectAvatarProps extends ProjectAvatarSource {
   size?: number;
 }
 

@@ -5,7 +5,7 @@ import {
 } from '../../../providers/anthropic/modelId';
 import type { ChatStreamPayload } from '../../../types';
 
-export interface ResolvedClaudeThinkingConfig {
+interface ResolvedClaudeThinkingConfig {
   budget_tokens?: number;
   display?: 'omitted' | 'summarized';
   type: 'adaptive' | 'disabled' | 'enabled';

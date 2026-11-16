@@ -15,7 +15,7 @@ import {
  * the hook returns `undefined` the guide falls back to its static manual-retry
  * card (auto-retry disabled, no scope, or the budget is exhausted/cancelled).
  */
-export interface HeteroAutoRetryViewModel {
+interface HeteroAutoRetryViewModel {
   /** 1-based index of the attempt about to run (e.g. "2 / 5"). */
   attempt: number;
   maxAttempts: number;

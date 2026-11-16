@@ -12,11 +12,11 @@ const supportPreservedThinkingModels = new Set(['z-ai/glm4.7', 'z-ai/glm5']);
 // Ref: NVIDIA NIM
 const enableThinkingModels = new Set(['qwen/qwen3.5-397b-a17b']);
 
-export interface NvidiaModelCard {
+interface NvidiaModelCard {
   id: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://integrate.api.nvidia.com/v1',
   chatCompletion: {
     // NVIDIA NIM rejects requests where prompt tokens already meet or

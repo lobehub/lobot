@@ -27,7 +27,7 @@ const RETIRED_MARKER = '.lobehub-retired';
 export const RETIRED_PROFILE_GRACE_MS = 7 * 24 * 60 * 60 * 1000;
 
 /** OAuth in the browser is human-paced; give up on an abandoned login eventually. */
-export const CLAUDE_CODE_LOGIN_TIMEOUT_MS = 10 * 60 * 1000;
+const CLAUDE_CODE_LOGIN_TIMEOUT_MS = 10 * 60 * 1000;
 
 /**
  * Entries of the default login's config dir a per-account profile links instead of
@@ -46,8 +46,6 @@ const SHARED_ENTRIES = [
   'plugins',
   'output-styles',
 ] as const;
-
-export type { ClaudeCodeAccountResolution, ClaudeCodeLocalAccount };
 
 export interface ClaudeCodeLoginSpawnParams {
   args: string[];
@@ -75,7 +73,7 @@ export const resolveDefaultClaudeConfigDir = (
   return inherited?.trim() ? inherited : path.join(home, '.claude');
 };
 
-export interface ClaudeCodeAccountProfilesOptions {
+interface ClaudeCodeAccountProfilesOptions {
   /** The default login's config dir, which profiles share entries with. */
   defaultConfigDir: string;
   /** Root holding one directory per account profile. */

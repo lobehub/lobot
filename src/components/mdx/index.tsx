@@ -9,7 +9,7 @@ import CodeBlock from './CodeBlock';
 import Image from './Image';
 import Link from './Link';
 
-export const Typography = ({
+const Typography = ({
   children,
   mobile,
   style,

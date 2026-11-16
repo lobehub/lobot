@@ -3,7 +3,7 @@ import type { UIChatMessage } from '@lobechat/types';
 import type { SteerContinuation } from '../../store/slices/data/steerChains';
 import { collectSteerChains } from '../../store/slices/data/steerChains';
 
-export interface ChatRow {
+interface ChatRow {
   continuations?: SteerContinuation[];
   id: string;
 }

@@ -10,7 +10,7 @@ export const SCROLL_SNAPSHOT_MAX_AGE_MS = 5 * 60 * 1000;
 
 // A paged topic reopens with only its newest rows, so a pixel offset from the
 // top points at different content on the next visit; the anchor row does not.
-export interface ScrollSnapshot {
+interface ScrollSnapshot {
   anchorId?: string;
   anchorOffset?: number;
   atBottom: boolean;
@@ -53,7 +53,7 @@ const collectPrefixedKeys = (storage: Storage): string[] => {
   return keys;
 };
 
-export interface PruneResult {
+interface PruneResult {
   evictedExpired: number;
   evictedOverflow: number;
   remaining: number;

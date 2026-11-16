@@ -40,5 +40,3 @@ export const openChangelogModal = () =>
     ),
     width: 800,
   });
-
-export default openChangelogModal;

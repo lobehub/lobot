@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { electronBrowserSidebarService } from '@/services/electron/browserSidebar';
 
-export const createInitialBrowserState = (
+const createInitialBrowserState = (
   sessionId: string,
   initialUrl?: string,
 ): BrowserSidebarState => ({

@@ -59,7 +59,7 @@ const composioServersLens: ReplicaLens<ToolStore, ComposioServer[]> = {
 };
 
 /** The connections sync, plus the `mutate` alias the skills reload control calls. */
-export interface ComposioConnectionsSyncResult extends ReplicaSyncResult {
+interface ComposioConnectionsSyncResult extends ReplicaSyncResult {
   /** Alias of `revalidate`, kept for the existing "reload skills" control. */
   mutate: () => Promise<unknown>;
 }
@@ -68,7 +68,7 @@ type Setter = StoreSetter<ToolStore>;
 export const createComposioStoreSlice = (set: Setter, get: () => ToolStore, _api?: unknown) =>
   new ComposioStoreActionImpl(set, get, _api);
 
-export class ComposioStoreActionImpl {
+class ComposioStoreActionImpl {
   readonly #appTools;
   readonly #connections;
   readonly #get: () => ToolStore;

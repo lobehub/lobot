@@ -9,7 +9,7 @@ import { createLogger } from '@/utils/logger';
 
 const logger = createLogger('controllers:NotificationCtr');
 
-export const NAVIGATE_MAP_LIMIT = 100;
+const NAVIGATE_MAP_LIMIT = 100;
 
 export const toLoggableNotificationParams = (params: ShowDesktopNotificationParams) => {
   if (!params.sender?.avatarDataUrl) return params;

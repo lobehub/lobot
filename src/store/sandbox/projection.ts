@@ -27,7 +27,7 @@ type RawInstanceDetail = Awaited<ReturnType<typeof sandboxStorageService.getInst
 
 /** The single entry of the scope-wide reads (entitlement and both lists). */
 export const SANDBOX_SCOPE_ENTRY = 'current';
-export type SandboxScopeEntry = typeof SANDBOX_SCOPE_ENTRY;
+type SandboxScopeEntry = typeof SANDBOX_SCOPE_ENTRY;
 
 /**
  * `{ entitled, quotaBytes }`. Gates the composer's chip and the environments
@@ -132,7 +132,7 @@ export const toInstanceDirectory = (instance: RawInstanceDetail): SandboxInstanc
   workingDirectory: instance ? instance.workingDirectory : null,
 });
 
-export interface SandboxInstancesParams {
+interface SandboxInstancesParams {
   /** Topic whose occupancy the listing answers; absent before the first send. */
   topicId?: string;
 }

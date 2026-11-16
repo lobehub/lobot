@@ -585,6 +585,6 @@ const ollamaChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...ollamaChatModels];
+const allModels = [...ollamaChatModels];
 
 export default allModels;

@@ -3,8 +3,6 @@ import { type LobeTool } from '@lobechat/types';
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 import { type PluginInstallError } from '@/types/tool/plugin';
 
-export type PluginsSettings = Record<string, any>;
-
 export interface PluginState {
   /**
    * Installed plugins of the active scope — the view of the `installedPlugins`

@@ -1,11 +1,11 @@
-export interface StraicoModelPricing {
+interface StraicoModelPricing {
   base_cost?: number;
   coins?: number;
   per_word_cost?: number;
   words?: number;
 }
 
-export interface StraicoAudioModel {
+interface StraicoAudioModel {
   _id: string;
   enabled: boolean;
   model: string;
@@ -14,7 +14,7 @@ export interface StraicoAudioModel {
   provider: string;
 }
 
-export interface StraicoModelMetadata {
+interface StraicoModelMetadata {
   applications?: string[];
   capabilities?: string[];
   cons?: string[];

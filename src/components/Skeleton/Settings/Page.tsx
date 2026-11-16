@@ -25,12 +25,6 @@ const useTabSkeleton = () => {
   return { skeleton: getSettingsTabSkeleton(tab) ?? GENERIC, sub, tab };
 };
 
-/** The active tab's body alone, for hosts that already draw the header and container. */
-export const SettingsBodySkeleton = () => {
-  const { skeleton, sub } = useTabSkeleton();
-  return <skeleton.Body sub={sub} />;
-};
-
 /**
  * Chunk fallback of a settings tab component. `SettingsContent` draws the frame
  * around in-frame tabs before their chunk loads, so they get the body plus their

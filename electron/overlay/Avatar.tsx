@@ -3,7 +3,7 @@ import { memo, useMemo } from 'react';
 
 import * as styles from './avatar.css.ts';
 
-export interface OverlayAvatarProps {
+interface OverlayAvatarProps {
   avatar?: string | null;
   background?: string | null;
   size?: number;

@@ -8,8 +8,6 @@ import type {
   UserMemoryActivity,
   UserMemoryActivityWithoutVectors,
   UserMemoryContext,
-  UserMemoryContextObjectType,
-  UserMemoryContextSubjectType,
   UserMemoryContextWithoutVectors,
   UserMemoryExperience,
   UserMemoryExperienceWithoutVectors,
@@ -68,7 +66,7 @@ export interface CreateUserMemoryExperienceParams extends BaseCreateUserMemoryPa
   >;
 }
 
-export interface CreateUserMemoryIdentityParams extends BaseCreateUserMemoryParams {
+interface CreateUserMemoryIdentityParams extends BaseCreateUserMemoryParams {
   identity: Optional<
     Omit<
       UserMemoryIdentity,
@@ -160,7 +158,7 @@ export interface IdentityEntryPayload {
   type?: IdentityTypeEnum | string | null;
 }
 
-export interface IdentityEntryBasePayload {
+interface IdentityEntryBasePayload {
   capturedAt?: Date;
   details?: string | null;
   detailsVector1024?: number[] | null;
@@ -199,63 +197,6 @@ export interface UpdateIdentityEntryParams {
   preserveOmittedFields?: boolean;
 }
 
-export interface ContextEntryPayload {
-  associatedObjects?:
-    { extra?: Record<string, unknown>; name?: string; type?: UserMemoryContextObjectType }[] | null;
-  associatedSubjects?:
-    | { extra?: Record<string, unknown>; name?: string; type?: UserMemoryContextSubjectType }[]
-    | null;
-  currentStatus?: string | null;
-  description?: string | null;
-  descriptionVector?: number[] | null;
-  metadata?: Record<string, unknown> | null;
-  scoreImpact?: number | null;
-  scoreUrgency?: number | null;
-  tags?: string[] | null;
-  title?: string | null;
-  type?: string | null;
-}
-
-export interface UpdateContextEntryParams {
-  context?: ContextEntryPayload;
-  contextId: string;
-}
-
-export interface ExperienceEntryPayload {
-  action?: string | null;
-  actionVector?: number[] | null;
-  keyLearning?: string | null;
-  keyLearningVector?: number[] | null;
-  metadata?: Record<string, unknown> | null;
-  possibleOutcome?: string | null;
-  reasoning?: string | null;
-  scoreConfidence?: number | null;
-  situation?: string | null;
-  situationVector?: number[] | null;
-  tags?: string[] | null;
-  type?: string | null;
-}
-
-export interface UpdateExperienceEntryParams {
-  experience?: ExperienceEntryPayload;
-  experienceId: string;
-}
-
-export interface PreferenceEntryPayload {
-  conclusionDirectives?: string | null;
-  conclusionDirectivesVector?: number[] | null;
-  metadata?: Record<string, unknown> | null;
-  scorePriority?: number | null;
-  suggestions?: string | null;
-  tags?: string[] | null;
-  type?: string | null;
-}
-
-export interface UpdatePreferenceEntryParams {
-  preference?: PreferenceEntryPayload;
-  preferenceId: string;
-}
-
 export interface QueryTagsParams {
   layers?: LayersEnum[];
   page?: number;
@@ -277,7 +218,7 @@ export interface QueryIdentityRolesResult {
   tags: Array<{ count: number; tag: string }>;
 }
 
-export type QueryUserMemoriesSort =
+type QueryUserMemoriesSort =
   | 'capturedAt' // all layers
   | 'scoreConfidence' // user_memories_experiences
   | 'scoreImpact' // user_memories_contexts

@@ -28,7 +28,7 @@ export const createCurrentRouteMetaSlice = (
   _api?: unknown,
 ) => new CurrentRouteMetaActionImpl(set, get, _api);
 
-export class CurrentRouteMetaActionImpl {
+class CurrentRouteMetaActionImpl {
   readonly #get: () => ElectronStore;
   readonly #set: Setter;
 

@@ -1,4 +1,4 @@
-import type { ModelPerformance, ModelUsage, TracePayload } from '@lobechat/types';
+import type { ModelPerformance, ModelUsage } from '@lobechat/types';
 import type { ClientOptions } from 'openai';
 
 import type { LobeBedrockAIParams } from '../providers/bedrock';
@@ -99,12 +99,6 @@ const buildGenerateObjectSpeed = (startedAt: number, usage: ModelUsage): ModelPe
     ttft: 0,
   };
 };
-
-export interface AgentChatOptions {
-  enableTrace?: boolean;
-  provider: string;
-  trace?: TracePayload;
-}
 
 export interface ModelRuntimeHooks {
   /**

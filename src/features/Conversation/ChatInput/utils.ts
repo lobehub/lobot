@@ -20,7 +20,7 @@ interface ChatInputMessage {
 }
 
 /** Coordinates mutually exclusive “Send now” attempts within one conversation tray. */
-export interface QueueSendNowGate {
+interface QueueSendNowGate {
   /**
    * Runs one send-now task when the gate is idle.
    *
@@ -130,7 +130,7 @@ export interface ConversationChatInputUiState {
   showStopButton: boolean;
 }
 
-export interface GetConversationChatInputUiStateParams {
+interface GetConversationChatInputUiStateParams {
   /**
    * When true, the placeholder never flips to the followUp variant — used by
    * surfaces (e.g. onboarding) that have no follow-up / pending-message design.

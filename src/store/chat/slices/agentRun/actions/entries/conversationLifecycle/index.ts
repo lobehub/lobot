@@ -148,7 +148,7 @@ export interface SendMessageWithContextParams extends SendMessageParams {
 /**
  * Result returned from sendMessage
  */
-export interface SendMessageResult {
+interface SendMessageResult {
   /** The created assistant message ID */
   assistantMessageId: string;
   /** The created thread ID (if a new thread was created) */
@@ -178,8 +178,6 @@ interface OptimisticTopicPlaceholder {
  */
 
 type Setter = StoreSetter<ChatStore>;
-export const conversationLifecycle = (set: Setter, get: () => ChatStore, _api?: unknown) =>
-  new ConversationLifecycleActionImpl(set, get, _api);
 
 const throwIfSendAborted = (signal?: AbortSignal) => {
   if (!signal?.aborted) return;

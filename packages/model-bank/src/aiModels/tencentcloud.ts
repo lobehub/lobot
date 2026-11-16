@@ -63,6 +63,6 @@ const tencentCloudChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...tencentCloudChatModels];
+const allModels = [...tencentCloudChatModels];
 
 export default allModels;

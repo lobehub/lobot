@@ -26,7 +26,7 @@ export const WORK_TYPE_ADAPTERS = {
 /** Work types read only through their owner (the goal graph), never through Work lists. */
 const UNLISTED_WORK_TYPES = new Set<WorkType>(['goal_report']);
 
-export const WORK_TYPES = (Object.keys(WORK_TYPE_ADAPTERS) as WorkType[]).filter(
+const WORK_TYPES = (Object.keys(WORK_TYPE_ADAPTERS) as WorkType[]).filter(
   (type) => !UNLISTED_WORK_TYPES.has(type),
 );
 
@@ -46,7 +46,7 @@ export const workTypeAdapters = WORK_TYPES.map(
 const OPT_IN_WORK_TYPES = new Set<WorkType>(['canvas', 'file']);
 
 /** The pre-`file` type set every already-deployed client is known to render. */
-export const LEGACY_WORK_TYPES = WORK_TYPES.filter((type) => !OPT_IN_WORK_TYPES.has(type));
+const LEGACY_WORK_TYPES = WORK_TYPES.filter((type) => !OPT_IN_WORK_TYPES.has(type));
 
 /**
  * Resolve the Work types a read request may return. Absent opt-in → the legacy

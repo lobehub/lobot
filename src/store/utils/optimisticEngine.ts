@@ -7,12 +7,7 @@ type AnyStore = StoreHandle<StoreState>;
 type Recipe<S> = (draft: Draft<S>) => void;
 type RemoteFn<T> = () => Promise<T>;
 
-export type OptimisticMutationStatus =
-  | 'failed'
-  | 'inflight'
-  | 'pending'
-  | 'rolled-back'
-  | 'success';
+type OptimisticMutationStatus = 'failed' | 'inflight' | 'pending' | 'rolled-back' | 'success';
 
 export type StoreHandle<S extends StoreState = StoreState> = Pick<
   StoreApi<S>,
@@ -29,7 +24,7 @@ export interface OptimisticMutationSnapshot {
   timestamp: Date;
 }
 
-export interface OptimisticEngineOptions {
+interface OptimisticEngineOptions {
   maxHistory?: number;
   maxRetries?: number;
   onMutationError?: (snapshot: OptimisticMutationSnapshot, error: unknown) => void;

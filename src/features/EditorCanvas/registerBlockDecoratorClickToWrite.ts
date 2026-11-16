@@ -22,7 +22,7 @@ const $isBlockDecorator = (node: LexicalNode | null | undefined): node is Decora
  * Put the caret at the start of the line after a block decorator, opening an
  * empty line there when the next block is not a text line.
  */
-export const $selectLineAfterBlockDecorator = (decorator: LexicalNode): void => {
+const $selectLineAfterBlockDecorator = (decorator: LexicalNode): void => {
   const next = decorator.getNextSibling();
   if ($isElementNode(next) && !next.isInline()) {
     next.selectStart();

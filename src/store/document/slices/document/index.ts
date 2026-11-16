@@ -7,4 +7,3 @@ export {
   type UseFetchDocumentResult,
 } from './action';
 export { type DocumentDetailSliceState, initialDocumentDetailSliceState } from './initialState';
-export { type DocumentDetail, documentDetailResource } from './projection';

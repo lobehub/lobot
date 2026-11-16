@@ -5,7 +5,7 @@ import debug from 'debug';
  * message string and the rest are formatter arguments (matches the shape
  * agreed across LobeHub packages).
  */
-export interface Logger {
+interface Logger {
   debug: (message: unknown, ...args: unknown[]) => void;
   error: (message: unknown, ...args: unknown[]) => void;
   info: (message: unknown, ...args: unknown[]) => void;
@@ -13,7 +13,7 @@ export interface Logger {
   warn: (message: unknown, ...args: unknown[]) => void;
 }
 
-export type LoggerFactory = (namespace: string) => Logger;
+type LoggerFactory = (namespace: string) => Logger;
 
 const DEFAULT_NAMESPACE_PREFIX = 'lobe-local-file-shell';
 

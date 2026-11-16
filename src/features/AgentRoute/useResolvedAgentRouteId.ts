@@ -11,8 +11,7 @@ const builtinAgentSlugs = new Set<string>(Object.values(BUILTIN_AGENT_SLUGS));
  * underscores). So the absence of one is what tells a slug route from an id
  * route — and a wrong guess only costs a lookup that resolves to null.
  */
-export const looksLikeSlug = (routeAgentId?: string) =>
-  !!routeAgentId && !routeAgentId.includes('_');
+const looksLikeSlug = (routeAgentId?: string) => !!routeAgentId && !routeAgentId.includes('_');
 
 /**
  * Keep the inbox route valid while its persisted agent ID is still loading.

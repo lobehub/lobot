@@ -28,6 +28,6 @@ const lmStudioChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...lmStudioChatModels];
+const allModels = [...lmStudioChatModels];
 
 export default allModels;

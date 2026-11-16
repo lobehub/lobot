@@ -42,7 +42,7 @@ const getErrorMessage = (error: unknown): string => {
 export const isBlockedBeforeExecution = (result: ToolRunResult) =>
   result.state?.type === 'blocked' && result.state.phase !== 'afterToolCall';
 
-export const toolResultMetadata = (result: ToolRunResult) => ({
+const toolResultMetadata = (result: ToolRunResult) => ({
   toolExecutionTimeMs: result.executionTime ?? 0,
   toolResultStop: result.stop ?? false,
   toolResultSuccess: result.success,

@@ -107,7 +107,7 @@ export const favoritePluginsResource = defineReplica<
 });
 
 /** Whether the viewer has favorited one Market target (an MCP plugin, agent or group). */
-export interface FavoriteStatusParams {
+interface FavoriteStatusParams {
   identifier: string;
   targetType: SocialTargetType;
 }

@@ -34,7 +34,7 @@ const n = setNamespace('discover/model');
  * (`isLoading` / `mutate`) so a call site only has to move its `data` read to
  * the matching `modelSelectors` entry.
  */
-export interface ModelSyncResult extends ReplicaSyncResult {
+interface ModelSyncResult extends ReplicaSyncResult {
   /** A request is in flight and this entry has no value to show yet. */
   isLoading: boolean;
   /** Alias of `revalidate`. */
@@ -48,7 +48,7 @@ type Setter = StoreSetter<DiscoverStore>;
 export const createModelSlice = (set: Setter, get: () => DiscoverStore, _api?: unknown) =>
   new ModelActionImpl(set, get, _api);
 
-export class ModelActionImpl {
+class ModelActionImpl {
   readonly #categories;
   readonly #detail;
   readonly #get: () => DiscoverStore;

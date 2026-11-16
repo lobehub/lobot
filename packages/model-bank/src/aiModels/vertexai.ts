@@ -995,6 +995,6 @@ const vertexaiImageModels: AIImageModelCard[] = [
   },
 ];
 
-export const allModels = [...vertexaiChatModels, ...vertexaiImageModels];
+const allModels = [...vertexaiChatModels, ...vertexaiImageModels];
 
 export default allModels;

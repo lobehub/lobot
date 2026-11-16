@@ -173,6 +173,6 @@ const xiaomimimoChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...xiaomimimoChatModels];
+const allModels = [...xiaomimimoChatModels];
 
 export default allModels;

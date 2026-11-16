@@ -25,7 +25,7 @@ export interface GatewayDeviceInfo {
   platform: string;
 }
 
-export class ElectronGatewayActionImpl {
+class ElectronGatewayActionImpl {
   readonly #get: () => ElectronStore;
   readonly #set: Setter;
   readonly #stableDeviceId;

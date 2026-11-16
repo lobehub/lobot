@@ -28,7 +28,7 @@ const NOTICE_THROTTLE_MS = 3000;
 const isMediaFile = (file: File) =>
   file.type.startsWith('image') || file.type.startsWith('video') || file.type.startsWith('audio');
 
-export interface PartitionedLargeLocalFiles {
+interface PartitionedLargeLocalFiles {
   files: File[];
   localPaths: DroppedLocalPath[];
 }

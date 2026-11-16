@@ -12,7 +12,7 @@ import { aggregateKimiCodeUsage, parseKimiCodeWireUsage } from './usage';
 
 type KimiCodeEnv = Record<string, string | undefined>;
 
-export interface ReadKimiCodeSessionUsageOptions {
+interface ReadKimiCodeSessionUsageOptions {
   env?: KimiCodeEnv;
   homeDir?: string;
   /**

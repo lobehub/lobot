@@ -46,7 +46,7 @@ export const appBrowsers = {
 } satisfies Record<string, BrowserWindowOpts>;
 
 // Window templates for multi-instance windows
-export interface WindowTemplate {
+interface WindowTemplate {
   allowMultipleInstances: boolean;
   autoHideMenuBar?: boolean;
   baseIdentifier: string;

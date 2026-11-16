@@ -58,5 +58,3 @@ export const useFollowUpActionStore = createWithEqualityFn<FollowUpActionStore>(
 );
 
 expose('followUpAction', useFollowUpActionStore);
-
-export const getFollowUpActionStoreState = () => useFollowUpActionStore.getState();

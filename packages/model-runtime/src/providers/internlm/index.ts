@@ -4,11 +4,11 @@ import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { MODEL_LIST_CONFIGS, processModelList } from '../../utils/modelParse';
 
-export interface InternLMModelCard {
+interface InternLMModelCard {
   id: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://chat.intern-ai.org.cn/api/v1',
   chatCompletion: {
     handlePayload: (payload) => {

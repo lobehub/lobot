@@ -16,7 +16,7 @@
 // Mirrors AgentStreamEvent from src/libs/agent-stream/types.ts
 // but defined here so the package is self-contained.
 
-export type HeterogeneousEventType =
+type HeterogeneousEventType =
   | 'stream_start'
   | 'stream_chunk'
   | 'stream_end'
@@ -44,7 +44,7 @@ export type HeterogeneousEventType =
   | 'agent_runtime_end'
   | 'error';
 
-export type StreamChunkType = 'text' | 'reasoning' | 'tool_state' | 'tools_calling';
+type StreamChunkType = 'text' | 'reasoning' | 'tool_state' | 'tools_calling';
 
 export interface HeterogeneousAgentEvent {
   data: any;
@@ -217,18 +217,6 @@ export interface ToolStateChunkData {
   pluginState: Record<string, unknown>;
   snapshotMode: 'replace';
   snapshotSeq: number;
-  subagent?: SubagentEventContext;
-  toolCallId: string;
-}
-
-/** Data shape for tool_end events */
-export interface ToolEndData {
-  isSuccess: boolean;
-  /** Canonical gateway payload used to resolve renderer-side lifecycle hooks. */
-  payload?: ToolCallPayload | { toolCalling: ToolCallPayload };
-  /** Builtin-tool-compatible result passed to renderer-side lifecycle hooks. */
-  result?: { content?: string; state?: unknown; success: boolean };
-  /** Subagent context if this tool_end belongs to a subagent inner tool. */
   subagent?: SubagentEventContext;
   toolCallId: string;
 }
@@ -442,23 +430,4 @@ export interface AgentEventAdapter {
    * the upstream process has reported a successful exit.
    */
   validateCompletion?: () => HeterogeneousAgentEvent[];
-}
-
-// ─── Agent Process Config ───
-
-/**
- * Configuration for spawning an external agent CLI process.
- * Agent-agnostic — works for claude, codex, kimi-cli, etc.
- */
-export interface AgentProcessConfig {
-  /** Adapter type key (e.g., 'claude-code', 'codex', 'kimi-cli') */
-  adapterType: string;
-  /** CLI arguments appended after built-in flags */
-  args?: string[];
-  /** Command to execute (e.g., 'claude', 'codex') */
-  command: string;
-  /** Working directory */
-  cwd?: string;
-  /** Environment variables */
-  env?: Record<string, string>;
 }

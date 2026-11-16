@@ -20,7 +20,7 @@ type Setter = StoreSetter<ElectronStore>;
 export const remoteSyncSlice = (set: Setter, get: () => ElectronStore, _api?: unknown) =>
   new ElectronRemoteServerActionImpl(set, get, _api);
 
-export class ElectronRemoteServerActionImpl {
+class ElectronRemoteServerActionImpl {
   readonly #get: () => ElectronStore;
   readonly #set: Setter;
 

@@ -1,12 +1,12 @@
 'use client';
 
 import { ErrorBoundary } from '@lobehub/ui';
-import { type ComponentType, memo, type ReactNode, useCallback } from 'react';
+import { memo, type ReactNode, useCallback } from 'react';
 
 import AlertFallback from './AlertFallback';
 import SilentFallback from './SilentFallback';
 
-export type ErrorBoundaryVariant = 'alert' | 'silent';
+type ErrorBoundaryVariant = 'alert' | 'silent';
 
 interface FallbackRenderProps {
   error: unknown;
@@ -51,23 +51,5 @@ const SafeBoundary = memo<SafeBoundaryProps>(
 
 SafeBoundary.displayName = 'SafeBoundary';
 
-export function withErrorBoundary<P extends object>(
-  Component: ComponentType<P>,
-  options?: { alertTitle?: string; minHeight?: number; variant?: ErrorBoundaryVariant },
-): ComponentType<P> {
-  const Wrapped = (props: P) => (
-    <SafeBoundary
-      alertTitle={options?.alertTitle}
-      minHeight={options?.minHeight}
-      variant={options?.variant}
-    >
-      <Component {...props} />
-    </SafeBoundary>
-  );
-
-  Wrapped.displayName = `withErrorBoundary(${Component.displayName || Component.name || 'Component'})`;
-  return Wrapped;
-}
-
-export { AlertFallback, SafeBoundary, SilentFallback };
+export { SafeBoundary };
 export default SafeBoundary;

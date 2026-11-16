@@ -1,7 +1,7 @@
 import { DEFAULT_LANG } from '@/const/locale';
 import { normalizeLocale } from '@/locales/resources';
 
-export type UILocaleResourceBundle = Record<string, string>;
+type UILocaleResourceBundle = Record<string, string>;
 export type UILocaleResources = Record<string, UILocaleResourceBundle>;
 export type UILocaleResourceInput = UILocaleResourceBundle | UILocaleResources;
 

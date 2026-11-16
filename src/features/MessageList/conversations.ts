@@ -26,7 +26,7 @@ export interface Conversation {
   unread?: number;
 }
 
-export interface ConversationSections {
+interface ConversationSections {
   pinned: Conversation[];
   recent: Conversation[];
 }

@@ -8,7 +8,7 @@ export { BUILTIN_AGENT_SLUGS, type BuiltinAgentSlug } from '@lobechat/const/buil
 /**
  * Persist Config - these fields will be stored in the database
  */
-export interface BuiltinAgentPersistConfig {
+interface BuiltinAgentPersistConfig {
   /** Default chat configuration */
   chatConfig?: Partial<LobeAgentChatConfig>;
   /** Default model */
@@ -20,7 +20,7 @@ export interface BuiltinAgentPersistConfig {
 /**
  * Runtime Result - dynamically generated config, not persisted
  */
-export interface BuiltinAgentRuntimeResult {
+interface BuiltinAgentRuntimeResult {
   /** Runtime agency configuration overrides */
   agencyConfig?: Partial<LobeAgentAgencyConfig>;
 
@@ -37,7 +37,7 @@ export interface BuiltinAgentRuntimeResult {
 /**
  * Runtime Context - context passed to runtime function
  */
-export interface RuntimeContext {
+interface RuntimeContext {
   /**
    * The agent's personal name as the user sees it (e.g. a renamed default
    * assistant). Builtin system roles should introduce themselves by this name
@@ -84,7 +84,7 @@ export interface RuntimeContext {
  * - Function: (ctx: RuntimeContext) => BuiltinAgentRuntimeResult
  * - Object: BuiltinAgentRuntimeResult (static config)
  */
-export type BuiltinAgentRuntimeConfig =
+type BuiltinAgentRuntimeConfig =
   ((ctx: RuntimeContext) => BuiltinAgentRuntimeResult) | BuiltinAgentRuntimeResult;
 
 /**

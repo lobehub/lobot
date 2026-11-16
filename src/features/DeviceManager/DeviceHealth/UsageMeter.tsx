@@ -66,7 +66,7 @@ interface UsageBarProps {
  * The segmented bar alone, colored by the normal / high / critical thresholds.
  * No reading keeps every segment unlit.
  */
-export const UsageBar = ({ height = 12, thresholds, value }: UsageBarProps) => {
+const UsageBar = ({ height = 12, thresholds, value }: UsageBarProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const size = useSize(ref);
   const segments = segmentCount(size?.width ?? 0);

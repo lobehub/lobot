@@ -21,7 +21,7 @@ declare module '../../types' {
 
 const log = debug('context-engine:provider:AgentDocumentSystemReplaceInjector');
 
-export interface AgentDocumentSystemReplaceInjectorConfig extends AgentDocumentFilterContext {
+interface AgentDocumentSystemReplaceInjectorConfig extends AgentDocumentFilterContext {
   documents?: AgentContextDocument[];
   enabled?: boolean;
 }

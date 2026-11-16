@@ -84,7 +84,7 @@ const styles = stylex.create({
   title: { fontSize: '16px', fontWeight: 'bold', color: '#fff' },
 });
 
-export interface DragUploadZoneProps {
+interface DragUploadZoneProps {
   /**
    * The content to render inside the drop zone
    */
@@ -270,4 +270,3 @@ DragUploadZone.displayName = 'DragUploadZone';
 export type { DroppedLocalPath } from './useLocalDragUpload';
 export { usePasteFile } from './usePasteFile';
 export { useUploadFiles } from './useUploadFiles';
-export default DragUploadZone;

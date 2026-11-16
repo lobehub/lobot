@@ -8,7 +8,7 @@
  * surface one normalized error to branch on — see `AsyncBoundary` / `AsyncError`
  * for the UI side.
  */
-export interface NormalizedAsyncError {
+interface NormalizedAsyncError {
   /** Machine code when the backend supplies one (TRPC `code`, app error code). */
   code?: string;
   /** Raw message from the error, used as a fallback when no status copy exists. */

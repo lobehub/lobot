@@ -52,6 +52,6 @@ const cerebrasModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...cerebrasModels];
+const allModels = [...cerebrasModels];
 
 export default allModels;

@@ -38,9 +38,9 @@ interface CacheEntry<T = unknown> {
   version: string;
 }
 
-export type CacheTier = 'idb' | 'local';
+type CacheTier = 'idb' | 'local';
 
-export interface CacheProviderOptions {
+interface CacheProviderOptions {
   /** Debounce (ms) before flushing writes to either tier, defaults to 2000. */
   debounceMs?: number;
   /** Resolver for the active identity scope (`${userId}:${workspaceId}`). */
@@ -79,7 +79,7 @@ export interface CacheProviderOptions {
 /**
  * SWR cache provider function with an in-place scope reloader.
  */
-export type ScopedSWRProvider = (() => Map<string, unknown>) & {
+type ScopedSWRProvider = (() => Map<string, unknown>) & {
   /**
    * Ensure the provider's Map exists and hydrate the current scope's IndexedDB
    * tier. This is used by the SPA bootstrap while React mounts the root tree.

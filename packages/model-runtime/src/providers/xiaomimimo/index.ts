@@ -60,11 +60,11 @@ const sanitizeXiaomiMessages = (messages: any[] | undefined, thinkingType?: stri
   return sanitizedMessages;
 };
 
-export interface XiaomiMiMoModelCard {
+interface XiaomiMiMoModelCard {
   id: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://api.xiaomimimo.com/v1',
   chatCompletion: {
     handlePayload: (payload) => {

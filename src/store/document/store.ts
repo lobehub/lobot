@@ -22,13 +22,10 @@ import {
 } from './slices/history';
 
 // State type
-export type DocumentState = EditorState & DocumentDetailSliceState & DocumentHistoryState;
+type DocumentState = EditorState & DocumentDetailSliceState & DocumentHistoryState;
 
 // Action type
-export type DocumentStoreAction = DocumentAction &
-  DocumentHistoryAction &
-  EditorAction &
-  ResetableStore;
+type DocumentStoreAction = DocumentAction & DocumentHistoryAction & EditorAction & ResetableStore;
 
 // Full store type
 export type DocumentStore = DocumentState & DocumentStoreAction;
@@ -64,5 +61,3 @@ export const useDocumentStore = createWithEqualityFn<DocumentStore>()(
 );
 
 expose('document', useDocumentStore);
-
-export const getDocumentStoreState = () => useDocumentStore.getState();

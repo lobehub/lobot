@@ -1,63 +1,3 @@
-import type { MessageMetadata } from '../message';
-
-export interface UsageRecordItem {
-  createdAt: Date;
-  /**
-   * Provider-native subscription credits consumed (e.g. Qoder), when the run
-   * bills in credits instead of tokens. Not USD.
-   */
-  credits?: number | null;
-  /**
-   * ID
-   **/
-  id: string;
-  inputStartAt?: Date | null;
-  /**
-   * Meta information
-   **/
-  metadata?: MessageMetadata | null;
-  /**
-   * Model id
-   */
-  model: string;
-  outputFinishAt?: Date | null;
-  outputStartAt?: Date | null;
-  /**
-   * Provider id
-   */
-  provider: string;
-  /**
-   * Spend
-   **/
-  spend: number;
-  /**
-   * Usage details
-   **/
-  totalInputTokens?: number | null;
-  totalOutputTokens?: number | null;
-  totalTokens?: number | null;
-  /**
-   * Performance details
-   **/
-  tps?: number | null;
-  ttft?: number | null;
-  /**
-   * Call types
-   **/
-  type: string;
-  updatedAt: Date;
-  userId: string;
-}
-
-export type UsageLog = {
-  date: number;
-  day: string;
-  records: UsageRecordItem[];
-  totalRequests: number;
-  totalSpend: number;
-  totalTokens: number;
-};
-
 /** Time granularity for the agent usage chart buckets. */
 export type AgentUsageGranularity = 'day' | 'week';
 
@@ -67,7 +7,7 @@ export type AgentUsageGranularity = 'day' | 'week';
  * Cached and uncached input are kept separate so the chart reflects their
  * different rates.
  */
-export interface AgentUsageBucket {
+interface AgentUsageBucket {
   cachedInputCost: number;
   cachedInputTokens: number;
   cacheWriteCost: number;
@@ -83,7 +23,7 @@ export interface AgentUsageBucket {
   totalCost: number;
 }
 
-export interface AgentUsageModelRow {
+interface AgentUsageModelRow {
   cost: number;
   id: string;
   model: string;

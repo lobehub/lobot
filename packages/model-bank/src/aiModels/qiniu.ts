@@ -198,6 +198,6 @@ const qiniuChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...qiniuChatModels];
+const allModels = [...qiniuChatModels];
 
 export default allModels;

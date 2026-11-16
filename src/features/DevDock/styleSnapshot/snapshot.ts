@@ -64,7 +64,7 @@ const STYLE_PROPS = [
 
 type StyleProp = (typeof STYLE_PROPS)[number];
 
-export interface StyleSnapshotEntry {
+interface StyleSnapshotEntry {
   box: string;
   key: string;
   label: string;

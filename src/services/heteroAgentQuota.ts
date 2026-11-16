@@ -3,7 +3,7 @@ import type { ClaudeCodeQuotaSnapshot } from '@lobechat/electron-client-ipc';
 import { lambdaClient } from '@/libs/trpc/client';
 import { heterogeneousAgentService } from '@/services/electron/heterogeneousAgent';
 
-export interface FetchClaudeCodeQuotaSnapshotParams {
+interface FetchClaudeCodeQuotaSnapshotParams {
   /** Sample on this bound execution device via the gateway instead of local IPC. */
   deviceId?: string;
   env?: Record<string, string>;

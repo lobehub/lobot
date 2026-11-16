@@ -36,7 +36,7 @@ export const INSERT_LOCAL_FILE_TAG_COMMAND = createCommand<InsertLocalFileTagPay
 
 type IEditorKernel = ReturnType<typeof getKernelFromEditor>;
 
-export interface LocalFileTagPluginOptions {
+interface LocalFileTagPluginOptions {
   decorator: (node: LocalFileTagNode, editor: LexicalEditor) => any;
   /**
    * Looks up size, line count, and MIME type for an inserted file reference. The result is

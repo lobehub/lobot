@@ -4,7 +4,7 @@ import type { FC } from 'react';
 
 type IconComponent = LucideIcon | FC<{ className?: string; size?: number }>;
 
-export interface CCSubagentTypeInfo {
+interface CCSubagentTypeInfo {
   icon: IconComponent;
   label: string;
 }
@@ -19,7 +19,7 @@ export interface CCSubagentTypeInfo {
  * rather than `@lobechat/heterogeneous-agents` — that package stays a
  * pure-data home for adapter orchestration.
  */
-export const CC_SUBAGENT_TYPES: Record<string, CCSubagentTypeInfo> = {
+const CC_SUBAGENT_TYPES: Record<string, CCSubagentTypeInfo> = {
   'Explore': { icon: Search, label: 'Explore' },
   'Plan': { icon: Compass, label: 'Plan' },
   'general-purpose': { icon: GroupBotIcon, label: 'General purpose' },

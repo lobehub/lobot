@@ -6,7 +6,7 @@ import { AppLocalStorage } from '@/libs/replica/storage';
 import type { LobeUser, UserPreference } from '@/types/user';
 import type { UserSettings } from '@/types/user/settings';
 
-export interface UserDisplaySnapshot {
+interface UserDisplaySnapshot {
   avatar?: string;
   email?: string;
   firstName?: string;

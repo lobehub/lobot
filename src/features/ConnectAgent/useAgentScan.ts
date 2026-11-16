@@ -14,7 +14,7 @@ import { CONNECTABLE_PROVIDERS } from './providers';
  */
 export type ScanTarget = { device: DeviceListItem; kind: 'device' } | { kind: 'local' };
 
-export interface AgentScanState {
+interface AgentScanState {
   agents: HeterogeneousAgentScanMap | null;
   error?: string;
   status: 'error' | 'idle' | 'scanning' | 'success';

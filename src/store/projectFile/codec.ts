@@ -26,7 +26,7 @@ import {
  * Entries beyond this many are not persisted. The default first paint expands
  * the project root only, so the shallowest entries are the ones worth keeping.
  */
-export const PROJECT_INDEX_PERSIST_MAX_ENTRIES = 20_000;
+const PROJECT_INDEX_PERSIST_MAX_ENTRIES = 20_000;
 
 /** A dirty-file overlay this large is not worth a stale first paint. */
 export const GIT_WORKING_TREE_PERSIST_MAX_PATHS = 5000;
@@ -153,7 +153,7 @@ const keepShallowest = (entries: ProjectFileIndexEntry[], max: number) => {
  * the network read replaces it — which is what the Files tab has to say when
  * that read does not come.
  */
-export type PersistedProjectIndex = ProjectFileIndexResult & { persistedPartial?: true };
+type PersistedProjectIndex = ProjectFileIndexResult & { persistedPartial?: true };
 
 export const isPersistedPartialIndex = (data: ProjectFileIndexResult | undefined): boolean =>
   !!(data as PersistedProjectIndex | undefined)?.persistedPartial;
@@ -205,9 +205,7 @@ export const isGitWorkingTreeFilesPersistable = (data: GitWorkingTreeFiles): boo
  * The overlay as stored: only the three buckets, and nothing at all past the
  * cap — a huge dirty set is not worth a stale first paint.
  */
-export const encodeGitWorkingTreeFiles = (
-  data: GitWorkingTreeFiles,
-): GitWorkingTreeFiles | undefined => {
+const encodeGitWorkingTreeFiles = (data: GitWorkingTreeFiles): GitWorkingTreeFiles | undefined => {
   if (!isGitWorkingTreeFilesPersistable(data)) return undefined;
   const { added, deleted, modified } = data;
   return { added, deleted, modified };

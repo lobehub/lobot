@@ -101,9 +101,9 @@ const createGuideConfig = () => {
   return configs;
 };
 
-export const HETEROGENEOUS_AGENT_GUIDE_CONFIG = createGuideConfig();
+const HETEROGENEOUS_AGENT_GUIDE_CONFIG = createGuideConfig();
 
-export const isSupportedHeterogeneousAgentType = (
+const isSupportedHeterogeneousAgentType = (
   value?: string,
 ): value is SupportedHeterogeneousAgentType =>
   !!value && SUPPORTED_HETEROGENEOUS_AGENT_TYPES.includes(value as SupportedHeterogeneousAgentType);

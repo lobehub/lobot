@@ -9,7 +9,7 @@ import {
   type LobeSessions,
 } from '@/types/session';
 
-export const getSessionPinned = (session: LobeSession) => session.pinned;
+const getSessionPinned = (session: LobeSession) => session.pinned;
 
 const getTitle = (s: MetaData) => s.title || t('defaultSession', { ns: 'common' });
 

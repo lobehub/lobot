@@ -8,7 +8,7 @@ interface OverlayDispatchStore {
   setPendingDispatch: (pendingDispatch: PendingOverlayDispatch) => void;
 }
 
-export const useOverlayDispatchStore = createWithEqualityFn<OverlayDispatchStore>()((set) => ({
+const useOverlayDispatchStore = createWithEqualityFn<OverlayDispatchStore>()((set) => ({
   clearPendingDispatch: (dispatchId) =>
     set((state) => {
       if (dispatchId && state.pendingDispatch?.dispatchId !== dispatchId) return state;

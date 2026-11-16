@@ -60,7 +60,7 @@ const serversLens: ReplicaLens<ToolStore, LobehubSkillServer[]> = {
 };
 
 /** The connections sync, plus the `mutate` alias the skills surfaces call. */
-export interface LobehubSkillConnectionsSyncResult extends ReplicaSyncResult {
+interface LobehubSkillConnectionsSyncResult extends ReplicaSyncResult {
   /**
    * Nothing has been painted yet (no persisted row, no response) and a sync is
    * in flight. This is the `isLoading` the callers gated on before the replica
@@ -76,7 +76,7 @@ type Setter = StoreSetter<ToolStore>;
 export const createLobehubSkillStoreSlice = (set: Setter, get: () => ToolStore, _api?: unknown) =>
   new LobehubSkillStoreActionImpl(set, get, _api);
 
-export class LobehubSkillStoreActionImpl {
+class LobehubSkillStoreActionImpl {
   readonly #get: () => ToolStore;
   #intent = createLobehubSkillLocalIntent();
   #intentScope?: string;

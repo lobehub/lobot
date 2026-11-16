@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export interface BusinessDocumentCharLimit {
+interface BusinessDocumentCharLimit {
   /** Button shown beside the page-limit notice, such as an upgrade entry. */
   action?: ReactNode;
   /** Per-page character limit known before a save is refused. Undefined means unknown or unlimited. */

@@ -10,9 +10,6 @@ export interface RawAgentTemplate {
   name?: string;
 }
 
-/** API response shape: top-level keys are MarketplaceCategory slugs. */
-export type OnboardingFullResponse = Record<string, RawAgentTemplate[]>;
-
 export const normalizeAgentTemplate = (
   item: RawAgentTemplate,
   category: string,
@@ -28,7 +25,7 @@ export const normalizeAgentTemplate = (
   };
 };
 
-export interface FetchAgentTemplatesOptions {
+interface FetchAgentTemplatesOptions {
   signal?: AbortSignal;
 }
 
@@ -38,21 +35,6 @@ export type AgentTemplateFetcher = (
 
 export const getAgentTemplatesSWRKey = (locale?: string) =>
   `builtin-tool-web-onboarding/agent-marketplace/onboarding-templates/${locale ?? 'default'}`;
-
-const defaultFetcher: AgentTemplateFetcher = async () => {
-  throw new Error(
-    '[AgentMarketplace] Agent templates fetcher is not configured. ' +
-      'Call setAgentTemplatesFetcher in your app initialization.',
-  );
-};
-
-let currentFetcher: AgentTemplateFetcher = defaultFetcher;
-
-export const setAgentTemplatesFetcher = (fetcher: AgentTemplateFetcher): void => {
-  currentFetcher = fetcher;
-};
-
-export const fetchAgentTemplates: AgentTemplateFetcher = (options) => currentFetcher(options);
 
 export const getTemplatesByCategories = (
   templates: AgentTemplate[],

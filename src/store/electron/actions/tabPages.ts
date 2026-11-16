@@ -47,7 +47,7 @@ type Setter = StoreSetter<ElectronStore>;
 export const createTabPagesSlice = (set: Setter, get: () => ElectronStore, _api?: unknown) =>
   new TabPagesActionImpl(set, get, _api);
 
-export class TabPagesActionImpl {
+class TabPagesActionImpl {
   readonly #get: () => ElectronStore;
   readonly #set: Setter;
 

@@ -3,7 +3,7 @@ import { cleanObject } from '@lobechat/utils';
 
 import { lambdaClient } from '@/libs/trpc/client';
 
-export interface RecordTracingFeedbackParams {
+interface RecordTracingFeedbackParams {
   data?: Record<string, unknown>;
   score?: number;
   signal: 'positive' | 'negative' | 'neutral';

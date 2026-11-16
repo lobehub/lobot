@@ -24,7 +24,7 @@ type SyncOptions<TFetched, TData> = ReplicaSyncOptions<TFetched, TData> & {
   shouldRetryOnError?: boolean;
 };
 
-export class ProjectFileActionImpl {
+class ProjectFileActionImpl {
   readonly #private: ProjectFilePrivateAction;
   readonly #set: Setter;
 

@@ -1,4 +1,4 @@
-export interface ParsedGLMModelId {
+interface ParsedGLMModelId {
   majorVersion: number;
   minorVersion?: number;
   normalizedModelId: string;

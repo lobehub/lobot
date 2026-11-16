@@ -38,7 +38,7 @@ type Setter = StoreSetter<NotebookStore>;
 export const createNotebookAction = (set: Setter, get: () => NotebookStore, _api?: unknown) =>
   new NotebookActionImpl(set, get, _api);
 
-export class NotebookActionImpl {
+class NotebookActionImpl {
   /** One topic's documents, persisted per `topicId` (`notebookMap`). */
   readonly #documents;
 

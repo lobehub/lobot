@@ -32,7 +32,7 @@ export const bytesToBase64 = (bytes: Uint8Array): string => {
  * @param input - The base64 string to decode
  * @returns Decoded bytes
  */
-export const base64ToBytes = (input: string): Uint8Array => {
+const base64ToBytes = (input: string): Uint8Array => {
   if (typeof atob === 'function') {
     // Browser environment: `atob` yields a Latin1 binary string, one char per byte.
     const binary = atob(input);

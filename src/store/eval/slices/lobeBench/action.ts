@@ -45,7 +45,7 @@ export const createLobeBenchSlice = (set: Setter, get: () => EvalStore, _api?: u
  * The Lobe Bench pages' server data. Each list is a replica owning one map of
  * the store; the hooks keep the `{ data, error, isLoading, mutate }` shape.
  */
-export class LobeBenchActionImpl {
+class LobeBenchActionImpl {
   readonly #casesByDataset;
   readonly #datasetCases;
   readonly #datasets;

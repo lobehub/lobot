@@ -14,7 +14,7 @@ export interface ContextCredSummary {
   ownerType?: 'organization' | 'user';
 }
 
-export type ClaudeCodeTokenStatus =
+type ClaudeCodeTokenStatus =
   /**
    * `editable`: the token the run reads is the caller's own personal credential.
    * Saving only writes that credential, so a workspace- or other-member-owned

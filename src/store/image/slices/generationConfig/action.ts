@@ -27,7 +27,7 @@ import { adaptSizeToRatio, parseRatio } from '../../utils/size';
  * This function is exported only for testing purposes.
  * Do not use this function directly in application code.
  */
-export function getModelAndDefaults(model: string, provider: string) {
+function getModelAndDefaults(model: string, provider: string) {
   const enabledImageModelList = aiProviderSelectors.enabledImageModelList(getAiInfraStoreState());
 
   const providerItem = enabledImageModelList.find((providerItem) => providerItem.id === provider);
@@ -103,7 +103,7 @@ type Setter = StoreSetter<ImageStore>;
 export const createGenerationConfigSlice = (set: Setter, get: () => ImageStore, _api?: unknown) =>
   new GenerationConfigActionImpl(set, get, _api);
 
-export class GenerationConfigActionImpl {
+class GenerationConfigActionImpl {
   readonly #get: () => ImageStore;
   readonly #set: Setter;
 

@@ -61,7 +61,7 @@ const snapshotAutomationFromDetail = (
 export const createTaskConfigSlice = (set: Setter, get: () => TaskStore, _api?: unknown) =>
   new TaskConfigSliceActionImpl(set, get, _api);
 
-export class TaskConfigSliceActionImpl {
+class TaskConfigSliceActionImpl {
   readonly #get: () => TaskStore;
   readonly #set: Setter;
   // Lazily-initialized engine shared by every action that mutates a task's

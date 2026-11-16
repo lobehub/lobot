@@ -12,7 +12,7 @@ type Setter = StoreSetter<UserStore>;
 export const createOnboardingSlice = (set: Setter, get: () => UserStore, _api?: unknown) =>
   new OnboardingActionImpl(set, get, _api);
 
-export class OnboardingActionImpl {
+class OnboardingActionImpl {
   readonly #get: () => UserStore;
   readonly #set: Setter;
   #writeChain: Promise<unknown> = Promise.resolve();

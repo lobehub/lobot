@@ -34,7 +34,7 @@ const styles = stylex.create({
   swatchActive: { borderColor: cssVar.colorText },
 });
 
-export interface LabelFormModalOptions {
+interface LabelFormModalOptions {
   /**
    * When creating from an agent's Labels submenu, apply the new label to that
    * agent right away — creating "for" an agent and then having to reopen the

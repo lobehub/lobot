@@ -11,7 +11,7 @@ import { type TopicListItem } from '@/services/topic';
 type DeviceClient = typeof lambdaClient.device;
 
 /** A running topic on a device, with the member who started it. */
-export interface DeviceRunningTopic extends TopicListItem {
+interface DeviceRunningTopic extends TopicListItem {
   user: DeviceEnroller | null;
 }
 

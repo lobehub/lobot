@@ -5,7 +5,7 @@ import { ModelProvider } from 'model-bank';
 import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible';
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 
-export interface HigressModelCard {
+interface HigressModelCard {
   context_length: number;
   description: string;
   id: string;
@@ -15,7 +15,7 @@ export interface HigressModelCard {
   };
 }
 
-export const params = {
+const params = {
   constructorOptions: {
     defaultHeaders: {
       'HTTP-Referer': 'https://lobehub.com',

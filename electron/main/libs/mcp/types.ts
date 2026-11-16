@@ -17,7 +17,7 @@ export interface McpResource {
   uri: string;
 }
 
-export interface McpPromptArgument {
+interface McpPromptArgument {
   description?: string;
   name: string;
   required?: boolean;
@@ -29,7 +29,7 @@ export interface McpPrompt {
   name: string;
 }
 
-export interface TextContent {
+interface TextContent {
   _meta?: any;
   text: string;
   type: 'text';
@@ -67,7 +67,7 @@ export interface ResourceContent {
   type: 'resource';
 }
 
-export interface ResourceLinkContent {
+interface ResourceLinkContent {
   _meta?: any;
   description?: string;
   icons?: Array<{
@@ -90,7 +90,7 @@ export interface ToolCallResult {
   structuredContent?: any;
 }
 
-export interface AuthConfig {
+interface AuthConfig {
   accessToken?: string;
   token?: string;
   type: 'none' | 'bearer' | 'oauth2';

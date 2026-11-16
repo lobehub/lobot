@@ -44,7 +44,7 @@ export type BuiltinAgentSlug = (typeof BUILTIN_AGENT_SLUGS)[keyof typeof BUILTIN
  * access rules, which still allow every member to reach them through whatever
  * level the workspace grants.
  */
-export const COLLABORATIVE_BUILTIN_AGENT_SLUGS: ReadonlySet<string> = new Set<string>([
+const COLLABORATIVE_BUILTIN_AGENT_SLUGS: ReadonlySet<string> = new Set<string>([
   BUILTIN_AGENT_SLUGS.agentBuilder,
   BUILTIN_AGENT_SLUGS.groupAgentBuilder,
   BUILTIN_AGENT_SLUGS.inbox,

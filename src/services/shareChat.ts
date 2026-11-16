@@ -13,7 +13,7 @@ import type {
   ResumeToolResultParam,
 } from '@/services/aiAgent';
 
-export interface ShareChatExecParams {
+interface ShareChatExecParams {
   /** Client-minted ids for the rows this run creates (fresh sends only). */
   clientIds?: ExecAgentClientIds;
   /**
@@ -49,7 +49,7 @@ export interface ShareChatExecParams {
  * visitor-scoped topic/message reads — all keyed by shareId, authorized
  * server-side against `topics.senderId`.
  */
-export interface ShareUploadMetadata {
+interface ShareUploadMetadata {
   codec?: string;
   durationMs?: number;
   height?: number;
@@ -58,7 +58,7 @@ export interface ShareUploadMetadata {
   width?: number;
 }
 
-export interface ShareCreateFileParams {
+interface ShareCreateFileParams {
   fileType: string;
   metadata?: ShareUploadMetadata;
   name: string;

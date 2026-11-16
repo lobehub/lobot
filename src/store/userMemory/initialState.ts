@@ -21,8 +21,6 @@ import { identityInitialState } from './slices/identity';
 import { type PreferenceSliceState } from './slices/preference/initialState';
 import { preferenceInitialState } from './slices/preference/initialState';
 
-export type { PersonaData } from './slices/home/projection';
-
 export interface UserMemoryStoreState
   extends
     ActivitySliceState,

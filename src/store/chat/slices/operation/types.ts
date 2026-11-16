@@ -116,7 +116,7 @@ export type AfterCompletionCallback = () => void | Promise<void>;
 /**
  * Runtime hooks that can be registered during operation execution
  */
-export interface RuntimeHooks {
+interface RuntimeHooks {
   /**
    * Callbacks to execute after AgentRuntime completes
    * Used for actions that should happen after current execution finishes
@@ -386,7 +386,7 @@ export const isServerDeliveringQueuedMessage = (message: QueuedMessage): boolean
 /**
  * Merged message ready for injection
  */
-export interface MergedQueuedMessage {
+interface MergedQueuedMessage {
   content: string;
   /** Lexical editor JSON state for rich text rendering */
   editorData?: Record<string, any>;
@@ -633,7 +633,7 @@ export const TOPIC_VISIBLY_RUNNING_OPERATION_TYPES: OperationType[] = INPUT_LOAD
  * wait op mid-countdown — and `isHeteroOverloadWaitAborted` reads a non-running
  * op as "the user cancelled", which would silently exhaust the retry sequence.
  */
-export const LOCAL_ONLY_TOPIC_RUN_OPERATION_TYPES: OperationType[] = ['autoRetryPending'];
+const LOCAL_ONLY_TOPIC_RUN_OPERATION_TYPES: OperationType[] = ['autoRetryPending'];
 
 /**
  * {@link TOPIC_VISIBLY_RUNNING_OPERATION_TYPES} minus the

@@ -6,7 +6,7 @@ import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { resolveParameters } from '../../core/parameterResolver';
 
-export interface MistralModelCard {
+interface MistralModelCard {
   capabilities: {
     function_calling: boolean;
     vision: boolean;
@@ -30,7 +30,7 @@ const resolveReasoningEffort = (payload: any) => {
   if (payload.thinking?.type === 'disabled') return 'none';
 };
 
-export const params = {
+const params = {
   baseURL: 'https://api.mistral.ai/v1',
   chatCompletion: {
     // Mistral API does not support stream_options: { include_usage: true }

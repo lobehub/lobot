@@ -1,4 +1,3 @@
-export { AnimatedNumber } from './AnimatedNumber';
 export {
   type FileChangeKind,
   getFileLanguage,
@@ -7,11 +6,3 @@ export {
   LineStats,
 } from './FileChangeStats';
 export { FilePathDisplay, getFilePathDisplayInfo } from './FilePathDisplay';
-export { OptionCard, type OptionCardProps } from './OptionCard';
-export {
-  TodoInspectorSummary,
-  TodoPanelHeader,
-  TodoProgressRing,
-  type TodoSummary,
-  type TodoSummaryState,
-} from './TodoProgress';

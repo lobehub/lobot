@@ -46,16 +46,6 @@ export { displayMessageSelectors } from './displayMessage';
 // Prefer using dbMessageSelectors or displayMessageSelectors directly
 
 /**
- * @deprecated Use displayMessageSelectors.currentDisplayChatKey instead
- */
-export const currentChatKey = displayMessageSelectors.currentDisplayChatKey;
-
-/**
- * @deprecated Use displayMessageSelectors.mainDisplayChatIDs instead
- */
-export const mainDisplayChatIDs = displayMessageSelectors.mainDisplayChatIDs;
-
-/**
  * Legacy chatSelectors object for backward compatibility
  * @deprecated Import dbMessageSelectors or displayMessageSelectors directly
  */

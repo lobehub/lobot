@@ -6,7 +6,7 @@ import { SYSTEM_FILES_TO_IGNORE } from '@lobechat/file-loaders';
 import type { FileEntry, ListFilesParams, ListFilesResult } from '../types';
 import { resolveAgainstCwd } from './expandTilde';
 
-export interface ListFilesOptions {
+interface ListFilesOptions {
   /** Whether to filter out system files like .DS_Store, Thumbs.db, etc. */
   ignoreSystemFiles?: boolean;
 }

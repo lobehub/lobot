@@ -4,9 +4,9 @@ import type { AgentStreamEvent } from '@lobechat/agent-gateway-client';
  * A single agent stream event handler — the shape returned by
  * `createGatewayEventHandler` / `createGatewayMemberStreamHandler`.
  */
-export type GatewayEventListener = (event: AgentStreamEvent) => void;
+type GatewayEventListener = (event: AgentStreamEvent) => void;
 
-export interface GatewayEventRouterParams {
+interface GatewayEventRouterParams {
   /**
    * Lazily build a render-only handler for a non-owner operation whose events
    * are multiplexed onto this same WebSocket (e.g. a broadcast council member

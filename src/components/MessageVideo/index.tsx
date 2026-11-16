@@ -24,7 +24,7 @@ const styles = stylex.create({
   },
 });
 
-export interface MessageVideoProps {
+interface MessageVideoProps {
   maxHeight?: number;
   poster?: string;
   src: string;

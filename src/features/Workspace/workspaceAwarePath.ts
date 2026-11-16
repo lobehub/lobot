@@ -31,7 +31,7 @@ const isPersonalPath = (to: string): boolean => PERSONAL_PATH_REGEX.test(to);
  * plugin, tts, agent, common, system-agent, memory, ...) are personal-only
  * and never prefixed.
  */
-export const WORKSPACE_SETTINGS_TABS: ReadonlySet<string> = new Set([
+const WORKSPACE_SETTINGS_TABS: ReadonlySet<string> = new Set([
   // About and the developer tools (advanced / labs) are user-level pages
   // mirrored under the workspace alongside the account-level tabs.
   'about',

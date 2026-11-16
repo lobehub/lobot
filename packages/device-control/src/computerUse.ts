@@ -26,7 +26,7 @@ export interface AuvRunCommandResult {
 }
 
 /** Runs the AUV CLI once; rejects with an `execFile` error on a nonzero exit. */
-export type AuvCliExec = (argv: string[]) => Promise<{ stderr: string; stdout: string }>;
+type AuvCliExec = (argv: string[]) => Promise<{ stderr: string; stdout: string }>;
 
 const MAX_CLI_ARGUMENTS = 128;
 const MAX_CLI_ARGUMENT_LENGTH = 16_384;

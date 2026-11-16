@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export interface BusinessSendErrorAlert {
+interface BusinessSendErrorAlert {
   /** Button shown beside the notice, such as an upgrade entry. */
   action?: ReactNode;
   /** Replaces the line under the title, so it names only the actions offered. */

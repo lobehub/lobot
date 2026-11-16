@@ -12,12 +12,7 @@ import type {
   FileEditToolCallRecord,
 } from './types';
 
-export type {
-  EditedFileCategory,
-  EditedFileChangeKind,
-  EditedFileEntry,
-  FileEditToolCallRecord,
-} from './types';
+export type { EditedFileEntry, FileEditToolCallRecord } from './types';
 
 /*
  * ── Source constants ────────────────────────────────────────────────────────

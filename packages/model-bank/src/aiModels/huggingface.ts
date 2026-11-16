@@ -88,6 +88,6 @@ const huggingfaceChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...huggingfaceChatModels];
+const allModels = [...huggingfaceChatModels];
 
 export default allModels;

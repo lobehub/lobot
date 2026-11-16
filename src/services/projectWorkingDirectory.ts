@@ -1,7 +1,7 @@
 import { lambdaClient } from '@/libs/trpc/client';
 
 type Client = typeof lambdaClient.projectWorkingDirectory;
-export type BindProjectDirectoryInput = Parameters<Client['bind']['mutate']>[0];
+type BindProjectDirectoryInput = Parameters<Client['bind']['mutate']>[0];
 
 class ProjectWorkingDirectoryService {
   listProjectTopics = (projectId: string) =>

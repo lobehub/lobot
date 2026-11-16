@@ -15,7 +15,7 @@ import { buildWorkspaceAwarePath } from '@/features/Workspace/workspaceAwarePath
  * Library path segment of an item: pages (`docs_` ids) open under `docs`,
  * everything else under `file`.
  */
-export const libraryItemSegment = (itemId: string): 'docs' | 'file' =>
+const libraryItemSegment = (itemId: string): 'docs' | 'file' =>
   itemId.startsWith('docs_') ? 'docs' : 'file';
 
 /** Where an item opens inside a library: `/resource/library/<id>/{docs,file}/<itemId>`. */
@@ -26,7 +26,7 @@ export const libraryItemPath = (libraryId: string, itemId: string): string =>
 export const LIBRARY_ITEM_PATH = /\/resource\/library\/[^/]+\/(?:docs|file)\/[^/]+\/?$/;
 
 /** Swap the `/resource/library/…` tail of `pathname` for `path`, keeping a workspace prefix. */
-export const rebaseLibraryPath = (pathname: string, path: string): string =>
+const rebaseLibraryPath = (pathname: string, path: string): string =>
   pathname.replace(/\/resource\/library\/.*$/, path);
 
 /**

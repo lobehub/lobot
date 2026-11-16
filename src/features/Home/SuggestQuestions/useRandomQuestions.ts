@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 const QUESTION_COUNT = 40;
 const DISPLAY_COUNT = 6;
 
-export type QuestionMode = 'agent' | 'chat' | 'group' | 'write';
+type QuestionMode = 'agent' | 'chat' | 'group' | 'write';
 
 const shuffleArray = <T>(array: T[]): T[] => {
   const shuffled = [...array];
@@ -24,7 +24,7 @@ const generateQuestions = (mode: QuestionMode) => {
   }));
 };
 
-export interface QuestionItem {
+interface QuestionItem {
   id: number;
   promptKey: string;
   titleKey: string;

@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 import { MemoryTypeSchema } from './common';
 
-export const RELATIONSHIP_ENUM = [
+const RELATIONSHIP_ENUM = [
   'self',
   'father',
   'mother',
@@ -76,69 +76,6 @@ export const AddIdentityActionSchema = z
   })
   .strict();
 
-export const UpdateIdentityActionSchema = z
-  .object({
-    id: z.string(),
-    mergeStrategy: z.nativeEnum(MergeStrategyEnum),
-    set: z.object({
-      details: z
-        .string()
-        .nullable()
-        .describe('Optional detailed information, use null for omitting the field'),
-      memoryCategory: z
-        .string()
-        .nullable()
-        .describe('Memory category, use null for omitting the field'),
-      memoryType: MemoryTypeSchema.describe('Memory type, use null for omitting the field'),
-      summary: z
-        .string()
-        .nullable()
-        .describe('Concise overview of this specific memory, use null for omitting the field'),
-      tags: z
-        .array(z.string())
-        .nullable()
-        .describe(
-          'Model generated tags that summarize the identity facets, use null for omitting the field',
-        ),
-      title: z
-        .string()
-        .nullable()
-        .describe(
-          'Honorific-style, concise descriptor (strength + domain/milestone), avoid bare job titles; e.g., "Trusted open-source maintainer", "Specializes in low-latency infra", "Former Aliyun engineer", "Cares for rescue cats"; use null for omitting the field',
-        ),
-      withIdentity: z
-        .object({
-          description: z.string().nullable(),
-          episodicDate: z.string().nullable(),
-          extractedLabels: z.array(z.string()).nullable(),
-          // TODO: OpenAI requires `required` fields to be always present, while enum fields cannot be null
-          relationship: z
-            .string()
-            .describe(`Possible values: ${RELATIONSHIP_ENUM.join(' | ')}`)
-            .nullable(),
-          role: z
-            .string()
-            .describe(
-              'Role explicitly mentioned for this identity entry (e.g., "platform engineer", "caregiver"); keep existing when not updated; use null for omitting the field',
-            )
-            .nullable(),
-          scoreConfidence: z.number().nullable(),
-          sourceIds: z
-            .array(z.string())
-            .nullable()
-            .describe('Stable source message ids that support this identity update'),
-          sourceEvidence: z.string().nullable(),
-          // TODO: OpenAI requires `required` fields to be always present, while enum fields cannot be null
-          type: z
-            .string()
-            .describe(`Possible values: ${IdentityTypeEnum.options.join(' | ')}`)
-            .nullable(),
-        })
-        .strict(),
-    }),
-  })
-  .strict();
-
 type WithoutNullFields<T> = { [K in keyof T]?: Exclude<T[K], null> };
 
 /** Drop null-valued keys, narrowing the nullable input shape to the optional output one. */
@@ -194,35 +131,3 @@ export const RemoveIdentityActionSchema = z
     reason: z.string(),
   })
   .strict();
-
-export const IdentityActionsSchema = z
-  .object({
-    add: z
-      .array(AddIdentityActionSchema)
-      .nullable()
-      .describe('Identity entries to add; use an empty array when nothing to add'),
-    remove: z
-      .array(RemoveIdentityActionSchema)
-      .nullable()
-      .describe('Identity entries to remove; use an empty array when nothing to remove'),
-    update: z
-      .array(UpdateIdentityActionSchema)
-      .nullable()
-      .describe('Identity entries to update; use an empty array when nothing to update'),
-  })
-  .strict();
-
-export const WithIdentitySchema = z
-  .object({
-    actions: IdentityActionsSchema,
-  })
-  .strict();
-
-export type IdentityActions = z.infer<typeof IdentityActionsSchema>;
-export type AddIdentityAction = z.infer<typeof AddIdentityActionSchema>;
-export type UpdateIdentityAction = z.infer<typeof UpdateIdentityActionSchema>;
-/** Raw tool arguments as the model sends them; nullable fields mean "leave unchanged". */
-export type UpdateIdentityToolInput = z.input<typeof UpdateIdentityToolInputSchema>;
-/** Parsed tool arguments with null fields dropped. */
-export type UpdateIdentityToolParsed = z.output<typeof UpdateIdentityToolInputSchema>;
-export type RemoveIdentityAction = z.infer<typeof RemoveIdentityActionSchema>;

@@ -23,20 +23,6 @@ export enum SidebarTabKey {
   Video = 'video',
 }
 
-export enum ChatSettingsTabs {
-  Connector = 'connector',
-  Graph = 'graph',
-  Opening = 'opening',
-  Plugin = 'plugin',
-  Prompt = 'prompt',
-}
-
-export enum GroupSettingsTabs {
-  Chat = 'chat',
-  Members = 'members',
-  Settings = 'settings',
-}
-
 // business builds may register extra sidebar tabs, so any string key is accepted
 export type WorkingSidebarTab =
   | 'browser'
@@ -52,10 +38,8 @@ export type WorkingSidebarTab =
   | 'web'
   | (string & {});
 
-export const CANVAS_TAB_PREFIX = 'canvas:';
+const CANVAS_TAB_PREFIX = 'canvas:';
 export const canvasTabKey = (canvasId: string) => `${CANVAS_TAB_PREFIX}${canvasId}`;
-export const canvasIdOfTab = (tab: string) =>
-  tab.startsWith(CANVAS_TAB_PREFIX) ? tab.slice(CANVAS_TAB_PREFIX.length) : undefined;
 
 export const DEFAULT_RESOURCE_MANAGER_COLUMN_WIDTHS = {
   date: 160,
@@ -113,19 +97,7 @@ export enum SettingsTabs {
   Usage = 'usage',
 }
 
-/**
- * @deprecated Use SettingsTabs instead
- */
-export enum ProfileTabs {
-  APIKey = 'apikey',
-  Memory = 'memory',
-  Profile = 'profile',
-  Security = 'security',
-  Stats = 'stats',
-  Usage = 'usage',
-}
-
-export const MODEL_DETAIL_PANEL_EXPANDED_KEYS = [
+const MODEL_DETAIL_PANEL_EXPANDED_KEYS = [
   'rating',
   'context',
   'abilities',
@@ -150,7 +122,7 @@ export const MODEL_DETAIL_PANEL_EXPANDABLE_KEYS = [
   'config',
 ] as const satisfies readonly ModelDetailPanelExpandedKey[];
 
-export type TaskViewMode = 'kanban' | 'list';
+type TaskViewMode = 'kanban' | 'list';
 
 /** How topics inside one byProject sidebar group are sectioned. */
 export type ProjectTopicSubGroupMode = 'none' | 'byDevice' | 'byTime' | 'byStatus';
@@ -610,7 +582,7 @@ export const WORKSPACE_OVERRIDABLE_FIELDS = [
   'sidebarItems',
 ] as const satisfies readonly WorkspaceOverridableField[];
 
-export interface GlobalNavigationRef {
+interface GlobalNavigationRef {
   current: NavigateFunction | null;
 }
 

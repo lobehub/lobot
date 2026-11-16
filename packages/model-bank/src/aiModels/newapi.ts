@@ -6,6 +6,6 @@ const newapiChatModels: AIChatModelCard[] = [
   // NewAPI as router provider, model list fetched dynamically via API
 ];
 
-export const allModels = [...newapiChatModels];
+const allModels = [...newapiChatModels];
 
 export default allModels;

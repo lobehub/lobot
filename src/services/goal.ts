@@ -11,7 +11,7 @@ import type {
 
 import { lambdaClient } from '@/libs/trpc/client';
 
-export interface GoalListParams {
+interface GoalListParams {
   agentId?: string;
   /** List only archived goals; omitted, archived goals are left out. */
   archived?: boolean;
@@ -230,5 +230,5 @@ class GoalService {
 
 export const goalService = new GoalService();
 
-export type GoalListResult = Awaited<ReturnType<GoalService['list']>>;
+type GoalListResult = Awaited<ReturnType<GoalService['list']>>;
 export type GoalListItem = GoalListResult['goals'][number];

@@ -1,5 +1,5 @@
 /** How much wider the container must get before the frame is measured again. */
-export const WIDEN_REMOUNT_THRESHOLD = 24;
+const WIDEN_REMOUNT_THRESHOLD = 24;
 
 /**
  * The preview's auto-height reports `documentElement.scrollHeight`, which never

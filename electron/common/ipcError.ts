@@ -19,7 +19,7 @@ const IPC_ERROR_MARKER = '__lobeIpcError__';
 /** Bound recursion on a deliberately malicious / cyclic `cause` chain. */
 const MAX_CAUSE_DEPTH = 5;
 
-export interface SerializedIpcError {
+interface SerializedIpcError {
   cause?: SerializedIpcError | string;
   /** Node/undici machine-readable reason (`ENOTFOUND`, `ECONNREFUSED`, …). */
   code?: unknown;
@@ -28,7 +28,7 @@ export interface SerializedIpcError {
   stack?: string;
 }
 
-export interface IpcErrorEnvelope {
+interface IpcErrorEnvelope {
   error: SerializedIpcError;
   [IPC_ERROR_MARKER]: true;
 }

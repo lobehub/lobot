@@ -16,7 +16,7 @@ const execPromise = promisify(exec);
  * mdfind - macOS Spotlight search
  * Only available on macOS, uses Spotlight index for fast searching
  */
-export const mdfindBinary: BinarySpec = {
+const mdfindBinary: BinarySpec = {
   description: 'macOS Spotlight search',
   async detect(): Promise<BinaryStatus> {
     if (process.platform !== 'darwin') {
@@ -58,7 +58,7 @@ export const mdfindBinary: BinarySpec = {
  * fd - Fast alternative to find
  * https://github.com/sharkdp/fd
  */
-export const fdBinary: BinarySpec = defineCommandBinary('fd', {
+const fdBinary: BinarySpec = defineCommandBinary('fd', {
   description: 'fd - fast find alternative',
   priority: 2,
 });
@@ -66,7 +66,7 @@ export const fdBinary: BinarySpec = defineCommandBinary('fd', {
 /**
  * find - Standard Unix file search
  */
-export const findBinary: BinarySpec = defineCommandBinary('find', {
+const findBinary: BinarySpec = defineCommandBinary('find', {
   description: 'Unix find command',
   priority: 3,
   versionFlag: '--version',

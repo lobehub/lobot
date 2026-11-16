@@ -28,7 +28,7 @@ import { type CSSProperties } from 'react';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export interface InlineToolbarProps {
+interface InlineToolbarProps {
   className?: string;
   editor?: IEditor;
   editorState?: EditorState;

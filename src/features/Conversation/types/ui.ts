@@ -1,19 +1,11 @@
 import { type LLMRoleType, type UIChatMessage } from '@lobechat/types';
 import { type ActionIconGroupItemType } from '@lobehub/ui';
 import { type ChatItemProps } from '@lobehub/ui/chat';
-import { type FC, type ReactNode } from 'react';
+import { type FC } from 'react';
 
-export type RenderRole = LLMRoleType | 'default' | 'history' | string;
-export type RenderMessage = FC<UIChatMessage & { editableContent: ReactNode }>;
-export type RenderBelowMessage = FC<UIChatMessage>;
-export type RenderMessageExtra = FC<UIChatMessage>;
-export type MarkdownCustomRender = (props: {
-  dom: ReactNode;
-  id: string;
-  text: string;
-}) => ReactNode;
+type RenderRole = LLMRoleType | 'default' | 'history' | string;
 
-export type RenderItem = FC<{ key: string } & UIChatMessage & ListItemProps>;
+type RenderItem = FC<{ key: string } & UIChatMessage & ListItemProps>;
 
 /**
  * Action item with click handler
@@ -41,7 +33,7 @@ export type MessageActionItemOrDivider = MessageActionItem | { type: 'divider' }
  * construction stays lazy and per-session/role config lives at the route
  * layer (see `useActionsBarConfig`).
  */
-export type MessageActionSlot = string;
+type MessageActionSlot = string;
 
 /**
  * Action configuration for a specific message type. Lists of registered
@@ -73,7 +65,7 @@ export interface ActionsBarConfig {
   user?: MessageActionsConfig;
 }
 
-export interface ListItemProps {
+interface ListItemProps {
   groupNav?: ChatItemProps['avatarAddon'];
 
   renderItems?: {

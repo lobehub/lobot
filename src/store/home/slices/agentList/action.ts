@@ -89,7 +89,7 @@ type Setter = StoreSetter<HomeStore>;
 export const createAgentListSlice = (set: Setter, get: () => HomeStore, _api?: unknown) =>
   new AgentListActionImpl(set, get, _api);
 
-export class AgentListActionImpl {
+class AgentListActionImpl {
   readonly #set: Setter;
   readonly #agentList;
   readonly #agents;

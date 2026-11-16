@@ -5,10 +5,7 @@ import {
 } from '@lobechat/utils/time';
 import { useTranslation } from 'react-i18next';
 
-export type UseActivityTimeOptions = Omit<
-  FormatActivityTimeOptions,
-  'formatOtherYear' | 'formatThisYear'
->;
+type UseActivityTimeOptions = Omit<FormatActivityTimeOptions, 'formatOtherYear' | 'formatThisYear'>;
 
 /**
  * Format a timestamp using the activity-feed convention: relative within

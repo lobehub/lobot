@@ -4,7 +4,7 @@ import { createReplicaState, type ReplicaPagedData, type ReplicaState } from '@/
 import { type McpConnectionType } from '@/types/discover';
 import { type MCPInstallProgressMap } from '@/types/plugins';
 
-export type PluginStoreListType = 'installed' | 'mcp';
+type PluginStoreListType = 'installed' | 'mcp';
 
 /**
  * The MCP marketplace list view: the generic local-first paged data plus the

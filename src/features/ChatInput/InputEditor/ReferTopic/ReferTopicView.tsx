@@ -9,7 +9,7 @@ import { topicSelectors } from '@/store/chat/slices/topic/selectors';
 import { TAG_MARGIN_INLINE_END } from '../constants';
 import { usePinnedTopic } from './pinnedTopic';
 
-export interface ReferTopicViewProps {
+interface ReferTopicViewProps {
   fallbackTitle?: string;
   topicId: string;
 }

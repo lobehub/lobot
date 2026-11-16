@@ -147,6 +147,6 @@ const perplexityChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...perplexityChatModels];
+const allModels = [...perplexityChatModels];
 
 export default allModels;

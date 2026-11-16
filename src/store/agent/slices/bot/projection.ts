@@ -16,7 +16,7 @@ export interface BotProviderItem {
   settings?: Record<string, unknown> | null;
 }
 
-export interface BotProvidersParams {
+interface BotProvidersParams {
   agentId: string;
 }
 
@@ -71,7 +71,7 @@ export const botProvidersResource = defineReplica<BotProvidersParams, BotProvide
 export const PLATFORM_DEFINITIONS_KEY = 'all';
 
 /** The platform catalog has no identity of its own — one entry per scope. */
-export type PlatformDefinitionsParams = Record<string, never>;
+type PlatformDefinitionsParams = Record<string, never>;
 
 /**
  * The server's channel platform catalog. One entry per scope: it is the same

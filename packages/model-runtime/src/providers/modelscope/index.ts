@@ -4,14 +4,14 @@ import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { processMultiProviderModelList } from '../../utils/modelParse';
 
-export interface ModelScopeModelCard {
+interface ModelScopeModelCard {
   created: number;
   id: string;
   object: string;
   owned_by: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://api-inference.modelscope.cn/v1',
   debug: {
     chatCompletion: () => process.env.DEBUG_MODELSCOPE_CHAT_COMPLETION === '1',

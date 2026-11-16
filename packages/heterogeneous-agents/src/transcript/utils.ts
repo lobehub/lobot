@@ -90,37 +90,3 @@ export const toModelUsageFromAnthropic = (
     totalTokens: totalInputTokens + totalOutputTokens,
   };
 };
-
-/**
- * Convert a Codex `token_count` usage object (`info.last_token_usage`) into
- * the LobeHub `ModelUsage` shape. Codex `input_tokens` INCLUDES the cached
- * portion, unlike Anthropic's cache-miss-only `input_tokens`.
- */
-export const toModelUsageFromCodex = (
-  raw:
-    | {
-        cached_input_tokens?: number;
-        input_tokens?: number;
-        output_tokens?: number;
-        reasoning_output_tokens?: number;
-        total_tokens?: number;
-      }
-    | null
-    | undefined,
-): Record<string, number> | undefined => {
-  if (!raw) return undefined;
-  const totalInputTokens = raw.input_tokens || 0;
-  const inputCachedTokens = raw.cached_input_tokens || 0;
-  const totalOutputTokens = raw.output_tokens || 0;
-  if (totalInputTokens + totalOutputTokens === 0) return undefined;
-  const outputReasoningTokens = raw.reasoning_output_tokens || 0;
-  return {
-    ...(inputCachedTokens
-      ? { inputCacheMissTokens: totalInputTokens - inputCachedTokens, inputCachedTokens }
-      : {}),
-    ...(outputReasoningTokens ? { outputReasoningTokens } : {}),
-    totalInputTokens,
-    totalOutputTokens,
-    totalTokens: raw.total_tokens || totalInputTokens + totalOutputTokens,
-  };
-};

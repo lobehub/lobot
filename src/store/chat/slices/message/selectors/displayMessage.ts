@@ -26,7 +26,7 @@ import { messageMapKey } from '../../../utils/messageMapKey';
  * Get the current chat key for accessing messagesMap
  * For group conversations, uses groupId to generate the correct key
  */
-export const currentDisplayChatKey = (s: ChatStoreState) =>
+const currentDisplayChatKey = (s: ChatStoreState) =>
   messageMapKey({
     agentId: s.activeAgentId,
     groupId: s.activeGroupId,

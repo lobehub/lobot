@@ -7,8 +7,6 @@ import { getActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspa
 
 import { buildWorkspaceAwarePath, type WorkspaceAwareNavigateOptions } from './workspaceAwarePath';
 
-export type { WorkspaceAwareNavigateOptions } from './workspaceAwarePath';
-
 /**
  * `useNavigate` from react-router-dom, extended with an `escape` option for
  * skipping workspace-prefix logic on personal-only destinations.

@@ -22,7 +22,7 @@ export interface EvalContext {
   timezone?: string;
 }
 
-export interface EvalContextSystemInjectorConfig {
+interface EvalContextSystemInjectorConfig {
   enabled?: boolean;
   evalContext?: EvalContext;
 }

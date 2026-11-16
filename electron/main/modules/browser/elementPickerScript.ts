@@ -10,7 +10,7 @@
  * promise with it, which the controller treats as a cancel.
  */
 
-export interface ElementPickerLabels {
+interface ElementPickerLabels {
   /** Bottom chip copy, e.g. "Click an element to add it · Esc to cancel". */
   hint: string;
 }

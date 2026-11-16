@@ -50,7 +50,7 @@ export interface MarketAuthSession {
   userInfo?: MarketUserInfo;
 }
 
-export interface MarketAuthState {
+interface MarketAuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   session: MarketAuthSession | null;

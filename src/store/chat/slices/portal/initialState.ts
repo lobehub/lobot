@@ -45,7 +45,7 @@ export enum PortalViewType {
  * A file preview the opener has already resolved, for surfaces that cannot read
  * the file through the owner-scoped file store.
  */
-export interface PortalFileSource {
+interface PortalFileSource {
   /** Display name; its extension also selects the renderer. */
   name: string;
   /** Publicly readable file URL. */

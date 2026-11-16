@@ -395,7 +395,7 @@ const transformGoogleGenerativeAIStream = (
   };
 };
 
-export interface GoogleAIStreamOptions {
+interface GoogleAIStreamOptions {
   callbacks?: ChatStreamCallbacks;
   enableStreaming?: boolean; // Select TPS calculation method (pass false for non-streaming)
   inputStartAt?: number;

@@ -43,7 +43,7 @@ const createDrizzleDatabase = (database: DatabaseSync) =>
     { schema: localDatabaseSchema },
   );
 
-export type LocalDrizzleDatabase = ReturnType<typeof createDrizzleDatabase>;
+type LocalDrizzleDatabase = ReturnType<typeof createDrizzleDatabase>;
 
 export interface LocalDatabaseRuntime {
   database: DatabaseSync;

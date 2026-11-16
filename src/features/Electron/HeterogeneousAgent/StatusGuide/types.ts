@@ -9,7 +9,7 @@ export type HeterogeneousAgentStatusGuideVariant = 'compact' | 'embedded' | 'inl
  * Present while an `overloaded` error is auto-retrying. When absent, the
  * overloaded guide renders its static manual-retry card.
  */
-export interface HeterogeneousAgentAutoRetryState {
+interface HeterogeneousAgentAutoRetryState {
   attempt: number;
   maxAttempts: number;
   onCancel: () => void;

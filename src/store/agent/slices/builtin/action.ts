@@ -90,7 +90,7 @@ type Setter = StoreSetter<AgentStore>;
 export const createBuiltinAgentSlice = (set: Setter, get: () => AgentStore, _api?: unknown) =>
   new BuiltinAgentSliceActionImpl(set, get, _api);
 
-export class BuiltinAgentSliceActionImpl {
+class BuiltinAgentSliceActionImpl {
   readonly #builtin;
   readonly #get: () => AgentStore;
 

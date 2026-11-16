@@ -5,7 +5,7 @@
  * hook to return the active workspace's avatar / name when a team workspace
  * is selected, so the header reflects the current context.
  */
-export interface ActiveIdentity {
+interface ActiveIdentity {
   avatar?: string | null;
   name?: string | null;
 }

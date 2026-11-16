@@ -33,11 +33,6 @@ const writeMap = (value: Record<string, string>) => {
   storage.setItem(LOCAL_AGENT_WORKING_DIRECTORY_KEY, JSON.stringify(value));
 };
 
-export const getLocalAgentWorkingDirectory = (agentId: string): string | undefined => {
-  if (!agentId) return;
-  return readMap()[agentId];
-};
-
 export const readAllLocalAgentWorkingDirectories = (): Record<string, string> => readMap();
 
 export const setLocalAgentWorkingDirectory = (agentId: string, workingDirectory?: string): void => {

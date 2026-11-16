@@ -58,7 +58,7 @@ interface RefreshFileListOptions {
  * the network only confirms it: `undefined` = nothing loaded for this id yet,
  * `null` on the server is mapped to `undefined`.
  */
-export interface UseFetchKnowledgeItemResult {
+interface UseFetchKnowledgeItemResult {
   data: FileListItem | undefined;
   error: unknown;
   /** SWR's `isLoading` semantics: no value yet and no error. */
@@ -69,7 +69,7 @@ export interface UseFetchKnowledgeItemResult {
 }
 
 /** Result of {@link FileManageActionImpl.useFetchFolderBreadcrumb}. */
-export interface UseFetchFolderBreadcrumbResult {
+interface UseFetchFolderBreadcrumbResult {
   /** The ancestor chain; `[]` while nothing is loaded or the folder is at the root. */
   data: FolderCrumb[];
   error: unknown;
@@ -119,7 +119,7 @@ type Setter = StoreSetter<FileStore>;
 export const createFileManageSlice = (set: Setter, get: () => FileStore, _api?: unknown) =>
   new FileManageActionImpl(set, get, _api);
 
-export class FileManageActionImpl {
+class FileManageActionImpl {
   readonly #get: () => FileStore;
   /**
    * The knowledge-item list is a `local-replica` paged resource: the

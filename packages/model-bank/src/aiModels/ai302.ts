@@ -168,6 +168,6 @@ const ai302ChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...ai302ChatModels];
+const allModels = [...ai302ChatModels];
 
 export default allModels;

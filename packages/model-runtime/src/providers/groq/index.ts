@@ -9,7 +9,7 @@ import {
 import { resolveParameters } from '../../core/parameterResolver';
 import { AgentRuntimeErrorType } from '../../types/error';
 
-export interface GroqModelCard {
+interface GroqModelCard {
   context_window: number;
   id: string;
 }
@@ -69,7 +69,7 @@ const isQwenEffortModel = (model: string): boolean => model.toLowerCase().includ
 /** GPT-OSS reasoning models: effort values are "low" | "medium" | "high" */
 const isGptOssModel = (model: string): boolean => model.toLowerCase().includes('gpt-oss-');
 
-export const params = {
+const params = {
   baseURL: 'https://api.groq.com/openai/v1',
   chatCompletion: {
     handleError: (error) => {

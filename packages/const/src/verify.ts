@@ -21,11 +21,9 @@
  * - llm:     call generateObject and let an LLM judge produce a Toulmin verdict
  */
 export const verifierTypes = ['program', 'agent', 'llm'] as const;
-export type VerifierType = (typeof verifierTypes)[number];
 
 /** What to do when a check item fails. */
 export const verifyOnFailStrategies = ['manual', 'auto_repair'] as const;
-export type VerifyOnFailStrategy = (typeof verifyOnFailStrategies)[number];
 
 /**
  * Lifecycle of a single check result.
@@ -41,15 +39,12 @@ export const verifyCheckResultStatuses = [
   'errored',
   'skipped',
 ] as const;
-export type VerifyCheckResultStatus = (typeof verifyCheckResultStatuses)[number];
 
 /** Toulmin Claim — the verifier's judgement. */
 export const verifyVerdicts = ['passed', 'failed', 'uncertain'] as const;
-export type VerifyVerdict = (typeof verifyVerdicts)[number];
 
 /** Human feedback on a result, feeding the data flywheel. */
 export const verifyUserDecisions = ['accepted', 'rejected', 'overridden'] as const;
-export type VerifyUserDecision = (typeof verifyUserDecisions)[number];
 
 /**
  * Denormalized rollup of a verification session's pipeline state — mirrors the
@@ -69,7 +64,6 @@ export const verifyRunStatuses = [
   'repairing',
   'delivered',
 ] as const;
-export type VerifyRunStatus = (typeof verifyRunStatuses)[number];
 
 /**
  * A draft round only describes what will be verified: nothing has executed and
@@ -100,7 +94,6 @@ export const isDraftVerifyRun = (run: {
  *   (no Agent Run — `operation_id` is null)
  */
 export const verifyRunSources = ['agent', 'agent-testing'] as const;
-export type VerifyRunSource = (typeof verifyRunSources)[number];
 
 /**
  * The kind of thing a verification session checks. Orthogonal to `source` (which
@@ -186,42 +179,6 @@ const PROGRAMMATIC_TEST_PATTERNS: RegExp[] = [
 ];
 
 /**
- * Round statuses past which a dispute can no longer change anything: the round
- * has been judged (or handed to a repair round) and its Task driven, so a waiver
- * written there would only rewrite metadata under a settled verdict.
- */
-export const DISPUTE_SETTLED_RUN_STATUSES = [
-  'delivered',
-  'errored',
-  'failed',
-  'passed',
-  'repairing',
-] as const satisfies readonly VerifyRunStatus[];
-
-/** Why a builder disputes a check; see `VerifyCheckDisputeKind` in `@lobechat/types`. */
-export const VERIFY_DISPUTE_KINDS = ['invalid_criterion', 'missed_evidence'] as const;
-
-/**
- * Whether a panel upheld the builder's `invalid_criterion` dispute on this check
- * result, which waives it: the rollup, the Goal review and the failure summary
- * stop counting it against the delivery. Takes the raw metadata bag so every
- * layer reads the same field.
- */
-export const isCheckWaivedByDispute = (metadata: unknown): boolean => {
-  const dispute = (metadata as { dispute?: { arbitration?: { outcome?: string }; kind?: string } })
-    ?.dispute;
-  return dispute?.kind === 'invalid_criterion' && dispute.arbitration?.outcome === 'upheld';
-};
-
-/**
- * Stored title of the synthesized holistic fallback check (one broad agent
- * verify over the whole deliverable, used when a task opted into verify without
- * decomposing into criteria). The server persists this fixed English string;
- * clients match against it to render a localized display title instead.
- */
-export const HOLISTIC_CHECK_TITLE = 'Task delivery acceptance';
-
-/**
  * Whether a proposed acceptance check is really one of the repo's programmatic
  * test / static-analysis gates rather than a delivery outcome a person accepts.
  *
@@ -262,13 +219,6 @@ export const acceptanceSubjectTypes = [
 ] as const;
 export type AcceptanceSubjectType = (typeof acceptanceSubjectTypes)[number];
 // A site's standing review is created only with the site itself, never through the generic acceptance API.
-export const creatableAcceptanceSubjectTypes = [
-  'task',
-  'topic',
-  'document',
-  'standalone',
-  'goal_gate',
-] as const;
 
 /**
  * Business-level acceptance state. Check-level and run-level verdicts stay in the
@@ -291,10 +241,6 @@ export const creatableAcceptanceSubjectTypes = [
 export const verifyVisibilities = ['private', 'public', 'owner'] as const;
 export type VerifyVisibility = (typeof verifyVisibilities)[number];
 
-/** Whether a member of the row's workspace (not its creator) may read it. */
-export const isWorkspaceReadableVisibility = (visibility: VerifyVisibility) =>
-  visibility !== 'owner';
-
 export const acceptanceVisibilities = verifyVisibilities;
 export type AcceptanceVisibility = VerifyVisibility;
 
@@ -312,7 +258,6 @@ export const acceptanceStatuses = [
   'rejected',
   'errored',
 ] as const;
-export type AcceptanceStatus = (typeof acceptanceStatuses)[number];
 
 /**
  * The user's per-check verdict on the acceptance union. `accept` and `ignore`
@@ -321,7 +266,6 @@ export type AcceptanceStatus = (typeof acceptanceStatuses)[number];
  * lands.
  */
 export const acceptanceCheckReviewActions = ['accept', 'ignore', 'reject'] as const;
-export type AcceptanceCheckReviewAction = (typeof acceptanceCheckReviewActions)[number];
 
 /**
  * Why a reviewer rejected a check. The offline baseline found that
@@ -337,7 +281,6 @@ export type AcceptanceCheckReviewAction = (typeof acceptanceCheckReviewActions)[
  * - no-evidence: the evidence does not show enough to judge the check at all
  */
 export const acceptanceRejectIntents = ['unmet', 'new-idea', 'no-evidence'] as const;
-export type AcceptanceRejectIntent = (typeof acceptanceRejectIntents)[number];
 
 /** What an automated reviewer proposes for a check. Deliberately narrower than
  *  the human's vocabulary: a model never proposes `ignore`, which is a statement
@@ -351,7 +294,6 @@ export type AcceptanceRejectIntent = (typeof acceptanceRejectIntents)[number];
  *  them together made "the delivery fell short" and "this reviewer cannot decide"
  *  indistinguishable in the agreement statistics. */
 export const reviewPredictionActions = ['accept', 'reject', 'unjudgeable'] as const;
-export type ReviewPredictionAction = (typeof reviewPredictionActions)[number];
 
 /**
  * How a review attempt ended. Split from the verdict for the same reason
@@ -370,7 +312,6 @@ export type ReviewPredictionAction = (typeof reviewPredictionActions)[number];
  * - errored: the call failed or its output did not parse; `action` is null
  */
 export const reviewPredictionStatuses = ['judged', 'skipped', 'errored'] as const;
-export type ReviewPredictionStatus = (typeof reviewPredictionStatuses)[number];
 
 /**
  * The reviewer's verdict on a model proposal. Three-way on purpose — a flat
@@ -384,7 +325,6 @@ export type ReviewPredictionStatus = (typeof reviewPredictionStatuses)[number];
  *   positive signal on the judgement, negative on the grounding
  */
 export const reviewAdjudications = ['confirmed', 'not-an-issue', 'misidentified'] as const;
-export type ReviewAdjudication = (typeof reviewAdjudications)[number];
 
 /**
  * How closely the reviewer's submitted reject matched the proposal it started
@@ -398,7 +338,6 @@ export const reviewProposalEdits = [
   'region-moved',
   'rewritten',
 ] as const;
-export type ReviewProposalEdit = (typeof reviewProposalEdits)[number];
 
 /** The medium of a captured evidence artifact. */
 export const verifyEvidenceTypes = [
@@ -419,10 +358,10 @@ export const verifyEvidenceTypes = [
   // facts, provenance and stdout / stderr / recording artifacts in metadata.
   'terminal',
 ] as const;
-export type VerifyEvidenceType = (typeof verifyEvidenceTypes)[number];
+type VerifyEvidenceType = (typeof verifyEvidenceTypes)[number];
 
 /** The part of a criterion's `requiredEvidence` entry the coverage gate reads. */
-export interface RequiredEvidenceCoverageSpec {
+interface RequiredEvidenceCoverageSpec {
   scope?: 'deliverable' | 'run_evidence' | 'task_artifacts';
   type: VerifyEvidenceType;
 }
@@ -453,7 +392,7 @@ const EVIDENCE_SATISFIED_BY: Partial<Record<VerifyEvidenceType, VerifyEvidenceTy
  * Evidence-driven criteria list the artifact types they need under
  * `verifierConfig.requiredEvidence`; everything else returns undefined.
  */
-export const readRequiredEvidence = <T extends RequiredEvidenceCoverageSpec>(
+const readRequiredEvidence = <T extends RequiredEvidenceCoverageSpec>(
   config: Record<string, unknown> | undefined | null,
 ): T[] | undefined => {
   const raw = config?.requiredEvidence;
@@ -465,7 +404,7 @@ export const readRequiredEvidence = <T extends RequiredEvidenceCoverageSpec>(
  * structural gate is unit-testable without a database. Returns `[]` when the
  * item declares no evidence requirement (nothing to gate on).
  */
-export const coverageGaps = (
+const coverageGaps = (
   required: RequiredEvidenceCoverageSpec[] | undefined,
   evidence: { type: VerifyEvidenceType }[],
 ): VerifyEvidenceType[] => {
@@ -492,18 +431,6 @@ export const runEvidenceGaps = (
     readRequiredEvidence(config)?.filter((spec) => !spec.scope || spec.scope === 'run_evidence'),
     evidence,
   );
-/**
- * Evidence whose payload is text a reader or model can take in directly. A
- * `terminal` evidence belongs here because its payload is the text fallback of
- * the execution, written for exactly the readers that have no player.
- */
-export const verifyTextEvidenceTypes: ReadonlySet<string> = new Set([
-  'dom_snapshot',
-  'markdown',
-  'terminal',
-  'text',
-  'transcript',
-]);
 
 /**
  * Every stored file an evidence row references: its own payload file, plus —
@@ -538,7 +465,6 @@ export const verifyEvidenceCapturedBy = [
   'program',
   'llm_judge',
 ] as const;
-export type VerifyEvidenceCapturedBy = (typeof verifyEvidenceCapturedBy)[number];
 
 /**
  * How an agent marker on a video reads.
@@ -550,7 +476,7 @@ export type VerifyEvidenceCapturedBy = (typeof verifyEvidenceCapturedBy)[number]
  *   reviewer can disagree
  */
 export const verifyEvidenceChapterKinds = ['check', 'flag', 'step'] as const;
-export type VerifyEvidenceChapterKind = (typeof verifyEvidenceChapterKinds)[number];
+type VerifyEvidenceChapterKind = (typeof verifyEvidenceChapterKinds)[number];
 
 /** An agent-authored marker on a video evidence (`verify_evidence.metadata.chapters`). */
 export interface VerifyEvidenceChapter {
@@ -631,32 +557,8 @@ export const formatVideoTimestamp = (seconds: number) => {
   return `${minutes}:${rest.toFixed(2).padStart(5, '0')}`;
 };
 
-/**
- * The whole frame. A reviewer note on a video that marks a moment or a span
- * without circling an area carries this region.
- */
-export const FULL_FRAME_RECT = { height: 1, width: 1, x: 0, y: 0 } as const;
-
 export const isFullFrameRect = (rect: { height: number; width: number; x: number; y: number }) =>
   rect.x === 0 && rect.y === 0 && rect.width === 1 && rect.height === 1;
-
-/** Default cap on automatic repair rounds when a rubric doesn't override it. */
-export const DEFAULT_MAX_REPAIR_ROUNDS = 3;
-
-/**
- * Round budget applied when the user left a goal's round cap untouched.
- *
- * A goal has *two* independent budgets and they must never be written from one
- * value: this one caps the outer loop (how many task topics the goal may spawn,
- * `tasks.config.goal.maxIterations`), while {@link DEFAULT_MAX_REPAIR_ROUNDS}
- * caps the inner auto-repair loop *within* a single round
- * (`tasks.config.verify.maxIterations`). Their product is the worst-case number
- * of agent runs a goal can pay for.
- */
-export const DEFAULT_GOAL_MAX_ROUNDS = 8;
-
-/** Bounds the round budget a goal may be created with. */
-export const GOAL_MAX_ROUNDS_RANGE = { max: 10, min: 2 } as const;
 
 /**
  * The LobeHub conversation an ingested report was authored in. Lets the report

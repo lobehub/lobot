@@ -9,19 +9,13 @@ import { getIdFromIdentifier, standardizeIdentifier } from '@/utils/identifier';
  * navigation adds it.
  */
 export const RESOURCE_HOME_PATH = '/resource';
-export const DRIVE_PATH = '/resource/drive';
+const DRIVE_PATH = '/resource/drive';
 /** The cloud sandbox's drives (public / personal) and their usage. */
 export const SANDBOX_STORAGE_PATH = '/resource/sandbox-storage';
-/**
- * The sandbox storage page opened on its space analysis and cleanup, for a
- * drive over its quota: where every refusal of a write points.
- */
-export const SANDBOX_STORAGE_CLEANUP_PATH = `${SANDBOX_STORAGE_PATH}?view=cleanup`;
-export const LIBRARY_INDEX_PATH = '/resource/library';
-export const WORKS_PATH = '/resource/works';
+const WORKS_PATH = '/resource/works';
 
 /** Path segment → drive category: /resource/drive/documents, /resource/drive/images, … */
-export const DRIVE_CATEGORY_BY_SEGMENT: Record<string, FilesTabs> = {
+const DRIVE_CATEGORY_BY_SEGMENT: Record<string, FilesTabs> = {
   audios: FilesTabs.Audios,
   documents: FilesTabs.Documents,
   files: FilesTabs.Files,
@@ -51,7 +45,7 @@ export const docsPagePath = (pageId: string): string =>
 export const docsFilePath = (fileId: string): string =>
   `${RESOURCE_HOME_PATH}/file/${encodeURIComponent(fileId)}`;
 
-export type ResourceRouteView =
+type ResourceRouteView =
   | { kind: 'home' }
   | { category: FilesTabs; kind: 'drive' }
   | { galleryKey: WorkGalleryKey; kind: 'works' }
@@ -124,7 +118,7 @@ export const resolveResourceRoute = (
   return { kind: 'redirect', to: RESOURCE_HOME_PATH };
 };
 
-export type DocsSection = 'drive' | 'home' | 'library' | 'sandboxStorage' | 'works';
+type DocsSection = 'drive' | 'home' | 'library' | 'sandboxStorage' | 'works';
 
 /**
  * Which top-level Docs section a pathname belongs to. Business routes under

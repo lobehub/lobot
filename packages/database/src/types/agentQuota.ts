@@ -3,11 +3,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 /** Which external agent tool the account/quota belongs to. */
-export const QuotaProvider = {
+const QuotaProvider = {
   claudeCode: 'claude-code',
   codex: 'codex',
 } as const;
-export type QuotaProvider = (typeof QuotaProvider)[keyof typeof QuotaProvider];
+type QuotaProvider = (typeof QuotaProvider)[keyof typeof QuotaProvider];
 
 /**
  * How the account's credential is held.
@@ -48,22 +48,11 @@ export const QuotaBindingRole = {
 export type QuotaBindingRole = (typeof QuotaBindingRole)[keyof typeof QuotaBindingRole];
 
 /** Whether the ledger cost came from the provider or was computed by us. */
-export const QuotaCostSource = {
+const QuotaCostSource = {
   computed: 'computed',
   providerReported: 'provider_reported',
 } as const;
-export type QuotaCostSource = (typeof QuotaCostSource)[keyof typeof QuotaCostSource];
-
-/**
- * Decrypted shape of `agent_provider_accounts.credentials` (managed mode only).
- * Encrypted at rest via KeyVaultsGateKeeper, same as `user_connectors`.
- */
-export interface QuotaAccountCredentials {
-  accessToken: string;
-  expiresAt?: number;
-  refreshToken?: string;
-  scope?: string;
-}
+type QuotaCostSource = (typeof QuotaCostSource)[keyof typeof QuotaCostSource];
 
 /** Plaintext pointer used in `referenced` mode — no secret material. */
 export interface QuotaAccountCredentialRef {

@@ -135,7 +135,7 @@ const topicOnlyMine =
     !!ownerId && !!s.status.topicOnlyMineByAgent?.[ownerId];
 
 /** Upper bound of `topic.getTopics`'s `pageSize` input on the server. */
-export const MAX_TOPIC_PAGE_SIZE = 100;
+const MAX_TOPIC_PAGE_SIZE = 100;
 
 /**
  * Clamped to the server's cap: the project sidebar's "load more" used to grow
@@ -178,7 +178,7 @@ const taskListViewMode = (s: GlobalState) => s.status.taskListViewMode ?? 'list'
 const taskCreateInlineCollapsed = (s: GlobalState): boolean =>
   s.status.taskCreateInlineCollapsed ?? true;
 
-export const DEFAULT_KANBAN_HIDDEN_COLUMNS: string[] = ['done', 'canceled'];
+const DEFAULT_KANBAN_HIDDEN_COLUMNS: string[] = ['done', 'canceled'];
 
 const taskKanbanHiddenColumns = (s: GlobalState): string[] =>
   s.status.taskKanbanHiddenColumns ?? DEFAULT_KANBAN_HIDDEN_COLUMNS;
@@ -192,7 +192,7 @@ export const DEFAULT_HIDDEN_SECTIONS: string[] = [];
  * sidebar visibility. `recents` lives in personal mode where the catch-all
  * stream is useful, but in a workspace the agent/project lists are the
  * primary entry points — surfacing recents on top adds noise. */
-export const WORKSPACE_DEFAULT_HIDDEN_SECTIONS: string[] = ['recents'];
+const WORKSPACE_DEFAULT_HIDDEN_SECTIONS: string[] = ['recents'];
 
 /** Sections hidden by default for the given mode. The customize-sidebar
  * "Reset to default" path uses this so resetting in a workspace restores

@@ -407,6 +407,6 @@ const githubCopilotChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...githubCopilotChatModels];
+const allModels = [...githubCopilotChatModels];
 
 export default allModels;

@@ -163,7 +163,7 @@ const activeTopicModel = (s: ChatStoreState): { model: string; provider: string 
   return getTopicModelById(s.activeTopicId)(s);
 };
 
-export interface TopicReasoningPin {
+interface TopicReasoningPin {
   model: string;
   provider: string;
   /** Absent on legacy topics and topics created before the config was loaded. */
@@ -208,7 +208,7 @@ const getTopicReasoningConfigForModel =
  * plus `metadata.heteroEffort` / `heteroSpeed`. Undefined when nothing is pinned, so callers
  * can pass it straight to `applyTopicModelToHeterogeneousProvider`.
  */
-export const resolveTopicHeteroPin = (
+const resolveTopicHeteroPin = (
   topic: Pick<ChatTopic, 'metadata' | 'model' | 'provider'> | undefined,
 ): HeterogeneousTopicPin | undefined => {
   if (!topic) return undefined;
@@ -350,7 +350,7 @@ const displayTopicsForSidebar =
     );
   };
 
-export const selectSidebarTopics = (
+const selectSidebarTopics = (
   topics: ChatTopic[],
   pageSize: number,
   sortBy: TopicSortBy = 'updatedAt',
@@ -455,7 +455,7 @@ const buildGroupedTopics = (
     : groupFn(topics);
 };
 
-export const groupSidebarTopics = (
+const groupSidebarTopics = (
   topics: ChatTopic[],
   groupMode: TopicGroupMode,
   sortBy: TopicSortBy,

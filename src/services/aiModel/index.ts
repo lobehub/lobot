@@ -11,7 +11,7 @@ import { isAiModelVisible } from 'model-bank/aiModel';
 
 import { lambdaClient } from '@/libs/trpc/client';
 
-export interface GetAiProviderModelListParams {
+interface GetAiProviderModelListParams {
   enabled?: boolean;
   limit?: number;
   offset?: number;

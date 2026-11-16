@@ -29,7 +29,7 @@ interface PriorityMeta {
   level: number;
 }
 
-export const PRIORITY_META: Record<number, PriorityMeta> = {
+const PRIORITY_META: Record<number, PriorityMeta> = {
   0: { icon: PriorityNoneIcon, label: 'No priority', labelKey: 'priority.none', level: 0 },
   1: { icon: PriorityUrgentIcon, label: 'Urgent', labelKey: 'priority.urgent', level: 1 },
   2: { icon: PriorityHighIcon, label: 'High', labelKey: 'priority.high', level: 2 },

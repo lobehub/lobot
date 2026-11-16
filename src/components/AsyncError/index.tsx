@@ -24,7 +24,7 @@ import { normalizeAsyncError } from '@/libs/swr/normalizeError';
  */
 export type AsyncErrorVariant = 'page' | 'block' | 'inline' | 'metric';
 
-export interface AsyncErrorProps {
+interface AsyncErrorProps {
   /**
    * Custom action rendered in the retry button's slot — for terminal errors
    * where retrying can never succeed but the user still needs a way out

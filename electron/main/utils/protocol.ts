@@ -4,8 +4,6 @@ import { getDesktopEnv } from '@/env';
 
 import type { McpSchema, ProtocolUrlParsed } from '../types/protocol';
 
-export type AppChannel = 'stable' | 'beta' | 'nightly';
-
 /**
  * The distribution's scheme, lowercased: `new URL()` lowercases the scheme it
  * parses, so a mixed-case value would never match an incoming link. The build
@@ -32,22 +30,6 @@ export const getProtocolScheme = (): string => {
   if (app.name?.includes('dev') || app.getPath('exe')?.includes('dev')) return `${BASE_SCHEME}-dev`;
 
   return BASE_SCHEME;
-};
-
-export const getVersionInfo = (): { channel: AppChannel; protocolScheme: string } => {
-  const protocolScheme = getProtocolScheme();
-
-  let appChannel: AppChannel = 'stable';
-  if (protocolScheme.includes('nightly')) {
-    appChannel = 'nightly';
-  } else if (protocolScheme.includes('beta')) {
-    appChannel = 'beta';
-  }
-
-  return {
-    channel: appChannel,
-    protocolScheme,
-  };
 };
 
 /**

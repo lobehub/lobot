@@ -13,7 +13,7 @@ import GroupItem from './GroupItem';
 import type { GroupRenderSegment } from './segments';
 import WorkflowCollapse, { type WorkflowExpandLevelDefault } from './WorkflowCollapse';
 
-export interface ChainSegmentRenderOptions {
+interface ChainSegmentRenderOptions {
   defaultWorkflowExpandLevel?: WorkflowExpandLevelDefault;
   disableEditing?: boolean;
   enableProcessFold?: boolean;

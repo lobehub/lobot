@@ -14,7 +14,7 @@ import {
   supportsOpenAIServiceTierFlex,
 } from './modelId';
 
-export interface OpenAIModelCard {
+interface OpenAIModelCard {
   id: string;
 }
 

@@ -1240,6 +1240,6 @@ const wenxinVideoModels: AIVideoModelCard[] = [
   },
 ];
 
-export const allModels = [...wenxinChatModels, ...wenxinImageModels, ...wenxinVideoModels];
+const allModels = [...wenxinChatModels, ...wenxinImageModels, ...wenxinVideoModels];
 
 export default allModels;

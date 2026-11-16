@@ -6,7 +6,7 @@ import {
   type TaskStatus,
 } from '@lobechat/types';
 
-export interface AgentAvatarInfo {
+interface AgentAvatarInfo {
   avatar: string | null;
   backgroundColor: string | null;
   id: string;

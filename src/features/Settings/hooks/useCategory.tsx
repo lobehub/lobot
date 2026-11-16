@@ -18,7 +18,7 @@ export enum SettingsGroupKey {
   System = 'system',
 }
 
-export interface CategoryItem {
+interface CategoryItem {
   /** Override the navigation URL. When omitted, Body derives the URL from `key`. */
   href?: string;
   icon: any;
@@ -26,7 +26,7 @@ export interface CategoryItem {
   label: string;
 }
 
-export interface CategoryGroup {
+interface CategoryGroup {
   items: CategoryItem[];
   key: SettingsGroupKey;
   title: string;

@@ -10,7 +10,7 @@ import { NoticeAlert } from '@/components/NoticeAlert';
 import { selectors, useChatInputStore } from '@/features/ChatInput/store';
 import type { InputCompletionError } from '@/features/ChatInput/store/initialState';
 
-export const InputCompletionErrorAlertContent = memo<{
+const InputCompletionErrorAlertContent = memo<{
   inputCompletionError: InputCompletionError;
 }>(({ inputCompletionError }) => {
   const { t } = useTranslation('chat');

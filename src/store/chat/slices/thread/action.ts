@@ -35,10 +35,7 @@ const n = setNamespace('thd');
 
 type Setter = StoreSetter<ChatStore>;
 /** Window in which mounts syncing the same topic share one request. */
-export const THREAD_LIST_DEDUPING_INTERVAL = 10_000;
-
-export const chatThreadMessage = (set: Setter, get: () => ChatStore, _api?: unknown) =>
-  new ChatThreadActionImpl(set, get, _api);
+const THREAD_LIST_DEDUPING_INTERVAL = 10_000;
 
 export class ChatThreadActionImpl {
   readonly #get: () => ChatStore;

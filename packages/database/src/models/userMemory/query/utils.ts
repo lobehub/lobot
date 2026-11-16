@@ -14,7 +14,7 @@ export const buildRetrievalQuery = (queries: string[]) => {
  * Long conversation context is useful to embeddings but not to conjunction-based lexical search:
  * requiring hundreds of analyzed terms to match one field produces no meaningful candidates.
  */
-export const USER_MEMORY_LEXICAL_QUERY_CHARACTER_LIMIT = 256;
+const USER_MEMORY_LEXICAL_QUERY_CHARACTER_LIMIT = 256;
 
 export const combineEmbeddings = (embeddings: number[][]) => {
   if (embeddings.length === 0) return undefined;

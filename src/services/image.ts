@@ -6,7 +6,7 @@ import { type CreateImageServicePayload } from '@/server/routers/lambda/image';
 // Create debug logger
 const log = debug('lobe-image:service');
 
-export class AiImageService {
+class AiImageService {
   async createImage(payload: CreateImageServicePayload) {
     log('Creating image with payload: %O', payload);
 

@@ -1,5 +1,5 @@
-import { createStaticStyles, cx, type DropdownItem, DropdownMenu, Icon } from '@lobehub/ui';
-import { CheckIcon, ChevronDownIcon, PlusIcon } from 'lucide-react';
+import { createStaticStyles, cx, Icon } from '@lobehub/ui';
+import { CheckIcon, PlusIcon } from 'lucide-react';
 
 const styles = createStaticStyles(({ css, cssVar }) => ({
   chip: css`
@@ -95,41 +95,3 @@ export const ToggleChip = ({ checked, label, onChange }: ToggleChipProps) => (
     {label}
   </button>
 );
-
-interface SelectChipOption<T extends string> {
-  label: string;
-  value: T;
-}
-
-interface SelectChipProps<T extends string> {
-  label: string;
-  onChange: (value: T) => void;
-  options: SelectChipOption<T>[];
-  value: T;
-}
-
-export const SelectChip = <T extends string>({
-  label,
-  onChange,
-  options,
-  value,
-}: SelectChipProps<T>) => {
-  const items: DropdownItem[] = options.map((option) => ({
-    extra: option.value === value ? <Icon icon={CheckIcon} size={14} /> : undefined,
-    key: option.value,
-    label: option.label,
-    onClick: () => onChange(option.value),
-  }));
-
-  const current = options.find((option) => option.value === value);
-
-  return (
-    <DropdownMenu items={items} placement={'bottomLeft'}>
-      <button className={styles.select} type={'button'}>
-        <span className={styles.selectLabel}>{label}</span>
-        {current?.label}
-        <Icon icon={ChevronDownIcon} size={14} style={{ opacity: 0.5 }} />
-      </button>
-    </DropdownMenu>
-  );
-};

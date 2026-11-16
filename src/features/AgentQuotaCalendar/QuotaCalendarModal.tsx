@@ -1115,5 +1115,3 @@ export const openQuotaCalendarModal = (
     width: 1040,
   });
 };
-
-export default QuotaCalendar;

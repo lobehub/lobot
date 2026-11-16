@@ -34,7 +34,7 @@ import { agentSkillsSelectors } from './selectors';
 const LIST_PARAMS = {} as Record<string, never>;
 
 /** Sync result of the skills list: replica flags plus the value the UI reads. */
-export interface AgentSkillsSyncResult extends ReplicaSyncResult {
+interface AgentSkillsSyncResult extends ReplicaSyncResult {
   /** The installed skills, `undefined` until the first entry lands. */
   data: AgentSkillListItem[] | undefined;
   /** A request is in flight and there is nothing to show for this entry yet. */
@@ -44,7 +44,7 @@ export interface AgentSkillsSyncResult extends ReplicaSyncResult {
 }
 
 /** Sync result of one skill detail page. */
-export interface AgentSkillDetailSyncResult extends ReplicaSyncResult {
+interface AgentSkillDetailSyncResult extends ReplicaSyncResult {
   /** The detail value: the skill and its resource tree. */
   data: AgentSkillDetail | undefined;
   /** A request is in flight and there is nothing to show for this entry yet. */
@@ -56,7 +56,7 @@ type Setter = StoreSetter<ToolStore>;
 export const createAgentSkillsSlice = (set: Setter, get: () => ToolStore, _api?: unknown) =>
   new AgentSkillsActionImpl(set, get, _api);
 
-export class AgentSkillsActionImpl {
+class AgentSkillsActionImpl {
   readonly #detail;
   readonly #get: () => ToolStore;
   readonly #list;

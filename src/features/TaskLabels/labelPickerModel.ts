@@ -1,6 +1,6 @@
 import type { TaskLabel, TaskLabelRef } from '@lobechat/types';
 
-export interface TaskLabelPickerSection {
+interface TaskLabelPickerSection {
   /** The group, or undefined for the top-level labels. */
   group?: TaskLabel;
   labels: TaskLabel[];

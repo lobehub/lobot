@@ -71,7 +71,7 @@ const TEXT_PREVIEW_MIME_TYPES = new Set([
   ...MARKDOWN_MIME_TYPES,
 ]);
 
-export interface BinaryLocalFilePreview {
+interface BinaryLocalFilePreview {
   contentType: string;
   /** The file has a previewable type but exceeds the in-app preview size cap. */
   oversized?: boolean;
@@ -82,19 +82,19 @@ export interface BinaryLocalFilePreview {
  * Binary document (pdf / office) small enough to preview in-app. Oversized
  * documents stay on the content-less `binary` / `pdf` variants.
  */
-export interface DocumentLocalFilePreview {
+interface DocumentLocalFilePreview {
   blob: Blob;
   contentType: string;
   type: 'document';
 }
 
-export interface ImageLocalFilePreview {
+interface ImageLocalFilePreview {
   blob: Blob;
   contentType: string;
   type: 'image';
 }
 
-export interface TextLocalFilePreview {
+interface TextLocalFilePreview {
   content: string;
   contentType: string;
   resourceBaseUrl?: string;
@@ -106,7 +106,7 @@ export interface TextLocalFilePreview {
  * cached by SWR for the whole session, so the player reads the file itself
  * (`readLocalVideo`) and releases it when it unmounts.
  */
-export interface VideoLocalFilePreview {
+interface VideoLocalFilePreview {
   contentType: string;
   /**
    * Identity of the file contents (size + mtime). Changes when the file at the
@@ -153,7 +153,7 @@ const isOversizedVideo = (response: Response): boolean => {
   return Number.isFinite(contentLength) && contentLength > MAX_VIDEO_PREVIEW_BYTES;
 };
 
-export type ReadLocalVideoResult = { blob: Blob; ok: true } | { ok: false; reason: 'oversized' };
+type ReadLocalVideoResult = { blob: Blob; ok: true } | { ok: false; reason: 'oversized' };
 
 const normalizeContentType = (contentType: string | null): string =>
   contentType?.split(';')[0].trim().toLowerCase() ?? '';

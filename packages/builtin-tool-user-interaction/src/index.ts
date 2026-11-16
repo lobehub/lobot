@@ -1,5 +1,3 @@
-export { UserInteractionManifest } from './manifest';
-export { systemPrompt } from './systemRole';
 export {
   type AskUserDraft,
   type AskUserQuestionArgs,
@@ -11,7 +9,6 @@ export {
   type InteractionStatus,
   type SkipUserResponseArgs,
   type SubmitUserResponseArgs,
-  UserInteractionApiName,
   UserInteractionIdentifier,
   type UserInteractionResult,
 } from './types';

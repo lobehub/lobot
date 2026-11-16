@@ -28,7 +28,7 @@ const replaceDexieCacheSchema = {
 } satisfies IndexedDBMigration;
 
 /** Append-only browser migration manifest. Released entries are immutable. */
-export const indexedDBMigrations = [replaceDexieCacheSchema] as const;
+const indexedDBMigrations = [replaceDexieCacheSchema] as const;
 export const INDEXED_DB_VERSION = indexedDBMigrations.at(-1)!.version;
 
 const validateManifest = (migrations: readonly IndexedDBMigration[]) => {

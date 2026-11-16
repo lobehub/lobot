@@ -17,7 +17,7 @@ const styles = createStaticStyles(({ css }) => ({
   `,
 }));
 
-export interface CaptureSuccessProps {
+interface CaptureSuccessProps {
   datasetName: string;
 }
 

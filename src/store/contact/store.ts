@@ -19,7 +19,7 @@ export interface ContactState {
   shareReplica: ReplicaState<ContactSearchResult[]>;
 }
 
-export const initialState: ContactState = {
+const initialState: ContactState = {
   listMap: {},
   listReplica: createReplicaState(),
   profileMap: {},

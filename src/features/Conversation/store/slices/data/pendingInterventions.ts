@@ -7,7 +7,7 @@ import {
   type UIChatMessage,
 } from '@lobechat/types';
 
-export interface PendingIntervention {
+interface PendingIntervention {
   apiName: string;
   /**
    * Id of the assistant turn that emitted this tool call.
@@ -34,23 +34,6 @@ export interface PendingIntervention {
   toolCallId: string;
   toolMessageId: string;
 }
-
-/**
- * Equality for selector results. The selector builds fresh arrays on every
- * store update; comparing by identity would re-render (and let interventions
- * write back into the store) in a loop.
- */
-export const isSamePendingInterventionList = (
-  a: PendingIntervention[],
-  b: PendingIntervention[],
-): boolean =>
-  a.length === b.length &&
-  a.every(
-    (item, i) =>
-      item.toolCallId === b[i].toolCallId &&
-      item.requestArgs === b[i].requestArgs &&
-      item.deadline === b[i].deadline,
-  );
 
 export const getPendingInterventions = (
   displayMessages: UIChatMessage[],

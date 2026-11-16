@@ -26,11 +26,11 @@ const readIdleCloseMs = (): number => {
 };
 
 /** Stamp a stream-json `user` line with the uuid Claude Code replays it under. */
-export const withUserMessageUuid = (stdinLine: string, uuid: string): string =>
+const withUserMessageUuid = (stdinLine: string, uuid: string): string =>
   `${JSON.stringify({ ...JSON.parse(stdinLine), uuid })}\n`;
 
 /** How the session's most recent turn ended. */
-export interface ClaudeCodeTurnOutcome {
+interface ClaudeCodeTurnOutcome {
   /** The turn was stopped by an interrupt (`terminal_reason: aborted_*`), not failed. */
   aborted: boolean;
   terminalReason?: string;
@@ -39,7 +39,7 @@ export interface ClaudeCodeTurnOutcome {
 const isAbortedResult = (message: any): boolean =>
   !!message.is_error && String(message.terminal_reason ?? '').startsWith('aborted');
 
-export interface ClaudeCodeLiveInputOptions {
+interface ClaudeCodeLiveInputOptions {
   idleCloseMs?: number;
   wakeUpGraceMs?: number;
 }

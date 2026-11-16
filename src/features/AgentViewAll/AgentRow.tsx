@@ -28,7 +28,7 @@ import LabelTags from './LabelTags';
 import SidebarItemAvatar from './SidebarItemAvatar';
 
 /** Fixed action-column width (sidebar-eye toggle + "…" menu) so rows stay aligned. */
-export const ACTION_COL_WIDTH = 64;
+const ACTION_COL_WIDTH = 64;
 
 /** Author avatar slot — reserved even when the author is unknown. */
 const AUTHOR_COL_WIDTH = 20;
@@ -126,7 +126,7 @@ const styles = createStaticStyles(({ css, cssVar }) => ({
 }));
 
 /** < 7 days → relative time; older → plain date (mirrors TopicSelector). */
-export const formatUpdatedAt = (updatedAt: Date | number | string) =>
+const formatUpdatedAt = (updatedAt: Date | number | string) =>
   dayjs().diff(dayjs(updatedAt), 'd') < 7
     ? dayjs(updatedAt).fromNow()
     : dayjs(updatedAt).format('YYYY-MM-DD');

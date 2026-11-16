@@ -33,7 +33,7 @@ export type CommandType = 'compact' | 'newTopic' | 'goal';
 export const GOAL_COMMAND_TYPE = 'goal';
 
 // Skills use dynamic identifiers from agent config (plugin/tool identifiers)
-export type SkillType = string & {};
+type SkillType = string & {};
 
 export type ActionTagType = CommandType | SkillType;
 

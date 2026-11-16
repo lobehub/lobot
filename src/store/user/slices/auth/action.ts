@@ -38,7 +38,7 @@ type Setter = StoreSetter<UserStore>;
 export const createAuthSlice = (set: Setter, get: () => UserStore, _api?: unknown) =>
   new UserAuthActionImpl(set, get, _api);
 
-export class UserAuthActionImpl {
+class UserAuthActionImpl {
   readonly #get: () => UserStore;
   readonly #set: Setter;
 

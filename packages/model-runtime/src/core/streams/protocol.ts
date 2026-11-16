@@ -180,7 +180,7 @@ const isAbortError = (error: unknown): boolean => {
  * provider/model identifiers so log triage can correlate identical
  * upstream failures across operations.
  */
-export type StreamErrorContext = {
+type StreamErrorContext = {
   model?: string;
   provider?: string;
 };
@@ -487,7 +487,7 @@ export const createSSEDataExtractor = () =>
     },
   });
 
-export const TOKEN_SPEED_CHUNK_ID = 'output_speed';
+const TOKEN_SPEED_CHUNK_ID = 'output_speed';
 
 const hasEffectiveOutput = (chunk: StreamProtocolChunk): boolean => {
   switch (chunk.type) {

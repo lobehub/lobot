@@ -1,5 +1,4 @@
 /** @see https://github.com/lobehub/lobe-chat/discussions/6563 */
-import type { ModelPricingContext } from '@lobechat/types';
 import debug from 'debug';
 
 import type {
@@ -37,12 +36,7 @@ import { runDecision } from './decisionRuntime';
 import { createRuntimeFromOption } from './optionRuntime';
 import type { RouteAttemptStart } from './routeAttempt';
 import { createRouteRequestTasks } from './routeRequestTasks';
-import type {
-  CreateRouterRuntimeOptions,
-  LobeClientOptions,
-  RouterInstance,
-  Routers,
-} from './routerOptions';
+import type { CreateRouterRuntimeOptions, LobeClientOptions, Routers } from './routerOptions';
 import { createRouteRun } from './routeRun';
 import {
   normalizeRouterOptions,
@@ -55,13 +49,7 @@ import {
 } from './routeSelection';
 import { createRouterTracer, type RouterTracer } from './tracer';
 
-export type { RouteAttemptResult } from './routeAttempt';
-export type {
-  CreateRouterRuntimeOptions,
-  RouterRuntimeMethod,
-  RouteSuccessParams,
-  SortRouterOptionsParams,
-} from './routerOptions';
+export type { CreateRouterRuntimeOptions } from './routerOptions';
 
 const log = debug('lobe-model-runtime:router-runtime');
 
@@ -97,14 +85,6 @@ export const createRouterRuntime = ({
         routers: this._routers,
         trace: this.trace,
       };
-    }
-
-    private resolveMatchedRouter(model: string, pricingContext?: ModelPricingContext) {
-      return resolveMatchedRouter(this.deps, model, pricingContext);
-    }
-
-    private normalizeRouterOptions(router: RouterInstance) {
-      return normalizeRouterOptions(this.deps, router);
     }
 
     constructor(options: LobeClientOptions & Record<string, any> = {}) {

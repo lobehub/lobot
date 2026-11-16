@@ -17,7 +17,7 @@ const ROW_WIDTHS = [
  * tile, a name + type-tag line over a key line, and the "..." menu button. Rows
  * sit edge to edge (gap 0), like the settled list.
  */
-export const CredsListSkeleton = ({ rows = 4 }: { rows?: number }) => (
+const CredsListSkeleton = ({ rows = 4 }: { rows?: number }) => (
   <Flexbox aria-busy data-testid={'settings-creds-skeleton'} gap={0} width={'100%'}>
     {Array.from({ length: rows }, (_, index) => {
       const [title, key] = ROW_WIDTHS[index % ROW_WIDTHS.length];

@@ -90,7 +90,7 @@ export const createHomeSlice = (
  * flat fields and the same action surface it always has, backed by the replica
  * views, so the memory home page and its components are untouched.
  */
-export class HomeActionImpl {
+class HomeActionImpl {
   readonly #api: StoreApi<UserMemoryStore>;
   readonly #identityRoles;
   readonly #persona;

@@ -16,9 +16,9 @@ const styles = stylex.create({
  */
 const DRAG_REGION_CLASS = 'lobe-drag-region';
 
-export const draggable = cx(stylex.props(styles.draggable).className, DRAG_REGION_CLASS);
+const draggable = cx(stylex.props(styles.draggable).className, DRAG_REGION_CLASS);
 
-export const nodrag = stylex.props(styles.nodrag).className ?? '';
+const nodrag = stylex.props(styles.nodrag).className ?? '';
 
 export const electronStylish = {
   draggable,

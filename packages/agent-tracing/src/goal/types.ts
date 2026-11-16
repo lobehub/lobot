@@ -32,7 +32,7 @@ export type GoalAdvanceTrigger =
   | 'unknown';
 
 /** Which arm of the coordinator ran. One per `tick` return path. */
-export type GoalTickBranch =
+type GoalTickBranch =
   /** Goal is paused or already terminal — nothing to decide. */
   | 'goal_paused'
   | 'goal_terminal'
@@ -75,12 +75,12 @@ export type GoalTickBranch =
   /** A repeated batch's gate is blocked; the coordinator hands it to a person. */
   | 'pattern_break';
 
-export type GoalTickOutcome =
+type GoalTickOutcome =
   'advanced' | 'achieved' | 'waiting_human' | 'waiting_external' | 'no_progress' | 'failed';
 
 // ==================== Graph state ====================
 
-export interface GoalTraceGoal {
+interface GoalTraceGoal {
   agentId?: string | null;
   exploration?: {
     instruction: string;
@@ -156,7 +156,7 @@ export interface GoalGraphDelta {
  * them a trace cannot answer "why not that node", which is the whole point of
  * keeping the input surface rather than the result.
  */
-export interface FrontierCandidate {
+interface FrontierCandidate {
   blockedBy: string[];
   nodeId: string;
   priority: number;
@@ -165,7 +165,7 @@ export interface FrontierCandidate {
 }
 
 /** Budget as the coordinator read it, not as it looks now. */
-export interface GoalBudgetState {
+interface GoalBudgetState {
   costLimitReached: boolean;
   /**
    * The goal's calendar-time budget (config.schedule.deadline), evaluated at
@@ -188,7 +188,7 @@ export interface GoalBudgetState {
  * `deadlinePassed` does: a replay must see the number the live run saw, not
  * whatever the series holds when the trajectory is re-read.
  */
-export interface GoalMetricCriterionState {
+interface GoalMetricCriterionState {
   key: string;
   met: boolean;
   /** When the recorded value was observed; absent when nothing was measured. */
@@ -200,13 +200,13 @@ export interface GoalMetricCriterionState {
 }
 
 /** The measured half of Goal acceptance, evaluated only in the terminal phase. */
-export interface GoalMetricCriteriaState {
+interface GoalMetricCriteriaState {
   allMet: boolean;
   criteria: GoalMetricCriterionState[];
 }
 
 /** A candidate's responsible task at decision time; drives every post-dispatch branch. */
-export interface GoalFrontierTaskState {
+interface GoalFrontierTaskState {
   error?: string | null;
   id: string;
   identifier?: string;
@@ -279,7 +279,7 @@ export interface GoalTickSnapshot {
   taskId?: string;
 }
 
-export type GoalEffectType =
+type GoalEffectType =
   | 'created_task'
   | 'started_run'
   | 'opened_decision'
@@ -290,7 +290,7 @@ export type GoalEffectType =
   | 'goal_status'
   | 'released_claim';
 
-export interface GoalAdvanceEffect {
+interface GoalAdvanceEffect {
   detail?: string;
   nodeId?: string;
   /** The agent operation this effect put in flight or consumed — the drill-down key. */

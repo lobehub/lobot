@@ -36,7 +36,7 @@ export const claudeCodeRoutesExternally = (
  * uses. With any of these set, subscription account routing could only be
  * overridden — or, worse, block the run over a pin the agent does not use.
  */
-export const CLAUDE_CODE_AGENT_LOGIN_ENV_KEYS = [
+const CLAUDE_CODE_AGENT_LOGIN_ENV_KEYS = [
   'CLAUDE_CONFIG_DIR',
   'ANTHROPIC_API_KEY',
   'ANTHROPIC_AUTH_TOKEN',
@@ -51,7 +51,7 @@ export const claudeCodeAgentEnvPicksLogin = (
   claudeCodeRoutesExternally(agentEnv);
 
 /** One account the server routed a device run to. */
-export interface ClaudeCodeRoutedAccount {
+interface ClaudeCodeRoutedAccount {
   externalAccountId: string;
   /** Display name for errors: the account label, else its email. */
   name?: string;
@@ -75,7 +75,7 @@ interface RoutableLogin {
   identity: { externalAccountId?: string | null };
 }
 
-export type ClaudeCodeRoutedLogin<T extends RoutableLogin = RoutableLogin> =
+type ClaudeCodeRoutedLogin<T extends RoutableLogin = RoutableLogin> =
   /** Spawn with this login. */
   | { account: ClaudeCodeRoutedAccount; kind: 'login'; login: T }
   /** Leave the spawn on the device's default login, as before routing existed. */

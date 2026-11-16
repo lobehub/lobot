@@ -33,7 +33,7 @@ export interface GatewayAgentRunDeps {
   platformTasks: Map<string, PlatformTaskEntry>;
 }
 
-export interface GatewayAgentRunAck {
+interface GatewayAgentRunAck {
   reason?: string;
   status: 'accepted' | 'rejected';
 }

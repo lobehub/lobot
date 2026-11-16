@@ -12,7 +12,7 @@ import type { UsageData } from '../types';
  * (`<kimiHome>/sessions/<wd_key>/<session_id>/agents/main/wire.jsonl`).
  * One record per model request; `inputOther` is the cache-miss portion.
  */
-export interface KimiCodeWireUsage {
+interface KimiCodeWireUsage {
   inputCacheCreation?: number;
   inputCacheRead?: number;
   inputOther?: number;
@@ -24,7 +24,7 @@ export interface KimiCodeWireUsage {
  * `type: 'usage.record'` and carry the request's `model` alongside `usage`;
  * older/untyped lines that just have a top-level `usage` are tolerated.
  */
-export interface KimiCodeWireUsageRecord {
+interface KimiCodeWireUsageRecord {
   model?: string;
   usage: KimiCodeWireUsage;
 }

@@ -2,13 +2,13 @@
  * Task-level model override as the task tools accept it. `null` clears the
  * override; omitted keeps whatever the task already carries.
  */
-export interface TaskModelParams {
+interface TaskModelParams {
   model?: string | null;
   provider?: string | null;
 }
 
 // A type alias, not an interface, so it stays assignable to `config` records.
-export type TaskModelConfig = {
+type TaskModelConfig = {
   model?: string | null;
   provider?: string | null;
 };

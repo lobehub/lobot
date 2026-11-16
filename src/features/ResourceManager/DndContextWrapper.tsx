@@ -4,7 +4,7 @@ import { CUSTOM_DOCUMENT_FILE_TYPE, CUSTOM_FOLDER_FILE_TYPE } from '@lobechat/co
 import { cssVar, Icon, toast, useAppElement } from '@lobehub/ui';
 import { FileText, FolderIcon } from 'lucide-react';
 import { type PropsWithChildren } from 'react';
-import { createContext, lazy, memo, Suspense, use, useEffect, useRef, useState } from 'react';
+import { createContext, lazy, memo, Suspense, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -29,22 +29,10 @@ if (typeof globalThis.window !== 'undefined') {
 }
 
 /**
- * Get the pre-loaded transparent drag image
- * Use this in setDragImage to prevent browser default drag icons
- */
-export const getTransparentDragImage = () => transparentDragImage;
-
-/**
  * Context to track if drag is currently active
  * Used to optimize droppable zones - only activate them during active drag
  */
 const DragActiveContext = createContext<boolean>(false);
-
-/**
- * Hook to check if drag is currently active
- * Use this to conditionally enable droppable zones for performance optimization
- */
-export const useDragActive = () => use(DragActiveContext);
 
 interface DragState {
   data: any;
@@ -55,18 +43,6 @@ interface DragState {
 
 const CurrentDragContext = createContext<DragState | null>(null);
 const SetCurrentDragContext = createContext<((_state: DragState | null) => void) | null>(null);
-
-export const useCurrentDrag = () => use(CurrentDragContext);
-
-export const useSetCurrentDrag = () => {
-  const setCurrentDrag = use(SetCurrentDragContext);
-
-  if (!setCurrentDrag) {
-    throw new Error('useSetCurrentDrag must be used within DndContextWrapper');
-  }
-
-  return setCurrentDrag;
-};
 
 /**
  * Pragmatic DnD wrapper for resource drag-and-drop

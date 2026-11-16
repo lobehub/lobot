@@ -116,7 +116,7 @@ const AGENT_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
  * `getBuiltinAgent`, so dropping the field here closes every caller path at
  * once; on create the column's own default then assigns a random slug.
  */
-export const stripImmutableFields = <T extends Record<string, any>>(data: T): T => {
+const stripImmutableFields = <T extends Record<string, any>>(data: T): T => {
   const carried = IMMUTABLE_AGENT_FIELDS.filter((field) => field in data);
   if (carried.length === 0) return data;
 
@@ -143,7 +143,7 @@ export const update = async (ctx: AgentModelContext, agentId: string, data: Part
  * {@link AGENT_BUILDER_PROTECTED_FIELDS}). Only looks up the target row's `slug` when the
  * incoming patch actually touches a protected field, so normal updates pay no extra query.
  */
-export const assertNotAgentBuilderProtectedWrite = async (
+const assertNotAgentBuilderProtectedWrite = async (
   ctx: AgentModelContext,
   agentId: string,
   data: Record<string, unknown>,

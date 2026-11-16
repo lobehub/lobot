@@ -12,13 +12,7 @@ export const LOCAL_FILE_PROTOCOL_HOST = 'file';
  * `shell.openExternal` as fully-qualified web URLs and never reach renderer
  * `fetch`.
  */
-export const BACKEND_PATH_PREFIXES = [
-  '/trpc',
-  '/webapi',
-  '/api/auth',
-  '/api/agent/llm-relay',
-  '/market',
-];
+const BACKEND_PATH_PREFIXES = ['/trpc', '/webapi', '/api/auth', '/api/agent/llm-relay', '/market'];
 
 const matchesPrefix = (pathname: string, prefixes: string[]) =>
   prefixes.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));

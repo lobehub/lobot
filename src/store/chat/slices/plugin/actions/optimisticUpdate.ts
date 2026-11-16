@@ -18,7 +18,7 @@ import { dbMessageSelectors, displayMessageSelectors } from '../../message/selec
 /**
  * Params for batch updating tool message content, state, and error
  */
-export interface UpdateToolMessageParams {
+interface UpdateToolMessageParams {
   content?: string;
   /**
    * Metadata to attach to the tool message
@@ -35,8 +35,6 @@ export interface UpdateToolMessageParams {
  */
 
 type Setter = StoreSetter<ChatStore>;
-export const pluginOptimisticUpdate = (set: Setter, get: () => ChatStore, _api?: unknown) =>
-  new PluginOptimisticUpdateActionImpl(set, get, _api);
 
 export class PluginOptimisticUpdateActionImpl {
   readonly #get: () => ChatStore;

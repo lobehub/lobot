@@ -3,7 +3,7 @@ import { type LucideIcon } from 'lucide-react';
 import { SquareArrowOutUpRight } from 'lucide-react';
 import { memo } from 'react';
 
-export interface ItemLinkProps {
+interface ItemLinkProps {
   href: string;
   icon?: LucideIcon;
   label: string;

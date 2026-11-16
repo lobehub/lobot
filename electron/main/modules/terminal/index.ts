@@ -6,20 +6,20 @@ import { detectWindowsShell } from '@lobechat/local-file-shell/shell';
 import type { IPty } from '@lydell/node-pty';
 import { spawn } from '@lydell/node-pty';
 
-export interface PtySessionCallbacks {
+interface PtySessionCallbacks {
   onData: (id: string, data: string) => void;
   onExit: (id: string, exitCode: number) => void;
   /** Called when the manager kills a session itself (LRU cap / idle timeout). */
   onReap?: (id: string, reason: 'idle' | 'limit') => void;
 }
 
-export interface CreatePtySessionOptions {
+interface CreatePtySessionOptions {
   cols: number;
   cwd?: string;
   rows: number;
 }
 
-export interface PtySessionInfo {
+interface PtySessionInfo {
   cwd: string;
   id: string;
   pid: number;

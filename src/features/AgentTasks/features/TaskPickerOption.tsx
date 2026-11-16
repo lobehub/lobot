@@ -32,12 +32,7 @@ interface TaskPickerOptionProps {
  * (one-of for a run target, many-of for repositories), so one row serves both
  * instead of each picker inventing its own state semantics.
  */
-export const TaskPickerOption = ({
-  checked,
-  children,
-  disabled,
-  onSelect,
-}: TaskPickerOptionProps) => (
+const TaskPickerOption = ({ checked, children, disabled, onSelect }: TaskPickerOptionProps) => (
   <button
     aria-pressed={checked === undefined ? undefined : checked}
     className={`${styles.row} ${checked ? styles.rowActive : ''}`}

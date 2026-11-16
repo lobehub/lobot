@@ -37,7 +37,7 @@ type Setter = StoreSetter<GlobalStore>;
 export const generalActionSlice = (set: Setter, get: () => GlobalStore, _api?: unknown) =>
   new GlobalGeneralActionImpl(set, get, _api);
 
-export class GlobalGeneralActionImpl {
+class GlobalGeneralActionImpl {
   readonly #get: () => GlobalStore;
   readonly #set: Setter;
 

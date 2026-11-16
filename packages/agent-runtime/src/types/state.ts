@@ -37,7 +37,7 @@ import type { Cost, CostLimit, Usage } from './usage';
 /**
  * The run's position in the run tree.
  */
-export interface AgentRunLineage {
+interface AgentRunLineage {
   /** True for any child run (callSubAgent child or isolated group member). */
   isSubAgent?: boolean;
   /**
@@ -62,7 +62,7 @@ export interface AgentRunLineage {
  * intervention claim. Lets a retry tell this exact continuation apart from an
  * unrelated operation that happens to reuse an id.
  */
-export interface InterventionContinuation {
+interface InterventionContinuation {
   resolutionRequestId: string;
   sourceOperationId: string;
   sourceToolMessageIds: string[];
@@ -77,7 +77,7 @@ export interface InterventionContinuation {
  * authority) so the runtime can hang its output on the right conversation
  * node without a lookup.
  */
-export interface AgentRunOrigin {
+interface AgentRunOrigin {
   // --- Conversation node ---
   /** Effective message owner for this run (the group member when applicable). */
   agentId?: string;
@@ -122,7 +122,7 @@ export interface AgentRunOrigin {
  * each dispatch boundary only re-presents these facts (share-visitor grants,
  * device access) instead of re-deriving them.
  */
-export interface AgentRunPrincipal {
+interface AgentRunPrincipal {
   /** Who the run acts as. */
   actor?: {
     /** Sender / owner identity for bot-originated runs. */
@@ -156,7 +156,7 @@ export interface AgentRunPrincipal {
  * caller fixed for it. Frozen at creation. The model itself lives on
  * `AgentState.modelRuntimeConfig`; the tool set on `operationToolSet`.
  */
-export interface AgentRunPlan {
+interface AgentRunPlan {
   /** Evaluation execution controls (tool forwarding) for eval runs. */
   eval?: {
     connectorSnapshots?: EvalConnectorSnapshots;
@@ -183,7 +183,7 @@ export interface AgentRunPlan {
  * What the host needs to deliver and retry the run. Written by the host,
  * carried by the runtime without interpretation.
  */
-export interface AgentRunHostEnvelope {
+interface AgentRunHostEnvelope {
   /**
    * The client that started this run renders `file` Works, so the pushed
    * `uiMessages` snapshots and `message_patch` revisions may carry them.
@@ -227,7 +227,7 @@ export interface AgentRunHostEnvelope {
  * replayed from `resume` once a client that can execute `provider` asks to
  * continue; past `expiresAt` the run ends with an actionable error instead.
  */
-export interface AgentRunClientLlmWait {
+interface AgentRunClientLlmWait {
   /** The step's assistant row; the resumed call fills it instead of a new one. */
   assistantMessageId?: string;
   /**
@@ -247,7 +247,7 @@ export interface AgentRunClientLlmWait {
 }
 
 /** A client's declaration that it can run relayed LLM attempts. */
-export interface AgentRunLlmExecutor {
+interface AgentRunLlmExecutor {
   /** Relay protocol versions the client speaks, e.g. `llm_relay@1`. */
   capabilities: string[];
   /**
@@ -268,7 +268,7 @@ export interface AgentRunLlmExecutor {
  * imported so the runtime package does not depend on the model catalog;
  * structurally identical to the resolver output in `model-bank`.
  */
-export interface SearchDecisionSnapshot {
+interface SearchDecisionSnapshot {
   enabledSearch: boolean;
   isModelHasBuiltinSearch: boolean;
   isProviderHasBuiltinSearch: boolean;
@@ -283,7 +283,7 @@ export interface SearchDecisionSnapshot {
  * fields and the sub-agent override are run-level facts the host stamps on
  * top of the stored agent config.
  */
-export interface RunAgentSnapshot extends Partial<LobeAgentConfig> {
+interface RunAgentSnapshot extends Partial<LobeAgentConfig> {
   /** Agent-row description; surfaces in tracing spans and skill placeholders. */
   description?: string | null;
   id?: string;
@@ -305,7 +305,7 @@ export interface RunAgentSnapshot extends Partial<LobeAgentConfig> {
  * step to assemble the system message. Nothing in here changes while the run
  * executes — a run that needs a different world is a different operation.
  */
-export interface AgentWorldSnapshot {
+interface AgentWorldSnapshot {
   /** Agent definition snapshot: systemRole, chatConfig, agencyConfig … */
   agent?: RunAgentSnapshot;
   /** Channel-specific facts the model should know (bot platform, Discord …). */
@@ -348,7 +348,7 @@ export interface AgentWorldSnapshot {
  * (`computeDeviceContext`), and the bound device's system info feeds both
  * prompt placeholders and tool cwd resolution.
  */
-export interface AgentRunBinding {
+interface AgentRunBinding {
   /**
    * Device routed for this run. `id` stays absent until a device is bound;
    * `systemInfo` may already carry a working directory for runs whose cwd was
@@ -678,8 +678,3 @@ export interface ToolsCalling {
   thoughtSignature?: string;
   type: 'function';
 }
-
-/**
- * A registry for tools, mapping tool names to their implementation.
- */
-export type ToolRegistry = Record<string, (args: any) => Promise<any>>;

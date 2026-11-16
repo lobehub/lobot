@@ -38,7 +38,7 @@ export interface GoalListParams {
 }
 
 /** The home rail's cross-agent roll-up, scoped like the other home feeds. */
-export interface HomeGoalListParams {
+interface HomeGoalListParams {
   /** Cache scope (`userId:workspaceId`), so a workspace you left cannot answer here. */
   scope: string;
 }

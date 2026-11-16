@@ -43,7 +43,7 @@ const n = setNamespace('discover/skill');
  * (`isLoading` / `mutate`) so a call site only has to move its `data` read to
  * the matching `skillSelectors` entry.
  */
-export interface SkillSyncResult extends ReplicaSyncResult {
+interface SkillSyncResult extends ReplicaSyncResult {
   /** A request is in flight and this entry has no value to show yet. */
   isLoading: boolean;
   /** Alias of `revalidate`. */
@@ -54,7 +54,7 @@ export interface SkillSyncResult extends ReplicaSyncResult {
 
 type Setter = StoreSetter<DiscoverStore>;
 
-export interface SkillListSyncOptions {
+interface SkillListSyncOptions {
   /** Collapse mounts of the same query within this window (ms). */
   dedupingInterval?: number;
   enabled?: boolean;
@@ -66,7 +66,7 @@ export interface SkillListSyncOptions {
  * / page size defaults the market endpoint applies. A reader that walks several
  * pages builds each page's `skillListQueryKey` from this.
  */
-export const normalizeSkillListParams = (params: SkillQueryParams = {}): SkillListParams => ({
+const normalizeSkillListParams = (params: SkillQueryParams = {}): SkillListParams => ({
   ...params,
   locale: globalHelpers.getCurrentLanguage(),
   page: params.page ? Number(params.page) : 1,
@@ -76,7 +76,7 @@ export const normalizeSkillListParams = (params: SkillQueryParams = {}): SkillLi
 export const createSkillSlice = (set: Setter, get: () => DiscoverStore, _api?: unknown) =>
   new SkillActionImpl(set, get, _api);
 
-export class SkillActionImpl {
+class SkillActionImpl {
   readonly #categories;
   readonly #comments;
   readonly #detail;

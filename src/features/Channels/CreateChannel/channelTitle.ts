@@ -1,6 +1,6 @@
 const LISTED = 3;
 
-export interface ChannelTitleFormat {
+interface ChannelTitleFormat {
   /** Wording for members beyond the listed ones, e.g. `A, B, C and 2 more`. */
   more: (names: string, rest: number, total: number) => string;
   separator: string;

@@ -47,7 +47,7 @@ const FAL_VIDEO_MODELS: Record<string, FalVideoModelSpec> = {
 const REQUEST_PATH_SEPARATOR = '/requests/';
 
 /** Video model cards whose task endpoint the runtime picks from the request params */
-export const isFalTaskRoutedVideoModel = (model: string) => Object.hasOwn(FAL_VIDEO_MODELS, model);
+const isFalTaskRoutedVideoModel = (model: string) => Object.hasOwn(FAL_VIDEO_MODELS, model);
 
 const FAL_VIDEO_TASKS = ['text-to-video', 'image-to-video', 'reference-to-video'] as const;
 
@@ -55,10 +55,10 @@ const FAL_VIDEO_TASKS = ['text-to-video', 'image-to-video', 'reference-to-video'
 export const getFalTaskRoutedVideoEndpoints = (model: string) =>
   isFalTaskRoutedVideoModel(model) ? FAL_VIDEO_TASKS.map((task) => `${model}/${task}`) : [];
 
-export const toFalVideoInferenceId = (appId: string, requestId: string) =>
+const toFalVideoInferenceId = (appId: string, requestId: string) =>
   `${appId}${REQUEST_PATH_SEPARATOR}${requestId}`;
 
-export const parseFalVideoInferenceId = (inferenceId: string) => {
+const parseFalVideoInferenceId = (inferenceId: string) => {
   const index = inferenceId.lastIndexOf(REQUEST_PATH_SEPARATOR);
   if (index <= 0) throw new Error(`Invalid fal video inference id: ${inferenceId}`);
 
@@ -75,7 +75,7 @@ export const parseFalVideoInferenceId = (inferenceId: string) => {
  * - first or last frame → `/image-to-video`, whose output follows the first frame's aspect ratio
  * - otherwise → `/text-to-video`
  */
-export const buildFalVideoRequest = (model: string, params: RuntimeVideoGenParams) => {
+const buildFalVideoRequest = (model: string, params: RuntimeVideoGenParams) => {
   const spec = isFalTaskRoutedVideoModel(model) ? FAL_VIDEO_MODELS[model] : undefined;
   if (!spec) throw new Error(`Unsupported fal video model: ${model}`);
 
@@ -114,7 +114,7 @@ export const buildFalVideoRequest = (model: string, params: RuntimeVideoGenParam
  * `fal-ai/kling-video/v2.1/master/image-to-video`). Fields use fal's common names; the caller
  * fits them to the endpoint's schema with `coerceFalInput`.
  */
-export const buildGenericFalVideoInput = (params: RuntimeVideoGenParams) => {
+const buildGenericFalVideoInput = (params: RuntimeVideoGenParams) => {
   const {
     aspectRatio,
     duration,

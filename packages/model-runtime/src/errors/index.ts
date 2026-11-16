@@ -1,4 +1,3 @@
-export { collectStatusCodes } from '../utils/routeFallback';
 export { ErrorClassifier, type ErrorClassifierType } from './classifier';
 export { getRuntimeErrorI18nKey, type RuntimeErrorI18nKey } from './i18nKey';
 export { isUserSideError, matchErrorPattern, type MatchInput, type MatchResult } from './match';

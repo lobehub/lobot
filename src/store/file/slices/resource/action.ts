@@ -107,15 +107,12 @@ const stripOptimistic = (resource: ResourceItem): ResourceItem => {
 };
 
 /** The `ResourceSyncResult` plus the SWR-era aliases the explorer consumes. */
-export interface ResourceListSyncResult extends ReplicaSyncResult {
+interface ResourceListSyncResult extends ReplicaSyncResult {
   /** Nothing painted yet and a fetch is on its way (the list/masonry skeletons). */
   isLoading: boolean;
   /** Alias of `revalidate`. */
   mutate: () => Promise<unknown>;
 }
-
-export const createResourceSlice = (set: Setter, get: () => FileStore, api?: unknown) =>
-  new ResourceActionImpl(set, get, api);
 
 export class ResourceActionImpl {
   readonly #get: () => FileStore;

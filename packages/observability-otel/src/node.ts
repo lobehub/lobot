@@ -23,7 +23,7 @@ import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic
  */
 const SERVICE_INSTANCE_ID = randomUUID();
 
-export function attributesForVercel(): DetectedResourceAttributes {
+function attributesForVercel(): DetectedResourceAttributes {
   return {
     // Vercel.
     // https://vercel.com/docs/projects/environment-variables/system-environment-variables
@@ -44,7 +44,7 @@ export function attributesForVercel(): DetectedResourceAttributes {
   };
 }
 
-export function attributesForNodejs(): DetectedResourceAttributes {
+function attributesForNodejs(): DetectedResourceAttributes {
   return {
     // Node.
     'node.ci': process.env.CI ? true : undefined,
@@ -52,7 +52,7 @@ export function attributesForNodejs(): DetectedResourceAttributes {
   };
 }
 
-export function attributesForEnv(): DetectedResourceAttributes {
+function attributesForEnv(): DetectedResourceAttributes {
   return {
     ...attributesForVercel(),
     ...attributesForNodejs(),
@@ -103,7 +103,7 @@ function debugLogLevelFromString(level?: string | null): DiagLogLevel | undefine
   }
 }
 
-export interface RegisterOptions {
+interface RegisterOptions {
   autoDetectResources?: boolean;
   autoInstrumentations?: boolean;
   contextManager?: ContextManager;
@@ -192,5 +192,3 @@ export const shutdownSafely = async (sdk: Pick<NodeSDK, 'shutdown'>): Promise<vo
     diag.error('[observability-otel] failed to shut down telemetry', error);
   }
 };
-
-export { DiagLogLevel } from '@opentelemetry/api';

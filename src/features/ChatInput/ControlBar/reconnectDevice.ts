@@ -8,9 +8,9 @@ import { isManagedCloudDevice } from '@lobechat/types';
  *   yet. A run bound to it still wakes it and waits.
  * - `failed`: a connected device did not come back.
  */
-export type ReconnectOutcome = 'connected' | 'failed' | 'starting';
+type ReconnectOutcome = 'connected' | 'failed' | 'starting';
 
-export interface ReconnectDeviceDeps {
+interface ReconnectDeviceDeps {
   /** Reconnect this desktop app's own gateway connection. */
   connectGateway: () => Promise<unknown>;
   /** Open a desktop deep link. */
@@ -23,7 +23,7 @@ export interface ReconnectDeviceDeps {
 }
 
 /** A connected device comes back in seconds once its app gets the deep link. */
-export const DEVICE_RECONNECT_POLL = { attempts: 8, intervalMs: 1000 };
+const DEVICE_RECONNECT_POLL = { attempts: 8, intervalMs: 1000 };
 
 /** A managed cloud device can take up to two minutes to start. */
 export const MANAGED_DEVICE_WAKE_POLL = { attempts: 40, intervalMs: 3000 };

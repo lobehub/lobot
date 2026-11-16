@@ -1,6 +1,6 @@
 export const SYSTEM_LANGUAGE_ARG_PREFIX = '--lobe-system-language=';
 
-export const FALLBACK_LOCALE = 'en-US';
+const FALLBACK_LOCALE = 'en-US';
 
 const SUPPORTED_LOCALES = [
   'ar',

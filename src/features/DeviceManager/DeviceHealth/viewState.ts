@@ -8,7 +8,7 @@ import {
   UPLOAD_GRACE_MS,
 } from './buildHealthTimeline';
 
-export type HealthViewState = 'empty' | 'error' | 'loading' | 'ready';
+type HealthViewState = 'empty' | 'error' | 'loading' | 'ready';
 
 /**
  * What the health section should show. A failed read with nothing cached is
@@ -26,7 +26,7 @@ export const healthViewState = ({
   return data.points.length === 0 ? 'empty' : 'ready';
 };
 
-export type LatestUsageView =
+type LatestUsageView =
   | {
       latest: LatestUsage | null;
       loading: false;

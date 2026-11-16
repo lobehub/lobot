@@ -15,9 +15,9 @@ import {
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export type VisibilityConfirmVariant = 'makePrivate' | 'publish';
+type VisibilityConfirmVariant = 'makePrivate' | 'publish';
 
-export interface VisibilityConfirmContentProps {
+interface VisibilityConfirmContentProps {
   /**
    * The resource carries state captured from a running session — an
    * environment's home directory, its CLI logins, whatever a setup command

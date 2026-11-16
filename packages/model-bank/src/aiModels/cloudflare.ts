@@ -79,6 +79,6 @@ const cloudflareChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...cloudflareChatModels];
+const allModels = [...cloudflareChatModels];
 
 export default allModels;

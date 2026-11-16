@@ -20,27 +20,11 @@ type AgentFixtureConfig = ChannelMemberConfig & {
   runtime: ChannelRuntime;
 };
 
-export const nativeConfig: AgentFixtureConfig = {
+const nativeConfig: AgentFixtureConfig = {
   model: 'gpt-5',
   provider: 'openai',
   runtime: 'native',
 };
-
-/** `device-1` is public in the fixture workspace; any other device id needs a grant. */
-export const deviceConfig = (
-  workingDirectory = '/repo',
-  deviceId = 'device-1',
-  deviceOwnerId?: string,
-): AgentFixtureConfig => ({
-  deviceId,
-  deviceOwnerId,
-  model: 'gpt-5',
-  provider: 'openai',
-  runtime: 'codex',
-  workingDirectory,
-});
-
-export const lease = { serverDefaultAgentConfig: {}, leaseMs: 60_000, leaseOwner: 'worker-1' };
 
 /**
  * Users and a workspace for one test file. Each file passes its own prefix so files can
@@ -143,16 +127,3 @@ export const createChannelFixture = (db: LobeChatDatabase, prefix: string) => {
 
 export const jobsOf = (db: LobeChatDatabase, messageId: string) =>
   db.select().from(channelJobs).where(eq(channelJobs.messageId, messageId));
-
-export const jobById = async (db: LobeChatDatabase, jobId: string) => {
-  const [job] = await db.select().from(channelJobs).where(eq(channelJobs.id, jobId));
-  return job;
-};
-
-export const operationById = async (db: LobeChatDatabase, operationId: string | null) => {
-  const [operation] = await db
-    .select()
-    .from(agentOperations)
-    .where(eq(agentOperations.id, operationId!));
-  return operation;
-};

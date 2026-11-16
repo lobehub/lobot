@@ -24,19 +24,7 @@ import type { AgentTransferTargetScope } from './agentTransferJob';
 /** Copy rejected: the source agent already has an unfinished copy job. */
 export const AGENT_COPY_IN_PROGRESS = 'AGENT_COPY_IN_PROGRESS';
 
-/**
- * Above this many source messages an agent copy stops duplicating history
- * inline and records an async copy job instead. Inserting a message row pays
- * for every message index (incl. the multi-GB BM25 index) exactly like the
- * transfer path's per-row rewrite (~5ms/row in production), so the sync copy
- * is capped at a few seconds' worth of rows.
- */
-export const getAgentCopySyncMessageThreshold = (): number => {
-  const raw = Number(process.env.AGENT_COPY_SYNC_MESSAGE_THRESHOLD);
-  return Number.isFinite(raw) && raw >= 0 ? raw : 1000;
-};
-
-export interface CreateAgentCopyJobParams {
+interface CreateAgentCopyJobParams {
   /** Source→target agent pairs duplicated by this job (job payload). */
   agents: { newAgentId: string; sourceAgentId: string }[];
   /**

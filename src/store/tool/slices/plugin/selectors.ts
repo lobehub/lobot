@@ -67,7 +67,7 @@ interface MarketShapedManifest {
  * marketplace shape so the row still renders its real name instead of a blank
  * label.
  */
-export const resolvePluginManifestMeta = (manifest?: ToolManifest | null): Meta | undefined => {
+const resolvePluginManifestMeta = (manifest?: ToolManifest | null): Meta | undefined => {
   if (!manifest) return;
   if (manifest.meta) return manifest.meta;
 

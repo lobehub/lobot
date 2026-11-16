@@ -30,7 +30,7 @@ export const resolveWorkspaceScoped = (
   deviceOverride: AgentDeviceOverride | null | undefined,
 ): boolean => isWorkspaceAgent && deviceOverride?.executionTarget === undefined;
 
-export interface ResolveExecutionTargetOptions {
+interface ResolveExecutionTargetOptions {
   /**
    * Whether tools can run on the user's own client/device in this environment —
    * i.e. the `local` target (`runtimeMode: 'local'`, the `'client'` executor)
@@ -313,7 +313,7 @@ export const isTopicDeviceUnknown = (
   return !!(topic.metadata?.workingDirectory || topic.metadata?.workingDirectoryConfig?.path);
 };
 
-export interface TopicDeviceBindingResult {
+interface TopicDeviceBindingResult {
   agencyConfig: LobeAgentAgencyConfig | undefined;
   workspaceScoped: boolean;
 }
@@ -387,10 +387,9 @@ export const resolveRuntimeMode = (
     }),
   );
 
-export type { ExecutionPlan, ExecutionPlanUnroutedReason } from '@lobechat/types';
+export type { ExecutionPlan } from '@lobechat/types';
 
-export type ExecutionManifestEnvironment =
-  Exclude<ExecutionPlan['kind'], 'device-wakeable'> | 'local';
+type ExecutionManifestEnvironment = Exclude<ExecutionPlan['kind'], 'device-wakeable'> | 'local';
 
 /**
  * Preserve the desktop-local capability signal after the server resolves that
@@ -418,7 +417,7 @@ export const executionPlanToManifestExecutionEnv = (
   }
 };
 
-export interface ResolveExecutionPlanParams {
+interface ResolveExecutionPlanParams {
   agencyConfig: LobeAgentAgencyConfig | undefined;
   /**
    * Verdict of `resolveDeviceAccessPolicy` — `false` (e.g. an external bot

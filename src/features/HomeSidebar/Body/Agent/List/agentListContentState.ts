@@ -1,4 +1,4 @@
-export type AgentListContentState = 'inbox' | 'loading' | 'ready';
+type AgentListContentState = 'inbox' | 'loading' | 'ready';
 
 interface ResolveAgentListContentStateParams {
   authLoaded: boolean;

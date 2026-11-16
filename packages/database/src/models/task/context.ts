@@ -76,7 +76,7 @@ export const taskOwnership = (ctx: TaskModelContext) =>
  * private with it, and the creator must keep seeing them — the task is still
  * theirs. Other members still see only public rows and their own.
  */
-export const childOwnership = (
+const childOwnership = (
   ctx: TaskModelContext,
   cols: {
     taskId: AnyPgColumn;

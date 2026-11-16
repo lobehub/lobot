@@ -107,7 +107,7 @@ export interface ResourceQueryParams {
 /**
  * Create operation payload for files
  */
-export interface CreateFileParams {
+interface CreateFileParams {
   fileType: string;
   knowledgeBaseId?: string;
   metadata?: Record<string, any>;

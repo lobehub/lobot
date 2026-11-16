@@ -33,7 +33,7 @@ const cost = (ranges: Range[], timing: Timing) =>
   ranges.reduce((sum, range) => sum + range.end - range.offset, 0) / timing.bytesPerSecond +
   Math.ceil(ranges.length / CONCURRENCY) * timing.latency;
 
-export function planPackDownload(
+function planPackDownload(
   manifest: CoreManifestV4,
   missing: string[],
   local: Map<string, string>,

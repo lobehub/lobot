@@ -2,10 +2,10 @@ import type { DeviceGitLinkedPullRequest, WorkingDirGitState } from '@lobechat/t
 
 import { getWorkingDirectoryName, isWorktreeCheckout } from '@/helpers/workingDirectoryPath';
 
-export type StaleSnapshotExplanationKey =
+type StaleSnapshotExplanationKey =
   'workingDirectory.staleSnapshot' | 'workingDirectory.staleWorktreeSnapshot';
 
-export interface StaleSnapshotView {
+interface StaleSnapshotView {
   /** The branch the topic recorded — the snapshot's headline. */
   branch?: string;
   explanation: {

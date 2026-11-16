@@ -10,7 +10,7 @@ import { editorSelectors } from '@/store/document/slices/editor';
 
 import { type CharLimitNotice, resolveCharLimitNotice } from './charLimitNotice';
 
-export interface CharLimitBannerProps {
+interface CharLimitBannerProps {
   documentId?: string;
   /**
    * Keeps the over-limit notices pinned to the top of the scrolling body, so

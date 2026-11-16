@@ -2,12 +2,12 @@ import { ErrorClassifier } from '../errors';
 import type { ILobeAgentRuntimeErrorType } from '../types/error';
 import { AgentRuntimeErrorType } from '../types/error';
 
-export interface ParsedError {
+interface ParsedError {
   error: any;
   errorType: ILobeAgentRuntimeErrorType;
 }
 
-export interface GoogleChatError {
+interface GoogleChatError {
   '@type': string;
   'domain': string;
   'metadata': {
@@ -16,7 +16,7 @@ export interface GoogleChatError {
   'reason': string;
 }
 
-export type GoogleChatErrors = GoogleChatError[];
+type GoogleChatErrors = GoogleChatError[];
 
 /**
  * Clean error message by removing formatting characters and extra spaces

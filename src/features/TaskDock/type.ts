@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 export type DockTaskStatus = 'pending' | 'running' | 'success' | 'error' | 'cancelled';
 
-export interface DockTaskResult {
+interface DockTaskResult {
   /** Label for the trailing action button; omit for a url-only result. */
   action?: string;
   /** Shown on the strip; a url renders in the code face, anything else muted. */
@@ -45,5 +45,3 @@ export interface DockTask {
   status: DockTaskStatus;
   title: string;
 }
-
-export type DockTaskProvider = () => DockTask[];

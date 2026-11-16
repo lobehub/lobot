@@ -14,7 +14,7 @@ const MAX_COPY_NAME_ATTEMPTS = 1000;
  * (`report copy.pdf` → `report copy 2.pdf`, not `report copy copy.pdf`).
  * Folders and dotfiles keep their whole name as the stem.
  */
-export const getCopyName = (name: string, isDirectory: boolean, attempt: number): string => {
+const getCopyName = (name: string, isDirectory: boolean, attempt: number): string => {
   const ext = isDirectory ? '' : path.extname(name);
   const base = ext ? name.slice(0, -ext.length) : name;
   const stem = base.replace(/ copy(?: \d+)?$/, '') || base;

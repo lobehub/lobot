@@ -90,7 +90,7 @@ export function transformSparkResponseToStream(data: OpenAI.ChatCompletion) {
   });
 }
 
-export const transformSparkStream = (
+const transformSparkStream = (
   chunk: OpenAI.ChatCompletionChunk,
   streamContext?: StreamContext,
   payload?: ChatPayloadForTransformStream,

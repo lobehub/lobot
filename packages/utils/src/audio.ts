@@ -1,15 +1,15 @@
 export const DEFAULT_AUDIO_INPUT_TOKEN_ESTIMATE = 1000;
 
-export type AudioTokenEstimateSource = 'duration' | 'fallback' | 'mixed' | 'none';
+type AudioTokenEstimateSource = 'duration' | 'fallback' | 'mixed' | 'none';
 
-export interface AudioInputTokenEstimate {
+interface AudioInputTokenEstimate {
   durationItemCount: number;
   fallbackItemCount: number;
   source: AudioTokenEstimateSource;
   tokens: number;
 }
 
-export interface AudioTokenEstimateOptions {
+interface AudioTokenEstimateOptions {
   /** Conservative per-item fallback used when duration or the model rate is unavailable. */
   fallbackTokensPerItem?: number;
   /** Model-specific audio input token rate. Invalid or non-positive values are ignored. */
@@ -22,7 +22,7 @@ export const normalizeAudioDurationMs = (value: unknown): number | undefined => 
   return Math.ceil(value);
 };
 
-export const normalizeAudioTokensPerSecond = (value: unknown): number | undefined => {
+const normalizeAudioTokensPerSecond = (value: unknown): number | undefined => {
   if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return undefined;
 
   return value;

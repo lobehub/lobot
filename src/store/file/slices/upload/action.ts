@@ -108,7 +108,7 @@ type Setter = StoreSetter<FileStore>;
 export const createFileUploadSlice = (set: Setter, get: () => FileStore, _api?: unknown) =>
   new FileUploadActionImpl(set, get, _api);
 
-export class FileUploadActionImpl {
+class FileUploadActionImpl {
   constructor(set: Setter, get: () => FileStore, _api?: unknown) {
     void _api;
     void set;

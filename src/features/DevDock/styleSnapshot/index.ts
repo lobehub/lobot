@@ -17,7 +17,7 @@ interface StoredSnapshot {
 
 const viewport = () => `${window.innerWidth}x${window.innerHeight}`;
 
-export interface StyleSnapshotApi {
+interface StyleSnapshotApi {
   capture: (name: string, selector?: string) => number;
   clear: () => void;
   compare: (name: string, selector?: string) => StyleSnapshotDiff[];

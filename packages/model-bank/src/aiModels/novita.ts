@@ -1058,6 +1058,6 @@ const novitaChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...novitaChatModels];
+const allModels = [...novitaChatModels];
 
 export default allModels;

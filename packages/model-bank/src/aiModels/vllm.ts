@@ -108,6 +108,6 @@ const vllmChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...vllmChatModels];
+const allModels = [...vllmChatModels];
 
 export default allModels;

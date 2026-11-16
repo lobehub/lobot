@@ -73,7 +73,7 @@ export const memoryListKey = <T extends { pageSize?: number; q?: string }>({
 }: T): string => stableQueryKey({ ...filters, q: q || undefined });
 
 /** The part of a replica slice the user-wide purge needs (structural). */
-export interface PurgeableReplica {
+interface PurgeableReplica {
   clear: () => Promise<boolean>;
   /**
    * `clear()` for a scope that may not be active: purges its persisted rows

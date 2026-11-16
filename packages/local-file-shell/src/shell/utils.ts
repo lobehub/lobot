@@ -4,7 +4,7 @@ import path from 'node:path';
 /** Maximum preview bytes returned inline to prevent context explosion */
 export const INLINE_OUTPUT_MAX_BYTES = 25 * 1024;
 
-export interface OutputPreview {
+interface OutputPreview {
   content: string;
   size: number;
   truncated: boolean;

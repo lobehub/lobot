@@ -22,7 +22,7 @@ export type GroupMemberInfo = GroupContextMemberInfo;
 /**
  * Configuration for GroupContextInjector
  */
-export interface GroupContextInjectorConfig {
+interface GroupContextInjectorConfig {
   /**
    * Current agent's ID (the one who will respond)
    */

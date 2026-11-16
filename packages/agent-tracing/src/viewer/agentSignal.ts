@@ -16,7 +16,7 @@ interface AgentSignalEventBase {
 /**
  * One agent-signal source event captured inside a step snapshot.
  */
-export interface AgentTracingAgentSignalSourceEvent extends AgentSignalEventBase {
+interface AgentTracingAgentSignalSourceEvent extends AgentSignalEventBase {
   chainId?: string;
   rootSourceId?: string;
   scopeKey?: string;
@@ -28,7 +28,7 @@ export interface AgentTracingAgentSignalSourceEvent extends AgentSignalEventBase
 /**
  * One agent-signal signal event captured inside a step snapshot.
  */
-export interface AgentTracingAgentSignalSignalEvent extends AgentSignalEventBase {
+interface AgentTracingAgentSignalSignalEvent extends AgentSignalEventBase {
   parentNodeId?: string;
   signalId?: string;
   signalType?: string;
@@ -39,7 +39,7 @@ export interface AgentTracingAgentSignalSignalEvent extends AgentSignalEventBase
 /**
  * One agent-signal action event captured inside a step snapshot.
  */
-export interface AgentTracingAgentSignalActionEvent extends AgentSignalEventBase {
+interface AgentTracingAgentSignalActionEvent extends AgentSignalEventBase {
   actionId?: string;
   actionType?: string;
   parentNodeId?: string;
@@ -50,7 +50,7 @@ export interface AgentTracingAgentSignalActionEvent extends AgentSignalEventBase
 /**
  * One agent-signal result event captured inside a step snapshot.
  */
-export interface AgentTracingAgentSignalResultEvent extends AgentSignalEventBase {
+interface AgentTracingAgentSignalResultEvent extends AgentSignalEventBase {
   actionId?: string;
   attemptCurrent?: number;
   attemptStatus?: string;
@@ -64,7 +64,7 @@ export interface AgentTracingAgentSignalResultEvent extends AgentSignalEventBase
 /**
  * Union of all agent-signal events reconstructed from one trace.
  */
-export type AgentTracingAgentSignalEvent =
+type AgentTracingAgentSignalEvent =
   | AgentTracingAgentSignalActionEvent
   | AgentTracingAgentSignalResultEvent
   | AgentTracingAgentSignalSignalEvent
@@ -73,7 +73,7 @@ export type AgentTracingAgentSignalEvent =
 /**
  * Aggregate view of agent-signal activity reconstructed from one execution snapshot.
  */
-export interface AgentTracingAgentSignalAnalysis {
+interface AgentTracingAgentSignalAnalysis {
   actions: AgentTracingAgentSignalActionEvent[];
   results: AgentTracingAgentSignalResultEvent[];
   signals: AgentTracingAgentSignalSignalEvent[];

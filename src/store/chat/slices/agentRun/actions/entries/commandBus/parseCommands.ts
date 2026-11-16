@@ -9,19 +9,19 @@ import type {
   ActionTagType,
 } from '@/features/ChatInput/InputEditor/ActionTag/types';
 
-export interface ParsedActionTag {
+interface ParsedActionTag {
   category: ActionTagCategory;
   label: string;
   type: ActionTagType;
 }
 
-export interface ParsedCommand extends ParsedActionTag {}
+interface ParsedCommand extends ParsedActionTag {}
 
-export interface SingleAgentMentionDirectRoute {
+interface SingleAgentMentionDirectRoute {
   agent: RuntimeMentionedAgent;
 }
 
-export interface ParsedLocalFileReference {
+interface ParsedLocalFileReference {
   isDirectory?: boolean;
   name: string;
   path: string;
@@ -42,7 +42,7 @@ const appendLocalFileReference = (
  * Walk the Lexical JSON tree to find all action-tag nodes.
  * Returns the extracted action tags in document order.
  */
-export const parseActionTagsFromEditorData = (
+const parseActionTagsFromEditorData = (
   editorData: Record<string, any> | undefined,
 ): ParsedActionTag[] => {
   if (!editorData) return [];
@@ -151,19 +151,6 @@ export const parseLocalFileReferencesFromEditorData = (
   });
 
   return references;
-};
-
-export const mergeLocalFileReferences = (
-  references: ParsedLocalFileReference[],
-): ParsedLocalFileReference[] => {
-  const merged: ParsedLocalFileReference[] = [];
-  const seen = new Set<string>();
-
-  for (const reference of references) {
-    appendLocalFileReference(merged, seen, reference);
-  }
-
-  return merged;
 };
 
 /**

@@ -30,7 +30,7 @@ interface GetOwnAgentsParams {
   pageSize?: number;
 }
 
-export class MarketApiService {
+class MarketApiService {
   // Create new agent
   async createAgent(agentData: {
     actAs?: number;

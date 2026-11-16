@@ -18,7 +18,7 @@ export const createRagEvalDatasetSlice = (
   _api?: unknown,
 ) => new RAGEvalDatasetActionImpl(set, get, _api);
 
-export class RAGEvalDatasetActionImpl {
+class RAGEvalDatasetActionImpl {
   readonly #get: () => KnowledgeBaseStore;
   readonly #set: Setter;
 

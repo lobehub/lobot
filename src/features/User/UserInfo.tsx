@@ -11,7 +11,7 @@ import { authSelectors, userProfileSelectors } from '@/store/user/selectors';
 import UserAvatar from './UserAvatar';
 import { type UserAvatarProps } from './UserAvatar';
 
-export interface UserInfoProps extends FlexboxProps {
+interface UserInfoProps extends FlexboxProps {
   avatarProps?: Partial<UserAvatarProps>;
   onClick?: () => void;
 }

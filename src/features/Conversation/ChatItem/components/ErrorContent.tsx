@@ -39,7 +39,7 @@ const styles = createStaticStyles(({ css }) => ({
   `,
 }));
 
-export interface ErrorContentProps {
+interface ErrorContentProps {
   customErrorRender?: ChatItemProps['customErrorRender'];
   error: ChatItemProps['error'];
   id?: string;

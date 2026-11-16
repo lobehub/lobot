@@ -8,7 +8,7 @@ import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 
 const log = debug('lobe-model-runtime:unsloth');
 
-export interface UnslothModelCard {
+interface UnslothModelCard {
   context_length?: number;
   display_name?: string;
   id: string;
@@ -26,7 +26,7 @@ interface UnslothModelProps {
   model_path?: string;
 }
 
-export const params = {
+const params = {
   apiKey: 'placeholder-to-avoid-error',
   baseURL: 'http://127.0.0.1:8888/v1',
   debug: {

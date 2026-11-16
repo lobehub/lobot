@@ -190,6 +190,6 @@ const moonshotChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...moonshotChatModels];
+const allModels = [...moonshotChatModels];
 
 export default allModels;

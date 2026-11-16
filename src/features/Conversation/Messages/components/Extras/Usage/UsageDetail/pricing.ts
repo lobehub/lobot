@@ -37,7 +37,7 @@ export const getPrice = (pricing: Pricing) => {
   };
 };
 
-export interface PriceLabel {
+interface PriceLabel {
   /**
    * The amount alone (`3.00`), for copy that already carries the `$`. Absent when the
    * model does not quote the rate, so that copy is not rendered as `$--`.
@@ -47,7 +47,7 @@ export interface PriceLabel {
   text: string;
 }
 
-export interface PriceLabels {
+interface PriceLabels {
   /** Present only when the model quotes a cached-input rate. */
   cachedInput?: PriceLabel;
   input: PriceLabel;

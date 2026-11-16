@@ -35,7 +35,7 @@ interface MdastNode {
  * variants cover pre-2026-03 entries, which combine both lists under one
  * heading; they are kept so EN and ZH collapse identically for the same post.
  */
-export const COLLAPSIBLE_HEADINGS = new Set([
+const COLLAPSIBLE_HEADINGS = new Set([
   // en-US
   'fixes',
   'improvements',

@@ -47,7 +47,7 @@ import {
 import { documentOriginalCharCount } from '../utils/originalCharCount';
 import { buildWorkspacePayload, buildWorkspaceWhere } from '../utils/workspace';
 
-export interface QueryDocumentParams {
+interface QueryDocumentParams {
   /**
    * Narrow by creator: `self` keeps the caller's own documents, `others` keeps
    * documents other workspace members created (still subject to visibility).
@@ -72,10 +72,9 @@ export interface QueryDocumentParams {
   standaloneOnly?: boolean;
 }
 
-export type DocumentQuerySortBy = 'createdAt' | 'title' | 'updatedAt';
+type DocumentQuerySortBy = 'createdAt' | 'title' | 'updatedAt';
 
-export const DOCUMENT_TRANSFER_FOREIGN_ROWS =
-  'Document subtree contains content created by other users';
+const DOCUMENT_TRANSFER_FOREIGN_ROWS = 'Document subtree contains content created by other users';
 
 export class DocumentModel {
   private userId: string;

@@ -10,8 +10,8 @@ import {
 } from './sink';
 
 export { rawConsole } from './capture';
-export type { LogLevel, LogProcess, LogRecord } from './layout';
-export { flushStructuredLogs, getStructuredLogDirectory, writeStructuredLog } from './sink';
+export type { LogLevel } from './layout';
+export { getStructuredLogDirectory, writeStructuredLog } from './sink';
 
 /**
  * Starts writing `<userData>/logs/{main,renderer}.jsonl` for this run, in dev and

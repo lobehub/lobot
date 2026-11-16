@@ -48,9 +48,6 @@ export const WORKFLOW_MARKDOWN_HEADING_MAX_LEVEL = 6;
 
 // ─── Tool argument / step lines (headline B/C and summaries) ───────────────
 
-/** First string tool argument preview: show at most this many chars before "…". */
-export const TOOL_FIRST_DETAIL_MAX_CHARS = 80;
-
 /** Tool step / arg combined headline: soft cap for readable one-liner. */
 export const TOOL_HEADLINE_DETAIL_MAX_CHARS = 120;
 

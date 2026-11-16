@@ -4,12 +4,11 @@
 // This overrides react-pdf's auto-detected bare filename which breaks under SPA routing.
 import pdfjsWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { type ComponentProps } from 'react';
-import { Document as PdfDocument, type Page as PdfPage, pdfjs } from 'react-pdf';
+import { Document as PdfDocument, pdfjs } from 'react-pdf';
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorkerUrl;
 
-export type DocumentProps = ComponentProps<typeof PdfDocument>;
-export type PageProps = ComponentProps<typeof PdfPage>;
+type DocumentProps = ComponentProps<typeof PdfDocument>;
 
 export const Document = (props: DocumentProps) => {
   return <PdfDocument {...props} />;

@@ -39,7 +39,7 @@ export type VerifyStatus = VerifyRunStatus;
  * step; `finalized` means everything landed and a retry must leave the row
  * alone.
  */
-export interface AgentAbandonmentMark {
+interface AgentAbandonmentMark {
   /** ISO timestamp of the claim; absent on the `finalized` rewrite. */
   at?: string;
   /**
@@ -52,7 +52,7 @@ export interface AgentAbandonmentMark {
   reason?: string;
 }
 
-export interface RecordOperationStartParams {
+interface RecordOperationStartParams {
   agentId?: string | null;
   appContext?: AgentOperationAppContext;
   chatGroupId?: string | null;
@@ -77,7 +77,7 @@ export interface RecordOperationStartParams {
   trigger?: string;
 }
 
-export interface AgentInterventionDispatchMarker {
+interface AgentInterventionDispatchMarker {
   deduplicationId: string;
   messageId: string;
   resolutionRequestId: string;
@@ -85,7 +85,7 @@ export interface AgentInterventionDispatchMarker {
   state: 'scheduled';
 }
 
-export interface AgentInterventionPreparationMarker {
+interface AgentInterventionPreparationMarker {
   deduplicationId: string;
   resolutionRequestId: string;
   state: 'ready';
@@ -93,7 +93,7 @@ export interface AgentInterventionPreparationMarker {
 }
 
 /** Why `heteroIngest` refused a batch — see {@link HeteroIngestRejectionMarker}. */
-export type HeteroIngestRejectionReason = 'operation-not-running' | 'stale-operation';
+type HeteroIngestRejectionReason = 'operation-not-running' | 'stale-operation';
 
 /**
  * Stamped the first time `heteroIngest` refuses a batch for this operation.
@@ -105,7 +105,7 @@ export type HeteroIngestRejectionReason = 'operation-not-running' | 'stale-opera
  * otherwise settle the producer's `success` receipt as a clean turn and leave
  * the user staring at an assistant placeholder that never fills in.
  */
-export interface HeteroIngestRejectionMarker {
+interface HeteroIngestRejectionMarker {
   at: string;
   /** Events discarded with the refusal that stamped this marker. */
   droppedEvents: number;
@@ -123,7 +123,7 @@ const sameServerDefaultRelayInvocation = (
   left.provider === right.provider;
 
 /** Terminal usage summed across every child operation of one parent. All-zero when it has none. */
-export interface ChildUsageRollup {
+interface ChildUsageRollup {
   llmCalls: number;
   toolCalls: number;
   totalCost: number;
@@ -132,7 +132,7 @@ export interface ChildUsageRollup {
   totalTokens: number;
 }
 
-export interface RecordOperationCompletionParams {
+interface RecordOperationCompletionParams {
   completedAt?: Date;
   completionReason?: AgentOperationCompletionReason;
   cost?: Record<string, unknown> | null;

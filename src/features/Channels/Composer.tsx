@@ -50,7 +50,7 @@ import { useComposerDraft } from './useComposerDraft';
 import { useMentionInvites } from './useMentionInvites';
 import type { ChannelReplyTarget } from './useReplyTarget';
 
-export type ChannelComposerMessage = Omit<ChannelQueuedSendInput, 'channelId' | 'threadId'>;
+type ChannelComposerMessage = Omit<ChannelQueuedSendInput, 'channelId' | 'threadId'>;
 
 export type ChannelComposerSend = (
   content: string,

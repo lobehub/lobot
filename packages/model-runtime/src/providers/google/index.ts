@@ -83,7 +83,7 @@ const normalizeThinkingConfig = (config?: ThinkingConfig): ThinkingConfig | unde
   return config;
 };
 
-export interface GoogleModelCard {
+interface GoogleModelCard {
   displayName: string;
   inputTokenLimit: number;
   name: string;
@@ -727,5 +727,3 @@ export class LobeGoogleAI implements LobeRuntimeAI {
     return buildGoogleTools(tools);
   }
 }
-
-export default LobeGoogleAI;

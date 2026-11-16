@@ -6,58 +6,10 @@
 // pull these helpers without dragging the inspector component (and its
 // style modules) into tests transitively.
 
-export const LINEAR_MCP_PREFIX = 'mcp__claude_ai_Linear__';
+const LINEAR_MCP_PREFIX = 'mcp__claude_ai_Linear__';
 
 // Mirrors the wire names the claude.ai Linear MCP server emits. The same
 // suffixes are reused by the LobeHub built-in Linear skill.
-export const LINEAR_TOOL_NAMES = [
-  'create_attachment',
-  'create_attachment_from_upload',
-  'create_issue_label',
-  'delete_attachment',
-  'delete_comment',
-  'delete_customer',
-  'delete_customer_need',
-  'delete_status_update',
-  'extract_images',
-  'get_attachment',
-  'get_diff',
-  'get_diff_threads',
-  'get_document',
-  'get_initiative',
-  'get_issue',
-  'get_issue_status',
-  'get_milestone',
-  'get_project',
-  'get_status_updates',
-  'get_team',
-  'get_user',
-  'list_comments',
-  'list_customers',
-  'list_cycles',
-  'list_diffs',
-  'list_documents',
-  'list_initiatives',
-  'list_issue_labels',
-  'list_issue_statuses',
-  'list_issues',
-  'list_milestones',
-  'list_project_labels',
-  'list_projects',
-  'list_teams',
-  'list_users',
-  'prepare_attachment_upload',
-  'save_comment',
-  'save_customer',
-  'save_customer_need',
-  'save_document',
-  'save_initiative',
-  'save_issue',
-  'save_milestone',
-  'save_project',
-  'save_status_update',
-  'search_documentation',
-] as const;
 
 // Multi-word suffixes a naive split would mangle.
 const NOUN_OVERRIDES: Record<string, string> = {
@@ -73,7 +25,7 @@ const NOUN_OVERRIDES: Record<string, string> = {
   status_updates: 'status updates',
 };
 
-export interface ParsedTool {
+interface ParsedTool {
   noun: string;
   verb: 'get' | 'list' | 'save' | 'create' | 'delete' | 'search' | 'extract' | 'prepare' | 'other';
 }
@@ -127,7 +79,7 @@ export const parseToolName = (apiName: string): ParsedTool => {
   }
 };
 
-export const capitalize = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+const capitalize = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
 // Args-free verb label; the collapsed-summary view has no runtime args, so
 // `save_*` stays "Save {noun}" rather than guessing Create vs Update.

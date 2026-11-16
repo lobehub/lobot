@@ -18,14 +18,14 @@ import { clearReplicas, clearUserReplicas, memoryListKey } from '../../utils/rep
 import { OffsetListPager } from './offsetListPager';
 
 /** Query of one memory list page set; `pageSize` is not part of its identity. */
-export interface MemoryListParams {
+interface MemoryListParams {
   pageSize: number;
   q?: string;
   sort?: string;
 }
 
 /** A memory list page set, tagged with the query it answers. */
-export interface MemoryListData<TItem, TSort extends string = string> extends ReplicaPagedData<
+interface MemoryListData<TItem, TSort extends string = string> extends ReplicaPagedData<
   TItem,
   number
 > {
@@ -43,7 +43,7 @@ export interface MemoryListPageResult<TItem> {
 
 type StoreField = keyof UserMemoryStore & string;
 
-export interface MemoryQueryListOptions<TParams extends MemoryListParams, TItem, TData> {
+interface MemoryQueryListOptions<TParams extends MemoryListParams, TItem, TData> {
   /** Devtools prefix of the replica writes. */
   actionPrefix: string;
   /** Store field holding the active query's entry key. */

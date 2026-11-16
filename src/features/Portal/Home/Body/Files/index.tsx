@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import FileList from './FileList';
 
-export const Files = memo(() => {
+const Files = memo(() => {
   const { t } = useTranslation('portal');
 
   return (

@@ -32,11 +32,6 @@ const logger = createLogger('contentSearch:base');
 const EXCLUDED_DIRS = ['node_modules', '.git'] as const;
 
 /**
- * Content search tool type
- */
-export type ContentSearchTool = 'ag' | 'grep' | 'nodejs' | 'rg';
-
-/**
  * Content Search Service Implementation Abstract Class
  * Defines the interface that different platform content search implementations need to implement
  */

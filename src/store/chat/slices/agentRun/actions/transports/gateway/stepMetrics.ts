@@ -5,7 +5,7 @@
  * is the user-facing metric (actual model calls, retries included) and is
  * independent of it. Returns `undefined` when the event carries neither.
  */
-export const resolveStepMetricPatch = (
+const resolveStepMetricPatch = (
   stepIndex: unknown,
   llmCalls: unknown,
 ): Record<string, number> | undefined => {

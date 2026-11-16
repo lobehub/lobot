@@ -1756,7 +1756,7 @@ const siliconcloudVideoModels: AIVideoModelCard[] = [
   },
 ];
 
-export const allModels = [
+const allModels = [
   ...siliconcloudChatModels,
   ...siliconcloudImageModels,
   ...siliconcloudVideoModels,

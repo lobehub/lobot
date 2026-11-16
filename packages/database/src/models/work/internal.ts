@@ -42,7 +42,7 @@ export const WORK_DESCRIPTION_PREVIEW_LENGTH = 120;
  * agent-generated multi-MB body would land in a version row. Card-facing
  * queries exclude this column and fetch only the bounded preview.
  */
-export const WORK_CONTENT_MAX_LENGTH = 65_536;
+const WORK_CONTENT_MAX_LENGTH = 65_536;
 
 /** Cap the full-text `content` column; no whitespace collapsing (it IS the full text). */
 export const truncateContentText = (value: string | null | undefined): string | null => {
@@ -189,7 +189,7 @@ export interface TaskWorkSummaryQueryRow {
 export type DisplayWorkType = 'canvas' | 'document' | 'external' | 'file';
 
 /** Version-event row for display-backed types (each mutation event). */
-export interface DisplayVersionEventRow {
+interface DisplayVersionEventRow {
   /** See {@link WorkListBaseItem.resourceDeleted}; constant `false` for external / file. */
   resourceDeleted: boolean;
   version: WorkVersionPreview;
@@ -324,12 +324,12 @@ export const listDisplayVersionEventRows = (
  * One current-version row surfaced by the conversation-scoped list query,
  * paired with the mutation-event timestamp used for cross-type ordering.
  */
-export interface WorkConversationRow {
+interface WorkConversationRow {
   eventCreatedAt: Date;
   item: WorkListItem;
 }
 
-export interface WorkConversationRowParams {
+interface WorkConversationRowParams {
   rowLimit: number;
   threadFilter: SQL;
   topicId: string;
@@ -340,7 +340,7 @@ export interface WorkConversationRowParams {
  * fan-out): the `works` display columns plus the coalesced task columns (nulled
  * for non-task rows by the LEFT JOIN).
  */
-export interface WorkspaceSummaryQueryRow {
+interface WorkspaceSummaryQueryRow {
   event: WorkSummaryVersionPreview;
   /** See {@link WorkListBaseItem.resourceDeleted}; derived by {@link resourceDeletedField}. */
   resourceDeleted: boolean;

@@ -18,7 +18,7 @@ interface RoutingBadgeProps {
  * filled tag rather than wording in the name, since a name reads as one model
  * and a group is a pool of them.
  */
-export const RoutingBadge = memo<RoutingBadgeProps>(({ id, provider }) => {
+const RoutingBadge = memo<RoutingBadgeProps>(({ id, provider }) => {
   const { t } = useTranslation('components');
 
   if (!isRoutingGroupId(id, provider)) return null;

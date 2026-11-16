@@ -15,7 +15,7 @@ type Setter = StoreSetter<ToolStore>;
 export const createProjectSkillsSlice = (set: Setter, get: () => ToolStore, _api?: unknown) =>
   new ProjectSkillsActionImpl(set, get, _api);
 
-export class ProjectSkillsActionImpl {
+class ProjectSkillsActionImpl {
   readonly #skills;
 
   constructor(set: Setter, get: () => ToolStore, _api?: unknown) {

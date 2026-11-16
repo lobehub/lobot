@@ -8,18 +8,15 @@ import {
 import { Form } from '@lobehub/ui/form';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
-import type { ComponentType, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import NavHeader from '@/features/NavHeader';
-import SettingContainer from '@/features/Setting/SettingContainer';
-import type { RouteSkeletonProps } from '@/spa/router/routeMeta';
 import { sx } from '@/styles/sx';
 
 import SkeletonBar from '../Bar';
 
 /** A static copy key: `[namespace, key]`. */
-export type SettingsSkeletonTextKey = readonly [namespace: string, key: string];
+type SettingsSkeletonTextKey = readonly [namespace: string, key: string];
 
 /** Shared head options of every section rendered as a filled `Form.Group`. */
 interface GroupHeadOptions {
@@ -50,7 +47,7 @@ interface QuotaBlockShape {
  * `banner` is a filled `Form.Group`, so the skeleton reuses the real group
  * chrome and only the contents are placeholders.
  */
-export type SettingsSectionSkeleton =
+type SettingsSectionSkeleton =
   | (GroupHeadOptions & {
       /**
        * One full-width control instead of labelled rows: `true` is a 38px input
@@ -144,17 +141,6 @@ export interface SettingsSectionsShape {
   /** The page draws its own large title + divider above the sections. */
   title?: boolean;
 }
-
-/**
- * Where the skeleton sits when the route has no layout chrome around it
- * (`chrome='page'`). Under `chrome='body'` the host layout already draws its
- * header and padded container, so only the sections render.
- *
- * - `header`: navigation header above a padded, centred 1024px container.
- * - `container`: padded, centred container only (the page draws its own title).
- * - `none`: the sections alone.
- */
-export type SettingsSectionsFrame = 'container' | 'header' | 'none';
 
 const styles = stylex.create({
   banner: {
@@ -774,47 +760,3 @@ export const SettingsSectionsBody = ({ shape }: { shape: SettingsSectionsShape }
     ))}
   </Flexbox>
 );
-
-/**
- * Route skeleton for a settings-style page made of stacked filled groups.
- * Under `chrome='page'` it draws the frame named by `frame`; under
- * `chrome='body'` the host layout owns that frame, so only the sections render.
- */
-export const SettingsSectionsSkeleton = ({
-  chrome = 'page',
-  frame = 'header',
-  shape,
-}: RouteSkeletonProps & { frame?: SettingsSectionsFrame; shape: SettingsSectionsShape }) => {
-  const body = <SettingsSectionsBody shape={shape} />;
-  if (chrome === 'body' || frame === 'none') return body;
-
-  return (
-    <Flexbox aria-busy flex={1} height={'100%'} style={{ minHeight: 0, overflow: 'hidden' }}>
-      {frame === 'header' && (
-        <NavHeader styles={{ center: { alignItems: 'center' } }}>
-          <SkeletonBar height={16} width={88} />
-        </NavHeader>
-      )}
-      <SettingContainer maxWidth={1024} paddingBlock={'24px 128px'} paddingInline={24}>
-        {body}
-      </SettingContainer>
-    </Flexbox>
-  );
-};
-
-/**
- * Binds a shape and frame into a route `Skeleton` component. Call it once per
- * route definition (module scope) so the component identity stays stable.
- */
-export const createSettingsSectionsSkeleton = (
-  shape: SettingsSectionsShape,
-  frame: SettingsSectionsFrame = 'header',
-): ComponentType<RouteSkeletonProps> => {
-  const Component = ({ chrome }: RouteSkeletonProps) => (
-    <SettingsSectionsSkeleton chrome={chrome} frame={frame} shape={shape} />
-  );
-  Component.displayName = `SettingsSectionsSkeleton(${frame})`;
-  return Component;
-};
-
-export default SettingsSectionsSkeleton;

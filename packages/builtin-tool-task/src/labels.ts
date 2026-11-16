@@ -5,7 +5,7 @@ import {
 } from '@lobechat/types';
 
 /** `error` is set when any name is unknown; `ids` is then empty. */
-export interface ToolLabelResolution {
+interface ToolLabelResolution {
   error?: string;
   ids: string[];
 }

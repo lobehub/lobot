@@ -1,6 +1,11 @@
 import type { AiModelReasoningConfig, AiProviderModelListItem } from 'model-bank';
 
-import { arrayEntity, defineReplica, identityOnlyScope, type ReplicaEntityAdapter } from '@/libs/replica';
+import {
+  arrayEntity,
+  defineReplica,
+  identityOnlyScope,
+  type ReplicaEntityAdapter,
+} from '@/libs/replica';
 
 import { modelReasoningConfigKey } from './initialState';
 
@@ -25,7 +30,7 @@ export const aiModelListEntity: ReplicaEntityAdapter<
   AiProviderModelListItem
 > = arrayEntity<AiProviderModelListItem>((model) => model.id);
 
-export interface AiModelReasoningConfigParams {
+interface AiModelReasoningConfigParams {
   model: string;
   provider: string;
 }

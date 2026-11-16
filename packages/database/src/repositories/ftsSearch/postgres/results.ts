@@ -20,7 +20,7 @@ export function buildResponse<
   return buildScoredResponse(mapScoresToRelevance(rows), mapItem);
 }
 
-export function buildScoredResponse<
+function buildScoredResponse<
   T extends { id: string; relevance: number; score: number },
   TItem extends FtsSearchBackendItem,
 >(rows: T[], mapItem: (row: T) => TItem): FtsSearchBackendResponse<TItem> {

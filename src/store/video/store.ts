@@ -59,5 +59,3 @@ export const useVideoStore = createWithEqualityFn<VideoStore>()(
 );
 
 expose('video', useVideoStore);
-
-export const getVideoStoreState = () => useVideoStore.getState();

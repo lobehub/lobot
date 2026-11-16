@@ -41,7 +41,7 @@ const mapResponseFormatToResponsesText = (
   };
 };
 
-export const handleMetaResponsesPayload = (payload: ChatStreamPayload) => {
+const handleMetaResponsesPayload = (payload: ChatStreamPayload) => {
   const { enabledSearch, response_format, text, tools, ...rest } = payload;
 
   return {

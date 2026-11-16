@@ -14,7 +14,7 @@ import { expose } from '@/store/middleware/expose';
 
 import { type HeteroModelCatalogParams, heteroModelCatalogResource } from './projection';
 
-export interface HeteroModelCatalogStoreState {
+interface HeteroModelCatalogStoreState {
   /** `heteroModelCatalogKey(params)` → last successful catalog. */
   heteroModelCatalogMap: Record<string, HeterogeneousAgentModelCatalogSuccess>;
   heteroModelCatalogReplica: ReplicaState<HeterogeneousAgentModelCatalogSuccess>;
@@ -29,7 +29,7 @@ export const initialHeteroModelCatalogState: HeteroModelCatalogStoreState = {
  * A failed discovery throws instead of resolving: the replica keeps the last
  * good catalog, and the error's `name` carries the code the selector words.
  */
-export const fetchHeteroModelCatalog = async ({
+const fetchHeteroModelCatalog = async ({
   cwd,
   deviceId,
   provider,
@@ -66,7 +66,7 @@ const createSlice = (
     ),
   });
 
-export interface HeteroModelCatalogStore extends HeteroModelCatalogStoreState {
+interface HeteroModelCatalogStore extends HeteroModelCatalogStoreState {
   /** @internal The replica slice; read through `useModelCatalog`. */
   slice: ReturnType<typeof createSlice>;
 }

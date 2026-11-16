@@ -3,7 +3,7 @@ import { isRecord } from '@lobechat/utils/object';
 
 export const CHAT_INPUT_HISTORY_STORAGE_KEY = 'lobechat:chat-input-history:v2';
 
-export const MAX_INPUT_HISTORY_ITEMS = 50;
+const MAX_INPUT_HISTORY_ITEMS = 50;
 
 export interface ChatInputHistoryEntry {
   createdAt: number;

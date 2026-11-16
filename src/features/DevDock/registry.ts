@@ -26,7 +26,7 @@ export interface DevDockToggleItem extends DevDockItemBase {
   type: 'toggle';
 }
 
-export interface DevDockSelectOption {
+interface DevDockSelectOption {
   label: string;
   value: string;
 }
@@ -50,12 +50,12 @@ export type DevDockItem =
 
 export type DevDockLoadableItem = DevDockPanelItem | DevDockReadoutItem;
 
-export type PinOverrides = Record<string, boolean>;
+type PinOverrides = Record<string, boolean>;
 
 export const isItemPinned = (item: DevDockItem, overrides: PinOverrides): boolean =>
   overrides[item.id] ?? item.defaultPinned ?? false;
 
-export interface DevDockBarLayout {
+interface DevDockBarLayout {
   center?: DevDockReadoutItem;
   right: Exclude<DevDockItem, DevDockPanelItem>[];
   tabs: DevDockPanelItem[];

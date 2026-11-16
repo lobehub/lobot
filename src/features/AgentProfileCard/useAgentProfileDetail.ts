@@ -9,7 +9,7 @@ export type AgentProfilePreview = Pick<
   'avatar' | 'backgroundColor' | 'description' | 'model' | 'name' | 'provider' | 'title'
 >;
 
-export interface AgentProfileDetail extends Partial<AgentProfilePreview> {
+interface AgentProfileDetail extends Partial<AgentProfilePreview> {
   agencyConfig?: { heterogeneousProvider?: { type?: string | null } | null } | null;
   files?: unknown[];
   id?: string;

@@ -23,14 +23,14 @@ type Translate = TFunction<'chat'>;
 export type ModelCapability = Required<Pick<HeteroSelectorCapability, 'model'>> &
   HeteroSelectorCapability;
 
-export interface SelectorDimensionOption {
+interface SelectorDimensionOption {
   desc?: string;
   disabled?: boolean;
   label: string;
   value: string;
 }
 
-export interface SelectorDimension {
+interface SelectorDimension {
   current: string;
   key: 'mode' | 'model' | 'reasoning' | 'speed';
   label: string;
@@ -40,7 +40,7 @@ export interface SelectorDimension {
   valueLabel: string;
 }
 
-export interface SelectorView {
+interface SelectorView {
   ariaLabel: string;
   dimensions: SelectorDimension[];
   isCatalogModel: boolean;
@@ -52,7 +52,7 @@ export interface SelectorView {
   triggerLabel: TriggerLabel;
 }
 
-export type SelectorShape =
+type SelectorShape =
   | { capability: HeteroSelectorCapability; kind: 'menu' }
   | { capability: ModelCapability; kind: 'catalog' }
   | { kind: 'none' };

@@ -5,11 +5,11 @@ import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { createStepfunImage } from './createImage';
 
-export interface StepfunModelCard {
+interface StepfunModelCard {
   id: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://api.stepfun.com/v1',
   chatCompletion: {
     handlePayload: (payload) => {

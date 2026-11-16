@@ -1,16 +1,12 @@
-import { DEFAULT_PROVIDER } from '@lobechat/business-const';
-import { isHeterogeneousAgentModelId } from '@lobechat/const';
-import type { ChannelExecutionConfig, ChannelMemberConfig, LobeAgentConfig } from '@lobechat/types';
-import { agentDisplayName, isChannelRuntime } from '@lobechat/types';
+import type { ChannelMemberConfig } from '@lobechat/types';
+import { agentDisplayName } from '@lobechat/types';
 import { cleanObject } from '@lobechat/utils';
 import { and, eq } from 'drizzle-orm';
-import type { PartialDeep } from 'type-fest';
 
 import type { ChannelItem, ChannelMemberItem } from '../../schemas';
-import { agents, channelMembers, userSettings } from '../../schemas';
+import { agents, channelMembers } from '../../schemas';
 import type { Transaction } from '../../type';
 import { agentUsableByWhere } from '../../utils/agent-access';
-import { mergeAgentDefaultConfig } from '../../utils/agentConfig';
 import { normalizeInboxAgentTitle } from '../../utils/inboxAgent';
 import { ChannelError } from './error';
 
@@ -111,64 +107,4 @@ export const requireAgentMember = async (tx: Transaction, channelId: string, mem
     .limit(1);
   if (!member?.agentId) throw new ChannelError('NOT_FOUND', 'Agent member not found');
   return member as ChannelMemberItem & { agentId: string };
-};
-
-/** Read current settings with the requester's Agent permissions, then freeze the effective config. */
-export const resolveExecutionConfig = async (
-  tx: Transaction,
-  channel: ChannelItem,
-  member: ChannelMemberItem,
-  userId: string,
-  serverDefault: PartialDeep<LobeAgentConfig>,
-): Promise<ChannelExecutionConfig | null> => {
-  if (!member.agentId) return null;
-  const [agent] = await tx
-    .select({
-      agencyConfig: agents.agencyConfig,
-      avatar: agents.avatar,
-      backgroundColor: agents.backgroundColor,
-      chatConfig: agents.chatConfig,
-      editorData: agents.editorData,
-      fewShots: agents.fewShots,
-      model: agents.model,
-      name: agents.name,
-      openingMessage: agents.openingMessage,
-      openingQuestions: agents.openingQuestions,
-      params: agents.params,
-      plugins: agents.plugins,
-      profile: agents.profile,
-      provider: agents.provider,
-      systemRole: agents.systemRole,
-      title: agents.title,
-      tts: agents.tts,
-      virtual: agents.virtual,
-    })
-    .from(agents)
-    .where(
-      agentUsableByWhere(member.agentId, { userId, workspaceId: channel.workspaceId ?? undefined }),
-    )
-    .for('share');
-  if (!agent) return null;
-  const [settings] = channel.workspaceId
-    ? []
-    : await tx
-        .select({ defaultAgent: userSettings.defaultAgent })
-        .from(userSettings)
-        .where(eq(userSettings.id, userId));
-  const config = mergeAgentDefaultConfig(agent, {
-    serverDefault,
-    userDefault: settings?.defaultAgent,
-    workspaceId: channel.workspaceId,
-  });
-  // Match ordinary Agent execution, including Agents created before agencyConfig existed.
-  const runtime =
-    config.agencyConfig?.heterogeneousProvider?.type ??
-    (isHeterogeneousAgentModelId(config.model) ? config.model : 'native');
-  if (!isChannelRuntime(runtime)) return null;
-  return {
-    ...config,
-    ...memberEnvironment(member.config),
-    provider: config.provider || DEFAULT_PROVIDER,
-    runtime,
-  };
 };

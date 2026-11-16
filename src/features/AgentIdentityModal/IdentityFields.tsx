@@ -26,7 +26,7 @@ const Field = memo<FieldProps>(({ label, hint, children }) => (
 ));
 
 /** The field values and setters both the edit and the create form expose. */
-export interface IdentityFieldsForm {
+interface IdentityFieldsForm {
   description: string;
   error?: string;
   name: string;

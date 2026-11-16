@@ -8,8 +8,6 @@ import { useGlobalStore } from '@/store/global';
 import FeedbackContent from './FeedbackContent';
 import type { FeedbackInitialValues } from './types';
 
-export type { FeedbackInitialValues } from './types';
-
 interface OpenFeedbackModalOptions {
   initialValues?: FeedbackInitialValues;
 }
@@ -26,5 +24,3 @@ export const openFeedbackModal = ({ initialValues }: OpenFeedbackModalOptions = 
     width: 600,
   });
 };
-
-export default openFeedbackModal;

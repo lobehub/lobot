@@ -4,7 +4,7 @@ import type { MessageMetadata, UIChatMessage } from '@lobechat/types';
  * Re-attach the metadata the client resolved at send time to the persisted user
  * row, so fields the server response does not echo keep rendering.
  */
-export const attachSendTimeMetadataToUserMessage = (
+const attachSendTimeMetadataToUserMessage = (
   messages: UIChatMessage[],
   userMessageId: string,
   metadata: MessageMetadata | undefined,
@@ -32,7 +32,7 @@ export const attachSendTimeMetadataToUserMessage = (
  * Merge a partial server response into the current list: the optimistic rows it
  * replaces and any row it re-sends are dropped in favour of the persisted ones.
  */
-export const mergePartialPersistedMessages = (
+const mergePartialPersistedMessages = (
   currentMessages: UIChatMessage[],
   persistedMessages: UIChatMessage[],
   replacedMessageIds: string[],

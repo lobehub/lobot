@@ -7,7 +7,7 @@ import { combineDocuments, getDocumentsForPositions, withRunStartedAt } from './
 
 const log = debug('context-engine:provider:AgentDocumentMessageInjector');
 
-export interface AgentDocumentMessageInjectorConfig extends AgentDocumentFilterContext {
+interface AgentDocumentMessageInjectorConfig extends AgentDocumentFilterContext {
   documents?: AgentContextDocument[];
   enabled?: boolean;
 }

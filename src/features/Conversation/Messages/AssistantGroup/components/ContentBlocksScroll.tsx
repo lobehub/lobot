@@ -44,8 +44,7 @@ interface ContentBlocksScrollFromMessages extends ContentBlocksScrollBaseProps {
   messages: UIChatMessage[];
 }
 
-export type ContentBlocksScrollProps =
-  ContentBlocksScrollFromBlocks | ContentBlocksScrollFromMessages;
+type ContentBlocksScrollProps = ContentBlocksScrollFromBlocks | ContentBlocksScrollFromMessages;
 
 const ContentBlocksScroll = memo<ContentBlocksScrollProps>((props) => {
   const { disableEditing, onScroll, scroll = true, scrollRef, variant } = props;

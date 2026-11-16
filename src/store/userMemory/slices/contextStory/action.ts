@@ -16,7 +16,7 @@ export const createContextStorySlice = (set: Setter, get: () => UserMemoryStore,
   new ContextStoryActionImpl(set, get, _api);
 
 /** Consolidated contexts (context → dossiers → evidence), read-only for now. */
-export class ContextStoryActionImpl {
+class ContextStoryActionImpl {
   readonly #get: () => UserMemoryStore;
   readonly #set: Setter;
 

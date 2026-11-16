@@ -8,14 +8,14 @@ import type { LobeChatDatabase } from '../type';
 import { buildWorkspacePayload, buildWorkspaceWhere } from '../utils/workspace';
 import { nonNull } from './utils/rows';
 
-export interface EnvironmentCreator {
+interface EnvironmentCreator {
   avatar: string | null;
   fullName: string | null;
   id: string | null;
   username: string | null;
 }
 
-export type EnvironmentWithCreator = Pick<
+type EnvironmentWithCreator = Pick<
   EnvironmentItem,
   | 'configuration'
   | 'createdAt'
@@ -29,7 +29,7 @@ export type EnvironmentWithCreator = Pick<
 > & { creator: EnvironmentCreator | null };
 
 /** Canonical GitHub source only; credentials and arbitrary clone transports are never persisted. */
-export const normalizeProjectRepository = (value: string): string => {
+const normalizeProjectRepository = (value: string): string => {
   const ssh = /^git@github\.com:([^/]+\/[^/]+?)(?:\.git)?$/.exec(value.trim());
   const url = new URL(ssh ? `https://github.com/${ssh[1]}` : value.trim());
   if (
@@ -58,7 +58,7 @@ export const normalizeProjectRepository = (value: string): string => {
  * environment is usable by the workspace but editable only by the member who
  * made it, the same split the device rows draw.
  */
-export const environmentOwnership = (userId: string, workspaceId?: string) =>
+const environmentOwnership = (userId: string, workspaceId?: string) =>
   and(
     eq(environments.userId, userId),
     workspaceId ? eq(environments.workspaceId, workspaceId) : isNull(environments.workspaceId),
@@ -80,7 +80,7 @@ export const environmentOwnership = (userId: string, workspaceId?: string) =>
  * agent must not reach it. Personal mode is unaffected — there every row is the
  * owner's own.
  */
-export const environmentVisibility = (
+const environmentVisibility = (
   userId: string,
   workspaceId?: string,
   callerAgentVisibility?: 'private' | 'public' | null,

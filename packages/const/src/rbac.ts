@@ -3,7 +3,7 @@
  * Defines all executable permission action types in the system
  * Format: resource:action (e.g., agent:create, file:upload)
  */
-export const PERMISSION_ACTIONS = {
+const PERMISSION_ACTIONS = {
   // ==================== Agent Management ====================
   AGENT_READ: 'agent:read',
 
@@ -217,107 +217,6 @@ export const PERMISSION_ACTIONS = {
 } as const;
 
 /**
- * Operation Scope Constants Definition
- */
-export const PERMISSION_SCOPE = ['ALL', 'OWNER'] as const;
-
-export type PermissionScope = (typeof PERMISSION_SCOPE)[number];
-
-/**
- * Calculate allowed scopes for a given permission action key.
- * Default policy: OWNER | ALL, with exceptions for system-level resources.
- */
-export const getAllowedScopesForAction = (
-  key: keyof typeof PERMISSION_ACTIONS,
-): PermissionScope[] => {
-  const value = PERMISSION_ACTIONS[key];
-  const resource = value.split(':')[0];
-  const action = value.split(':')[1];
-
-  // RBAC resources: ALL only (system-level resource)
-  if (resource === 'rbac') return ['ALL'];
-
-  // Workspace-scoped resources: ALL only. The workspace itself is the isolation
-  // boundary, so an "OWNER" sub-scope (resource-author-only) is redundant —
-  // workspace_member.role + assigned permissions already pin who can do what.
-  if (resource.startsWith('workspace')) return ['ALL'];
-
-  // Agent labels are a shared registry rather than per-author content: in a
-  // workspace every member sees and uses the same label set, and the model
-  // scopes reads and writes by `workspace_id` alone. An OWNER grant would
-  // therefore be a lie — it reads as "only labels you created" but would in
-  // fact authorize mutating every label in the workspace.
-  if (resource === 'agent_label') return ['ALL'];
-
-  // Sidebar folders became the same kind of thing: they are the shared
-  // skeleton of a workspace sidebar, and `SessionGroupModel.ownership()` now
-  // matches every public folder rather than only the caller's. An OWNER grant
-  // would read as "only folders you created" while authorizing renames and
-  // deletes across every shared Category.
-  if (resource === 'session_group') return ['ALL'];
-
-  // user resource nuance: create/delete without OWNER; read/update allow OWNER
-  if (resource === 'user') {
-    if (action === 'create' || action === 'delete') return ['ALL'];
-
-    return ['ALL', 'OWNER'];
-  }
-
-  // Default: OWNER | ALL
-  return ['ALL', 'OWNER'];
-};
-
-/**
- * RBAC System Permissions Definition
- * Combines permission actions with operation scopes to generate complete RBAC permission definitions
- * Format: resource:action:scope (e.g., agent:create:workspace, file:upload:owner)
- */
-export const RBAC_PERMISSIONS = Object.entries(PERMISSION_ACTIONS).reduce(
-  (acc, [key]) => {
-    const actionKey = key as keyof typeof PERMISSION_ACTIONS;
-    const permissionValue = PERMISSION_ACTIONS[actionKey];
-    const allowedScopes = getAllowedScopesForAction(actionKey);
-
-    const scoped = allowedScopes.reduce(
-      (map, scope) => {
-        const permissionWithScopeKey =
-          `${key}_${scope}` as `${keyof typeof PERMISSION_ACTIONS}_${PermissionScope}`;
-        map[permissionWithScopeKey] = `${permissionValue}:${scope.toLowerCase()}`;
-        return map;
-      },
-      {} as Record<`${keyof typeof PERMISSION_ACTIONS}_${PermissionScope}`, string>,
-    );
-
-    return Object.assign(acc, scoped);
-  },
-  {} as Record<`${keyof typeof PERMISSION_ACTIONS}_${PermissionScope}`, string>,
-);
-
-/**
- * RBAC Permissions Key Type Definition
- */
-export type RBAC_PERMISSIONS_KEY = keyof typeof RBAC_PERMISSIONS;
-
-/**
- * ALL permission scope
- */
-export const ALL_SCOPE = 'ALL';
-
-/**
- * RBAC Role Constants Definition
- */
-export const SYSTEM_DEFAULT_ROLES = {
-  SUPER_ADMIN: 'super_admin',
-} as const;
-
-/**
- * Role Description Mapping
- */
-export const ROLE_DESCRIPTIONS = {
-  [SYSTEM_DEFAULT_ROLES.SUPER_ADMIN]: 'Administrator with all system permissions',
-} as const;
-
-/**
  * Built-in role names for workspace-scoped RBAC. Each workspace is seeded with
  * exactly these four system roles on creation; their `workspace_id` is the
  * owning workspace, distinguishing them from the global `super_admin` role.
@@ -329,8 +228,7 @@ export const WORKSPACE_SYSTEM_ROLES = {
   VIEWER: 'workspace_viewer',
 } as const;
 
-export type WorkspaceSystemRoleName =
-  (typeof WORKSPACE_SYSTEM_ROLES)[keyof typeof WORKSPACE_SYSTEM_ROLES];
+type WorkspaceSystemRoleName = (typeof WORKSPACE_SYSTEM_ROLES)[keyof typeof WORKSPACE_SYSTEM_ROLES];
 
 const action = (key: keyof typeof PERMISSION_ACTIONS): string => PERMISSION_ACTIONS[key];
 
@@ -600,20 +498,6 @@ export const WORKSPACE_ROLE_PERMISSIONS: Record<WorkspaceSystemRoleName, readonl
   ],
 };
 
-export const WORKSPACE_ROLE_DESCRIPTIONS: Record<WorkspaceSystemRoleName, string> = {
-  [WORKSPACE_SYSTEM_ROLES.ADMIN]: 'Can manage workspace settings and members.',
-  [WORKSPACE_SYSTEM_ROLES.OWNER]: 'Full access including billing, members, and all content.',
-  [WORKSPACE_SYSTEM_ROLES.MEMBER]: 'Can create and edit own content, read shared content.',
-  [WORKSPACE_SYSTEM_ROLES.VIEWER]: 'Read-only access to workspace content.',
-};
-
-export const WORKSPACE_ROLE_DISPLAY_NAMES: Record<WorkspaceSystemRoleName, string> = {
-  [WORKSPACE_SYSTEM_ROLES.ADMIN]: 'Admin',
-  [WORKSPACE_SYSTEM_ROLES.OWNER]: 'Owner',
-  [WORKSPACE_SYSTEM_ROLES.MEMBER]: 'Member',
-  [WORKSPACE_SYSTEM_ROLES.VIEWER]: 'Viewer',
-};
-
 /**
  * Translate a legacy `workspace_members.role` text value to its corresponding
  * built-in role name. Used by the migration backfill and member CRUD code that
@@ -646,12 +530,12 @@ export const legacyRoleToWorkspaceRole = (role: string): WorkspaceSystemRoleName
  * built-in roles and no per-workspace role/permission rows are stored in the
  * RBAC tables. Unknown roles expand to an empty set.
  */
-export const getWorkspaceRolePermissionCodes = (role: string): readonly string[] => {
+const getWorkspaceRolePermissionCodes = (role: string): readonly string[] => {
   const systemRole = legacyRoleToWorkspaceRole(role);
   return systemRole ? WORKSPACE_ROLE_PERMISSIONS[systemRole] : [];
 };
 
-export const TASK_ASSIGNEE_PERMISSION_CODES = [
+const TASK_ASSIGNEE_PERMISSION_CODES = [
   `${action('AGENT_UPDATE')}:all`,
   `${action('AGENT_UPDATE')}:owner`,
 ] as const;

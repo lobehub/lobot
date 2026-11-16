@@ -155,7 +155,7 @@ export const normalizeRouterOptions = (
   return routerOptions;
 };
 
-export const applySortRouterOptions = async (
+const applySortRouterOptions = async (
   deps: RouterRuntimeDeps,
   router: RouterInstance,
   model: string,

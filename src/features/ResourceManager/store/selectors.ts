@@ -33,7 +33,7 @@ export const getResourceQueryVisibility = (
  * filter there would be four controls that can only ever partition the list one
  * way. Pages hold no files and Home is a dashboard.
  */
-export const SOURCE_FILTER_CATEGORIES: FilesTabs[] = [
+const SOURCE_FILTER_CATEGORIES: FilesTabs[] = [
   FilesTabs.Audios,
   FilesTabs.Images,
   FilesTabs.Videos,

@@ -25,7 +25,7 @@ import { formatNumber } from '@/utils/format';
 import { contextSelectors, useConversationStore } from '../../../../store';
 import TokenDetail from './UsageDetail';
 
-export const styles = stylex.create({
+const styles = stylex.create({
   container: {
     fontSize: '12px',
     color: cssVar.colorTextQuaternary,

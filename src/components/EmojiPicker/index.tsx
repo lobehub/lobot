@@ -9,7 +9,7 @@ import { globalGeneralSelectors } from '@/store/global/selectors';
 // on mount so the picker never sits inside a route's static closure.
 const LobeEmojiPicker = lazy(() => import('@lobehub/ui/es/EmojiPicker/index'));
 
-export const EmojiPicker = memo<EmojiPickerProps>(({ shape = 'square', ...rest }) => {
+const EmojiPicker = memo<EmojiPickerProps>(({ shape = 'square', ...rest }) => {
   const locale = useGlobalStore(globalGeneralSelectors.currentLanguage);
   const size = rest.size ?? 40;
 

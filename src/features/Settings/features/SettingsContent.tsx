@@ -24,7 +24,7 @@ const REDIRECT_MAP: Record<string, string> = {
  * Where a tab URL lands instead: legacy aliases map to their new tab, and tabs
  * Lobot does not offer (providers, skills, OAuth apps, …) go to the profile.
  */
-export const getSettingsRedirect = (tab: string | undefined): string | undefined => {
+const getSettingsRedirect = (tab: string | undefined): string | undefined => {
   if (!tab) return;
   if (REDIRECT_MAP[tab]) return REDIRECT_MAP[tab];
   if (!(tab in componentMap)) return SettingsTabs.Profile;

@@ -2,7 +2,7 @@ import { defineReplica } from '@/libs/replica';
 
 import type { SaveState } from './initialState';
 
-export interface GroupProfileSaveParams {
+interface GroupProfileSaveParams {
   tabId: string;
 }
 

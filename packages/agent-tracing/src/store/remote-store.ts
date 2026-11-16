@@ -41,7 +41,7 @@ function isZstdFrame(buf: Buffer): boolean {
  * Format: op_{timestamp}_agt_{agentHash}_tpc_{topicHash}_{suffix}
  * Example: op_1775743208456_agt_6OfrfD6sRP2x_tpc_lMs3V4bpXa5x_9fRnPApi
  */
-export function parseOperationId(opId: string): {
+function parseOperationId(opId: string): {
   agentId: string;
   operationId: string;
   topicId: string;

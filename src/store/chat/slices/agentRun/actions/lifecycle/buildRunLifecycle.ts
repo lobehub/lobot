@@ -60,7 +60,7 @@ const claimServerRunNotification = (serverOperationId: string | undefined): bool
  * executor). Carries everything the lifecycle hooks need beyond the per-call
  * event so they can be assembled ONCE and called at runtime boundaries.
  */
-export interface RunAdapterContext {
+interface RunAdapterContext {
   context: ConversationContext;
   parentMessageId: string;
   parentMessageType: 'user' | 'assistant' | 'tool';

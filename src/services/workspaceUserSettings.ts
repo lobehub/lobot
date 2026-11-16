@@ -8,7 +8,7 @@ import { lambdaClient } from '@/libs/trpc/client';
  * workspace-scoped bucket. Consumers should not call these when the caller
  * is in personal mode — the server rejects the request there.
  */
-export class WorkspaceUserSettingsService {
+class WorkspaceUserSettingsService {
   getPreference = async (): Promise<WorkspaceUserPreference> => {
     return lambdaClient.workspaceUserSettings.getPreference.query();
   };

@@ -5,8 +5,6 @@ import {
   toTaskExecutionConfigPatch,
 } from '@lobechat/types';
 
-import { isUniqueViolation } from '../../utils/uniqueViolation';
-
 export const DEFAULT_TASK_IDENTIFIER_PREFIX = 'T';
 
 /** Columns whose change is worth a line in the task activity feed. */
@@ -128,6 +126,3 @@ export const withStaleReposCleared = (
     },
   };
 };
-
-/** Kept under its historical name for callers outside this package. */
-export const isTaskIdentifierUniqueViolation = isUniqueViolation;

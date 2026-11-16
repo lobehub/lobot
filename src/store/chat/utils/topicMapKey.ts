@@ -6,7 +6,7 @@
  */
 export type TopicMapScope = 'agent' | 'group' | 'group_agent';
 
-export interface TopicMapKeyInput {
+interface TopicMapKeyInput {
   /**
    * Agent ID - used for agent sessions or agent within group
    */

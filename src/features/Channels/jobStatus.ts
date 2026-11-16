@@ -20,7 +20,7 @@ export const memberJobStatus = (job: ChannelReplyJob) => {
  * A follow-up deferred behind the message's primary responder. It starts only once that reply
  * settles and may well stay silent, so until then it is not a reply in progress.
  */
-export const isAwaitingPrimary = (job: ChannelReplyJob) =>
+const isAwaitingPrimary = (job: ChannelReplyJob) =>
   job.status === 'queued' && job.blockedCode === 'awaiting_primary';
 
 /** Colour family of a status: working blue, attention amber, error red, settled grey. */

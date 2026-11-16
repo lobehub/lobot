@@ -132,7 +132,7 @@ const normalizeMessagesForAnthropic = (messages: ChatStreamPayload['messages']) 
     };
   });
 
-export const buildMiniMaxAnthropicPayload = async (
+const buildMiniMaxAnthropicPayload = async (
   payload: ChatStreamPayload,
 ): Promise<Anthropic.MessageCreateParams> => {
   const resolvedMaxTokens =
@@ -180,7 +180,7 @@ export const buildMiniMaxAnthropicPayload = async (
   };
 };
 
-export const buildMiniMaxOpenAIPayload = (payload: ChatStreamPayload) => {
+const buildMiniMaxOpenAIPayload = (payload: ChatStreamPayload) => {
   const {
     enabledSearch: _enabledSearch,
     max_tokens: _maxTokens,
@@ -284,7 +284,7 @@ export const buildMiniMaxOpenAIPayload = (payload: ChatStreamPayload) => {
   } as any;
 };
 
-export const openAIParams = {
+const openAIParams = {
   baseURL: DEFAULT_MINIMAX_BASE_URL,
   chatCompletion: {
     handlePayload: buildMiniMaxOpenAIPayload,
@@ -390,7 +390,7 @@ export const openAIParams = {
   provider: ModelProvider.Minimax,
 } satisfies OpenAICompatibleFactoryOptions;
 
-export const LobeMinimaxOpenAI = createOpenAICompatibleRuntime(openAIParams);
+const LobeMinimaxOpenAI = createOpenAICompatibleRuntime(openAIParams);
 
 type MiniMaxOpenAIRuntimeOptions = ConstructorParameters<typeof LobeMinimaxOpenAI>[0];
 
@@ -403,7 +403,7 @@ const fetchMiniMaxModelsWithOpenAI = ({ options }: { options?: MiniMaxOpenAIRunt
   return runtime.models();
 };
 
-export const anthropicParams = createAnthropicCompatibleParams({
+const anthropicParams = createAnthropicCompatibleParams({
   baseURL: DEFAULT_MINIMAX_ANTHROPIC_BASE_URL,
   chatCompletion: {
     handlePayload: buildMiniMaxAnthropicPayload,
@@ -415,7 +415,7 @@ export const anthropicParams = createAnthropicCompatibleParams({
   provider: ModelProvider.Minimax,
 });
 
-export const LobeMinimaxAnthropicAI = createAnthropicCompatibleRuntime(anthropicParams);
+const LobeMinimaxAnthropicAI = createAnthropicCompatibleRuntime(anthropicParams);
 
 const createAnthropicRouter = ({
   baseURL,
@@ -462,7 +462,7 @@ const createSpeechRouter = (baseURL?: string | null) => ({
   runtime: LobeMinimaxSpeechAI,
 });
 
-export const params: CreateRouterRuntimeOptions = {
+const params: CreateRouterRuntimeOptions = {
   id: ModelProvider.Minimax,
   models: fetchMiniMaxModelsWithOpenAI,
   routers: (options, context) => {

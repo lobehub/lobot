@@ -1,6 +1,6 @@
 import { isManagedCloudDevice, isWakeableManagedDevice } from '@lobechat/types';
 
-export interface DeviceOptionState {
+interface DeviceOptionState {
   /** Locale key (namespace `chat`) for an offline row's status. */
   offlineLabelKey:
     'heteroAgent.executionTarget.offline' | 'heteroAgent.executionTarget.wakesWhenUsed';

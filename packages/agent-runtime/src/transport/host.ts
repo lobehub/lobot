@@ -24,7 +24,7 @@ import type { ToolTransport } from './tool';
  *   - `blob`           → call_llm
  *   - `operationStore` → finish, call_llm (interruption guard)
  */
-export interface RuntimeTransports {
+interface RuntimeTransports {
   blob?: BlobStore;
   compression?: CompressionTransport;
   context?: ContextBuilder;

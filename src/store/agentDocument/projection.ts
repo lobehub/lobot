@@ -40,7 +40,7 @@ export const agentDocumentReaderKey = ({ agentId, documentId }: AgentDocumentRea
   `${agentId}/${documentId}`;
 
 /** What the read-only reader paints — the server row minus its editor state. */
-export interface AgentDocumentReaderContent {
+interface AgentDocumentReaderContent {
   content: string;
   filename: string;
   title: string;

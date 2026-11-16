@@ -10,9 +10,6 @@ import { type StoreSetter } from '@/store/types';
 
 type Setter = StoreSetter<ChatStore>;
 
-export const conversationControl = (set: Setter, get: () => ChatStore, _api?: unknown) =>
-  new ConversationControlActionImpl(set, get, _api);
-
 export class ConversationControlActionImpl {
   readonly #get: () => ChatStore;
 

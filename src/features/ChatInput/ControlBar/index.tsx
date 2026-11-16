@@ -38,7 +38,7 @@ const styles = stylex.create({
  * Same-height stand-in for the control bar (the 28px row), so the composer does
  * not move when the real controls replace it.
  */
-export const ControlBarSkeleton = () => (
+const ControlBarSkeleton = () => (
   <Flexbox
     aria-busy
     horizontal

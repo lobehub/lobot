@@ -413,7 +413,7 @@ export const groupList = async (
 };
 
 /** Labels per task for list rows; tasks without labels are absent from the map. */
-export const labelsByTaskIds = (ctx: TaskModelContext, taskIds: string[]) =>
+const labelsByTaskIds = (ctx: TaskModelContext, taskIds: string[]) =>
   new TaskLabelModel(ctx.db, ctx.userId, ctx.workspaceId).getLabelsForTasks(taskIds);
 
 /**
@@ -499,7 +499,7 @@ const buildLabelGroupQueries = async (
   });
 };
 
-export const runStatsByTaskIds = async (
+const runStatsByTaskIds = async (
   ctx: TaskModelContext,
   taskIds: string[],
 ): Promise<TaskRunStats[]> => {
@@ -533,7 +533,7 @@ export const runStatsByTaskIds = async (
   return result.rows;
 };
 
-export const subtaskProgressByTaskIds = async (
+const subtaskProgressByTaskIds = async (
   ctx: TaskModelContext,
   taskIds: string[],
 ): Promise<Map<string, TaskSubtaskProgress>> => {

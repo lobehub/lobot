@@ -26,7 +26,7 @@ interface UseFetchDocumentListOptions {
   enabled?: boolean;
 }
 
-export class AgentDocumentActionImpl {
+class AgentDocumentActionImpl {
   readonly #get: () => AgentDocumentState;
   readonly #private: AgentDocumentPrivateAction;
   readonly #set: Setter;

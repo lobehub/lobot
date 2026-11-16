@@ -38,12 +38,7 @@ const HOME_UNREAD_EXCLUDE_TRIGGERS = [
 ];
 
 // Re-export types for backward compatibility
-export type {
-  SidebarAgentItem,
-  SidebarAgentListResponse,
-  SidebarGroup,
-  SidebarItemType,
-} from '@lobechat/types';
+export type { SidebarAgentItem, SidebarAgentListResponse, SidebarGroup } from '@lobechat/types';
 
 /**
  * Home Repository - provides sidebar agent list data

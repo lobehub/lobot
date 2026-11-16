@@ -14,19 +14,6 @@ import * as taskCallback from './taskCallback';
 import * as trash from './trash';
 import * as update from './update';
 
-export { getTopicDeviceId } from './runningOperation';
-export { hasLiveTaskCallbackReservation } from './taskCallback';
-export type {
-  CreateTopicParams,
-  ListTopicsForMemoryExtractorCursor,
-  ModelTimingContext,
-  SettleRunningOperationOptions,
-  TopicKeywordScope,
-  TopicListItem,
-  VisitorRunningOperation,
-  VisitorTopicItem,
-} from './types';
-
 /**
  * NEVER null-test a jsonb arrow / path expression inside a WHERE clause:
  *
@@ -74,7 +61,7 @@ export type {
  * tick from the day it shipped, so rate-limit continuations never once resumed).
  * `jsonbNullTest.test.ts` is the source-shape guard that holds the line.
  */
-export interface TopicModelOptions {
+interface TopicModelOptions {
   /**
    * Opt IN to agent-share visitor topics. Visitor conversations persist under
    * the CREATOR's `userId` (only `topics.senderId` marks them), so every

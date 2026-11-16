@@ -4,7 +4,7 @@ import { defineReplica } from '@/libs/replica';
 import type { agentDocumentService } from '@/services/agentDocument';
 
 type AgentDocumentListResponse = Awaited<ReturnType<typeof agentDocumentService.listDocuments>>;
-export type AgentDocumentListItem = AgentDocumentListResponse[number];
+type AgentDocumentListItem = AgentDocumentListResponse[number];
 
 /**
  * Lightweight registry entry for an agent-document skill bundle (the "Agent Skills"

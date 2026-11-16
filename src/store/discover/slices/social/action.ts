@@ -36,7 +36,7 @@ const n = setNamespace('discover/social');
  * (`isLoading` / `mutate`) so a call site only has to move its `data` read to
  * the matching `socialSelectors` entry.
  */
-export interface SocialSyncResult extends ReplicaSyncResult {
+interface SocialSyncResult extends ReplicaSyncResult {
   /** A request is in flight and this entry has no value to show yet. */
   isLoading: boolean;
   /** Alias of `revalidate`. */
@@ -82,7 +82,7 @@ const toSyncResult = (
 export const createSocialSlice = (set: Setter, get: () => DiscoverStore, _api?: unknown) =>
   new SocialActionImpl(set, get, _api);
 
-export class SocialActionImpl {
+class SocialActionImpl {
   readonly #favoriteAgents;
   readonly #favoritePlugins;
   readonly #favoriteStatus;

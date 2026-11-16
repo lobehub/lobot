@@ -133,7 +133,7 @@ const SubmenuScrollStyle = createGlobalStyle`
   }
 `;
 
-export type ActionDropdownMenuItem = MenuItemType;
+type ActionDropdownMenuItem = MenuItemType;
 
 /**
  * `renderDropdownMenuItems` accepts Base UI's full item union (`BaseMenuItemType`),

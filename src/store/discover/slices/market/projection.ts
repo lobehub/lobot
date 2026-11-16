@@ -22,7 +22,7 @@ import type {
  */
 
 /** Read addressed by one Market identifier (agent, group or skill). */
-export interface MarketIdentifierParams {
+interface MarketIdentifierParams {
   identifier: string;
 }
 
@@ -181,7 +181,7 @@ export const skillPackageFilesResource = defineReplica<
 
 // ============================== Market user profile ==============================
 
-export interface MarketUserProfileParams {
+interface MarketUserProfileParams {
   username: string;
 }
 

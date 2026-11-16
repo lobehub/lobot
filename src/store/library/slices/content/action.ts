@@ -6,7 +6,7 @@ type Setter = StoreSetter<KnowledgeBaseStore>;
 export const createContentSlice = (set: Setter, get: () => KnowledgeBaseStore, _api?: unknown) =>
   new KnowledgeBaseContentActionImpl(set, get, _api);
 
-export class KnowledgeBaseContentActionImpl {
+class KnowledgeBaseContentActionImpl {
   constructor(set: Setter, get: () => KnowledgeBaseStore, _api?: unknown) {
     void _api;
     void set;

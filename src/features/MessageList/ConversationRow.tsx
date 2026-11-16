@@ -20,7 +20,7 @@ import {
 import { hideConversation } from './hiddenConversations';
 import { styles } from './style';
 
-export interface ConversationRowProps {
+interface ConversationRowProps {
   active?: boolean;
   activeAt?: Date;
   /**

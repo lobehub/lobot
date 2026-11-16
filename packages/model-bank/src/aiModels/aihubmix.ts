@@ -2208,6 +2208,6 @@ const aihubmixImageModels: AIImageModelCard[] = [
   },
 ];
 
-export const allModels = [...aihubmixChatModels, ...aihubmixImageModels];
+const allModels = [...aihubmixChatModels, ...aihubmixImageModels];
 
 export default allModels;

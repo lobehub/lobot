@@ -34,6 +34,6 @@ const unslothChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...unslothChatModels];
+const allModels = [...unslothChatModels];
 
 export default allModels;

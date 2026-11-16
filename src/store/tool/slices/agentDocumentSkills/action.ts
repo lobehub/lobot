@@ -17,7 +17,7 @@ type Setter = StoreSetter<ToolStore>;
 export const createAgentDocumentSkillsSlice = (set: Setter, get: () => ToolStore, _api?: unknown) =>
   new AgentDocumentSkillsActionImpl(set, get, _api);
 
-export class AgentDocumentSkillsActionImpl {
+class AgentDocumentSkillsActionImpl {
   readonly #get: () => ToolStore;
   readonly #skills;
 

@@ -20,10 +20,10 @@ import { merge } from '@/utils/merge';
 
 export const currentSettings = (s: UserStore): UserSettings => merge(s.defaultSettings, s.settings);
 
-export const currentLLMSettings = (s: UserStore): UserModelProviderConfig =>
+const currentLLMSettings = (s: UserStore): UserModelProviderConfig =>
   currentSettings(s).languageModel || {};
 
-export const getProviderConfigById = (provider: string) => (s: UserStore) =>
+const getProviderConfigById = (provider: string) => (s: UserStore) =>
   currentLLMSettings(s)[provider as GlobalLLMProviderKey] as ProviderConfig | undefined;
 
 const currentImageSettings = (s: UserStore) => currentSettings(s).image;

@@ -52,7 +52,7 @@ const styles = stylex.create({
   },
 });
 
-export interface ChoiceOption<T extends string> {
+interface ChoiceOption<T extends string> {
   desc?: string;
   label: string;
   /** Marks the option the product suggests; shown as a small tag. */

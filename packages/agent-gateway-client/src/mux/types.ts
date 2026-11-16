@@ -8,20 +8,20 @@ import type {
 
 // ─── Protocol v2: Client → Hub ───
 
-export interface MuxSubscribeMessage {
+interface MuxSubscribeMessage {
   executor?: boolean;
   lastEventId?: string;
   operationId: string;
   type: 'subscribe';
 }
 
-export interface MuxUnsubscribeMessage {
+interface MuxUnsubscribeMessage {
   operationId: string;
   type: 'unsubscribe';
 }
 
 /** Auto-answered by the hub's WebSocket auto-response pair; never wakes the DO. */
-export interface MuxHeartbeatMessage {
+interface MuxHeartbeatMessage {
   type: 'heartbeat';
 }
 
@@ -30,21 +30,21 @@ export interface MuxToolResultMessage extends Omit<ToolResultMessage, 'type'> {
   type: 'tool_result';
 }
 
-export interface MuxToolConfirmationMessage {
+interface MuxToolConfirmationMessage {
   approved: boolean;
   operationId: string;
   toolCallId: string;
   type: 'tool_confirmation';
 }
 
-export interface MuxUserInputMessage {
+interface MuxUserInputMessage {
   content: string;
   operationId: string;
   requestId: string;
   type: 'user_input';
 }
 
-export type MuxDocClientMessage =
+type MuxDocClientMessage =
   | { documentId: string; epoch?: string; stateVector?: string; type: 'doc_subscribe' }
   | { documentId: string; type: 'doc_unsubscribe' }
   | { bootstrap?: true; documentId: string; seq: number; type: 'doc_update'; update: string }
@@ -55,13 +55,13 @@ export type MuxDocClientMessage =
       type: 'doc_awareness';
     };
 
-export interface MuxDocAwarenessEntry {
+interface MuxDocAwarenessEntry {
   clientID: number;
   state: Record<string, unknown> | null;
 }
 
 /** How close the room's page is to its size cap; `full` refuses anything that adds content. */
-export type MuxDocCapacity = 'full' | 'near_full' | 'ok';
+type MuxDocCapacity = 'full' | 'near_full' | 'ok';
 
 export type MuxDocServerMessage =
   | {
@@ -123,14 +123,14 @@ export type MuxClientMessage =
 
 // ─── Protocol v2: Hub → Client ───
 
-export interface MuxReadyMessage {
+interface MuxReadyMessage {
   connectionId: string;
   protocol: 2;
   type: 'ready';
   userId: string;
 }
 
-export interface MuxAgentEventMessage {
+interface MuxAgentEventMessage {
   /**
    * `event.operationId` may differ from `operationId` (mirrored member event),
    * and is OMITTED when it would repeat it. `GatewayMuxClient` fills it back in
@@ -142,21 +142,21 @@ export interface MuxAgentEventMessage {
   type: 'agent_event';
 }
 
-export interface MuxSessionCompleteMessage {
+interface MuxSessionCompleteMessage {
   id: string;
   operationId: string;
   summary?: unknown;
   type: 'session_complete';
 }
 
-export interface MuxStatusChangeMessage {
+interface MuxStatusChangeMessage {
   id: string;
   operationId: string;
   status: SessionStatus;
   type: 'status_change';
 }
 
-export interface MuxToolConfirmationRequestMessage {
+interface MuxToolConfirmationRequestMessage {
   id: string;
   operationId: string;
   tool: unknown;
@@ -164,7 +164,7 @@ export interface MuxToolConfirmationRequestMessage {
   type: 'tool_confirmation_request';
 }
 
-export interface MuxInputRequestMessage {
+interface MuxInputRequestMessage {
   id: string;
   operationId: string;
   prompt: unknown;
@@ -172,7 +172,7 @@ export interface MuxInputRequestMessage {
   type: 'input_request';
 }
 
-export interface MuxResumeCompleteMessage {
+interface MuxResumeCompleteMessage {
   gap: boolean;
   operationId: string;
   /** The op DO has not received `init` yet; the hub will replay once it does. */
@@ -181,13 +181,13 @@ export interface MuxResumeCompleteMessage {
   type: 'resume_complete';
 }
 
-export interface MuxSubscribeFailedMessage {
+interface MuxSubscribeFailedMessage {
   operationId: string;
   reason: 'forbidden' | 'invalid';
   type: 'subscribe_failed';
 }
 
-export interface MuxOperationMeta {
+interface MuxOperationMeta {
   agentId?: string;
   groupId?: string;
   mirrorToOperationId?: string;
@@ -208,17 +208,17 @@ export interface MuxOpLifecycleMessage {
   type: 'op_lifecycle';
 }
 
-export interface MuxHeartbeatAckMessage {
+interface MuxHeartbeatAckMessage {
   type: 'heartbeat_ack';
 }
 
 /** Public-view invalidation only. Re-fetch through the membership-authorized Channel API. */
-export interface MuxChannelChangedMessage {
+interface MuxChannelChangedMessage {
   channelId: string;
   type: 'channel_changed';
 }
 
-export interface MuxErrorMessage {
+interface MuxErrorMessage {
   code: string;
   message: string;
   operationId?: string;

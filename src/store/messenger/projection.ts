@@ -13,7 +13,7 @@ export type MessengerBindingAgent = Resolved<typeof messengerService.listAgentsF
 export type MessengerPushWindow = Resolved<typeof messengerService.getMessengerPushWindow>;
 
 /** The caller-wide lists have a single entry; the scope partitions them per user + workspace. */
-export type MessengerListParams = Record<string, never>;
+type MessengerListParams = Record<string, never>;
 export const MESSENGER_LIST_PARAMS: MessengerListParams = {};
 export const MESSENGER_LIST_KEY = 'all';
 
@@ -68,7 +68,7 @@ export const messengerBindingScopesResource = defineReplica<
   version: 1,
 });
 
-export interface MessengerBindingAgentsParams {
+interface MessengerBindingAgentsParams {
   /** `null` is the personal scope. */
   workspaceId: string | null;
 }

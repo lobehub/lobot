@@ -192,6 +192,6 @@ const xinferenceChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...xinferenceChatModels];
+const allModels = [...xinferenceChatModels];
 
 export default allModels;

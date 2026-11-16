@@ -7,7 +7,6 @@ import type {
 import { matchesLoadRules } from '../../policies/agentDocumentLoadPolicy';
 
 export type { AgentDocumentLoadRule, AgentDocumentLoadRules };
-export type { AgentDocumentPolicyLoad };
 
 export const AGENT_DOCUMENT_INJECTION_POSITIONS = [
   'after-first-user',
@@ -24,7 +23,7 @@ export type AgentDocumentInjectionPosition = (typeof AGENT_DOCUMENT_INJECTION_PO
 
 export type AgentDocumentLoadFormat = 'file' | 'raw';
 
-export type AgentDocumentSourceType = 'agent' | 'agent-signal' | 'api' | 'file' | 'topic' | 'web';
+type AgentDocumentSourceType = 'agent' | 'agent-signal' | 'api' | 'file' | 'topic' | 'web';
 
 export interface AgentContextDocument {
   content?: string;
@@ -98,7 +97,7 @@ export function withRunStartedAt<T extends AgentDocumentFilterContext>(
 /**
  * Filter documents by load rules (always, by-keywords, by-regexp, by-time-range)
  */
-export function filterDocumentsByRules(
+function filterDocumentsByRules(
   docs: AgentContextDocument[],
   context: AgentDocumentFilterContext,
 ): AgentContextDocument[] {
@@ -113,7 +112,7 @@ export function filterDocumentsByRules(
 /**
  * Sort documents by priority (lower number = higher priority)
  */
-export function sortByPriority(docs: AgentContextDocument[]): AgentContextDocument[] {
+function sortByPriority(docs: AgentContextDocument[]): AgentContextDocument[] {
   return [...docs].sort((a, b) => {
     const aPriority = a.loadRules?.priority ?? 999;
     const bPriority = b.loadRules?.priority ?? 999;
@@ -141,10 +140,7 @@ export function getDocumentsForPositions(
 /**
  * Format a single document for injection
  */
-export function formatDocument(
-  doc: AgentContextDocument,
-  context: AgentDocumentFilterContext,
-): string {
+function formatDocument(doc: AgentContextDocument, context: AgentDocumentFilterContext): string {
   const maxTokens = doc.loadRules?.maxTokens;
   let content = doc.content || '';
   if (maxTokens && maxTokens > 0) {

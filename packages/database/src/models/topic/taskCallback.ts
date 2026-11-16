@@ -5,14 +5,14 @@ import { topics } from '../../schemas';
 import type { TopicModelContext } from './context';
 import { isRunningOperationAlive } from './runningOperation';
 
-export const TASK_CALLBACK_RESERVATION_TTL_MS = 5 * 60 * 1000;
+const TASK_CALLBACK_RESERVATION_TTL_MS = 5 * 60 * 1000;
 
 /**
  * Whether a turn start currently holds the topic's short start reservation.
  * A writer that changes where the topic runs must respect it as it would a
  * `runningOperation`: the reserving turn may already have resolved its target.
  */
-export const hasLiveTaskCallbackReservation = (
+const hasLiveTaskCallbackReservation = (
   metadata: Pick<ChatTopicMetadata, 'taskCallbackReservation'> | null | undefined,
   now = Date.now(),
 ): boolean => {

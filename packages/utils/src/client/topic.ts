@@ -19,7 +19,7 @@ dayjs.extend(isToday);
 dayjs.extend(isYesterday);
 
 /** Time bucket of a timestamp: today, yesterday, this week, this month, a month or a year. */
-export const getTimeGroupId = (timestamp: number): TimeGroupId => {
+const getTimeGroupId = (timestamp: number): TimeGroupId => {
   const date = dayjs(timestamp);
   const now = dayjs();
 
@@ -53,7 +53,7 @@ export const getTimeGroupId = (timestamp: number): TimeGroupId => {
 };
 
 /** Orders time buckets newest first: the fixed buckets, then months and years. */
-export const sortTimeGroups = <T extends { id: string }>(groups: T[]): T[] => {
+const sortTimeGroups = <T extends { id: string }>(groups: T[]): T[] => {
   const orderMap = new Map<string, number>([
     ['today', 0],
     ['yesterday', 1],
@@ -164,14 +164,14 @@ const normalizeOptionalWorkingDirectory = (dir: string | undefined): string | un
 // Routing the whole thing through the extractor (which accepts `string |
 // WorkingDirConfig`) yields the path for either shape instead of crashing
 // `normalizeWorkingDirectory` with `dir.trim is not a function`.
-export const getTopicMetadataWorkingDirectorySourcePath = (
+const getTopicMetadataWorkingDirectorySourcePath = (
   metadata?: ChatTopicMetadata,
 ): string | undefined =>
   normalizeOptionalWorkingDirectory(
     getWorkingDirSourcePath(metadata?.workingDirectoryConfig ?? metadata?.workingDirectory),
   );
 
-export const getTopicMetadataWorkingDirectoryEffectivePath = (
+const getTopicMetadataWorkingDirectoryEffectivePath = (
   metadata?: ChatTopicMetadata,
 ): string | undefined =>
   normalizeOptionalWorkingDirectory(
@@ -427,7 +427,7 @@ export interface TopicDeviceDirectory {
  * the device of its project working directory. Shared by device grouping and
  * the project sidebar's device filter so both attribute topics the same way.
  */
-export const createTopicDeviceResolver = (directories?: ReadonlyArray<TopicDeviceDirectory>) => {
+const createTopicDeviceResolver = (directories?: ReadonlyArray<TopicDeviceDirectory>) => {
   const deviceIdByDirectoryId = new Map(
     (directories ?? []).map((directory) => [directory.id, directory.deviceId]),
   );
@@ -479,8 +479,7 @@ export const groupTopicsByDevice = (
 // failed, and an unread completion — collapse into a single `pending` bucket so
 // the sidebar surfaces "needs attention" in one place. The remaining buckets map
 // 1:1 to a status. The group `id` resolves its title via `groupTitle.byStatus.<id>`.
-export type TopicStatusBucket =
-  'pending' | 'running' | 'scheduled' | 'active' | 'completed' | 'archived';
+type TopicStatusBucket = 'pending' | 'running' | 'scheduled' | 'active' | 'completed' | 'archived';
 
 // Fixed priority order: `pending` (needs attention) comes first, then running,
 // then active; the remaining states fall below. Topics without a status are
@@ -492,7 +491,7 @@ export type TopicStatusBucket =
 // client-only nuance is `loadingTopicIds` (a topic streaming right now), which
 // the server can't know about — see `resolveStatusBucket`. The unread state is
 // now a persisted `topics.status === 'unread'`, so it needs no client overlay.
-export const STATUS_GROUP_ORDER: TopicStatusBucket[] = [
+const STATUS_GROUP_ORDER: TopicStatusBucket[] = [
   'pending',
   'running',
   'scheduled',
@@ -509,7 +508,7 @@ export const STATUS_GROUP_ORDER: TopicStatusBucket[] = [
  * server can't see) or persisted as `running` lands in `running`; then the
  * persisted status, defaulting to `active`.
  */
-export const resolveStatusBucket = (
+const resolveStatusBucket = (
   topic: ChatTopic,
   loadingTopicIds?: ReadonlySet<string>,
 ): TopicStatusBucket => {
@@ -557,13 +556,13 @@ export const groupTopicsByStatus = (
 };
 
 /** Status buckets a list can be narrowed to; archived work has its own toggle. */
-export const TOPIC_STATUS_FILTERS = ['pending', 'running', 'scheduled', 'active'] as const;
-export type TopicStatusFilter = (typeof TOPIC_STATUS_FILTERS)[number];
+const TOPIC_STATUS_FILTERS = ['pending', 'running', 'scheduled', 'active'] as const;
+type TopicStatusFilter = (typeof TOPIC_STATUS_FILTERS)[number];
 
 /** `none` keeps the topics no device is attributed to. */
-export type TopicDeviceFilter = string | 'none';
+type TopicDeviceFilter = string | 'none';
 
-export interface TopicListFilter {
+interface TopicListFilter {
   device?: TopicDeviceFilter;
   status?: TopicStatusFilter;
 }

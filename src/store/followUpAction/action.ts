@@ -30,7 +30,7 @@ export const createFollowUpActionSlice = (
   _api?: unknown,
 ) => new FollowUpActionImpl(set, get, _api);
 
-export class FollowUpActionImpl {
+class FollowUpActionImpl {
   readonly #get: () => FollowUpActionStore;
   /** Local-first replica of the per-conversation chip slots (`slots` is its view). */
   readonly #slots;

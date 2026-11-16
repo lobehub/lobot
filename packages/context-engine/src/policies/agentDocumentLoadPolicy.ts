@@ -20,12 +20,12 @@ export interface AgentDocumentLoadRules {
   };
 }
 
-export interface AgentDocumentPolicyEvaluationContext {
+interface AgentDocumentPolicyEvaluationContext {
   currentTime?: Date;
   currentUserMessage?: string;
 }
 
-export interface AgentContextDocumentRuleInput {
+interface AgentContextDocumentRuleInput {
   loadRules?: AgentDocumentLoadRules;
 }
 
@@ -86,11 +86,4 @@ export const matchesLoadRules = (
       return current >= from && current <= to;
     }
   }
-};
-
-export const shouldInjectDocument = (
-  doc: AgentContextDocumentRuleInput,
-  context: AgentDocumentPolicyEvaluationContext,
-): boolean => {
-  return matchesLoadRules(doc, context);
 };

@@ -11,8 +11,3 @@
  * edited value is never silently lost.
  */
 export type SaveStatus = 'idle' | 'saving' | 'saved' | 'failed';
-
-export interface SaveState {
-  lastUpdatedTime?: Date | null;
-  saveStatus: SaveStatus;
-}

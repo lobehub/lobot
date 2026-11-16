@@ -39,7 +39,7 @@ const readPersisted = (): DevDockUIState => {
   }
 };
 
-export interface DevDockStore extends DevDockUIState {
+interface DevDockStore extends DevDockUIState {
   setExpanded: (expanded: boolean) => void;
   setMaximized: (maximized: boolean) => void;
   setMesurer: (mesurer: boolean) => void;

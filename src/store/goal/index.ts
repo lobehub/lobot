@@ -22,8 +22,4 @@ export const useGoalStore = createWithEqualityFn<GoalStore>()(
 
 expose('goal', useGoalStore);
 
-export const getGoalStoreState = () => useGoalStore.getState();
-
-export { goalStatusesForFilter } from './goalListFilter';
-export type { GoalListFilter, GoalViewMode } from './initialState';
 export { goalSelectors } from './selectors';

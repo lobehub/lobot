@@ -3,7 +3,7 @@ import { type PartialDeep } from 'type-fest';
 
 import { lambdaClient } from '@/libs/trpc/client';
 
-export const AVAILABLE_AGENTS_CONTEXT_LIMIT = 10;
+const AVAILABLE_AGENTS_CONTEXT_LIMIT = 10;
 export const AVAILABLE_AGENTS_CONTEXT_QUERY_LIMIT = AVAILABLE_AGENTS_CONTEXT_LIMIT + 2;
 
 export interface AvailableAgentItem {
@@ -89,12 +89,12 @@ export interface CreateAgentResult {
   agentId: string;
 }
 
-export interface CreateAgentOnlyParams {
+interface CreateAgentOnlyParams {
   config?: PartialDeep<AgentItem>;
   groupId: string;
 }
 
-export interface CreateAgentOnlyResult {
+interface CreateAgentOnlyResult {
   agentId: string;
 }
 

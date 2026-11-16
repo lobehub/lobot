@@ -27,7 +27,7 @@ const EditorSkeleton = () => (
   </div>
 );
 
-export interface DocumentIdModeProps extends EditorCanvasProps {
+interface DocumentIdModeProps extends EditorCanvasProps {
   documentId: string;
   editor: IEditor | undefined;
 }

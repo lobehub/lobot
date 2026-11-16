@@ -44,7 +44,7 @@ type DeletedTask = NonNullable<Awaited<ReturnType<typeof taskService.delete>>['d
 // - checkpoint goes through configSlice.updateCheckpoint
 // - review goes through configSlice.updateReview
 // - heartbeat config will get a dedicated action once the upstream task scheduler infra is complete
-export interface TaskUpdatePayload {
+interface TaskUpdatePayload {
   assigneeAgentId?: string | null;
   assigneeUserId?: string | null;
   description?: string;
@@ -57,7 +57,7 @@ export interface TaskUpdatePayload {
   projectId?: string | null;
 }
 
-export interface TaskUpdateOptions {
+interface TaskUpdateOptions {
   /**
    * The agent making the change when the task tool runs in the browser
    * (client-first runtime), so the server attributes the activity to it. No
@@ -102,7 +102,7 @@ const cachedTaskId = (ref: string | undefined, index: Record<string, string>) =>
 export const createTaskDetailSlice = (set: Setter, get: () => TaskStore, _api?: unknown) =>
   new TaskDetailSliceActionImpl(set, get, _api);
 
-export class TaskDetailSliceActionImpl {
+class TaskDetailSliceActionImpl {
   readonly #get: () => TaskStore;
   readonly #set: Setter;
   readonly #detail;

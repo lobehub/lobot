@@ -4,7 +4,7 @@
  * decoding the image. Consumers reserve layout space from it (no jump when the
  * image finishes loading).
  */
-export interface ImageDimensions {
+interface ImageDimensions {
   height: number;
   width: number;
 }

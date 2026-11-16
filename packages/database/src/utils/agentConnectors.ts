@@ -1,4 +1,4 @@
-import { and, count, eq, inArray, ne, or, sql } from 'drizzle-orm';
+import { and, eq, inArray, ne, sql } from 'drizzle-orm';
 
 import { userConnectors, userConnectorTools } from '../schemas';
 import type { LobeChatDatabase, Transaction } from '../type';
@@ -171,21 +171,4 @@ export const rehomeAgentConnectorsForScopeTransfer = async (
         ordinaryConnection(),
       ),
     );
-};
-
-/**
- * Read-only companion for the transfer manifest: how many connectors the
- * handover above will disconnect (agent-owned reauthorization shells) or
- * unmount (other members' linked rows). Must stay predicate-identical to it.
- */
-export const countAgentConnectorsAffected = async (
-  db: Db,
-  params: AgentConnectorHandoverParams,
-): Promise<number> => {
-  if (params.agentIds.length === 0) return 0;
-  const [row] = await db
-    .select({ value: count() })
-    .from(userConnectors)
-    .where(or(foreignAgentScopedRows(params), foreignMountedRows(params)));
-  return row.value;
 };

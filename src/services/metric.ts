@@ -8,7 +8,7 @@ import type {
 import { lambdaClient } from '@/libs/trpc/client';
 
 /** One observation; who recorded it and how is optional for persisted older reads. */
-export interface MetricSeriesPoint {
+interface MetricSeriesPoint {
   actorType?: MetricActorType;
   observedAt: Date;
   sourceType?: MetricPointSourceType;

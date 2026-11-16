@@ -736,7 +736,7 @@ const minimaxTTSModels: AITTSModelCard[] = [
   },
 ];
 
-export const allModels = [
+const allModels = [
   ...minimaxChatModels,
   ...minimaxImageModels,
   ...minimaxVideoModels,

@@ -1,6 +1,6 @@
 import { isTrpcErrorCode } from '@/utils/trpcError';
 
-export type TopicCommentThreadState = 'error' | 'hidden' | 'loading' | 'notFound' | 'ready';
+type TopicCommentThreadState = 'error' | 'hidden' | 'loading' | 'notFound' | 'ready';
 
 export const resolveTopicCommentThreadState = ({
   error,

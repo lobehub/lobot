@@ -6,24 +6,12 @@
 
 import {
   isLinearMcpApiName,
-  LINEAR_TOOL_NAMES,
-  parseToolName,
-  staticLabelFor,
-} from '@lobechat/shared-tool-ui/inspectors/linear-labels';
-
-export {
-  capitalize,
-  getLinearToolSuffix,
-  isLinearMcpApiName,
-  LINEAR_MCP_PREFIX,
-  type ParsedTool,
   parseToolName,
   staticLabelFor,
 } from '@lobechat/shared-tool-ui/inspectors/linear-labels';
 
 // Re-exported under the historical CC-flavoured name so existing imports
 // (`import { LINEAR_MCP_TOOL_NAMES } from './linearMcpLabels'`) keep working.
-export const LINEAR_MCP_TOOL_NAMES = LINEAR_TOOL_NAMES;
 
 export const formatLinearMcpShortLabel = (apiName: string): string | null => {
   if (!isLinearMcpApiName(apiName)) return null;

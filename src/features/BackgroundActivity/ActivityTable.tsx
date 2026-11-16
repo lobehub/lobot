@@ -173,7 +173,7 @@ const tableStyles = createStaticStyles(({ css }) => ({
   `,
 }));
 
-export function TopicTitle({ id }: { id: string }) {
+function TopicTitle({ id }: { id: string }) {
   const { t } = useTranslation('chat');
   const title = useChatStore(() => topicName(id));
   const useFetchTopicDetail = useChatStore((s) => s.useFetchTopicDetail);

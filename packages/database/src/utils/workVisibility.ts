@@ -3,7 +3,7 @@ import { and, sql } from 'drizzle-orm';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 
 /** Agent Share provenance is an access boundary, not Work ownership. */
-export const notAgentShareWork = (metadata: AnyPgColumn) =>
+const notAgentShareWork = (metadata: AnyPgColumn) =>
   sql<boolean>`NOT COALESCE(${metadata} ? 'agentShare', false)`;
 
 /**

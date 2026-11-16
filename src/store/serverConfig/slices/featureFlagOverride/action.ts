@@ -104,5 +104,3 @@ class FeatureFlagOverrideActionImpl implements FeatureFlagOverrideAction {
     );
   };
 }
-
-export type { FeatureFlagOverrideActionImpl };

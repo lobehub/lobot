@@ -2,7 +2,7 @@ import type { LobeRuntimeAI } from '../../core/BaseAI';
 import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible';
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 
-export const params = {
+const params = {
   baseURL: 'https://api.typesafe.ai/v1',
   /** @see https://docs.typesafe.ai/api */
   decide: { includeUser: false, path: '/systemone', protocol: 'systemone' },

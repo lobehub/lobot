@@ -1,6 +1,6 @@
 import type { ProjectListItem } from '@/store/project';
 
-export type ProjectListState = 'empty' | 'error' | 'loading' | 'ready';
+type ProjectListState = 'empty' | 'error' | 'loading' | 'ready';
 
 interface ResolveProjectListStateParams {
   error: unknown;

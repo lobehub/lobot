@@ -20,7 +20,7 @@ export const AssociatedObjectSchema = z.object({
     .describe('Type/category of the associated object'),
 });
 
-export const AssociatedSubjectSchema = z.object({
+const AssociatedSubjectSchema = z.object({
   extra: z
     .string()
     .nullable()
@@ -36,7 +36,7 @@ export const AssociatedSubjectSchema = z.object({
 /**
  * Context-specific fields
  */
-export const WithContextSchema = z.object({
+const WithContextSchema = z.object({
   associatedObjects: z
     .array(AssociatedObjectSchema)
     .describe(
@@ -89,18 +89,3 @@ export const ContextMemoryItemSchema = z.object({
   title: z.string().describe('Brief descriptive title'),
   withContext: WithContextSchema,
 });
-
-/**
- * Context memory extraction result
- */
-export const ContextMemorySchema = z.object({
-  memories: z
-    .array(ContextMemoryItemSchema)
-    .describe(
-      'Array of extracted context memory items, could be empty if decided no relevant context to extract',
-    ),
-});
-
-export type WithContext = z.infer<typeof WithContextSchema>;
-export type ContextMemoryItem = z.infer<typeof ContextMemoryItemSchema>;
-export type ContextMemory = z.infer<typeof ContextMemorySchema>;

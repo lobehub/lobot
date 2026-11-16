@@ -20,7 +20,7 @@ export interface PiRpcImage {
 }
 
 /** How a prompt is delivered while the agent is already streaming. */
-export type PiStreamingBehavior = 'steer' | 'followUp';
+type PiStreamingBehavior = 'steer' | 'followUp';
 
 /** Commands the host can send to a `pi --mode rpc` process. */
 export type PiRpcCommand =
@@ -71,30 +71,17 @@ export interface PiRpcResponse<T = any> {
  * means an extension command consumed it and no run starts. Older releases
  * omit it; treat absence as `started`.
  */
-export type PiRpcPromptDisposition = 'handled' | 'queued' | 'started';
+type PiRpcPromptDisposition = 'handled' | 'queued' | 'started';
 
 /** `data` of a successful `prompt` / `steer` / `follow_up` response. */
 export interface PiRpcPromptResponseData {
   disposition?: PiRpcPromptDisposition;
 }
 
-/** Subset of `get_state` data the host uses for handshake / diagnostics. */
-export interface PiRpcStateData {
-  isCompacting?: boolean;
-  isStreaming?: boolean;
-  messageCount?: number;
-  model?: { id?: string; name?: string } | null;
-  pendingMessageCount?: number;
-  sessionFile?: string;
-  sessionId?: string;
-  sessionName?: string;
-  thinkingLevel?: string;
-}
-
 /** Dialog methods that block until the host answers with a response. */
-export type PiExtensionUiDialogMethod = 'select' | 'confirm' | 'input' | 'editor';
+type PiExtensionUiDialogMethod = 'select' | 'confirm' | 'input' | 'editor';
 /** Fire-and-forget methods — the host may display or ignore them. */
-export type PiExtensionUiFireAndForgetMethod =
+type PiExtensionUiFireAndForgetMethod =
   'notify' | 'setStatus' | 'setWidget' | 'setTitle' | 'set_editor_text';
 
 /**

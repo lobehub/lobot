@@ -82,5 +82,3 @@ export const useUserMemoryStore = createWithEqualityFn<UserMemoryStore>()(
 );
 
 expose('userMemory', useUserMemoryStore);
-
-export const getUserMemoryStoreState = () => useUserMemoryStore.getState();

@@ -5,7 +5,7 @@ import type { ListWorkspaceMembersParams } from './types';
 export const DEFAULT_LIST_WORKSPACE_MEMBERS_LIMIT = 50;
 const MAX_LIST_WORKSPACE_MEMBERS_LIMIT = 100;
 
-export interface ListWorkspaceMembersQuery {
+interface ListWorkspaceMembersQuery {
   limit: number;
   query?: string;
 }

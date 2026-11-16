@@ -32,7 +32,7 @@ type Setter = StoreSetter<FileStore>;
  * confirms it: `undefined` = nothing loaded for this id yet, `null` = the
  * server answered "not found".
  */
-export interface UseFetchDocumentDetailResult {
+interface UseFetchDocumentDetailResult {
   data: LobeDocument | null | undefined;
   error: unknown;
   /** SWR's `isLoading` semantics: no value yet and no error. */
@@ -66,7 +66,7 @@ interface ResourceDocumentSnapshot {
 export const createDocumentSlice = (set: Setter, get: () => FileStore, _api?: unknown) =>
   new DocumentActionImpl(set, get, _api);
 
-export class DocumentActionImpl {
+class DocumentActionImpl {
   readonly #get: () => FileStore;
   /**
    * One document row per id. The replica owns every transition of `documentMap`

@@ -132,14 +132,14 @@ interface TraeAcpSetConfigOptionResult {
   configOptions?: unknown;
 }
 
-export interface TraeAcpModelCatalog {
+interface TraeAcpModelCatalog {
   configId?: string;
   currentModelId?: string;
   models: HeterogeneousAgentModel[];
   protocol: 'config-option' | 'legacy-model';
 }
 
-export interface ListTraeAcpModelsOptions {
+interface ListTraeAcpModelsOptions {
   args?: string[];
   clientVersion?: string;
   commandPath: string;

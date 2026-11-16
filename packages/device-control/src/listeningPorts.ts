@@ -16,7 +16,7 @@ const execFileAsync = promisify(execFile);
  * any platform.
  */
 
-export interface ListenEntry {
+interface ListenEntry {
   /** Address exactly as the OS reported it, e.g. `*`, `127.0.0.1`, `::1`. */
   address: string;
   command?: string;
@@ -24,7 +24,7 @@ export interface ListenEntry {
   port: number;
 }
 
-export type LoopbackFamily = 'both' | 'ipv4' | 'ipv6';
+type LoopbackFamily = 'both' | 'ipv4' | 'ipv6';
 
 export interface ListeningPort {
   command?: string;

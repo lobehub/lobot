@@ -6,12 +6,12 @@
  * Deliberately not `UNAUTHORIZED`: that code drives the LobeHub / Market
  * re-login flows, and a provider connection is neither.
  */
-export const SkillConnectionErrorCode = {
+const SkillConnectionErrorCode = {
   NotConnected: 'NOT_CONNECTED',
   TokenExpired: 'TOKEN_EXPIRED',
 } as const;
 
-export type SkillConnectionErrorCode =
+type SkillConnectionErrorCode =
   (typeof SkillConnectionErrorCode)[keyof typeof SkillConnectionErrorCode];
 
 /** Whether a tRPC client error carries a provider-connection discriminator. */

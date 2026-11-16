@@ -1,5 +1,5 @@
 /** Default lifetime of a cached native runtime probe. */
-export const RUNTIME_PROBE_TTL_MS = 10 * 60 * 1000;
+const RUNTIME_PROBE_TTL_MS = 10 * 60 * 1000;
 
 export interface RuntimeProbeCache {
   /** Returns the cached probe, starting one when none is cached or the entry expired. */

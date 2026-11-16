@@ -9,7 +9,7 @@ import { $getRoot, $getSelection, $isElementNode, $isRangeSelection } from 'lexi
 
 import { getFileIdForUrl, registerAttachment } from './attachmentRegistry';
 
-export interface ExistingEditorAttachment {
+interface ExistingEditorAttachment {
   fileId: string;
   fileType: string;
   name: string;
@@ -27,7 +27,7 @@ interface FileNodeWithSize {
   status?: 'pending' | 'uploaded' | 'error';
 }
 
-export interface EditorAttachmentState {
+interface EditorAttachmentState {
   hasCompletedAttachments: boolean;
   hasIncompleteAttachments: boolean;
 }
@@ -116,7 +116,7 @@ export const preserveInsertedFileSize = (file: File): void => {
  * URLs that have no registered fileId (e.g. externally pasted image URLs)
  * are silently skipped.
  */
-export const getAttachmentFileIdsFromJson = (json: unknown): string[] => {
+const getAttachmentFileIdsFromJson = (json: unknown): string[] => {
   if (!json) return [];
   const { imageList, fileList } = extractMediaFromEditorState(json as SerializedEditorState);
   const seen = new Set<string>();
@@ -147,7 +147,7 @@ export const hasIncompleteEditorAttachments = (editor: IEditor | undefined): boo
 /**
  * Images → `INSERT_IMAGE_COMMAND`; everything else → `INSERT_FILE_COMMAND`.
  */
-export const insertFilesIntoEditor = (editor: IEditor | undefined, files: File[]): void => {
+const insertFilesIntoEditor = (editor: IEditor | undefined, files: File[]): void => {
   if (!editor || files.length === 0) return;
   const lexicalEditor = editor.getLexicalEditor?.();
   if (!lexicalEditor) return;

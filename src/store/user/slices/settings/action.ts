@@ -28,7 +28,7 @@ type SystemAgentDiff = Partial<Record<string, unknown>>;
 export const createSettingsSlice = (set: Setter, get: () => UserStore, _api?: unknown) =>
   new UserSettingsActionImpl(set, get, _api);
 
-export class UserSettingsActionImpl {
+class UserSettingsActionImpl {
   readonly #get: () => UserStore;
   readonly #set: Setter;
 

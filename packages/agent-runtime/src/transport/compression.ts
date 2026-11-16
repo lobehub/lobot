@@ -1,6 +1,6 @@
 import type { OpenAIChatMessage, UIChatMessage } from '@lobechat/types';
 
-export interface CompressionGroupCreateInput {
+interface CompressionGroupCreateInput {
   agentId?: string;
   groupId?: string;
   messageIds: string[];
@@ -9,23 +9,23 @@ export interface CompressionGroupCreateInput {
   workspaceId?: string;
 }
 
-export interface CompressionGroupCreateResult {
+interface CompressionGroupCreateResult {
   messageGroupId: string;
   messages?: UIChatMessage[];
   messagesToSummarize: UIChatMessage[];
   signal?: AbortSignal;
 }
 
-export interface CompressionPromptInput {
+interface CompressionPromptInput {
   existingSummary?: string;
   messages: UIChatMessage[];
 }
 
-export interface CompressionPromptResult {
+interface CompressionPromptResult {
   messages: OpenAIChatMessage[];
 }
 
-export interface CompressionGroupFinalizeInput {
+interface CompressionGroupFinalizeInput {
   agentId?: string;
   content: string;
   groupId?: string;
@@ -36,16 +36,16 @@ export interface CompressionGroupFinalizeInput {
   workspaceId?: string;
 }
 
-export interface CompressionGroupFinalizeResult {
+interface CompressionGroupFinalizeResult {
   messages?: UIChatMessage[];
 }
 
-export interface CompressionGroupUpdateInput {
+interface CompressionGroupUpdateInput {
   content: string;
   messageGroupId: string;
 }
 
-export interface CompressionGroupRollbackInput {
+interface CompressionGroupRollbackInput {
   agentId?: string;
   error: unknown;
   groupId?: string;
@@ -55,7 +55,7 @@ export interface CompressionGroupRollbackInput {
   workspaceId?: string;
 }
 
-export interface CompressionGroupRollbackResult {
+interface CompressionGroupRollbackResult {
   messages?: UIChatMessage[];
 }
 

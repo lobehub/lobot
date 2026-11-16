@@ -21,7 +21,7 @@ import {
 
 const log = debug('lobe-render:features:Conversation');
 
-export interface StoreUpdaterProps {
+interface StoreUpdaterProps {
   /**
    * Actions bar configuration by message type
    */

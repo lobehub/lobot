@@ -45,6 +45,6 @@ const ai21ChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...ai21ChatModels];
+const allModels = [...ai21ChatModels];
 
 export default allModels;

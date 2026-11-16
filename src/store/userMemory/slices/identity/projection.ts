@@ -46,23 +46,6 @@ export interface IdentityListView extends ReplicaPagedData<IdentityListItem, num
 export type IdentityListMeta = Omit<IdentityListView, 'items'>;
 
 /**
- * Whether a painted identity page still answers `params`. The view stores the
- * query it was fetched with, so a response for another query can never be read
- * as this one's answer.
- */
-export const isIdentityQueryCurrent = (
-  meta: IdentityListMeta | undefined,
-  params: Pick<IdentityListParams, 'q' | 'types'>,
-): boolean => {
-  if (!meta) return false;
-  const sameTypes =
-    (meta.types?.length ?? 0) === (params.types?.length ?? 0) &&
-    (meta.types ?? []).every((type) => (params.types ?? []).includes(type));
-
-  return (meta.q || undefined) === (params.q || undefined) && sameTypes;
-};
-
-/**
  * The identities list (`userMemories.queryIdentities`): a local-first paged
  * replica. A reload paints the persisted head page on the first frame, the
  * network confirms it, and "load more" appends further pages through the

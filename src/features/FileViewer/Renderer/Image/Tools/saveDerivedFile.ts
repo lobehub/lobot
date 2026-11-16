@@ -2,7 +2,7 @@ import type { AIEditDeps } from './AIEdit/runAIImageEdit';
 
 export type SaveDerivedFileDeps = Pick<AIEditDeps, 'addToKnowledgeBase' | 'getFile' | 'uploadFile'>;
 
-export interface SaveDerivedFileParams {
+interface SaveDerivedFileParams {
   file: File;
   metadata: Record<string, unknown>;
   /** Folder known on the client, used when the server lookup fails. */

@@ -238,7 +238,7 @@ const SORTABLE_COLUMNS: Record<string, string> = {
   updatedAt: 'updated_at',
 };
 
-export interface ReorderKnowledgeItemsParams {
+interface ReorderKnowledgeItemsParams {
   dragIds: string[];
   knowledgeBaseId: string;
   parentId: string | null;
@@ -248,7 +248,7 @@ export interface ReorderKnowledgeItemsParams {
   targetId: string;
 }
 
-export interface KnowledgeItem {
+interface KnowledgeItem {
   chunkTaskId?: string | null;
   content?: string | null;
   /** Bounded raw source used only to generate a list preview on the server. */
@@ -296,7 +296,7 @@ export interface KnowledgeItem {
  * - `file` — uploaded files, excluding the file rows that back a derived page
  * - `page` — derived pages / notes, excluding folders
  */
-export type RecentItemKind = 'file' | 'page';
+type RecentItemKind = 'file' | 'page';
 
 interface KnowledgeQueryParams extends QueryFileListParams {
   /** Restrict the result set to rows created by a specific workspace member. */

@@ -11,7 +11,7 @@ import type { TaskStore } from '../../store';
 type Setter = StoreSetter<TaskStore>;
 
 /** Ids added and removed going from `current` to `next`. */
-export const diffTaskLabels = (current: TaskLabelRef[], next: TaskLabelRef[]) => {
+const diffTaskLabels = (current: TaskLabelRef[], next: TaskLabelRef[]) => {
   const currentIds = new Set(current.map((label) => label.id));
   const nextIds = new Set(next.map((label) => label.id));
   return {
@@ -23,7 +23,7 @@ export const diffTaskLabels = (current: TaskLabelRef[], next: TaskLabelRef[]) =>
 export const createTaskLabelSlice = (set: Setter, get: () => TaskStore, _api?: unknown) =>
   new TaskLabelSliceActionImpl(set, get, _api);
 
-export class TaskLabelSliceActionImpl {
+class TaskLabelSliceActionImpl {
   readonly #get: () => TaskStore;
   readonly #set: Setter;
   /**

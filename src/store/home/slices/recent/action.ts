@@ -34,10 +34,10 @@ const n = setNamespace('recent');
 export const ALL_RECENTS_LIMIT = 50;
 
 /** Topics the Home chat-mode recents block fetches (the customize slider's max). */
-export const HOME_TOPIC_RECENT_LIMIT = 15;
+const HOME_TOPIC_RECENT_LIMIT = 15;
 
 /** Rows the desktop tray menu fetches. */
-export const TRAY_RECENT_LIMIT = 10;
+const TRAY_RECENT_LIMIT = 10;
 
 /** The Home chat-mode recents block: the viewer's own topics, with previews. */
 export const HOME_TOPIC_RECENTS_PARAMS = {
@@ -112,7 +112,7 @@ type Setter = StoreSetter<HomeStore>;
 export const createRecentSlice = (set: Setter, get: () => HomeStore, _api?: unknown) =>
   new RecentActionImpl(set, get, _api);
 
-export class RecentActionImpl {
+class RecentActionImpl {
   readonly #set: Setter;
   /** Server writes per entity run in order; the newest optimistic title stays on top. */
   readonly #renameQueues = new Map<RecentEntityRef, Promise<unknown>>();

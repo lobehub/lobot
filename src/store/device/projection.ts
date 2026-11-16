@@ -13,7 +13,7 @@ export const DEVICE_LIST_KEY = 'all';
 export type DeviceListParams = Record<string, never>;
 
 /** Upper bound on persisted device rows — the snapshot must stay a small shell. */
-export const MAX_PERSISTED_DEVICES = 50;
+const MAX_PERSISTED_DEVICES = 50;
 
 /**
  * A persisted device row keeps what the UI needs to name the device and
@@ -22,7 +22,7 @@ export const MAX_PERSISTED_DEVICES = 50;
  * stored as `false`, the live `channels` are dropped, and `onlineUnknown` marks
  * the row until the next `listDevices` replaces it.
  */
-export const toPersistedDevice = (device: DeviceListItem): DeviceListItem => ({
+const toPersistedDevice = (device: DeviceListItem): DeviceListItem => ({
   ...device,
   channels: [],
   online: false,

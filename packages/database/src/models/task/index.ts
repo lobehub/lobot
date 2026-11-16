@@ -46,9 +46,6 @@ import {
   withStaleReposCleared,
 } from './utils';
 
-export type { InterruptedRunningTopic, OrphanedRunningTopic } from './scheduling';
-export { isTaskIdentifierUniqueViolation, taskActivityActor } from './utils';
-
 export class TaskModel {
   private readonly userId: string;
   private readonly db: LobeChatDatabase;

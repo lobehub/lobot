@@ -19,12 +19,12 @@ import {
 } from './piRpcProtocol';
 
 /** Text + base64 image content for a single prompt. */
-export interface PiRpcPromptInput {
+interface PiRpcPromptInput {
   images?: PiRpcImage[];
   text: string;
 }
 
-export interface PiRpcSessionOptions {
+interface PiRpcSessionOptions {
   /** Extra CLI args (user/provider-configured), e.g. `--provider`, `--model`. */
   args: string[];
   /**
@@ -65,7 +65,7 @@ export interface PiRpcSessionOptions {
 }
 
 /** Host callbacks a pooled process can be rebound to between runs. */
-export interface PiRpcSessionCallbacks {
+interface PiRpcSessionCallbacks {
   onEvents: (events: AgentStreamEvent[]) => void | Promise<void>;
   onRuntimeStatus: (status: HeterogeneousAgentRuntimeStatus) => void;
   onSessionId: (sessionId: string) => void;

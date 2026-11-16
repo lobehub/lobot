@@ -67,6 +67,6 @@ const search1apiChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...search1apiChatModels];
+const allModels = [...search1apiChatModels];
 
 export default allModels;

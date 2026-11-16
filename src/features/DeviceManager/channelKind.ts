@@ -1,4 +1,4 @@
-export type ChannelKind = 'cli' | 'desktop';
+type ChannelKind = 'cli' | 'desktop';
 
 /**
  * Which client holds a gateway connection. Channels carry a suffix for variants

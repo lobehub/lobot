@@ -9,14 +9,14 @@ import type { fileService } from '@/services/file';
  * - `topic`: topics with their reply previews (the Home chat-mode recents block)
  * - `all`: every type, no previews (the desktop tray menu)
  */
-export type RecentListTypes = 'all' | 'sidebar' | 'topic';
+type RecentListTypes = 'all' | 'sidebar' | 'topic';
 
 /**
  * Whose rows a recents query keeps. Workspace topics are shared, so `mine` is
  * narrowed on the server: client-filtering the top N of a team-wide feed could
  * starve out the viewer's own topics. `team` drops private agents / groups.
  */
-export type RecentListView = 'mine' | 'team';
+type RecentListView = 'mine' | 'team';
 
 export interface RecentListParams {
   limit: number;
@@ -68,7 +68,7 @@ export const conversationRecentResource = defineReplica<RecentListParams, Recent
 
 export type DocsHomeTab = 'mine' | 'recent' | 'shared';
 
-export interface DocsHomeParams {
+interface DocsHomeParams {
   tab: DocsHomeTab;
 }
 

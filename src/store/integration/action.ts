@@ -13,7 +13,7 @@ const DEDUPING_INTERVAL = 10_000;
 
 type Setter = StoreSetter<IntegrationState>;
 
-export class IntegrationActionImpl {
+class IntegrationActionImpl {
   readonly #private: IntegrationPrivateAction;
   readonly #set: Setter;
 

@@ -29,9 +29,9 @@ const RESERVED_BUILTIN_AGENT_SLUGS: string[] = Object.values(BUILTIN_AGENT_SLUGS
  *   leaves it untouched, and a group transfer must not drag it into another
  *   scope (a clone is made there instead).
  */
-export const GROUP_MEMBERSHIP_TYPES = ['owned', 'referenced'] as const;
+const GROUP_MEMBERSHIP_TYPES = ['owned', 'referenced'] as const;
 
-export type GroupMembershipType = (typeof GROUP_MEMBERSHIP_TYPES)[number];
+type GroupMembershipType = (typeof GROUP_MEMBERSHIP_TYPES)[number];
 
 /**
  * Roles a `chat_groups_agents` row may carry. `supervisor` is the group's own
@@ -39,7 +39,7 @@ export type GroupMembershipType = (typeof GROUP_MEMBERSHIP_TYPES)[number];
  * writes `role: 'supervisor'` creates a fresh virtual agent for it, there is no
  * path that promotes an existing agent.
  */
-export const GROUP_MEMBER_ROLES = ['supervisor', 'participant', 'assistant'] as const;
+const GROUP_MEMBER_ROLES = ['supervisor', 'participant', 'assistant'] as const;
 
 export type GroupMemberRole = (typeof GROUP_MEMBER_ROLES)[number];
 

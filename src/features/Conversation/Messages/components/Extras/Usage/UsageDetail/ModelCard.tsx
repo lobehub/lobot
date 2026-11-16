@@ -12,7 +12,7 @@ import { systemStatusSelectors } from '@/store/global/selectors';
 
 import { getPriceLabels } from './pricing';
 
-export const styles = stylex.create({
+const styles = stylex.create({
   container: { fontSize: '12px' },
   desc: { lineHeight: '12px', color: cssVar.colorTextDescription },
   pricing: {

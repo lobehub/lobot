@@ -13,7 +13,7 @@ import { systemStatusSelectors } from '@/store/global/selectors';
 import CouncilMember from './CouncilMember';
 import ScrollShadowWithButton from './ScrollShadowWithButton';
 
-export type DisplayMode = 'horizontal' | 'tab';
+type DisplayMode = 'horizontal' | 'tab';
 
 interface CouncilListProps {
   activeTab: number;

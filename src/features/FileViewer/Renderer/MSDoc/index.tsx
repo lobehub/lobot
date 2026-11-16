@@ -26,7 +26,7 @@ const OFFICE_MIME_VALUES = new Set(Object.values(OFFICE_MIME_TYPES));
 
 // `fileType` is either a bare extension or a full MIME depending on how the file
 // was uploaded; the renderer map keys on MIME, so normalize both to a MIME.
-export const resolveContentType = (fileType?: string, fileName?: string): string => {
+const resolveContentType = (fileType?: string, fileName?: string): string => {
   const lowerFileType = fileType?.toLowerCase();
   if (lowerFileType) {
     if (OFFICE_MIME_VALUES.has(lowerFileType)) return lowerFileType;

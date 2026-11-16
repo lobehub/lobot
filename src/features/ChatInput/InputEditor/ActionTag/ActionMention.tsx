@@ -10,7 +10,7 @@ import { styles } from './style';
 import type { ActionTagCategory, ActionTagType } from './types';
 import { GOAL_COMMAND_TYPE } from './types';
 
-export interface ActionMentionProps {
+interface ActionMentionProps {
   category: ActionTagCategory;
   /**
    * Render the tag as interactive (pointer cursor + hover affordance + a

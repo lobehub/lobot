@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 const DEFAULT_S3_FILE_PATH = 'files';
 
-export const getFileConfig = () => {
+const getFileConfig = () => {
   if (!!process.env.NEXT_PUBLIC_S3_DOMAIN) {
     console.warn(
       '⚠️ `NEXT_PUBLIC_S3_DOMAIN` will be de deprecated in the next major version, please replace it with `S3_PUBLIC_DOMAIN` in your env',

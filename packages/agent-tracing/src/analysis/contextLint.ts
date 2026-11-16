@@ -20,9 +20,9 @@ import { analyzeToolResult } from './toolFeedback';
 // Types
 // ---------------------------------------------------------------------------
 
-export type LintSeverity = 'error' | 'warn';
+type LintSeverity = 'error' | 'warn';
 
-export interface LintFinding {
+interface LintFinding {
   detail: string;
   messageIndex?: number;
   rule: string;
@@ -34,7 +34,7 @@ export interface LintFinding {
 }
 
 /** Flat per-op feature vector — the candidate rollup shape for `agent_operations`. */
-export interface ContextLintFeatures {
+interface ContextLintFeatures {
   assistantTokens: number;
   /** Share of final-payload chars covered by shingles that occur in ≥2 messages. */
   dupShare: number;
@@ -68,7 +68,7 @@ export interface ContextLintFeatures {
   wasteTokens: number;
 }
 
-export interface ContextLintResult {
+interface ContextLintResult {
   features: ContextLintFeatures;
   findings: LintFinding[];
 }
@@ -98,7 +98,7 @@ const TRUNCATION_MARKER_RE =
 // Payload reconstruction
 // ---------------------------------------------------------------------------
 
-export interface PayloadMessage {
+interface PayloadMessage {
   content?: unknown;
   name?: string;
   /** String on most providers, `{ content }` on some — normalize before use. */
@@ -109,7 +109,7 @@ export interface PayloadMessage {
   tool_calls?: Array<{ function?: { arguments?: string; name?: string }; id?: string }>;
 }
 
-export function contentText(m: PayloadMessage): string {
+function contentText(m: PayloadMessage): string {
   if (typeof m.content === 'string') return m.content;
   if (Array.isArray(m.content)) {
     return m.content

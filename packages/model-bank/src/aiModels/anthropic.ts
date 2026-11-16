@@ -647,6 +647,6 @@ const anthropicChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...anthropicChatModels];
+const allModels = [...anthropicChatModels];
 
 export default allModels;

@@ -9,7 +9,7 @@ import {
 import { parseSpeakerTag } from '@/store/chat/utils/parseSpeakerTag';
 
 /** The shape of a user row this resolver needs — the server-written blocks live on it. */
-export interface SenderIdentitySource {
+interface SenderIdentitySource {
   content?: null | string;
   metadata?: null | {
     agentSender?: AgentSenderMetadata | null;

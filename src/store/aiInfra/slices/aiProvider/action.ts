@@ -90,7 +90,7 @@ export const resolveUserScopedBuiltinModelState = (
   };
 };
 
-export type ProviderModelListItem = {
+type ProviderModelListItem = {
   abilities: ModelAbilities;
   approximatePricePerImage?: number;
   approximatePricePerVideo?: number;
@@ -232,9 +232,7 @@ export const normalizeImageModel = async (
   };
 };
 
-export const normalizeVideoModel = async (
-  model: EnabledAiModel,
-): Promise<ProviderModelListItem> => {
+const normalizeVideoModel = async (model: EnabledAiModel): Promise<ProviderModelListItem> => {
   const [parameters, pricing, description] = await Promise.all([
     resolveModelParameters(model),
     getModelProperty<Pricing>(model, 'pricing'),
@@ -269,7 +267,7 @@ export const getAsrModelList = createProviderModelCollector('asr', normalizeEmbe
 
 export const getImageModelList = createProviderModelCollector('image', normalizeImageModel);
 
-export const getVideoModelList = createProviderModelCollector('video', normalizeVideoModel);
+const getVideoModelList = createProviderModelCollector('video', normalizeVideoModel);
 
 const buildProviderModelLists = async (
   providers: EnabledProvider[],
@@ -589,7 +587,7 @@ type Setter = StoreSetter<AiInfraStore>;
 export const createAiProviderSlice = (set: Setter, get: () => AiInfraStore, _api?: unknown) =>
   new AiProviderActionImpl(set, get, _api);
 
-export class AiProviderActionImpl {
+class AiProviderActionImpl {
   readonly #detail;
   readonly #get: () => AiInfraStore;
   readonly #list;

@@ -6,7 +6,7 @@ import { memberName } from './memberName';
 
 const OUTGOING_PREFIX = 'outgoing:';
 
-export const outgoingMessageId = (message: Pick<ChannelOutgoingMessage, 'requestKey'>) =>
+const outgoingMessageId = (message: Pick<ChannelOutgoingMessage, 'requestKey'>) =>
   `${OUTGOING_PREFIX}${message.requestKey}`;
 
 /**

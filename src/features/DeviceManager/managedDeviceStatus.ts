@@ -7,7 +7,7 @@ import { cssVar } from '@lobehub/ui';
  * it. An offline managed device is usually asleep, not broken, so it shows its
  * provider phase instead of a bare "Offline".
  */
-export type ManagedDeviceStatus = 'deleting' | 'failed' | 'sleeping' | 'starting' | 'stopping';
+type ManagedDeviceStatus = 'deleting' | 'failed' | 'sleeping' | 'starting' | 'stopping';
 
 type ManagedStatusInput = Pick<
   DeviceListItem,
@@ -63,7 +63,7 @@ export const managedStatusLabelKey = {
 } as const satisfies Record<ManagedDeviceStatus, string>;
 
 /** Presence-dot color: sleeping stays calm, starting reads as in progress, failed as an error. */
-export const managedStatusColor: Record<ManagedDeviceStatus, string> = {
+const managedStatusColor: Record<ManagedDeviceStatus, string> = {
   deleting: cssVar.colorTextQuaternary,
   failed: cssVar.colorError,
   sleeping: cssVar.colorInfo,
@@ -78,13 +78,4 @@ export const managedStatusColor: Record<ManagedDeviceStatus, string> = {
 export const presenceDotColor = (managedStatus: ManagedDeviceStatus | null, online: boolean) => {
   if (managedStatus) return managedStatusColor[managedStatus];
   return online ? cssVar.colorSuccess : cssVar.colorTextQuaternary;
-};
-
-/** Status-pill background matching {@link managedStatusColor}. */
-export const managedStatusBackground: Record<ManagedDeviceStatus, string> = {
-  deleting: cssVar.colorFillTertiary,
-  failed: cssVar.colorErrorBg,
-  sleeping: cssVar.colorInfoBg,
-  starting: cssVar.colorWarningBg,
-  stopping: cssVar.colorInfoBg,
 };

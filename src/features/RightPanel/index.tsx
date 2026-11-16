@@ -8,7 +8,7 @@ import { isMobileSurface } from '@/utils/mobileSurface';
 
 import { useMobilePanelExpand } from './useMobilePanelExpand';
 
-export interface Size {
+interface Size {
   height?: string | number;
   width?: string | number;
 }

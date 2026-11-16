@@ -38,7 +38,7 @@ const MAX_TOPIC_LABEL = 50;
 type MenuOptionWithMetadata = { key: string; metadata?: Record<string, unknown> };
 
 /** What the menu needs to turn a Market search into installable entries. */
-export interface MarketMentionScope {
+interface MarketMentionScope {
   /** Section uninstalled agents join (where they land once installed); absent in group chats. */
   agentCategory?: Omit<MentionCategory, 'items'>;
   agents: boolean;
@@ -51,7 +51,7 @@ export interface MarketMentionScope {
   skills: boolean;
 }
 
-export interface MentionSource {
+interface MentionSource {
   categories: MentionCategory[];
   market: MarketMentionScope;
 }

@@ -1168,6 +1168,6 @@ const googleVideoModels: AIVideoModelCard[] = [
   },
 ];
 
-export const allModels = [...googleChatModels, ...googleImageModels, ...googleVideoModels];
+const allModels = [...googleChatModels, ...googleImageModels, ...googleVideoModels];
 
 export default allModels;

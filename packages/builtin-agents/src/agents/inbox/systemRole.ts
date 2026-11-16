@@ -11,7 +11,7 @@ import { promptAssistantName } from '@lobechat/const';
  * product.
  */
 
-export interface InboxIdentity {
+interface InboxIdentity {
   /** Personal name the user gave the assistant (falls back to the branded default). */
   name?: string;
   /** Role title shown alongside the name. */

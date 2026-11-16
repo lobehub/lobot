@@ -15,7 +15,7 @@ type Setter = StoreSetter<ImageStore>;
 export const createCreateImageSlice = (set: Setter, get: () => ImageStore, _api?: unknown) =>
   new CreateImageActionImpl(set, get, _api);
 
-export class CreateImageActionImpl {
+class CreateImageActionImpl {
   readonly #get: () => ImageStore;
   readonly #set: Setter;
 

@@ -38,7 +38,7 @@ export const AGENT_COVER_PATTERNS = [
   'scales',
 ] as const;
 
-export type AgentCoverPattern = (typeof AGENT_COVER_PATTERNS)[number];
+type AgentCoverPattern = (typeof AGENT_COVER_PATTERNS)[number];
 
 /** FNV-1a: a small, stable string hash. */
 const hashString = (text: string): number => {

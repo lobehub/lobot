@@ -9,7 +9,7 @@ export const AuvIdentifier = 'lobe-computer-use';
 export const CloudSandboxIdentifier = 'lobe-cloud-sandbox';
 export const GoalIdentifier = 'builtin-goal';
 /** Goal calls approved before the rename still name the tool `lobe-goal`. */
-export const LegacyGoalIdentifier = 'lobe-goal';
+const LegacyGoalIdentifier = 'lobe-goal';
 export const ImageGenerationIdentifier = 'lobe-image-generation';
 export const LobeActivatorIdentifier = 'lobe-activator';
 export const LocalSystemIdentifier = 'lobe-local-system';
@@ -56,7 +56,7 @@ export type SandboxDrive = 'personal' | 'public';
 export const SANDBOX_DRIVE_ROOT = '.';
 
 /** Where every project keeps its repository checkouts on the drive. */
-export const PROJECT_DRIVE_ROOT = 'projects';
+const PROJECT_DRIVE_ROOT = 'projects';
 
 /**
  * One path segment from an id. Ids are already path-safe (`prj_…`, UUIDs); any
@@ -75,7 +75,7 @@ export const projectCheckoutDirectory = (projectId: string, environmentId: strin
 // ── Task list ────────────────────────────────────────────────────────
 
 /** Look-back windows a task list can keep completed and canceled tasks for. */
-export const TASK_COMPLETED_WINDOWS = ['day', 'week', 'month'] as const;
+const TASK_COMPLETED_WINDOWS = ['day', 'week', 'month'] as const;
 
 export type TaskCompletedWindow = (typeof TASK_COMPLETED_WINDOWS)[number];
 

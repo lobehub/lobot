@@ -19,7 +19,7 @@ import { getFolderIcon } from './folderIcons';
 import { NewFolderInput } from './NewFolderInput';
 import { useDirectoryBrowserState } from './useDirectoryBrowserState';
 
-export interface DirectoryBrowserProps {
+interface DirectoryBrowserProps {
   defaultPath?: string;
   /** Above the address bar; the device wording when absent, nothing when `null`. */
   description?: ReactNode;

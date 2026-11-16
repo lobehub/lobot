@@ -3356,6 +3356,6 @@ const higressChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...higressChatModels];
+const allModels = [...higressChatModels];
 
 export default allModels;

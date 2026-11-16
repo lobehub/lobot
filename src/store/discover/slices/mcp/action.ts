@@ -26,7 +26,7 @@ const n = setNamespace('discover/mcp');
  * (`isLoading` / `mutate`) so a call site only has to move its `data` read to
  * the matching `mcpSelectors` entry.
  */
-export interface MCPSyncResult extends ReplicaSyncResult {
+interface MCPSyncResult extends ReplicaSyncResult {
   /** A request is in flight and this entry has no value to show yet. */
   isLoading: boolean;
   /** Alias of `revalidate`. */
@@ -40,7 +40,7 @@ type Setter = StoreSetter<DiscoverStore>;
 export const createMCPSlice = (set: Setter, get: () => DiscoverStore, _api?: unknown) =>
   new MCPActionImpl(set, get, _api);
 
-export class MCPActionImpl {
+class MCPActionImpl {
   readonly #categories;
   readonly #detail;
   readonly #get: () => DiscoverStore;

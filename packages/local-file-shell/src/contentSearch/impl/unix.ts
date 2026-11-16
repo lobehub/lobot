@@ -14,7 +14,7 @@ const logger = createLogger('contentSearch:unix');
  * Unix content search tool type
  * Priority: rg (1) > ag (2) > grep (3)
  */
-export type UnixContentSearchTool = 'ag' | 'grep' | 'nodejs' | 'rg';
+type UnixContentSearchTool = 'ag' | 'grep' | 'nodejs' | 'rg';
 
 /**
  * Unix content search base class

@@ -1,6 +1,4 @@
-import { HotkeyEnum, HotkeyScopeEnum } from '@lobechat/const/hotkeys';
-import { useEffect } from 'react';
-import { useHotkeysContext } from 'react-hotkeys-hook';
+import { HotkeyEnum } from '@lobechat/const/hotkeys';
 
 import { useHotkeyById } from './useHotkeyById';
 
@@ -18,19 +16,4 @@ export const useSaveDocumentHotkey = (onSave: () => void | Promise<void>) => {
       enableOnContentEditable: true,
     },
   );
-};
-
-/**
- * Register Files scope and enable it
- * Use this in components that need Files scope hotkeys
- */
-export const useRegisterFilesHotkeys = () => {
-  const { enableScope, disableScope } = useHotkeysContext();
-
-  useEffect(() => {
-    enableScope(HotkeyScopeEnum.Files);
-    return () => disableScope(HotkeyScopeEnum.Files);
-  }, [enableScope, disableScope]);
-
-  return null;
 };

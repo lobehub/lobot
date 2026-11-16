@@ -7,7 +7,7 @@
 // `formatBrowserMcpShortLabel` and must not drag the inspector component in.
 
 /** MCP server name the desktop registers; CC prefixes every tool with it. */
-export const BROWSER_MCP_PREFIX = 'mcp__lobe_cc__';
+const BROWSER_MCP_PREFIX = 'mcp__lobe_cc__';
 
 /**
  * Wire tool name (minus the prefix) → `BrowserManifest.api` name. The MCP tools
@@ -26,21 +26,14 @@ const TOOL_TO_API = {
   browser_snapshot: 'snapshot',
 } as const;
 
-export type BrowserMcpApi = (typeof TOOL_TO_API)[keyof typeof TOOL_TO_API];
-
-/** Full CC-facing tool names, e.g. `mcp__lobe_cc__browser_navigate`. */
-export const BROWSER_MCP_TOOL_NAMES: string[] = Object.keys(TOOL_TO_API).map(
-  (tool) => `${BROWSER_MCP_PREFIX}${tool}`,
-);
+type BrowserMcpApi = (typeof TOOL_TO_API)[keyof typeof TOOL_TO_API];
 
 /** `mcp__lobe_cc__browser_navigate` → `navigate`; anything else → undefined. */
-export const parseBrowserMcpApi = (apiName: string): BrowserMcpApi | undefined => {
+const parseBrowserMcpApi = (apiName: string): BrowserMcpApi | undefined => {
   if (!apiName.startsWith(BROWSER_MCP_PREFIX)) return undefined;
   const tool = apiName.slice(BROWSER_MCP_PREFIX.length);
   return TOOL_TO_API[tool as keyof typeof TOOL_TO_API];
 };
-
-export const isBrowserMcpApiName = (apiName: string): boolean => !!parseBrowserMcpApi(apiName);
 
 /**
  * English source strings, doubling as the `defaultValue` for the `chat` locale
@@ -66,13 +59,12 @@ const API_LABELS: Record<BrowserMcpApi, string> = {
   snapshot: 'Read page elements',
 };
 
-export const browserMcpLabelKey = (api: BrowserMcpApi): string =>
-  `workingPanel.browser.tool.${api}`;
+const browserMcpLabelKey = (api: BrowserMcpApi): string => `workingPanel.browser.tool.${api}`;
 
-export const browserMcpLabelFallback = (api: BrowserMcpApi): string => API_LABELS[api];
+const browserMcpLabelFallback = (api: BrowserMcpApi): string => API_LABELS[api];
 
 /** Translate one `chat`-namespace key with its English fallback. */
-export type BrowserMcpTranslate = (key: string, defaultValue: string) => string;
+type BrowserMcpTranslate = (key: string, defaultValue: string) => string;
 
 /**
  * Short label for a browser MCP call, or null when `apiName` isn't one. Takes

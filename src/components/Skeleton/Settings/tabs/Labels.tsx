@@ -15,7 +15,7 @@ const ROWS = 4;
  * 42px rows (color dot + name, description, usage, created date, menu) on the
  * same column widths as the loaded rows.
  */
-export const LabelsListSkeleton = () => {
+const LabelsListSkeleton = () => {
   const text = useSkeletonText('setting');
   const head = (key: string, width: number) =>
     text(`workspaceSetting.labels.columns.${key}`, width, 12);

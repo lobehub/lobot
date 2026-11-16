@@ -1,6 +1,6 @@
 import type { GitWorkingTreeFiles, ProjectFileIndexResult } from '@lobechat/electron-client-ipc';
 
-import { AppIndexedDBStorage, AppLocalStorage, cacheScope, defineReplica } from '@/libs/replica';
+import { AppIndexedDBStorage, AppLocalStorage, defineReplica } from '@/libs/replica';
 import { localFileKeys } from '@/libs/swr/keys';
 
 import {
@@ -30,7 +30,7 @@ export interface GitWorkingTreeFilesParams {
  * same instance are looking at one tree, and keying by topic would fetch it
  * twice and let one go stale while the other refreshed.
  */
-export const projectIndexHost = ({
+const projectIndexHost = ({
   deviceId,
   sandboxInstanceId,
   sandboxTopicId,
@@ -106,15 +106,3 @@ export const filesLocationResource = defineReplica<FilesLocationParams, FilesLoc
   storage: (namespace) => new AppLocalStorage<FilesLocation>({ namespace }),
   version: 1,
 });
-
-/**
- * The saved location of a conversation, read synchronously from the replica's
- * own row. The replica hydrates asynchronously, and the frames in between
- * would otherwise resolve the tree to the unsettled fallback directory.
- */
-export const peekFilesLocation = (contextKey: string, scope: string): FilesLocation | undefined => {
-  if (!cacheScope.canHydrate?.()) return undefined;
-  const storage = filesLocationResource.storage as AppLocalStorage<FilesLocation> | undefined;
-  return storage?.getSync({ queryKey: filesLocationResource.storageKey({ contextKey }), scope })
-    ?.data;
-};

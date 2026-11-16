@@ -12,7 +12,7 @@ import { pluginSelectors, toolSelectors } from '@/store/tool/selectors';
 
 import PluginStatus from './PluginStatus';
 
-export interface PluginTagProps {
+interface PluginTagProps {
   plugins: string[];
 }
 

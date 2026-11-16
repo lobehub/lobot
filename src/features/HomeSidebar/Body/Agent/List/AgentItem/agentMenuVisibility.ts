@@ -3,7 +3,7 @@ interface AgentDeleteMenuVisibility {
   canManage: boolean;
 }
 
-export type AgentPublishErrorKey = 'agent.publishToWorkspaceErrorFixedPrivateDevice';
+type AgentPublishErrorKey = 'agent.publishToWorkspaceErrorFixedPrivateDevice';
 
 export const getAgentPublishErrorKey = (error: unknown): AgentPublishErrorKey | undefined => {
   if (typeof error !== 'object' || error === null) return;

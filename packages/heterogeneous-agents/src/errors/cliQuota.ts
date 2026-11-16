@@ -12,7 +12,7 @@
 /** Remedies that only a top-up clears — waiting for a window never helps. */
 const CLI_CREDIT_REMEDY_PATTERNS = [/\/usage-credits\b/i] as const;
 
-export const CLI_CREDIT_LIMIT_PATTERNS = [
+const CLI_CREDIT_LIMIT_PATTERNS = [
   /you'?ve reached your .{0,40}\blimit\b/i,
   ...CLI_CREDIT_REMEDY_PATTERNS,
 ] as const;
@@ -77,7 +77,7 @@ const CLI_RATE_LIMIT_TYPE_PATTERNS: readonly (readonly [RegExp, string])[] = [
   [/\b5[\s-]?hour\b|\bfive[\s-]?hour\b|\bsession limit\b|5\s*小时/i, 'five_hour'],
 ] as const;
 
-export interface CliQuotaClassification {
+interface CliQuotaClassification {
   /** `usage_limit` resets on its own; `credit_limit` needs a top-up. */
   kind: 'credit_limit' | 'usage_limit';
   /** Window name for the guide card, when the message states one. */

@@ -28,7 +28,7 @@ const styles = stylex.create({
   },
 });
 
-export interface SettingsSectionSkeletonControl {
+interface SettingsSectionSkeletonControl {
   height: number;
   width: number;
 }
@@ -146,7 +146,7 @@ const Group = ({
   </Form.Group>
 );
 
-export interface SettingsSectionSkeletonProps {
+interface SettingsSectionSkeletonProps {
   /**
    * Gap between groups. Groups of one `<Form itemsType="group">` sit 16px apart;
    * separate forms stacked in the settings container sit 36px apart.
@@ -187,7 +187,7 @@ export interface SettingsFormSkeletonItem {
   minWidth?: number | string;
 }
 
-export interface SettingsFormSkeletonGroup {
+interface SettingsFormSkeletonGroup {
   desc?: ReactNode;
   extra?: ReactNode;
   items: SettingsFormSkeletonItem[];

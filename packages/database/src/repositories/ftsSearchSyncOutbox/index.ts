@@ -14,7 +14,7 @@ import {
   normalizeFtsSearchSyncCaptureDefinition,
 } from './captureInfrastructure';
 
-export interface FtsSearchSyncWork {
+interface FtsSearchSyncWork {
   documentId: string;
   entity: FtsSearchDocumentEntity;
   /** Opaque fencing token that binds settlement to the worker's exact lease. */
@@ -22,12 +22,12 @@ export interface FtsSearchSyncWork {
   revision: number;
 }
 
-export interface FtsSearchSyncFailure extends FtsSearchSyncWork {
+interface FtsSearchSyncFailure extends FtsSearchSyncWork {
   error: unknown;
   permanent?: boolean;
 }
 
-export interface FtsSearchSyncOutboxEntityStats {
+interface FtsSearchSyncOutboxEntityStats {
   dead: number;
   expiredLeases: number;
   inFlight: number;
@@ -37,7 +37,7 @@ export interface FtsSearchSyncOutboxEntityStats {
   retrying: number;
 }
 
-export interface FtsSearchSyncOutboxStats extends FtsSearchSyncOutboxEntityStats {
+interface FtsSearchSyncOutboxStats extends FtsSearchSyncOutboxEntityStats {
   entities: Record<FtsSearchDocumentEntity, FtsSearchSyncOutboxEntityStats>;
   highWaterRevision: number;
   oldestActiveRevision: number | null;
@@ -45,7 +45,7 @@ export interface FtsSearchSyncOutboxStats extends FtsSearchSyncOutboxEntityStats
 }
 
 /** Approximately one day of durable retries when the exponential delay is capped at one hour. */
-export const FTS_SEARCH_SYNC_MAX_ATTEMPTS = 36;
+const FTS_SEARCH_SYNC_MAX_ATTEMPTS = 36;
 
 const ACKNOWLEDGEMENT_DEADLOCK_MAX_ATTEMPTS = 3;
 const ACKNOWLEDGEMENT_DEADLOCK_RETRY_BASE_DELAY_MS = 10;

@@ -4,7 +4,7 @@ export const CHAT_INPUT_DRAFTS_STORAGE_KEY = 'lobechat:chat-input-drafts:v1';
 
 const MAX_DRAFTS = 50;
 
-export interface ChatInputDraftEntry {
+interface ChatInputDraftEntry {
   json: Record<string, unknown>;
   updatedAt: number;
 }

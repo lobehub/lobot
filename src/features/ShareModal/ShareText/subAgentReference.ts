@@ -33,22 +33,3 @@ export const stripSubAgentReference = (content: string): string => {
 
   return content.slice(0, match.index).trimEnd();
 };
-
-export const appendSubAgentReference = (content: string, subAgentId: string): string => {
-  const body = stripSubAgentReference(content);
-  const reference = `<sub_agent id="${subAgentId}" />`;
-
-  return body ? `${body}\n\n${reference}` : reference;
-};
-
-/**
- * Tool result of a background call (`callSubAgent` / `callAgent` with
- * `runInBackground`) — what the parent sees in place of the answer, which
- * arrives later as a message of its own. `subAgentId` is appended as the
- * follow-up handle when the sub-agent can be continued (`callSubAgent` only).
- */
-export const buildBackgroundSubAgentReceipt = (subAgentId?: string): string => {
-  const receipt =
-    'Started in the background. The result will be delivered to you as a new message when it finishes — do not wait or poll for it. Continue with other work, or end your turn and tell the user what is running.';
-  return subAgentId ? appendSubAgentReference(receipt, subAgentId) : receipt;
-};

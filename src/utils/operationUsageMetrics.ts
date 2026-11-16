@@ -1,11 +1,11 @@
-export interface OperationUsageLike {
+interface OperationUsageLike {
   cost?: number | null;
   totalInputTokens?: number | null;
   totalOutputTokens?: number | null;
   totalTokens?: number | null;
 }
 
-export interface OperationUsageMetrics {
+interface OperationUsageMetrics {
   totalCost: number;
   totalInputTokens: number;
   totalOutputTokens: number;
@@ -71,7 +71,7 @@ export const EMPTY_OPERATION_USAGE_METRICS: OperationUsageMetrics = {
   totalTokens: 0,
 };
 
-export const mergeOperationUsageMetrics = (
+const mergeOperationUsageMetrics = (
   left?: Partial<OperationUsageMetrics> | null,
   right?: Partial<OperationUsageMetrics> | null,
 ): OperationUsageMetrics => ({
@@ -83,9 +83,7 @@ export const mergeOperationUsageMetrics = (
   totalTokens: normalizeNumber(left?.totalTokens) + normalizeNumber(right?.totalTokens),
 });
 
-export const usageToOperationMetrics = (
-  usage?: OperationUsageLike | null,
-): OperationUsageMetrics => ({
+const usageToOperationMetrics = (usage?: OperationUsageLike | null): OperationUsageMetrics => ({
   totalCost: normalizeNumber(usage?.cost),
   totalInputTokens: normalizeNumber(usage?.totalInputTokens),
   totalOutputTokens: normalizeNumber(usage?.totalOutputTokens),

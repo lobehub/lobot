@@ -7,7 +7,7 @@ export const KIMI_CODE_SESSION_WINDOW_MINUTES = 5 * 60;
 export const KIMI_CODE_WEEKLY_WINDOW_MINUTES = 7 * 24 * 60;
 export const KIMI_CODE_MONTHLY_WINDOW_MINUTES = 30 * 24 * 60;
 
-export interface KimiCodeQuotaWindows {
+interface KimiCodeQuotaWindows {
   monthly: HeteroQuotaWindow | null;
   monthlyCode: HeteroQuotaWindow | null;
   session: HeteroQuotaWindow | null;

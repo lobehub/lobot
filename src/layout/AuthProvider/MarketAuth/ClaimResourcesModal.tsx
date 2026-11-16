@@ -18,7 +18,7 @@ interface ClaimResourcesModalProps {
   resources: ClaimableResources;
 }
 
-export const ClaimResourcesModal = memo<ClaimResourcesModalProps>(
+const ClaimResourcesModal = memo<ClaimResourcesModalProps>(
   ({ open, onClose, resources, onSuccess }) => {
     const { t } = useTranslation('marketAuth');
 

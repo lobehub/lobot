@@ -28,11 +28,11 @@ import type { EditedFileEntry } from '@/features/Conversation/operationArtifacts
 import { summarizeEditedFilesTotals } from './deriveEditedFiles';
 import { useOpenEditedFile } from './useOpenEditedFile';
 
-export const SINGLE_EDITED_FILE_ICON_SIZE = 40;
-export const AGGREGATE_EDITED_FILE_ICON_SIZE = 40;
+const SINGLE_EDITED_FILE_ICON_SIZE = 40;
+const AGGREGATE_EDITED_FILE_ICON_SIZE = 40;
 
 /** Files listed before the "show N more" row, matching Codex's file toolbar. */
-export const INITIAL_VISIBLE_EDITED_FILES = 3;
+const INITIAL_VISIBLE_EDITED_FILES = 3;
 
 /** Fire a toggle on Enter/Space so the div-based expander is keyboard operable. */
 const toggleOnKey = (toggle: () => void) => (event: KeyboardEvent<HTMLDivElement>) => {

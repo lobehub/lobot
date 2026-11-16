@@ -13,7 +13,7 @@ export interface UsageThresholds {
 }
 
 /** CPU / memory / disk share: yellow from 80%, red from 95%. */
-export const USAGE_THRESHOLDS: UsageThresholds = { critical: 95, high: 80 };
+const USAGE_THRESHOLDS: UsageThresholds = { critical: 95, high: 80 };
 
 /**
  * Load average per core. macOS counts threads waiting on disk as well as

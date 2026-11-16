@@ -14,7 +14,7 @@ import type {
 } from '../../types';
 import { AgentRuntimeError } from '../../utils/createError';
 
-export type DecisionGenerateObject = (
+type DecisionGenerateObject = (
   payload: GenerateObjectPayload,
   options?: GenerateObjectOptions,
 ) => Promise<unknown>;

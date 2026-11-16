@@ -39,6 +39,6 @@ const modelscopeChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...modelscopeChatModels];
+const allModels = [...modelscopeChatModels];
 
 export default allModels;

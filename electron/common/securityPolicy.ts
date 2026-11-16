@@ -2,7 +2,7 @@ import { valid, validRange } from 'semver';
 import * as z from 'zod/v4';
 
 const channels = z.enum(['stable', 'canary', 'beta', 'nightly']);
-export const securityUpdateRuleSchema = z.strictObject({
+const securityUpdateRuleSchema = z.strictObject({
   affectedVersions: z
     .string()
     .min(1)

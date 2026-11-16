@@ -5,7 +5,7 @@ import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import type { TogetherAIModel } from './type';
 
-export const params = {
+const params = {
   baseURL: 'https://api.together.xyz/v1',
   constructorOptions: {
     defaultHeaders: {
@@ -63,5 +63,3 @@ export const params = {
 } satisfies OpenAICompatibleFactoryOptions;
 
 export const LobeTogetherAI = createOpenAICompatibleRuntime(params);
-
-export type { TogetherAIModel } from './type';

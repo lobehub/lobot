@@ -19,7 +19,7 @@ import {
   pushRecentAssignee,
 } from './assigneeAgentSections';
 
-export interface AssigneeAgentScope {
+interface AssigneeAgentScope {
   id: 'private' | 'workspace';
   sections: AssigneeAgentSection[];
   /** Omitted when the workspace list is the only scope, so it keeps no header. */

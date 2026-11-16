@@ -3,7 +3,7 @@ import type { Pricing } from 'model-bank';
 import type { VideoGenerationParams, VideoRequestPricingInputs } from './computeVideoCost';
 import { computeVideoRequestCost } from './computeVideoCost';
 
-export interface VideoSinglePriceResult {
+interface VideoSinglePriceResult {
   /**
    * Hold for models priced by reported usage: an estimate from metered inputs when available,
    * otherwise the configured `approximatePricePerVideo`

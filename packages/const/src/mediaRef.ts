@@ -1,4 +1,4 @@
-export type MediaFileType = 'audio' | 'image' | 'video';
+type MediaFileType = 'audio' | 'image' | 'video';
 
 interface CreateMediaFileRefOptions {
   index: number;
@@ -6,7 +6,7 @@ interface CreateMediaFileRefOptions {
   type: MediaFileType;
 }
 
-export const createMediaLocalRef = (type: MediaFileType, index: number) => `${type}_${index + 1}`;
+const createMediaLocalRef = (type: MediaFileType, index: number) => `${type}_${index + 1}`;
 
 const hashMessageId = (messageId: string) => {
   let hash = 2166136261;
@@ -19,7 +19,7 @@ const hashMessageId = (messageId: string) => {
   return (hash >>> 0).toString(36).slice(0, 6);
 };
 
-export const createMediaMessageRef = (messageId: string) => `msg_${hashMessageId(messageId)}`;
+const createMediaMessageRef = (messageId: string) => `msg_${hashMessageId(messageId)}`;
 
 export const createMediaFileRef = ({ index, messageId, type }: CreateMediaFileRefOptions) => {
   const localRef = createMediaLocalRef(type, index);

@@ -11,7 +11,7 @@ interface InboxAgentMeta {
 
 const isBlank = (value: string | null | undefined) => !value || value.trim().length === 0;
 
-export const isInboxAgentIdentity = ({ slug }: InboxAgentIdentity) => slug === INBOX_SESSION_ID;
+const isInboxAgentIdentity = ({ slug }: InboxAgentIdentity) => slug === INBOX_SESSION_ID;
 
 export function normalizeInboxAgentTitle(
   title: string | null,

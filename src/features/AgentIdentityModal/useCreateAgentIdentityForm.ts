@@ -16,7 +16,7 @@ import { homeAgentListSelectors } from '@/store/home/selectors';
 export const MAX_AVATAR_SIZE = 1024 * 1024;
 
 /** What connecting a third-party agent adds to the new agent's config. */
-export type ExternalRuntimeConfig = ConnectAgentRuntimeConfig;
+type ExternalRuntimeConfig = ConnectAgentRuntimeConfig;
 
 export interface UseCreateAgentIdentityFormOptions {
   groupId?: string;

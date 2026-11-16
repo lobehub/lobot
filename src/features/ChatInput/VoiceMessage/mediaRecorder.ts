@@ -1,7 +1,7 @@
 export const VOICE_MESSAGE_MIN_DURATION_MS = 600;
 export const VOICE_MESSAGE_MAX_DURATION_MS = 60_000;
 
-export const RECORDING_MIME_TYPE_CANDIDATES = [
+const RECORDING_MIME_TYPE_CANDIDATES = [
   'audio/webm;codecs=opus',
   'audio/mp4;codecs=mp4a.40.2',
   'audio/webm',

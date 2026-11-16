@@ -25,8 +25,6 @@ const {
 
 export { useChatInputStore, useStoreApi };
 
-export { useChatInputStoreApiOptional } from './apiContext';
-
 /**
  * Wraps zustand-utils' Provider and additionally publishes the same store
  * instance through {@link ChatInputStoreApiContext} for optional reads. Keeps

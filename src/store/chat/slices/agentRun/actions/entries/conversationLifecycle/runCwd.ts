@@ -14,7 +14,7 @@ export type SourceTopicDirectory = Pick<
 >;
 
 /** The machine a run's cwd lives on, and the execution target that picked it. */
-export interface RunMachine {
+interface RunMachine {
   deviceId?: string;
   target?: string;
 }

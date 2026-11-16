@@ -51,7 +51,7 @@ const SECRET_PATTERNS: [RegExp, string][] = [
 ];
 const SECRET_KEY_PATTERN = /token|secret|password|authorization|cookie|api[-_]?key/i;
 
-export const redactSecrets = (value: string) =>
+const redactSecrets = (value: string) =>
   SECRET_PATTERNS.reduce(
     (text, [pattern, replacement]) => text.replace(pattern, replacement),
     value,
@@ -110,7 +110,7 @@ export const toLogValue = (value: unknown, depth = 0, seen = new WeakSet<object>
 
 const hasFormatSpecifier = (message: string) => /%[sdifjoOc%]/.test(message);
 
-export interface CreateLogRecordInput {
+interface CreateLogRecordInput {
   appVersion?: string;
   args?: unknown[];
   level: LogLevel;

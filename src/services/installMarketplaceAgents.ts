@@ -11,9 +11,7 @@ import { marketApiService } from '@/services/marketApi';
 import { useAgentStore } from '@/store/agent';
 import { useHomeStore } from '@/store/home';
 
-export type { InstallMarketplaceAgentSummary };
-
-export const generateMarketIdentifier = () => {
+const generateMarketIdentifier = () => {
   const alphabet = '0123456789abcdefghijklmnopqrstuvwxyz';
   const generate = customAlphabet(alphabet, 8);
   return generate();
@@ -35,7 +33,7 @@ export const buildMarketAgentConfig = (detail: DiscoverAssistantDetail, sourceId
 });
 
 /** Local agent config for a Market fork of `sourceId`, as every install entry builds it. */
-export const buildForkedAgentConfig = (
+const buildForkedAgentConfig = (
   detail: DiscoverAssistantDetail,
   fork: { identifier: string; name: string },
   sourceId: string,
@@ -51,7 +49,7 @@ const getSourcePath = () => {
   return location.pathname;
 };
 
-export interface InstallMarketplaceAgentsResult {
+interface InstallMarketplaceAgentsResult {
   /**
    * True only when this call freshly auto-provisioned the workspace's Market
    * Community profile (owner-only path). Lets the caller surface a "we set up
@@ -64,7 +62,7 @@ export interface InstallMarketplaceAgentsResult {
   summaries: InstallMarketplaceAgentSummary[];
 }
 
-export interface InstallMarketplaceAgentsOptions {
+interface InstallMarketplaceAgentsOptions {
   /**
    * Override the visibility used when inserting into a workspace. Defaults to
    * `'public'` (shared with the workspace) — callers can opt into `'private'`

@@ -1,5 +1,5 @@
 import type { SFSymbol } from '@lobechat/electron-client-ipc';
-import type { ContextMenuItem, ItemType, showContextMenu as showWebContextMenu } from '@lobehub/ui';
+import type { ContextMenuItem, showContextMenu as showWebContextMenu } from '@lobehub/ui';
 
 type NativeMenuIcon = {
   sfSymbol?: SFSymbol;
@@ -16,13 +16,3 @@ type WithSfSymbol<T> = T extends null
 export type NativeContextMenuItem = WithSfSymbol<ContextMenuItem>;
 
 export type ShowContextMenuOptions = NonNullable<Parameters<typeof showWebContextMenu>[1]>;
-
-type AssertTrue<_T extends true> = never;
-
-export type AssertContextMenuItemArrayAssignable = AssertTrue<
-  ContextMenuItem[] extends NativeContextMenuItem[] ? true : false
->;
-
-export type AssertAntdItemTypeArrayAssignable = AssertTrue<
-  ItemType[] extends NativeContextMenuItem[] ? true : false
->;

@@ -171,26 +171,6 @@ export const DeviceGridSkeleton = memo(() => (
 
 DeviceGridSkeleton.displayName = 'DeviceGridSkeleton';
 
-/**
- * The devices list as `DeviceManager` lays it out: the toolbar (leading slot —
- * the workspace visibility tabs — then refresh + primary connect button) above
- * the same card grid the list shows while it loads, so the chunk wait hands
- * over to the data wait without a second skeleton. The personal page has no
- * visibility tabs, so it passes `leading={false}`.
- */
-export const DevicesListSkeleton = ({ leading = true }: { leading?: boolean }) => (
-  <Flexbox aria-busy data-testid={'devices-list-skeleton'} gap={16}>
-    <Flexbox horizontal align={'center'} gap={16} justify={'space-between'}>
-      <div>{leading && <SkeletonBar height={36} width={200} />}</div>
-      <Flexbox horizontal align={'center'} gap={8}>
-        <SkeletonBar height={36} width={36} />
-        <SkeletonBar height={36} width={140} />
-      </Flexbox>
-    </Flexbox>
-    <DeviceGridSkeleton />
-  </Flexbox>
-);
-
 interface DetailCardShape {
   /** `InfoRow` labels; activity cards list topics / agents instead. */
   labels?: readonly string[];
@@ -295,8 +275,3 @@ export const DeviceDetailSkeleton = memo(() => {
 });
 
 DeviceDetailSkeleton.displayName = 'DeviceDetailSkeleton';
-
-/** Route fallback for the workspace devices page (visibility tabs + toolbar + grid). */
-const DevicesPageSkeleton = () => <DevicesListSkeleton />;
-
-export default DevicesPageSkeleton;

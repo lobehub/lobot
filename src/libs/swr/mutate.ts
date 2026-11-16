@@ -40,7 +40,7 @@ export const setScopedMutate = (m: ScopedMutator) => {
  * Get the scoped mutate function
  * Returns the actual mutate function from useSWRConfig(), not a wrapper
  */
-export const getMutate = (): ScopedMutator => {
+const getMutate = (): ScopedMutator => {
   if (!mutateRef.current) {
     console.warn('[SWR] Scoped mutate not initialized, this may cause cache sync issues');
     // Return a no-op function that returns empty array

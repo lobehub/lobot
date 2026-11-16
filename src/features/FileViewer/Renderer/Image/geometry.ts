@@ -22,7 +22,7 @@ export type Rotation = 0 | 90 | 180 | 270;
 /** Zoom is relative to the "fit" size, so 1 always means the whole image is visible. */
 export const MIN_ZOOM = 0.25;
 export const MAX_ZOOM = 8;
-export const ZOOM_STEP = 1.25;
+const ZOOM_STEP = 1.25;
 
 export const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
@@ -35,7 +35,7 @@ export const zoomOut = (zoom: number) => clampZoom(zoom / ZOOM_STEP);
 
 export const nextRotation = (rotation: Rotation): Rotation => ((rotation + 90) % 360) as Rotation;
 
-export const isQuarterTurn = (rotation: Rotation) => rotation === 90 || rotation === 270;
+const isQuarterTurn = (rotation: Rotation) => rotation === 90 || rotation === 270;
 
 /**
  * Size of the (unrotated) image box that fits the container at zoom 1. A

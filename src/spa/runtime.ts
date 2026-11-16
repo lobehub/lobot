@@ -4,7 +4,7 @@ import { createBrowserRouter } from 'react-router';
 
 type BrowserRouterFactory = typeof createBrowserRouter;
 
-export interface SPARuntimeInstrumentation {
+interface SPARuntimeInstrumentation {
   createBrowserRouter?: BrowserRouterFactory;
   rootOptions?: RootOptions;
 }

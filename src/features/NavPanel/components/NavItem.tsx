@@ -75,7 +75,7 @@ const styles = createStaticStyles(({ css }) => ({
   `,
 }));
 
-export interface NavItemSlots {
+interface NavItemSlots {
   /** Stacked under the leading icon, e.g. a short status label on a two-line row. */
   iconBelow?: ReactNode;
   iconPostfix?: ReactNode;

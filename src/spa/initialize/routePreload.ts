@@ -173,7 +173,7 @@ const getConnection = (targetWindow: Window): NetworkInformationLike | undefined
   );
 };
 
-export const shouldSkipRoutePreload = (targetWindow: Window) => {
+const shouldSkipRoutePreload = (targetWindow: Window) => {
   const connection = getConnection(targetWindow);
 
   return Boolean(

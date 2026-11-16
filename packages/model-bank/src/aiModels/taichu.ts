@@ -224,6 +224,6 @@ const taichuChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...taichuChatModels];
+const allModels = [...taichuChatModels];
 
 export default allModels;

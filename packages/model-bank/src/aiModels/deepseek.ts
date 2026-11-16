@@ -126,6 +126,6 @@ const deepseekChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...deepseekChatModels];
+const allModels = [...deepseekChatModels];
 
 export default allModels;

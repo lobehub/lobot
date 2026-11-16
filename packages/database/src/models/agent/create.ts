@@ -11,7 +11,7 @@ import { buildWorkspacePayload } from '../../utils/workspace';
 import { RESERVED_AGENT_SLUGS } from './constants';
 import { type AgentModelContext } from './context';
 
-export const stripReservedSlug = <T extends { slug?: string | null }>(config: T): T => {
+const stripReservedSlug = <T extends { slug?: string | null }>(config: T): T => {
   if (!config.slug || !RESERVED_AGENT_SLUGS.has(config.slug)) return config;
   return { ...config, slug: undefined };
 };

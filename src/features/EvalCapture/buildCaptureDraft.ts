@@ -4,7 +4,7 @@
  * before that as replayable context.
  */
 
-export interface CaptureSourceMessage {
+interface CaptureSourceMessage {
   content?: unknown;
   id: string;
   role?: string;

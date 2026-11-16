@@ -173,6 +173,6 @@ const mistralChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...mistralChatModels];
+const allModels = [...mistralChatModels];
 
 export default allModels;

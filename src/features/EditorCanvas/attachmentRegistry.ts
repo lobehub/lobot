@@ -10,7 +10,7 @@
  * existing editor must `seedAttachments(...)` from persisted file metadata.
  */
 
-export interface RegisteredAttachment {
+interface RegisteredAttachment {
   downloadUrl?: string;
   fileId: string;
 }

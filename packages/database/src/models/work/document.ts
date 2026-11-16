@@ -15,7 +15,7 @@ import { createDisplayWorkAdapter } from './displayWork';
 import { truncateSummaryText, type WorkDisplayColumns } from './internal';
 import { registerWorkVersion } from './writes';
 
-export const documentDisplayColumns = (
+const documentDisplayColumns = (
   doc: DocumentItem,
   params: Pick<RegisterDocumentWorkParams, 'description'>,
 ): WorkDisplayColumns => {

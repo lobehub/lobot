@@ -13,7 +13,7 @@ type Setter = StoreSetter<SessionStore>;
 export const createSessionGroupSlice = (set: Setter, get: () => SessionStore, _api?: unknown) =>
   new SessionGroupActionImpl(set, get, _api);
 
-export class SessionGroupActionImpl {
+class SessionGroupActionImpl {
   readonly #get: () => SessionStore;
 
   constructor(set: Setter, get: () => SessionStore, _api?: unknown) {

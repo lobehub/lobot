@@ -31,7 +31,7 @@ export interface RealtimeAsrClientTimings {
   pressToStartSentMs?: number;
 }
 
-export type RealtimeAsrErrorCode =
+type RealtimeAsrErrorCode =
   | 'AUDIO_FORMAT_INVALID'
   | 'AUTH_FAILED'
   | 'BACKPRESSURE'
@@ -48,7 +48,7 @@ export type RealtimeAsrErrorCode =
   | 'SESSION_LIMIT_EXCEEDED'
   | 'WORKER_RESTART';
 
-export type RealtimeDictationClientErrorCode =
+type RealtimeDictationClientErrorCode =
   | 'AUDIO_CAPTURE_FAILED'
   | 'FINAL_TIMEOUT'
   | 'MICROPHONE_NOT_SUPPORTED'
@@ -73,7 +73,7 @@ interface ServerEventBase {
   sessionId: string;
 }
 
-export interface RealtimeAsrAcceptedEvent extends ServerEventBase {
+interface RealtimeAsrAcceptedEvent extends ServerEventBase {
   audio: typeof REALTIME_ASR_AUDIO;
   deferredLimits: typeof REALTIME_ASR_DEFERRED_LIMITS;
   limits: typeof REALTIME_ASR_LIMITS;
@@ -81,7 +81,7 @@ export interface RealtimeAsrAcceptedEvent extends ServerEventBase {
   type: 'session.accepted';
 }
 
-export interface RealtimeAsrReadyEvent extends ServerEventBase {
+interface RealtimeAsrReadyEvent extends ServerEventBase {
   audio: typeof REALTIME_ASR_AUDIO;
   limits: typeof REALTIME_ASR_LIMITS;
   protocolVersion: typeof REALTIME_ASR_PROTOCOL_VERSION;
@@ -94,17 +94,17 @@ export interface RealtimeAsrTranscriptEvent extends ServerEventBase {
   type: 'transcript.final' | 'transcript.partial';
 }
 
-export interface RealtimeAsrCompletedEvent extends ServerEventBase {
+interface RealtimeAsrCompletedEvent extends ServerEventBase {
   forwardedAudioMs: number;
   type: 'session.completed';
 }
 
-export interface RealtimeAsrCancelledEvent extends ServerEventBase {
+interface RealtimeAsrCancelledEvent extends ServerEventBase {
   forwardedAudioMs: number;
   type: 'session.cancelled';
 }
 
-export interface RealtimeAsrErrorEvent extends ServerEventBase {
+interface RealtimeAsrErrorEvent extends ServerEventBase {
   code: RealtimeAsrErrorCode;
   retryable: boolean;
   type: 'session.error';

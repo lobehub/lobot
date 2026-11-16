@@ -23,7 +23,7 @@ export interface DictationConnection {
   socket: RealtimeAsrWebSocket;
 }
 
-export interface ConnectDictationOptions {
+interface ConnectDictationOptions {
   createSession: (signal: AbortSignal) => Promise<RealtimeAsrSessionResponse>;
   createWebSocket: (url: string) => RealtimeAsrWebSocket;
   onAdmission?: (stage: 'admission' | 'admission_refresh') => void;

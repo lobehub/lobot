@@ -12,7 +12,7 @@ import { buildClaudeQuotaWindows } from '@lobechat/heterogeneous-agents/quota';
  */
 export type QuotaReadingRow = QuotaDisplayReading;
 
-export interface QuotaAccountRow {
+interface QuotaAccountRow {
   displayName?: string | null;
   email?: string | null;
   externalAccountId?: string | null;

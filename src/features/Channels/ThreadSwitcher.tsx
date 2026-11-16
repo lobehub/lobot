@@ -22,7 +22,7 @@ const styles = stylex.create({
  * The Channel's threads as menu items, the open one checked. Archived threads stay out, as in
  * the sidebar, unless one of them is open.
  */
-export const useThreadItems = (
+const useThreadItems = (
   detail: ChannelDetail,
   activeId: string | null,
   onOpen: (threadId: string) => void,

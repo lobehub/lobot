@@ -17,7 +17,7 @@ export interface ProjectInstructionFile {
   source: string;
 }
 
-export interface ProjectInstructionsInjectorConfig {
+interface ProjectInstructionsInjectorConfig {
   enabled?: boolean;
   instructions?: ProjectInstructionFile[];
 }

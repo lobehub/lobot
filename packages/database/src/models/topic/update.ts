@@ -116,7 +116,7 @@ export const recomputeUsage = async (ctx: TopicModelContext, id: string) =>
  * Update topic metadata with merge logic
  * This method merges new metadata with existing metadata instead of replacing it
  */
-export interface UpdateMetadataOptions {
+interface UpdateMetadataOptions {
   /**
    * Checked against the row's current metadata under the row lock; the write is
    * skipped (and `[]` returned) when it fails. Lets a caller undo its own

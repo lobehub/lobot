@@ -23,20 +23,3 @@ export interface ConversationContext extends BaseConversationContext {
    */
   metadata?: Record<string, any>;
 }
-
-/**
- * Helper type: Extract metadata type for better type safety
- */
-export type ConversationMetadata<T = Record<string, any>> = T;
-
-/**
- * Common metadata types
- */
-export interface KnowledgeBaseMetadata {
-  knowledgeBaseId: string;
-}
-
-export interface AgentPreviewMetadata {
-  agentId: string;
-  preview: true;
-}

@@ -3,7 +3,7 @@
 import { type ReactNode } from 'react';
 import { createContext, memo, use, useCallback, useMemo, useState } from 'react';
 
-export type FaviconState = 'default' | 'done' | 'error' | 'progress';
+type FaviconState = 'default' | 'done' | 'error' | 'progress';
 
 interface FaviconStateContextValue {
   currentState: FaviconState;
@@ -17,14 +17,6 @@ interface FaviconSettersContextValue {
 
 const FaviconStateContext = createContext<FaviconStateContextValue | null>(null);
 const FaviconSettersContext = createContext<FaviconSettersContextValue | null>(null);
-
-export const useFaviconState = () => {
-  const context = use(FaviconStateContext);
-  if (!context) {
-    throw new Error('useFaviconState must be used within FaviconProvider');
-  }
-  return context;
-};
 
 export const useFaviconSetters = () => {
   const context = use(FaviconSettersContext);

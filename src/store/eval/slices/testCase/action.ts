@@ -24,7 +24,7 @@ const n = setNamespace('evalTestCase');
 type Setter = StoreSetter<EvalStore>;
 
 /** Pre-migration `useFetchTestCase` return shape, backed by the detail replica. */
-export interface TestCaseDetailSyncResult {
+interface TestCaseDetailSyncResult {
   /** The case once it has settled (hydrated or fetched), else `undefined`. */
   data: TestCaseDetail | undefined;
   error: unknown;
@@ -64,7 +64,7 @@ const testCasePageLens: ReplicaLens<EvalStore, TestCaseListValue> = {
 export const createTestCaseSlice = (set: Setter, get: () => EvalStore, _api?: unknown) =>
   new TestCaseActionImpl(set, get, _api);
 
-export class TestCaseActionImpl {
+class TestCaseActionImpl {
   readonly #get: () => EvalStore;
   readonly #detail;
   readonly #list;

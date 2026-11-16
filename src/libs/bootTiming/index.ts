@@ -1,4 +1,4 @@
-export interface BootSpan {
+interface BootSpan {
   durMs: number;
   name: string;
   startMs: number;

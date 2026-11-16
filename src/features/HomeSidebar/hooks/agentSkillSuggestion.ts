@@ -74,7 +74,7 @@ export interface AgentSkillSuggestionResult {
   query: string;
 }
 
-export const isHighConfidenceSkillSuggestionPrompt = (prompt: string): boolean => {
+const isHighConfidenceSkillSuggestionPrompt = (prompt: string): boolean => {
   const cleaned = removeAgentShell(prompt);
   const text = `${prompt} ${cleaned}`;
   const hasReusableSkillIntent = matchesAny(SKILL_INTENT_PATTERNS, text);

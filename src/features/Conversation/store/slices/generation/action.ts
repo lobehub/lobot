@@ -27,13 +27,7 @@ import {
   settleGenerationEntry,
 } from './heteroRun';
 
-export {
-  ensureEffectiveAgencyAccess,
-  getEffectiveAgencyConfig,
-  settleGenerationEntry,
-} from './heteroRun';
-
-export interface HeteroContinuationScheduleParams {
+interface HeteroContinuationScheduleParams {
   failedAssistantMessageId: string;
   rateLimit?: {
     rateLimitType?: string;

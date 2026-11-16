@@ -4,21 +4,21 @@ import { and, inArray, or } from 'drizzle-orm';
 import { tasks } from '../../schemas/task';
 import { type TaskModelContext, taskOwnership } from './context';
 
-export interface ParsedTaskRef {
+interface ParsedTaskRef {
   kind: 'id' | 'identifier';
   raw: string;
   value: string;
 }
 
 /** Classify once. An id must never fall back to an identifier (or vice versa). */
-export const parseTaskRef = (raw: string): ParsedTaskRef => {
+const parseTaskRef = (raw: string): ParsedTaskRef => {
   const value = raw.trim();
   return value.startsWith('task_')
     ? { kind: 'id', raw, value }
     : { kind: 'identifier', raw, value: value.toUpperCase() };
 };
 
-export const matchTaskRefs = (refs: ParsedTaskRef[], rows: TaskItem[]) => {
+const matchTaskRefs = (refs: ParsedTaskRef[], rows: TaskItem[]) => {
   const byId = new Map(rows.map((row) => [row.id, row]));
   const byIdentifier = new Map<string, TaskItem[]>();
   for (const row of rows) {

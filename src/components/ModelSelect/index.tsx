@@ -1,6 +1,5 @@
 import { BRANDING_PROVIDER } from '@lobechat/business-const';
 import { type ChatModelCard } from '@lobechat/types';
-import { type IconAvatarProps } from '@lobehub/icons';
 import { LobeHub } from '@lobehub/icons';
 import { type FlexboxProps } from '@lobehub/ui';
 import { Avatar, Flexbox, Icon, Tag, Text, Tooltip, useResponsive } from '@lobehub/ui';
@@ -17,7 +16,7 @@ import {
 } from 'lucide-react';
 import { type ModelAbilities } from 'model-bank';
 import numeral from 'numeral';
-import { type CSSProperties, type FC, type ReactNode } from 'react';
+import { type CSSProperties, type ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -211,7 +210,7 @@ const Context = memo(
   },
 );
 
-export const ModelInfoTags = memo<ModelInfoTagsProps>(
+const ModelInfoTags = memo<ModelInfoTagsProps>(
   ({ directionReverse, disableTooltip, placement = 'top', style, ...model }) => {
     return (
       <Flexbox
@@ -396,15 +395,3 @@ export const ProviderItemRender = memo<ProviderItemRenderProps>(
     );
   },
 );
-
-interface LabelRendererProps {
-  Icon: FC<IconAvatarProps>;
-  label: string;
-}
-
-export const LabelRenderer = memo<LabelRendererProps>(({ Icon, label }) => (
-  <Flexbox horizontal align={'center'} gap={8}>
-    <Icon size={20} />
-    <span>{label}</span>
-  </Flexbox>
-));

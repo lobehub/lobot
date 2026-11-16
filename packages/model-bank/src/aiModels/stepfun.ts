@@ -529,6 +529,6 @@ const stepfunImageModels: AIImageModelCard[] = [
   },
 ];
 
-export const allModels = [...stepfunChatModels, ...stepfunImageModels];
+const allModels = [...stepfunChatModels, ...stepfunImageModels];
 
 export default allModels;

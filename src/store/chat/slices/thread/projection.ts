@@ -7,7 +7,7 @@ import { defineReplica } from '@/libs/replica';
  * one row, so this bounds how many rows a long history leaves in storage; the
  * topic on screen is pinned by its mounted `useSync`.
  */
-export const MAX_PERSISTED_THREAD_LISTS = 100;
+const MAX_PERSISTED_THREAD_LISTS = 100;
 
 /**
  * Sub-threads of one topic (`threadMaps[topicId]`), so every existing selector

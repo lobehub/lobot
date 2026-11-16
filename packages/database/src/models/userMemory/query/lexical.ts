@@ -22,10 +22,7 @@ import { inJsonStringArray } from '../../../utils/inJsonStringArray';
 import type { UserMemoryQueryContext } from './context';
 import type { Bm25MatchFieldGroup } from './types';
 
-export const buildBm25MatchCondition = (
-  query: string,
-  groups: Bm25MatchFieldGroup[],
-): SQL | undefined => {
+const buildBm25MatchCondition = (query: string, groups: Bm25MatchFieldGroup[]): SQL | undefined => {
   const matchQuery = normalizeBm25MatchQuery(query, SAFE_BM25_QUERY_OPTIONS);
   const conditions = groups
     .map(({ fields, keyColumn }) => {

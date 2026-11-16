@@ -5,7 +5,7 @@ import type { PipelineContext, ProcessorOptions } from '../types';
 
 const log = debug('context-engine:provider:OnboardingContextInjector');
 
-export interface OnboardingContext {
+interface OnboardingContext {
   /** User messages observed after discovery began */
   discoveryUserMessageCount?: number;
   /** User persona document content (markdown) */
@@ -29,7 +29,7 @@ export interface OnboardingUserInfo {
   username?: string;
 }
 
-export interface OnboardingContextInjectorConfig {
+interface OnboardingContextInjectorConfig {
   enabled?: boolean;
   onboardingContext?: OnboardingContext;
 }
@@ -89,7 +89,7 @@ export class OnboardingContextInjector extends BaseFirstUserContentProvider {
   }
 }
 
-export const formatOnboardingUserInfo = (userInfo?: OnboardingUserInfo | null): string | null => {
+const formatOnboardingUserInfo = (userInfo?: OnboardingUserInfo | null): string | null => {
   if (!userInfo) return null;
 
   const normalizedUserInfo = {

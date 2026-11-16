@@ -3,7 +3,7 @@ import { type LobeTool, type ToolManifest } from '@lobechat/types';
 import { lambdaClient } from '@/libs/trpc/client';
 import { type LobeToolCustomPlugin } from '@/types/tool/plugin';
 
-export interface InstallPluginParams {
+interface InstallPluginParams {
   customParams?: Record<string, any>;
   identifier: string;
   manifest: ToolManifest;

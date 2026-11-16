@@ -57,7 +57,7 @@ const DEFAULT_BASE_URL = 'http://127.0.0.1:3425';
  * dot as a dash, whitespace, `_` and `-` as one dash, a vendor's snapshot date
  * off.
  */
-export const magpieModelKey = (id: string): string => {
+const magpieModelKey = (id: string): string => {
   let key = id.trim().toLowerCase();
 
   // A routing group magpie found goes by two ids: `auto/<model>`, the one it
@@ -256,7 +256,7 @@ const fetchMagpieModels = async (client: OpenAI): Promise<ChatModelCard[]> => {
   return processMultiProviderModelList(unique, ModelProvider.Magpie);
 };
 
-export const params = {
+const params = {
   apiKey: 'placeholder-to-avoid-error',
   baseURL: `${DEFAULT_BASE_URL}/v1`,
   customClient: {

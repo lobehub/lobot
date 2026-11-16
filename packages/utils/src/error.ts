@@ -7,7 +7,7 @@ type Nullable<T> = {
 /**
  * ErrorLike utility interface for containing error-like objects.
  */
-export type ErrorLike<C = unknown> = Nullable<Partial<Pick<Error, 'stack'>>> &
+type ErrorLike<C = unknown> = Nullable<Partial<Pick<Error, 'stack'>>> &
   Pick<Error, 'message' | 'name'> & { cause?: C };
 
 export const isError = (err: null | undefined | unknown): err is Error => err instanceof Error;

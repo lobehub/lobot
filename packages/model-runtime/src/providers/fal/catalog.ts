@@ -26,7 +26,7 @@ const FAL_GENERATION_CATEGORIES = [
 type FalGenerationCategory = (typeof FAL_GENERATION_CATEGORIES)[number];
 
 /** fal caps the page size at 10 when a catalog request expands OpenAPI schemas */
-export const FAL_CATALOG_PAGE_SIZE = 10;
+const FAL_CATALOG_PAGE_SIZE = 10;
 
 /** Upper bound of pages per category, so a model fetch stays a bounded number of requests */
 const MAX_PAGES_PER_CATEGORY = 40;
@@ -66,7 +66,7 @@ interface FalCatalogPage {
   next_cursor?: string | null;
 }
 
-export interface FalModelListItem {
+interface FalModelListItem {
   description?: string;
   displayName: string;
   id: string;
@@ -198,7 +198,7 @@ export const listFalGenerationModels = async (apiKey: string, signal?: AbortSign
 };
 
 /** fal redeploys endpoints in place, so a cached input schema is refetched after this long */
-export const FAL_INPUT_SCHEMA_TTL_MS = 60 * 60 * 1000;
+const FAL_INPUT_SCHEMA_TTL_MS = 60 * 60 * 1000;
 
 const inputSchemaCache = new Map<
   string,

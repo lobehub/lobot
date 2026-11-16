@@ -4,13 +4,13 @@ import { ModelProvider } from 'model-bank';
 import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible';
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 
-export interface Ai360ModelCard {
+interface Ai360ModelCard {
   id: string;
   max_tokens: number;
   total_tokens: number;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://api.360.cn/v1',
   chatCompletion: {
     handlePayload: (payload) => {

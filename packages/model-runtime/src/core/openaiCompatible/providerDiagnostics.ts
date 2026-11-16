@@ -44,7 +44,7 @@ interface OpenAIResponseMetadata {
   response?: Response;
 }
 
-export interface OpenAIResponseWithMetadata<T> {
+interface OpenAIResponseWithMetadata<T> {
   data: T;
   request_id?: string | null;
   response?: Response;
@@ -244,7 +244,7 @@ export const recordOpenAIChatCompletionChunk = (
   appendEvent(diagnostics, event);
 };
 
-export const recordOpenAIResponseStreamEvent = (
+const recordOpenAIResponseStreamEvent = (
   diagnostics: ProviderResponseDiagnostics,
   chunk: OpenAI.Responses.ResponseStreamEvent,
 ) => {

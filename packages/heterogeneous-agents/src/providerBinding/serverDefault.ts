@@ -1,8 +1,8 @@
 import type { LocalHeterogeneousAgentType } from '../config';
 
-export type ServerDefaultHeterogeneousIngress = 'anthropic-messages' | 'openai-responses';
+type ServerDefaultHeterogeneousIngress = 'anthropic-messages' | 'openai-responses';
 
-export type ServerDefaultHeterogeneousTokenHeader = 'bearer' | 'x-api-key';
+type ServerDefaultHeterogeneousTokenHeader = 'bearer' | 'x-api-key';
 
 interface ServerDefaultHeterogeneousAgentConfig {
   ingress: ServerDefaultHeterogeneousIngress;

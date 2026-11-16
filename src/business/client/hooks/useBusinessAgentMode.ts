@@ -1,4 +1,4 @@
-export interface BusinessModelModeConfig {
+interface BusinessModelModeConfig {
   chatConfig?: {
     enableAgentMode?: boolean;
   };
@@ -9,7 +9,5 @@ export interface BusinessModelModeConfig {
 export const useBusinessModelModeConfig = () => {
   return <T extends BusinessModelModeConfig>(config: T): T => config;
 };
-
-export const useBusinessCanEnableAgentMode = (_agentId: string): boolean => true;
 
 export const useBusinessAgentModeSync = (_agentId: string): void => {};

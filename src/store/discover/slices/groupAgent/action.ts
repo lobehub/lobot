@@ -35,7 +35,7 @@ const n = setNamespace('discover/groupAgent');
  * (`isLoading` / `mutate`) so a call site only has to move its `data` read to
  * the matching `groupAgentSelectors` entry.
  */
-export interface GroupAgentSyncResult extends ReplicaSyncResult {
+interface GroupAgentSyncResult extends ReplicaSyncResult {
   /** A request is in flight and this entry has no value to show yet. */
   isLoading: boolean;
   /** Alias of `revalidate`. */
@@ -49,7 +49,7 @@ type Setter = StoreSetter<DiscoverStore>;
 export const createGroupAgentSlice = (set: Setter, get: () => DiscoverStore, _api?: unknown) =>
   new GroupAgentActionImpl(set, get, _api);
 
-export class GroupAgentActionImpl {
+class GroupAgentActionImpl {
   readonly #categories;
   readonly #detail;
   readonly #get: () => DiscoverStore;

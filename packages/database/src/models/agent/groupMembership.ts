@@ -17,7 +17,7 @@ import { type AgentGroupMembershipRef } from './types';
  * gated on visibility — a private group's name is its members' business —
  * which is why `groupTitle` is nullable.
  */
-export const queryGroupMemberships = async (
+const queryGroupMemberships = async (
   ctx: AgentModelContext,
   executor: Transaction | LobeChatDatabase,
   agentIds: string[],

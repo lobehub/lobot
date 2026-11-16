@@ -23,7 +23,7 @@ export const createConnectorSlice = (set: Setter, get: () => EvalStore, _api?: u
   new ConnectorActionImpl(set, get, _api);
 
 /** A dataset's connections and bindings, read by the connection pickers and editor. */
-export class ConnectorActionImpl {
+class ConnectorActionImpl {
   readonly #bindings;
   readonly #detail;
   readonly #list;

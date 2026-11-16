@@ -9,7 +9,7 @@ import type {
 import { BUSINESS_LINE } from '@/const/analytics';
 import { isDesktop } from '@/const/version';
 
-export interface AnalyticsClientConfig {
+interface AnalyticsClientConfig {
   ga4: GoogleAnalyticsProviderConfig;
   posthog: PostHogProviderAnalyticsConfig;
   xAds: XAdsProviderAnalyticsConfig;
@@ -66,8 +66,6 @@ export const loadAnalytics = (config: AnalyticsClientConfig) => {
   return loading;
 };
 
-export const getAnalyticsManager = () => manager;
-
 export const analyticsClient = {
   identify: (userId: string, traits: Record<string, unknown>) => {
     if (manager) void manager.identify(userId, traits);
@@ -78,8 +76,6 @@ export const analyticsClient = {
     enqueue({ event, type: 'track' });
   },
 };
-
-export type AnalyticsClient = typeof analyticsClient;
 
 export const useAnalytics = () => ({ analytics: analyticsClient });
 

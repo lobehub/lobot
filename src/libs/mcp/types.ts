@@ -22,7 +22,7 @@ export interface McpResource {
   uri: string;
 }
 
-export interface McpPromptArgument {
+interface McpPromptArgument {
   description?: string;
   name: string;
   required?: boolean;
@@ -37,13 +37,13 @@ export interface McpPrompt {
 /**
  * MCP Tool Call Result Types
  */
-export interface TextContent {
+interface TextContent {
   _meta?: any;
   text: string;
   type: 'text';
 }
 
-export interface ImageContent {
+interface ImageContent {
   _meta?: any;
   data: string;
   // base64
@@ -51,7 +51,7 @@ export interface ImageContent {
   type: 'image';
 }
 
-export interface AudioContent {
+interface AudioContent {
   _meta?: any;
   data: string;
   // base64
@@ -59,7 +59,7 @@ export interface AudioContent {
   type: 'audio';
 }
 
-export interface ResourceContent {
+interface ResourceContent {
   _meta?: any;
   resource: {
     _meta?: any;
@@ -71,7 +71,7 @@ export interface ResourceContent {
   type: 'resource';
 }
 
-export interface ResourceLinkContent {
+interface ResourceLinkContent {
   _meta?: any;
   description?: string;
   icons?: Array<{
@@ -85,7 +85,7 @@ export interface ResourceLinkContent {
   uri: string;
 }
 
-export type ToolCallContent =
+type ToolCallContent =
   TextContent | ImageContent | AudioContent | ResourceContent | ResourceLinkContent;
 
 export interface ToolCallResult {
@@ -105,7 +105,7 @@ export interface MCPToolCallResult {
  * MCP authentication configuration interface
  * Supports manual configuration in the first stage and future OAuth 2.1 automated flow
  */
-export interface AuthConfig {
+interface AuthConfig {
   // C. User token obtained after user authorization
   accessToken?: string;
 
@@ -141,7 +141,7 @@ export interface HttpMCPClientParams {
   url: string;
 }
 
-export interface StdioMCPParams {
+interface StdioMCPParams {
   args: string[];
   command: string;
   env?: Record<string, string>;
@@ -149,18 +149,7 @@ export interface StdioMCPParams {
   type: 'stdio';
 }
 
-export interface CloudMCPParams {
-  auth?: AuthConfig;
-  headers?: Record<string, string>;
-  name: string;
-  type: 'cloud';
-  url: string;
-}
-
 export type MCPClientParams = HttpMCPClientParams | StdioMCPParams;
-
-// canonical definition lives with the shared MCP plugin types
-export type { MCPErrorType };
 export interface MCPErrorData {
   message: string;
   /**
@@ -246,7 +235,7 @@ const STDIO_OUTPUT_SEPARATOR = '--- STDIO Process Output ---';
  * The enhanced error format from desktop is:
  * "Original message\n\n--- STDIO Process Output ---\nlogs..."
  */
-export interface ParsedStdioError {
+interface ParsedStdioError {
   errorLog?: string;
   originalMessage: string;
 }

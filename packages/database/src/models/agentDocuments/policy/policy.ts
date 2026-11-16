@@ -25,7 +25,7 @@ export const normalizePolicy = (
   };
 };
 
-export interface ToolPolicyCompositionResult {
+interface ToolPolicyCompositionResult {
   policy: AgentDocumentPolicy;
   policyLoad: PolicyLoad;
   policyLoadFormat: DocumentLoadFormat;

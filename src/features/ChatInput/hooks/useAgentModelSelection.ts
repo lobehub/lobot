@@ -38,9 +38,9 @@ interface SelectModelOptions {
  *   (`modelSelectionPolicy: 'fixed'`); it changes in the Agent Profile only.
  * - `useOnly` — the caller may chat with the resource but not edit its config.
  */
-export type AgentModelSelectionLockReason = 'fixedByAgent' | 'useOnly';
+type AgentModelSelectionLockReason = 'fixedByAgent' | 'useOnly';
 
-export interface UseAgentModelSelectionResult extends ModelSelection {
+interface UseAgentModelSelectionResult extends ModelSelection {
   canDisplayModel: boolean;
   canSelectModel: boolean;
   isPreferenceLoading: boolean;

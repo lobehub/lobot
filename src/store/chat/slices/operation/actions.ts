@@ -48,8 +48,6 @@ const isSameNullableContextValue = (left?: string | null, right?: string | null)
  */
 
 type Setter = StoreSetter<ChatStore>;
-export const operationActions = (set: Setter, get: () => ChatStore, _api?: unknown) =>
-  new OperationActionsImpl(set, get, _api);
 
 export class OperationActionsImpl {
   readonly #get: () => ChatStore;
@@ -1018,7 +1016,11 @@ export class OperationActionsImpl {
     patch: Partial<
       Pick<
         QueuedMessage,
-        'heldBehindOperationId' | 'serverDelivering' | 'serverDelivery' | 'serverRequest' | 'serverUnconfirmed'
+        | 'heldBehindOperationId'
+        | 'serverDelivering'
+        | 'serverDelivery'
+        | 'serverRequest'
+        | 'serverUnconfirmed'
       >
     >,
   ): void => {

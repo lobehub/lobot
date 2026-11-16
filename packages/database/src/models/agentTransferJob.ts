@@ -19,8 +19,6 @@ import type { LobeChatDatabase, Transaction } from '../type';
 
 /** Transfer rejected: the agent already has an unfinished backfill job. */
 export const AGENT_TRANSFER_IN_PROGRESS = 'AGENT_TRANSFER_IN_PROGRESS';
-/** Owner delete rejected: a pending backfill still references this owner. */
-export const AGENT_TRANSFER_PENDING_OWNER_DELETE = 'AGENT_TRANSFER_PENDING_OWNER_DELETE';
 
 /**
  * Above this many messages the transfer stops rewriting message scope inline
@@ -140,7 +138,7 @@ export const rewriteResidualMessageScope = async (
  * One member agent's redirection during a group transfer: the group left a
  * referenced member behind and took a clone of it instead.
  */
-export interface AgentIdRemapPair {
+interface AgentIdRemapPair {
   newAgentId: string;
   sourceAgentId: string;
 }
@@ -187,7 +185,7 @@ const remapMessageAgentIds = async (
 };
 
 /** {@link remapMessageAgentIds} over the messages of the given topics. */
-export const remapMessageAgentIdsForTopics = async (
+const remapMessageAgentIdsForTopics = async (
   executor: Executor,
   topicIds: string[],
   pairs: AgentIdRemapPair[],
@@ -201,7 +199,7 @@ export const remapMessageAgentIdsForTopics = async (
  * {@link remapMessageAgentIds} over the topicless residue of the given groups —
  * the same rows `rewriteResidualMessageScope` picks up on its group arm.
  */
-export const remapResidualMessageAgentIds = async (
+const remapResidualMessageAgentIds = async (
   executor: Executor,
   groupIds: string[],
   pairs: AgentIdRemapPair[],
@@ -241,7 +239,7 @@ export const remapResidualMessageAgentIds = async (
 const isPendingTransfer = () =>
   and(eq(agentHistoryJobs.status, 'pending'), eq(agentHistoryJobs.type, 'transfer'));
 
-export interface CreateAgentTransferJobParams {
+interface CreateAgentTransferJobParams {
   /**
    * Group-transfer member redirections, applied to every message row this job
    * rewrites. Empty for an agent transfer, and for a group whose roster is all
@@ -274,7 +272,7 @@ export interface CreateAgentTransferJobParams {
   topics: { activityAt: Date; id: string }[];
 }
 
-export interface AgentTransferJobProgress {
+interface AgentTransferJobProgress {
   completedTopics: number;
   id: string;
   status: 'pending' | 'completed';

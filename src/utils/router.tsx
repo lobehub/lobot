@@ -137,7 +137,7 @@ export function dynamicLayout<P = NonNullable<unknown>>(
   );
 }
 
-export interface ErrorBoundaryProps {
+interface ErrorBoundaryProps {
   /** Base path for "back home" on the error screen (defaults to `/`). */
   resetPath?: string;
 }
@@ -160,7 +160,7 @@ export const ErrorBoundary = ({ resetPath }: ErrorBoundaryProps) => {
   );
 };
 
-export interface CreateAppRouterOptions {
+interface CreateAppRouterOptions {
   basename?: string;
 }
 

@@ -6,11 +6,11 @@ import { processMultiProviderModelList } from '../../utils/modelParse';
 
 const THINKING_MODELS = new Set(['DeepSeek-V3-1']);
 
-export interface AkashChatModelCard {
+interface AkashChatModelCard {
   id: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://chatapi.akash.network/api/v1',
   chatCompletion: {
     handlePayload: (payload) => {

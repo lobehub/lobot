@@ -57,9 +57,9 @@ import { TrayManager } from './ui/TrayManager';
 const logger = createLogger('core:App');
 const mainProcessStartedAt = Date.now() - process.uptime() * 1000;
 
-export type IPCEventMap = Map<string, { controller: any; methodName: string }>;
-export type ShortcutMethodMap = Map<string, () => Promise<void>>;
-export type ProtocolHandlerMap = Map<string, { controller: any; methodName: string }>;
+type IPCEventMap = Map<string, { controller: any; methodName: string }>;
+type ShortcutMethodMap = Map<string, () => Promise<void>>;
+type ProtocolHandlerMap = Map<string, { controller: any; methodName: string }>;
 
 type Class<T> = new (...args: any[]) => T;
 

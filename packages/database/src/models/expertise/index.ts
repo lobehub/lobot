@@ -20,14 +20,11 @@ import * as lessons from './lessons';
 import * as lineage from './lineage';
 import * as rules from './rules';
 
-export type { ExpertiseCarrier } from './domains';
-export type { ExpertiseGroupOwner } from './rules';
-
 /** The core tier starts at 40% of the domain's maximum hit count, with a floor of two. */
 const CORE_CUT_RATIO = 0.4;
 const CORE_CUT_MIN = 2;
 
-export type ExpertiseTier = 'core' | 'niche' | 'unused';
+type ExpertiseTier = 'core' | 'niche' | 'unused';
 
 /**
  * Runs that observed practice: a material the reviewer distilled (`reflectionKey` `material:…`)

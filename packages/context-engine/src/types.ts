@@ -15,7 +15,7 @@ export interface PipelineContextMetadataOverrides {}
 /**
  * Agent state - inferred from original project types
  */
-export interface AgentState {
+interface AgentState {
   [key: string]: any;
   messages: UIChatMessage[];
   model?: string;
@@ -24,27 +24,6 @@ export interface AgentState {
   tools?: string[];
 }
 
-/**
- * Chat image item
- */
-export interface ChatImageItem {
-  alt?: string;
-  id: string;
-  url: string;
-}
-
-/**
- * Message tool call
- */
-export interface MessageToolCall {
-  function: {
-    arguments: string;
-    name: string;
-  };
-  id: string;
-  thoughtSignature?: string;
-  type: 'function';
-}
 export interface Message {
   [key: string]: any;
   content: string | any[];
@@ -63,7 +42,7 @@ export interface Message {
  * Consumers can extend this through declaration merging on
  * `LobeChatContextEngine.PipelineContextMetadataOverrides`.
  */
-export interface PipelineContextMetadata extends PipelineContextMetadataOverrides {
+interface PipelineContextMetadata extends PipelineContextMetadataOverrides {
   [key: `${string}InjectedCount`]: number | undefined;
   currentTokenCount?: number;
   maxTokens?: number;
@@ -111,86 +90,6 @@ export interface ProcessorOptions {
 }
 
 /**
- * Pipeline execution result
- */
-export interface PipelineResult {
-  /** Abort reason */
-  abortReason?: string;
-  /** Whether aborted */
-  isAborted: boolean;
-  /** Final processed messages */
-  messages: any[];
-  /** Metadata from processing */
-  metadata: PipelineContextMetadata;
-  /** Execution statistics */
-  stats: {
-    /** Number of processors processed */
-    processedCount: number;
-    /** Execution time for each processor */
-    processorDurations: Record<string, number>;
-    /** Total processing time */
-    totalDuration: number;
-  };
-}
-
-/**
- * Processor type enum
- */
-export enum ProcessorType {
-  /** Processor type */
-  PROCESSOR = 'processor',
-}
-
-/** Legacy processor type - kept for backward compatibility */
-export type ProcessorTypeLegacy =
-  'injector' | 'transformer' | 'validator' | 'optimizer' | 'processor';
-
-/**
- * Token counter interface
- */
-export interface TokenCounter {
-  count: (messages: UIChatMessage[] | string) => Promise<number>;
-}
-
-/**
- * File context information
- */
-export interface FileContext {
-  addUrl?: boolean;
-  fileList?: string[];
-  imageList?: ChatImageItem[];
-}
-
-/**
- * RAG retrieval chunk
- */
-export interface RetrievalChunk {
-  content: string;
-  id: string;
-  metadata?: Record<string, any>;
-  similarity: number;
-}
-
-/**
- * RAG context
- */
-export interface RAGContext {
-  chunks: RetrievalChunk[];
-  queryId?: string;
-  rewriteQuery?: string;
-}
-
-/**
- * Model capabilities
- */
-export interface ModelCapabilities {
-  supportsFunctionCall: boolean;
-  supportsReasoning: boolean;
-  supportsSearch: boolean;
-  supportsVision: boolean;
-}
-
-/**
  * Processor error — carries diagnostic context about which processor failed and why.
  *
  * The `cause` chain follows the ES2022 standard so that error-reporting tooling
@@ -226,40 +125,3 @@ export class ProcessorError extends Error {
     };
   }
 }
-
-/**
- * Pipeline error — thrown when a pipeline processor fails.
- *
- * Same design principles as {@link ProcessorError}: standard `cause` chain,
- * legacy `originalError` compatibility, and a `toJSON()` that preserves the
- * full error tree.
- */
-export class PipelineError extends Error {
-  /** @deprecated Prefer reading the standard `cause` property. */
-  public originalError?: Error;
-
-  constructor(
-    message: string,
-    public processorName?: string,
-    cause?: Error,
-  ) {
-    super(message, { cause });
-    this.name = 'PipelineError';
-    this.originalError = cause;
-  }
-
-  toJSON(): Record<string, unknown> {
-    return {
-      message: this.message,
-      name: this.name,
-      processorName: this.processorName,
-      cause: this.cause
-        ? this.cause instanceof Error && typeof (this.cause as any).toJSON === 'function'
-          ? (this.cause as any).toJSON()
-          : String(this.cause)
-        : undefined,
-    };
-  }
-}
-
-export type { UIChatMessage } from '@lobechat/types';

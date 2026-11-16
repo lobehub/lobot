@@ -1,6 +1,6 @@
 import { ConnectorOAuthError } from '@/utils/connectorOAuth';
 
-export interface OAuthCreateDeps<TPayload> {
+interface OAuthCreateDeps<TPayload> {
   createConnector: (payload: TPayload) => Promise<{ id: string; isNew: boolean }>;
   deleteConnector: (id: string) => Promise<void>;
   /** Re-read the connector from the server and report whether it is connected. */

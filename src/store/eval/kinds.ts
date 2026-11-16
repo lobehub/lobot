@@ -4,7 +4,7 @@
  * Bench carries `metadata.kind = 'lobe-bench'`; each surface lists only its
  * own side, so the shared storage never shows through.
  */
-export const LOBE_BENCH_KIND = 'lobe-bench';
+const LOBE_BENCH_KIND = 'lobe-bench';
 
 export const isLobeBenchKind = (item?: { metadata?: unknown } | null): boolean =>
   !!item &&

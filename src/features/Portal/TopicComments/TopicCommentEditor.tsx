@@ -19,7 +19,7 @@ export interface TopicCommentEditorRef {
   setValue: (value: TopicCommentEditorValue) => void;
 }
 
-export interface TopicCommentEditorProps {
+interface TopicCommentEditorProps {
   autoFocus?: boolean;
   compact?: boolean;
   disabled?: boolean;

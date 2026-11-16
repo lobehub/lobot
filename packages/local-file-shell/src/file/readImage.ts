@@ -25,13 +25,13 @@ const LOCAL_IMAGE_EXT_TO_MIME: Record<string, string> = {
 };
 
 /** Refuse to load image bytes beyond this size — providers reject them anyway. */
-export const MAX_IMAGE_READ_BYTES = 10 * 1024 * 1024;
+const MAX_IMAGE_READ_BYTES = 10 * 1024 * 1024;
 
 /** MIME type of a path `readFile` treats as an image, or `undefined` for any other file. */
 export const getLocalImageMimeType = (filePath: string): string | undefined =>
   LOCAL_IMAGE_EXT_TO_MIME[path.extname(filePath).toLowerCase().replace('.', '')];
 
-export interface ReadLocalImageFileOptions {
+interface ReadLocalImageFileOptions {
   /**
    * Explains an upload failure to the model. The text follows
    * "upload unavailable — ", so it should say why and what the model can do.

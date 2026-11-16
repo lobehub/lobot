@@ -61,7 +61,7 @@ import { labPreferSelectors } from '@/store/user/selectors';
 
 const ACCORDION_GROUP_ID = 'accordion-group';
 
-export interface SidebarItemConfig {
+interface SidebarItemConfig {
   alwaysVisible?: boolean;
   id: string;
   labelKey: string;

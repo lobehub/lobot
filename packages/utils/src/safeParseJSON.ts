@@ -1,5 +1,3 @@
-import { parse } from 'partial-json';
-
 export const safeParseJSON = <T = Record<string, any>>(text?: string) => {
   if (typeof text !== 'string') return undefined;
 
@@ -11,12 +9,4 @@ export const safeParseJSON = <T = Record<string, any>>(text?: string) => {
   }
 
   return json;
-};
-
-export const safeParsePartialJSON = <T = Record<string, any>>(text?: string): T | undefined => {
-  try {
-    return parse(text || '{}') as T;
-  } catch {
-    return undefined;
-  }
 };

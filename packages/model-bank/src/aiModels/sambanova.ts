@@ -157,6 +157,6 @@ const sambanovaChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...sambanovaChatModels];
+const allModels = [...sambanovaChatModels];
 
 export default allModels;

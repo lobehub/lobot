@@ -8,7 +8,7 @@ import type { LobeChatDatabase } from '../../type';
  * A list avatar pictures the caller plus this many other members: a full 3×3 grid, the way a
  * WeChat group shows its people.
  */
-export const CHANNEL_AVATAR_MEMBERS = 8;
+const CHANNEL_AVATAR_MEMBERS = 8;
 
 /**
  * The earliest active members of each Channel besides `userId`, for the list avatar. One

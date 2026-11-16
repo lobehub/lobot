@@ -44,7 +44,7 @@ export type AgentHookType =
  * Outbound attachment carried alongside the agent's final reply text.
  * Populated only on `onComplete`. JSON-safe so it survives webhook delivery.
  */
-export interface HookEventAttachment {
+interface HookEventAttachment {
   /** Base64-encoded bytes. Used when no fetchable URL exists. */
   data?: string;
   /** Remote URL the downstream consumer can GET to retrieve the bytes. */
@@ -54,7 +54,7 @@ export interface HookEventAttachment {
   type: 'image' | 'file' | 'video' | 'audio';
 }
 
-export interface AgentHookEvent {
+interface AgentHookEvent {
   // Identification
   agentId: string;
   /**
@@ -169,7 +169,7 @@ export interface AgentHookEvent {
  * Correlation and routing facts shared by tool lifecycle notifications.
  * The server transport supplies the native toolCallId on every invocation.
  */
-export interface ToolCallHookContext {
+interface ToolCallHookContext {
   /** Device selected by the run's execution plan and access policy, if any. */
   activeDeviceId?: string;
   agentId?: string;
@@ -214,20 +214,20 @@ export interface ToolCallHookEvent extends ToolCallHookContext {
 }
 
 /** beforeToolCall notification payload, without the local mock callback. */
-export type BeforeToolCallObservationEvent = ToolCallHookContext;
+type BeforeToolCallObservationEvent = ToolCallHookContext;
 
-export interface AfterToolCallHookEvent extends ToolCallHookContext {
+interface AfterToolCallHookEvent extends ToolCallHookContext {
   /** Whether a beforeToolCall hook supplied the result through mock(). */
   mocked: boolean;
   /** Complete pre-archive result for controls; post-archive result for notifications. */
   result: ToolRunResult;
 }
 
-export interface ToolCallErrorHookEvent extends ToolCallHookContext {
+interface ToolCallErrorHookEvent extends ToolCallHookContext {
   error: string;
 }
 
-export interface BeforeCompactHookEvent {
+interface BeforeCompactHookEvent {
   messageCount: number;
   operationId: string;
   stepIndex: number;
@@ -235,7 +235,7 @@ export interface BeforeCompactHookEvent {
   userId?: string;
 }
 
-export interface AfterCompactHookEvent {
+interface AfterCompactHookEvent {
   groupId: string;
   messagesAfter: number;
   messagesBefore: number;
@@ -245,7 +245,7 @@ export interface AfterCompactHookEvent {
   userId?: string;
 }
 
-export interface CompactErrorHookEvent {
+interface CompactErrorHookEvent {
   error: string;
   operationId: string;
   stepIndex: number;
@@ -253,14 +253,14 @@ export interface CompactErrorHookEvent {
   userId?: string;
 }
 
-export interface BeforeHumanInterventionHookEvent {
+interface BeforeHumanInterventionHookEvent {
   operationId: string;
   pendingTools: Array<{ apiName: string; identifier: string }>;
   stepIndex: number;
   userId?: string;
 }
 
-export interface AfterHumanInterventionHookEvent {
+interface AfterHumanInterventionHookEvent {
   action: 'approve' | 'reject' | 'rejectAndContinue';
   operationId: string;
   rejectionReason?: string;
@@ -268,14 +268,14 @@ export interface AfterHumanInterventionHookEvent {
   userId?: string;
 }
 
-export interface StopByHumanInterventionHookEvent {
+interface StopByHumanInterventionHookEvent {
   operationId: string;
   rejectionReason?: string;
   toolCallId?: string;
   userId?: string;
 }
 
-export interface BeforeCallAgentHookEvent {
+interface BeforeCallAgentHookEvent {
   agentId: string;
   instruction: string;
   operationId: string;
@@ -283,7 +283,7 @@ export interface BeforeCallAgentHookEvent {
 }
 
 /** Reports the creation/start result; child completion belongs to its onComplete hook. */
-export interface AfterCallAgentHookEvent {
+interface AfterCallAgentHookEvent {
   agentId: string;
   operationId: string;
   subOperationId: string;
@@ -293,7 +293,7 @@ export interface AfterCallAgentHookEvent {
   userId?: string;
 }
 
-export interface CallAgentErrorHookEvent {
+interface CallAgentErrorHookEvent {
   agentId: string;
   error: string;
   operationId: string;

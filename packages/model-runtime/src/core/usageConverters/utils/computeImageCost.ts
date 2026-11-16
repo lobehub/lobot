@@ -1,17 +1,18 @@
-import { CREDITS_PER_DOLLAR } from '../../../const/currency';
 import debug from 'debug';
 import type { FixedPricingUnit, LookupPricingUnit, Pricing } from 'model-bank';
 
+import { CREDITS_PER_DOLLAR } from '../../../const/currency';
+
 const log = debug('lobe-cost:computeImagePricing');
 
-export interface ImageGenerationParams {
+interface ImageGenerationParams {
   // Other possible parameters for future extensions
   [key: string]: any;
   quality?: 'standard' | 'hd';
   size?: string;
 }
 
-export interface ImageCostResult {
+interface ImageCostResult {
   breakdown?: {
     imageCount: number;
     /** Number of reference images sent with each generation request */

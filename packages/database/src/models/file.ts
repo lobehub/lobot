@@ -61,7 +61,7 @@ import { buildWorkspacePayload, buildWorkspaceWhere } from '../utils/workspace';
 /**
  * Minimal file descriptor used to bootstrap user-uploaded files into a sandbox.
  */
-export interface SandboxInitFileItem {
+interface SandboxInitFileItem {
   fileType: string;
   id: string;
   name: string;

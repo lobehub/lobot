@@ -17,7 +17,7 @@ const relativePathSchema = z.string().refine((value) => {
   return value.split('/').every((segment) => segment && segment !== '.' && segment !== '..');
 });
 
-export const rendererTreeFileSchema = z
+const rendererTreeFileSchema = z
   .object({
     path: relativePathSchema,
     sha256: sha256Schema,
@@ -25,7 +25,7 @@ export const rendererTreeFileSchema = z
   })
   .strict();
 
-export const rendererArtifactSchema = z
+const rendererArtifactSchema = z
   .object({
     path: packPathSchema,
     sha256: sha256Schema,
@@ -34,7 +34,7 @@ export const rendererArtifactSchema = z
   .strict()
   .refine((artifact) => artifact.path === `packs/${artifact.sha256}.zip`);
 
-export const rendererTreeSchema = z
+const rendererTreeSchema = z
   .array(rendererTreeFileSchema)
   .min(1)
   .superRefine((tree, ctx) => {
@@ -47,7 +47,7 @@ export const rendererTreeSchema = z
     }
   });
 
-export const corePatchSchema = z
+const corePatchSchema = z
   .object({
     fromSha256: sha256Schema,
     size: z.number().int().positive(),
@@ -55,7 +55,7 @@ export const corePatchSchema = z
   })
   .strict();
 
-export const coreManifestV3Schema = z
+const coreManifestV3Schema = z
   .object({
     applyMode: z.enum(['reload', 'relaunch']).nullable(),
     channel: z.enum(['stable', 'beta', 'canary', 'nightly']),
@@ -75,7 +75,7 @@ export const coreManifestV3Schema = z
   .strict();
 
 // The builtin manifest ships inside the code-signed app bundle, so it is built without the OTA key.
-export const builtinManifestSchema = coreManifestV3Schema.extend({ signature: z.string() });
+const builtinManifestSchema = coreManifestV3Schema.extend({ signature: z.string() });
 
 const packSchema = z
   .object({
@@ -103,7 +103,7 @@ const frameSchema = z
   })
   .strict();
 
-export const coreManifestV4Schema = coreManifestV3Schema
+const coreManifestV4Schema = coreManifestV3Schema
   .omit({
     full: true,
     objectsBaseUrl: true,
@@ -156,12 +156,7 @@ export type CoreManifestV3 = z.infer<typeof coreManifestV3Schema>;
 export type CoreManifestV4 = z.infer<typeof coreManifestV4Schema>;
 export type CoreManifest = CoreManifestV3 | CoreManifestV4;
 export type PackFrame = z.infer<typeof frameSchema>;
-export type CorePatch = z.infer<typeof corePatchSchema>;
-export type RendererArtifact = z.infer<typeof rendererArtifactSchema>;
 export type RendererTreeFile = z.infer<typeof rendererTreeFileSchema>;
-
-export const isValidManifestShape = (value: unknown): value is CoreManifest =>
-  coreManifestSchema.safeParse(value).success;
 
 export const sha256File = (content: Buffer): string =>
   createHash('sha256').update(content).digest('hex');

@@ -1,12 +1,12 @@
 import type { AgentHookType, AnyHookEvent, ToolCallHookEvent } from '../types';
 import type { ToolRunResult } from './tool';
 
-export interface ToolCallMockResult {
+interface ToolCallMockResult {
   isMocked: true;
   result: ToolRunResult;
 }
 
-export interface LifecycleDispatchParams {
+interface LifecycleDispatchParams {
   /** The lifecycle hook event payload. */
   event: AnyHookEvent;
   /**

@@ -129,7 +129,7 @@ export const IntegrationsOverviewSkeleton = ({
  * connect button row above one filled connection row (36px avatar, name and
  * detail line, status).
  */
-export const IntegrationConnectionsSkeleton = ({ title }: { title?: string }) => (
+const IntegrationConnectionsSkeleton = ({ title }: { title?: string }) => (
   <Flexbox aria-busy gap={10}>
     <Flexbox horizontal align={'center'} gap={16} justify={'space-between'}>
       {title ? (

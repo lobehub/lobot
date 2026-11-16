@@ -29,7 +29,7 @@ export const SkeletonItem = ({
   </Flexbox>
 );
 
-export const SkeletonList = ({
+const SkeletonList = ({
   rows = 3,
   ...rest
 }: { rows?: number } & Omit<FlexboxProps, 'children'>) => (

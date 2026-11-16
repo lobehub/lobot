@@ -5,12 +5,12 @@ import path from 'node:path';
 import { nativeImage } from 'electron';
 
 /** Same limits as chat uploads (`packages/utils/src/compressImage.ts`). */
-export const MAX_UPLOAD_IMAGE_EDGE = 1920;
+const MAX_UPLOAD_IMAGE_EDGE = 1920;
 export const MAX_UPLOAD_IMAGE_BYTES = 3 * 1024 * 1024;
 
 const JPEG_QUALITY = 85;
 
-export interface PreparedImageUpload {
+interface PreparedImageUpload {
   /** Removes the temporary copy, if one was written. */
   cleanup: () => Promise<void>;
   filePath: string;

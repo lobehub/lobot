@@ -9,7 +9,7 @@ export const AgentBuilderIdentifier = 'lobe-agent-builder';
 /**
  * Agent Builder API Names
  */
-export const AgentBuilderApiName = {
+const AgentBuilderApiName = {
   // Read operations
   // Note: getAgentConfig, getAgentMeta, getPrompt, getAvailableTools, searchOfficialTools are removed
   // because the current agent context is now automatically injected

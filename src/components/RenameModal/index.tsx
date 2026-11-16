@@ -84,7 +84,7 @@ const RenameModalContent = memo<RenameModalContentProps>(
 
 RenameModalContent.displayName = 'RenameModalContent';
 
-export interface OpenRenameModalProps {
+interface OpenRenameModalProps {
   defaultValue: string;
   description?: string;
   maxLength?: number;
@@ -116,5 +116,3 @@ export const openRenameModal = ({
     title: title ?? t('rename', { ns: 'common' }),
     width: 'min(90vw, 480px)',
   });
-
-export default openRenameModal;

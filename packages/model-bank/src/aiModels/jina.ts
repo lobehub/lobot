@@ -25,6 +25,6 @@ const jinaChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...jinaChatModels];
+const allModels = [...jinaChatModels];
 
 export default allModels;

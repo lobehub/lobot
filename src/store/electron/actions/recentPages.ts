@@ -48,7 +48,7 @@ type Setter = StoreSetter<ElectronStore>;
 export const createRecentPagesSlice = (set: Setter, get: () => ElectronStore, _api?: unknown) =>
   new RecentPagesActionImpl(set, get, _api);
 
-export class RecentPagesActionImpl {
+class RecentPagesActionImpl {
   readonly #get: () => ElectronStore;
   readonly #set: Setter;
 

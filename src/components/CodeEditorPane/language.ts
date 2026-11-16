@@ -73,7 +73,7 @@ const SUPPORTED_MODES = new Set([
   'z80',
 ]);
 
-export interface EditorLanguage {
+interface EditorLanguage {
   /**
    * Human-readable name for the status bar. Kept apart from `mode` so a
    * language that borrows another's grammar still reports its own name.

@@ -1,6 +1,6 @@
 import type { FileUploadState, FileUploadStatus } from '@/types/files/upload';
 
-export interface EditorFileUploadSnapshot {
+interface EditorFileUploadSnapshot {
   file: File;
   id: string;
   status: FileUploadStatus;

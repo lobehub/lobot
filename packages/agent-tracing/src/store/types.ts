@@ -1,6 +1,6 @@
 import type { ExecutionSnapshot, SnapshotSummary } from '../types';
 
-export interface PartialSaveOptions {
+interface PartialSaveOptions {
   /**
    * Write only while the stored object still carries this token, which came
    * from an earlier read or write of the same partial. A store that can fence
@@ -12,7 +12,7 @@ export interface PartialSaveOptions {
   signal?: AbortSignal;
 }
 
-export interface PartialSaveResult {
+interface PartialSaveResult {
   /** The write was refused: someone else has written this partial since. */
   conflict?: boolean;
   /** Identifies what is stored now, to fence the caller's next write. */

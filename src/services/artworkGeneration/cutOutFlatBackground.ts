@@ -12,12 +12,12 @@ export interface RgbaImage {
   width: number;
 }
 
-export interface CutOutOptions {
+interface CutOutOptions {
   /** Max squared RGB distance from the sampled backdrop that still counts as backdrop. */
   tolerance?: number;
 }
 
-export interface CutOutResult {
+interface CutOutResult {
   /** False when the result was rejected as untrustworthy and `data` was left untouched. */
   applied: boolean;
   /**
@@ -30,7 +30,7 @@ export interface CutOutResult {
   removedRatio: number;
 }
 
-export interface SubjectBounds {
+interface SubjectBounds {
   height: number;
   left: number;
   top: number;

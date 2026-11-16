@@ -1,12 +1,9 @@
 import type { GoalGraphSnapshot } from '@lobechat/types';
 
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
-import type { GoalListItem } from '@/services/goal';
 import type { MetricSeriesWithPoints } from '@/services/metric';
 
 import type { GoalListValue } from './projection';
-
-export type { GoalListItem };
 /**
  * List tab. Each option names the lifecycle states it keeps: `all` is the
  * default (nothing hidden), `review` the goals at the human acceptance gate,

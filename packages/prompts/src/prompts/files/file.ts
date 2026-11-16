@@ -24,7 +24,7 @@ export const FILE_PREVIEW_CHARS = 4000;
 export const readAttachmentContinuation = (fileId: string) => (line: number) =>
   `call readAttachment with fileId="${fileId}" and offset=${line}`;
 
-export interface PreviewLongFileContentOptions {
+interface PreviewLongFileContentOptions {
   /**
    * Whether `readAttachment` is in the tool set sent with this request. Only then does the preview
    * name it as the way to continue; otherwise (custom tool modes, share visitors, clients without

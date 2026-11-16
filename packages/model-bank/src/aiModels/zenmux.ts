@@ -1554,6 +1554,6 @@ const zenmuxChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...zenmuxChatModels];
+const allModels = [...zenmuxChatModels];
 
 export default allModels;

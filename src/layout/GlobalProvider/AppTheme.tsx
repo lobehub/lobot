@@ -41,7 +41,7 @@ const styles = stylex.create({
   },
 });
 
-export interface AppThemeProps {
+interface AppThemeProps {
   children?: ReactNode;
   customFontFamily?: string;
   customFontURL?: string;

@@ -7,7 +7,7 @@ const CLICK_TIMEOUT_MS = 1500;
 let memoryUnlocked = false;
 const listeners = new Set<() => void>();
 
-export interface DevDockClickSequence {
+interface DevDockClickSequence {
   count: number;
   lastClickAt: number;
 }

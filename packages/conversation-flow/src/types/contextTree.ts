@@ -95,7 +95,7 @@ export interface TasksNode extends BaseNode {
 /**
  * Pinned message within a compression group
  */
-export interface PinnedMessage {
+interface PinnedMessage {
   content: string | null;
   createdAt: Date | string;
   id: string;
@@ -109,7 +109,7 @@ export interface PinnedMessage {
  * Messages marked as compressed are hidden, and a summary is shown instead.
  * Pinned messages (favorite=true) within the compression group are preserved.
  */
-export interface CompressedGroupNode extends BaseNode {
+interface CompressedGroupNode extends BaseNode {
   /** Summary content of the compressed messages */
   content: string | null;
   /** Messages marked as favorite/pinned within this compression group */
@@ -120,7 +120,7 @@ export interface CompressedGroupNode extends BaseNode {
 /**
  * Child message within a compare group (parallel responses)
  */
-export interface CompareGroupChild {
+interface CompareGroupChild {
   content: string | null;
   createdAt: Date | string;
   id: string;
@@ -134,7 +134,7 @@ export interface CompareGroupChild {
  * Multiple models respond to the same user message in parallel.
  * Different from CompareNode which is built from metadata.compare flag.
  */
-export interface CompareGroupNode extends BaseNode {
+interface CompareGroupNode extends BaseNode {
   /** Parallel responses from different models */
   children: CompareGroupChild[];
   type: 'compareGroup';

@@ -2,9 +2,9 @@ import type { DockTask, DockTaskStatus } from './type';
 
 const ACTIVE: ReadonlySet<DockTaskStatus> = new Set(['pending', 'running']);
 
-export type DockOverviewStatus = 'running' | 'success' | 'error' | 'cancelled';
+type DockOverviewStatus = 'running' | 'success' | 'error' | 'cancelled';
 
-export interface DockOverview {
+interface DockOverview {
   activeCount: number;
   /** 0-100 across the active tasks, or 100 once nothing is running. */
   progress: number;
@@ -36,7 +36,7 @@ export const resolveDockOverview = (tasks: DockTask[]): DockOverview => {
 export const hasCancellableTask = (tasks: DockTask[]): boolean =>
   tasks.some((task) => isActiveTask(task) && !!task.cancel);
 
-export interface DockTaskGroup {
+interface DockTaskGroup {
   label: string;
   tasks: DockTask[];
 }

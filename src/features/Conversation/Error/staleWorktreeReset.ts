@@ -5,7 +5,7 @@ import {
   getWorkingDirectoryPathString,
 } from '@/helpers/workingDirectoryPath';
 
-export interface StaleWorktreeReset {
+interface StaleWorktreeReset {
   /** The entry to commit: the source repo with the worktree override dropped. */
   entry: WorkingDirEntry;
   /** The source repo's folder name, for the button label. */

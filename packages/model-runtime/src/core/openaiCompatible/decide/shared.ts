@@ -9,16 +9,16 @@ import type {
 /** A response that does not answer what was asked; mapped to `ProviderBizError`. */
 export class InvalidDecisionResponseError extends Error {}
 
-export type DecisionQuestionEntries = [name: string, question: DecisionQuestion][];
+type DecisionQuestionEntries = [name: string, question: DecisionQuestion][];
 
-export interface DecisionWireUsage {
+interface DecisionWireUsage {
   inputTokens: number;
   outputTokens?: number;
   /** Raw provider charge, validated before it reaches `onProviderReportedCost`. */
   providerReportedCost?: unknown;
 }
 
-export interface ParsedDecisionWireResponse {
+interface ParsedDecisionWireResponse {
   response: Omit<DecisionResponse, 'usage'>;
   usage?: DecisionWireUsage;
 }

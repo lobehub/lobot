@@ -20,7 +20,7 @@ const buildAnthropicPayload = (payload: ChatStreamPayload) => {
   });
 };
 
-export const params = createAnthropicCompatibleParams({
+const params = createAnthropicCompatibleParams({
   chatCompletion: {
     handlePayload: buildAnthropicPayload,
   },
@@ -31,5 +31,3 @@ export const params = createAnthropicCompatibleParams({
 });
 
 export const LobeAnthropicAI = createAnthropicCompatibleRuntime(params);
-
-export default LobeAnthropicAI;

@@ -17,7 +17,7 @@ import {
 
 const n = setNamespace('userMemory/activity');
 
-export interface ActivityQueryParams extends Partial<ActivityListParams> {
+interface ActivityQueryParams extends Partial<ActivityListParams> {
   page?: number;
 }
 
@@ -49,7 +49,7 @@ export const createActivitySlice = (set: Setter, get: () => UserMemoryStore, _ap
  * The user-memory activity list: one `MemoryQueryList` (shared with the other
  * offset-paged memory lists) behind the slice's long-standing action names.
  */
-export class ActivityActionImpl {
+class ActivityActionImpl {
   readonly #list: MemoryQueryList<ActivityListParams, ActivityListItem, ActivityListData>;
 
   constructor(set: Setter, get: () => UserMemoryStore, _api?: unknown) {

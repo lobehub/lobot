@@ -1,6 +1,6 @@
 import type { ChatContextContent, ContextSelection, PageSelection } from '@lobechat/types';
 
-export interface MessageContextSelections {
+interface MessageContextSelections {
   contextSelections: ContextSelection[];
   pageSelections: PageSelection[];
 }

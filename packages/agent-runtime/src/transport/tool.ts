@@ -40,27 +40,6 @@ export interface ToolRunResult {
   workRegistration?: WorkRegistrationIntent;
 }
 
-export interface ToolForwardingRequest {
-  data: Pick<ChatToolPayload, 'apiName' | 'identifier'> & { args: Record<string, unknown> };
-  metadata: {
-    /**
-     * The eval attempt this call belongs to. One attempt is one case run (or
-     * one pass@k thread of it) including every sub-agent it forks, so a mock
-     * keys its session on this, not on `operationId`, which changes per
-     * sub-agent.
-     */
-    attemptId?: string;
-    caseId?: string;
-    callIndex: number;
-    operationId: string;
-    stepIndex: number;
-  };
-  type: 'toolCall';
-}
-
-export type ToolForwardingResponse =
-  { data: ToolRunResult; success: true } | { error?: unknown; success: false };
-
 /**
  * A Work version ready to persist: the executor pairs the tool's registration
  * intent with provenance and the cumulative usage/cost snapshot as of that

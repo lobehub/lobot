@@ -26,7 +26,7 @@ const styles = stylex.create({
  * The environment list while it loads: the bordered list frame with the same
  * 4px inset and 72px rows (`EnvironmentItem`, 2px apart) the loaded list uses.
  */
-export const EnvironmentListSkeleton = () => (
+const EnvironmentListSkeleton = () => (
   <Flexbox {...stylex.props(styles.listCol)}>
     <Flexbox padding={4}>
       <ListSkeleton />

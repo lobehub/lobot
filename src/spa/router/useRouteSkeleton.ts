@@ -4,7 +4,7 @@ import { useMatches } from 'react-router';
 
 import { getRouteMetaFromHandle, type RouteSkeletonProps } from './routeMeta';
 
-export const resolveRouteSkeleton = (
+const resolveRouteSkeleton = (
   matches: Array<{ handle?: unknown }>,
 ): ComponentType<RouteSkeletonProps> | undefined => {
   for (let i = matches.length - 1; i >= 0; i -= 1) {

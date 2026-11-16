@@ -1,7 +1,7 @@
 import { messageStateSelectors, useConversationStore } from '../store';
 import { type ConversationChatInputUiState, getConversationChatInputUiState } from './utils';
 
-export interface UseConversationChatInputUiStateParams {
+interface UseConversationChatInputUiStateParams {
   /**
    * When true, the placeholder never flips to the followUp variant — used by
    * surfaces (e.g. onboarding) that have no follow-up / pending-message design.

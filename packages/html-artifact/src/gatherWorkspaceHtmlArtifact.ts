@@ -22,7 +22,7 @@ import {
   workspaceHtmlArtifactIdentifierForFile,
 } from './workspaceHtmlPath';
 
-export interface GatheredWorkspaceHtmlArtifact {
+interface GatheredWorkspaceHtmlArtifact {
   blocked?: 'too-large' | 'too-many';
   entryPath: string;
   escaped: EscapedResourceRef[];
@@ -37,17 +37,17 @@ export interface GatheredWorkspaceHtmlArtifact {
   unsupported: string[];
 }
 
-export interface EscapedResourceRef {
+interface EscapedResourceRef {
   absolutePath: string;
   hrefs: string[];
 }
 
-export interface GatheredWorkspaceHtmlResource extends EscapedResourceRef {
+interface GatheredWorkspaceHtmlResource extends EscapedResourceRef {
   contentType?: string;
   text?: string;
 }
 
-export const READ_CONCURRENCY = 5;
+const READ_CONCURRENCY = 5;
 
 const isWalkableAssetPath = (absolutePath: string): boolean =>
   isCssAssetPath(absolutePath) || isJsAssetPath(absolutePath);

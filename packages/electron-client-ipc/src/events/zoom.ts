@@ -1,4 +1,4 @@
-export interface ZoomChangedPayload {
+interface ZoomChangedPayload {
   factor: number;
   level: number;
 }

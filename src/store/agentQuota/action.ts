@@ -38,7 +38,7 @@ import {
   toPersistedQuotaPanel,
 } from './projection';
 
-export type Action = Pick<ActionImpl, keyof ActionImpl>;
+type Action = Pick<ActionImpl, keyof ActionImpl>;
 export type Store = State & Action;
 
 type Setter = StoreSetter<Store>;
@@ -48,7 +48,7 @@ type Setter = StoreSetter<Store>;
  * and readings. A read inside this window answers from the replica instead of
  * sending another request; writes and explicit refreshes pass `fresh`.
  */
-export const QUOTA_READ_DEDUPE_MS = 10_000;
+const QUOTA_READ_DEDUPE_MS = 10_000;
 
 type QuotaResourceName = 'accounts' | 'bindings' | 'deviceAccount' | 'history' | 'readings';
 
@@ -82,7 +82,7 @@ const upsertBinding = (bindings: QuotaBinding[], row: QuotaBinding) =>
  * the last snapshot every quota panel rendered. All of it paints from the
  * local replica on a reload and converges on the server in the background.
  */
-export class ActionImpl {
+class ActionImpl {
   readonly #get: () => Store;
   readonly #set: Setter;
   readonly #accounts;

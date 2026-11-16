@@ -14,7 +14,7 @@ const n = setNamespace('discover/user');
  * returned (`isLoading` / `mutate`) so a call site only has to move its `data`
  * read to `userSelectors.userProfile(fetchHook.queryKey)`.
  */
-export interface UserProfileSyncResult extends ReplicaSyncResult {
+interface UserProfileSyncResult extends ReplicaSyncResult {
   /** A request is in flight and this entry has no value to show yet. */
   isLoading: boolean;
   /** Alias of `revalidate`. */
@@ -28,7 +28,7 @@ type Setter = StoreSetter<DiscoverStore>;
 export const createUserSlice = (set: Setter, get: () => DiscoverStore, _api?: unknown) =>
   new UserActionImpl(set, get, _api);
 
-export class UserActionImpl {
+class UserActionImpl {
   readonly #get: () => DiscoverStore;
   readonly #profile;
 

@@ -14,7 +14,7 @@ import type { RouteAttemptContext, RouterRuntimeDeps } from './routeSelection';
 
 const log = debug('lobe-model-runtime:router-runtime');
 
-export interface PreparedRouteAttempt {
+interface PreparedRouteAttempt {
   apiType: ApiType;
   attempt: RouteAttemptStart;
   channelId?: string;

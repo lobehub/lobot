@@ -112,13 +112,13 @@ const styles = stylex.create({
   },
 });
 
-export interface LocalFileTagData {
+interface LocalFileTagData {
   isDirectory?: boolean;
   name: string;
   path: string;
 }
 
-export interface LocalFileTagProps {
+interface LocalFileTagProps {
   className?: string;
   editor?: LexicalEditor;
   file: LocalFileTagData;

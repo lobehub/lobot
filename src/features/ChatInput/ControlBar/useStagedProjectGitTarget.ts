@@ -5,7 +5,7 @@ import { useElectronStore } from '@/store/electron';
 import { useStagedProjectDirectory } from './useProjectTopicDirectory';
 import { useRepoType } from './useRepoType';
 
-export interface StagedProjectGitTarget {
+interface StagedProjectGitTarget {
   /** Undefined for this desktop, which probes its own filesystem over IPC. */
   deviceId?: string;
   isGithub: boolean;

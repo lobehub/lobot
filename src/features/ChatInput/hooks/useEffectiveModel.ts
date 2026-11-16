@@ -29,7 +29,7 @@ interface ModelAndProvider {
  * decide whether such a leaf mounts at all) triggers the load; the by-id fetch
  * dedupes across callers and with `useFetchActiveTopicDetail`.
  */
-export const useTopicModel = (): ModelAndProvider | undefined => {
+const useTopicModel = (): ModelAndProvider | undefined => {
   const topicId = useTopicId();
 
   const topicModel = useChatStore((s) =>

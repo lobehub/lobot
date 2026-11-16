@@ -27,7 +27,7 @@ export const INSERT_REFER_DOCUMENT_COMMAND = createCommand<{ documentId: string;
 
 type IEditorKernel = ReturnType<typeof getKernelFromEditor>;
 
-export interface ReferDocumentPluginOptions {
+interface ReferDocumentPluginOptions {
   decorator: (node: ReferDocumentNode, editor: LexicalEditor) => any;
   theme?: { referDocument?: string };
 }

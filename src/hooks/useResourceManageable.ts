@@ -26,7 +26,7 @@ export const useResourceManageable = (creatorUserId?: string | null): boolean =>
  * evaluate multiple rows under a single hook call (e.g. table columns, list
  * item menus built in a loop).
  */
-export const useResourceManageableChecker = (): ((creatorUserId?: string | null) => boolean) => {
+const useResourceManageableChecker = (): ((creatorUserId?: string | null) => boolean) => {
   const currentUserId = useUserStore(userProfileSelectors.userId);
   const isOwner = useIsWorkspaceOwner();
 

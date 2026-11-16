@@ -33,7 +33,7 @@ const LABEL_KEY = {
   memory: 'devices.health.memory',
 } as const satisfies Record<LoadHintMetric, string>;
 
-export interface DeviceLoad {
+interface DeviceLoad {
   hint: LoadHint;
   /** Every reading on one line, e.g. "CPU 4% · Memory 29% · Load 12%". */
   summary: string;

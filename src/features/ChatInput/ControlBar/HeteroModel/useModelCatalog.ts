@@ -34,7 +34,7 @@ interface UseHeterogeneousAgentModelCatalogParams {
   type: ListHeterogeneousAgentModelsParams['type'];
 }
 
-export interface ModelCatalogResult {
+interface ModelCatalogResult {
   data: HeterogeneousAgentModelCatalogSuccess | undefined;
   /** A failed discovery; `name` is the catalog error code. */
   error: Error | undefined;

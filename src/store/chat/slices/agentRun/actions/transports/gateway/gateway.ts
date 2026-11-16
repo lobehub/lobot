@@ -62,6 +62,7 @@ import { isTrpcErrorCode } from '@/utils/trpcError';
 import { buildRunLifecycle } from '../../lifecycle/buildRunLifecycle';
 import { scheduleQueuedFollowUp } from '../../lifecycle/queuedFollowUp';
 import type { RunScope } from '../../lifecycle/types';
+import { getGatewayClientId } from './clientId';
 import {
   buildExecAppContext,
   resolveDesktopDeviceHints,
@@ -85,7 +86,6 @@ import { gatewayRunOperationMetadata, isLocalStopNotice } from './runOperationMe
 import { isCompletedRuntimeEnd } from './runtimeEndReason';
 import * as serverSteerQueue from './serverSteerQueue';
 import { watchSubAgentRun, type WatchSubAgentRunParams } from './watchSubAgentRun';
-import { getGatewayClientId } from './clientId';
 
 const getGatewayServerConfig = () =>
   (typeof window !== 'undefined'
@@ -113,7 +113,7 @@ export interface GatewayConnection {
   supersede?: () => void;
 }
 
-export interface ConnectGatewayParams {
+interface ConnectGatewayParams {
   /**
    * Present on the agent-share visitor surface. Routes the `auth_expired`
    * token refresh through `shareChat.refreshGatewayToken` — the owner-scoped

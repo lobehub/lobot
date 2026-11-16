@@ -55,8 +55,3 @@ export const getFileLoader = async (
   if (!loaderFactory) return TextLoader;
   return loaderFactory();
 };
-
-// For backward compatibility - but prefer using getFileLoader for lazy loading
-// This is kept to avoid breaking existing imports, but it will trigger immediate loading
-// of all loaders. Consider migrating to getFileLoader.
-export { lazyFileLoaders as fileLoaderFactories };

@@ -10,14 +10,14 @@ import { useAiInfraStore } from '@/store/aiInfra';
 import { aiProviderSelectors } from '@/store/aiInfra/selectors';
 import type { AiProviderSourceType } from '@/types/aiProvider';
 
-export interface ProviderBindingCompatibleProvider {
+interface ProviderBindingCompatibleProvider {
   id: string;
   logo?: string;
   name?: string;
   source?: AiProviderSourceType;
 }
 
-export interface ProviderBindingCompatibleModel {
+interface ProviderBindingCompatibleModel {
   displayName?: string;
   id: string;
   providerId: string;

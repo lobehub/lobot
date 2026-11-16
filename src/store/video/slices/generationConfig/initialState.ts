@@ -10,8 +10,8 @@ import {
 
 import type { VideoImageInputMode, VideoImageInputs } from './imageInputMode';
 
-export const DEFAULT_AI_VIDEO_PROVIDER = ModelProvider.LobeHub;
-export const DEFAULT_AI_VIDEO_MODEL = 'dreamina-seedance-2-0-260128';
+const DEFAULT_AI_VIDEO_PROVIDER = ModelProvider.LobeHub;
+const DEFAULT_AI_VIDEO_MODEL = 'dreamina-seedance-2-0-260128';
 
 const seedance20Params: VideoModelParamsSchema = {
   aspectRatio: {
@@ -75,7 +75,7 @@ export interface VideoGenerationConfigState {
   isInit: boolean;
 }
 
-export const DEFAULT_VIDEO_GENERATION_PARAMETERS: RuntimeVideoGenParams =
+const DEFAULT_VIDEO_GENERATION_PARAMETERS: RuntimeVideoGenParams =
   extractVideoDefaultValues(seedance20Params);
 
 export const initialGenerationConfigState: VideoGenerationConfigState = {

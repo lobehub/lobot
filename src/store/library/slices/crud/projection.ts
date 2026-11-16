@@ -16,7 +16,7 @@ export type KnowledgeBaseVisibility = 'private' | 'public';
  */
 export const KNOWLEDGE_BASE_LIST_ALL_KEY = 'all';
 
-export interface KnowledgeBaseListParams {
+interface KnowledgeBaseListParams {
   visibility?: KnowledgeBaseVisibility;
 }
 

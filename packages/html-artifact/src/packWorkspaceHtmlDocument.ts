@@ -17,14 +17,14 @@ import { resolveLocalResourceHref, toWorkspaceRelativePath } from './workspaceHt
 
 const SITE_ROOT = '/__workspace_html_site__';
 
-export interface PackedWorkspaceHtmlSite {
+interface PackedWorkspaceHtmlSite {
   html: string;
   inlinedPaths: string[];
   sidecars: WorkspaceHtmlArtifactFile[];
   unresolvedHrefs: string[];
 }
 
-export const normalizePath = (path: string) => path.replaceAll('\\', '/').replace(/^\/+/u, '');
+const normalizePath = (path: string) => path.replaceAll('\\', '/').replace(/^\/+/u, '');
 
 export const hostedPath = (path: string) => `/${normalizePath(path)}`;
 
@@ -62,7 +62,7 @@ const isCssFile = (file: WorkspaceHtmlArtifactFile) =>
 const isJsFile = (file: WorkspaceHtmlArtifactFile) =>
   file.contentType.includes('javascript') || isJsAssetPath(file.path);
 
-export const replaceHrefToken = (source: string, href: string, replacement: string): string => {
+const replaceHrefToken = (source: string, href: string, replacement: string): string => {
   const escaped = escapeRegExp(href);
 
   return source

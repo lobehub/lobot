@@ -1,6 +1,6 @@
 import type { ItemType } from '@lobehub/ui';
 
-export interface AgentGroupTransferToMemberMeta {
+interface AgentGroupTransferToMemberMeta {
   avatar?: string | null;
   backgroundColor?: string | null;
   title?: string | null;

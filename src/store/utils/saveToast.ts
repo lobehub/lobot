@@ -3,7 +3,7 @@ import { t } from 'i18next';
 
 import { normalizeAsyncError } from '@/libs/swr/normalizeError';
 
-export interface SaveToastOptions {
+interface SaveToastOptions {
   /**
    * Suppress the server-supplied cause. Only for failures whose raw message is
    * an implementation detail the user can do nothing with.

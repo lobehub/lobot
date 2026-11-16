@@ -4,13 +4,13 @@ import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { processMultiProviderModelList } from '../../utils/modelParse';
 
-export interface CometAPIModelCard {
+interface CometAPIModelCard {
   id: string;
   object: string;
   owned_by: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://api.cometapi.com/v1',
   chatCompletion: {
     handlePayload: (payload) => {

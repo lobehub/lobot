@@ -18,7 +18,7 @@ const logger = createLogger('fileSearch:macOS');
  * substring match, so "Foo Bar" matches both `Bar_Foo.pdf` and `Foo Bar.pdf`
  * — instead of requiring the literal phrase "Foo Bar" to appear.
  */
-export const buildFilenameKeywordExpression = (keywords: string): string => {
+const buildFilenameKeywordExpression = (keywords: string): string => {
   const tokens = keywords
     .trim()
     .split(/\s+/)

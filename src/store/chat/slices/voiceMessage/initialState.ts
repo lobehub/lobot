@@ -1,6 +1,6 @@
 export type VoiceMessageUploadError = 'send' | 'unsupported' | 'upload';
 
-export type VoiceMessageUploadStatus = 'failed' | 'sending' | 'uploading';
+type VoiceMessageUploadStatus = 'failed' | 'sending' | 'uploading';
 
 export interface VoiceMessageUploadState {
   error?: VoiceMessageUploadError;

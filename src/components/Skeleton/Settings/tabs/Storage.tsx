@@ -49,7 +49,7 @@ const Body = () => {
 };
 
 /** Cloud's account-deletion group: one labelled row with a description and a danger button. */
-export const AccountDeletionSkeleton = () => {
+const AccountDeletionSkeleton = () => {
   const text = useSkeletonText('setting');
 
   return (

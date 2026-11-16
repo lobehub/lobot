@@ -45,7 +45,7 @@ export const snapshotAgentModel = (
   };
 };
 
-export type TopicReasoningSnapshot = Pick<
+type TopicReasoningSnapshot = Pick<
   ChatTopicMetadata,
   'heteroEffort' | 'heteroSpeed' | 'reasoningConfig'
 >;

@@ -10,7 +10,7 @@ export interface FileSearchResult {
   topChunks: FileSearchResultChunk[];
 }
 
-export interface DocumentSearchResult {
+interface DocumentSearchResult {
   documentId: string;
   fileId?: string;
   knowledgeBaseId: string;
@@ -19,7 +19,7 @@ export interface DocumentSearchResult {
   title: string;
 }
 
-export interface SearchResultErrors {
+interface SearchResultErrors {
   bm25?: string;
   vector?: string;
 }

@@ -5,7 +5,7 @@ import type { ResourceSorter } from '@/types/resource';
 import type { LibraryTreeSnapshot } from './projection';
 import type { TreeDataState } from './types';
 
-export interface TreeInitialState extends TreeDataState {
+interface TreeInitialState extends TreeDataState {
   epoch: number;
   errors: Record<string, unknown>;
   expanded: Record<string, boolean>;

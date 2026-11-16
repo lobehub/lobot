@@ -43,7 +43,7 @@ export const imageToBase64 = ({
   return canvas.toDataURL(type);
 };
 
-export interface ImageUrlToBase64Options {
+interface ImageUrlToBase64Options {
   /** Abort the download once the response exceeds this many bytes. */
   maxBytes?: number;
 }

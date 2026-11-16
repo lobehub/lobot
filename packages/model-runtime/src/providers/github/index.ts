@@ -6,7 +6,7 @@ import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { AgentRuntimeErrorType } from '../../types/error';
 import { processMultiProviderModelList } from '../../utils/modelParse';
 
-export interface GithubModelCard {
+interface GithubModelCard {
   capabilities: string[];
   html_url: string;
   id: string;
@@ -25,7 +25,7 @@ export interface GithubModelCard {
   version: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://models.github.ai/inference',
   chatCompletion: {
     handlePayload: (payload) => {

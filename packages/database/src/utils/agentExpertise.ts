@@ -1,4 +1,4 @@
-import { and, count, countDistinct, eq, inArray, isNull, not, notInArray, or } from 'drizzle-orm';
+import { and, count, eq, inArray, isNull, not, notInArray, or } from 'drizzle-orm';
 
 import { expertiseBindings, expertiseDomains } from '../schemas';
 import type { LobeChatDatabase, Transaction } from '../type';
@@ -84,21 +84,4 @@ export const rehomeAgentExpertiseForRecipient = async (
         );
     }
   }
-};
-
-/**
- * Read-only companion for the transfer manifest: how many domains the handover
- * above will re-home or unbind. Must stay predicate-identical to it.
- */
-export const countAgentExpertiseAffected = async (
-  db: Db,
-  params: AgentExpertiseHandoverParams,
-): Promise<number> => {
-  if (params.agentIds.length === 0) return 0;
-  const [row] = await db
-    .select({ value: countDistinct(expertiseDomains.id) })
-    .from(expertiseBindings)
-    .innerJoin(expertiseDomains, eq(expertiseDomains.id, expertiseBindings.domainId))
-    .where(inaccessibleBoundDomains(params));
-  return row.value;
 };

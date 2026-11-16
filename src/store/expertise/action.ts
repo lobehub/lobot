@@ -47,7 +47,7 @@ const withoutKey = (map: Record<string, true>, key: string): Record<string, true
   return next;
 };
 
-export class ExpertiseActionImpl {
+class ExpertiseActionImpl {
   readonly #domain;
   readonly #get: () => ExpertiseState;
   readonly #historyCount;

@@ -26,12 +26,7 @@ import {
   projectTopicsResource,
 } from './projection';
 
-export type {
-  DirectoryTopic,
-  ProjectDirectory,
-  ProjectEnvironment,
-  ProjectTopic,
-} from './projection';
+export type { ProjectDirectory } from './projection';
 
 /** Poll cadence for the project topic list while a conversation is in flight. */
 export const PROJECT_TOPICS_POLL_INTERVAL = 5000;
@@ -47,7 +42,7 @@ const hasInFlightTopic = (topics: ProjectTopic[] | undefined) =>
  * What a `useFetch*` hook reports. It never carries rows — read them with the
  * matching `use*` selector, which is the only place the data lives.
  */
-export interface ProjectListSyncResult extends ReplicaSyncResult {
+interface ProjectListSyncResult extends ReplicaSyncResult {
   /**
    * The rows have materialized (persisted replica or network). `isValidating`
    * cannot tell a re-fetch from a first load, but surfaces that gate on "there
@@ -57,7 +52,7 @@ export interface ProjectListSyncResult extends ReplicaSyncResult {
   hasData: boolean;
 }
 
-export interface ProjectDirectoryStoreState {
+interface ProjectDirectoryStoreState {
   /** Directory rows by project (`all` = every project of the scope). */
   directoriesMap: Record<string, ProjectDirectory[]>;
   /** Replica bookkeeping for `directoriesMap`. */
@@ -129,7 +124,7 @@ interface ProjectDirectoryStore extends ProjectDirectoryStoreState {
   useFetchProjectTopics: (projectId?: string) => ProjectListSyncResult;
 }
 
-export const initialProjectDirectoryState: ProjectDirectoryStoreState = {
+const initialProjectDirectoryState: ProjectDirectoryStoreState = {
   directoriesMap: {},
   directoriesReplica: createReplicaState(),
   directoryTopicsMap: {},
@@ -359,20 +354,11 @@ export const useProjectDirectoryStore: UseBoundStoreWithEqualityFn<
   };
 }, shallow);
 
-const EMPTY_DIRECTORY_TOPICS: DirectoryTopic[] = [];
 const EMPTY_DIRECTORIES: ProjectDirectory[] = [];
-const EMPTY_ENVIRONMENTS: ProjectEnvironment[] = [];
-const EMPTY_PROJECT_TOPICS: ProjectTopic[] = [];
 
 /** Stable-identity empty lists: an absent entry and an empty one read the same. */
 const rowsOf = <T>(map: Record<string, T[]>, key: string | undefined, empty: T[]): T[] =>
   (key ? map[key] : undefined) ?? empty;
-
-/** Conversations of one project. */
-export const useProjectTopics = (projectId?: string) =>
-  useProjectDirectoryStore((state) =>
-    rowsOf(state.projectTopicsMap, projectId, EMPTY_PROJECT_TOPICS),
-  );
 
 /** Directories of one project, or every directory of the scope. */
 export const useProjectDirectories = (projectId?: string) =>
@@ -400,21 +386,3 @@ export const findProjectDirectory = (id: string): ProjectDirectory | undefined =
     .reduce((newest, key) => (freshness(key) > freshness(newest) ? key : newest));
   return directoriesMap[newestKey].find((row) => row.id === id);
 };
-
-/** Environments of one project, or every environment of the scope. */
-export const useProjectEnvironments = (projectId?: string) =>
-  useProjectDirectoryStore((state) =>
-    rowsOf(state.environmentsMap, projectId ?? ALL_PROJECTS_KEY, EMPTY_ENVIRONMENTS),
-  );
-
-/** Conversations bound to one directory. */
-export const useDirectoryTopics = (directoryId?: string) =>
-  useProjectDirectoryStore((state) =>
-    rowsOf(state.directoryTopicsMap, directoryId, EMPTY_DIRECTORY_TOPICS),
-  );
-
-/** Conversations bound to any of these directories. */
-export const useEnvironmentTopics = (directoryIds: string[]) =>
-  useProjectDirectoryStore((state) =>
-    rowsOf(state.environmentTopicsMap, directoryIdsKey(directoryIds), EMPTY_DIRECTORY_TOPICS),
-  );

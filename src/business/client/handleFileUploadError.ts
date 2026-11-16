@@ -1,9 +1,9 @@
-export interface FileUploadErrorDetails {
+interface FileUploadErrorDetails {
   code?: string;
   description: string;
 }
 
-export interface HandleFileUploadErrorOptions {
+interface HandleFileUploadErrorOptions {
   onUploadBlocked?: (details: FileUploadErrorDetails) => void;
 }
 

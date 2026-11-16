@@ -138,4 +138,3 @@ export const MessageActionBar = memo<MessageActionBarProps>(({ ctx, bar, leading
 MessageActionBar.displayName = 'MessageActionBar';
 
 export type { MessageActionContext, MessageActionSlot } from './types';
-export { DIVIDER_KEY } from './types';

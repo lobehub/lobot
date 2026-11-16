@@ -17,7 +17,7 @@ const SYSTEM_ROLE_CONTEXT_PREVIEW_LENGTH = 10_000;
 /**
  * Official tool item for Agent Builder context
  */
-export interface OfficialToolItem {
+interface OfficialToolItem {
   /** Tool description */
   description?: string;
   /** Whether the tool is enabled for current agent */
@@ -61,7 +61,7 @@ export interface AgentBuilderContext {
   officialTools?: OfficialToolItem[];
 }
 
-export interface AgentBuilderContextInjectorConfig {
+interface AgentBuilderContextInjectorConfig {
   /** Agent context to inject */
   agentContext?: AgentBuilderContext;
   /** Whether Agent Builder is enabled */

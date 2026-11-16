@@ -1,8 +1,6 @@
-export const MAC_WINDOW_FULLSCREEN_DATASET_KEY = 'windowFullscreen';
+const MAC_WINDOW_FULLSCREEN_DATASET_KEY = 'windowFullscreen';
 
-export const MAC_WINDOW_FULLSCREEN_SELECTOR = 'html.desktop[data-window-fullscreen]';
-
-export const MAC_PANEL_BG_VAR = '--mac-panel-bg';
+const MAC_PANEL_BG_VAR = '--mac-panel-bg';
 
 export const MAC_VIBRANCY_BACKGROUND = `var(${MAC_PANEL_BG_VAR}, transparent)`;
 

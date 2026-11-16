@@ -2,7 +2,7 @@
  * Tool categories the search modules consult when picking the best available
  * binary on the host.
  */
-export type ToolCategory = 'content-search' | 'file-search';
+type ToolCategory = 'content-search' | 'file-search';
 
 /**
  * Minimal contract the search modules need from a tool detector. Desktop

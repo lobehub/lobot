@@ -10,7 +10,7 @@ import type { RouteSkeletonProps } from '@/spa/router/routeMeta';
 
 import SkeletonBar from './Bar';
 
-export type SurfaceSkeletonVariant = 'detail' | 'editor' | 'form' | 'grid' | 'list';
+type SurfaceSkeletonVariant = 'detail' | 'editor' | 'form' | 'grid' | 'list';
 
 interface SurfaceSkeletonProps {
   header?: boolean;

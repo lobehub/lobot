@@ -3,7 +3,7 @@ import { ModelProvider } from 'model-bank';
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { processMultiProviderModelList } from '../../utils/modelParse';
 
-export interface InfiniAIModelCard {
+interface InfiniAIModelCard {
   id: string;
 }
 

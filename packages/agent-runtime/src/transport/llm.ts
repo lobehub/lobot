@@ -13,7 +13,7 @@ import type { AgentEvent, AgentState, CallLLMPayload } from '../types';
 import type { ClassifiedLLMError } from '../utils';
 import type { ContextBuildOutput } from './context';
 
-export interface LLMStreamPayload {
+interface LLMStreamPayload {
   [key: string]: unknown;
   messages: OpenAIChatMessage[] | CallLLMPayload['messages'];
   model: string;
@@ -26,24 +26,23 @@ export interface LLMStreamPayload {
  * Aggregated result for lightweight stream consumers such as context
  * compression. Full `call_llm` execution uses {@link LLMAttemptOutput}.
  */
-export interface LLMStreamResult {
+interface LLMStreamResult {
   [key: string]: unknown;
   content: string;
   reasoning?: string;
   usage?: ModelUsage;
 }
 
-export interface LLMStreamHandlers {
+interface LLMStreamHandlers {
   onChunk?: (chunk: unknown) => void;
   onError?: (error: unknown) => void;
   onFinish?: (result: LLMStreamResult) => void;
   onText?: (text: string) => void;
 }
 
-export type LLMAttemptContentPart =
-  { image: string; type: 'image' } | { text: string; type: 'text' };
+type LLMAttemptContentPart = { image: string; type: 'image' } | { text: string; type: 'text' };
 
-export interface LLMAttemptOutput {
+interface LLMAttemptOutput {
   answerSalvagedFromReasoning: boolean;
   content: string;
   contentParts: LLMAttemptContentPart[];
@@ -73,7 +72,7 @@ export interface LLMAttemptOutput {
   usageEstimated?: boolean;
 }
 
-export interface LLMAttemptInput {
+interface LLMAttemptInput {
   /** Assistant message this attempt streams into. */
   assistantMessageId?: string;
   attempt: number;
@@ -86,10 +85,10 @@ export interface LLMAttemptInput {
   state: AgentState;
 }
 
-export type LLMAttemptExecution =
+type LLMAttemptExecution =
   { error: unknown; ok: false; output: LLMAttemptOutput } | { ok: true; output: LLMAttemptOutput };
 
-export interface LLMCallErrorInput {
+interface LLMCallErrorInput {
   error: unknown;
   events: AgentEvent[];
   interrupted: boolean;
@@ -97,14 +96,14 @@ export interface LLMCallErrorInput {
   retryBudget?: number;
 }
 
-export interface LLMRetryInput {
+interface LLMRetryInput {
   attempt: number;
   delayMs: number;
   error: ClassifiedLLMError;
   maxAttempts: number;
 }
 
-export interface LLMRetryPolicy {
+interface LLMRetryPolicy {
   classifyError: (error: unknown) => ClassifiedLLMError;
   maxAttempts: (provider: string) => number;
   onError?: (input: LLMCallErrorInput) => Promise<void> | void;
@@ -113,7 +112,7 @@ export interface LLMRetryPolicy {
   waitForRetry?: (delayMs: number) => Promise<void>;
 }
 
-export interface LLMTraceInput {
+interface LLMTraceInput {
   assistantMessageId: string;
   /** The built context this call sends, so a trace can record what the request really carries. */
   context?: ContextBuildOutput;
@@ -123,7 +122,7 @@ export interface LLMTraceInput {
 }
 
 /** Narrow tracing scope shared by all attempts in one package-owned call. */
-export interface LLMTrace {
+interface LLMTrace {
   close: (error?: unknown) => Promise<void> | void;
   onFirstChunk: () => void;
   recordResult?: (output: LLMAttemptOutput) => Promise<void> | void;

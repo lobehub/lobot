@@ -29,7 +29,7 @@ const providerNames: Record<SocialProvider, string> = {
   twitter: 'X (Twitter)',
 };
 
-export const SocialConnectButton = memo<SocialConnectButtonProps>(
+const SocialConnectButton = memo<SocialConnectButtonProps>(
   ({ provider, profile, isConnecting, isDisconnecting, disabled, onConnect, onDisconnect }) => {
     const { t } = useTranslation('marketAuth');
     const ProviderIcon = providerIcons[provider];

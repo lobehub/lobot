@@ -18,7 +18,7 @@ interface UseCollapsibleOptions {
  * The clamp is capped by the viewport, not just the caller's limit: on a short
  * window a 280px preview is most of the screen.
  */
-export const computeThreshold = (limit: number) => {
+const computeThreshold = (limit: number) => {
   if (typeof window === 'undefined') return limit;
   return Math.min(limit, Math.round(window.innerHeight * VIEWPORT_RATIO));
 };

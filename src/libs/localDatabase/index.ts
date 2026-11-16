@@ -3,7 +3,6 @@ import type { LocalDatabaseAdapter, LocalDatabaseBatchOperation } from './types'
 
 export type {
   LocalDatabaseAdapter,
-  LocalDatabaseBatchOperation,
   LocalDatabaseCollectionInfo,
   LocalDatabaseEntry,
 } from './types';

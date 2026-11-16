@@ -33,7 +33,7 @@ const decodeBase64Header = (base64: string): Uint8Array | undefined => {
   }
 };
 
-export const inferMimeTypeFromBytes = async (
+const inferMimeTypeFromBytes = async (
   input: ArrayBuffer | Uint8Array,
 ): Promise<string | undefined> => {
   const fileType = await fileTypeFromBuffer(getBytes(input));
@@ -41,29 +41,19 @@ export const inferMimeTypeFromBytes = async (
   return normalizeDetectedMimeType(fileType?.mime);
 };
 
-export const inferImageMimeTypeFromBytes = async (
+const inferImageMimeTypeFromBytes = async (
   input: ArrayBuffer | Uint8Array,
 ): Promise<string | undefined> => {
   return normalizeDetectedImageMimeType(await inferMimeTypeFromBytes(input));
 };
 
-export const inferImageMimeTypeFromBase64 = async (base64: string | null | undefined) => {
+const inferImageMimeTypeFromBase64 = async (base64: string | null | undefined) => {
   if (!base64) return undefined;
 
   const bytes = decodeBase64Header(base64);
   if (!bytes) return undefined;
 
   return await inferImageMimeTypeFromBytes(bytes);
-};
-
-export const resolveImageMimeTypeFromBytes = async (
-  declaredMimeType: string | null | undefined,
-  input: ArrayBuffer | Uint8Array,
-): Promise<string | undefined> => {
-  return (
-    (await inferImageMimeTypeFromBytes(input)) ??
-    normalizeDetectedImageMimeType(declaredMimeType ?? undefined)
-  );
 };
 
 export const resolveImageMimeTypeFromBase64 = async (

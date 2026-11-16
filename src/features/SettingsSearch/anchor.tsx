@@ -5,7 +5,7 @@ import * as stylex from '@stylexjs/stylex';
 import { memo, type PropsWithChildren, useEffect } from 'react';
 import { useLocation } from 'react-router';
 
-export const SETTINGS_ANCHOR_ATTR = 'data-settings-anchor';
+const SETTINGS_ANCHOR_ATTR = 'data-settings-anchor';
 /**
  * Marks the row container to flash-highlight for anchors inside non-antd rows
  * (e.g. a settings InsetRow) — the highlight lookup falls back to this attribute
@@ -74,7 +74,7 @@ SettingsSearchAnchor.displayName = 'SettingsSearchAnchor';
  * Returns a cancel function that stops the poll (the highlight timer is left
  * to finish — removing a CSS class on a detached node is harmless).
  */
-export const scrollToSettingsAnchor = (anchor: string) => {
+const scrollToSettingsAnchor = (anchor: string) => {
   const startAt = Date.now();
   let timer: ReturnType<typeof setTimeout> | undefined;
 

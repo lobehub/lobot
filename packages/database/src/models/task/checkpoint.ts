@@ -2,7 +2,7 @@ import type { CheckpointConfig, CheckpointTaskRef, TaskItem } from '@lobechat/ty
 import { isRecord } from '@lobechat/utils/object';
 
 /** Old writers can leave stale pairs behind when replacing only the label list. */
-export const checkpointTaskPairsMatch = (
+const checkpointTaskPairsMatch = (
   ids: readonly string[] | undefined,
   pairs: readonly CheckpointTaskRef[] | undefined,
 ): boolean => {

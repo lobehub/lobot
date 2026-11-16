@@ -4,8 +4,6 @@ import type { LobeDefaultAiModelListItem } from 'model-bank';
 
 import { ModelItemRender, TAG_CLASSNAME } from '@/components/ModelSelect';
 
-export const MODEL_PICKER_STYLE = { minWidth: 200, width: 'initial' } as const;
-
 /** Closed trigger next to the composer send button — hug the label, cap growth. */
 export const COMPACT_MODEL_PICKER_STYLE = { maxWidth: 160, minWidth: 0, width: 'auto' } as const;
 

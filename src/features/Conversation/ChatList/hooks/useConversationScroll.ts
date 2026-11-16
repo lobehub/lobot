@@ -431,7 +431,7 @@ const useScrollShrink = ({
 // - Retries are layout-driven: each `spacerLayoutVersion` bump re-fires
 //   `scrollToIndex` once. The old 0/32/96ms timer fan-out is gone.
 // ---------------------------------------------------------------------------
-export interface UseConversationScrollOptions {
+interface UseConversationScrollOptions {
   /**
    * Conversation identity. The hook instance survives in-place topic switches
    * (the provider is not keyed by context), so a change here means the whole
@@ -451,7 +451,7 @@ export interface UseConversationScrollOptions {
   virtuaRef: RefObject<VListHandle | null>;
 }
 
-export interface UseConversationScrollResult {
+interface UseConversationScrollResult {
   /**
    * True while the user is actively dragging the spacer shorter via scroll-up.
    * Consumers can use this to disable the spacer's height transition so it

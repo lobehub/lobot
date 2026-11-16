@@ -6,6 +6,6 @@ import type { AIChatModelCard } from '../types/aiModel';
 // here.
 const magpieChatModels: AIChatModelCard[] = [];
 
-export const allModels = [...magpieChatModels];
+const allModels = [...magpieChatModels];
 
 export default allModels;

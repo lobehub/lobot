@@ -1,4 +1,4 @@
-export type MoveTopicToTargetResult = 'moved' | 'target-not-saved' | 'topic-not-saved';
+type MoveTopicToTargetResult = 'moved' | 'target-not-saved' | 'topic-not-saved';
 
 interface MoveTopicToTargetParams {
   /** Runs once the topic is re-pinned, e.g. giving a sandboxed run a directory. */

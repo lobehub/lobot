@@ -30,7 +30,7 @@ import { messageMapKey } from '../../../utils/messageMapKey';
 /**
  * Get the current chat key for accessing dbMessagesMap
  */
-export const currentDbChatKey = (s: ChatStoreState) =>
+const currentDbChatKey = (s: ChatStoreState) =>
   messageMapKey({
     agentId: s.activeAgentId,
     groupId: s.activeGroupId,
@@ -176,9 +176,7 @@ const inboxActiveTopicDbMessages = (state: ChatStoreState) => {
  * @param messages - Array of chat messages to scan
  * @returns Deduplicated array of activated tool identifiers, or undefined if none
  */
-export const selectActivatedToolIdsFromMessages = (
-  messages: UIChatMessage[],
-): string[] | undefined => {
+const selectActivatedToolIdsFromMessages = (messages: UIChatMessage[]): string[] | undefined => {
   const ids = new Set<string>();
 
   for (const msg of messages) {
@@ -212,7 +210,7 @@ export const selectActivatedToolIdsFromMessages = (
  * @param messages - Array of chat messages to scan
  * @returns Array of activated skills, or undefined if none
  */
-export const selectActivatedSkillsFromMessages = (
+const selectActivatedSkillsFromMessages = (
   messages: UIChatMessage[],
 ): StepActivatedSkill[] | undefined => extractActivatedSkillsFromMessages(messages);
 

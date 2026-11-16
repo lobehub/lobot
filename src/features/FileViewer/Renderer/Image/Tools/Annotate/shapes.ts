@@ -13,7 +13,7 @@ export interface BrushShape extends ShapeStyle {
   type: 'brush';
 }
 
-export interface RectShape extends ShapeStyle {
+interface RectShape extends ShapeStyle {
   rect: NormalizedRect;
   type: 'rect';
 }

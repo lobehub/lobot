@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { TAG_MARGIN_INLINE_END } from '../constants';
 
-export interface ReferDocumentViewProps {
+interface ReferDocumentViewProps {
   title?: string;
 }
 
