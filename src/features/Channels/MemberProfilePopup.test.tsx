@@ -16,6 +16,10 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 vi.mock('./MemberAvatar', () => ({ MemberAvatar: () => null }));
+vi.mock('./PersonAction', () => ({
+  PersonAction: ({ userId }: { userId: string }) =>
+    createElement('div', { 'data-testid': 'person-action', 'data-user-id': userId }),
+}));
 vi.mock('@/components/Avatar', () => ({ default: () => null }));
 vi.mock('@/features/AgentProfileCard/AgentProfilePopup', () => ({
   default: ({ agentId, children }: { agentId: string; children: ReactNode }) =>
@@ -51,6 +55,18 @@ describe('PersonProfileCard', () => {
 
     expect(screen.getByText('Ann')).toBeTruthy();
     expect(screen.getByText('@ann')).toBeTruthy();
+  });
+
+  it('offers the action for the person behind the card', () => {
+    render(<PersonProfileCard member={person} />);
+
+    expect(screen.getByTestId('person-action').dataset.userId).toBe('user-ann');
+  });
+
+  it('offers no action for a deleted account', () => {
+    render(<PersonProfileCard member={{ ...person, userId: null }} />);
+
+    expect(screen.queryByTestId('person-action')).toBeNull();
   });
 
   it('leaves the handle out for a person without one', () => {
