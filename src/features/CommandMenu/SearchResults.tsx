@@ -1,6 +1,6 @@
 import { AGENT_CHAT_TOPIC_URL, GROUP_CHAT_TOPIC_URL, GROUP_CHAT_URL } from '@lobechat/const';
-import { agentDisplayName } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
+import { agentDisplayName } from '@lobot/types';
 import { Command } from 'cmdk';
 import dayjs from 'dayjs';
 import {
@@ -28,10 +28,6 @@ import { useCommandMenuContext } from '@/features/CommandMenu/CommandMenuContext
 import { docsFilePath, docsPagePath } from '@/features/ResourceHome/paths';
 import { libraryFolderPath, libraryItemPath } from '@/features/ResourceManager/utils/resourcePath';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
-import { useImageStore } from '@/store/image';
-import { generationTopicSelectors as imageGenerationTopicSelectors } from '@/store/image/slices/generationTopic/selectors';
-import { useVideoStore } from '@/store/video';
-import { generationTopicSelectors as videoGenerationTopicSelectors } from '@/store/video/slices/generationTopic/selectors';
 import { markdownToTxt } from '@/utils/markdownToTxt';
 
 import type { CommandMenuResultClick } from './analytics';
@@ -53,13 +49,6 @@ interface SearchResultsProps {
   typeFilter: ValidSearchType | undefined;
 }
 
-interface LocalGenerationTopicResult {
-  createdAt: Date;
-  id: string;
-  title: string;
-  updatedAt: Date;
-}
-
 /**
  * Search results from unified search index.
  */
@@ -77,15 +66,8 @@ const SearchResults = memo<SearchResultsProps>(
   }) => {
     const { t } = useTranslation('common');
     const { t: tChat } = useTranslation('chat');
-    const { t: tImage } = useTranslation('image');
-    const { t: tVideo } = useTranslation('video');
     const navigate = useWorkspaceAwareNavigate();
     const { menuContext } = useCommandMenuContext();
-    const imageTopics = useImageStore(imageGenerationTopicSelectors.generationTopics);
-    const activeImageTopicId = useImageStore((s) => s.activeGenerationTopicId);
-    const videoTopics = useVideoStore(videoGenerationTopicSelectors.generationTopics);
-    const activeVideoTopicId = useVideoStore((s) => s.activeGenerationTopicId);
-
     const handleNavigate = (result: FtsSearchResult, position: number) => {
       onResultClick({ position, resultType: result.type });
       switch (result.type) {
@@ -347,51 +329,7 @@ const SearchResults = memo<SearchResultsProps>(
       onSetTypeFilter(type);
     };
 
-    const localImageTopicResults: LocalGenerationTopicResult[] =
-      menuContext === 'painting'
-        ? (imageTopics || [])
-            .filter((topic) => {
-              const title = topic.title || tImage('topic.untitled');
-              return title.toLowerCase().includes(searchQuery.toLowerCase());
-            })
-            .sort((a, b) => {
-              if (a.id === activeImageTopicId) return -1;
-              if (b.id === activeImageTopicId) return 1;
-              return b.updatedAt.getTime() - a.updatedAt.getTime();
-            })
-            .slice(0, 8)
-            .map((topic) => ({
-              createdAt: topic.createdAt,
-              id: topic.id,
-              title: topic.title || tImage('topic.untitled'),
-              updatedAt: topic.updatedAt,
-            }))
-        : [];
-
-    const localVideoTopicResults: LocalGenerationTopicResult[] =
-      menuContext === 'video'
-        ? (videoTopics || [])
-            .filter((topic) => {
-              const title = topic.title || tVideo('topic.untitled');
-              return title.toLowerCase().includes(searchQuery.toLowerCase());
-            })
-            .sort((a, b) => {
-              if (a.id === activeVideoTopicId) return -1;
-              if (b.id === activeVideoTopicId) return 1;
-              return b.updatedAt.getTime() - a.updatedAt.getTime();
-            })
-            .slice(0, 8)
-            .map((topic) => ({
-              createdAt: topic.createdAt,
-              id: topic.id,
-              title: topic.title || tVideo('topic.untitled'),
-              updatedAt: topic.updatedAt,
-            }))
-        : [];
-
     const hasResults = results.length > 0;
-    const hasLocalTopicResults =
-      localImageTopicResults.length > 0 || localVideoTopicResults.length > 0;
 
     // Group results by type
     const messageResults = results.filter((r) => r.type === 'message');
@@ -407,26 +345,22 @@ const SearchResults = memo<SearchResultsProps>(
     const knowledgeBaseResults = results.filter((r) => r.type === 'knowledgeBase');
     const taskResults = results.filter((r) => r.type === 'task');
     const assistantResults = results.filter((r) => r.type === 'communityAgent');
-    const localResultCount = localImageTopicResults.length + localVideoTopicResults.length;
-    const visibleResultPositions = createVisibleResultPositionMap<FtsSearchResult>(
-      [
-        taskResults,
-        messageResults,
-        agentResults,
-        chatGroupResults,
-        topicResults,
-        pageResults,
-        memoryResults,
-        fileResults,
-        folderResults,
-        knowledgeBaseResults,
-        mcpResults,
-        pluginResults,
-        assistantResults,
-      ],
-      localResultCount,
-    );
-    const visibleResultCount = localResultCount + visibleResultPositions.size;
+    const visibleResultPositions = createVisibleResultPositionMap<FtsSearchResult>([
+      taskResults,
+      messageResults,
+      agentResults,
+      chatGroupResults,
+      topicResults,
+      pageResults,
+      memoryResults,
+      fileResults,
+      folderResults,
+      knowledgeBaseResults,
+      mcpResults,
+      pluginResults,
+      assistantResults,
+    ]);
+    const visibleResultCount = visibleResultPositions.size;
 
     useLayoutEffect(() => {
       onVisibleResultCountChange(visibleResultCount);
@@ -436,7 +370,7 @@ const SearchResults = memo<SearchResultsProps>(
     // unfiltered view, which always carries the permanent marketplace entries
     // below (the aggregate response is DB-only, so a query whose matches live
     // only in the marketplace would otherwise dead-end with no visible route).
-    if (!hasResults && !hasLocalTopicResults && !isLoading && typeFilter) {
+    if (!hasResults && !isLoading && typeFilter) {
       return null;
     }
 
@@ -517,85 +451,6 @@ const SearchResults = memo<SearchResultsProps>(
 
     return (
       <>
-        {localImageTopicResults.length > 0 && (
-          <Command.Group forceMount>
-            {localImageTopicResults.map((result, index) => {
-              const formattedDate = dayjs(result.updatedAt).format('MMM D, YYYY');
-              return (
-                <CommandItem
-                  forceMount
-                  description={formattedDate}
-                  icon={<MessageSquare size={16} />}
-                  key={`image-topic-${result.id}`}
-                  value={`local-image-topic ${result.id} ${result.title}`}
-                  variant="detailed"
-                  title={
-                    <>
-                      <span style={{ opacity: 0.5 }}>{t('tab.image')}</span>
-                      <ChevronRight
-                        size={14}
-                        style={{
-                          display: 'inline',
-                          marginInline: '6px',
-                          opacity: 0.5,
-                          verticalAlign: 'middle',
-                        }}
-                      />
-                      {result.title}
-                    </>
-                  }
-                  onSelect={() => {
-                    onResultClick({ position: index + 1, resultType: 'imageTopic' });
-                    navigate(`/image?topic=${result.id}`);
-                    onClose();
-                  }}
-                />
-              );
-            })}
-          </Command.Group>
-        )}
-
-        {localVideoTopicResults.length > 0 && (
-          <Command.Group forceMount>
-            {localVideoTopicResults.map((result, index) => {
-              const formattedDate = dayjs(result.updatedAt).format('MMM D, YYYY');
-              return (
-                <CommandItem
-                  forceMount
-                  description={formattedDate}
-                  icon={<MessageSquare size={16} />}
-                  key={`video-topic-${result.id}`}
-                  value={`local-video-topic ${result.id} ${result.title}`}
-                  variant="detailed"
-                  title={
-                    <>
-                      <span style={{ opacity: 0.5 }}>{t('tab.video')}</span>
-                      <ChevronRight
-                        size={14}
-                        style={{
-                          display: 'inline',
-                          marginInline: '6px',
-                          opacity: 0.5,
-                          verticalAlign: 'middle',
-                        }}
-                      />
-                      {result.title}
-                    </>
-                  }
-                  onSelect={() => {
-                    onResultClick({
-                      position: localImageTopicResults.length + index + 1,
-                      resultType: 'videoTopic',
-                    });
-                    navigate(`/video?topic=${result.id}`);
-                    onClose();
-                  }}
-                />
-              );
-            })}
-          </Command.Group>
-        )}
-
         {/* Render search results grouped by type without headers */}
         {taskResults.length > 0 && (
           <Command.Group forceMount>
@@ -691,7 +546,6 @@ const SearchResults = memo<SearchResultsProps>(
         {/* Marketplace typed-search entries as the no-result fallback; see
             shouldShowMarketplaceFallback for the rationale. */}
         {shouldShowMarketplaceFallback({
-          hasLocalTopicResults,
           hasResults,
           isLoading,
           typeFilter,

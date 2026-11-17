@@ -14,7 +14,6 @@ import { useEvalStore } from '@/store/eval';
 import { expertiseActions } from '@/store/expertise';
 import { useFileStore } from '@/store/file';
 import { useHomeStore } from '@/store/home';
-import { useImageStore } from '@/store/image';
 import { integrationActions } from '@/store/integration';
 import { useKnowledgeBaseStore } from '@/store/library';
 import { useMentionStore } from '@/store/mention';
@@ -31,7 +30,6 @@ import { useToolStore } from '@/store/tool';
 import { useUserStore } from '@/store/user';
 import { useUserMemoryStore } from '@/store/userMemory';
 import type { ResetableStore } from '@/store/utils/resetableStore';
-import { useVideoStore } from '@/store/video';
 import { workActions } from '@/store/work';
 
 interface ResetableStoreApi {
@@ -48,7 +46,6 @@ const resetableStores: ResetableStoreApi[] = [
   useEvalStore,
   useFileStore,
   useHomeStore,
-  useImageStore,
   useKnowledgeBaseStore,
   useMentionStore,
   useNotebookStore,
@@ -57,7 +54,6 @@ const resetableStores: ResetableStoreApi[] = [
   useToolStore,
   useUserMemoryStore,
   useUserStore,
-  useVideoStore,
 ];
 
 const resetableActions: ResetableStore[] = [

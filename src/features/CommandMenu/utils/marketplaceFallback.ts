@@ -1,5 +1,4 @@
 interface MarketplaceFallbackState {
-  hasLocalTopicResults: boolean;
   hasResults: boolean;
   isLoading: boolean;
   typeFilter: string | undefined;
@@ -13,9 +12,7 @@ interface MarketplaceFallbackState {
  * real matches or the loading skeleton.
  */
 export const shouldShowMarketplaceFallback = ({
-  hasLocalTopicResults,
   hasResults,
   isLoading,
   typeFilter,
-}: MarketplaceFallbackState): boolean =>
-  !typeFilter && !hasResults && !hasLocalTopicResults && !isLoading;
+}: MarketplaceFallbackState): boolean => !typeFilter && !hasResults && !isLoading;

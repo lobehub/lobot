@@ -17,8 +17,8 @@ import { fileChatSelectors, useFileStore } from '@/store/file';
 
 import { useImageStage } from '../context';
 import { buildDerivedFileName } from '../geometry';
-import { loadStageImage } from './AIEdit/deps';
 import { ImagePixelsUnavailableError, renderImageToBlob } from './exportImage';
+import { loadStageImage } from './fileDeps';
 import { buildMarkupMessage, type ImageMarkup, isMarkupEmpty } from './markup';
 
 /**

@@ -62,9 +62,9 @@ const location = vi.hoisted(() => ({
   addToKnowledgeBase: vi.fn(),
   getFile: vi.fn(),
 }));
-vi.mock('./AIEdit/deps', async (importOriginal) => {
-  const { aiEditDeps } = await importOriginal<{ aiEditDeps: object }>();
-  return { aiEditDeps: { ...aiEditDeps, ...location }, loadStageImage: exporter.loadStageImage };
+vi.mock('./fileDeps', async (importOriginal) => {
+  const { fileDeps } = await importOriginal<{ fileDeps: object }>();
+  return { fileDeps: { ...fileDeps, ...location }, loadStageImage: exporter.loadStageImage };
 });
 
 const toast = vi.hoisted(() => ({ error: vi.fn(), success: vi.fn() }));
@@ -625,7 +625,7 @@ describe('ImageEditTools', () => {
         within(toolbar).getByRole('button', { name: 'imageViewer.tool.resize' }),
       ).toBeInTheDocument();
       expect(within(toolbar).queryByText('imageViewer.tool.resize')).toBeNull();
-      expect(within(toolbar).getAllByRole('button')).toHaveLength(5);
+      expect(within(toolbar).getAllByRole('button')).toHaveLength(3);
     });
 
     // Regression: the comment list covered the image in the chat preview.

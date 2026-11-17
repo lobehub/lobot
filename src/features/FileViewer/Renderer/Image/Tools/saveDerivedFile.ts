@@ -1,6 +1,25 @@
-import type { AIEditDeps } from './AIEdit/runAIImageEdit';
-
-export type SaveDerivedFileDeps = Pick<AIEditDeps, 'addToKnowledgeBase' | 'getFile' | 'uploadFile'>;
+export interface SaveDerivedFileDeps {
+  /** File the result into the same library as the original. */
+  addToKnowledgeBase: (knowledgeBaseId: string, fileIds: string[]) => Promise<unknown>;
+  /** Read a file's location and metadata; never used to write. */
+  getFile: (id: string) => Promise<
+    | {
+        knowledgeBaseIds?: string[];
+        metadata?: Record<string, unknown> | null;
+        parentId?: string | null;
+        size?: number | null;
+        visibility?: 'private' | 'public' | null;
+      }
+    | null
+    | undefined
+  >;
+  uploadFile: (params: {
+    file: File;
+    metadata?: Record<string, unknown>;
+    parentId?: string;
+    visibility?: 'private' | 'public';
+  }) => Promise<{ id: string; url: string } | undefined>;
+}
 
 interface SaveDerivedFileParams {
   file: File;

@@ -204,28 +204,6 @@ export default {
     'Create Knowledge Bases and add files to build your own Knowledge Base.',
   'notSupportGuide.features.libraries.title': 'Knowledge Base',
   'notSupportGuide.title': 'The current deployment mode does not support file management',
-  'imageViewer.ai.brushSize': 'Brush size',
-  'imageViewer.ai.cancelled': 'Edit cancelled. The original image is unchanged.',
-  'imageViewer.ai.erase.empty': 'Paint over an area first',
-  'imageViewer.ai.erase.hint': 'Paint over what you want to erase',
-  'imageViewer.ai.erase.start': 'Erase',
-  'imageViewer.ai.error.failed': 'Edit failed. Hover for details. The original image is unchanged.',
-  'imageViewer.ai.error.lostTrack':
-    'Lost track of the edit. It may still be running in Image generation, where the result will appear.',
-  'imageViewer.ai.error.noModel':
-    'No image model that can edit images is enabled. Enable one under Settings → AI Service Provider.',
-  'imageViewer.ai.error.noResult': 'The model returned no image. Try again.',
-  'imageViewer.ai.error.timeout':
-    'Still running after 3 minutes. It keeps going in Image generation, where the result will appear.',
-  'imageViewer.ai.error.tooLarge':
-    'This image is larger than the selected model accepts. Resize it smaller, then try again.',
-  'imageViewer.ai.phase.generating': 'Generating… {{seconds}}s',
-  'imageViewer.ai.phase.saving': 'Saving as a new image…',
-  'imageViewer.ai.phase.uploading': 'Preparing…',
-  'imageViewer.ai.removeBackground.hint':
-    'AI removes the background and saves the result as a new image',
-  'imageViewer.ai.removeBackground.start': 'Remove background',
-  'imageViewer.ai.topicTitle': '{{operation}} · {{name}}',
   'imageViewer.tool.annotate': 'Annotate',
   'imageViewer.tool.erase': 'Erase',
   'imageViewer.tool.removeBackground': 'Remove background',
@@ -241,8 +219,6 @@ export default {
   'imageViewer.annotate.rect': 'Box',
   'imageViewer.annotate.size': 'Stroke width',
   'imageViewer.annotate.undo': 'Undo',
-  'imageViewer.ai.stoppedWaiting':
-    'Stopped waiting. The edit keeps running in Image generation, where the result will appear.',
   'imageViewer.markup.added': 'Added to the chat input. Review it, then send.',
   'imageViewer.markup.addToChat': 'Add to chat',
   'imageViewer.markup.area.bottom': 'bottom',

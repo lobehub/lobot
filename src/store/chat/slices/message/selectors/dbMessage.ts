@@ -1,17 +1,10 @@
-import {
-  extractActivatedSkillsFromMessages,
-  extractTodosFromMessages,
-} from '@lobechat/agent-runtime';
 import { LobeActivatorIdentifier } from '@lobechat/const/builtinTools';
-import {
-  type StepActivatedSkill,
-  type StepContextTodos,
-  type UIChatMessage,
-} from '@lobot/types';
+import { type StepActivatedSkill, type StepContextTodos, type UIChatMessage } from '@lobot/types';
 
 import { chatHelpers } from '../../../helpers';
 import { type ChatStoreState } from '../../../initialState';
 import { messageMapKey } from '../../../utils/messageMapKey';
+import { extractActivatedSkillsFromMessages, extractTodosFromMessages } from './messageExtractors';
 
 /**
  * DB Message Selectors

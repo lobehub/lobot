@@ -1,4 +1,3 @@
-import type { AgentState } from '@lobechat/agent-runtime';
 import type { ChatMessageError, ConversationContext, UIChatMessage } from '@lobot/types';
 
 import type { AgentRuntimeType } from '@/store/chat/slices/agentRun/actions/dispatch/agentDispatcher';
@@ -81,7 +80,15 @@ export interface RunCompleteEvent extends RunLifecycleEventBase {
    * reproduce the exact per-status completion branch. Optional — gateway/hetero
    * adapters that don't expose it rely on `status` instead.
    */
-  runtimeStatus?: AgentState['status'];
+  runtimeStatus?:
+    | 'idle'
+    | 'running'
+    | 'waiting_for_human'
+    | 'waiting_for_async_tool'
+    | 'waiting_for_client'
+    | 'done'
+    | 'error'
+    | 'interrupted';
   /**
    * Normalized cross-runtime terminal disposition. Optional: the client adapter
    * drives completion off {@link runtimeStatus}; gateway/hetero adapters supply
@@ -113,7 +120,7 @@ interface RunErrorEvent extends RunLifecycleEventBase {
  * decide where title / signal / queue-drain / notification / metadata effects run.
  *
  * NOT to be confused with the runtime-internal, bidirectional, BLOCKING hooks in
- * `@lobechat/agent-runtime` (`beforeStep` / `beforeToolCall` / `onComplete` …)
+ * the agent runtime (`beforeStep` / `beforeToolCall` / `onComplete` …)
  * that intercept execution and can mock/halt it. This layer is one-way and only
  * reacts to a run's lifecycle — the two must not be conflated.
  */

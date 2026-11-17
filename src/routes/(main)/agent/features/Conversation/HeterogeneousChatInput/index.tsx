@@ -1,9 +1,9 @@
 'use client';
 
 import { HETEROGENEOUS_TYPE_LABELS } from '@lobechat/heterogeneous-agents';
-import { isHeteroSelectorAvailable } from '@lobot/types';
 import { type ChatInputActionsProps } from '@lobehub/editor/react';
 import { Alert, Button, Flexbox } from '@lobehub/ui';
+import { isHeteroSelectorAvailable } from '@lobot/types';
 import { memo, type ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,7 +25,6 @@ import { useEffectiveAgencyConfig } from '@/hooks/useEffectiveAgencyConfig';
 import { useRemoteAgentDeviceGuard } from '@/hooks/useRemoteAgentDeviceGuard';
 import { useChatStore } from '@/store/chat';
 
-import ApiModeModelBar from './ApiModeModelBar';
 import HeteroPlus from './HeteroPlus';
 import ScheduledSendChip from './ScheduledSendChip';
 import { shouldShowHeteroModelSelector } from './shouldShowHeteroModelSelector';
@@ -138,7 +137,6 @@ const HeterogeneousChatInput = memo(() => {
       isDesktopClient: isDesktop,
       providerType,
     });
-  const showApiModeModel = !!agentId && isApiAuth && executionTarget === 'local';
   const apiModeTargetUnsupported = isApiAuth && executionTarget !== 'local';
   const validateProviderBinding =
     (apiConfigMissing || !!providerApiConfig) && executionTarget === 'local';
@@ -166,13 +164,8 @@ const HeterogeneousChatInput = memo(() => {
   // (left-aligned) action bar, so it sits right next to Send — it qualifies the
   // run the send button is about to commit.
   const sendAreaPrefix = useMemo(
-    () =>
-      showApiModeModel ? (
-        <ApiModeModelBar agentId={agentId} />
-      ) : showHeteroModel ? (
-        <HeteroModel />
-      ) : undefined,
-    [agentId, showApiModeModel, showHeteroModel],
+    () => (showHeteroModel ? <HeteroModel /> : undefined),
+    [showHeteroModel],
   );
 
   // A run goes to an `lh connect` device when its execution target resolves to a

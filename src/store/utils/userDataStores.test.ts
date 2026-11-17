@@ -30,7 +30,6 @@ vi.mock('@/store/eval', () => ({ useEvalStore: fakeStore() }));
 vi.mock('@/store/expertise', () => ({ expertiseActions: { reset: expertiseReset } }));
 vi.mock('@/store/file', () => ({ useFileStore: fakeStore() }));
 vi.mock('@/store/home', () => ({ useHomeStore: fakeStore() }));
-vi.mock('@/store/image', () => ({ useImageStore: fakeStore() }));
 vi.mock('@/store/library', () => ({ useKnowledgeBaseStore: fakeStore() }));
 vi.mock('@/store/mention', () => ({ useMentionStore: fakeStore() }));
 vi.mock('@/store/notebook', () => ({ useNotebookStore: fakeStore() }));
@@ -45,7 +44,6 @@ vi.mock('@/store/task', () => ({ useTaskStore: fakeStore() }));
 vi.mock('@/store/tool', () => ({ useToolStore: fakeStore() }));
 vi.mock('@/store/user', () => ({ useUserStore: fakeStore() }));
 vi.mock('@/store/userMemory', () => ({ useUserMemoryStore: fakeStore() }));
-vi.mock('@/store/video', () => ({ useVideoStore: fakeStore() }));
 vi.mock('@/store/work', () => ({ workActions: { reset: workReset } }));
 
 describe('stores.reset', () => {
@@ -68,7 +66,7 @@ describe('stores.reset', () => {
     stores.reset();
 
     expect(resetGatewayMuxRegistry).toHaveBeenCalledTimes(1);
-    expect(storeResets).toHaveLength(19);
+    expect(storeResets).toHaveLength(17);
     expect(pageReset).toHaveBeenCalledTimes(1);
     // The rule sheet and agent portraits must not leak into the next identity.
     expect(expertiseReset).toHaveBeenCalledTimes(1);

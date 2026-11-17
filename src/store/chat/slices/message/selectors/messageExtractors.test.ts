@@ -8,7 +8,7 @@ import {
   extractTodosFromMessages,
   findInMessages,
   normalizeTodosState,
-} from './messageSelectors';
+} from './messageExtractors';
 
 const createMessage = (overrides: Partial<UIChatMessage> = {}): UIChatMessage =>
   ({

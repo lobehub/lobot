@@ -11,8 +11,8 @@ import {
   DERIVED_FILE_SUFFIX,
   type DerivedImageOperation,
 } from '../geometry';
-import { aiEditDeps, loadStageImage } from './AIEdit/deps';
 import { ImagePixelsUnavailableError } from './exportImage';
+import { fileDeps, loadStageImage } from './fileDeps';
 import { saveDerivedFile } from './saveDerivedFile';
 
 /**
@@ -40,7 +40,7 @@ export const useSaveDerivedImage = (operation: DerivedImageOperation) => {
         const { refreshFileList } = useFileStore.getState();
         const source = fileManagerSelectors.getFileByChunkTargetId(fileId)(useFileStore.getState());
 
-        const result = await saveDerivedFile(aiEditDeps, {
+        const result = await saveDerivedFile(fileDeps, {
           file: new File([blob], fileName, { type: blob.type || 'image/png' }),
           metadata: buildDerivedFileMetadata(fileId, operation),
           parentId: source?.parentId,

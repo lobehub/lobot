@@ -1,15 +1,8 @@
 'use client';
 
 import { ActionIcon, Badge } from '@lobehub/ui';
-import {
-  CropIcon,
-  EraserIcon,
-  MessageSquarePlusIcon,
-  PencilLineIcon,
-  WandSparklesIcon,
-  XIcon,
-} from 'lucide-react';
-import { lazy, Suspense, useState } from 'react';
+import { CropIcon, MessageSquarePlusIcon, PencilLineIcon, XIcon } from 'lucide-react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { usePermission } from '@/hooks/usePermission';
@@ -24,14 +17,11 @@ import ResizeMode from './Resize';
 import SendToChatButton from './SendToChatButton';
 import { toolStyles as styles } from './styles';
 
-// AI editing pulls in the model and generation services; load it only when used.
-const AIEditMode = lazy(() => import('./AIEdit'));
-
-type ToolMode = 'annotate' | 'comment' | 'erase' | 'removeBackground' | 'resize';
+type ToolMode = 'annotate' | 'comment' | 'resize';
 
 /**
  * Editing tools for a persisted image file: the floating bottom toolbar and
- * the annotate / comment / remove background / erase / resize workflows it
+ * the annotate / comment / resize workflows it
  * opens. Mounted by hosts that show a real library file; each workflow
  * renders its own bar while active.
  *
@@ -43,8 +33,8 @@ const ImageEditTools = () => {
   const { t } = useTranslation('file');
   const { fitToScreen, markup, setMarkup } = useImageStage();
   const [mode, setMode] = useState<ToolMode | null>(null);
-  // Every workflow ends in a new upload (file or chat attachment) or an image
-  // generation, so members who cannot create content cannot start one.
+  // Every workflow ends in a new upload (file or chat attachment), so members who
+  // cannot create content cannot start one.
   const { allowed: canCreate, reason } = usePermission('create_content');
   const { comments } = markup;
 
@@ -63,12 +53,6 @@ const ImageEditTools = () => {
   const markupProps = { markup, onChange: setMarkup, onExit: exit, onSent: clearAfterSend };
   if (mode === 'annotate') return <AnnotateMode {...markupProps} />;
   if (mode === 'comment') return <CommentMode {...markupProps} />;
-  if (mode === 'removeBackground' || mode === 'erase')
-    return (
-      <Suspense fallback={null}>
-        <AIEditMode key={mode} operation={mode} onExit={exit} />
-      </Suspense>
-    );
   if (mode === 'resize') return <ResizeMode onExit={exit} />;
 
   const hasMarkup = !isMarkupEmpty(markup);
@@ -107,22 +91,6 @@ const ImageEditTools = () => {
             )
           }
           onClick={() => enter('comment')}
-        />
-        <BarButton
-          disabled={!canCreate}
-          icon={WandSparklesIcon}
-          label={t('imageViewer.tool.removeBackground')}
-          title={reason}
-          type={'text'}
-          onClick={() => enter('removeBackground')}
-        />
-        <BarButton
-          disabled={!canCreate}
-          icon={EraserIcon}
-          label={t('imageViewer.tool.erase')}
-          title={reason}
-          type={'text'}
-          onClick={() => enter('erase')}
         />
         <BarButton
           disabled={!canCreate}
