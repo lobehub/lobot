@@ -11,6 +11,7 @@ import { messagesUnreadCount } from '@/features/MessageList/conversations';
 import UserAvatar from '@/features/User/UserAvatar';
 import { useActiveLocation } from '@/hooks/useActiveLocation';
 import { channelSelectors, useChannelStore } from '@/store/channel';
+import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
 import { useHomeStore } from '@/store/home';
 import { homeAgentListSelectors } from '@/store/home/selectors';
 
@@ -32,6 +33,14 @@ const useMessagesUnread = (channelsEnabled: boolean) => {
   );
 };
 
+/** Contacts' badge counts the friend requests waiting in its Requests group. */
+const useContactRequestsCount = (channelsEnabled: boolean) => {
+  contactActions.useFetchRequests(channelsEnabled);
+  return useContactStore((s) =>
+    channelsEnabled ? contactSelectors.incomingRequests(s).length : 0,
+  );
+};
+
 /**
  * Telegram-style tab bar at the foot of the list column. It replaces the old
  * left icon rail, so the window is just the list column and the content.
@@ -42,6 +51,8 @@ const NavTabBar = memo(() => {
   const activeWorkspaceSlug = useActiveWorkspaceSlug();
   const channelsEnabled = useChannelsEnabled();
   const unread = useMessagesUnread(channelsEnabled);
+  const contactRequests = useContactRequestsCount(channelsEnabled);
+  const badges = { contacts: contactRequests, messages: unread };
 
   const activeTab = resolveRailTab(pathname, activeWorkspaceSlug);
 
@@ -60,7 +71,7 @@ const NavTabBar = memo(() => {
       {tabs.map((tab) => (
         <TabItem
           active={activeTab === tab.key}
-          badge={tab.key === 'messages' ? unread : undefined}
+          badge={badges[tab.key]}
           icon={tab.icon}
           key={tab.key}
           title={tab.title}
