@@ -1,8 +1,8 @@
 import type { ChannelDetail, ChannelPublicMember, ChannelPublicThread } from '@lobechat/types';
-import { ActionIcon, type DropdownItem, DropdownMenu, Icon } from '@lobehub/ui';
+import { type DropdownItem, DropdownMenu, Icon } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
-import { Check, MessagesCircle } from 'lucide-react';
+import { Check } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -36,28 +36,14 @@ const styles = stylex.create({
     color: cssVar.colorText,
     fontWeight: 500,
   },
+  // An empty span is inline by default, where width and height do nothing.
   dot: {
+    display: 'inline-block',
     flexShrink: 0,
     width: 8,
     height: 8,
     borderRadius: '50%',
     backgroundColor: cssVar.colorError,
-  },
-  trigger: {
-    position: 'relative',
-    display: 'inline-flex',
-  },
-  // Sits on the button's top-right corner without taking part in the header's layout.
-  triggerDot: {
-    pointerEvents: 'none',
-    position: 'absolute',
-    insetBlockStart: 2,
-    insetInlineEnd: 2,
-    width: 8,
-    height: 8,
-    borderRadius: '50%',
-    backgroundColor: cssVar.colorError,
-    boxShadow: `0 0 0 2px ${cssVar.colorBgLayout}`,
   },
 });
 
@@ -82,7 +68,7 @@ const useThreadItems = (
   detail: ChannelDetail,
   activeId: string | null,
   onOpen: (threadId: string) => void,
-): { items: DropdownItem[]; unread: number } => {
+): DropdownItem[] => {
   const { t } = useTranslation('channel');
   const unreadIds = useUnreadThreadIds(detail.threads);
   const listed = detail.threads
@@ -124,7 +110,7 @@ const useThreadItems = (
       },
     };
   });
-  return { items, unread: listed.filter(({ thread }) => isUnread(thread.id)).length };
+  return items;
 };
 
 /** Wraps the open thread's title so it switches to another thread of the Channel. */
@@ -139,37 +125,10 @@ export const ThreadSwitchMenu = ({
   onOpen: (threadId: string) => void;
   threadId: string;
 }) => {
-  const { items } = useThreadItems(detail, threadId, onOpen);
+  const items = useThreadItems(detail, threadId, onOpen);
   return (
     <DropdownMenu items={items} placement="bottomLeft">
       {children}
-    </DropdownMenu>
-  );
-};
-
-/**
- * The header's threads button: every thread of the Channel, one click from the feed. A red dot
- * on it says some thread other than the open one has replies the person has not seen.
- */
-export const ThreadsButton = ({
-  activeId,
-  detail,
-  onOpen,
-}: {
-  activeId: string | null;
-  detail: ChannelDetail;
-  onOpen: (threadId: string) => void;
-}) => {
-  const { t } = useTranslation('channel');
-  const { items, unread } = useThreadItems(detail, activeId, onOpen);
-  if (!items.length) return null;
-  const label = unread ? t('threadListUnread', { count: unread }) : t('threadList');
-  return (
-    <DropdownMenu items={items} placement="bottomRight">
-      <span {...stylex.props(styles.trigger)}>
-        <ActionIcon aria-label={label} icon={MessagesCircle} size="small" title={label} />
-        {unread > 0 && <span aria-hidden {...stylex.props(styles.triggerDot)} />}
-      </span>
     </DropdownMenu>
   );
 };

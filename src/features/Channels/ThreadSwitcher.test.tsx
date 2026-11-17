@@ -6,7 +6,7 @@ import { createElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { markThreadRead, useThreadReadStore } from './threadReads';
-import { threadOwner, ThreadsButton, ThreadSwitchMenu } from './ThreadSwitcher';
+import { threadOwner, ThreadSwitchMenu } from './ThreadSwitcher';
 
 vi.mock('./MemberAvatar', () => ({
   MemberAvatar: ({ member }: { member: { id: string } }) =>
@@ -14,7 +14,6 @@ vi.mock('./MemberAvatar', () => ({
 }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 vi.mock('@lobehub/ui', () => ({
-  ActionIcon: ({ title }: { title?: string }) => createElement('button', {}, title),
   Icon: () => createElement('i', { 'data-check': true }),
   // Renders the trigger and lists the menu flat so each item can be read and picked.
   DropdownMenu: ({ children, items }: { children?: unknown; items: any[] }) =>
@@ -155,29 +154,6 @@ describe('ThreadSwitchMenu', () => {
   });
 });
 
-describe('ThreadsButton', () => {
-  it('opens a thread from the header', () => {
-    const onOpen = vi.fn();
-    render(createElement(ThreadsButton, { activeId: null, detail, onOpen }));
-
-    expect(screen.getByText('threadList')).toBeTruthy();
-    fireEvent.click(screen.getByText('Fix the release flow'));
-    expect(onOpen).toHaveBeenCalledWith('thr_2');
-  });
-
-  it('stays out of a Channel without threads', () => {
-    render(
-      createElement(ThreadsButton, {
-        activeId: null,
-        detail: { messages: [], threads: [] } as never,
-        onOpen: vi.fn(),
-      }),
-    );
-
-    expect(screen.queryByText('threadList')).toBeNull();
-  });
-});
-
 describe('unread threads', () => {
   const replied = (iso: string) => ({ author: {}, content: '', createdAt: new Date(iso), id: iso });
   const withReplies = {
@@ -187,21 +163,25 @@ describe('unread threads', () => {
       { ...(detail as any).threads[1], lastReply: replied('2026-11-18T11:00:00Z') },
     ],
   } as never;
-
-  it('dots each thread with unseen replies and the header button', () => {
-    render(createElement(ThreadsButton, { activeId: null, detail: withReplies, onOpen: vi.fn() }));
-
-    expect(unreadRows()).toEqual(['Unify Channel members', 'Fix the release flow']);
-    expect(screen.getByText('threadListUnread')).toBeTruthy();
-  });
-
-  it('leaves the open thread and threads read up to their newest reply undotted', () => {
-    markThreadRead('thr_1', '2026-11-18T10:00:00Z');
+  const menu = (threadId: string) =>
     render(
-      createElement(ThreadsButton, { activeId: 'thr_2', detail: withReplies, onOpen: vi.fn() }),
+      createElement(
+        ThreadSwitchMenu,
+        { detail: withReplies, onOpen: vi.fn(), threadId },
+        createElement('span', {}, 'title'),
+      ),
     );
 
+  it('dots each other thread with unseen replies', () => {
+    menu('thr_2');
+
+    expect(unreadRows()).toEqual(['Unify Channel members']);
+  });
+
+  it('drops the dot once the newest reply is read', () => {
+    markThreadRead('thr_1', '2026-11-18T10:00:00Z');
+    menu('thr_2');
+
     expect(unreadRows()).toEqual([]);
-    expect(screen.getByText('threadList')).toBeTruthy();
   });
 });

@@ -158,6 +158,12 @@ export default {
   'openThread': 'Open thread',
   'openThreadPage': 'Open as page',
   /** Before "3 minutes ago" on a thread's line under its root message. */
+  'threadBrowser.count_one': '{{count}} thread',
+  'threadBrowser.count_other': '{{count}} threads',
+  'threadBrowser.empty': 'No matching threads',
+  'threadBrowser.matches_one': '{{count}} match',
+  'threadBrowser.matches_other': '{{count}} matches',
+  'threadBrowser.search': 'Search threads',
   'threadCard.lastReply': 'Last reply',
   'threadCard.replies_one': '{{count}} reply',
   'threadCard.replies_other': '{{count}} replies',

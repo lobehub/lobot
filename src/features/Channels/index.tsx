@@ -32,9 +32,9 @@ import { channelTitle } from './peerTitle';
 import { CHANNEL_ENTITY_PORTAL_SCOPE, PortalPanel } from './PortalPanel';
 import { type ReplyTopic, ReplyTopicPanel } from './ReplyTopicPanel';
 import { styles } from './styles';
+import { ThreadsButton } from './ThreadBrowser';
 import { ThreadPageActions, ThreadPageTitle } from './ThreadPageTitle';
 import { THREAD_FLOAT_BREAKPOINT, ThreadPanel } from './ThreadPanel';
-import { ThreadsButton } from './ThreadSwitcher';
 import { channelBrowserSessionId, usePortalPanelOpen } from './usePortalPanel';
 import { useThreadPanel } from './useThreadPanel';
 
