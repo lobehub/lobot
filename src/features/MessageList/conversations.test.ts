@@ -373,6 +373,20 @@ describe('messagesUnreadCount', () => {
       ...patch,
     }) as ChannelListItem;
 
+  it('counts only the unread @mentions of a muted conversation', () => {
+    const mutedAt = new Date('2026-11-15');
+    expect(
+      messagesUnreadCount(
+        [],
+        [
+          channel({ id: 'chn_quiet', mentionCount: 0, mutedAt, unreadCount: 7 }),
+          channel({ id: 'chn_called', mentionCount: 1, mutedAt, unreadCount: 4 }),
+          channel({ id: 'chn_loud', unreadCount: 2 }),
+        ],
+      ),
+    ).toBe(3);
+  });
+
   it('sums the list rows: topics without a direct Channel, direct, group and project Channels', () => {
     const items = [
       agent('agt_topics', '2026-10-01', { unreadCount: 2 }),

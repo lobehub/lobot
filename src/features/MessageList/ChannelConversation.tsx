@@ -60,6 +60,7 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
         contextMenuItems={menuItems(channel)}
         hideKey={channel.id}
         mentioned={mentioned}
+        muted={!!channel.mutedAt}
         preview={cleared ? undefined : channelPreview(channel)}
         previewThread={cleared ? undefined : channelPreviewThread(channel)}
         // Someone else's Agent looks like one's own otherwise; the tag says it is theirs.
@@ -91,6 +92,7 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
       contextMenuItems={menuItems(channel)}
       hideKey={channel.id}
       mentioned={mentioned}
+      muted={!!channel.mutedAt}
       preview={channelPreview(channel)}
       previewThread={channelPreviewThread(channel)}
       tag={project?.name}

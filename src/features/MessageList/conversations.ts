@@ -275,7 +275,7 @@ export const withoutHidden = (
 /**
  * The Messages tab badge: the sum of what the list rows show. A row that opens a direct Channel
  * counts that Channel's unread messages instead of its Agent's unread topics, and an archived
- * group Channel has no row.
+ * group Channel has no row. A muted Channel counts only its unread @mentions.
  */
 export const messagesUnreadCount = (
   items: Pick<SidebarAgentItem, 'id' | 'unreadCount'>[],
@@ -287,7 +287,8 @@ export const messagesUnreadCount = (
     const direct = !!channel.agentId && !channel.projectId;
     if (direct) directAgentIds.add(channel.agentId!);
     else if (channel.agentId || channel.status === 'archived') continue;
-    sum += channel.unreadCount ?? 0;
+    // A muted conversation adds only what @mentions the user, like WeChat.
+    sum += channel.mutedAt ? (channel.mentionCount ?? 0) : (channel.unreadCount ?? 0);
   }
   for (const item of items) {
     if (!directAgentIds.has(item.id)) sum += item.unreadCount ?? 0;

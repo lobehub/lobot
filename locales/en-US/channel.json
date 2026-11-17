@@ -158,6 +158,8 @@
   "moveToTrash": "Move channel to trash",
   "moveToTrashConfirm": "Move “{{title}}” to trash? Replies will stop. You can restore the channel and its history from Trash. Agents and files will be kept.",
   "moveToTrashSuccess": "Channel moved to trash",
+  "muteNotifications": "Mute notifications",
+  "muted": "Notifications muted",
   "nameOptional": "Channel name (optional)",
   "noDevices": "No device is connected. Connect one, then choose it here.",
   "notification.groupTitle": "{{name}} ({{channel}})",
@@ -315,6 +317,7 @@
   "unarchiveSuccess": "Channel unarchived",
   "unarchiveThread": "Unarchive thread",
   "unarchiveThreadSuccess": "Thread unarchived",
+  "unmuteNotifications": "Unmute notifications",
   "unnamedAgent": "Unnamed Agent",
   "unreadMentions": "Unread mentions: {{count}}"
 }

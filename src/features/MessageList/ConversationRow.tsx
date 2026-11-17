@@ -2,7 +2,7 @@
 
 import { type ContextMenuItem, ContextMenuTrigger, Flexbox, Icon } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
-import { EyeOffIcon } from 'lucide-react';
+import { BellOffIcon, EyeOffIcon } from 'lucide-react';
 import { type ComponentProps, memo, type MouseEvent, type ReactNode, type Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -42,6 +42,11 @@ interface ConversationRowProps {
    * WeChat's 有人@我, so the row stands out among plain unread ones.
    */
   mentioned?: boolean;
+  /**
+   * The person muted this conversation: unread messages show as a dot instead of a count, and a
+   * muted bell sits at the end of the preview line, like WeChat.
+   */
+  muted?: boolean;
   onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
   onMouseEnter?: () => void;
   preview?: string;
@@ -102,6 +107,7 @@ const ConversationRow = memo<ConversationRowProps>(
     contextMenuItems,
     hideKey,
     mentioned,
+    muted,
     onClick,
     onMouseEnter,
     preview,
@@ -138,9 +144,13 @@ const ConversationRow = memo<ConversationRowProps>(
       <>
         <span {...stylex.props(styles.avatar)}>
           {avatar}
-          {!!unread && unread > 0 && (
-            <span {...stylex.props(styles.unread)}>{unread > 99 ? '99+' : unread}</span>
-          )}
+          {!!unread &&
+            unread > 0 &&
+            (muted ? (
+              <span {...stylex.props(styles.unreadDot)} />
+            ) : (
+              <span {...stylex.props(styles.unread)}>{unread > 99 ? '99+' : unread}</span>
+            ))}
         </span>
         <Flexbox
           flex={1}
@@ -174,6 +184,11 @@ const ConversationRow = memo<ConversationRowProps>(
                         title: previewThread.title || t('thread'),
                       })
                     : preview}
+                </span>
+              )}
+              {muted && (
+                <span aria-label={t('muted')} role="img" {...stylex.props(styles.mutedIcon)}>
+                  <Icon icon={BellOffIcon} size={12} />
                 </span>
               )}
             </Flexbox>

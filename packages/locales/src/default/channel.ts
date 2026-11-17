@@ -278,6 +278,9 @@ export default {
   'events.membersJoined': '<members/> joined the channel',
   'events.youInvitedMembers': 'You invited <members/> to the channel',
   'events.invitedMembers': '{{inviter}} invited <members/> to the channel',
+  'muteNotifications': 'Mute notifications',
+  'muted': 'Notifications muted',
+  'mentionedYou': '[@me]',
   'moveToTrash': 'Move channel to trash',
   'moveToTrashConfirm':
     'Move “{{title}}” to trash? Replies will stop. You can restore the channel and its history from Trash. Agents and files will be kept.',
@@ -295,6 +298,7 @@ export default {
     'This channel is archived. Its history stays readable, but it takes no new messages.',
   'threadArchivedNotice':
     'This thread is archived. Its replies stay readable, but it takes no new messages.',
+  'unmuteNotifications': 'Unmute notifications',
   'unarchive': 'Unarchive channel',
   'unarchiveSuccess': 'Channel unarchived',
   'unarchiveThread': 'Unarchive thread',

@@ -46,6 +46,12 @@ export const styles = stylex.create({
     lineHeight: '16px',
     color: cssVar.colorError,
   },
+  /** The muted bell at the end of the preview line; as quiet as the timestamp. */
+  mutedIcon: {
+    flex: 'none',
+    marginInlineStart: 'auto',
+    color: cssVar.colorTextQuaternary,
+  },
   preview: {
     overflow: 'hidden',
     minWidth: 0,
@@ -126,6 +132,20 @@ export const styles = stylex.create({
     lineHeight: '13px',
     color: '#fff',
     textAlign: 'center',
+    backgroundColor: cssVar.colorError,
+  },
+  /** A muted conversation's unread messages: a dot instead of a count, like WeChat. */
+  unreadDot: {
+    pointerEvents: 'none',
+    position: 'absolute',
+    insetBlockStart: '-3px',
+    insetInlineEnd: '-3px',
+    width: '10px',
+    height: '10px',
+    borderWidth: '1.5px',
+    borderStyle: 'solid',
+    borderColor: cssVar.colorBgContainer,
+    borderRadius: '999px',
     backgroundColor: cssVar.colorError,
   },
 });

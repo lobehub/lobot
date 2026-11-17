@@ -1,7 +1,17 @@
 import type { ChannelListItem } from '@lobechat/types';
 import { CHANNEL_LIMITS } from '@lobechat/types';
 import { copyToClipboard, toast } from '@lobehub/ui';
-import { Archive, ArchiveRestore, Copy, PencilLine, Pin, PinOff, Trash } from 'lucide-react';
+import {
+  Archive,
+  ArchiveRestore,
+  Bell,
+  BellOff,
+  Copy,
+  PencilLine,
+  Pin,
+  PinOff,
+  Trash,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { openRenameModal } from '@/components/RenameModal';
@@ -13,8 +23,9 @@ import { useDeletePeerChat } from './useDeletePeerChat';
 import { useRemoveChannel } from './useRemoveChannel';
 
 /**
- * A Channel's menu wherever it is listed: pin, rename, copy id, archive, and move to the trash.
- * A conversation between two people is a private chat instead: pin, and delete it for me only.
+ * A Channel's menu wherever it is listed: pin, mute, rename, copy id, archive, and move to the
+ * trash. A conversation between two people is a private chat instead: pin, mute, and delete it
+ * for me only.
  */
 export const useChannelMenu = () => {
   const { t } = useTranslation('channel');
@@ -55,10 +66,28 @@ export const useChannelMenu = () => {
     onClick: () => void togglePin(channel),
   });
 
+  const toggleMute = async (channel: ChannelListItem) => {
+    try {
+      await channelActions.setMuted(channel.id, !channel.mutedAt);
+    } catch (error) {
+      console.error('Failed to mute Channel', error);
+      toast.error(t('actionFailed'));
+    }
+  };
+
+  // Each member mutes it for themselves; @mentions still notify.
+  const muteItem = (channel: ChannelListItem) => ({
+    icon: channel.mutedAt ? Bell : BellOff,
+    key: channel.mutedAt ? 'unmute' : 'mute',
+    label: t(channel.mutedAt ? 'unmuteNotifications' : 'muteNotifications'),
+    onClick: () => void toggleMute(channel),
+  });
+
   // Both people own the conversation, so renaming, archiving or trashing it would change it for
   // the other person too.
   const peerItems = (channel: ChannelListItem) => [
     pinItem(channel),
+    muteItem(channel),
     { type: 'divider' as const },
     {
       danger: true,
@@ -71,6 +100,7 @@ export const useChannelMenu = () => {
 
   const channelItems = (channel: ChannelListItem) => [
     pinItem(channel),
+    muteItem(channel),
     ...(channel.canDelete && channel.status !== 'archived'
       ? [{ icon: PencilLine, key: 'rename', label: t('rename'), onClick: () => rename(channel) }]
       : []),

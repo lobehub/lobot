@@ -77,7 +77,8 @@ export const diffChannelActivity = ({
       time(channel.lastMessage?.createdAt ?? channel.updatedAt) > (before?.lastAt ?? 0);
 
     if (mentioned) events.push({ channel, kind: 'mention' });
-    else if (newMessage && (level === 'all' || isDirect(channel)))
+    // A muted conversation still announces an @mention of the user, like WeChat.
+    else if (newMessage && !channel.mutedAt && (level === 'all' || isDirect(channel)))
       events.push({ channel, kind: 'message' });
   }
 
