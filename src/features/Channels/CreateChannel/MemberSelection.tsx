@@ -15,6 +15,7 @@ import { useDeviceList } from '@/store/device/useDeviceList';
 import type { ChannelAgentDraft } from './agentEnvironment';
 import type { PeopleSelection } from './PeopleOptions';
 import { PeopleOptions, SelectedPerson } from './PeopleOptions';
+import { PickerSection } from './PickerSection';
 import { pickerStyles as styles } from './pickerStyles';
 import { splitByPriority } from './projectAgentOrder';
 import { SelectedAgent } from './SelectedAgent';
@@ -30,12 +31,6 @@ const AgentLabel = ({ agent, fallback }: { agent?: ChannelAgentOption; fallback:
       </Tag>
     )}
   </Flexbox>
-);
-
-const SectionTitle = ({ children }: { children: string }) => (
-  <Text fontSize={12} type="secondary" weight={500} {...stylex.props(styles.section)}>
-    {children}
-  </Text>
 );
 
 const AgentOptionRow = ({
@@ -110,53 +105,65 @@ export const MemberSelection = ({
       onToggle={() => toggle(agent.id)}
     />
   );
+  const othersTitle =
+    people || (priority.length > 0 && others.length > 0)
+      ? t(priority.length ? 'otherAgents' : 'agents')
+      : undefined;
+  const otherRows = others.length ? (
+    others.map(renderAgent)
+  ) : priority.length ? null : people?.channelId ? (
+    <Text fontSize={12} type="secondary" {...stylex.props(styles.section)}>
+      {t(search.trim() ? 'invite.noAgentMatches' : 'invite.noAgents')}
+    </Text>
+  ) : (
+    <AgentSelectionEmpty search={!!search.trim()} variant="noAvailable" />
+  );
+  const agentGroups = (
+    <AsyncBoundary
+      data={agents}
+      error={options.error}
+      errorVariant={people ? 'inline' : 'block'}
+      isLoading={!agents && !options.error}
+      onRetry={options.retry}
+    >
+      {priority.length > 0 && (
+        <PickerSection title={t('projectAgents')}>{priority.map(renderAgent)}</PickerSection>
+      )}
+      {othersTitle ? (
+        <PickerSection title={othersTitle}>{otherRows}</PickerSection>
+      ) : (
+        <Flexbox gap={2}>{otherRows}</Flexbox>
+      )}
+    </AsyncBoundary>
+  );
   const devices = useDeviceList({ refreshInterval: 15_000 });
   const selectedCount = value.length + (people?.value.length ?? 0);
 
   return (
     <Flexbox gap={12}>
       <div {...stylex.props(styles.picker)}>
-        <Flexbox gap={8} {...stylex.props(styles.pane)}>
+        <Flexbox gap={8} {...stylex.props(styles.pane, styles.candidates)}>
           <SearchBar
             allowClear
             autoFocus
             placeholder={t(people ? 'invite.search' : 'searchAgents')}
             value={search}
-            variant="filled"
+            variant="outlined"
             onChange={(event) => setSearch(event.target.value)}
           />
-          <Flexbox gap={people || priority.length ? 8 : 0} {...stylex.props(styles.pane)}>
+          {/* Searching opens every folded group again, so no match hides behind a heading. */}
+          <Flexbox
+            gap={people || priority.length ? 8 : 0}
+            key={search.trim() ? 'search' : 'browse'}
+            {...stylex.props(styles.pane)}
+          >
             {people && <PeopleOptions people={people} search={search} />}
-            {people && !agents && <SectionTitle>{t('agents')}</SectionTitle>}
             {/* People load on their own, so an Agent-list failure must not take them down. */}
-            <AsyncBoundary
-              data={agents}
-              error={options.error}
-              errorVariant={people ? 'inline' : 'block'}
-              isLoading={!agents && !options.error}
-              onRetry={options.retry}
-            >
-              {priority.length > 0 && (
-                <Flexbox gap={2}>
-                  <SectionTitle>{t('projectAgents')}</SectionTitle>
-                  {priority.map(renderAgent)}
-                </Flexbox>
-              )}
-              <Flexbox gap={2}>
-                {(people || (priority.length > 0 && others.length > 0)) && (
-                  <SectionTitle>{t(priority.length ? 'otherAgents' : 'agents')}</SectionTitle>
-                )}
-                {others.length ? (
-                  others.map(renderAgent)
-                ) : priority.length ? null : people?.channelId ? (
-                  <Text fontSize={12} type="secondary" {...stylex.props(styles.section)}>
-                    {t(search.trim() ? 'invite.noAgentMatches' : 'invite.noAgents')}
-                  </Text>
-                ) : (
-                  <AgentSelectionEmpty search={!!search.trim()} variant="noAvailable" />
-                )}
-              </Flexbox>
-            </AsyncBoundary>
+            {people && !agents ? (
+              <PickerSection title={t('agents')}>{agentGroups}</PickerSection>
+            ) : (
+              agentGroups
+            )}
           </Flexbox>
         </Flexbox>
         <Flexbox gap={8} {...stylex.props(styles.pane, styles.selected)}>

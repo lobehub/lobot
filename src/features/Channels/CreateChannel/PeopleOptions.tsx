@@ -11,6 +11,7 @@ import Avatar from '@/components/Avatar';
 import type { ChannelPersonOption } from '@/services/channel';
 import { channelActions } from '@/store/channel';
 
+import { PickerSection } from './PickerSection';
 import { pickerStyles } from './pickerStyles';
 
 /** The server returns at most this many candidates; searching narrows the rest. */
@@ -49,10 +50,7 @@ export const PeopleOptions = ({ people, search }: { people: PeopleSelection; sea
     );
 
   return (
-    <Flexbox gap={2}>
-      <Text fontSize={12} type="secondary" weight={500} {...stylex.props(pickerStyles.section)}>
-        {t('invite.people')}
-      </Text>
+    <PickerSection title={t('invite.people')}>
       <AsyncBoundary
         data={data}
         error={error}
@@ -84,7 +82,7 @@ export const PeopleOptions = ({ people, search }: { people: PeopleSelection; sea
           </Text>
         )}
       </AsyncBoundary>
-    </Flexbox>
+    </PickerSection>
   );
 };
 
