@@ -3,7 +3,6 @@ import { createElement, type ReactNode } from 'react';
 import { SWRConfig } from 'swr';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useWorkspaceMembers } from '../hooks/useWorkspaceMembers';
 import { getBusinessTrpcHeaders } from '../trpc-headers';
 import {
   readLastWorkspaceId,
@@ -12,12 +11,11 @@ import {
   writeLastWorkspaceId,
 } from './store';
 
-const mocks = vi.hoisted(() => ({ list: vi.fn(), listMembers: vi.fn() }));
+const mocks = vi.hoisted(() => ({ list: vi.fn() }));
 
 vi.mock('@/libs/trpc/client', () => ({
   lambdaClient: {
     workspace: { list: { query: mocks.list } },
-    workspaceMember: { list: { query: mocks.listMembers } },
   },
 }));
 
@@ -39,7 +37,6 @@ describe('workspace store', () => {
       activeWorkspaceId: null,
       isWorkspaceAvailable: false,
       isWorkspaceLoading: true,
-      members: [],
       workspaces: [],
     });
   });
@@ -169,43 +166,5 @@ describe('workspace store', () => {
     writeLastWorkspaceId('user-1', null);
     expect(readLastWorkspaceId('user-1')).toBeNull();
     expect(readLastWorkspaceId('user-2')).toBe('ws-b');
-  });
-
-  describe('members', () => {
-    const member = (userId: string, fullName: string) => ({
-      role: 'member',
-      user: { avatar: null, email: null, fullName, username: null },
-      userId,
-    });
-
-    // Without the roster every agent in the Contacts list was grouped under "unknown author".
-    it('loads the active workspace members for whoever reads them', async () => {
-      mocks.listMembers.mockResolvedValue([member('user-1', 'Ann'), member('user-2', 'Bo')]);
-      useWorkspaceStore.setState({ activeWorkspaceId: 'ws-a' });
-
-      const { result } = renderHook(() => useWorkspaceMembers(), { wrapper });
-
-      await waitFor(() => expect(result.current).toHaveLength(2));
-      expect(result.current.map((m) => m.user?.fullName)).toEqual(['Ann', 'Bo']);
-      expect(mocks.listMembers).toHaveBeenCalledWith({ includeDeleted: false });
-    });
-
-    it('asks for no members in the personal space', () => {
-      const { result } = renderHook(() => useWorkspaceMembers(), { wrapper });
-
-      expect(result.current).toEqual([]);
-      expect(mocks.listMembers).not.toHaveBeenCalled();
-    });
-
-    it('drops the previous workspace members on a switch', () => {
-      useWorkspaceStore.setState({
-        activeWorkspaceId: 'ws-a',
-        members: [member('user-1', 'Ann')] as never,
-      });
-
-      act(() => useWorkspaceStore.getState().switchWorkspace('ws-b'));
-
-      expect(useWorkspaceStore.getState().members).toEqual([]);
-    });
   });
 });

@@ -19,11 +19,18 @@ export type WorkspaceMemberWithProfile = WorkspaceMemberItem & {
  * Members of the active workspace. Reading them also loads them, so a caller such as the
  * Contacts author column never shows "unknown author" just because nothing fetched the list.
  */
-export const useWorkspaceMembers = (): WorkspaceMemberWithProfile[] => {
-  useFetchWorkspaceMembers();
-  return useWorkspaceStore((s) => s.members);
-};
+export const useWorkspaceMembers = (): WorkspaceMemberWithProfile[] =>
+  useFetchWorkspaceMembers().data;
+
+/**
+ * Whether the active scope's roster is on screen. An author missing from it is unknown; one
+ * missing from a roster still on its way is only not loaded yet. The personal space has no
+ * roster to wait for.
+ */
+export const useWorkspaceMembersReady = (): boolean => !useFetchWorkspaceMembers().isLoading;
 
 /** Non-hook snapshot of the same list, for imperative callers such as tool executors. */
-export const getWorkspaceMembers = (): WorkspaceMemberWithProfile[] =>
-  useWorkspaceStore.getState().members;
+export const getWorkspaceMembers = (): WorkspaceMemberWithProfile[] => {
+  const { activeWorkspaceId, membersMap } = useWorkspaceStore.getState();
+  return (activeWorkspaceId && membersMap[activeWorkspaceId]) || [];
+};

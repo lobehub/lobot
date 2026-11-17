@@ -27,7 +27,10 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router';
 
 import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
-import { useWorkspaceMembers } from '@/business/client/hooks/useWorkspaceMembers';
+import {
+  useWorkspaceMembers,
+  useWorkspaceMembersReady,
+} from '@/business/client/hooks/useWorkspaceMembers';
 import {
   AgentViewAllRowsSkeleton,
   AgentViewAllSidebarSectionSkeleton,
@@ -307,6 +310,11 @@ const AgentViewAllPage = memo(() => {
         : viewOptions.groupBy;
   const orderBy =
     !showAuthor && viewOptions.orderBy === 'author' ? 'updatedAt' : viewOptions.orderBy;
+  // Author sections and the author sort are built from the roster; before it arrives every
+  // author would read "unknown author", so they wait for it like the list waits for its items.
+  const membersReady = useWorkspaceMembersReady();
+  const isAuthorPending =
+    showAuthor && !membersReady && (groupBy === 'author' || orderBy === 'author');
   const effectiveViewOptions = useMemo(
     () => ({ ...viewOptions, groupBy, orderBy }),
     [viewOptions, groupBy, orderBy],
@@ -611,7 +619,7 @@ const AgentViewAllPage = memo(() => {
             )}
           </Flexbox>
         </Flexbox>
-        {!isInit ? (
+        {!isInit || isAuthorPending ? (
           <AgentViewAllRowsSkeleton />
         ) : filteredItems.length === 0 ? (
           <Center flex={1} padding={40}>
