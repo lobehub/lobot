@@ -1,25 +1,19 @@
-import { CHANNEL_URL } from '@lobechat/const';
 import type { ContactUserProfile } from '@lobechat/types';
-import { Button, Popover, Skeleton, Text, toast } from '@lobehub/ui';
+import { Popover, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
-import { CheckIcon, MessageCircleIcon, UserRoundPlusIcon } from 'lucide-react';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import UserAvatar from '@/components/UserAvatar';
 import { personName } from '@/features/AddContactModal/result';
 import { PERSON_CONTACT_URL } from '@/features/ContactList/const';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
-import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
+import { channelSelectors, useChannelStore } from '@/store/channel';
 import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
 
 import { PersonCardFrame } from './MemberProfilePopup';
+import { ContactAction } from './PersonAction';
 
 const styles = stylex.create({
-  action: {
-    marginBlockStart: 10,
-  },
   row: {
     display: 'flex',
     alignItems: 'center',
@@ -67,97 +61,6 @@ export const useSharedAgentOwner = (
   return shared ? (contactOwner ?? shareOwner) : undefined;
 };
 
-/** What to do with the owner, by our relation: message a contact, or ask to become one. */
-const OwnerAction = ({ userId }: { userId: string }) => {
-  const { t } = useTranslation('common');
-  const navigate = useWorkspaceAwareNavigate();
-  contactActions.useFetchProfile(userId);
-  contactActions.useFetchRequests();
-  const relation = useContactStore((s) => contactSelectors.profile(userId)(s)?.relation);
-  const request = useContactStore((s) =>
-    contactSelectors.requests(s).find((item) => item.user.id === userId),
-  );
-  const [pending, setPending] = useState(false);
-
-  const run = async (action: () => Promise<unknown>) => {
-    setPending(true);
-    try {
-      await action();
-    } catch (error) {
-      console.error('[channel] Shared Agent owner action failed', error);
-      toast.error(t('contacts.actionFailed'));
-    } finally {
-      setPending(false);
-    }
-  };
-
-  if (!relation)
-    return <Skeleton height={24} radius={6} style={{ marginBlockStart: 10 }} width={'100%'} />;
-
-  switch (relation) {
-    case 'contact': {
-      return (
-        <Button
-          block
-          icon={MessageCircleIcon}
-          loading={pending}
-          size={'small'}
-          {...stylex.props(styles.action)}
-          onClick={() =>
-            run(async () => {
-              const channelId = await channelActions.openPeer(userId);
-              if (channelId) navigate(CHANNEL_URL(channelId));
-            })
-          }
-        >
-          {t('contacts.sendMessage')}
-        </Button>
-      );
-    }
-    case 'none': {
-      return (
-        <Button
-          block
-          icon={UserRoundPlusIcon}
-          loading={pending}
-          size={'small'}
-          type={'primary'}
-          {...stylex.props(styles.action)}
-          onClick={() => run(() => contactActions.sendRequest(userId))}
-        >
-          {t('contacts.person.request')}
-        </Button>
-      );
-    }
-    case 'request_sent': {
-      return (
-        <Button block disabled icon={CheckIcon} size={'small'} {...stylex.props(styles.action)}>
-          {t('contacts.person.requestSent')}
-        </Button>
-      );
-    }
-    case 'request_received': {
-      if (!request) return null;
-      return (
-        <Button
-          block
-          icon={CheckIcon}
-          loading={pending}
-          size={'small'}
-          type={'primary'}
-          {...stylex.props(styles.action)}
-          onClick={() => run(() => contactActions.acceptRequest(request))}
-        >
-          {t('contacts.person.accept')}
-        </Button>
-      );
-    }
-    default: {
-      return null;
-    }
-  }
-};
-
 /** The owner's hover card: who they are, and the one thing to do next. */
 export const SharedAgentOwnerCard = ({ owner }: { owner: ContactUserProfile }) => {
   const name = personName(owner);
@@ -173,7 +76,7 @@ export const SharedAgentOwnerCard = ({ owner }: { owner: ContactUserProfile }) =
           @{owner.username}
         </Text>
       )}
-      <OwnerAction userId={owner.id} />
+      <ContactAction userId={owner.id} />
     </PersonCardFrame>
   );
 };

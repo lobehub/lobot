@@ -10,6 +10,7 @@ import AgentProfilePopup from '@/features/AgentProfileCard/AgentProfilePopup';
 
 import { MemberAvatar } from './MemberAvatar';
 import { memberAvatar, memberName } from './memberName';
+import { PersonAction } from './PersonAction';
 
 // Same shape as the Agent profile card (`AgentProfileCard`), so hovering a person or an Agent
 // shows one kind of card: a blurred banner of the avatar, the avatar over its edge, then text.
@@ -84,7 +85,10 @@ export const PersonCardFrame = ({
   </Flexbox>
 );
 
-/** A person's card: who they are in the Channel. Agents keep their own profile card. */
+/**
+ * A person's card: who they are in the Channel, and a way to message them one-on-one. Agents keep
+ * their own profile card.
+ */
 export const PersonProfileCard = ({ member }: { member: ChannelPublicMember }) => {
   const { t, i18n } = useTranslation('channel');
   const name = memberName(member, t('deletedMember'));
@@ -114,6 +118,7 @@ export const PersonProfileCard = ({ member }: { member: ChannelPublicMember }) =
           {joined}
         </Text>
       )}
+      {member.userId && <PersonAction userId={member.userId} />}
     </PersonCardFrame>
   );
 };
