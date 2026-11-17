@@ -4,9 +4,10 @@ import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { ChevronRight, LoaderCircle } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import AgentAvatar from '@/components/AgentAvatar';
 import UserAvatar from '@/features/User/UserAvatar';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
@@ -14,8 +15,9 @@ import { userProfileSelectors } from '@/store/user/selectors';
 import { activityLabel } from './activityLabel';
 import { memberJobStatus, workingJob } from './jobStatus';
 import { MemberAvatar } from './MemberAvatar';
-import { authorAvatar, isCurrentUserAuthor, memberName } from './memberName';
+import { authorAvatar, isCurrentUserAuthor, memberAvatar, memberName } from './memberName';
 import { threadTitle } from './threadTitle';
+import { TypingDots } from './TypingDots';
 
 dayjs.extend(relativeTime);
 
@@ -170,12 +172,21 @@ export const ThreadPreviewCard = ({
       {job ? (
         // The reply on its way is newer than the last one posted, so it takes that place.
         <span role="status" {...stylex.props(styles.note, styles.working)}>
-          <Icon spin icon={LoaderCircle} size={12} />
+          {/* Who is replying, then the same typing dots as everywhere else an Agent works. */}
+          <AgentAvatar
+            agentId={worker?.agentId}
+            avatar={memberAvatar(worker)}
+            name={workerName}
+            shape={'circle'}
+            size={16}
+            title={workerName}
+          />
           <span {...stylex.props(styles.noteText)}>
             {activityLabel(
               t('activity.one', { name: workerName, status: t(memberJobStatus(job)) }),
             )}
           </span>
+          <TypingDots />
         </span>
       ) : (
         lastReply && (
