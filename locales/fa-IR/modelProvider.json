@@ -44,7 +44,6 @@
   "bedrock.title": "Bedrock",
   "bedrock.unlock.customRegion": "منطقه سرویس سفارشی",
   "bedrock.unlock.customSessionToken": "توکن نشست سفارشی",
-  "bedrock.unlock.description": "برای شروع نشست، شناسه کلید دسترسی و کلید مخفی AWS خود را وارد کنید. برنامه اطلاعات احراز هویت شما را ذخیره نخواهد کرد",
   "bedrock.unlock.imageGenerationDescription": "برای شروع تولید تصویر، شناسه کلید دسترسی و کلید مخفی AWS خود را وارد کنید. برنامه اطلاعات احراز هویت شما را ذخیره نخواهد کرد.",
   "bedrock.unlock.title": "استفاده از اطلاعات احراز هویت سفارشی Bedrock",
   "cloudflare.apiKey.desc": "لطفاً کلید API Cloudflare را وارد کنید",

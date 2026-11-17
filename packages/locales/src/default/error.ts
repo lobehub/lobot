@@ -302,7 +302,6 @@ export default {
   'unlock.comfyui.modifyBaseUrl': 'Edit ComfyUI service URL',
   'unlock.comfyui.title': 'Verify your {{name}} credentials',
   'unlock.confirm': 'Confirm and Retry',
-  'unlock.goToSettings': 'Go to Settings',
   'unlock.oauth.description':
     'The administrator has enabled unified sign-in authentication. Click the button below to sign in and unlock the application.',
   'unlock.oauth.success': 'Sign-in successful',

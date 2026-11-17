@@ -169,7 +169,6 @@
   "unlock.comfyui.modifyBaseUrl": "ویرایش آدرس سرویس ComfyUI",
   "unlock.comfyui.title": "اعتبارسنجی اطلاعات {{name}}",
   "unlock.confirm": "تأیید و تلاش مجدد",
-  "unlock.goToSettings": "رفتن به تنظیمات",
   "unlock.oauth.description": "مدیر سیستم احراز هویت یکپارچه را فعال کرده است. برای ورود و باز کردن برنامه، روی دکمه زیر کلیک کنید.",
   "unlock.oauth.success": "ورود موفقیت‌آمیز بود",
   "unlock.oauth.title": "وارد حساب خود شوید",

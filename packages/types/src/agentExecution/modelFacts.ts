@@ -1,4 +1,4 @@
-import type { AiModelReasoningConfig, ModelAbilities } from 'model-bank';
+import type { AiModelReasoningConfig, ModelAbilities } from '../modelBank';
 
 /** The subset of a model card the model-parameter rules read (bundled bank or user-enabled list). */
 export interface ModelCardFacts {

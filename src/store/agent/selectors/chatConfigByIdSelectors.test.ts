@@ -1,5 +1,5 @@
 import { DEFAULT_AGENT_CHAT_CONFIG, DEFAULT_AGENT_SEARCH_FC_MODEL } from '@lobechat/const';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { type AgentStoreState } from '@/store/agent/initialState';
 import { initialAgentSliceState } from '@/store/agent/slices/agent/initialState';
@@ -8,11 +8,6 @@ import { initialBuiltinAgentSliceState } from '@/store/agent/slices/builtin/init
 import { chatConfigByIdSelectors } from './chatConfigByIdSelectors';
 
 // Mock model runtime functions
-vi.mock('@lobechat/model-runtime', () => ({
-  isContextCachingModel: vi.fn((model) => model === 'claude-3-5-sonnet'),
-  isThinkingWithToolClaudeModel: vi.fn((model) => model === 'claude-3-7-sonnet'),
-}));
-
 // isDesktop defaults to false in test environment (no __ELECTRON__)
 
 const createState = (overrides: Partial<AgentStoreState> = {}): AgentStoreState => ({

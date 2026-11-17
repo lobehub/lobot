@@ -95,6 +95,15 @@ export * from './acceptanceComment';
 export * from './acceptanceFlow';
 export * from './acceptanceReview';
 export * from './agentRuntime';
+export type {
+  AiModelReasoningConfig,
+  AiModelSettings,
+  LookupPricingUnit,
+  ModelPriceCurrency,
+  Pricing,
+  PricingUnit,
+  PricingUnitName,
+} from './modelBank';
 export * from './oauthApp';
 export * from './openai/chat';
 export * from './openai/plugin';

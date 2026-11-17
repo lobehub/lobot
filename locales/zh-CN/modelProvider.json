@@ -44,7 +44,6 @@
   "bedrock.title": "Bedrock",
   "bedrock.unlock.customRegion": "自定义服务区域",
   "bedrock.unlock.customSessionToken": "自定义 Session Token",
-  "bedrock.unlock.description": "输入你的 Amazon Bedrock API 密钥或 AWS 凭证即可开始会话。应用不会记录你的鉴权配置",
   "bedrock.unlock.imageGenerationDescription": "输入你的 Amazon Bedrock API 密钥或 AWS 凭证即可开始生成。应用不会记录你的鉴权配置",
   "bedrock.unlock.title": "使用自定义 Bedrock 鉴权信息",
   "cloudflare.apiKey.desc": "请填写 Cloudflare API Key",

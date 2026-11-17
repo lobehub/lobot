@@ -7,7 +7,6 @@
   },
   "main": "./src/index.ts",
   "dependencies": {
-    "@lobechat/business-config": "workspace:*",
     "@lobechat/const": "workspace:*"
   },
   "devDependencies": {

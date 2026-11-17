@@ -1,4 +1,4 @@
-import { getRuntimeErrorI18nKey } from '@lobechat/model-runtime/errors';
+import { getRuntimeErrorI18nKey } from '@lobot/types/chatError';
 
 /**
  * Loose `t` shape that accepts any key / vars — the type-safe key inference in

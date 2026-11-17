@@ -12,7 +12,7 @@ const { mockHashHex, mockHashUpdate } = vi.hoisted(() => ({
   mockHashUpdate: vi.fn(),
 }));
 
-vi.mock('@lobechat/model-runtime', () => ({
+vi.mock('@/utils/parseDataUri', () => ({
   parseDataUri: vi.fn(),
 }));
 
@@ -178,7 +178,7 @@ describe('UploadService', () => {
     });
 
     it('should upload base64 data successfully', async () => {
-      const { parseDataUri } = await import('@lobechat/model-runtime');
+      const { parseDataUri } = await import('@/utils/parseDataUri');
       vi.mocked(parseDataUri).mockReturnValueOnce({
         base64: 'dGVzdA==', // "test" in base64
         mimeType: 'image/png',
@@ -199,7 +199,7 @@ describe('UploadService', () => {
     });
 
     it('should throw error for invalid base64 data', async () => {
-      const { parseDataUri } = await import('@lobechat/model-runtime');
+      const { parseDataUri } = await import('@/utils/parseDataUri');
       vi.mocked(parseDataUri).mockReturnValueOnce({
         base64: null,
         mimeType: null,
@@ -214,7 +214,7 @@ describe('UploadService', () => {
     });
 
     it('should use custom filename when provided', async () => {
-      const { parseDataUri } = await import('@lobechat/model-runtime');
+      const { parseDataUri } = await import('@/utils/parseDataUri');
       vi.mocked(parseDataUri).mockReturnValueOnce({
         base64: 'dGVzdA==',
         mimeType: 'image/png',

@@ -172,7 +172,6 @@
   "unlock.comfyui.modifyBaseUrl": "修改 ComfyUI 服务地址",
   "unlock.comfyui.title": "需要确认 {{name}} 认证信息",
   "unlock.confirm": "确认并重试",
-  "unlock.goToSettings": "前往配置",
   "unlock.oauth.description": "管理员已开启统一登录认证。登录后即可解锁应用",
   "unlock.oauth.success": "登录成功",
   "unlock.oauth.title": "登录账号",

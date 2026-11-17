@@ -1,6 +1,5 @@
-import type { LobeDefaultAiModelListItem } from 'model-bank';
-
 import type { ModelProviderCard } from '../llm';
+import type { LobeDefaultAiModelListItem } from '../modelBank';
 
 export enum ModelSorts {
   ContextWindowTokens = 'contextWindowTokens',

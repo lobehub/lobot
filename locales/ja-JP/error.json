@@ -169,7 +169,6 @@
   "unlock.comfyui.modifyBaseUrl": "ComfyUI サービスアドレスを変更",
   "unlock.comfyui.title": "{{name}} 認証情報の確認が必要です",
   "unlock.confirm": "確認して再試行",
-  "unlock.goToSettings": "設定に移動",
   "unlock.oauth.description": "管理者が統一ログイン認証を有効にしました。ログインするとアプリがロック解除されます",
   "unlock.oauth.success": "ログインに成功しました",
   "unlock.oauth.title": "アカウントにログイン",

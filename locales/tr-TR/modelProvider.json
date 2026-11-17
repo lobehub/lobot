@@ -44,7 +44,6 @@
   "bedrock.title": "Bedrock",
   "bedrock.unlock.customRegion": "Özel Hizmet Bölgesi",
   "bedrock.unlock.customSessionToken": "Özel Oturum Belgesi",
-  "bedrock.unlock.description": "Oturumu başlatmak için AWS AccessKeyId / SecretAccessKey bilgilerinizi girin. Uygulama kimlik doğrulama yapılandırmanızı saklamaz",
   "bedrock.unlock.imageGenerationDescription": "Görüntü üretimini başlatmak için AWS AccessKeyId / SecretAccessKey bilgilerinizi girin. Uygulama kimlik bilgilerinizi saklamaz.",
   "bedrock.unlock.title": "Özel Bedrock Kimlik Doğrulama Bilgilerini Kullan",
   "cloudflare.apiKey.desc": "Lütfen Cloudflare API Anahtarını girin",

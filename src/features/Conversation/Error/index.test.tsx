@@ -153,10 +153,6 @@ vi.mock('@/features/Conversation/hooks/useConversationResourceAccess', () => ({
   useConversationResourceAccess: () => resourceAccessMock,
 }));
 
-vi.mock('@/hooks/useProviderName', () => ({
-  useProviderName: () => 'Mock Provider',
-}));
-
 vi.mock('@/libs/next/dynamic', () => ({
   default: () => (props: { onRetry?: () => void }) => {
     dynamicComponentPropsMock(props);
@@ -537,8 +533,6 @@ describe('ErrorMessageExtra', () => {
     expect(screen.getByText('dynamic')).toBeInTheDocument();
     expect(dynamicComponentPropsMock).toHaveBeenCalledWith({ reason: 'requestBodyTooLarge' });
   });
-
-
 
   it('renders the auth guide when the refreshed error is missing type but still carries session code', () => {
     render(

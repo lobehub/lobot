@@ -25,12 +25,9 @@
   },
   "dependencies": {
     "@lobechat/const": "workspace:*",
-    "@lobechat/model-runtime": "workspace:*",
     "@lobechat/utils": "workspace:*",
+    "@lobot/types": "workspace:*",
     "i18next": "^24.2.3",
-    "model-bank": "workspace:*"
-  },
-  "devDependencies": {
-    "@lobot/types": "workspace:*"
+    "immer": "^11.1.16"
   }
 }

@@ -1,7 +1,19 @@
-import type { GenerateObjectSchema } from '@lobechat/model-runtime';
 import { ActivityTypeEnum, TypesEnum } from '@lobot/types';
 import type { JSONSchema7 } from 'json-schema';
 import { z } from 'zod';
+
+/** A JSON schema handed to a model for structured output. */
+interface GenerateObjectSchema {
+  description?: string;
+  name: string;
+  schema: {
+    additionalProperties?: boolean;
+    properties: Record<string, any>;
+    required?: string[];
+    type: 'object';
+  };
+  strict?: boolean;
+}
 
 const ActivityAssociatedLocationSchema = z.object({
   address: z.string().nullish(),

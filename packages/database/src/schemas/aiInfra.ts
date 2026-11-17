@@ -1,4 +1,4 @@
-import type { AiProviderConfig, AiProviderSettings } from '@lobot/types';
+import type { AiModelSettings, AiProviderConfig, AiProviderSettings } from '@lobot/types';
 import { isNotNull, isNull } from 'drizzle-orm';
 import {
   boolean,
@@ -11,7 +11,6 @@ import {
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
-import type { AiModelSettings } from 'model-bank';
 
 import { timestamps } from './_helpers';
 import { users } from './user';

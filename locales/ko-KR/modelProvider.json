@@ -44,7 +44,6 @@
   "bedrock.title": "Bedrock",
   "bedrock.unlock.customRegion": "사용자 지정 서비스 지역",
   "bedrock.unlock.customSessionToken": "사용자 지정 Session Token",
-  "bedrock.unlock.description": "AWS AccessKeyId / SecretAccessKey를 입력하면 세션을 시작할 수 있습니다. 애플리케이션은 인증 구성을 저장하지 않습니다",
   "bedrock.unlock.imageGenerationDescription": "AWS AccessKeyId / SecretAccessKey를 입력하면 이미지 생성을 시작할 수 있습니다. 애플리케이션은 인증 구성을 저장하지 않습니다",
   "bedrock.unlock.title": "사용자 지정 Bedrock 인증 정보 사용",
   "cloudflare.apiKey.desc": "Cloudflare API Key를 입력하세요",

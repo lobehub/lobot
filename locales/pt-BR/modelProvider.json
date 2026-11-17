@@ -44,7 +44,6 @@
   "bedrock.title": "Bedrock",
   "bedrock.unlock.customRegion": "Região de Serviço Personalizada",
   "bedrock.unlock.customSessionToken": "Token de Sessão Personalizado",
-  "bedrock.unlock.description": "Insira seu AccessKeyId / SecretAccessKey da AWS para iniciar a sessão. O aplicativo não armazenará sua configuração de autenticação",
   "bedrock.unlock.imageGenerationDescription": "Insira seu AccessKeyId / SecretAccessKey da AWS para começar a gerar. O aplicativo não armazenará suas credenciais de autenticação.",
   "bedrock.unlock.title": "Usar Informações de Autenticação Personalizadas do Bedrock",
   "cloudflare.apiKey.desc": "Insira a Chave da API do Cloudflare",

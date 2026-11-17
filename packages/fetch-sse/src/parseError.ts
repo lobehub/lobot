@@ -1,8 +1,7 @@
-import { getRuntimeErrorI18nKey, normalizeChatMessageError } from '@lobechat/model-runtime/errors';
-import type { ChatMessageError, ErrorResponse, ErrorType } from '@lobot/types';
 import { isRecord, pickTrimmedString } from '@lobechat/utils';
+import type { ChatMessageError, ErrorResponse, ErrorType } from '@lobot/types';
+import { getRuntimeErrorI18nKey, normalizeChatMessageError } from '@lobot/types/chatError';
 import i18next, { t } from 'i18next';
-import { getProviderDisplayName } from 'model-bank/modelProviders';
 
 /**
  * Runtime error codes live in their own `modelRuntime` namespace while HTTP
@@ -15,11 +14,8 @@ import { getProviderDisplayName } from 'model-bank/modelProviders';
 const translateErrorType = (errorType: ChatMessageError['type'], body: unknown) => {
   const { key, ns } = getRuntimeErrorI18nKey(errorType);
 
-  // Both namespaces interpolate `{{provider}}`; the backend puts the provider
-  // **id** on the error body, so resolve it to the display name the same way
-  // `useProviderName` does — otherwise the toast reads "meta" instead of "Meta".
-  const providerId = isRecord(body) ? pickTrimmedString(body.provider) : undefined;
-  const provider = providerId ? getProviderDisplayName(providerId) : '';
+  // Both namespaces interpolate `{{provider}}`, which the backend puts on the error body.
+  const provider = (isRecord(body) ? pickTrimmedString(body.provider) : undefined) ?? '';
 
   // A registered code with no locale entry yet (e.g. `NoAvailableProvider`) must
   // not surface as the bare code: prefer the backend's own message, then the

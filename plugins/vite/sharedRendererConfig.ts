@@ -27,18 +27,6 @@ const APP_SHELL_NS = new Set(['chat', 'home']);
 /** Default-language metadata imported directly by an eager route component. */
 const EAGER_DEFAULT_NS = new Set(['hotkey']);
 
-const MODEL_RUNTIME_CLIENT_MODULES = [
-  '/core/usageConverters/utils/resolveImageSinglePrice.ts',
-  '/core/usageConverters/utils/resolveVideoSinglePrice.ts',
-  '/helpers/parseToolCalls.ts',
-  '/providers/openai/modelId.ts',
-  '/types/error.ts',
-  '/types/toolsCalling.ts',
-  '/utils/createError.ts',
-  '/utils/modelExtendParams.ts',
-  '/utils/uriParser.ts',
-];
-
 /** antd locale filename → app locale */
 const ANTD_LOCALE: Record<string, string> = {
   ar_EG: 'ar',
@@ -156,14 +144,6 @@ function sharedManualChunks(id: string): string | undefined {
   // dragging the whole AI chunk into the auth SPA's static graph
   if (id.includes('/packages/const/src/')) return 'app-const';
 
-  if (
-    id.includes('/packages/model-runtime/src/') &&
-    (id.includes('/packages/model-runtime/src/errors/') ||
-      MODEL_RUNTIME_CLIENT_MODULES.some((moduleId) => id.endsWith(moduleId)))
-  ) {
-    return 'model-runtime-client';
-  }
-
   if (!id.includes('node_modules')) return;
 
   // UI/date locale modules are loaded during shell initialization. They must
@@ -245,24 +225,12 @@ const isOnDemandShikiModule = (moduleId: string) => {
   );
 };
 
-const isModelBankModule = (moduleId: string) =>
-  moduleId.replaceAll('\\', '/').includes('/packages/model-bank/src/');
-
-const isOnDemandModelBankCatalog = (moduleIds: string[]) =>
-  moduleIds.length > 0 &&
-  moduleIds.every(isModelBankModule) &&
-  moduleIds.some((moduleId) =>
-    moduleId.replaceAll('\\', '/').endsWith('/packages/model-bank/src/aiModels/index.ts'),
-  );
-
 const sharedChunkFileNames = (chunkInfo: SharedChunkInfo) => {
   const { moduleIds = [], name } = chunkInfo;
   if (name.startsWith('devtools-') || moduleIds.some(isDeferredDevtoolsSource))
     return 'devtools/[name]-[hash].js';
   if (name.startsWith('i18n-')) return 'i18n/[name]-[hash].js';
   if (name.startsWith('vendor-')) return 'vendor/[name]-[hash].js';
-  if (chunkInfo.moduleIds && isOnDemandModelBankCatalog(chunkInfo.moduleIds))
-    return 'model-bank/[name]-[hash].js';
   if (chunkInfo.moduleIds?.length && chunkInfo.moduleIds.every(isOnDemandShikiModule))
     return 'shiki/[name]-[hash].js';
   return 'assets/[name]-[hash].js';
@@ -287,12 +255,7 @@ const isDevtoolsChunkFileName = (fileName: string) => {
 };
 
 /** Deferred assets must remain demand-loaded rather than entering the service-worker precache. */
-export const sharedPwaGlobIgnores = [
-  'devtools/**',
-  'i18n/**/*.js',
-  'model-bank/**/*.js',
-  'shiki/**/*.js',
-];
+export const sharedPwaGlobIgnores = ['devtools/**', 'i18n/**/*.js', 'shiki/**/*.js'];
 
 /** Runtime caching for deferred assets excluded from the service-worker precache. */
 export const sharedPwaRuntimeCaching = [
@@ -311,14 +274,6 @@ export const sharedPwaRuntimeCaching = [
       expiration: { maxAgeSeconds: 60 * 60 * 24 * 30, maxEntries: 150 },
     },
     urlPattern: ({ url }: { url: URL }) => /\/shiki\/.*\.js$/i.test(url.pathname),
-  },
-  {
-    handler: 'CacheFirst',
-    options: {
-      cacheName: 'on-demand-model-bank',
-      expiration: { maxAgeSeconds: 60 * 60 * 24 * 30, maxEntries: 5 },
-    },
-    urlPattern: ({ url }: { url: URL }) => /\/model-bank\/.*\.js$/i.test(url.pathname),
   },
 ] as const;
 

@@ -790,18 +790,6 @@ export default defineConfig(
       'perfectionist/sort-interfaces': 'off',
     },
   },
-  // model-bank aiModels - enforce English-only descriptions
-  restrictSyntax(
-    ['packages/model-bank/src/aiModels/**/*'],
-    [
-      ...useRefLazyInitRestrictedSyntax,
-      ...uppercaseRestrictedSyntax,
-      {
-        message: 'Chinese characters are not allowed in aiModels files. Use English instead.',
-        selector: 'Literal[value=/[\\u4e00-\\u9fff]/]',
-      },
-    ],
-  ),
   // E2E and test files - allow console.log for debugging
   {
     files: ['e2e/**/*', '**/*.test.ts', '**/*.test.tsx'],

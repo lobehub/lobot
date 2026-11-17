@@ -1,5 +1,5 @@
 import { normalizeHeterogeneousMessageError } from '@lobechat/heterogeneous-agents/errors';
-import { normalizeChatMessageError } from '@lobechat/model-runtime/errors';
+import { type HeatmapsProps } from '@lobehub/charts';
 import {
   type ChatMessageError,
   type ChatMessagePluginError,
@@ -16,7 +16,7 @@ import {
   type UpdateMessageRAGParams,
   type UpdateMessageResult,
 } from '@lobot/types';
-import { type HeatmapsProps } from '@lobehub/charts';
+import { normalizeChatMessageError } from '@lobot/types/chatError';
 import pMap from 'p-map';
 
 import { lambdaClient } from '@/libs/trpc/client';

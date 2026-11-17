@@ -1,4 +1,4 @@
-import type { LookupPricingUnit, Pricing, PricingUnit, PricingUnitName } from 'model-bank';
+import type { LookupPricingUnit, Pricing, PricingUnit, PricingUnitName } from '@lobot/types';
 
 /**
  * Cache TTL a request uses unless it asks for a longer one; Anthropic's prompt caching

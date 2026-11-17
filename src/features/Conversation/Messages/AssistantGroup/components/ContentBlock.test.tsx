@@ -67,10 +67,6 @@ vi.mock('@/features/Electron/HeterogeneousAgent/StatusGuide', () => ({
   ),
 }));
 
-vi.mock('@/hooks/useProviderName', () => ({
-  useProviderName: () => 'Mock Provider',
-}));
-
 vi.mock('@/libs/next/dynamic', () => ({
   default: () => () => <div>dynamic</div>,
 }));

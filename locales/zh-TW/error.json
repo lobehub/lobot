@@ -169,7 +169,6 @@
   "unlock.comfyui.modifyBaseUrl": "修改 Comfy UI 服務位址",
   "unlock.comfyui.title": "確認你的 {{name}} 認證資訊",
   "unlock.confirm": "確認並重試",
-  "unlock.goToSettings": "前往設定",
   "unlock.oauth.description": "管理員已開啟統一登錄認證，點擊下方按鈕登錄，即可解鎖應用",
   "unlock.oauth.success": "登錄成功",
   "unlock.oauth.title": "登錄帳號",

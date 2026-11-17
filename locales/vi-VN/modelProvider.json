@@ -44,7 +44,6 @@
   "bedrock.title": "Bedrock",
   "bedrock.unlock.customRegion": "Khu vực dịch vụ tùy chỉnh",
   "bedrock.unlock.customSessionToken": "Session Token tùy chỉnh",
-  "bedrock.unlock.description": "Nhập AccessKeyId / SecretAccessKey của bạn để bắt đầu phiên. Ứng dụng sẽ không lưu trữ cấu hình xác thực của bạn",
   "bedrock.unlock.imageGenerationDescription": "Nhập AccessKeyId / SecretAccessKey của bạn để bắt đầu tạo ảnh. Ứng dụng sẽ không lưu trữ thông tin xác thực của bạn.",
   "bedrock.unlock.title": "Sử dụng thông tin xác thực Bedrock tùy chỉnh",
   "cloudflare.apiKey.desc": "Vui lòng nhập Cloudflare API Key",

@@ -169,7 +169,6 @@
   "unlock.comfyui.modifyBaseUrl": "Изменить URL сервиса ComfyUI",
   "unlock.comfyui.title": "Подтвердите учётные данные {{name}}",
   "unlock.confirm": "Подтвердить и повторить",
-  "unlock.goToSettings": "Перейти в настройки",
   "unlock.oauth.description": "Администратор включил единую аутентификацию. Нажмите кнопку ниже, чтобы войти и разблокировать приложение.",
   "unlock.oauth.success": "Вход выполнен успешно",
   "unlock.oauth.title": "Войдите в свой аккаунт",

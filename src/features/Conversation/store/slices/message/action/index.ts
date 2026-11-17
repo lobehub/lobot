@@ -1,9 +1,4 @@
-import { shouldDropUnsupportedClaudeAssistantPrefill } from '@lobechat/model-runtime/providers/anthropic/modelId';
-import { toast } from '@lobehub/ui';
-import { t } from 'i18next';
 import type { StateCreator } from 'zustand';
-
-import { getEffectiveConversationModel } from '@/features/Conversation/store/utils/effectiveModel';
 
 import type { Store as ConversationStore } from '../../../action';
 import { isSameConversationContext } from '../../../utils/contextGuard';
@@ -87,16 +82,6 @@ export const messageSlice: StateCreator<
 
       // Clear input after successful creation
       set({ inputMessage: '' });
-
-      // Claude 4.6+/5 reject conversations ending with an assistant turn
-      // (assistant prefill removed upstream), and the runtime strips trailing
-      // assistant messages for them. Adding mid-conversation stays legal, so
-      // don't block — just tell the user to follow up with a user message.
-      // Effective model = topic override > agent default (see helper JSDoc).
-      const model = getEffectiveConversationModel({ agentId, topicId });
-      if (model && shouldDropUnsupportedClaudeAssistantPrefill(model)) {
-        toast.info(t('input.addAiPrefillUnsupported', { ns: 'chat' }));
-      }
     }
 
     return id;

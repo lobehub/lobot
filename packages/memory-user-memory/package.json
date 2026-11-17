@@ -14,7 +14,6 @@
     "test:coverage": "vitest --coverage --silent='passed-only'"
   },
   "dependencies": {
-    "@lobechat/model-runtime": "workspace:*",
     "@lobechat/prompts": "workspace:*",
     "@lobot/types": "workspace:*",
     "dayjs": "^1.11.21",

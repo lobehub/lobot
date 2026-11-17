@@ -15,18 +15,6 @@ const alias = {
   // internal implementations whose source files import alias paths that only exist
   // in the outer workspace, causing vite import-analysis to fail when running tests
   // from this repo. Pin the package to the local stub so tests here stay hermetic.
-  '@lobechat/business-model-runtime': resolve(
-    __dirname,
-    './packages/business/model-runtime/src/index.ts',
-  ),
-  '@lobechat/business-model-bank/model-config': resolve(
-    __dirname,
-    './packages/business/model-bank/src/model-config.ts',
-  ),
-  '@lobechat/business-model-bank': resolve(
-    __dirname,
-    './packages/business/model-bank/src/index.ts',
-  ),
   '@emoji-mart/data': resolve(__dirname, './tests/mocks/emojiMartData.mjs'),
   '@emoji-mart/react': resolve(__dirname, './tests/mocks/emojiMartReact.mjs'),
   '@/utils/client/switchLang': resolve(__dirname, './src/utils/client/switchLang'),

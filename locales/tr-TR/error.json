@@ -169,7 +169,6 @@
   "unlock.comfyui.modifyBaseUrl": "ComfyUI hizmet URL'sini düzenle",
   "unlock.comfyui.title": "{{name}} bilgilerinizi doğrulayın",
   "unlock.confirm": "Onayla ve Tekrar Dene",
-  "unlock.goToSettings": "Ayarlar'a Git",
   "unlock.oauth.description": "Yönetici birleşik giriş doğrulamasını etkinleştirdi. Giriş yapmak ve uygulamanın kilidini açmak için aşağıdaki butona tıklayın.",
   "unlock.oauth.success": "Giriş başarılı",
   "unlock.oauth.title": "Hesabınıza giriş yapın",

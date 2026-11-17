@@ -1,9 +1,9 @@
-import type { LLMParams } from 'model-bank';
 import { z } from 'zod';
 
 import type { FileItem } from '../files';
 import type { KnowledgeBaseItem } from '../knowledgeBase';
 import type { FewShots } from '../llm';
+import type { LLMParams } from '../modelBank';
 import type { LobeAgentAgencyConfig } from './agencyConfig';
 import { AgentChatConfigSchema, type LobeAgentChatConfig } from './chatConfig';
 import { type AgentPluginEntry, AgentPluginEntrySchema } from './pluginConfig';

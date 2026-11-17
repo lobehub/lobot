@@ -13,10 +13,10 @@ import type {
 } from '@lobechat/agent-gateway-client';
 import { isSessionTerminalEvent } from '@lobechat/agent-gateway-client';
 import { normalizeHeterogeneousMessageError } from '@lobechat/heterogeneous-agents/errors';
-import { normalizeChatMessageError } from '@lobechat/model-runtime/errors';
+import { isRecord, pickNonEmptyString, toRecord } from '@lobechat/utils/object';
 import type { ConversationContext, UIChatMessage } from '@lobot/types';
 import { isClientLlmWaitableError } from '@lobot/types';
-import { isRecord, pickNonEmptyString, toRecord } from '@lobechat/utils/object';
+import { normalizeChatMessageError } from '@lobot/types/chatError';
 
 import { readConversationMessages } from '@/helpers/conversationMessageRead';
 import { messageService } from '@/services/message';

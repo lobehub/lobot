@@ -240,24 +240,6 @@ describe('sharedManualChunks', () => {
       ),
     ).toBe('vendor-ai-runtime');
   });
-
-  it('lets model-runtime follow dynamic import boundaries', () => {
-    expect(
-      __testing.sharedManualChunks('/repo/packages/model-runtime/src/providers/openai/index.ts'),
-    ).toBeUndefined();
-    expect(
-      __testing.sharedManualChunks('/repo/packages/model-runtime/src/helpers/parseToolCalls.ts'),
-    ).toBe('model-runtime-client');
-    expect(
-      __testing.sharedManualChunks('/repo/packages/model-runtime/src/types/toolsCalling.ts'),
-    ).toBe('model-runtime-client');
-    expect(
-      __testing.sharedManualChunks(
-        '/repo/packages/model-runtime/src/utils/getFallbackModelProperty.ts',
-      ),
-    ).toBeUndefined();
-    expect(__testing.sharedManualChunks('/repo/packages/model-bank/src/index.ts')).toBeUndefined();
-  });
 });
 
 describe('isUiCoreModule', () => {
@@ -274,25 +256,6 @@ describe('isUiCoreModule', () => {
 });
 
 describe('sharedChunkFileNames', () => {
-  it('routes only the complete deferred model catalog to on-demand assets', () => {
-    expect(
-      __testing.sharedChunkFileNames({
-        moduleIds: [
-          '/repo/packages/model-bank/src/aiModels/index.ts',
-          '/repo/packages/model-bank/src/aiModels/openai.ts',
-        ],
-        name: 'src',
-      }),
-    ).toBe('model-bank/[name]-[hash].js');
-
-    expect(
-      __testing.sharedChunkFileNames({
-        moduleIds: ['/repo/packages/model-bank/src/aiModels/opencodeZen.ts'],
-        name: 'opencodeZen',
-      }),
-    ).toBe('assets/[name]-[hash].js');
-  });
-
   it('routes only self-contained Shiki language, theme, and WASM chunks to on-demand assets', () => {
     expect(
       __testing.sharedChunkFileNames({

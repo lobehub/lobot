@@ -1,11 +1,11 @@
 import { MAX_UPLOAD_FILE_SIZE, UPLOAD_FILE_SIZE_LIMIT_ERROR_MESSAGE } from '@lobechat/const';
-import { parseDataUri } from '@lobechat/model-runtime/utils/uriParser';
 import { uuid } from '@lobechat/utils';
 import dayjs from 'dayjs';
 
 import { lambdaClient } from '@/libs/trpc/client';
 import type { FileMetadata, UploadBase64ToS3Result } from '@/types/files';
 import type { FileUploadState, FileUploadStatus } from '@/types/files/upload';
+import { parseDataUri } from '@/utils/parseDataUri';
 
 import { hashFile } from './hashFile';
 

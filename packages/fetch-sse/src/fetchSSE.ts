@@ -1,5 +1,6 @@
 import { LOBE_CHAT_OBSERVATION_ID, LOBE_CHAT_TRACE_ID, MESSAGE_CANCEL_FLAT } from '@lobechat/const';
-import { parseToolCalls } from '@lobechat/model-runtime/helpers/parseToolCalls';
+import { fetchEventSource } from '@lobechat/utils/client/fetchEventSource/index';
+import { nanoid } from '@lobechat/utils/uuid';
 import type {
   ChatImageChunk,
   ChatMessageError,
@@ -13,10 +14,9 @@ import type {
   ResponseAnimationStyle,
 } from '@lobot/types';
 import { ChatErrorType } from '@lobot/types';
-import { fetchEventSource } from '@lobechat/utils/client/fetchEventSource/index';
-import { nanoid } from '@lobechat/utils/uuid';
 
 import { getMessageError } from './parseError';
+import { parseToolCalls } from './parseToolCalls';
 
 type SSEFinishType = 'done' | 'error' | 'abort' | string;
 

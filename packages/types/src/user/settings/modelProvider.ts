@@ -1,6 +1,5 @@
-import type { AiFullModelCard, ModelProviderKey } from 'model-bank';
-
 import type { ChatModelCard } from '../../llm';
+import type { AiFullModelCard } from '../../modelBank';
 
 export interface ProviderConfig {
   /**
@@ -31,6 +30,6 @@ export interface ProviderConfig {
   serverModelLists?: AiFullModelCard[];
 }
 
-export type GlobalLLMProviderKey = ModelProviderKey;
+export type GlobalLLMProviderKey = string;
 
-export type UserModelProviderConfig = Record<ModelProviderKey, ProviderConfig>;
+export type UserModelProviderConfig = Record<string, ProviderConfig>;

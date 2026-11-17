@@ -1,9 +1,4 @@
-/**
- * The model / provider catalog card types are owned by `model-bank` (the
- * package whose data files are typed by them) — re-exported here so existing
- * `@lobot/types` / `@/types/llm` imports keep working.
- */
-export type { ChatModelCard, ModelProviderCard } from 'model-bank';
+export type { ChatModelCard, ModelProviderCard } from './modelBank/providerCard';
 
 export type LLMRoleType = 'user' | 'system' | 'assistant' | 'tool';
 

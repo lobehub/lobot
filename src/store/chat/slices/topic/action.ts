@@ -8,6 +8,7 @@ import {
 } from '@lobechat/prompts';
 import { toast } from '@lobehub/ui';
 import {
+  type AiModelReasoningConfig,
   type ChatTopicMetadata,
   type HeterogeneousReasoningEffort,
   type HeterogeneousSpeedMode,
@@ -18,7 +19,6 @@ import {
 } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { t } from 'i18next';
-import type { AiModelReasoningConfig } from 'model-bank';
 import useSWR from 'swr';
 import { type SWRResponse } from 'swr';
 

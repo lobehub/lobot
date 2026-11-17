@@ -1,6 +1,6 @@
-import type { AiFullModelCard } from 'model-bank';
 import type { PartialDeep } from 'type-fest';
 
+import type { AiFullModelCard } from './modelBank';
 import type {
   GlobalLLMProviderKey,
   UserDefaultAgent,

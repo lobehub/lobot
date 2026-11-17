@@ -169,7 +169,6 @@
   "unlock.comfyui.modifyBaseUrl": "Modifier l'URL du service ComfyUI",
   "unlock.comfyui.title": "Vérifiez vos identifiants {{name}}",
   "unlock.confirm": "Confirmer et réessayer",
-  "unlock.goToSettings": "Aller aux paramètres",
   "unlock.oauth.description": "L'administrateur a activé l'authentification unifiée. Cliquez ci-dessous pour vous connecter et déverrouiller l'application.",
   "unlock.oauth.success": "Connexion réussie",
   "unlock.oauth.title": "Connectez-vous à votre compte",

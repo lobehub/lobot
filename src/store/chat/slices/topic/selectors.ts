@@ -1,8 +1,7 @@
 import { isDesktop } from '@lobechat/const';
-import type { HeterogeneousTopicPin } from '@lobot/types';
+import type { AiModelReasoningConfig, HeterogeneousTopicPin } from '@lobot/types';
 import { getWorkingDirEffectivePath } from '@lobot/types';
 import { t } from 'i18next';
-import type { AiModelReasoningConfig } from 'model-bank';
 
 import { MAIN_SIDEBAR_EXCLUDE_TRIGGERS, TopicTrigger } from '@/const/topic';
 import {

@@ -1,7 +1,7 @@
 /**
  * Heterogeneous (external CLI agent) error taxonomy.
  *
- * Mirrors the model-runtime taxonomy (`@lobechat/model-runtime/errors`) in
+ * Mirrors the model-runtime taxonomy (`@lobot/types/chatError`) in
  * shape and intent, but classifies a different failure surface: instead of one
  * HTTP call to a model provider, a heterogeneous run is a **local CLI process**
  * that streams events and can die at any of four layers — spawn, transport,

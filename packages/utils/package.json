@@ -24,7 +24,6 @@
     "file-type": "^21.3.4",
     "gpt-tokenizer": "^3.4.0",
     "mime": "^4.1.0",
-    "model-bank": "workspace:*",
     "nanoid": "^5.1.16",
     "numeral": "^2.0.6",
     "partial-json": "^0.1.7",

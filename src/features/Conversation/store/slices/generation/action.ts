@@ -1,13 +1,11 @@
-import { shouldDropUnsupportedClaudeAssistantPrefill } from '@lobechat/model-runtime/providers/anthropic/modelId';
-import type { ConversationContext } from '@lobot/types';
 import { toast } from '@lobehub/ui';
+import type { ConversationContext } from '@lobot/types';
 import { t } from 'i18next';
 import { type StateCreator } from 'zustand';
 
 import { MESSAGE_CANCEL_FLAT } from '@/const/index';
 import { saveDraft } from '@/features/ChatInput/draftStorage';
 import { isHeterogeneousAgentStatusGuideError } from '@/features/Conversation/Error/heterogeneous';
-import { getEffectiveConversationModel } from '@/features/Conversation/store/utils/effectiveModel';
 import { messageService } from '@/services/message';
 import { topicService } from '@/services/topic';
 import { useChatStore } from '@/store/chat';
@@ -606,18 +604,6 @@ export const generationSlice: StateCreator<
       isWorkspaceAgent,
       workspaceScoped,
     });
-
-    // Claude 4.6+/5 removed assistant prefill: a payload ending with an
-    // assistant turn is rejected (400), and the model runtime strips trailing
-    // assistant messages for these models — so "continue" would silently
-    // regenerate instead of continuing. Surface that instead of pretending.
-    // Resolve the effective model (topic override > agent default) — the topic
-    // may have been switched to/from a prefill-capable model independently.
-    const continueModel = getEffectiveConversationModel(context);
-    if (continueModel && shouldDropUnsupportedClaudeAssistantPrefill(continueModel)) {
-      toast.warning(t('messageAction.continueGenerationUnsupported', { ns: 'chat' }));
-      return false;
-    }
 
     // Create continue operation with ConversationStore context (includes groupId)
     const { operationId } = chatStore.startOperation({

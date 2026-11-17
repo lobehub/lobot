@@ -1,7 +1,7 @@
 import { cpSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 
-const copyDirs = ['assets', 'devtools', 'i18n', 'model-bank', 'shiki', 'vendor'] as const;
+const copyDirs = ['assets', 'devtools', 'i18n', 'shiki', 'vendor'] as const;
 
 // Workers are requested root-relative, not from under the entry prefix, because
 // `new Worker` needs a same-origin script and the file is byte-identical across

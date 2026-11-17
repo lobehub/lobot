@@ -44,7 +44,6 @@
   "bedrock.title": "Bedrock",
   "bedrock.unlock.customRegion": "自定義服務區域",
   "bedrock.unlock.customSessionToken": "自訂 Session Token",
-  "bedrock.unlock.description": "輸入你的 AWS AccessKeyId / SecretAccessKey 即可開始會話。應用程式不會記錄你的驗證配置",
   "bedrock.unlock.imageGenerationDescription": "輸入你的 AWS AccessKeyId / SecretAccessKey 即可開始生成。應用不會記錄你的鑑權配置",
   "bedrock.unlock.title": "使用自定義 Bedrock 驗證資訊",
   "cloudflare.apiKey.desc": "請填入 Cloudflare API Key",

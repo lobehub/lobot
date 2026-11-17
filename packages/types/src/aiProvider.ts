@@ -1,11 +1,9 @@
 /**
- * The AI-provider settings / CRUD types are owned by `model-bank` (its
- * provider catalog data is typed by them) — re-exported here so existing
+ * The AI-provider settings / CRUD types live in `./modelBank`; re-exported here so existing
  * `@lobot/types` / `@/types/aiProvider` imports keep working.
  *
- * Explicit named re-exports on purpose: a blanket `export * from 'model-bank'`
- * through this barrel would collide with sibling files' exports and TypeScript
- * silently DROPS ambiguous `export *` symbols.
+ * Explicit named re-exports on purpose: a blanket `export *` through this barrel would collide
+ * with sibling files' exports, and TypeScript silently drops ambiguous `export *` symbols.
  */
 export type {
   AiProviderAuthType,
@@ -28,7 +26,7 @@ export type {
   ResponseAnimationStyle,
   UpdateAiProviderConfigParams,
   UpdateAiProviderParams,
-} from 'model-bank/aiProvider';
+} from './modelBank/aiProvider';
 export {
   AiProviderAuthTypeEnum,
   AiProviderSDKEnum,
@@ -36,4 +34,4 @@ export {
   CreateAiProviderSchema,
   UpdateAiProviderConfigSchema,
   UpdateAiProviderSchema,
-} from 'model-bank/aiProvider';
+} from './modelBank/aiProvider';

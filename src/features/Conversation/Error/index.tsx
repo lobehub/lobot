@@ -1,7 +1,6 @@
 import { isDesktop } from '@lobechat/const';
 import { HeterogeneousAgentSessionErrorCode } from '@lobechat/electron-client-ipc';
 import { readHeterogeneousErrorContext } from '@lobechat/heterogeneous-agents/errors';
-import { getErrorCodeSpec } from '@lobechat/model-runtime/errors';
 import { isRecord } from '@lobechat/utils/object';
 import { type AlertProps, Block, Highlighter, Skeleton, toast } from '@lobehub/ui';
 import {
@@ -12,6 +11,7 @@ import {
   type ILobeAgentRuntimeErrorType,
   type IToolErrorType,
 } from '@lobot/types';
+import { getErrorCodeSpec } from '@lobot/types/chatError';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -33,7 +33,6 @@ import type {
 } from '@/features/Electron/HeterogeneousAgent/StatusGuide/types';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { usePermission } from '@/hooks/usePermission';
-import { useProviderName } from '@/hooks/useProviderName';
 import dynamic from '@/libs/next/dynamic';
 import { binaryService } from '@/services/electron/binary';
 import { useChatStore } from '@/store/chat';
@@ -41,7 +40,6 @@ import { topicSelectors } from '@/store/chat/selectors';
 import { serverConfigSelectors, useServerConfigStore } from '@/store/serverConfig';
 import { getRuntimeErrorMessage } from '@/utils/locale/runtimeErrorMessage';
 
-import ChatInvalidAPIKey from './ChatInvalidApiKey';
 import { type DedicatedErrorCardType, isDedicatedErrorCardType } from './dedicatedErrorCards';
 import { isHeterogeneousAgentStatusGuideError } from './heterogeneous';
 import { useHeterogeneousAutoRetry } from './useHeterogeneousAutoRetry';
@@ -240,7 +238,7 @@ const getErrorAlertConfig = (
 
 export const useErrorContent = (error: any) => {
   const { t } = useTranslation(['error', 'modelRuntime']);
-  const providerName = useProviderName(error?.body?.provider || '');
+  const providerName = typeof error?.body?.provider === 'string' ? error.body.provider : '';
   const businessAlertConfig = useBusinessErrorAlertConfig(error?.type);
   const {
     errorType: businessErrorType,
@@ -563,10 +561,6 @@ const ErrorMessageExtra = memo<ErrorExtraProps>(
           return <ExceededContextWindowError reason={'requestBodyTooLarge'} />;
         }
 
-        case AgentRuntimeErrorType.NoOpenAIAPIKey: {
-          return <ChatInvalidAPIKey id={data.id} provider={data.error?.body?.provider} />;
-        }
-
         default: {
           const unhandled: never = type;
           return unhandled;
@@ -578,10 +572,6 @@ const ErrorMessageExtra = memo<ErrorExtraProps>(
       ? renderDedicatedCard(error.type)
       : undefined;
     if (dedicatedCard) return dedicatedCard;
-
-    if (error?.type?.toString().includes('Invalid')) {
-      return <ChatInvalidAPIKey id={data.id} provider={data.error?.body?.provider} />;
-    }
 
     // Show a report action for unknown or fallback-bucket traceable errors.
     // Specific known error types keep their dedicated localized message below.

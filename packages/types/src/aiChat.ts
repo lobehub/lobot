@@ -287,7 +287,7 @@ const DecisionContentSchema = z.union([
   z.record(z.string(), z.unknown()),
 ]);
 
-/** One typed question for a decision model; mirrors `DecisionQuestion` in `@lobechat/model-runtime`. */
+/** One typed question for a decision model. */
 export const DecisionQuestionSchema = z.discriminatedUnion('type', [
   z.object({
     criteria: z.object({ false: DecisionContentSchema, true: DecisionContentSchema }).optional(),

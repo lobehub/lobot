@@ -169,7 +169,6 @@
   "unlock.comfyui.modifyBaseUrl": "ComfyUI-Service-URL bearbeiten",
   "unlock.comfyui.title": "Bestätigen Sie Ihre {{name}} Zugangsdaten",
   "unlock.confirm": "Bestätigen und erneut versuchen",
-  "unlock.goToSettings": "Zu den Einstellungen",
   "unlock.oauth.description": "Der Administrator hat eine einheitliche Anmeldung aktiviert. Klicken Sie unten, um sich anzumelden.",
   "unlock.oauth.success": "Anmeldung erfolgreich",
   "unlock.oauth.title": "Melden Sie sich bei Ihrem Konto an",

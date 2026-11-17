@@ -51,8 +51,6 @@ export default {
   'bedrock.title': 'Bedrock',
   'bedrock.unlock.customRegion': 'Custom Service Region',
   'bedrock.unlock.customSessionToken': 'Custom Session Token',
-  'bedrock.unlock.description':
-    'Enter your Amazon Bedrock API key or AWS credentials to start the session. The app will not store your authentication configuration',
   'bedrock.unlock.imageGenerationDescription':
     'Enter your Amazon Bedrock API key or AWS credentials to start generating. The application will not store your authentication credentials.',
   'bedrock.unlock.title': 'Use Custom Bedrock Authentication Information',

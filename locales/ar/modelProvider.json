@@ -44,7 +44,6 @@
   "bedrock.title": "Bedrock",
   "bedrock.unlock.customRegion": "منطقة خدمة مخصصة",
   "bedrock.unlock.customSessionToken": "رمز جلسة مخصص",
-  "bedrock.unlock.description": "أدخل AccessKeyId / SecretAccessKey الخاص بك لبدء الجلسة. لن يقوم التطبيق بتخزين إعدادات المصادقة الخاصة بك",
   "bedrock.unlock.imageGenerationDescription": "أدخل AccessKeyId / SecretAccessKey الخاص بك لبدء التوليد. لن يقوم التطبيق بتخزين بيانات اعتماد المصادقة الخاصة بك.",
   "bedrock.unlock.title": "استخدام معلومات مصادقة Bedrock مخصصة",
   "cloudflare.apiKey.desc": "يرجى إدخال مفتاح Cloudflare API",

@@ -1,5 +1,3 @@
-import type { AiModelReasoningConfig } from 'model-bank';
-import { AiModelReasoningConfigSchema } from 'model-bank/aiModel';
 import { z } from 'zod';
 
 import type { HeterogeneousRuntimeConfigField } from '../agent/heterogeneousRuntimeConfig';
@@ -12,6 +10,8 @@ import type { WorkingDirConfig } from '../device';
 import { workingDirConfigSchema } from '../device';
 import type { BotSenderMetadata } from '../message';
 import type { BaseDataModel } from '../meta';
+import type { AiModelReasoningConfig } from '../modelBank';
+import { AiModelReasoningConfigSchema } from '../modelBank';
 import type { OnboardingUnderstandingSession } from '../understanding';
 import type { OnboardingTaskRecommendationSession } from '../user/onboardingTasks';
 

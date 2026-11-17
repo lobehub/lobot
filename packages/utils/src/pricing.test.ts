@@ -1,4 +1,4 @@
-import type { Pricing } from 'model-bank';
+import type { Pricing } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import {

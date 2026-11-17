@@ -169,7 +169,6 @@
   "unlock.comfyui.modifyBaseUrl": "تعديل عنوان خدمة ComfyUI",
   "unlock.comfyui.title": "تحقق من بيانات اعتماد {{name}}",
   "unlock.confirm": "تأكيد وإعادة المحاولة",
-  "unlock.goToSettings": "الذهاب إلى الإعدادات",
   "unlock.oauth.description": "قام المسؤول بتمكين تسجيل الدخول الموحد. انقر على الزر أدناه لتسجيل الدخول وفتح التطبيق.",
   "unlock.oauth.success": "تم تسجيل الدخول بنجاح",
   "unlock.oauth.title": "تسجيل الدخول إلى حسابك",

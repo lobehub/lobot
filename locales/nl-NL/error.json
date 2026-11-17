@@ -169,7 +169,6 @@
   "unlock.comfyui.modifyBaseUrl": "Bewerk ComfyUI-service-URL",
   "unlock.comfyui.title": "Verifieer je {{name}} inloggegevens",
   "unlock.confirm": "Bevestigen en opnieuw proberen",
-  "unlock.goToSettings": "Ga naar instellingen",
   "unlock.oauth.description": "De beheerder heeft een uniforme login ingeschakeld. Klik op de knop hieronder om in te loggen en de applicatie te ontgrendelen.",
   "unlock.oauth.success": "Inloggen geslaagd",
   "unlock.oauth.title": "Log in op je account",

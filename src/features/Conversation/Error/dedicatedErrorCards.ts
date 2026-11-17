@@ -18,7 +18,6 @@ const DEDICATED_ERROR_CARD_TYPES = [
   AgentRuntimeErrorType.RateLimitExceeded,
   AgentRuntimeErrorType.ExceededContextWindow,
   AgentRuntimeErrorType.RequestBodyTooLarge,
-  AgentRuntimeErrorType.NoOpenAIAPIKey,
 ] as const;
 
 export type DedicatedErrorCardType = (typeof DEDICATED_ERROR_CARD_TYPES)[number];

@@ -937,8 +937,6 @@ export default {
   'inbox.desc': 'Collaborate in one Workspace and move ideas into outcomes.',
   'inbox.title': 'Lobe AI',
   'input.addAi': 'Add an AI message',
-  'input.addAiPrefillUnsupported':
-    'The current model doesn’t support ending the conversation with an assistant message. Follow it with a user message before sending.',
   'input.addUser': 'Add a user message',
   'input.agentRunFeeUnfunded.desc':
     'Each agent run carries a fee, even on your own API key. Top up or upgrade your plan, then send again.',
@@ -1058,8 +1056,6 @@ export default {
   'messageAction.codexEdit.sourceUnavailable': 'The source conversation or agent is unavailable',
   'messageAction.collapse': 'Collapse Message',
   'messageAction.continueGeneration': 'Continue Generating',
-  'messageAction.continueGenerationUnsupported':
-    'The current model doesn’t support continuing an assistant message. Try regenerating instead.',
   'messageAction.advanced': 'Advanced',
   'messageAction.copyMessageId': 'Copy Message ID',
   'messageAction.copyOperationId': 'Copy Operation ID',

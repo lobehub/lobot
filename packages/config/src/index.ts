@@ -1,4 +1,3 @@
-import { DEFAULT_LLM_CONFIG } from '@lobechat/business-config';
 import {
   DEFAULT_AGENT,
   DEFAULT_COMMON_SETTINGS,
@@ -18,7 +17,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   hotkey: DEFAULT_HOTKEY_CONFIG,
   image: DEFAULT_IMAGE_CONFIG,
   keyVaults: {},
-  languageModel: DEFAULT_LLM_CONFIG,
+  languageModel: {},
   memory: DEFAULT_MEMORY_SETTINGS,
   notification: DEFAULT_NOTIFICATION_SETTINGS,
   systemAgent: DEFAULT_SYSTEM_AGENT_CONFIG,

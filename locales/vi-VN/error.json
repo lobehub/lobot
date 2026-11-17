@@ -169,7 +169,6 @@
   "unlock.comfyui.modifyBaseUrl": "Chỉnh sửa URL dịch vụ ComfyUI",
   "unlock.comfyui.title": "Xác minh thông tin xác thực {{name}} của bạn",
   "unlock.confirm": "Xác nhận và thử lại",
-  "unlock.goToSettings": "Đi đến Cài đặt",
   "unlock.oauth.description": "Quản trị viên đã bật xác thực đăng nhập hợp nhất. Nhấn nút bên dưới để đăng nhập và mở khóa ứng dụng.",
   "unlock.oauth.success": "Đăng nhập thành công",
   "unlock.oauth.title": "Đăng nhập vào tài khoản của bạn",

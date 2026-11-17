@@ -44,7 +44,6 @@
   "bedrock.title": "Bedrock",
   "bedrock.unlock.customRegion": "Niestandardowy region usługi",
   "bedrock.unlock.customSessionToken": "Niestandardowy token sesji",
-  "bedrock.unlock.description": "Wprowadź AccessKeyId / SecretAccessKey AWS, aby rozpocząć sesję. Aplikacja nie przechowuje danych uwierzytelniających",
   "bedrock.unlock.imageGenerationDescription": "Wprowadź AccessKeyId / SecretAccessKey AWS, aby rozpocząć generowanie. Aplikacja nie przechowuje danych uwierzytelniających",
   "bedrock.unlock.title": "Użyj niestandardowych danych uwierzytelniających Bedrock",
   "cloudflare.apiKey.desc": "Wprowadź klucz API Cloudflare",
