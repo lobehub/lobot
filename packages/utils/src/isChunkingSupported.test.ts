@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { getChunkingLoaderType, isChunkingSupported } from './loaderType';
+import { getChunkingLoaderType, isChunkingSupported } from './isChunkingSupported';
 
 describe('getChunkingLoaderType', () => {
   it('resolves the loader the chunker dispatches on', () => {

@@ -387,7 +387,7 @@ class ResourceManagerStoreActionImpl {
     const { libraryId, resolveSelectedResourceIds, selectAllState, selectedFileIds } = this.#get();
     const { useFileStore } = await import('@/store/file');
     const { useKnowledgeBaseStore } = await import('@/store/library');
-    const { isChunkingSupported } = await import('@/libs/document-loaders/loaderType');
+    const { isChunkingSupported } = await import('@/utils/isChunkingSupported');
 
     const fileStore = useFileStore.getState();
     const kbStore = useKnowledgeBaseStore.getState();

@@ -1,8 +1,69 @@
-import { isChunkingUnsupported } from '@/utils/isChunkingUnsupported';
+import { isChunkingUnsupported } from './isChunkingUnsupported';
 
-import { SUPPORT_TEXT_LIST } from './file';
-import { SUPPORTED_LANGUAGES, type SupportedLanguage } from './splitter/separators';
-import { type FileLoaderType } from './types';
+export type FileLoaderType =
+  | 'code'
+  | 'ppt'
+  | 'pdf'
+  | 'markdown'
+  | 'doc'
+  | 'text'
+  | 'latex'
+  | 'csv'
+  | 'excel'
+  | 'epub'
+  | 'ipynb';
+
+/** Extensions the server-side code splitter has language-specific separators for. */
+const CODE_LANGUAGES: string[] = [
+  'cpp',
+  'go',
+  'java',
+  'js',
+  'php',
+  'proto',
+  'python',
+  'rst',
+  'ruby',
+  'rust',
+  'scala',
+  'swift',
+  'markdown',
+  'latex',
+  'html',
+  'sol',
+];
+
+/** Extensions chunked as plain text. */
+const SUPPORT_TEXT_LIST = [
+  'txt',
+  'markdown',
+  'md',
+  'mdx',
+  'toml',
+  'yaml',
+  'yml',
+  'json',
+
+  'sh',
+  'patch',
+  'log',
+  // js
+  'js',
+  'jsx',
+  'mjs',
+  'tsx',
+  'ts',
+  'less',
+  'css',
+  // rust
+  'rs',
+  // python
+  'py',
+  'java',
+  // database
+  'sql',
+  'db',
+];
 
 /**
  * Resolve which built-in chunking loader handles a file, by filename.
@@ -50,7 +111,7 @@ export const getChunkingLoaderType = (filename: string): FileLoaderType | undefi
 
   const ext = name.split('.').pop();
 
-  if (ext && SUPPORTED_LANGUAGES.includes(ext as SupportedLanguage)) {
+  if (ext && CODE_LANGUAGES.includes(ext)) {
     return 'code';
   }
 

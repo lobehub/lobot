@@ -420,7 +420,7 @@ const convertIpynbToBlocks = (raw: string): string[] | null => {
 
 /**
  * Full-document variant of {@link convertIpynbToBlocks}. Exported for the
- * chunking pipeline (`src/libs/document-loaders`), which converts the notebook
+ * server-side chunking pipeline, which converts the notebook
  * to markdown and then reuses the markdown splitter.
  */
 export const convertIpynbToMarkdown = (raw: string): string | null => {

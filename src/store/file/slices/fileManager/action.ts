@@ -9,7 +9,7 @@ import { t } from 'i18next';
 import pMap from 'p-map';
 
 import { FILE_UPLOAD_BLACKLIST, MAX_UPLOAD_FILE_COUNT } from '@/const/file';
-import { isChunkingSupported } from '@/libs/document-loaders/loaderType';
+import { isChunkingSupported } from '@/utils/isChunkingSupported';
 import {
   createReplicaSlice,
   linkReplicaEntity,
