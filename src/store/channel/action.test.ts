@@ -108,9 +108,12 @@ describe('channelActions after a committed write', () => {
       channelActions.addMember('chn_000000000001', { agent: { agentId: 'agt_a' } }),
     ).resolves.toBe('mem_agent');
     expect(channelService.addUser).toHaveBeenCalledExactlyOnceWith('chn_000000000001', 'user_b');
-    expect(channelService.addAgent).toHaveBeenCalledExactlyOnceWith('chn_000000000001', {
-      agentId: 'agt_a',
-    });
+    // An Agent from outside a project Channel's project joins the project too.
+    expect(channelService.addAgent).toHaveBeenCalledExactlyOnceWith(
+      'chn_000000000001',
+      { agentId: 'agt_a' },
+      true,
+    );
   });
 
   // One invite adds people and Agents together; people go first so a failing Agent
@@ -131,6 +134,11 @@ describe('channelActions after a committed write', () => {
     ]);
     expect(vi.mocked(channelService.addUser).mock.invocationCallOrder[1]).toBeLessThan(
       vi.mocked(channelService.addAgent).mock.invocationCallOrder[0],
+    );
+    expect(channelService.addAgent).toHaveBeenCalledWith(
+      'chn_000000000001',
+      { agentId: 'agt_a' },
+      true,
     );
     expect(channelService.detail).toHaveBeenCalledTimes(1);
   });

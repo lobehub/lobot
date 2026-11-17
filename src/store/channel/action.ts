@@ -286,7 +286,8 @@ class ChannelActionImpl {
   ) => {
     try {
       for (const userId of userIds) await channelService.addUser(channelId, userId);
-      for (const agent of agents) await channelService.addAgent(channelId, agent);
+      // Picking an Agent from outside a project Channel's project is the consent to seat it there.
+      for (const agent of agents) await channelService.addAgent(channelId, agent, true);
     } finally {
       // A partial failure still shows the members that did join.
       await this.#refreshAfterWrite(() => this.refreshDetail({ channelId }));
@@ -303,7 +304,7 @@ class ChannelActionImpl {
     const { data } =
       'userId' in member
         ? await channelService.addUser(channelId, member.userId)
-        : await channelService.addAgent(channelId, member.agent);
+        : await channelService.addAgent(channelId, member.agent, true);
     await this.#refreshAfterWrite(() => this.refreshDetail({ channelId }));
     return data.id;
   };

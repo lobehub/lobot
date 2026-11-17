@@ -234,6 +234,8 @@ function CreateChannel({ existing, onCreated, onLayoutChange, projectId }: Creat
         }
         const id = await channelActions.create({
           agents: selections,
+          // Agents picked from outside the project join it along with the Channel.
+          joinProject: true,
           projectId: channelProjectId,
           title: channelTitle,
           userIds: people.map((person) => person.userId),
