@@ -1,9 +1,5 @@
-import type {
-  AgentSignalSourceEventInput,
-  AgentSignalSourceType,
-} from '@lobechat/agent-signal/source';
-
 import { lambdaClient } from '@/libs/trpc/client';
+import type { AgentSignalSourceEventInput, AgentSignalSourceType } from '@/types/agentSignal';
 
 type ClientGatewaySourceType = Extract<AgentSignalSourceType, `client.${string}`>;
 

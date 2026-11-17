@@ -1,13 +1,4 @@
 import {
-  type ActivityMemoryItemSchema,
-  type AddIdentityActionSchema,
-  type ContextMemoryItemSchema,
-  type ExperienceMemoryItemSchema,
-  type PreferenceMemoryItemSchema,
-  type RemoveIdentityActionSchema,
-  type UpdateIdentityToolInputSchema,
-} from '@lobechat/memory-user-memory/schemas';
-import {
   type ActivityListParams,
   type ActivityListResult,
   type AddActivityMemoryResult,

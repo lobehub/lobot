@@ -1,6 +1,7 @@
-import type { BaseSource } from '../base/types';
-import type { AgentSignalSourceEvent } from './sourceEvent';
-
+/**
+ * AgentSignal source event shapes the app reports to the server. Kept from the removed
+ * `agent-signal` package, which held the server's signal pipeline.
+ */
 /** AgentSignal source type identifiers shared by browser producers and server executors. */
 export const AGENT_SIGNAL_SOURCE_TYPES = {
   agentExecutionCompleted: 'agent.execution.completed',
@@ -277,166 +278,26 @@ export interface AgentSignalSourcePayloadMap {
 }
 
 /** AgentSignal source variant with source-type-specific payload typing. */
-type AgentSignalSourceVariant<TSourceType extends AgentSignalSourceType = AgentSignalSourceType> =
-  BaseSource & {
-    payload: AgentSignalSourcePayloadMap[TSourceType];
-    sourceType: TSourceType;
-  };
 
-/** Union of every known AgentSignal source variant. */
-type AgentSignalSourceVariants = {
-  [TSourceType in AgentSignalSourceType]: AgentSignalSourceVariant<TSourceType>;
-}[AgentSignalSourceType];
-
-/** User-message source variant. */
-type SourceAgentUserMessage = AgentSignalSourceVariant<'agent.user.message'>;
-
-/** Client runtime-start source variant. */
-type SourceClientRuntimeStart = AgentSignalSourceVariant<'client.runtime.start'>;
-
-/** Normalized client runtime-start source event. */
-type SourceEventClientRuntimeStart = AgentSignalSourceEvent<'client.runtime.start'>;
-
-/** Normalized agent user-message source event. */
-type SourceEventAgentUserMessage = AgentSignalSourceEvent<'agent.user.message'>;
-
-/** Normalized agent nightly-review requested source event. */
-type SourceEventAgentNightlyReviewRequested =
-  AgentSignalSourceEvent<'agent.nightly_review.requested'>;
-
-/** Normalized agent self-reflection requested source event. */
-type SourceEventAgentSelfReflectionRequested =
-  AgentSignalSourceEvent<'agent.self_reflection.requested'>;
-
-/** Normalized agent-declared self-feedback intent source event. */
-type SourceEventAgentSelfFeedbackIntentDeclared =
-  AgentSignalSourceEvent<'agent.self_feedback_intent.declared'>;
-
-/** Normalized tool outcome source event. */
-type SourceEventToolOutcome =
-  AgentSignalSourceEvent<'tool.outcome.completed'> | AgentSignalSourceEvent<'tool.outcome.failed'>;
+type AgentSignalSourceEventPayload<TSourceType extends AgentSignalSourceType> =
+  AgentSignalSourcePayloadMap[TSourceType];
 
 /**
- * Narrows a source event or source variant to `client.runtime.start`.
+ * Caller-provided data for one AgentSignal source event.
  *
- * Use when:
- * - Workflow ingress needs to bridge client runtime starts into server-owned sources
- * - Callers need source-type-specific payload typing
- *
- * Expects:
- * - `source.sourceType` follows the AgentSignal source catalog
- *
- * Returns:
- * - Whether the source is a client runtime-start source
+ * @param TSourceType - Source type whose payload shape should be enforced.
  */
-export function isClientRuntimeStartSource(
-  source: AgentSignalSourceEvent,
-): source is SourceEventClientRuntimeStart;
-export function isClientRuntimeStartSource(
-  source: AgentSignalSourceVariants,
-): source is SourceClientRuntimeStart;
-export function isClientRuntimeStartSource(
-  source: AgentSignalSourceEvent | AgentSignalSourceVariants,
-) {
-  return source.sourceType === AGENT_SIGNAL_SOURCE_TYPES.clientRuntimeStart;
+export interface AgentSignalSourceEventInput<
+  TSourceType extends AgentSignalSourceType = AgentSignalSourceType,
+> {
+  /** Source-type-specific payload that describes what happened. */
+  payload: AgentSignalSourceEventPayload<TSourceType>;
+  /** Optional explicit scope key. Defaults to a key derived from payload routing fields. */
+  scopeKey?: string;
+  /** Stable producer event id used for dedupe. */
+  sourceId: string;
+  /** Source event type identifier. */
+  sourceType: TSourceType;
+  /** Optional event timestamp in milliseconds. Defaults to the current time. */
+  timestamp?: number;
 }
-
-/**
- * Narrows a source event or source variant to `agent.user.message`.
- *
- * Use when:
- * - Feedback classifiers only process direct user-message sources
- * - Workflow normalization needs user-message payload typing
- *
- * Expects:
- * - `source.sourceType` follows the AgentSignal source catalog
- *
- * Returns:
- * - Whether the source is an agent user-message source
- */
-export function isAgentUserMessageSource(
-  source: AgentSignalSourceEvent,
-): source is SourceEventAgentUserMessage;
-export function isAgentUserMessageSource(
-  source: AgentSignalSourceVariants,
-): source is SourceAgentUserMessage;
-export function isAgentUserMessageSource(
-  source: AgentSignalSourceEvent | AgentSignalSourceVariants,
-) {
-  return source.sourceType === AGENT_SIGNAL_SOURCE_TYPES.agentUserMessage;
-}
-
-/**
- * Narrows a source event to `agent.nightly_review.requested`.
- *
- * Use when:
- * - Workflow policy composition needs nightly-review dependencies only for nightly sources
- *
- * Expects:
- * - `source.sourceType` follows the AgentSignal source catalog
- *
- * Returns:
- * - Whether the source is a nightly-review request source
- */
-export const isNightlyReviewSource = (
-  source: AgentSignalSourceEvent,
-): source is SourceEventAgentNightlyReviewRequested => {
-  return source.sourceType === AGENT_SIGNAL_SOURCE_TYPES.agentNightlyReviewRequested;
-};
-
-/**
- * Narrows a source event to `agent.self_reflection.requested`.
- *
- * Use when:
- * - Workflow policy composition needs self-reflection dependencies only for reflection sources
- *
- * Expects:
- * - `source.sourceType` follows the AgentSignal source catalog
- *
- * Returns:
- * - Whether the source is a self-reflection request source
- */
-export const isSelfReflectionSource = (
-  source: AgentSignalSourceEvent,
-): source is SourceEventAgentSelfReflectionRequested => {
-  return source.sourceType === AGENT_SIGNAL_SOURCE_TYPES.agentSelfReflectionRequested;
-};
-
-/**
- * Narrows a source event to `agent.self_feedback_intent.declared`.
- *
- * Use when:
- * - Workflow policy composition needs self-feedback intent dependencies only for declared intents
- *
- * Expects:
- * - `source.sourceType` follows the AgentSignal source catalog
- *
- * Returns:
- * - Whether the source is an agent-declared self-feedback intent source
- */
-export const isSelfFeedbackIntentSource = (
-  source: AgentSignalSourceEvent,
-): source is SourceEventAgentSelfFeedbackIntentDeclared => {
-  return source.sourceType === AGENT_SIGNAL_SOURCE_TYPES.agentSelfFeedbackIntentDeclared;
-};
-
-/**
- * Narrows a source event to tool outcome sources.
- *
- * Use when:
- * - Workflow policy composition needs procedure dependencies for completed or failed tool outcomes
- *
- * Expects:
- * - `source.sourceType` follows the AgentSignal source catalog
- *
- * Returns:
- * - Whether the source is a completed or failed tool outcome source
- */
-export const isToolOutcomeSource = (
-  source: AgentSignalSourceEvent,
-): source is SourceEventToolOutcome => {
-  return (
-    source.sourceType === AGENT_SIGNAL_SOURCE_TYPES.toolOutcomeCompleted ||
-    source.sourceType === AGENT_SIGNAL_SOURCE_TYPES.toolOutcomeFailed
-  );
-};

@@ -1,4 +1,3 @@
-import { DocumentLoadFormat, DocumentLoadRule, PolicyLoad } from '@lobechat/agent-templates';
 import {
   AGENT_DOCUMENT_CATEGORY,
   AGENT_DOCUMENT_SOURCE_TYPE,
@@ -8,6 +7,7 @@ import {
 import { describe, expect, it } from 'vitest';
 
 import type { AgentDocumentContextPayload as AgentDocumentWithRules } from '@/types/serverData';
+import { DocumentLoadFormat, DocumentLoadRule, PolicyLoad } from '@/types/serverData';
 import {
   normalizeAgentDocumentPosition,
   toAgentContextDocument,

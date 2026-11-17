@@ -58,11 +58,7 @@ export const imageUrlToBase64 = async (
 ): Promise<{ base64: string; mimeType: string }> => {
   try {
     const isServer = typeof window === 'undefined';
-
-    // Use SSRF-safe fetch on server-side to prevent SSRF attacks
-    const res = isServer
-      ? await import('@lobechat/ssrf-safe-fetch').then((m) => m.ssrfSafeFetch(imageUrl))
-      : await fetch(imageUrl);
+    const res = await fetch(imageUrl);
 
     const blob = options.maxBytes
       ? await readBlobWithLimit(res, options.maxBytes)

@@ -1,3 +1,6 @@
+/**
+ * Hunk shapes of a markdown patch, kept from the removed `markdown-patch` package.
+ */
 interface MarkdownPatchReplaceHunk {
   mode?: 'replace';
   replace: string;

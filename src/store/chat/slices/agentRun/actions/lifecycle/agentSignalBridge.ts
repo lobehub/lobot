@@ -1,11 +1,7 @@
-import type {
-  AgentSignalSourcePayloadMap,
-  AgentSignalSourceType,
-} from '@lobechat/agent-signal/source';
-
 import { agentSignalService } from '@/services/agentSignal';
 import { labPreferSelectors } from '@/store/user/selectors';
 import { getUserStoreState } from '@/store/user/store';
+import type { AgentSignalSourcePayloadMap, AgentSignalSourceType } from '@/types/agentSignal';
 
 type ClientAgentSignalSourceType = Extract<AgentSignalSourceType, `client.${string}`>;
 
