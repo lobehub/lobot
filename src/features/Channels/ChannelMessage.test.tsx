@@ -496,7 +496,7 @@ describe('ChannelMessage layout', () => {
     expect(screen.queryByText('agentBadge')).toBeNull();
   });
 
-  it('shows your own message without your name or avatar, keeping its time', () => {
+  it('shows your own message with your avatar but not your name, keeping its time', () => {
     const { container } = render(
       <ChannelMessage
         detail={detail}
@@ -505,8 +505,21 @@ describe('ChannelMessage layout', () => {
     );
 
     expect(screen.queryByText('Me')).toBeNull();
+    expect(screen.getByText('me')).toBeTruthy();
     expect(screen.queryByTestId('member-popup')).toBeNull();
     expect(container.querySelector('[data-message-meta] time')).toBeTruthy();
+  });
+
+  it('shows your avatar only on the first of your consecutive messages', () => {
+    render(
+      <ChannelMessage
+        continuation
+        detail={detail}
+        message={message({ avatar: null, id: 'user-self', name: 'Me', type: 'user' })}
+      />,
+    );
+
+    expect(screen.queryByText('me')).toBeNull();
   });
 });
 

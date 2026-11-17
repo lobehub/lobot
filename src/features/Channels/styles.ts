@@ -160,6 +160,7 @@ export const styles = stylex.create({
     insetInlineStart: 16,
     display: 'inline-flex',
   },
+  bubbleAvatarOwn: { insetInlineEnd: 16, insetInlineStart: 'auto' },
   bubbleColumn: {
     display: 'flex',
     flexDirection: 'column',
@@ -169,8 +170,13 @@ export const styles = stylex.create({
   },
   // Clear of the avatar column, so every bubble from one person lines up.
   bubbleColumnOther: { alignItems: 'flex-start', paddingInlineStart: 36 },
-  // Short enough to read as yours at a glance.
-  bubbleColumnOwn: { alignItems: 'flex-end', marginInlineStart: 'auto', paddingInlineStart: 48 },
+  // Clear of your avatar on the right, and short enough to read as yours at a glance.
+  bubbleColumnOwn: {
+    alignItems: 'flex-end',
+    marginInlineStart: 'auto',
+    paddingInlineStart: 48,
+    paddingInlineEnd: 36,
+  },
   bubbleColumnEditing: { flexGrow: 1 },
   bubbleAuthor: {
     display: 'flex',

@@ -32,6 +32,7 @@ import AgentProfilePopup from '@/features/AgentProfileCard/AgentProfilePopup';
 import { ChatItem } from '@/features/Conversation/ChatItem';
 import Markdown from '@/features/Conversation/Markdown';
 import EntityLinkElement from '@/features/EntityLink/element';
+import UserAvatar from '@/features/User/UserAvatar';
 import { channelActions } from '@/store/channel';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
@@ -402,6 +403,13 @@ export const ChannelMessage = ({
           stylex.defaultMarker(),
         )}
       >
+        {isOwnMessage && !compact && (
+          // Your own run of messages starts with your avatar on the right, like WeChat, so a
+          // busy feed still shows at a glance where you spoke.
+          <span {...stylex.props(styles.bubbleAvatar, styles.bubbleAvatarOwn)}>
+            <UserAvatar shape={'circle'} size={28} />
+          </span>
+        )}
         {!isOwnMessage && !compact && (
           // A person shows who they are on hover, the way an Agent shows its profile.
           <MemberProfilePopup member={userMember}>
