@@ -15,7 +15,7 @@ import { useChatStore } from '@/store/chat';
 import { operationSelectors } from '@/store/chat/selectors';
 
 import ConversationRow from './ConversationRow';
-import { conversationPreview, replyActivity } from './conversations';
+import { channelPreviewThread, conversationPreview, replyActivity } from './conversations';
 import { AVATAR_SIZE } from './style';
 import { useInboxConversationLink } from './useAgentConversationLink';
 import { useDirectChannelRow } from './useDirectChannelRow';
@@ -48,6 +48,7 @@ const InboxConversation = memo<{
     <ConversationRow
       closeOnReselect
       active={active}
+      previewThread={channelPreviewThread(channel)}
       title={title}
       unread={channel?.unreadCount ?? undefined}
       url={url}

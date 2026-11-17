@@ -10,7 +10,12 @@ import { TypingDots } from '@/features/Channels/TypingDots';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import WorkspaceLink, { type WorkspaceLinkProps } from '@/features/Workspace/WorkspaceLink';
 
-import { type ConversationActivity, formatConversationTime, isPlainClick } from './conversations';
+import {
+  type ChannelPreviewThread,
+  type ConversationActivity,
+  formatConversationTime,
+  isPlainClick,
+} from './conversations';
 import { styles } from './style';
 
 export interface ConversationRowProps {
@@ -31,6 +36,8 @@ export interface ConversationRowProps {
   onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
   onMouseEnter?: () => void;
   preview?: string;
+  /** The Thread the preview's message was posted in; the preview line names it first. */
+  previewThread?: ChannelPreviewThread;
   /** The row element, e.g. the anchor for an inline rename popover. */
   ref?: Ref<HTMLElement>;
   /** Title only, no preview line — for directory lists like the contacts tab. */
@@ -74,6 +81,7 @@ const ConversationRow = memo<ConversationRowProps>(
     onClick,
     onMouseEnter,
     preview,
+    previewThread,
     ref,
     singleLine,
     tag,
@@ -125,7 +133,14 @@ const ConversationRow = memo<ConversationRowProps>(
                   <TypingDots />
                 </span>
               ) : (
-                <span {...stylex.props(styles.preview)}>{preview}</span>
+                <span {...stylex.props(styles.preview)}>
+                  {previewThread
+                    ? t('threadPreview', {
+                        content: preview,
+                        title: previewThread.title || t('thread'),
+                      })
+                    : preview}
+                </span>
               )}
             </Flexbox>
           )}

@@ -298,6 +298,7 @@
   "threadDivider": "此线程中的回复",
   "threadEmpty": "在这里接着讨论这条消息。",
   "threadList": "全部线程",
+  "threadPreview": "↳ {{title}}：{{content}}",
   "title": "频道",
   "topic.close": "关闭话题",
   "topic.open": "打开话题",

@@ -1,4 +1,9 @@
-import type { ChannelListItem, RecentItem, SidebarAgentItem } from '@lobechat/types';
+import type {
+  ChannelLastMessage,
+  ChannelListItem,
+  RecentItem,
+  SidebarAgentItem,
+} from '@lobechat/types';
 
 import { markdownToTxt } from '@/utils/markdownToTxt';
 
@@ -15,6 +20,8 @@ export interface Conversation {
   item: SidebarAgentItem;
   /** One-line preview from the latest topic (assistant reply, else title). */
   preview?: string;
+  /** The Thread the previewed message was posted in, when it is a Thread reply. */
+  previewThread?: ChannelPreviewThread;
   /** Unread messages of the agent's direct Channel, when the row opens it. */
   unread?: number;
 }
@@ -42,6 +49,18 @@ const oneLine = (text: string | null | undefined) =>
 /** A Channel's latest message as one line of plain text. */
 export const channelPreview = (channel: Pick<ChannelListItem, 'lastMessage'>) =>
   channel.lastMessage ? oneLine(markdownToTxt(channel.lastMessage.content)) : undefined;
+
+export type ChannelPreviewThread = NonNullable<ChannelLastMessage['thread']>;
+
+/**
+ * The Thread a Channel's latest message was posted in. The preview names it, or a Thread reply
+ * reads like the main conversation's last word. Nothing when that message has no preview text,
+ * so a row's fallback line is not credited to a Thread.
+ */
+export const channelPreviewThread = (
+  channel: Pick<ChannelListItem, 'lastMessage'> | undefined,
+): ChannelPreviewThread | undefined =>
+  channel && channelPreview(channel) ? (channel.lastMessage?.thread ?? undefined) : undefined;
 
 /**
  * A row's preview line: its direct Channel's latest message once it has one, else its latest
@@ -149,6 +168,7 @@ export const buildConversationSections = (
         channel: direct,
         item,
         preview: conversationPreview(item.description, undefined, direct),
+        previewThread: channelPreviewThread(direct),
         unread: direct.unreadCount ?? 0,
       });
       continue;

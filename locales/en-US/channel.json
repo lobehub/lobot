@@ -298,6 +298,7 @@
   "threadDivider": "Replies in this thread",
   "threadEmpty": "Keep discussing this message here.",
   "threadList": "Threads",
+  "threadPreview": "↳ {{title}}: {{content}}",
   "title": "Channels",
   "topic.close": "Close topic",
   "topic.open": "Open topic",

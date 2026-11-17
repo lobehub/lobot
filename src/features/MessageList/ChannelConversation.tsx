@@ -17,7 +17,7 @@ import ProjectAvatar from '@/features/Projects/ProjectAvatar';
 import { projectListItemSelector, useProjectStore } from '@/store/project';
 
 import ConversationRow from './ConversationRow';
-import { channelPreview, directCounterpart } from './conversations';
+import { channelPreview, channelPreviewThread, directCounterpart } from './conversations';
 import { AVATAR_SIZE, styles } from './style';
 
 interface ChannelConversationProps {
@@ -53,6 +53,7 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
         activeAt={activeAt}
         contextMenuItems={menuItems(channel)}
         preview={channelPreview(channel)}
+        previewThread={channelPreviewThread(channel)}
         // Someone else's Agent looks like one's own otherwise; the tag says it is theirs.
         tag={channel.sharedAgent ? t('sharedAgent.tag') : undefined}
         title={counterpart.name || channel.title}
@@ -81,6 +82,7 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
       activeAt={activeAt}
       contextMenuItems={menuItems(channel)}
       preview={channelPreview(channel)}
+      previewThread={channelPreviewThread(channel)}
       tag={project?.name}
       title={channel.title}
       unread={channel.unreadCount}

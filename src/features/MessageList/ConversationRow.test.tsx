@@ -9,7 +9,12 @@ import ConversationRow from './ConversationRow';
 
 const navigate = vi.fn();
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, values?: Record<string, string>) =>
+      values ? `${key}(${values.title}|${values.content})` : key,
+  }),
+}));
 vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
   useWorkspaceAwareNavigate: () => navigate,
 }));
@@ -77,6 +82,31 @@ describe('ConversationRow', () => {
     const { row } = renderRow(false);
 
     expect(row.textContent).toBe('Dario');
+  });
+
+  // A Thread reply read like the main conversation's last word; the preview names its Thread.
+  it('names the Thread before a Thread reply preview', () => {
+    const { rerender } = render(
+      createElement(ConversationRow, {
+        avatar: null,
+        preview: 'Conflict resolved',
+        previewThread: { id: 'thr_1', title: 'Member model' },
+        title: 'Dario',
+        url: '/channels/chn_dario',
+      }),
+    );
+    expect(screen.getByText('threadPreview(Member model|Conflict resolved)')).toBeInTheDocument();
+
+    rerender(
+      createElement(ConversationRow, {
+        avatar: null,
+        preview: 'Conflict resolved',
+        previewThread: { id: 'thr_1', title: null },
+        title: 'Dario',
+        url: '/channels/chn_dario',
+      }),
+    );
+    expect(screen.getByText('threadPreview(thread|Conflict resolved)')).toBeInTheDocument();
   });
 
   // The row said a green "running" with a spinner; it now reads like the header's typing line.

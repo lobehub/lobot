@@ -150,6 +150,7 @@ export default {
   'thread': 'Thread',
   'threadList': 'Threads',
   'threadDivider': 'Replies in this thread',
+  'threadPreview': '↳ {{title}}: {{content}}',
   'followers': 'Replies from: {{names}}',
   'olderMessages': 'Older messages',
   'latestMessages': 'Latest messages',

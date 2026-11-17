@@ -183,6 +183,31 @@ describe('buildConversationSections with direct Channels', () => {
 
     expect(recent[0]).toMatchObject({ preview: 'Cooks dinner', unread: 0 });
   });
+
+  // A newer Thread reply read like the main conversation's last word.
+  it('names the Thread a latest reply was posted in', () => {
+    const direct = {
+      agentId: 'a',
+      createdAt: new Date('2026-10-01'),
+      id: 'chn_a',
+      lastMessage: {
+        content: 'Conflict resolved',
+        createdAt: new Date('2026-10-09'),
+        thread: { id: 'thr_1', title: 'Member model' },
+      },
+    } as ChannelListItem;
+    const { recent } = buildConversationSections(
+      [agent('a', '2026-10-01')],
+      [],
+      new Map([['a', direct]]),
+    );
+
+    expect(recent[0]).toMatchObject({
+      activeAt: new Date('2026-10-09'),
+      preview: 'Conflict resolved',
+      previewThread: { id: 'thr_1', title: 'Member model' },
+    });
+  });
 });
 
 describe('formatConversationTime', () => {

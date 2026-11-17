@@ -24,7 +24,7 @@ interface AgentConversationProps {
 }
 
 const AgentConversation = memo<AgentConversationProps>(({ active, conversation }) => {
-  const { item, preview, activeAt } = conversation;
+  const { item, preview, previewThread, activeAt } = conversation;
   const { id, avatar, backgroundColor, pinned, slug, userId, visibility } = item;
   const { t } = useTranslation('chat');
   const { openCreateGroupModal } = useAgentModal();
@@ -83,6 +83,7 @@ const AgentConversation = memo<AgentConversationProps>(({ active, conversation }
       activity={activity}
       contextMenuItems={menuItems}
       preview={preview}
+      previewThread={previewThread}
       title={title}
       unread={conversation.unread ?? item.unreadCount}
       url={url}
