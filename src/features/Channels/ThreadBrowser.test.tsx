@@ -73,11 +73,16 @@ beforeEach(() => {
 });
 
 describe('browseThreads', () => {
-  it('lists live threads newest activity first', () => {
-    expect(browse().map((entry) => entry.title)).toEqual([
-      'Fix the release flow',
-      'Unify Channel members',
+  it('lists live threads newest activity first, then archived ones', () => {
+    expect(browse().map((entry) => [entry.title, entry.archived])).toEqual([
+      ['Fix the release flow', false],
+      ['Unify Channel members', false],
+      ['thread 3', true],
     ]);
+  });
+
+  it('never marks an archived thread unread', () => {
+    expect(browse('thread 3', null, ['thr_3'])[0].unread).toBe(false);
   });
 
   it('searches the title and the last reply as plain text', () => {
@@ -92,6 +97,7 @@ describe('browseThreads', () => {
     expect(entries.map(({ thread, unread }) => [thread.id, unread])).toEqual([
       ['thr_2', true],
       ['thr_1', false],
+      ['thr_3', false],
     ]);
   });
 });
@@ -100,9 +106,19 @@ describe('ThreadBrowser', () => {
   it('shows a count, the last reply, and a red dot on unread threads', () => {
     render(createElement(ThreadBrowser, { activeId: null, detail, onOpen: vi.fn() }));
 
-    expect(screen.getByText('threadBrowser.count:2')).toBeTruthy();
+    expect(screen.getByText('threadBrowser.count:3')).toBeTruthy();
     expect(screen.getByText('Release fixed')).toBeTruthy();
     expect(screen.getAllByRole('img', { name: 'threadUnread' })).toHaveLength(2);
+  });
+
+  it('groups archived threads at the bottom', () => {
+    render(createElement(ThreadBrowser, { activeId: null, detail, onOpen: vi.fn() }));
+
+    const group = screen.getByText('archivedGroup:1');
+    const live = screen.getByText('Unify Channel members');
+    const archived = screen.getByText('thread 3');
+    expect(live.compareDocumentPosition(group) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(group.compareDocumentPosition(archived) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('filters as the person types and opens the picked thread', () => {

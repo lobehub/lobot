@@ -92,6 +92,19 @@ const styles = stylex.create({
   active: {
     borderColor: cssVar.colorPrimaryBorder,
   },
+  // Archived threads fade back, and come forward again under the pointer.
+  archived: {
+    opacity: { 'default': 0.55, ':hover': 1 },
+    backgroundColor: { 'default': 'transparent', ':hover': cssVar.colorFillTertiary },
+  },
+  group: {
+    paddingBlockStart: 10,
+    paddingBlockEnd: 2,
+    paddingInline: 4,
+    fontSize: 12,
+    fontWeight: 500,
+    color: cssVar.colorTextTertiary,
+  },
   body: {
     display: 'flex',
     flex: '1',
@@ -185,6 +198,7 @@ const lastActive = (thread: ChannelPublicThread) =>
 
 export interface BrowsedThread {
   active: boolean;
+  archived: boolean;
   preview?: string;
   thread: ChannelPublicThread;
   title: string;
@@ -192,8 +206,8 @@ export interface BrowsedThread {
 }
 
 /**
- * The Channel's threads as the panel lists them: newest activity first, archived ones left out
- * unless open, filtered by a search on the title and the last reply.
+ * The Channel's threads as the panel lists them: live ones newest activity first, then the
+ * archived ones the same way, filtered by a search on the title and the last reply.
  */
 export const browseThreads = (
   detail: Pick<ChannelDetail, 'messages' | 'threads'>,
@@ -212,7 +226,6 @@ export const browseThreads = (
   const needle = query.trim().toLowerCase();
   return detail.threads
     .map((thread, index) => ({ index, thread }))
-    .filter(({ thread }) => thread.status !== 'archived' || thread.id === activeId)
     .map(({ thread, index }) => {
       const title =
         threadTitle(
@@ -223,8 +236,11 @@ export const browseThreads = (
         ? oneLine(markdownToTxt(thread.lastReply.content))
         : undefined;
       const active = thread.id === activeId;
-      // The open thread is being read, so it never counts as unread.
-      return { active, preview, thread, title, unread: !active && unreadIds.has(thread.id) };
+      const archived = thread.status === 'archived';
+      // The open thread is being read, and an archived one takes no new replies, so neither
+      // counts as unread.
+      const unread = !active && !archived && unreadIds.has(thread.id);
+      return { active, archived, preview, thread, title, unread };
     })
     .filter(
       ({ preview, title }) =>
@@ -232,7 +248,10 @@ export const browseThreads = (
         title.toLowerCase().includes(needle) ||
         !!preview?.toLowerCase().includes(needle),
     )
-    .sort((a, b) => lastActive(b.thread) - lastActive(a.thread));
+    .sort(
+      (a, b) =>
+        Number(a.archived) - Number(b.archived) || lastActive(b.thread) - lastActive(a.thread),
+    );
 };
 
 const ThreadCard = ({
@@ -245,7 +264,7 @@ const ThreadCard = ({
   onOpen: () => void;
 }) => {
   const { t } = useTranslation('channel');
-  const { active, preview, thread, title, unread } = entry;
+  const { active, archived, preview, thread, title, unread } = entry;
   const faces = thread.followerMemberIds
     .map((id) => detail.members.find((member) => member.id === id && member.status === 'active'))
     .filter((member) => !!member)
@@ -255,7 +274,7 @@ const ThreadCard = ({
     <button
       aria-current={active || undefined}
       type="button"
-      {...stylex.props(styles.card, active && styles.active)}
+      {...stylex.props(styles.card, archived && styles.archived, active && styles.active)}
       onClick={onOpen}
     >
       <span {...stylex.props(styles.body)}>
@@ -321,6 +340,17 @@ export const ThreadBrowser = ({
     query,
     unreadIds,
   });
+  const archivedCount = entries.filter((entry) => entry.archived).length;
+  const renderCard = (entry: BrowsedThread) => (
+    <ThreadCard
+      detail={detail}
+      entry={entry}
+      key={entry.thread.id}
+      onOpen={() => {
+        if (!entry.active) onOpen(entry.thread.id);
+      }}
+    />
+  );
   return (
     <div {...stylex.props(styles.panel)}>
       <div {...stylex.props(styles.header)}>
@@ -346,16 +376,17 @@ export const ThreadBrowser = ({
       </div>
       <div {...stylex.props(styles.list)}>
         {entries.length ? (
-          entries.map((entry) => (
-            <ThreadCard
-              detail={detail}
-              entry={entry}
-              key={entry.thread.id}
-              onOpen={() => {
-                if (!entry.active) onOpen(entry.thread.id);
-              }}
-            />
-          ))
+          <>
+            {entries.filter((entry) => !entry.archived).map(renderCard)}
+            {archivedCount > 0 && (
+              <>
+                <div {...stylex.props(styles.group)}>
+                  {t('archivedGroup', { count: archivedCount })}
+                </div>
+                {entries.filter((entry) => entry.archived).map(renderCard)}
+              </>
+            )}
+          </>
         ) : (
           <div {...stylex.props(styles.empty)}>{t('threadBrowser.empty')}</div>
         )}
@@ -381,12 +412,10 @@ export const ThreadsButton = ({
   const [open, setOpen] = useState(false);
   const popoverKey = useCloseOnNavigate(open, () => setOpen(false));
   const unreadIds = useUnreadThreadIds(detail.threads);
-  const listed = detail.threads.filter(
-    (thread) => thread.status !== 'archived' || thread.id === activeId,
-  );
-  if (!listed.length) return null;
-  const unread = listed.filter(
-    (thread) => thread.id !== activeId && unreadIds.has(thread.id),
+  if (!detail.threads.length) return null;
+  const unread = detail.threads.filter(
+    (thread) =>
+      thread.status !== 'archived' && thread.id !== activeId && unreadIds.has(thread.id),
   ).length;
   const label = unread ? t('threadListUnread', { count: unread }) : t('threadList');
   return (

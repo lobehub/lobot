@@ -113,6 +113,10 @@ const styles = stylex.create({
     whiteSpace: 'nowrap',
   },
   working: { color: cssVar.colorTextSecondary },
+  // An archived thread steps back: a quieter title, a grey count, fainter faces.
+  archivedTitle: { color: cssVar.colorTextSecondary },
+  archivedCount: { fontWeight: 500, color: cssVar.colorTextTertiary },
+  archivedFaces: { opacity: 0.5 },
   noteText: {
     overflow: 'hidden',
     minWidth: 0,
@@ -172,6 +176,7 @@ export const ThreadPreviewCard = ({
     (s) => !!lastReply && isCurrentUserAuthor(lastReply.author, userProfileSelectors.userId(s)),
   );
   const title = threadTitle(root, thread) ?? t('thread');
+  const archived = thread.status === 'archived';
   return (
     <button type="button" {...stylex.props(styles.entry)} onClick={onOpen}>
       <span {...stylex.props(styles.head)}>
@@ -179,10 +184,10 @@ export const ThreadPreviewCard = ({
         <span {...stylex.props(styles.arrow)}>
           <Icon icon={CornerDownRight} size={14} />
         </span>
-        <span {...stylex.props(styles.title)}>{title}</span>
+        <span {...stylex.props(styles.title, archived && styles.archivedTitle)}>{title}</span>
       </span>
       <span {...stylex.props(styles.line)}>
-        <span {...stylex.props(styles.faces)}>
+        <span {...stylex.props(styles.faces, archived && styles.archivedFaces)}>
           {faces.length > 0
             ? faces.map((member) => <MemberAvatar key={member.id} member={member} size={20} />)
             : lastReply &&
@@ -197,7 +202,7 @@ export const ThreadPreviewCard = ({
                 />
               ))}
         </span>
-        <span {...stylex.props(styles.count)}>
+        <span {...stylex.props(styles.count, archived && styles.archivedCount)}>
           {/* Views cached before thread summaries existed only know that the thread exists. */}
           {replyCount ? t('threadCard.replies', { count: replyCount }) : t('openThread')}
         </span>
