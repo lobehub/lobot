@@ -113,7 +113,15 @@ function AgentEnvironment({
   );
   return (
     <AsyncBoundary data={data} error={error} isLoading={isLoading} onRetry={() => void mutate()}>
-      {data && <EnvironmentForm channelId={channelId} current={data} member={member} />}
+      {data && (
+        // The form copies the saved choice once; a refetch that changes it starts the form over.
+        <EnvironmentForm
+          channelId={channelId}
+          current={data}
+          key={`${data.deviceId ?? ''}:${data.workingDirectory ?? ''}`}
+          member={member}
+        />
+      )}
     </AsyncBoundary>
   );
 }

@@ -422,6 +422,14 @@ export const statusStyles = stylex.create({
   memberWorking: {
     color: cssVar.colorWarning,
   },
+  /** A member's status line under its name: secondary text, one line. */
+  memberState: {
+    overflow: 'hidden',
+    fontSize: cssVar.fontSizeSM,
+    lineHeight: 1.5,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
   memberAvatar: {
     position: 'relative',
     display: 'inline-flex',

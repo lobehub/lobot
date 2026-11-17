@@ -1,6 +1,6 @@
 import type { ChannelDetail, ChannelPublicMember } from '@lobechat/types';
 import type { DropdownItem } from '@lobehub/ui';
-import { ActionIcon, DropdownMenu, Flexbox, Icon, Spin, Text } from '@lobehub/ui';
+import { ActionIcon, DropdownMenu, Flexbox, Icon, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { ExternalLink, FolderCog, MoreHorizontal, UserMinus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -77,15 +77,19 @@ export function useMemberEntries(detail: ChannelDetail) {
   return entries;
 }
 
-/** A working member spins amber, like a running Agent in the sidebar. */
+/**
+ * A working member reads amber, like a running Agent in the sidebar. The avatar's dot already
+ * shows the state, so the line carries no icon of its own.
+ */
 const MemberState = ({ entry }: { entry: MemberEntry }) =>
-  !entry.label ? null : entry.tone === 'working' ? (
-    <span {...stylex.props(statusStyles.state, statusStyles.memberWorking)}>
-      <Spin size={12} style={{ color: 'inherit' }} />
-      {entry.label}
+  !entry.label ? null : (
+    <span {...stylex.props(statusStyles.memberState)}>
+      {entry.tone === 'working' ? (
+        <span {...stylex.props(statusStyles.memberWorking)}>{entry.label}</span>
+      ) : (
+        <ChannelStatus hideDot label={entry.label} tone={entry.tone} />
+      )}
     </span>
-  ) : (
-    <ChannelStatus hideDot label={entry.label} tone={entry.tone} />
   );
 
 interface MemberRowProps {
