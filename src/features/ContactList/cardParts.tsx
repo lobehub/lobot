@@ -36,9 +36,11 @@ export const styles = stylex.create({
   avatar: {
     marginBlockStart: `-${AVATAR_SIZE / 2}px`,
   },
+  // Tiles keep a button's width rather than stretching, so a lone "Message" is not a bar.
   actions: {
     display: 'grid',
-    gridAutoColumns: 'minmax(0, 1fr)',
+    gridAutoColumns: 'minmax(0, 120px)',
+    justifyContent: 'center',
     gridAutoFlow: 'column',
     gap: '8px',
     width: '100%',

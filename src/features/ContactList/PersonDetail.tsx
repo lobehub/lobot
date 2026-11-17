@@ -23,6 +23,7 @@ import AgentAvatar from '@/components/AgentAvatar';
 import AsyncError from '@/components/AsyncError';
 import UserAvatar from '@/components/UserAvatar';
 import { personName } from '@/features/AddContactModal/result';
+import { cardStyles } from '@/features/AgentViewAll/AgentCard';
 import NavHeader from '@/features/NavHeader';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { channelActions } from '@/store/channel';
@@ -32,7 +33,7 @@ import { userProfileSelectors } from '@/store/user/selectors';
 
 import { AVATAR_SIZE, styles, TileContent } from './cardParts';
 import { AGENT_CONTACT_URL } from './const';
-import { workspaceRoleKey } from './ExternalRows';
+import { PersonInfo } from './PersonInfo';
 import { useMessageSharedAgent } from './useMessageSharedAgent';
 
 const AGENT_ROW_AVATAR = 32;
@@ -122,7 +123,6 @@ const WORKSPACE_MANAGER_ROLES = new Set(['owner', 'admin']);
  */
 const PersonCard = memo<{ userId: string }>(({ userId }) => {
   const { t } = useTranslation('common');
-  const { t: tSetting } = useTranslation('setting');
   const navigate = useWorkspaceAwareNavigate();
   const workspace = useActiveWorkspace();
   const members = useWorkspaceMembers();
@@ -188,13 +188,10 @@ const PersonCard = memo<{ userId: string }>(({ userId }) => {
         {name}
       </Text>
       {user.username && <Text type={'secondary'}>@{user.username}</Text>}
-      {workspace && member && (
-        <Text fontSize={12} type={'secondary'}>
-          {t('contacts.person.memberOf', {
-            role: tSetting(workspaceRoleKey(member.role)),
-            workspace: workspace.name,
-          })}
-        </Text>
+      {workspace && member?.title && (
+        <span className={cardStyles.role} title={member.title}>
+          {member.title}
+        </span>
       )}
       {workspace && isExternal && (
         <Text fontSize={12} type={'secondary'}>
@@ -303,6 +300,8 @@ const PersonCard = memo<{ userId: string }>(({ userId }) => {
           {t('contacts.external.openHint')}
         </Text>
       )}
+
+      {workspace && member && <PersonInfo member={member} />}
 
       {sharedAgents.length > 0 && (
         <Flexbox gap={12} style={{ marginBlockStart: 24, width: '100%' }}>

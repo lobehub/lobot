@@ -11,7 +11,8 @@ import { useAgentAccounts } from '@/features/AgentMail/useAgentIdentity';
 
 import { contactInfoRows } from './contactInfoRows';
 
-const styles = stylex.create({
+/** The info-list look, shared with a person's card. */
+export const infoStyles = stylex.create({
   list: {
     overflow: 'hidden',
     marginBlockStart: '8px',
@@ -70,21 +71,21 @@ export const ContactInfo = memo<{
   if (rows.length === 0) return null;
 
   return (
-    <div {...stylex.props(styles.list)}>
+    <div {...stylex.props(infoStyles.list)}>
       {rows.map((row, index) => (
         <Flexbox
           horizontal
           align={'center'}
           gap={8}
           key={row.key}
-          {...stylex.props(styles.row, index > 0 && styles.divided)}
+          {...stylex.props(infoStyles.row, index > 0 && infoStyles.divided)}
         >
           <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
-            <span {...stylex.props(styles.label)}>{t(LABELS[row.kind])}</span>
+            <span {...stylex.props(infoStyles.label)}>{t(LABELS[row.kind])}</span>
             {row.kind === 'bio' ? (
-              <span {...stylex.props(styles.value, styles.bio)}>{row.value}</span>
+              <span {...stylex.props(infoStyles.value, infoStyles.bio)}>{row.value}</span>
             ) : (
-              <span title={row.value} {...stylex.props(styles.value)}>
+              <span title={row.value} {...stylex.props(infoStyles.value)}>
                 {row.value}
               </span>
             )}

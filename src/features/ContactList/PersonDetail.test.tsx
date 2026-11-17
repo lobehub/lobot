@@ -23,6 +23,7 @@ const { navigate, openPeer, openToExternal, removeExternal, state } = vi.hoisted
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
+    i18n: { language: 'en-US' },
     t: (key: string, options?: Record<string, string>) =>
       options ? `${key}(${Object.values(options).join(',')})` : key,
   }),
@@ -105,15 +106,25 @@ describe('PersonDetail', () => {
     expect(openPeer).toHaveBeenCalledWith('u_bo');
   });
 
-  it('messages a fellow workspace member who is not a contact, and names their role', () => {
+  it('messages a fellow workspace member who is not a contact, and shows their profile', () => {
     state.profile = profile('member');
     state.workspace = { id: 'ws_team', name: 'Team' };
-    state.members = [{ role: 'admin', userId: 'u_bo' }];
+    state.members = [
+      {
+        joinedAt: '2026-09-12T00:00:00Z',
+        responsibilities: 'Bots and channels',
+        role: 'admin',
+        title: 'FDE',
+        user: { email: 'bo@example.com' },
+        userId: 'u_bo',
+      },
+    ];
     renderCard();
 
-    expect(
-      screen.getByText('contacts.person.memberOf(workspace.member.roles.admin,Team)'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('FDE')).toBeInTheDocument();
+    expect(screen.getByText('workspace.member.roles.admin')).toBeInTheDocument();
+    expect(screen.getByText('bo@example.com')).toBeInTheDocument();
+    expect(screen.getByText('Bots and channels')).toBeInTheDocument();
     expect(screen.getByText('contacts.sendMessage')).toBeInTheDocument();
     expect(screen.queryByText('contacts.external.invite')).not.toBeInTheDocument();
   });

@@ -23,7 +23,7 @@ const styles = stylex.create({
 });
 
 const ActionSkeleton = () => (
-  <Skeleton height={24} radius={6} style={{ marginBlockStart: 10 }} width={'100%'} />
+  <Skeleton height={32} radius={8} style={{ marginBlockStart: 10 }} width={'100%'} />
 );
 
 /** Runs a card action with a pending flag and the shared failure toast. */
@@ -57,7 +57,7 @@ const MessageButton = ({ userId }: { userId: string }) => {
       block
       icon={MessageCircleIcon}
       loading={pending}
-      size={'small'}
+      type={'fill'}
       {...stylex.props(styles.action)}
       onClick={() =>
         run(async () => {
@@ -94,7 +94,6 @@ export const ContactAction = ({ userId }: { userId: string }) => {
           block
           icon={UserRoundPlusIcon}
           loading={pending}
-          size={'small'}
           type={'primary'}
           {...stylex.props(styles.action)}
           onClick={() => run(() => contactActions.sendRequest(userId))}
@@ -105,7 +104,7 @@ export const ContactAction = ({ userId }: { userId: string }) => {
     }
     case 'request_sent': {
       return (
-        <Button block disabled icon={CheckIcon} size={'small'} {...stylex.props(styles.action)}>
+        <Button block disabled icon={CheckIcon} {...stylex.props(styles.action)}>
           {t('contacts.person.requestSent')}
         </Button>
       );
@@ -117,7 +116,6 @@ export const ContactAction = ({ userId }: { userId: string }) => {
           block
           icon={CheckIcon}
           loading={pending}
-          size={'small'}
           type={'primary'}
           {...stylex.props(styles.action)}
           onClick={() => run(() => contactActions.acceptRequest(request))}
