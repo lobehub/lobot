@@ -6,8 +6,6 @@ import {
 
 import { getAgentStoreState } from '@/store/agent';
 import { agentByIdSelectors } from '@/store/agent/selectors';
-import { getAiInfraStoreState } from '@/store/aiInfra';
-import { aiModelSelectors } from '@/store/aiInfra/slices/aiModel/selectors';
 
 /**
  * Snapshot the given agent's current model/provider so a newly created topic
@@ -79,16 +77,6 @@ export const snapshotAgentReasoning = async (
     return Object.keys(snapshot).length === 0 ? undefined : snapshot;
   }
 
-  const { model, provider } = modelSnapshot;
-  if (!model || !provider) return undefined;
-
-  /** Creation must settle the saved config before persistence, including a first send after reload. */
-  await getAiInfraStoreState().ensureModelReasoningConfig(model, provider);
-  const aiInfraState = getAiInfraStoreState();
-  if (!aiModelSelectors.isModelHasReasoningExtendParams(model, provider)(aiInfraState)) return;
-  if (!aiModelSelectors.isModelReasoningConfigLoaded(model, provider)(aiInfraState)) return;
-
-  return {
-    reasoningConfig: aiModelSelectors.modelReasoningConfig(model, provider)(aiInfraState) ?? {},
-  };
+  // Only external Agents run here; an API model has no reasoning config to pin.
+  return undefined;
 };

@@ -14,13 +14,11 @@ import HeteroControlBar from '@/features/ChatInput/ControlBar/HeteroControlBar';
 import HeteroModel from '@/features/ChatInput/ControlBar/HeteroModel';
 import { ChatInput } from '@/features/Conversation';
 import { contextSelectors, useConversationStore } from '@/features/Conversation/store';
-import { useProviderBindingValidation } from '@/features/HeterogeneousAgent/hooks/useProviderBinding';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import {
   isHeterogeneousSandboxExecutionAvailable,
   resolveExecutionTarget,
 } from '@/helpers/executionTarget';
-import { resolveProviderBindingGuard } from '@/helpers/providerBinding';
 import { useEffectiveAgencyConfig } from '@/hooks/useEffectiveAgencyConfig';
 import { useRemoteAgentDeviceGuard } from '@/hooks/useRemoteAgentDeviceGuard';
 import { useChatStore } from '@/store/chat';
@@ -108,43 +106,23 @@ const HeterogeneousChatInput = memo(() => {
   });
   const heterogeneousProvider = agencyConfig?.heterogeneousProvider;
   const providerType = heterogeneousProvider?.type;
-  const isApiAuth = heterogeneousProvider?.authMode === 'api';
-  const providerApiConfig =
-    isApiAuth &&
-    heterogeneousProvider.apiConfig &&
-    heterogeneousProvider.apiConfig.source !== 'server-default'
-      ? heterogeneousProvider.apiConfig
-      : undefined;
-  const apiConfigMissing = isApiAuth && !heterogeneousProvider.apiConfig;
   const executionTarget = resolveExecutionTarget(agencyConfig, {
     isHetero: !!providerType,
     clientExecutionAvailable: isDesktop,
     workspaceScoped,
   });
-  const { error: apiBindingValidationError, isReady: isApiBindingStateReady } =
-    useProviderBindingValidation(providerType, providerApiConfig);
   const deviceSelectionRequired =
     !!providerType &&
     !isHeterogeneousSandboxExecutionAvailable(providerType) &&
     executionTarget === 'none';
 
   const showHeteroModel =
-    !isApiAuth &&
     isHeteroSelectorAvailable(providerType) &&
     shouldShowHeteroModelSelector({
       boundDeviceId: agencyConfig?.boundDeviceId,
       executionTarget,
       isDesktopClient: isDesktop,
       providerType,
-    });
-  const apiModeTargetUnsupported = isApiAuth && executionTarget !== 'local';
-  const validateProviderBinding =
-    (apiConfigMissing || !!providerApiConfig) && executionTarget === 'local';
-  const { blocked: apiModeBindingBlocked, error: apiModeBindingError } =
-    resolveProviderBindingGuard({
-      active: validateProviderBinding,
-      error: apiBindingValidationError,
-      isReady: isApiBindingStateReady,
     });
   // The armed-schedule chip sits immediately after the `+` that armed it, so the
   // state and the control that produced it read as one unit.
@@ -229,13 +207,7 @@ const HeterogeneousChatInput = memo(() => {
   const renderCloudConfigGuard = () => {
     // Until the override loads, `isDeviceExecution` may be a false negative —
     // don't flash the cloud-config prompt for what turns out to be a device run.
-    if (
-      apiModeTargetUnsupported ||
-      isPreferenceLoading ||
-      deviceSelectionRequired ||
-      isDeviceExecution ||
-      isConfigured
-    ) {
+    if (isPreferenceLoading || deviceSelectionRequired || isDeviceExecution || isConfigured) {
       return null;
     }
 
@@ -246,44 +218,6 @@ const HeterogeneousChatInput = memo(() => {
         action={
           <Button size={'small'} type={'primary'} onClick={goToConfig}>
             {t('heteroAgent.cloudNotConfigured.action')}
-          </Button>
-        }
-      />
-    );
-  };
-
-  const renderApiModeTargetGuard = () => {
-    if (!apiModeTargetUnsupported) return null;
-
-    return (
-      <GuardBanner
-        hint={t('heteroAgent.apiMode.localOnly.desc')}
-        title={t('heteroAgent.apiMode.localOnly.title')}
-        action={
-          <Button size={'small'} type={'primary'} onClick={goToAgentProfile}>
-            {t('platformAgent.deviceGuard.configure')}
-          </Button>
-        }
-      />
-    );
-  };
-
-  const renderApiModeBindingGuard = () => {
-    if (!apiModeBindingError) return null;
-
-    const title =
-      apiModeBindingError.code === 'configMissing'
-        ? t('heteroAgent.apiMode.configMissing')
-        : apiModeBindingError.code === 'agentUnsupported'
-          ? t('heteroAgent.apiMode.agentUnsupported', { name: providerType })
-          : t(`heteroAgent.apiMode.${apiModeBindingError.code}`, apiModeBindingError);
-
-    return (
-      <GuardBanner
-        title={title}
-        action={
-          <Button size={'small'} type={'primary'} onClick={goToAgentProfile}>
-            {t('platformAgent.deviceGuard.configure')}
           </Button>
         }
       />
@@ -308,26 +242,18 @@ const HeterogeneousChatInput = memo(() => {
   // workspace preference loads, keep send disabled: the effective target isn't
   // known yet, so neither guard can vouch for the run.
   const inputDisabled =
-    apiModeTargetUnsupported ||
-    apiModeBindingBlocked ||
     isPreferenceLoading ||
     deviceSelectionRequired ||
     (!isConfigured && !isDeviceExecution) ||
     deviceBlocked;
   const hasGuard =
-    apiModeTargetUnsupported ||
-    !!apiModeBindingError ||
-    deviceSelectionRequired ||
-    deviceBlocked ||
-    (!isConfigured && !isDeviceExecution);
+    deviceSelectionRequired || deviceBlocked || (!isConfigured && !isDeviceExecution);
 
   // The guards go through `notices` rather than as siblings above `ChatInput`:
   // the running-status / queue trays float above this column, so a sibling
   // guard would sit underneath them. The slot puts it on top of that stack.
   const notices = hasGuard ? (
     <>
-      {renderApiModeTargetGuard()}
-      {renderApiModeBindingGuard()}
       {renderDeviceSelectionGuard()}
       {renderCloudConfigGuard()}
       {renderDeviceGuard()}

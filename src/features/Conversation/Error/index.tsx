@@ -2,6 +2,8 @@ import { isDesktop } from '@lobechat/const';
 import { HeterogeneousAgentSessionErrorCode } from '@lobechat/electron-client-ipc';
 import { readHeterogeneousErrorContext } from '@lobechat/heterogeneous-agents/errors';
 import { getErrorCodeSpec } from '@lobechat/model-runtime/errors';
+import { isRecord } from '@lobechat/utils/object';
+import { type AlertProps, Block, Highlighter, Skeleton, toast } from '@lobehub/ui';
 import {
   AgentRuntimeErrorType,
   ChatErrorType,
@@ -10,8 +12,6 @@ import {
   type ILobeAgentRuntimeErrorType,
   type IToolErrorType,
 } from '@lobot/types';
-import { isRecord } from '@lobechat/utils/object';
-import { type AlertProps, Block, Highlighter, Skeleton, toast } from '@lobehub/ui';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -122,13 +122,6 @@ const loading = () => (
 );
 
 const ExceededContextWindowError = dynamic(() => import('./ExceededContextWindowError'), {
-  loading,
-  ssr: false,
-});
-
-const OllamaBizError = dynamic(() => import('./OllamaBizError'), { loading, ssr: false });
-
-const OllamaSetupGuide = dynamic(() => import('./OllamaSetupGuide'), {
   loading,
   ssr: false,
 });
@@ -559,16 +552,6 @@ const ErrorMessageExtra = memo<ErrorExtraProps>(
           if (!enableBusinessFeatures) return;
           return (
             <QuotaLimitError id={data.id} onRetry={canRetry ? handleManualRetry : undefined} />
-          );
-        }
-
-        case AgentRuntimeErrorType.OllamaServiceUnavailable: {
-          return <OllamaSetupGuide id={data.id} />;
-        }
-
-        case AgentRuntimeErrorType.OllamaBizError: {
-          return (
-            <OllamaBizError {...data} alertError={{ ...alertError, message: displayMessage }} />
           );
         }
 

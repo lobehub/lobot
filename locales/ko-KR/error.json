@@ -165,7 +165,6 @@
   "unlock.apiKey.description": "{{name}} API 키를 입력하면 대화를 시작할 수 있습니다",
   "unlock.apiKey.imageGenerationDescription": "{{name}} API 키를 입력하면 생성을 시작할 수 있습니다",
   "unlock.apiKey.title": "사용자 정의 {{name}} API 키 사용",
-  "unlock.closeMessage": "힌트 닫기",
   "unlock.comfyui.description": "올바른 {{name}} 인증 정보를 입력하면 계속할 수 있습니다",
   "unlock.comfyui.modifyBaseUrl": "ComfyUI 서비스 주소 변경",
   "unlock.comfyui.title": "{{name}} 인증 정보 확인이 필요합니다",

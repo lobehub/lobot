@@ -18,11 +18,9 @@ import { useTranslation } from 'react-i18next';
 import { ModelIcon } from '@/components/LobeIcons';
 import { ArticleSkeleton } from '@/components/Skeleton';
 import { CONTACT_URL } from '@/features/ContactList/const';
-import ModelSelect from '@/features/ModelSelect';
 import { useResourceAccess } from '@/features/ResourcePermission/useResourceAccess';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { usePermission } from '@/hooks/usePermission';
-import { useAgentGroupStore } from '@/store/agentGroup';
 import { contactSelectors, useContactStore } from '@/store/contact';
 import { useHomeStore } from '@/store/home';
 import { homeAgentListSelectors } from '@/store/home/selectors';
@@ -49,16 +47,6 @@ const styles = createStaticStyles(({ css, cssVar }) => ({
     padding-block: 12px;
     padding-inline: 16px;
     border-block-start: 1px solid ${cssVar.colorBorderSecondary};
-  `,
-  section: css`
-    padding-block: 12px;
-    padding-inline: 16px;
-  `,
-  sectionTitle: css`
-    margin-block-end: 8px;
-    font-size: 11px;
-    font-weight: 600;
-    color: ${cssVar.colorTextTertiary};
   `,
   statItem: css`
     color: ${cssVar.colorTextSecondary};
@@ -90,7 +78,6 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
     const { t } = useTranslation('chat');
     const navigate = useWorkspaceAwareNavigate();
     const [open, setOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
     const { allowed: canEditContent } = usePermission('edit_own_content');
     const { canEditResource: canEditAgent, isAccessResolved: isAgentAccessResolved } =
       useResourceAccess('agent', open ? agentId : undefined);
@@ -102,7 +89,6 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
       canEditAgent &&
       (!groupId || (isGroupAccessResolved && canEditGroup));
 
-    const updateMemberAgentConfig = useAgentGroupStore((s) => s.updateMemberAgentConfig);
     const listEntry = useHomeStore(homeAgentListSelectors.getAgentById(agentId));
     // An Agent in my Contacts, mine or one shared with me, opens its contact card.
     const isContact = useContactStore((s) => !!contactSelectors.agentById(agentId)(s));
@@ -124,19 +110,6 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
       name: fetched?.name ?? agent?.name,
       provider: fetched?.provider ?? agent?.provider,
       title: fetched?.title ?? agent?.title,
-    };
-
-    const handleModelChange = async (props: { model: string; provider: string }) => {
-      if (!groupId || !canConfigure) return;
-      setLoading(true);
-      try {
-        await updateMemberAgentConfig(groupId, agentId, {
-          model: props.model,
-          provider: props.provider,
-        });
-      } finally {
-        setLoading(false);
-      }
     };
 
     const handleSettings = () => {
@@ -165,18 +138,7 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
     // on its config is not what runs it: name the runtime instead, and never
     // offer a model switch that would not take effect.
     const modelSection =
-      canConfigure && groupId && !isExternal ? (
-        merged.model && (
-          <Flexbox className={styles.section} gap={4}>
-            <div className={styles.sectionTitle}>{t('groupSidebar.agentProfile.model')}</div>
-            <ModelSelect
-              loading={loading}
-              value={{ model: merged.model, provider: merged.provider ?? undefined }}
-              onChange={handleModelChange}
-            />
-          </Flexbox>
-        )
-      ) : footerLoading && !isExternal ? (
+      footerLoading && !isExternal ? (
         <Flexbox horizontal align={'center'} className={styles.footer} gap={14}>
           <Skeleton height={16} width={90} />
           <Skeleton height={16} width={60} />

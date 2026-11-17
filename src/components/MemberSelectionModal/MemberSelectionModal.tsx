@@ -1,6 +1,5 @@
 'use client';
 
-import { agentDisplayName, type SidebarAgentItem } from '@lobot/types';
 import {
   ActionIcon,
   Button,
@@ -15,6 +14,7 @@ import {
 } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import { media } from '@lobehub/ui/stylex/media.stylex';
+import { agentDisplayName, type SidebarAgentItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { useHover } from 'ahooks';
 import { X } from 'lucide-react';
@@ -25,13 +25,10 @@ import { useTranslation } from 'react-i18next';
 import AgentAvatar from '@/components/AgentAvatar';
 import ImperativeModal from '@/components/ImperativeModal';
 import AgentSelectionEmpty from '@/features/AgentSelectionEmpty';
-import ModelSelect from '@/features/ModelSelect';
-import { useEnabledChatModels } from '@/hooks/useEnabledChatModels';
 import { useHomeStore } from '@/store/home';
 import { homeAgentListSelectors } from '@/store/home/selectors';
 import { useUserStore } from '@/store/user';
 import { authSelectors } from '@/store/user/selectors';
-import { sx } from '@/styles/sx';
 
 const AvailableAgentItem = memo<{
   agent: SidebarAgentItem;
@@ -113,10 +110,6 @@ const styles = stylex.create({
     flexDirection: { default: null, [media.sm]: 'column' },
     alignItems: { default: null, [media.sm]: 'stretch' },
   },
-  hostModelSelect: {
-    flex: { default: null, [media.sm]: '1' },
-    minWidth: { default: null, [media.sm]: 0 },
-  },
   leftColumn: {
     userSelect: 'none',
     overflowY: 'auto',
@@ -142,7 +135,6 @@ const styles = stylex.create({
     backgroundColor: { 'default': null, ':hover': cssVar.colorFillTertiary },
     backgroundImage: { 'default': null, ':hover': 'none' },
   },
-  modelSelectDisabled: { pointerEvents: 'none' },
   rightColumn: {
     overflowY: 'auto',
     flex: '1',
@@ -196,7 +188,6 @@ const MemberSelectionModal = memo<MemberSelectionModalProps>(
     preSelectedAgents = [],
   }) => {
     const { t } = useTranslation(['chat', 'common']);
-    const enabledModels = useEnabledChatModels();
     const [selectedAgents, setSelectedAgents] = useState<string[]>(preSelectedAgents);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -207,28 +198,6 @@ const MemberSelectionModal = memo<MemberSelectionModalProps>(
     // - In create mode: default to enabled (isHostRemoved = false)
     // - In add mode with host disabled: default to disabled (isHostRemoved = true)
     const [isHostRemoved, setIsHostRemoved] = useState(mode === 'add' ? true : false);
-    const [hostModelConfig, setHostModelConfig] = useState<{ model?: string; provider?: string }>(
-      () => {
-        if (mode === 'add' && currentHostConfig) {
-          return {
-            model: currentHostConfig.orchestratorModel,
-            provider: currentHostConfig.orchestratorProvider,
-          };
-        }
-        // Set default for create mode
-        if (enabledModels.length > 0 && enabledModels[0].children.length > 0) {
-          const firstProvider = enabledModels[0];
-          const firstModel = firstProvider.children[0];
-
-          return {
-            model: firstModel.id,
-            provider: firstProvider.id,
-          };
-        }
-        return {};
-      },
-    );
-
     const isLogin = useUserStore(authSelectors.isLogin);
     const useFetchAgentList = useHomeStore((s) => s.useFetchAgentList);
     useFetchAgentList(open && isLogin);
@@ -252,10 +221,6 @@ const MemberSelectionModal = memo<MemberSelectionModalProps>(
 
     const handleHostToggle = useCallback((enabled: boolean) => {
       setIsHostRemoved(!enabled);
-    }, []);
-
-    const handleHostModelChange = useCallback((config: { model?: string; provider?: string }) => {
-      setHostModelConfig(config);
     }, []);
 
     // Filter logic based on mode
@@ -328,24 +293,9 @@ const MemberSelectionModal = memo<MemberSelectionModalProps>(
       setSelectedAgents(preSelectedAgents);
       setSearchTerm('');
       setIsHostRemoved(mode === 'add' ? true : false);
-      if (mode === 'add' && currentHostConfig) {
-        setHostModelConfig({
-          model: currentHostConfig.orchestratorModel,
-          provider: currentHostConfig.orchestratorProvider,
-        });
-      }
     };
 
     const [isAdding, setIsAdding] = useState(false);
-
-    const normalizedHostModelConfig = useMemo(() => {
-      const model = hostModelConfig.model;
-      const provider = hostModelConfig.provider;
-
-      if (!model || !provider) return undefined;
-
-      return { model, provider };
-    }, [hostModelConfig]);
 
     const handleConfirm = async () => {
       try {
@@ -462,18 +412,6 @@ const MemberSelectionModal = memo<MemberSelectionModalProps>(
                     </Text>
                   </Flexbox>
                   <Flexbox horizontal align="center" gap={12}>
-                    <div
-                      {...sx(styles.hostModelSelect, isHostRemoved && styles.modelSelectDisabled, {
-                        opacity: isHostRemoved ? 0.6 : 1,
-                      })}
-                    >
-                      <ModelSelect
-                        requiredAbilities={['functionCall']}
-                        style={{ maxWidth: '100%', minWidth: 'min(200px, 100%)' }}
-                        value={normalizedHostModelConfig}
-                        onChange={handleHostModelChange}
-                      />
-                    </div>
                     <Tooltip title={t('groupWizard.host.tooltip')}>
                       <Switch
                         checked={!isHostRemoved}

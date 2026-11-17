@@ -165,7 +165,6 @@
   "unlock.apiKey.description": "Въведете вашия {{name}} API ключ, за да започнете сесията",
   "unlock.apiKey.imageGenerationDescription": "Въведете вашия {{name}} API ключ, за да започнете генериране",
   "unlock.apiKey.title": "Използвайте персонализиран {{name}} API ключ",
-  "unlock.closeMessage": "Затвори съобщението",
   "unlock.comfyui.description": "Въведете валидни {{name}} данни, за да започнете генериране на изображения.",
   "unlock.comfyui.modifyBaseUrl": "Редактирайте URL адреса на услугата ComfyUI",
   "unlock.comfyui.title": "Потвърдете вашите {{name}} данни",

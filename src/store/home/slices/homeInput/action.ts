@@ -9,8 +9,6 @@ import { documentService } from '@/services/document';
 import { getAgentStoreState } from '@/store/agent';
 import { agentByIdSelectors, agentSelectors, builtinAgentSelectors } from '@/store/agent/selectors';
 import { getChatGroupStoreState } from '@/store/agentGroup';
-import { getAiInfraStoreState } from '@/store/aiInfra';
-import { aiModelSelectors, aiProviderSelectors } from '@/store/aiInfra/selectors';
 import { useChatStore } from '@/store/chat';
 import { useGlobalStore } from '@/store/global';
 import { useGroupProfileStore } from '@/store/groupProfile';
@@ -67,8 +65,6 @@ const ensureBuiltinAgentHydrated = async (slug: string): Promise<string | undefi
  * The workspace-scoped row of the same slug is shared by every member, so a
  * personal preference must not repoint it — that write both broke for
  * non-creators and silently changed the model for everyone else.
- * The single exception is a shared row whose own model cannot be invoked in this
- * deployment; leaving it would fail the request outright, so it is repaired once.
  *
  * Ownership is read off the hydrated row rather than a `workspaceSlug` argument,
  * because some call sites (e.g. the command menu) omit that argument while still
@@ -84,28 +80,8 @@ const syncBuiltinAgentModel = async (
   const state = getAgentStoreState();
   const builtin = agentByIdSelectors.getAgentById(builtinAgentId)(state);
 
-  if (builtin?.workspaceId) {
-    // The shared row keeps whatever model the workspace configured — unless that
-    // model isn't invocable here (a provider this deployment never enabled, a
-    // retired model id), in which case the builder request would fail outright.
-    // Repair it once instead of leaving the flow broken.
-    const aiInfraState = getAiInfraStoreState();
-
-    // Before the provider runtime state hydrates, `enabledAiModels` is undefined
-    // and EVERY model would look unusable — repairing then would overwrite the
-    // workspace's model with this member's pick on a mere race. Unknown ≠ invalid.
-    if (!aiProviderSelectors.isInitAiProviderRuntimeState(aiInfraState)) return;
-
-    const builtinConfig = agentSelectors.getAgentConfigById(builtinAgentId)(state);
-    const currentModel = builtinConfig?.model;
-    const currentProvider = builtinConfig?.provider;
-    const isUsable =
-      !!currentModel &&
-      !!currentProvider &&
-      !!aiModelSelectors.getEnabledModelById(currentModel, currentProvider)(aiInfraState);
-
-    if (isUsable) return;
-  }
+  // The workspace-scoped row is shared by every member, so a personal pick never repoints it.
+  if (builtin?.workspaceId) return;
 
   await state.updateAgentConfigById(builtinAgentId, { model, provider });
 };

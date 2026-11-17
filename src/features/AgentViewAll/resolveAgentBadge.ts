@@ -2,9 +2,19 @@ import { BUILTIN_AGENT_SLUGS } from '@lobechat/const/builtinAgents';
 import type { SidebarAgentItem } from '@lobot/types';
 
 import { usableBackground } from '@/components/Avatar/fallback';
-import { resolveAgentBackground } from '@/features/AgentProfileArtwork/utils';
 
 const BUILTIN_SLUGS = new Set<string>(Object.values(BUILTIN_AGENT_SLUGS));
+
+const IMAGE_SOURCE_PATTERN = /^(?:https?:\/\/|\/|data:image\/)/i;
+
+/**
+ * Agent `backgroundColor` historically stored CSS colors; it now stores the profile cover image.
+ * Only image-like sources count, so legacy colors resolve to no cover.
+ */
+const resolveAgentBackground = (value?: string | null): string | undefined => {
+  const source = value?.trim();
+  return source && IMAGE_SOURCE_PATTERN.test(source) ? source : undefined;
+};
 
 /**
  * Labels that mark an event / limited-time agent. Only these earn the arch

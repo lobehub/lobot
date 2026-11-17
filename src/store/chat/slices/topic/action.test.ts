@@ -1,8 +1,8 @@
 import { DEFAULT_MODEL, DEFAULT_PROVIDER } from '@lobechat/business-const';
 import { TOPIC_TITLE_JSON_SCHEMA } from '@lobechat/prompts';
+import { toast } from '@lobehub/ui';
 import type { LobeUser, UIChatMessage } from '@lobot/types';
 import { RequestTrigger } from '@lobot/types';
-import { toast } from '@lobehub/ui';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { type Mock } from 'vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -15,8 +15,6 @@ import { aiChatService } from '@/services/aiChat';
 import { messageService } from '@/services/message';
 import { topicService } from '@/services/topic';
 import { useAgentStore } from '@/store/agent';
-import { useAiInfraStore } from '@/store/aiInfra';
-import { aiModelSelectors } from '@/store/aiInfra/slices/aiModel/selectors';
 import { operationSelectors } from '@/store/chat/slices/operation/selectors';
 import type { TOPIC_VISIBLY_RUNNING_OPERATION_TYPES } from '@/store/chat/slices/operation/types';
 import { SETTLEABLE_TOPIC_RUN_OPERATION_TYPES } from '@/store/chat/slices/operation/types';
@@ -483,36 +481,6 @@ describe('topic action', () => {
       expect(matcherFn(topicListSyncKey(topicMapKey({ agentId: 'edited-agent' })))).toBe(false);
     });
 
-    it('writes model and the re-pinned reasoning config in one request', async () => {
-      const { result } = renderHook(() => useChatStore());
-      const spy = vi.spyOn(topicService, 'updateTopicModel').mockResolvedValue(undefined as any);
-      seedBuilderTopic();
-      act(() => {
-        useChatStore.setState({
-          internal_resolveTopicReasoningSnapshot: vi
-            .fn()
-            .mockResolvedValue({ deepseekV4GAReasoningEffort: 'high' }),
-        });
-      });
-
-      await act(async () => {
-        await result.current.updateTopicModel('builder-topic', {
-          model: 'deepseek-v4-flash',
-          provider: 'lobehub',
-        });
-      });
-
-      expect(spy).toHaveBeenCalledWith('builder-topic', {
-        metadata: { reasoningConfig: { deepseekV4GAReasoningEffort: 'high' } },
-        model: 'deepseek-v4-flash',
-        provider: 'lobehub',
-      });
-      expect(useChatStore.getState().topicDataMap[BUILDER_KEY].items[0]).toMatchObject({
-        metadata: { reasoningConfig: { deepseekV4GAReasoningEffort: 'high' } },
-        model: 'deepseek-v4-flash',
-      });
-    });
-
     it('drops the previous pin when the new model has no reasoning params', async () => {
       const { result } = renderHook(() => useChatStore());
       const spy = vi.spyOn(topicService, 'updateTopicModel').mockResolvedValue(undefined as any);
@@ -521,7 +489,6 @@ describe('topic action', () => {
         const key = BUILDER_KEY;
         const state = useChatStore.getState();
         useChatStore.setState({
-          internal_resolveTopicReasoningSnapshot: vi.fn().mockResolvedValue(undefined),
           topicDataMap: {
             [key]: {
               ...state.topicDataMap[key],
@@ -647,10 +614,6 @@ describe('topic action', () => {
           persistedEffort = 'low';
           return [];
         });
-        vi.spyOn(
-          useChatStore.getState(),
-          'internal_resolveTopicReasoningSnapshot',
-        ).mockResolvedValue({ reasoningEffort: 'high' });
         let modelWrite!: Promise<void>;
         act(() => {
           modelWrite =
@@ -4282,52 +4245,6 @@ describe('topic action', () => {
     });
   });
   describe('createTopic', () => {
-    it.each(['createTopic', 'saveToTopic'] as const)(
-      '%s waits for saved reasoning before persisting',
-      async (method) => {
-        const agentId = 'test-session-id';
-        useChatStore.setState({
-          activeAgentId: agentId,
-          messagesMap: { [messageMapKey({ agentId })]: [{ id: 'message-1' } as UIChatMessage] },
-          summaryTopicTitle: vi.fn().mockResolvedValue(undefined),
-        });
-        let loaded = false;
-        let finishLoad!: () => void;
-        vi.spyOn(aiModelSelectors, 'isModelHasReasoningExtendParams').mockReturnValue(() => true);
-        vi.spyOn(aiModelSelectors, 'isModelReasoningConfigLoaded').mockReturnValue(() => loaded);
-        vi.spyOn(aiModelSelectors, 'modelReasoningConfig').mockReturnValue(() => ({
-          reasoningEffort: 'high',
-        }));
-        const ensure = vi
-          .spyOn(useAiInfraStore.getState(), 'ensureModelReasoningConfig')
-          .mockImplementation(
-            () =>
-              new Promise<void>((resolve) => {
-                finishLoad = () => {
-                  loaded = true;
-                  resolve();
-                };
-              }),
-          );
-        const persist = vi.spyOn(topicService, 'createTopic').mockResolvedValue('loaded-topic');
-        let pending!: Promise<string | undefined>;
-        act(() => {
-          pending = useChatStore.getState()[method]();
-        });
-        await waitFor(() => expect(ensure).toHaveBeenCalled());
-        expect(persist).not.toHaveBeenCalled();
-        await act(async () => {
-          finishLoad();
-          await pending;
-        });
-        expect(persist).toHaveBeenCalledWith(
-          expect.objectContaining({
-            metadata: { reasoningConfig: { reasoningEffort: 'high' } },
-          }),
-        );
-      },
-    );
-
     it('should create a new topic and update the store', async () => {
       const { result } = renderHook(() => useChatStore());
       const activeAgentId = 'test-session-id';

@@ -41,63 +41,24 @@ vi.mock('@/store/chat', () => ({
     }),
 }));
 
-vi.mock('@/store/aiInfra', async () => {
-  const { aiModelSelectors, aiProviderSelectors } = await import('@/store/aiInfra/selectors');
-
-  return {
-    aiModelSelectors,
-    aiProviderSelectors,
-    useAiInfraStore: (selector: (s: object) => unknown) =>
-      selector({
-        enabledAiModels: state.toolUseModels.map(({ model, provider }) => ({
-          abilities: { functionCall: true },
-          id: model,
-          providerId: provider,
-        })),
-        isInitAiProviderRuntimeState: true,
-      }),
-  };
-});
-
-const topicModel = { model: 'topic-model', provider: 'topic-provider' };
-
 const renderAvailability = () =>
   renderHook(() => useTaskExecutionAvailability('agent-1')).result.current;
 
 beforeEach(() => {
   state.agentModel = { model: 'agent-model', provider: 'agent-provider' };
   state.isPreferenceLoading = false;
-  state.toolUseModels = [];
   state.topicModel = undefined;
 });
 
-// A task runs on its assignee's default model; whatever topic the chat page has
-// active must not decide whether the task gets an execution environment.
+// Agents always call tools, so only the agent mode preference decides availability.
 describe('useTaskExecutionAvailability', () => {
-  it('is available when the assignee default model supports tool use', () => {
-    state.toolUseModels = [state.agentModel];
-
+  it('is available once the agent mode preference has loaded', () => {
     expect(renderAvailability()).toBe(true);
   });
 
   it('is unavailable while the agent mode preference is loading', () => {
     state.isPreferenceLoading = true;
-    state.toolUseModels = [state.agentModel];
 
     expect(renderAvailability()).toBe(false);
-  });
-
-  it('is unavailable when only the active chat topic model supports tool use', () => {
-    state.topicModel = topicModel;
-    state.toolUseModels = [topicModel];
-
-    expect(renderAvailability()).toBe(false);
-  });
-
-  it('is available when the assignee default model supports tool use even if the active topic model does not', () => {
-    state.topicModel = topicModel;
-    state.toolUseModels = [state.agentModel];
-
-    expect(renderAvailability()).toBe(true);
   });
 });

@@ -18,11 +18,6 @@ const createGroupMock = vi.hoisted(() => vi.fn());
 const loadGroupsMock = vi.hoisted(() => vi.fn());
 const createDocumentMock = vi.hoisted(() => vi.fn());
 
-const enabledModels = vi.hoisted(() => ({
-  isInit: true,
-  list: [{ id: 'deepseek-v4-pro', provider: 'lobehub' }],
-}));
-
 const agentState = vi.hoisted(() => ({
   agentConfigMap: {
     agentBuilder: { model: 'deepseek-v4-pro', provider: 'lobehub' },
@@ -73,20 +68,6 @@ vi.mock('@/services/chatGroup', () => ({
 
 vi.mock('@/store/agent', () => ({
   getAgentStoreState: () => agentState,
-}));
-
-vi.mock('@/store/aiInfra', () => ({
-  getAiInfraStoreState: () => enabledModels,
-}));
-
-vi.mock('@/store/aiInfra/selectors', () => ({
-  aiModelSelectors: {
-    getEnabledModelById: (id: string, provider: string) => (s: typeof enabledModels) =>
-      s.list.find((m) => m.id === id && m.provider === provider),
-  },
-  aiProviderSelectors: {
-    isInitAiProviderRuntimeState: (s: typeof enabledModels) => s.isInit,
-  },
 }));
 
 vi.mock('@/store/agent/selectors', () => ({
@@ -173,8 +154,6 @@ describe('HomeInputActionImpl', () => {
       delete agentState.agentMap[key].workspaceId;
       agentState.agentConfigMap[key] = { model: 'deepseek-v4-pro', provider: 'lobehub' };
     }
-    enabledModels.list = [{ id: 'deepseek-v4-pro', provider: 'lobehub' }];
-    enabledModels.isInit = true;
   });
 
   describe('sendAsAgent', () => {
@@ -267,34 +246,6 @@ describe('HomeInputActionImpl', () => {
       await action.sendAsAgent({ message: 'build a support agent' });
 
       expect(updateAgentConfigByIdMock).not.toHaveBeenCalled();
-    });
-
-    // A shared row pointing at a model this deployment cannot invoke would fail
-    // the builder request outright, so it is repaired once rather than left broken.
-    // A pre-hydration model catalog makes every model look unusable; repairing then
-    // would overwrite the workspace's model on a race. Unknown must not mean invalid.
-    it('leaves a workspace-shared builder alone before the model catalog hydrates', async () => {
-      agentState.agentMap.agentBuilder.workspaceId = 'ws-1';
-      enabledModels.isInit = false;
-      enabledModels.list = [];
-      const action = createAction();
-
-      await action.sendAsAgent({ message: 'build a support agent' });
-
-      expect(updateAgentConfigByIdMock).not.toHaveBeenCalled();
-    });
-
-    it('repairs a workspace-shared builder whose own model is not invocable', async () => {
-      agentState.agentMap.agentBuilder.workspaceId = 'ws-1';
-      enabledModels.list = [{ id: 'gpt-4o-mini', provider: 'openai' }];
-      const action = createAction();
-
-      await action.sendAsAgent({ message: 'build a support agent' });
-
-      expect(updateAgentConfigByIdMock).toHaveBeenCalledWith('agentBuilder', {
-        model: 'gpt-4o-mini',
-        provider: 'openai',
-      });
     });
   });
 

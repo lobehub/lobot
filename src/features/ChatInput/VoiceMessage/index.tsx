@@ -1,7 +1,7 @@
 'use client';
 
-import { type VoiceMessageRecording } from '@lobot/types';
 import { Icon, Tooltip } from '@lobehub/ui';
+import { type VoiceMessageRecording } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { ArrowUp, type LucideProps, RotateCcw, X } from 'lucide-react';
 import { memo, useCallback, useEffect, useRef } from 'react';
@@ -10,18 +10,12 @@ import { useTranslation } from 'react-i18next';
 import { sx } from '@/styles/sx';
 
 import { ChatInputAction } from '../ActionBar/components/ChatInputAction';
-import { useAgentId } from '../hooks/useAgentId';
-import { useEffectiveModel } from '../hooks/useEffectiveModel';
 import { voiceSendButtonMarker } from '../markers.stylex';
 import { useChatInputStore, useStoreApi } from '../store';
 import { formatVoiceDuration } from './mediaRecorder';
 import { styles } from './style';
 import { useIntentionalHover } from './useIntentionalHover';
-import {
-  getVoiceMessageActionState,
-  getVoiceMessageIdleState,
-  useVoiceMessageCapability,
-} from './useVoiceMessageCapability';
+import { getVoiceMessageActionState, getVoiceMessageIdleState } from './useVoiceMessageCapability';
 import { useVoiceMessageRecorder } from './useVoiceMessageRecorder';
 
 const VoiceMessageIcon = ({
@@ -205,9 +199,6 @@ VoiceMessageControl.displayName = 'VoiceMessageControl';
 
 const VoiceMessage = memo(() => {
   const { t } = useTranslation('chat');
-  const agentId = useAgentId();
-  const { model, provider } = useEffectiveModel(agentId);
-  const fallbackCanRecordVoiceMessage = useVoiceMessageCapability(model, provider, agentId);
   const storeApi = useStoreApi();
   const [
     activeAudioInputMode,
@@ -222,7 +213,8 @@ const VoiceMessage = memo(() => {
     s.sendButtonProps,
     s.setActiveAudioInputMode,
   ]);
-  const canRecordVoiceMessage = injectedCanRecordVoiceMessage ?? fallbackCanRecordVoiceMessage;
+  // Only a composer that can transcribe the recording (an external Agent's) injects this.
+  const canRecordVoiceMessage = injectedCanRecordVoiceMessage ?? false;
   const isGenerating = Boolean(sendButtonProps?.generating);
   const canUseVoiceMessage = canRecordVoiceMessage && !isGenerating;
   const recorder = useVoiceMessageRecorder();

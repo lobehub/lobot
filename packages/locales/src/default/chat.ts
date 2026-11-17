@@ -615,7 +615,6 @@ export default {
   'group.title': 'Group',
   'groupDescription': 'Group description',
   'groupSidebar.agentProfile.chat': 'Chat',
-  'groupSidebar.agentProfile.model': 'Model',
   'groupSidebar.agentProfile.settings': 'Settings',
   'groupSidebar.members.addMember': 'Add Member',
   'groupSidebar.members.enableOrchestrator': 'Enable Orchestrator',
@@ -862,32 +861,6 @@ export default {
   'heteroAgent.cloudNotConfigured.desc':
     'Configure your Claude Code token in agent profile to start sending messages.',
   'heteroAgent.cloudNotConfigured.title': 'Cloud credentials required',
-  'heteroAgent.apiMode.agentUnsupported': '{{name}} does not support LobeHub Provider binding.',
-  'heteroAgent.apiMode.configMissing':
-    'Provider binding requires a provider and model. Open the agent profile to configure it.',
-  'heteroAgent.apiMode.defaultProviderConfigMissing':
-    'LobeHub requires a compatible model. Open the agent profile to select one.',
-  'heteroAgent.apiMode.credentialUnsupported':
-    'The provider "{{providerId}}" uses an authentication method this agent does not support.',
-  'heteroAgent.apiMode.credentialsMissing':
-    'The provider "{{providerId}}" has no API key configured.',
-  'heteroAgent.apiMode.endpointMissing':
-    'The provider "{{providerId}}" requires a base URL for this agent.',
-  'heteroAgent.apiMode.endpointUnsupported':
-    'The provider "{{providerId}}" has an unsupported base URL.',
-  'heteroAgent.apiMode.labDisabled.action': 'Enable in Labs',
-  'heteroAgent.apiMode.labDisabled.desc':
-    'Turn it on in Settings → Labs, or switch this agent to Subscription authentication.',
-  'heteroAgent.apiMode.labDisabled.title': 'Provider binding is a Labs experiment',
-  'heteroAgent.apiMode.localOnly.desc':
-    'Switch the execution environment to Local device, or use Subscription authentication.',
-  'heteroAgent.apiMode.localOnly.title': 'API mode requires Desktop local execution',
-  'heteroAgent.apiMode.modelUnavailable':
-    'The model "{{providerId}}/{{model}}" is disabled or no longer available.',
-  'heteroAgent.apiMode.protocolMismatch':
-    'The provider "{{providerId}}" does not expose a protocol supported by {{agentType}}.',
-  'heteroAgent.apiMode.providerUnavailable':
-    'The provider "{{providerId}}" is disabled or no longer available.',
   'heteroAgent.cloudRepo.sectionTitle': 'Repositories',
   'heteroAgent.cloudRepo.notSet': 'No repo selected',
   'heteroAgent.cloudRepo.noRepos': 'No repositories configured. Add them in agent settings.',
@@ -967,8 +940,6 @@ export default {
   'input.addAiPrefillUnsupported':
     'The current model doesn’t support ending the conversation with an assistant message. Follow it with a user message before sending.',
   'input.addUser': 'Add a user message',
-  'input.agentModeUnsupportedModel':
-    'The current model doesn’t support agentic tool calling. Switch to a model with agent capability for the best experience.',
   'input.agentRunFeeUnfunded.desc':
     'Each agent run carries a fee, even on your own API key. Top up or upgrade your plan, then send again.',
   'input.agentRunFeeUnfunded.descOverflow':
@@ -1002,13 +973,6 @@ export default {
   'input.inputCompletionError.title': 'Input suggestions paused',
   'input.modelFixedTip':
     'The model is fixed in the Agent Profile and cannot be switched while chatting.',
-  'input.modelDisabled': 'The current model is disabled',
-  'input.modelDisabled.action': 'Enable',
-  'input.modelDisabled.actionFailed': 'Failed to enable the model. Please try again.',
-  'input.modelDisabled.selectionFailed':
-    'The model was enabled, but switching providers failed. Select it again to continue.',
-  'input.modelUnavailable':
-    'The current model is no longer available. Choose another model to continue.',
   'input.viewOnlyAgent': 'You can only view this agent',
   'input.viewOnlyGroup': 'You can only view this group',
   'input.heteroPlus.tooltip': 'Attachments, formatting and scheduling',
@@ -1179,17 +1143,8 @@ export default {
   'messageLongCollapse.expand': 'Show more',
   'messages.dm.sentTo': 'Visible only to {{name}}',
   'messages.dm.title': 'DM',
-  'messages.modelCard.credit': 'Cost',
-  'messages.modelCard.creditPricing': 'Pricing',
-  'messages.modelCard.creditTooltip':
-    'Prices are shown in US dollars. Example: $3/M tokens means $3 per million tokens.',
-  'messages.modelCard.pricing.inputCachedTokens': 'Cached input ${{amount}}/M',
   'messages.modelCard.pricing.inputCharts': '${{amount}}/M characters',
   'messages.modelCard.pricing.inputMinutes': '${{amount}}/minute',
-  'messages.modelCard.pricing.inputTokens': 'Input ${{amount}}/M',
-  'messages.modelCard.pricing.outputTokens': 'Output ${{amount}}/M',
-  'messages.modelCard.pricing.writeCacheInputTokens': 'Cache write ${{amount}}/M',
-  'messages.tokenDetails.average': 'Average price per 1M tokens',
   'messages.tokenDetails.cliCredits.title': '{{value}} Credits',
   'messages.tokenDetails.cliCredits.tooltip':
     'Subscription credits reported by the agent CLI for this turn. The CLI bills in credits instead of reporting tokens; this is separate from your LobeHub usage.',
@@ -3565,8 +3520,6 @@ export default {
   'upload.preview.status.uploading': 'Uploading file...',
   'upload.validation.heteroImageNotSupported':
     "{{name}} can't read images, so {{file}} was not added. Use an agent that supports images instead.",
-  'upload.validation.mediaNotSupported':
-    'The current model cannot read these media files, so they were not added: {{files}}. Switch to a model that supports them, or upload a different file type.',
   'upload.validation.unsupportedFileType':
     'Unsupported file type: {{files}}. Supported images: JPG, PNG, GIF, WebP. Supported documents include PDF, Word, Excel, PowerPoint, Markdown, text, CSV, JSON, and code files.',
   'upload.validation.videoSizeExceeded':

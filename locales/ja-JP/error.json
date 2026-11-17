@@ -165,7 +165,6 @@
   "unlock.apiKey.description": "{{name}} API キーを入力すると、会話を開始できます",
   "unlock.apiKey.imageGenerationDescription": "{{name}} API キーを入力すると、生成を開始できます",
   "unlock.apiKey.title": "カスタム {{name}} API キーを使用",
-  "unlock.closeMessage": "ヒントを閉じる",
   "unlock.comfyui.description": "正しい {{name}} 認証情報を入力すると、続けてください",
   "unlock.comfyui.modifyBaseUrl": "ComfyUI サービスアドレスを変更",
   "unlock.comfyui.title": "{{name}} 認証情報の確認が必要です",

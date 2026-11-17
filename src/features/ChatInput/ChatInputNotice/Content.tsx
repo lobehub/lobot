@@ -1,6 +1,6 @@
 'use client';
 
-import { Alert, Button, Flexbox, Icon, Popover, Text, Tooltip } from '@lobehub/ui';
+import { Alert, Button, Flexbox, Icon, Popover, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 import { AlertTriangle } from 'lucide-react';
@@ -17,8 +17,6 @@ const summaryWarning = `color-mix(in srgb, ${cssVar.colorWarning} 12%, ${cssVar.
 const summaryWarningActive = `color-mix(in srgb, ${cssVar.colorWarning} 18%, ${cssVar.colorBgContainer})`;
 
 const styles = stylex.create({
-  action: { flex: 'none', height: '24px', paddingInline: '10px' },
-  actionWrapper: { display: 'inline-flex' },
   alert: {
     gap: '6px',
     alignItems: 'flex-start',
@@ -66,31 +64,8 @@ interface NoticeAlertProps {
 const NoticeAlert = ({ notice }: NoticeAlertProps) => {
   const { t } = useTranslation('chat');
 
-  const enableButton = notice.action === 'enableModel' && (
-    <Button
-      className={stylex.props(styles.action).className}
-      disabled={notice.actionDisabled}
-      loading={notice.actionLoading}
-      size={'small'}
-      type={'primary'}
-      onClick={() => void notice.onAction?.()}
-    >
-      {t('input.modelDisabled.action')}
-    </Button>
-  );
-
-  const action =
-    enableButton && notice.actionDisabled ? (
-      <Tooltip title={notice.actionDisabledReason}>
-        <span {...stylex.props(styles.actionWrapper)}>{enableButton}</span>
-      </Tooltip>
-    ) : (
-      enableButton
-    );
-
   return (
     <Alert
-      action={action}
       title={t(notice.key)}
       type={notice.type}
       variant={'borderless'}

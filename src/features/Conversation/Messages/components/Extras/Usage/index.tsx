@@ -2,11 +2,11 @@ import {
   HETEROGENEOUS_TYPE_LABELS,
   isRemoteHeterogeneousType,
 } from '@lobechat/heterogeneous-agents';
-import type { ModelPerformance, ModelUsage } from '@lobot/types';
-import { unwrapServerDefaultHeterogeneousModel } from '@lobot/types';
 import { formatUsd } from '@lobechat/utils';
 import { Center, Flexbox, Icon, Tooltip } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ModelPerformance, ModelUsage } from '@lobot/types';
+import { unwrapServerDefaultHeterogeneousModel } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import isEqual from 'fast-deep-equal';
 import { CoinsIcon } from 'lucide-react';
@@ -16,7 +16,6 @@ import { useTranslation } from 'react-i18next';
 import { ModelIcon } from '@/components/LobeIcons';
 import { useAgentStore } from '@/store/agent';
 import { agentByIdSelectors, builtinAgentSelectors } from '@/store/agent/selectors';
-import { aiModelSelectors, useAiInfraStore } from '@/store/aiInfra';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 import { isDev } from '@/utils/env';
@@ -60,17 +59,6 @@ const Usage = memo<UsageProps>(({ model, usage, performance, provider }) => {
   const isShowCredit = useGlobalStore(systemStatusSelectors.isShowCredit);
   const displayModel =
     unwrapServerDefaultHeterogeneousModel(model, serverDefaultConfiguredModel) ?? model;
-  const modelCard = useAiInfraStore((s) => {
-    const exact = aiModelSelectors.getModelCard(displayModel, provider)(s);
-    if (exact || !serverDefaultConfiguredModel) return exact;
-    // Server-default messages keep provider as the CLI type (`claude-code` /
-    // `codex`), so the catalog card lives under the relay provider id.
-    return (
-      s.enabledAiModels?.find((item) => item.id === displayModel) ||
-      s.builtinAiModelList.find((item) => item.id === displayModel)
-    );
-  });
-  const displayProvider = modelCard?.providerId ?? provider;
 
   if (!isDev && onboardingAgentId && conversationAgentId === onboardingAgentId) return null;
 
@@ -104,7 +92,7 @@ const Usage = memo<UsageProps>(({ model, usage, performance, provider }) => {
           {heteroName || (
             <>
               <ModelIcon model={displayModel} type={'mono'} />
-              {modelCard?.displayName || displayModel}
+              {displayModel}
             </>
           )}
         </Center>
@@ -134,14 +122,7 @@ const Usage = memo<UsageProps>(({ model, usage, performance, provider }) => {
       </Center>
 
       <Center horizontal gap={8}>
-        {!!usage?.totalTokens && (
-          <TokenDetail
-            model={displayModel}
-            performance={performance}
-            provider={displayProvider}
-            usage={usage}
-          />
-        )}
+        {!!usage?.totalTokens && <TokenDetail performance={performance} usage={usage} />}
         {/* CLI subscription credits (e.g. Qoder) — the CLI reports these instead
             of token counts, so without them the footer would show no usage at
             all. Not LobeHub 积分 and not USD, hence the separate label. */}

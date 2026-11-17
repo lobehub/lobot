@@ -165,7 +165,6 @@
   "unlock.apiKey.description": "Oturuma başlamak için {{name}} API Anahtarınızı girin",
   "unlock.apiKey.imageGenerationDescription": "Görsel oluşturmaya başlamak için {{name}} API Anahtarınızı girin",
   "unlock.apiKey.title": "Özel {{name}} API Anahtarı Kullan",
-  "unlock.closeMessage": "Mesajı Kapat",
   "unlock.comfyui.description": "Görsel oluşturmaya başlamak için geçerli {{name}} bilgilerini girin.",
   "unlock.comfyui.modifyBaseUrl": "ComfyUI hizmet URL'sini düzenle",
   "unlock.comfyui.title": "{{name}} bilgilerinizi doğrulayın",

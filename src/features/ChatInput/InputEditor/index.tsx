@@ -6,13 +6,13 @@ import {
   INPUT_COMPLETION_PROMPT_VERSION,
   INPUT_COMPLETION_SCHEMA_NAME,
 } from '@lobechat/prompts';
-import { RequestTrigger } from '@lobot/types';
 import { isCommandPressed } from '@lobechat/utils';
 import type { IEditor, ISlashMenuOption, ISlashSectionOption } from '@lobehub/editor';
 import { INSERT_MENTION_COMMAND, ReactAutoCompletePlugin } from '@lobehub/editor';
 import { Editor, useEditorState } from '@lobehub/editor/react';
 // oxlint-disable-next-line stylex-migration/no-emotion-styles -- Lexical editor paragraphs take no className
 import { combineKeys, createStaticStyles, cx } from '@lobehub/ui';
+import { RequestTrigger } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import Fuse from 'fuse.js';
 import { KEY_ESCAPE_COMMAND } from 'lexical';
@@ -47,7 +47,6 @@ import { useChatInputDraft } from '../hooks/useChatInputDraft';
 import { useChatInputHistory } from '../hooks/useChatInputHistory';
 import { useChatInputResourceAccess } from '../hooks/useChatInputResourceAccess';
 import { useChatInputUploadKey } from '../hooks/useChatInputUpload';
-import { useEffectiveModel } from '../hooks/useEffectiveModel';
 import { useLargeFileLocalPath } from '../hooks/useLargeFileLocalPath';
 import { useChatInputStore, useStoreApi } from '../store';
 import {
@@ -156,8 +155,6 @@ const InputEditor = memo<{
   // --- Category-based mention system ---
   const { categories, market } = useMentionCategories();
 
-  // Get agent's model info for vision support check and handle paste upload
-  const { model, provider } = useEffectiveModel(agentId);
   const heterogeneousType = useAgentStore(
     (s) => agentByIdSelectors.getAgencyConfigById(agentId)(s)?.heterogeneousProvider?.type,
   );
@@ -281,8 +278,6 @@ const InputEditor = memo<{
   const { handleUploadFiles } = useUploadFiles({
     agentId,
     contextKey: uploadContextKey,
-    model,
-    provider,
   });
   const routeLargeFilesToLocalPaths = useLargeFileLocalPath(agentId, editor);
   const handlePasteFiles = useCallback(

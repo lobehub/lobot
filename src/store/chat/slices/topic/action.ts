@@ -6,6 +6,7 @@ import {
   TOPIC_TITLE_JSON_SCHEMA,
   TOPIC_TITLE_PROMPT_VERSION,
 } from '@lobechat/prompts';
+import { toast } from '@lobehub/ui';
 import {
   type ChatTopicMetadata,
   type HeterogeneousReasoningEffort,
@@ -15,7 +16,6 @@ import {
   type UIChatMessage,
   type UpdateTopicMetadataInput,
 } from '@lobot/types';
-import { toast } from '@lobehub/ui';
 import isEqual from 'fast-deep-equal';
 import { t } from 'i18next';
 import type { AiModelReasoningConfig } from 'model-bank';
@@ -39,8 +39,6 @@ import { type GitLinkedPRSummary } from '@/services/git';
 import { messageService } from '@/services/message';
 import type { TopicBatchDeleteScope } from '@/services/topic';
 import { topicService } from '@/services/topic';
-import { getAiInfraStoreState } from '@/store/aiInfra';
-import { aiModelSelectors } from '@/store/aiInfra/slices/aiModel/selectors';
 import { type ChatStore } from '@/store/chat';
 import { snapshotAgentModel, snapshotAgentReasoning } from '@/store/chat/utils/snapshotAgentModel';
 import { topicMapKey, type TopicMapScope } from '@/store/chat/utils/topicMapKey';
@@ -639,18 +637,7 @@ export class ChatTopicActionImpl {
     { model, provider }: { model: string; provider: string },
   ): Promise<void> => {
     await this.#enqueueTopicEffortWrite(id, async () => {
-      // The effort pin belongs to the model it was taken for (the param names
-      // are model-specific), so switching model re-snapshots it from the user's
-      // config for the new model — same "remembers what it started with" rule.
-      const reasoningConfig = await this.#get().internal_resolveTopicReasoningSnapshot({
-        model,
-        provider,
-      });
-      await this.#writeTopicModelPin(id, {
-        metadata: reasoningConfig ? { reasoningConfig } : undefined,
-        model,
-        provider,
-      });
+      await this.#writeTopicModelPin(id, { model, provider });
     });
   };
 
@@ -703,25 +690,6 @@ export class ChatTopicActionImpl {
       await this.#recoverTopicPinWrite(containerKey, error);
     }
     await this.#get().refreshTopic(containerKey);
-  };
-
-  /**
-   * Resolve the user-level reasoning config to pin for `model`, fetching it when
-   * not cached yet. Returns `undefined` for models without reasoning extend
-   * params (nothing to pin).
-   */
-  internal_resolveTopicReasoningSnapshot = async ({
-    model,
-    provider,
-  }: {
-    model: string;
-    provider: string;
-  }): Promise<AiModelReasoningConfig | undefined> => {
-    const aiInfraStore = getAiInfraStoreState();
-    if (!aiModelSelectors.isModelHasReasoningExtendParams(model, provider)(aiInfraStore)) return;
-
-    await aiInfraStore.ensureModelReasoningConfig(model, provider);
-    return aiModelSelectors.modelReasoningConfig(model, provider)(getAiInfraStoreState()) ?? {};
   };
 
   /**

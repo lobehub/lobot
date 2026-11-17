@@ -165,7 +165,6 @@
   "unlock.apiKey.description": "Insira sua chave de API {{name}} para iniciar a sessão",
   "unlock.apiKey.imageGenerationDescription": "Insira sua chave de API {{name}} para começar a gerar",
   "unlock.apiKey.title": "Usar chave de API personalizada {{name}}",
-  "unlock.closeMessage": "Fechar mensagem",
   "unlock.comfyui.description": "Insira credenciais válidas de {{name}} para começar a gerar imagens.",
   "unlock.comfyui.modifyBaseUrl": "Editar URL do serviço ComfyUI",
   "unlock.comfyui.title": "Verifique suas credenciais {{name}}",

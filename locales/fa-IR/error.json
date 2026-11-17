@@ -165,7 +165,6 @@
   "unlock.apiKey.description": "کلید API {{name}} خود را وارد کنید تا جلسه آغاز شود",
   "unlock.apiKey.imageGenerationDescription": "کلید API {{name}} خود را وارد کنید تا تولید تصویر آغاز شود",
   "unlock.apiKey.title": "استفاده از کلید API سفارشی {{name}}",
-  "unlock.closeMessage": "بستن پیام",
   "unlock.comfyui.description": "اطلاعات معتبر {{name}} را وارد کنید تا تولید تصویر آغاز شود.",
   "unlock.comfyui.modifyBaseUrl": "ویرایش آدرس سرویس ComfyUI",
   "unlock.comfyui.title": "اعتبارسنجی اطلاعات {{name}}",

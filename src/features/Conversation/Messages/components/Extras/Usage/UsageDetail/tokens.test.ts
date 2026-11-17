@@ -2,26 +2,23 @@ import { describe, expect, it } from 'vitest';
 
 import { getDetailsToken } from './tokens';
 
-const modelCard = {
-  pricing: {
-    currency: 'USD',
-    units: [
-      { name: 'textInput', rate: 2, strategy: 'fixed', unit: 'millionTokens' },
-      { name: 'textOutput', rate: 10, strategy: 'fixed', unit: 'millionTokens' },
-    ],
-  },
-} as any;
+describe('getDetailsToken', () => {
+  it('splits input into cache hits and misses and derives the cache rate', () => {
+    const result = getDetailsToken({
+      inputCachedTokens: 300,
+      totalInputTokens: 1000,
+      totalOutputTokens: 200,
+      totalTokens: 1200,
+    } as never);
 
-describe('getDetailsToken cost', () => {
-  it('returns costs in dollars rather than micro-dollar integers', () => {
-    const result = getDetailsToken(
-      { totalInputTokens: 1000, totalOutputTokens: 500, totalTokens: 1500 } as any,
-      modelCard,
-    );
+    expect(result.inputCached?.token).toBe(300);
+    expect(result.inputCacheMiss?.token).toBe(700);
+    expect(result.inputCacheRate).toBeCloseTo(0.3, 10);
+    expect(result.totalOutput?.token).toBe(200);
+    expect(result.totalTokens?.token).toBe(1200);
+  });
 
-    // 1000 * $2/1M = $0.002; 500 * $10/1M = $0.005
-    expect(result.totalInput?.cost).toBeCloseTo(0.002, 10);
-    expect(result.totalOutput?.cost).toBeCloseTo(0.005, 10);
-    expect(result.totalTokens?.cost).toBeCloseTo(0.007, 10);
+  it('leaves out counts that are zero', () => {
+    expect(getDetailsToken({ totalTokens: 0 } as never).totalTokens).toBeUndefined();
   });
 });

@@ -165,7 +165,6 @@
   "unlock.apiKey.description": "Nhập API Key {{name}} của bạn để bắt đầu phiên",
   "unlock.apiKey.imageGenerationDescription": "Nhập API Key {{name}} của bạn để bắt đầu tạo hình ảnh",
   "unlock.apiKey.title": "Sử dụng API Key tùy chỉnh {{name}}",
-  "unlock.closeMessage": "Đóng tin nhắn",
   "unlock.comfyui.description": "Nhập thông tin xác thực hợp lệ của {{name}} để bắt đầu tạo hình ảnh.",
   "unlock.comfyui.modifyBaseUrl": "Chỉnh sửa URL dịch vụ ComfyUI",
   "unlock.comfyui.title": "Xác minh thông tin xác thực {{name}} của bạn",

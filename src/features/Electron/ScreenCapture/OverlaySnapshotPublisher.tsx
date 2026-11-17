@@ -9,7 +9,6 @@ import { useTheme } from '@lobehub/ui';
 import isEqual from 'fast-deep-equal';
 import { memo, useEffect, useMemo, useRef } from 'react';
 
-import { useEnabledChatModels } from '@/hooks/useEnabledChatModels';
 import { useFetchAgentList } from '@/hooks/useFetchAgentList';
 import { useAgentStore } from '@/store/agent';
 import { agentByIdSelectors, agentSelectors, builtinAgentSelectors } from '@/store/agent/selectors';
@@ -32,7 +31,6 @@ const OverlaySnapshotPublisher = memo(() => {
 
   const allAgents = useHomeStore(homeAgentListSelectors.allAgents, isEqual);
   const theme = useTheme();
-  const enabledChatModels = useEnabledChatModels();
   const activeAgentId = useAgentStore((s) => s.activeAgentId);
   const inboxAgentId = useAgentStore(builtinAgentSelectors.inboxAgentId);
   const inboxMeta = useAgentStore((s) =>
@@ -60,17 +58,8 @@ const OverlaySnapshotPublisher = memo(() => {
     [activeAgentId, agentOptions, inboxAgentId],
   );
 
-  const modelOptions = useMemo<ScreenCaptureModelOption[]>(
-    () =>
-      enabledChatModels.flatMap((provider) =>
-        provider.children.map((model) => ({
-          displayName: model.displayName ?? model.id,
-          id: model.id,
-          provider: provider.id,
-        })),
-      ),
-    [enabledChatModels],
-  );
+  // Agents run in their own runtime, so the overlay offers no model choice.
+  const modelOptions = useMemo<ScreenCaptureModelOption[]>(() => [], []);
 
   const defaultModel = useAgentStore((s) =>
     defaultAgentId ? agentByIdSelectors.getAgentModelById(defaultAgentId)(s) : undefined,

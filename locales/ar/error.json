@@ -165,7 +165,6 @@
   "unlock.apiKey.description": "أدخل مفتاح API الخاص بـ {{name}} لبدء الجلسة",
   "unlock.apiKey.imageGenerationDescription": "أدخل مفتاح API الخاص بـ {{name}} لبدء التوليد",
   "unlock.apiKey.title": "استخدام مفتاح API مخصص لـ {{name}}",
-  "unlock.closeMessage": "إغلاق الرسالة",
   "unlock.comfyui.description": "أدخل بيانات اعتماد {{name}} الصالحة لبدء توليد الصور.",
   "unlock.comfyui.modifyBaseUrl": "تعديل عنوان خدمة ComfyUI",
   "unlock.comfyui.title": "تحقق من بيانات اعتماد {{name}}",

@@ -8,25 +8,6 @@ const agentMap: Record<string, any> = {};
 
 vi.mock('@/store/agent', () => ({ getAgentStoreState: () => ({ agentMap }) }));
 
-const aiInfra = vi.hoisted(() => ({
-  state: {
-    loaded: false,
-    reasoningConfig: undefined as Record<string, string> | undefined,
-    reasoningParams: false,
-  },
-}));
-
-vi.mock('@/store/aiInfra', () => ({
-  getAiInfraStoreState: () => ({ ...aiInfra.state, ensureModelReasoningConfig: () => {} }),
-}));
-vi.mock('@/store/aiInfra/slices/aiModel/selectors', () => ({
-  aiModelSelectors: {
-    isModelHasReasoningExtendParams: () => (s: typeof aiInfra.state) => s.reasoningParams,
-    isModelReasoningConfigLoaded: () => (s: typeof aiInfra.state) => s.loaded,
-    modelReasoningConfig: () => (s: typeof aiInfra.state) => s.reasoningConfig,
-  },
-}));
-
 const seedAgent = (id: string, config: Record<string, any>) => {
   agentMap[id] = config;
   return id;
@@ -128,10 +109,6 @@ describe('snapshotAgentModel', () => {
 describe('snapshotAgentReasoning', () => {
   const modelSnapshot = { model: 'gpt-5.5', provider: 'openai' };
 
-  beforeEach(() => {
-    aiInfra.state = { loaded: false, reasoningConfig: undefined, reasoningParams: false };
-  });
-
   it('returns nothing without an agent', async () => {
     expect(await snapshotAgentReasoning(undefined, modelSnapshot)).toBeUndefined();
   });
@@ -168,30 +145,8 @@ describe('snapshotAgentReasoning', () => {
     expect(await snapshotAgentReasoning(unset, {})).toBeUndefined();
   });
 
-  it('skips models without reasoning extend params', async () => {
+  it('pins nothing for an agent without an external runtime', async () => {
     const id = seedAgent('plain', { model: 'gpt-4o', provider: 'openai' });
-
-    expect(await snapshotAgentReasoning(id, modelSnapshot)).toBeUndefined();
-  });
-
-  it('pins the loaded user-level config, an empty object when nothing is saved', async () => {
-    const id = seedAgent('reasoning', { model: 'gpt-5.5', provider: 'openai' });
-    aiInfra.state = {
-      loaded: true,
-      reasoningConfig: { gpt5_2ReasoningEffort: 'high' },
-      reasoningParams: true,
-    };
-    expect(await snapshotAgentReasoning(id, modelSnapshot)).toEqual({
-      reasoningConfig: { gpt5_2ReasoningEffort: 'high' },
-    });
-
-    aiInfra.state = { loaded: true, reasoningConfig: undefined, reasoningParams: true };
-    expect(await snapshotAgentReasoning(id, modelSnapshot)).toEqual({ reasoningConfig: {} });
-  });
-
-  it('retains fallback when the user-level config could not be loaded', async () => {
-    const id = seedAgent('loading', { model: 'gpt-5.5', provider: 'openai' });
-    aiInfra.state = { loaded: false, reasoningConfig: undefined, reasoningParams: true };
 
     expect(await snapshotAgentReasoning(id, modelSnapshot)).toBeUndefined();
   });

@@ -1,18 +1,6 @@
 import { type ModelUsage } from '@lobot/types';
-import { type LobeDefaultAiModelListItem } from 'model-bank';
 
-import { getAudioInputUnitRate, getAudioOutputUnitRate } from '@/utils/pricing';
-
-import { getPrice } from './pricing';
-
-/** Pricing is USD per 1M tokens; returns the cost in dollars. */
-const calcCost = (token: number, pricing?: number) => {
-  if (!pricing) return '-';
-
-  return (token * pricing) / 1_000_000;
-};
-
-export const getDetailsToken = (usage: ModelUsage, modelCard?: LobeDefaultAiModelListItem) => {
+export const getDetailsToken = (usage: ModelUsage) => {
   const inputTextTokens = usage.inputTextTokens || (usage as any).inputTokens || 0;
   const totalInputTokens = usage.totalInputTokens || (usage as any).inputTokens || 0;
 
@@ -48,101 +36,23 @@ export const getDetailsToken = (usage: ModelUsage, modelCard?: LobeDefaultAiMode
       ? inputCacheTokens / cacheRateInputTokens
       : undefined;
 
-  // Pricing
-  const formatPrice = getPrice(modelCard?.pricing || { units: [] });
-
-  const inputCacheMissCost = (
-    !!inputCacheMissTokens ? calcCost(inputCacheMissTokens, formatPrice.input) : 0
-  ) as number;
-
-  const inputCachedCost = (
-    !!inputCacheTokens ? calcCost(inputCacheTokens, formatPrice.cachedInput) : 0
-  ) as number;
-
-  const inputWriteCachedCost = !!inputWriteCacheTokens
-    ? (calcCost(inputWriteCacheTokens, formatPrice.writeCacheInput) as number)
-    : 0;
-
-  const totalOutputCost = (
-    !!totalOutputTokens ? calcCost(totalOutputTokens, formatPrice.output) : 0
-  ) as number;
-  const totalInputCost = (
-    !!totalInputTokens ? calcCost(totalInputTokens, formatPrice.input) : 0
-  ) as number;
-  const inputToolCost = (
-    !!inputToolTokens ? calcCost(inputToolTokens, formatPrice.input) : 0
-  ) as number;
-
-  const totalCost =
-    inputCacheMissCost + inputCachedCost + inputWriteCachedCost + inputToolCost + totalOutputCost;
+  const count = (token: number) => (token ? { token } : undefined);
 
   return {
-    inputAudio: !!usage.inputAudioTokens
-      ? {
-          cost: calcCost(usage.inputAudioTokens, getAudioInputUnitRate(modelCard?.pricing)),
-          token: usage.inputAudioTokens,
-        }
-      : undefined,
-    inputCacheMiss: !!inputCacheMissTokens
-      ? { cost: inputCacheMissCost, token: inputCacheMissTokens }
-      : undefined,
-    inputCached: !!inputCacheTokens
-      ? { cost: inputCachedCost, token: inputCacheTokens }
-      : undefined,
-    inputCachedWrite: !!inputWriteCacheTokens
-      ? { cost: inputWriteCachedCost, token: inputWriteCacheTokens }
-      : undefined,
+    inputAudio: count(usage.inputAudioTokens || 0),
+    inputCacheMiss: count(inputCacheMissTokens),
+    inputCached: count(inputCacheTokens),
+    inputCachedWrite: count(inputWriteCacheTokens),
     inputCacheRate: cacheRate,
-    inputCitation: !!usage.inputCitationTokens
-      ? {
-          cost: calcCost(usage.inputCitationTokens, formatPrice.input),
-          token: usage.inputCitationTokens,
-        }
-      : undefined,
-    inputText: !!inputTextTokens
-      ? {
-          cost: calcCost(inputTextTokens, formatPrice.input),
-          token: inputTextTokens,
-        }
-      : undefined,
-    inputTool: !!inputToolTokens
-      ? {
-          cost: inputToolCost,
-          token: inputToolTokens,
-        }
-      : undefined,
-
-    outputAudio: !!usage.outputAudioTokens
-      ? {
-          cost: calcCost(usage.outputAudioTokens, getAudioOutputUnitRate(modelCard?.pricing)),
-          id: 'outputAudio',
-          token: usage.outputAudioTokens,
-        }
-      : undefined,
-    outputImage: !!outputImageTokens
-      ? {
-          cost: calcCost(outputImageTokens, formatPrice.output),
-          id: 'outputImage',
-          token: outputImageTokens,
-        }
-      : undefined,
-    outputReasoning: !!outputReasoningTokens
-      ? {
-          cost: calcCost(outputReasoningTokens, formatPrice.output),
-          token: outputReasoningTokens,
-        }
-      : undefined,
-    outputText: !!outputTextTokens
-      ? {
-          cost: calcCost(outputTextTokens, formatPrice.output),
-          token: outputTextTokens,
-        }
-      : undefined,
-
-    totalInput: !!totalInputTokens ? { cost: totalInputCost, token: totalInputTokens } : undefined,
-    totalOutput: !!totalOutputTokens
-      ? { cost: totalOutputCost, token: totalOutputTokens }
-      : undefined,
-    totalTokens: !!usage.totalTokens ? { cost: totalCost, token: usage.totalTokens } : undefined,
+    inputCitation: count(usage.inputCitationTokens || 0),
+    inputText: count(inputTextTokens),
+    inputTool: count(inputToolTokens),
+    outputAudio: count(usage.outputAudioTokens || 0),
+    outputImage: count(outputImageTokens),
+    outputReasoning: count(outputReasoningTokens),
+    outputText: count(outputTextTokens),
+    totalInput: count(totalInputTokens),
+    totalOutput: count(totalOutputTokens),
+    totalTokens: count(usage.totalTokens || 0),
   };
 };

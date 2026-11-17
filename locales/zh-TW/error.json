@@ -165,7 +165,6 @@
   "unlock.apiKey.description": "輸入您的 {{name}} API 金鑰即可開始會話",
   "unlock.apiKey.imageGenerationDescription": "輸入你的 {{name}} API Key 即可開始生成",
   "unlock.apiKey.title": "使用自定義 {{name}} API 金鑰",
-  "unlock.closeMessage": "關閉提示",
   "unlock.comfyui.description": "請輸入正確的 {{name}} 認證資訊即可開始生成圖像",
   "unlock.comfyui.modifyBaseUrl": "修改 Comfy UI 服務位址",
   "unlock.comfyui.title": "確認你的 {{name}} 認證資訊",

@@ -165,7 +165,6 @@
   "unlock.apiKey.description": "Voer je {{name}} API-sleutel in om de sessie te starten",
   "unlock.apiKey.imageGenerationDescription": "Voer je {{name}} API-sleutel in om afbeeldingen te genereren",
   "unlock.apiKey.title": "Gebruik aangepaste {{name}} API-sleutel",
-  "unlock.closeMessage": "Bericht sluiten",
   "unlock.comfyui.description": "Voer geldige {{name}} inloggegevens in om afbeeldingen te genereren.",
   "unlock.comfyui.modifyBaseUrl": "Bewerk ComfyUI-service-URL",
   "unlock.comfyui.title": "Verifieer je {{name}} inloggegevens",
