@@ -76,9 +76,7 @@ const styles = stylex.create({
     width: '100%',
     paddingBlock: 10,
     paddingInline: 12,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: cssVar.colorBorderSecondary,
+    borderWidth: 0,
     borderRadius: cssVar.borderRadiusLG,
     font: 'inherit',
     textAlign: 'start',
@@ -89,8 +87,9 @@ const styles = stylex.create({
     },
     cursor: 'pointer',
   },
+  // Like Discord, the open thread is only a shade brighter, with no outline.
   active: {
-    borderColor: cssVar.colorPrimaryBorder,
+    backgroundColor: cssVar.colorFillSecondary,
   },
   // Archived threads fade back, and come forward again under the pointer.
   archived: {
