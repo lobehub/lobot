@@ -55,7 +55,7 @@ const styles = stylex.create({
 
 const tones = stylex.create({
   idle: { color: cssVar.colorSuccess },
-  offDuty: { color: cssVar.colorWarning },
+  offDuty: { color: cssVar.colorError },
   offline: { color: cssVar.colorTextQuaternary },
   online: { color: cssVar.colorSuccess },
   working: { color: cssVar.colorInfo },
@@ -85,10 +85,7 @@ export const AgentPresenceLabel = memo<{ presence: AgentPresence }>(({ presence 
   return (
     <Tooltip title={tip}>
       <span data-status={status} {...stylex.props(styles.label, tones[status])}>
-        <span
-          aria-hidden
-          {...stylex.props(styles.dot, status === 'working' && styles.working)}
-        />
+        <span aria-hidden {...stylex.props(styles.dot, status === 'working' && styles.working)} />
         {t(`contacts.presence.${status}`)}
       </span>
     </Tooltip>
