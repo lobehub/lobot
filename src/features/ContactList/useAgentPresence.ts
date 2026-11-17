@@ -15,7 +15,8 @@ const REFRESH_INTERVAL = 30_000;
 const RUNNING_TOPICS_LIMIT = 200;
 
 const fetchQuotaLoads = async (agentId: string): Promise<QuotaAccountLoad[]> => {
-  const bindings = await agentQuotaService.listBindings(agentId);
+  const bindings: { accountId: string; enabled: boolean; role: string }[] =
+    await agentQuotaService.listBindings(agentId);
   const accountIds = bindings
     .filter((binding) => binding.enabled && binding.role !== 'disabled')
     .map((binding) => binding.accountId);
