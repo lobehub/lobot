@@ -1,0 +1,410 @@
+---
+name: lobe-icons
+description: "React components for AI model and provider logos. Use when choosing a component, looking up its props and API, or implementing UI with it."
+---
+
+# Lobe Icons
+
+> React components for AI model and provider logos.
+
+## Setup
+
+- Package: `@lobehub/icons`
+- Repository: https://github.com/lobehub/lobe-icons
+- Docs: https://icons.lobehub.com/
+
+## Workflow
+
+1. Pick candidates from the index below. Groups follow the source folder, which usually maps to the import entry.
+2. Fetch the linked reference page before writing code. It holds the documented usage, props and API tables.
+3. Only use props, variants and imports that the reference page documents. Follow its Docs link to see live demos.
+
+The page index with outlines is at https://icons.lobehub.com/llms.txt.
+
+## Index
+
+### Guides
+
+#### Editor
+
+- [Icon Editor](https://icons.lobehub.com/skills/editor.md) — Icon Editor for @lobehub/icons
+
+#### Features
+
+- [AgentIcon](https://icons.lobehub.com/skills/features/agent-icon.md) — Guide to using agent icons from @lobehub/icons.
+- [getLobeIconCDN](https://icons.lobehub.com/skills/features/cdn-utils.md) — Guide to resolving Lobe Icons assets through the public CDN utilities.
+- [IconAvatar](https://icons.lobehub.com/skills/features/icon-avatar.md) — Guide to composing icon avatars with @lobehub/icons.
+- [IconCombine](https://icons.lobehub.com/skills/features/icon-combine.md) — Guide to combining brand icons with text and visual treatments.
+- [ModelIcon](https://icons.lobehub.com/skills/features/model-icon.md) — Guide to rendering model icons with @lobehub/icons.
+- [ModelTag](https://icons.lobehub.com/skills/features/model-tag.md) — Guide to rendering model tags with @lobehub/icons.
+- [ProviderCombine](https://icons.lobehub.com/skills/features/provider-combine.md) — Guide to composing provider icons with labels and variants.
+- [ProviderIcon](https://icons.lobehub.com/skills/features/provder-icon.md) — Guide to rendering provider icons with @lobehub/icons.
+
+### components
+
+#### Application
+
+- [11x](https://icons.lobehub.com/skills/components/eleven-x.md) — https://11x.ai
+- [Adobe](https://icons.lobehub.com/skills/components/adobe.md) — https://adobe.com
+- [AG-UI](https://icons.lobehub.com/skills/components/agui.md) — https://ag-ui.com
+- [Agnes AI](https://icons.lobehub.com/skills/components/agnes-ai.md) — https://agnes-ai.com
+- [AirJelly](https://icons.lobehub.com/skills/components/air-jelly.md) — https://airjelly.ai
+- [Amp](https://icons.lobehub.com/skills/components/amp.md) — https://ampcode.com
+- [Antigravity (Google)](https://icons.lobehub.com/skills/components/antigravity.md) — https://antigravity.google
+- [Appwrite](https://icons.lobehub.com/skills/components/appwrite.md) — https://appwrite.io
+- [AskVerdict](https://icons.lobehub.com/skills/components/ask-verdict.md) — https://askverdict.ai
+- [Automatic1111 (SD Webui)](https://icons.lobehub.com/skills/components/automatic.md) — https://github.com/AUTOMATIC1111/stable-diffusion-webui
+- [CapCut](https://icons.lobehub.com/skills/components/cap-cut.md) — https://capcut.com
+- [CelestoAI](https://icons.lobehub.com/skills/components/celesto-ai.md) — https://celesto.ai
+- [Cherry Studio](https://icons.lobehub.com/skills/components/cherry-studio.md) — https://cherry-ai.com
+- [Claude Code](https://icons.lobehub.com/skills/components/claude-code.md) — https://code.claude.com
+- [Cline](https://icons.lobehub.com/skills/components/cline.md) — https://cline.bot
+- [Clipdrop](https://icons.lobehub.com/skills/components/clipdrop.md) — https://clipdrop.co
+- [CodeBuddy](https://icons.lobehub.com/skills/components/code-buddy.md) — https://codebuddy.ai
+- [CodeFlicker](https://icons.lobehub.com/skills/components/code-flicker.md) — https://codeflicker.ai
+- [Colab (Google)](https://icons.lobehub.com/skills/components/colab.md) — https://colab.research.google.com/
+- [ComfyUI](https://icons.lobehub.com/skills/components/comfy-ui.md) — https://comfy.org
+- [Command Code](https://icons.lobehub.com/skills/components/command-code.md) — https://commandcode.ai
+- [CopilotKit](https://icons.lobehub.com/skills/components/copilot-kit.md) — https://copilotkit.ai
+- [Coqui](https://icons.lobehub.com/skills/components/coqui.md) — https://github.com/coqui-ai/TTS
+- [Coze](https://icons.lobehub.com/skills/components/coze.md) — https://coze.com
+- [CrewAI](https://icons.lobehub.com/skills/components/crew-ai.md) — https://crewai.com
+- [Cursor](https://icons.lobehub.com/skills/components/cursor.md) — https://cursor.com
+- [CyberCut](https://icons.lobehub.com/skills/components/cyber-cut.md) — https://cybercut.ai
+- [DeepAI](https://icons.lobehub.com/skills/components/deep-ai.md) — https://deepai.org
+- [DeepL](https://icons.lobehub.com/skills/components/deep-l.md) — https://deepl.com
+- [Devin](https://icons.lobehub.com/skills/components/devin.md) — https://devin.ai
+- [Dify](https://icons.lobehub.com/skills/components/dify.md) — https://dify.ai
+- [Doc2X](https://icons.lobehub.com/skills/components/doc2-x.md) — https://doc2x.noedgeai.com
+- [DocSearch](https://icons.lobehub.com/skills/components/doc-search.md) — https://docsearch.algolia.com
+- [DreamMachine (Luma)](https://icons.lobehub.com/skills/components/dream-machine.md) — https://lumalabs.ai/dream-machine
+- [FastGPT](https://icons.lobehub.com/skills/components/fast-gpt.md) — https://tryfastgpt.ai
+- [Figma](https://icons.lobehub.com/skills/components/figma.md) — https://figma.com
+- [Firecrawl](https://icons.lobehub.com/skills/components/firecrawl.md) — https://firecrawl.dev
+- [Firefly (Adobe)](https://icons.lobehub.com/skills/components/adobe-firefly.md) — https://firefly.adobe.com
+- [Flora](https://icons.lobehub.com/skills/components/flora.md) — https://florafauna.ai
+- [Flowith](https://icons.lobehub.com/skills/components/flowith.md) — https://flowith.io
+- [Gemini CLI](https://icons.lobehub.com/skills/components/gemini-cli.md) — https://geminicli.com
+- [Github Copilot](https://icons.lobehub.com/skills/components/github-copilot.md) — https://github.com/features/copilot
+- [Glama](https://icons.lobehub.com/skills/components/glama.md) — https://glama.ai
+- [Glif](https://icons.lobehub.com/skills/components/glif.md) — https://glif.app
+- [Goose (codename)](https://icons.lobehub.com/skills/components/goose.md) — https://block.github.io/goose
+- [Gradio](https://icons.lobehub.com/skills/components/gradio.md) — https://gradio.app
+- [Greptile](https://icons.lobehub.com/skills/components/greptile.md) — https://greptile.com
+- [Grok Bot](https://icons.lobehub.com/skills/components/grok-bot.md) — https://x.ai/bot
+- [Hailuo (海螺)](https://icons.lobehub.com/skills/components/hailuo.md) — https://hailuoai.video
+- [Haiper](https://icons.lobehub.com/skills/components/haiper.md) — https://haiper.ai
+- [Hedra](https://icons.lobehub.com/skills/components/hedra.md) — https://hedra.com
+- [Hermes Agent](https://icons.lobehub.com/skills/components/hermes-agent.md) — https://hermes-agent.nousresearch.com
+- [Ideogram](https://icons.lobehub.com/skills/components/ideogram.md) — https://ideogram.ai
+- [Jimeng (即梦)](https://icons.lobehub.com/skills/components/jimeng.md) — https://jimeng.jianying.com
+- [Junie](https://icons.lobehub.com/skills/components/junie.md) — https://jetbrains.com/junie
+- [Kilo Code](https://icons.lobehub.com/skills/components/kilo-code.md) — https://kilo.ai
+- [Kimi](https://icons.lobehub.com/skills/components/kimi.md) — https://kimi.moonshot.cn
+- [Kiro](https://icons.lobehub.com/skills/components/kiro.md) — https://kiro.dev
+- [Kling (可灵)](https://icons.lobehub.com/skills/components/kling.md) — https://klingai.com
+- [Krea](https://icons.lobehub.com/skills/components/krea.md) — https://krea.ai
+- [LangChain](https://icons.lobehub.com/skills/components/lang-chain.md) — https://langchain.com
+- [Langfuse](https://icons.lobehub.com/skills/components/langfuse.md) — https://langfuse.com
+- [LangGraph (LangChain)](https://icons.lobehub.com/skills/components/lang-graph.md) — https://langchain.com/LangGraph
+- [LangSmith (LangChain)](https://icons.lobehub.com/skills/components/lang-smith.md) — https://langchain.com/langsmith
+- [Lightricks](https://icons.lobehub.com/skills/components/lightricks.md) — https://lightricks.com
+- [LiveKit](https://icons.lobehub.com/skills/components/live-kit.md) — https://livekit.io
+- [LlamaIndex](https://icons.lobehub.com/skills/components/llama-index.md) — https://llamaindex.ai
+- [Lovable](https://icons.lobehub.com/skills/components/lovable.md) — https://lovable.dev
+- [Lovart](https://icons.lobehub.com/skills/components/lovart.md) — https://lovart.ai
+- [Luma](https://icons.lobehub.com/skills/components/luma.md) — https://lumalabs.ai
+- [Make](https://icons.lobehub.com/skills/components/make.md) — https://make.com
+- [Manus](https://icons.lobehub.com/skills/components/manus.md) — https://manus.im
+- [Mastra](https://icons.lobehub.com/skills/components/mastra.md) — https://mastra.ai
+- [MCP (Model Context Protocol)](https://icons.lobehub.com/skills/components/mcp.md) — https://modelcontextprotocol.io
+- [MCP.so](https://icons.lobehub.com/skills/components/mcp-so.md) — https://mcp.so
+- [MetaAI](https://icons.lobehub.com/skills/components/meta-ai.md) — https://meta.ai
+- [MetaGPT](https://icons.lobehub.com/skills/components/meta-gpt.md) — https://github.com/FoundationAgents/MetaGPT
+- [Microsoft Bing](https://icons.lobehub.com/skills/components/bing.md) — https://bing.com
+- [Microsoft Copilot](https://icons.lobehub.com/skills/components/copilot.md) — https://copilot.microsoft.com
+- [Midjourney](https://icons.lobehub.com/skills/components/midjourney.md) — https://midjourney.com
+- [Monica](https://icons.lobehub.com/skills/components/monica.md) — https://monica.im
+- [Moxt](https://icons.lobehub.com/skills/components/moxt.md) — https://moxt.ai
+- [MyShell](https://icons.lobehub.com/skills/components/my-shell.md) — https://myshell.ai
+- [n8n](https://icons.lobehub.com/skills/components/n8n.md) — https://n8n.io
+- [NotebookLM](https://icons.lobehub.com/skills/components/notebook-lm.md) — https://notebooklm.google
+- [Notion](https://icons.lobehub.com/skills/components/notion.md) — https://notion.com
+- [NovelAI](https://icons.lobehub.com/skills/components/novel-ai.md) — https://novelai.net
+- [Obsidian](https://icons.lobehub.com/skills/components/obsidian.md) — https://obsidian.md
+- [OpenClaw (MoltBot/ClawdBot)](https://icons.lobehub.com/skills/components/open-claw.md) — https://openclaw.dev
+- [opencode](https://icons.lobehub.com/skills/components/open-code.md) — https://opencode.ai
+- [OpenHands](https://icons.lobehub.com/skills/components/open-hands.md) — https://openhands.dev
+- [OpenHuman](https://icons.lobehub.com/skills/components/open-human.md) — https://tinyhumans.ai/openhuman
+- [OpenWebUI](https://icons.lobehub.com/skills/components/open-web-ui.md) — https://openwebui.com
+- [Phidata](https://icons.lobehub.com/skills/components/phidata.md) — https://phidata.com
+- [Pika](https://icons.lobehub.com/skills/components/pika.md) — https://pika.art
+- [PixVerse](https://icons.lobehub.com/skills/components/pix-verse.md) — https://app.pixverse.ai
+- [Player2](https://icons.lobehub.com/skills/components/player2.md) — https://player2.game
+- [Poe](https://icons.lobehub.com/skills/components/poe.md) — https://poe.com
+- [Pollinations](https://icons.lobehub.com/skills/components/pollinations.md) — https://pollinations.ai
+- [PydanticAI](https://icons.lobehub.com/skills/components/pydantic-ai.md) — https://ai.pydantic.dev
+- [Qingyan (智谱清言)](https://icons.lobehub.com/skills/components/qingyan.md) — https://chatglm.cn
+- [Qoder](https://icons.lobehub.com/skills/components/qoder.md) — https://qoder.com
+- [Railway](https://icons.lobehub.com/skills/components/railway.md) — https://railway.com
+- [Recraft](https://icons.lobehub.com/skills/components/recraft.md) — https://recraft.ai
+- [Replit](https://icons.lobehub.com/skills/components/replit.md) — https://replit.com
+- [RooCode](https://icons.lobehub.com/skills/components/roo-code.md) — https://roocode.com
+- [RSSHub](https://icons.lobehub.com/skills/components/rss-hub.md) — https://rsshub.app
+- [Runway](https://icons.lobehub.com/skills/components/runway.md) — https://runwayml.com
+- [SillyTavern](https://icons.lobehub.com/skills/components/silly-tavern.md) — https://github.com/SillyTavern
+- [Slock](https://icons.lobehub.com/skills/components/slock.md) — https://slock.ai
+- [Smithery](https://icons.lobehub.com/skills/components/smithery.md) — https://smithery.ai
+- [Suno](https://icons.lobehub.com/skills/components/suno.md) — https://app.suno.ai
+- [Sync](https://icons.lobehub.com/skills/components/sync.md) — https://sync.so
+- [Tabbit](https://icons.lobehub.com/skills/components/tabbit.md) — https://tabbit.ai
+- [Tavily](https://icons.lobehub.com/skills/components/tavily.md) — https://tavily.com
+- [Tiangong (天工)](https://icons.lobehub.com/skills/components/tiangong.md) — https://tiangong.cn
+- [TopazLabs](https://icons.lobehub.com/skills/components/topaz-labs.md) — https://topazlabs.com
+- [TRAE](https://icons.lobehub.com/skills/components/trae.md) — https://trae.ai
+- [Tripo](https://icons.lobehub.com/skills/components/tripo.md) — https://tripo3d.ai
+- [TuriX](https://icons.lobehub.com/skills/components/turi-x.md) — https://turix.ai
+- [Udio](https://icons.lobehub.com/skills/components/udio.md) — https://udio.com
+- [Unstructured](https://icons.lobehub.com/skills/components/unstructured.md) — https://unstructured.io
+- [V0 (Vercel)](https://icons.lobehub.com/skills/components/v0.md) — https://v0.dev
+- [Vectorizer.AI](https://icons.lobehub.com/skills/components/vectorizer-ai.md) — https://vectorizer.ai
+- [Venice](https://icons.lobehub.com/skills/components/venice.md) — https://venice.ai
+- [Vidu](https://icons.lobehub.com/skills/components/vidu.md) — https://vidu.com
+- [Viggle](https://icons.lobehub.com/skills/components/viggle.md) — https://viggle.ai
+- [Weights & Biases](https://icons.lobehub.com/skills/components/wandb.md) — https://wandb.ai
+- [Windsurf](https://icons.lobehub.com/skills/components/windsurf.md) — https://windsurf.com
+- [WorkBuddy](https://icons.lobehub.com/skills/components/work-buddy.md) — https://workbuddy.ai
+- [YouMind](https://icons.lobehub.com/skills/components/you-mind.md) — https://youmind.ai
+- [Yuanbao (腾讯元宝)](https://icons.lobehub.com/skills/components/yuanbao.md) — https://yuanbao.tencent.com
+- [Z.ai](https://icons.lobehub.com/skills/components/zai.md) — https://z.ai
+- [Zapier](https://icons.lobehub.com/skills/components/zapier.md) — https://zapier.com
+- [Zeabur](https://icons.lobehub.com/skills/components/zeabur.md) — https://zeabur.com
+- [Zencoder](https://icons.lobehub.com/skills/components/zencoder.md) — https://zencoder.ai
+
+#### Model
+
+- [ACE](https://icons.lobehub.com/skills/components/ace.md) — https://github.com/ace-step/ACE-Step
+- [Ai2](https://icons.lobehub.com/skills/components/ai2.md) — https://allenai.org/
+- [Ai21Labs (Jamba)](https://icons.lobehub.com/skills/components/ai21.md) — https://huggingface.co/ai21labs
+- [AionLabs](https://icons.lobehub.com/skills/components/aion-labs.md) — https://aionlabs.ai
+- [Arcee](https://icons.lobehub.com/skills/components/arcee.md) — https://arcee.ai/
+- [AssemblyAI](https://icons.lobehub.com/skills/components/assembly-ai.md) — https://assemblyai.com
+- [Aya (Cohere)](https://icons.lobehub.com/skills/components/aya.md) — https://cohere.com/research/aya
+- [BAAI (智源研究院)](https://icons.lobehub.com/skills/components/baai.md) — https://baai.ac.cn
+- [Baichuan (百川)](https://icons.lobehub.com/skills/components/baichuan.md) — https://baichuan-ai.com
+- [Bilibili Index (Index Team)](https://icons.lobehub.com/skills/components/bilibili-index.md) — https://huggingface.co/IndexTeam
+- [ChatGLM (智谱)](https://icons.lobehub.com/skills/components/chat-glm.md) — https://github.com/THUDM/ChatGLM-6B
+- [Claude](https://icons.lobehub.com/skills/components/claude.md) — https://claude.ai
+- [CodeGeeX](https://icons.lobehub.com/skills/components/code-gee-x.md) — https://codegeex.cn/
+- [Codex (OpenAI)](https://icons.lobehub.com/skills/components/codex.md) — https://openai.com/codex
+- [CogVideo](https://icons.lobehub.com/skills/components/cog-video.md) — https://github.com/THUDM/CogVideo
+- [CogView](https://icons.lobehub.com/skills/components/cog-view.md) — https://github.com/THUDM/CogView3
+- [CommandA (Cohere)](https://icons.lobehub.com/skills/components/command-a.md) — https://cohere.com/blog/command
+- [DALL·E (OpenAI)](https://icons.lobehub.com/skills/components/dalle.md) — https://openai.com/dall-e-3
+- [DBRX (Databricks)](https://icons.lobehub.com/skills/components/dbrx.md) — https://databricks.com
+- [Deep Cogito](https://icons.lobehub.com/skills/components/deep-cogito.md) — https://deepcogito.com
+- [DeepSeek](https://icons.lobehub.com/skills/components/deep-seek.md) — https://deepseek.com
+- [Dolphin (dphnAI)](https://icons.lobehub.com/skills/components/dolphin.md) — https://dphn.ai
+- [Dots Studio](https://icons.lobehub.com/skills/components/dots-studio.md) — https://studio.dots.ai
+- [Doubao (豆包)](https://icons.lobehub.com/skills/components/doubao.md) — https://team.doubao.com
+- [ElevenLabs](https://icons.lobehub.com/skills/components/eleven-labs.md) — https://elevenlabs.io
+- [Essential AI](https://icons.lobehub.com/skills/components/essential-ai.md) — https://essential.ai
+- [FishAudio (Bert)](https://icons.lobehub.com/skills/components/fish-audio.md) — https://github.com/fishaudio
+- [Flux (black forest labs)](https://icons.lobehub.com/skills/components/flux.md) — https://blackforestlabs.ai
+- [Gemini (Google)](https://icons.lobehub.com/skills/components/gemini.md) — https://deepmind.google/technologies/gemini
+- [Gemma (Google)](https://icons.lobehub.com/skills/components/gemma.md) — https://ai.google.dev/gemma
+- [GLM-V](https://icons.lobehub.com/skills/components/glmv.md) — https://huggingface.co/zai-org/GLM-4.1V-9B-Thinking
+- [Grok (xAI)](https://icons.lobehub.com/skills/components/grok.md) — https://grok.x.ai
+- [HappyHorse](https://icons.lobehub.com/skills/components/happy-horse.md) — https://happyhorse.com
+- [Hunyuan (腾讯混元)](https://icons.lobehub.com/skills/components/hunyuan.md) — https://hunyuan.tencent.com
+- [Inception Labs](https://icons.lobehub.com/skills/components/inception.md) — https://inceptionlabs.ai
+- [Inflection](https://icons.lobehub.com/skills/components/inflection.md) — https://inflection.ai
+- [Kolors (快手可图)](https://icons.lobehub.com/skills/components/kolors.md) — https://kolors.kuaishou.com
+- [KwaiKAT (KAT-Coder)](https://icons.lobehub.com/skills/components/kwai-kat.md) — https://streamlake.ai/product/kat-coder
+- [Kwaipilot](https://icons.lobehub.com/skills/components/kwaipilot.md) — https://kwaipilot.ai
+- [Ling (百灵)](https://icons.lobehub.com/skills/components/ling.md) — https://www.ant-ling.com
+- [Liquid](https://icons.lobehub.com/skills/components/liquid.md) — https://liquid.ai
+- [LLaVA](https://icons.lobehub.com/skills/components/l-la-va.md) — https://github.com/haotian-liu/LLaVA
+- [LongCat](https://icons.lobehub.com/skills/components/long-cat.md) — https://longcat.chat/
+- [Magic](https://icons.lobehub.com/skills/components/magic.md) — https://magic.dev
+- [Meshy](https://icons.lobehub.com/skills/components/meshy.md) — https://meshy.ai
+- [Minimax](https://icons.lobehub.com/skills/components/minimax.md) — https://api.minimax.chat
+- [Mistral](https://icons.lobehub.com/skills/components/mistral.md) — https://mistral.ai
+- [Morph](https://icons.lobehub.com/skills/components/morph.md) — https://morphllm.com
+- [Muse (Meta)](https://icons.lobehub.com/skills/components/muse.md) — https://muse.ai
+- [Nano Banana (Google)](https://icons.lobehub.com/skills/components/nano-banana.md) — https://gemini.google/overview/image-generation
+- [Nova (AWS)](https://icons.lobehub.com/skills/components/nova.md) — https://nova.amazon.com/
+- [OpenChat](https://icons.lobehub.com/skills/components/open-chat.md) — https://huggingface.co/openchat
+- [PaLM (Google)](https://icons.lobehub.com/skills/components/pa-lm.md) — https://ai.google/discover/palm2
+- [Perceptron](https://icons.lobehub.com/skills/components/perceptron.md) — https://perceptron.inc
+- [Phind](https://icons.lobehub.com/skills/components/phind.md) — https://phind.com
+- [Poolside](https://icons.lobehub.com/skills/components/poolside.md) — https://poolside.ai
+- [Pruna AI](https://icons.lobehub.com/skills/components/pruna-ai.md) — https://pruna.ai
+- [Qwen (千问)](https://icons.lobehub.com/skills/components/qwen.md) — https://huggingface.co/Qwen
+- [Reka](https://icons.lobehub.com/skills/components/reka.md) — https://reka.ai
+- [Relace](https://icons.lobehub.com/skills/components/relace.md) — https://relace.ai
+- [Reve](https://icons.lobehub.com/skills/components/reve.md) — https://app.reve.com
+- [RWKV](https://icons.lobehub.com/skills/components/rwkv.md) — https://github.com/RWKV
+- [Sakana](https://icons.lobehub.com/skills/components/sakana.md) — https://sakana.ai
+- [SenseNova (商汤)](https://icons.lobehub.com/skills/components/sense-nova.md) — https://platform.sensenova.cn
+- [Skywork (天工)](https://icons.lobehub.com/skills/components/skywork.md) — https://skywork.ai
+- [Sora (OpenAI)](https://icons.lobehub.com/skills/components/sora.md) — https://platform.openai.com/docs/models/sora-2
+- [Spark (讯飞星火)](https://icons.lobehub.com/skills/components/spark.md) — https://xinghuo.xfyun.cn
+- [Stepfun (阶跃星辰)](https://icons.lobehub.com/skills/components/stepfun.md) — https://stepfun.com
+- [Union Alpha](https://icons.lobehub.com/skills/components/union-alpha.md) — https://union-alpha.com
+- [Voyage](https://icons.lobehub.com/skills/components/voyage.md) — https://voyageai.com
+- [Wenxin (文心)](https://icons.lobehub.com/skills/components/wenxin.md) — https://yiyan.baidu.com
+- [Xiaomi MiMo](https://icons.lobehub.com/skills/components/xiaomi-mi-mo.md) — https://platform.xiaomimimo.com
+- [Xuanyuan (度小满轩辕)](https://icons.lobehub.com/skills/components/xuanyuan.md) — https://github.com/Duxiaoman-DI/XuanYuan
+- [Yi (零一万物)](https://icons.lobehub.com/skills/components/yi.md) — https://github.com/01-ai/Yi
+
+#### Provider
+
+- [01.AI (零一万物)](https://icons.lobehub.com/skills/components/zero-one.md) — https://lingyiwanwu.com/
+- [302.AI](https://icons.lobehub.com/skills/components/ai302.md) — https://302.ai/
+- [AgentVoice](https://icons.lobehub.com/skills/components/agent-voice.md) — https://agentvoice.com
+- [AI Studio (Google)](https://icons.lobehub.com/skills/components/ai-studio.md) — https://aistudio.google.com
+- [AI/ML API](https://icons.lobehub.com/skills/components/aimlapi.md) — https://aimlapi.com
+- [Ai360 (360智脑)](https://icons.lobehub.com/skills/components/ai360.md) — https://ai.360.com/
+- [AiHubMix (推理时代)](https://icons.lobehub.com/skills/components/ai-hub-mix.md) — https://aihubmix.com
+- [AiMass (紫东太初)](https://icons.lobehub.com/skills/components/ai-mass.md) — https://ai-maas.wair.ac.cn
+- [AkashChat](https://icons.lobehub.com/skills/components/akash-chat.md) — https://chatapi.akash.network
+- [AlephAlpha](https://icons.lobehub.com/skills/components/aleph-alpha.md) — https://aleph-alpha.com
+- [Alibaba](https://icons.lobehub.com/skills/components/alibaba.md) — https://alibaba.com
+- [AlibabaCloud (阿里云)](https://icons.lobehub.com/skills/components/alibaba-cloud.md) — https://aliyun.com
+- [AMD Radeon Cloud](https://icons.lobehub.com/skills/components/amd-radeon-cloud.md) — https://developer.amd.com.cn/radeon
+- [Anspire](https://icons.lobehub.com/skills/components/anspire.md) — https://anspire.ai
+- [AntGroup](https://icons.lobehub.com/skills/components/ant-group.md) — https://antgroup.com
+- [Anthropic](https://icons.lobehub.com/skills/components/anthropic.md) — https://anthropic.com
+- [Anyscale](https://icons.lobehub.com/skills/components/anyscale.md) — https://anyscale.com
+- [Apertis](https://icons.lobehub.com/skills/components/apertis.md) — https://apertis.ai
+- [Apple](https://icons.lobehub.com/skills/components/apple.md) — https://apple.com
+- [AtlasCloud](https://icons.lobehub.com/skills/components/atlas-cloud.md) — https://atlascloud.ai
+- [AWS](https://icons.lobehub.com/skills/components/aws.md) — https://aws.amazon.com
+- [AzureAI](https://icons.lobehub.com/skills/components/azure-ai.md) — https://ai.azure.com
+- [Baidu](https://icons.lobehub.com/skills/components/baidu.md) — https://baidu.com
+- [BaiduCloud (百度智能云)](https://icons.lobehub.com/skills/components/baidu-cloud.md) — https://cloud.baidu.com
+- [Bailian (阿里云百炼)](https://icons.lobehub.com/skills/components/bailian.md) — https://bailian.console.aliyun.com
+- [Baseten](https://icons.lobehub.com/skills/components/baseten.md) — https://baseten.co
+- [Bedrock (AWS)](https://icons.lobehub.com/skills/components/bedrock.md) — https://aws.amazon.com/bedrock
+- [Bilibili (哔哩哔哩)](https://icons.lobehub.com/skills/components/bilibili.md) — https://github.com/bilibili
+- [Black Forest Labs (bfl)](https://icons.lobehub.com/skills/components/bfl.md) — https://bfl.ai
+- [Bocha (博查)](https://icons.lobehub.com/skills/components/bocha.md) — https://open.bochaai.com
+- [Brave](https://icons.lobehub.com/skills/components/brave.md) — https://brave.com
+- [BRIA AI](https://icons.lobehub.com/skills/components/bria-ai.md) — https://bria.ai
+- [Browserless](https://icons.lobehub.com/skills/components/browserless.md) — https://browserless.js.org
+- [BurnCloud](https://icons.lobehub.com/skills/components/burn-cloud.md) — https://ai.burncloud.com
+- [ByteDance](https://icons.lobehub.com/skills/components/byte-dance.md) — https://bytedance.com
+- [CentML](https://icons.lobehub.com/skills/components/cent-ml.md) — https://centml.ai
+- [Cerebras](https://icons.lobehub.com/skills/components/cerebras.md) — https://cerebras.ai
+- [Cheaper Inference](https://icons.lobehub.com/skills/components/cheaper-inference.md) — https://cheaperinference.com
+- [Chutes](https://icons.lobehub.com/skills/components/chutes.md) — https://chutes.ai
+- [Civitai](https://icons.lobehub.com/skills/components/civitai.md) — https://civitai.com
+- [Cloudflare](https://icons.lobehub.com/skills/components/cloudflare.md) — https://cloudflare.com
+- [Cohere](https://icons.lobehub.com/skills/components/cohere.md) — https://cohere.com
+- [Comet API](https://icons.lobehub.com/skills/components/comet-api.md) — https://cometapi.com/
+- [Crusoe](https://icons.lobehub.com/skills/components/crusoe.md) — https://crusoe.ai
+- [Decart](https://icons.lobehub.com/skills/components/decart.md) — https://decart.ai
+- [DeepInfra](https://icons.lobehub.com/skills/components/deep-infra.md) — https://deepinfra.com
+- [DeepMind (Google)](https://icons.lobehub.com/skills/components/deep-mind.md) — https://deepmind.google
+- [DigitalOcean](https://icons.lobehub.com/skills/components/digital-ocean.md) — https://digitalocean.com
+- [DotHoosh](https://icons.lobehub.com/skills/components/dot-hoosh.md) — https://gateway.dothoosh.com
+- [EmpirioLabs AI](https://icons.lobehub.com/skills/components/empirio-labs.md) — https://empiriolabs.ai
+- [Exa](https://icons.lobehub.com/skills/components/exa.md) — https://exa.ai
+- [Fal](https://icons.lobehub.com/skills/components/fal.md) — https://fal.ai
+- [Featherless.ai](https://icons.lobehub.com/skills/components/featherless.md) — https://featherless.ai
+- [Fireworks](https://icons.lobehub.com/skills/components/fireworks.md) — https://fireworks.ai
+- [FlexAI](https://icons.lobehub.com/skills/components/flex-ai.md) — https://flex.ai
+- [Friendli](https://icons.lobehub.com/skills/components/friendli.md) — https://friendli.ai
+- [GiteeAI](https://icons.lobehub.com/skills/components/gitee-ai.md) — https://ai-assets.gitee.com/
+- [Github](https://icons.lobehub.com/skills/components/github.md) — https://github.com
+- [GMI Cloud](https://icons.lobehub.com/skills/components/gmi-cloud.md) — https://gmicloud.ai
+- [Google](https://icons.lobehub.com/skills/components/google.md) — https://google.com
+- [GoogleCloud](https://icons.lobehub.com/skills/components/google-cloud.md) — https://cloud.google.com
+- [GreenPT](https://icons.lobehub.com/skills/components/green-pt.md) — https://greenpt.ai
+- [Groq](https://icons.lobehub.com/skills/components/groq.md) — https://wow.groq.com
+- [Higress](https://icons.lobehub.com/skills/components/higress.md) — https://higress.cn/
+- [Huawei](https://icons.lobehub.com/skills/components/huawei.md) — https://huawei.com
+- [HuaweiCloud (华为云)](https://icons.lobehub.com/skills/components/huawei-cloud.md) — https://huaweicloud.com
+- [HuggingFace](https://icons.lobehub.com/skills/components/hugging-face.md) — https://huggingface.co
+- [Hyperbolic](https://icons.lobehub.com/skills/components/hyperbolic.md) — https://hyperbolic.xyz
+- [IBM (Granite)](https://icons.lobehub.com/skills/components/ibm.md) — https://huggingface.co/ibm-granite
+- [IFlyTekCloud (讯飞开放平台)](https://icons.lobehub.com/skills/components/i-fly-tek-cloud.md) — https://xfyun.cn
+- [Inceptron](https://icons.lobehub.com/skills/components/inceptron.md) — https://inceptron.io
+- [Inference](https://icons.lobehub.com/skills/components/inference.md) — https://inference.net
+- [Infermatic](https://icons.lobehub.com/skills/components/infermatic.md) — https://infermatic.ai
+- [Infinigence (无问芯穹)](https://icons.lobehub.com/skills/components/infinigence.md) — https://cloud.infini-ai.com
+- [InternLM](https://icons.lobehub.com/skills/components/intern-lm.md) — https://internlm.intern-ai.org.cn
+- [io.net](https://icons.lobehub.com/skills/components/io-net.md) — https://io.net
+- [Jina AI](https://icons.lobehub.com/skills/components/jina.md) — https://jina.ai
+- [Kagi](https://icons.lobehub.com/skills/components/kagi.md) — https://kagi.com
+- [Kluster](https://icons.lobehub.com/skills/components/kluster.md) — https://kluster.ai
+- [Lambda](https://icons.lobehub.com/skills/components/lambda.md) — https://lambdalabs.com
+- [LeptonAI](https://icons.lobehub.com/skills/components/lepton-ai.md) — https://lepton.ai
+- [LG AI (KMMLU/EXAONE)](https://icons.lobehub.com/skills/components/lg.md) — https://lgresearch.ai
+- [LLM API](https://icons.lobehub.com/skills/components/llm-api.md) — https://llmapi.ai
+- [LLM Gateway](https://icons.lobehub.com/skills/components/llm-gateway.md) — https://llmgateway.io
+- [LM Studio](https://icons.lobehub.com/skills/components/lm-studio.md) — https://lmstudio.ai
+- [LobeHub](https://icons.lobehub.com/skills/components/lobe-hub.md) — https://lobehub.com
+- [Magpie](https://icons.lobehub.com/skills/components/magpie.md) — https://usemagpie.ai
+- [MENLO (Lucy/Jan-nano)](https://icons.lobehub.com/skills/components/menlo.md) — https://menlo.ai
+- [Meta](https://icons.lobehub.com/skills/components/meta.md) — https://llama.meta.com
+- [Microsoft](https://icons.lobehub.com/skills/components/microsoft.md) — https://microsoft.com
+- [Microsoft Azure](https://icons.lobehub.com/skills/components/azure.md) — https://azure.microsoft.com
+- [ModelScope (魔搭)](https://icons.lobehub.com/skills/components/model-scope.md) — https://modelscope.cn
+- [Moonshot (月之暗面)](https://icons.lobehub.com/skills/components/moonshot.md) — https://moonshot.cn
+- [Nebius](https://icons.lobehub.com/skills/components/nebius.md) — https://nebius.com
+- [New API](https://icons.lobehub.com/skills/components/new-api.md) — https://newapi.ai
+- [Nextbit](https://icons.lobehub.com/skills/components/nextbit.md) — https://nextbit256.com
+- [NousResearch (Hermes)](https://icons.lobehub.com/skills/components/nous-research.md) — https://nousresearch.com
+- [Novita](https://icons.lobehub.com/skills/components/novita.md) — https://novita.ai/
+- [NPLCloud](https://icons.lobehub.com/skills/components/npl-cloud.md) — https://nlpcloud.com
+- [Nvidia (Nemotron)](https://icons.lobehub.com/skills/components/nvidia.md) — https://nvidia.com/en-us/ai-on-rtx/chat-with-rtx-generative-ai/
+- [Ollama](https://icons.lobehub.com/skills/components/ollama.md) — https://ollama.ai
+- [OpenAI (ChatGPT)](https://icons.lobehub.com/skills/components/open-ai.md) — https://openai.com
+- [OpenRouter](https://icons.lobehub.com/skills/components/open-router.md) — https://openrouter.ai
+- [Parasail](https://icons.lobehub.com/skills/components/parasail.md) — https://parasail.io/
+- [Perplexity](https://icons.lobehub.com/skills/components/perplexity.md) — https://perplexity.ai
+- [Phala](https://icons.lobehub.com/skills/components/phala.md) — https://phala.com
+- [Pi Agent](https://icons.lobehub.com/skills/components/pi.md) — https://pi.dev
+- [PPIO](https://icons.lobehub.com/skills/components/ppio.md) — https://ppinfra.com
+- [Qiniu (七牛云)](https://icons.lobehub.com/skills/components/qiniu.md) — https://qiniu.com
+- [Reflection](https://icons.lobehub.com/skills/components/reflection.md) — https://reflection.ai
+- [Replicate](https://icons.lobehub.com/skills/components/replicate.md) — https://replicate.com
+- [SambaNova](https://icons.lobehub.com/skills/components/samba-nova.md) — https://sambanova.ai
+- [Search1API](https://icons.lobehub.com/skills/components/search1-api.md) — https://search1api.com
+- [SearchApi](https://icons.lobehub.com/skills/components/search-api.md) — https://searchapi.io
+- [SearXNG](https://icons.lobehub.com/skills/components/sear-xng.md) — https://searxng.org
+- [SiliconCloud (SiliconFlow)](https://icons.lobehub.com/skills/components/silicon-cloud.md) — https://siliconflow.com
+- [Snowflake](https://icons.lobehub.com/skills/components/snowflake.md) — https://snowflake.com
+- [SophNet](https://icons.lobehub.com/skills/components/soph-net.md) — https://sophnet.com
+- [SpeedAI](https://icons.lobehub.com/skills/components/speed-ai.md) — https://speedai.com
+- [Stability (StableDiffusion)](https://icons.lobehub.com/skills/components/stability.md) — https://deepmind.google/technologies/gemini
+- [StateCloud (天翼云)](https://icons.lobehub.com/skills/components/state-cloud.md) — https://ctyun.cn/act/xirang/deepseek
+- [Straico](https://icons.lobehub.com/skills/components/straico.md) — https://straico.com
+- [StreamLake](https://icons.lobehub.com/skills/components/stream-lake.md) — https://streamlake.ai
+- [Sub2API](https://icons.lobehub.com/skills/components/sub2-api.md) — https://sub2api.org
+- [SubModel](https://icons.lobehub.com/skills/components/sub-model.md) — https://submodel.ai
+- [Targon](https://icons.lobehub.com/skills/components/targon.md) — https://targon.com
+- [Technology Innovation Institute (Falcon)](https://icons.lobehub.com/skills/components/tii.md) — https://tii.ae
+- [Tencent](https://icons.lobehub.com/skills/components/tencent.md) — https://tencent.com
+- [TencentCloud (腾讯云)](https://icons.lobehub.com/skills/components/tencent-cloud.md) — https://cloud.tencent.com
+- [together.ai](https://icons.lobehub.com/skills/components/together.md) — https://together.ai
+- [TypeSafe AI](https://icons.lobehub.com/skills/components/type-safe-ai.md) — https://typesafe.ai/
+- [Unsloth](https://icons.lobehub.com/skills/components/unsloth.md) — https://unsloth.ai
+- [Upstage](https://icons.lobehub.com/skills/components/upstage.md) — https://upstage.ai
+- [Vercel](https://icons.lobehub.com/skills/components/vercel.md) — https://sdk.vercel.ai
+- [VertexAI (Google)](https://icons.lobehub.com/skills/components/vertex-ai.md) — https://cloud.google.com/generative-ai-studio
+- [vLLM](https://icons.lobehub.com/skills/components/vllm.md) — https://github.com/vllm-project
+- [Volcengine (火山引擎)](https://icons.lobehub.com/skills/components/volcengine.md) — https://volcengine.com
+- [Wafer](https://icons.lobehub.com/skills/components/wafer.md) — https://wafer.ai
+- [WaveSpeed](https://icons.lobehub.com/skills/components/wave-speed.md) — https://wavespeed.ai
+- [WorkersAI (Cloudflare)](https://icons.lobehub.com/skills/components/workers-ai.md) — https://developers.cloudflare.com/workers-ai
+- [WorldRouter](https://icons.lobehub.com/skills/components/world-router.md) — https://worldrouter.ai
+- [xAI](https://icons.lobehub.com/skills/components/xai.md) — https://x.ai
+- [Xinference](https://icons.lobehub.com/skills/components/xinference.md) — https://github.com/xorbitsai/inference
+- [Xpay](https://icons.lobehub.com/skills/components/xpay.md) — https://xpay.sh
+- [Yandex](https://icons.lobehub.com/skills/components/yandex.md) — https://ai.yandex.com
+- [ZenMux](https://icons.lobehub.com/skills/components/zen-mux.md) — https://zenmux.ai
+- [Zhipu (智谱)](https://icons.lobehub.com/skills/components/zhipu.md) — https://zhipuai.cn
+

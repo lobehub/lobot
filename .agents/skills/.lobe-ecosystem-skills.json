@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "skills": {
+    "lobe-charts": {
+      "url": "https://charts.lobehub.com/skills.md",
+      "hash": "9c055c67a7c1607b6a3c34af1339023c78be3452f4563eea1745814cd1d2dee2",
+      "etag": "W/\"989b4dc38fb69cbd54db1f61caf5127a\"",
+      "packages": [
+        "@lobehub/charts"
+      ],
+      "frontmatterName": "lobe-charts",
+      "updatedAt": "2026-11-17T17:40:07.969Z"
+    },
+    "lobe-lint": {
+      "url": "https://lint.lobehub.com/skills.md",
+      "hash": "6751da4a317c795eaab1faded255b2142cb990b018ae106b12e14ced38717a8a",
+      "etag": "W/\"1b7f6ea6375177996c04efe28d3e37ab\"",
+      "packages": [
+        "@lobehub/commitlint-config",
+        "@lobehub/oxlint-config",
+        "@lobehub/prettier-config",
+        "@lobehub/remarklint-config",
+        "@lobehub/semantic-release-config",
+        "@lobehub/stylelint-config"
+      ],
+      "frontmatterName": "lobe-lint",
+      "updatedAt": "2026-11-17T17:40:11.406Z"
+    },
+    "lobe-editor": {
+      "url": "https://editor.lobehub.com/skills.md",
+      "hash": "438c19eacefea7281a79c9a78efd15ad25bba029f3d78a66aa9db0a988642093",
+      "etag": "\"708197ef87bf07c28f7d881a88a53d23\"",
+      "packages": [
+        "@lobehub/editor"
+      ],
+      "frontmatterName": "lobe-editor",
+      "updatedAt": "2026-11-17T17:40:13.885Z"
+    },
+    "lobe-icons": {
+      "url": "https://icons.lobehub.com/skills.md",
+      "hash": "43f193b36d0fc01883efdf8f7976d1a20274fce70308c9284943b51e2a04b76d",
+      "etag": "\"361236289074069a10c19c831d994c0e\"",
+      "packages": [
+        "@lobehub/icons"
+      ],
+      "frontmatterName": "lobe-icons",
+      "updatedAt": "2026-11-17T17:40:28.020Z"
+    },
+    "lobe-ui": {
+      "url": "https://ui.lobehub.com/skills.md",
+      "hash": "e7faa90be2142f0f3b60aa7cbd6308caf608b40b3de9bf84e9fb236e3ad9f513",
+      "etag": "W/\"3f66d664af3f58c84e1bd32b98eeac7a\"",
+      "packages": [
+        "@lobehub/ui"
+      ],
+      "frontmatterName": "lobe-ui",
+      "updatedAt": "2026-11-17T17:40:32.282Z"
+    }
+  }
+}
