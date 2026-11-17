@@ -1,4 +1,4 @@
-import type { ChannelPublicMessage } from '@lobot/types';
+import type { ChannelPublicMessage, ChannelPublicThread } from '@lobot/types';
 
 import type { TimelineItem } from './joinEvents';
 
@@ -9,6 +9,21 @@ const itemDate = (item: TimelineItem) =>
 
 const sameAuthor = (a: ChannelPublicMessage, b: ChannelPublicMessage) =>
   !!a.author.id && a.author.id === b.author.id && a.author.type === b.author.type;
+
+/**
+ * A deleted message leaves the feed, unless a Thread grew from it: then it keeps its place as a
+ * "deleted" line so the Thread card under it stays reachable.
+ */
+export const visibleChannelMessages = <T extends Pick<ChannelPublicMessage, 'deletedAt' | 'id'>>(
+  messages: T[],
+  threads: Pick<ChannelPublicThread, 'rootMessageId'>[],
+) =>
+  messages.some((message) => message.deletedAt)
+    ? messages.filter(
+        (message) =>
+          !message.deletedAt || threads.some((thread) => thread.rootMessageId === message.id),
+      )
+    : messages;
 
 /** Group only adjacent speech; system events, dates and reply contexts break a group. */
 export const presentChannelTimeline = (items: TimelineItem[]) =>

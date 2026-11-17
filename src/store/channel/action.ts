@@ -240,6 +240,24 @@ class ChannelActionImpl {
       throw error;
     }
   };
+  /**
+   * The message turns into a tombstone right away and comes back if the server refuses. Replies
+   * it asked for stop on the server, so the view refreshes once it confirms.
+   */
+  deleteMessage = async (channelId: string, messageId: string) => {
+    const tokens = this.#private.detail.beginEntityOptimistic<ChannelPublicMessage>(
+      channelMessageEntityId(channelId, messageId),
+      (message) => ({ ...message, content: '', deletedAt: new Date(), fileIds: [], mentions: [] }),
+    );
+    try {
+      await channelService.deleteMessage(channelId, messageId);
+      for (const token of tokens) token.commit();
+    } catch (error) {
+      for (const token of tokens) token.rollback();
+      throw error;
+    }
+    await this.#refreshAfterWrite(() => this.refreshDetail({ channelId }));
+  };
   /** Threads restored from the recycle bin; call before revalidating their views. */
   forgetThreadRemovals = (threadIds: string[]) => this.#private.forgetThreadRemovals(threadIds);
   /** The sidebar row and the open header show the new name before the server confirms. */

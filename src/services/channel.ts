@@ -62,6 +62,8 @@ class ChannelService {
     lambdaClient.channel.updateWakeConfig.mutate({ channelId, wake });
   editMessage = (channelId: string, messageId: string, content: string) =>
     lambdaClient.channel.editMessage.mutate({ channelId, content, messageId });
+  deleteMessage = (channelId: string, messageId: string) =>
+    lambdaClient.channel.deleteMessage.mutate({ channelId, messageId });
   /** Opens a workspace group Channel to the whole workspace, or makes it invite-only again. */
   updateVisibility = (channelId: string, visibility: 'private' | 'public') =>
     lambdaClient.channel.updateVisibility.mutate({ channelId, visibility });

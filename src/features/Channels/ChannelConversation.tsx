@@ -27,7 +27,11 @@ import { JoinEventLine } from './JoinEventLine';
 import { channelTimeline, conversationJoinEvents } from './joinEvents';
 import { isCurrentUserMember } from './memberName';
 import { consumeChannelJump, useChannelJump } from './messageJump';
-import { channelTimeFormatters, presentChannelTimeline } from './messagePresentation';
+import {
+  channelTimeFormatters,
+  presentChannelTimeline,
+  visibleChannelMessages,
+} from './messagePresentation';
 import { presentOutgoingMessage, timelineTail } from './outgoing';
 import { OutgoingStatus } from './OutgoingStatus';
 import { channelTitle } from './peerTitle';
@@ -157,11 +161,10 @@ const Timeline = ({
   const selectReply = (message: ChannelPublicMessage) => reply.select(message);
   const channelArchived = channel?.status === 'archived';
   const oneToOne = !!(channel?.agentId || channel?.peerUserId);
+  const messages = detail ? visibleChannelMessages(detail.messages, detail.threads) : [];
   const timeline = detail
     ? channelTimeline(
-        outgoing.length
-          ? [...detail.messages, ...outgoing.map((item) => item.message)]
-          : detail.messages,
+        outgoing.length ? [...messages, ...outgoing.map((item) => item.message)] : messages,
         conversationJoinEvents(detail, threadId),
         !detail.hasMore && before === undefined,
       )

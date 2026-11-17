@@ -1,7 +1,7 @@
-import type { ChannelDetail, ChannelPublicMember, ChannelPublicMessage } from '@lobot/types';
 import {
   ActionIcon,
   Button,
+  confirmModal,
   copyToClipboard,
   Divider,
   DropdownMenu,
@@ -10,6 +10,7 @@ import {
   Text,
   toast,
 } from '@lobehub/ui';
+import type { ChannelDetail, ChannelPublicMember, ChannelPublicMessage } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import {
   ChevronsDownUp,
@@ -20,6 +21,7 @@ import {
   MoreHorizontal,
   PencilLine,
   Reply,
+  Trash2,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
@@ -36,6 +38,7 @@ import { channelActions } from '@/store/channel';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
+import { callerMemberRole } from './memberManagement';
 import { authorAvatar, isCurrentUserAuthor, isCurrentUserMember, memberName } from './memberName';
 import { MemberProfilePopup } from './MemberProfilePopup';
 import { CHANNEL_MENTION_TAG, remarkChannelMentions } from './mentionMarkdown';
@@ -149,6 +152,11 @@ export const ChannelMessage = ({
   const isOwnMessage = useUserStore((s) =>
     isCurrentUserAuthor(message.author, userProfileSelectors.userId(s)),
   );
+  const isAdmin = useUserStore((s) => {
+    const role = callerMemberRole(detail.members, userProfileSelectors.userId(s));
+    return role === 'owner' || role === 'admin';
+  });
+  const deleted = !!message.deletedAt;
   // Someone else's message that @-mentions you stands out in the feed, the way Slack marks it.
   const mentionsMe = useUserStore((s) => {
     const userId = userProfileSelectors.userId(s);
@@ -189,7 +197,31 @@ export const ChannelMessage = ({
   const [overflowing, setOverflowing] = useState(false);
   const [editing, setEditing] = useState(false);
   // Only a person's own sent message; one still sending has nothing on the server to edit yet.
-  const canEdit = isOwnMessage && message.author.type === 'user' && !pending && !delivery;
+  const canEdit =
+    !deleted && isOwnMessage && message.author.type === 'user' && !pending && !delivery;
+  // A person deletes their own message; an admin any, Agent replies included.
+  const canDelete =
+    !deleted &&
+    !pending &&
+    !delivery &&
+    ((isOwnMessage && message.author.type === 'user') || isAdmin);
+  const confirmDelete = () =>
+    confirmModal({
+      cancelText: t('cancel'),
+      content: t('message.deleteConfirm'),
+      okButtonProps: { danger: true },
+      okText: t('message.delete'),
+      title: t('message.delete'),
+      onOk: async () => {
+        try {
+          await channelActions.deleteMessage(detail.channel.id, message.id);
+        } catch (error) {
+          console.error('[channel] Failed to delete a message', error);
+          toast.error(t('message.deleteFailed'));
+          throw error;
+        }
+      },
+    });
   const moreItems = [
     ...(canEdit
       ? [
@@ -241,8 +273,21 @@ export const ChannelMessage = ({
           },
         ]
       : []),
+    ...(canDelete
+      ? [
+          { type: 'divider' as const },
+          {
+            danger: true,
+            icon: Trash2,
+            key: 'delete',
+            label: t('message.delete'),
+            onClick: confirmDelete,
+          },
+        ]
+      : []),
   ];
-  const hasToolbar = !editing && (!!onReply || canBranch || moreItems.length > 0);
+  // A deleted message keeps only its place (and its Thread card); there is nothing to act on.
+  const hasToolbar = !editing && !deleted && (!!onReply || canBranch || moreItems.length > 0);
   const mentionedMembers = detail.members.filter((member) => message.mentions.includes(member.id));
   const replyQuote =
     !isRoot &&
@@ -257,9 +302,15 @@ export const ChannelMessage = ({
         onClick={() => onJumpToMessage?.(message.replyTo!)}
       >
         <Text ellipsis as="span" fontSize={12} type="secondary">
-          {message.replyTo.author.name || t('deletedMember')}
-          {': '}
-          {message.replyTo.content || t('reply.attachment')}
+          {message.replyTo.deletedAt ? (
+            t('reply.deleted')
+          ) : (
+            <>
+              {message.replyTo.author.name || t('deletedMember')}
+              {': '}
+              {message.replyTo.content || t('reply.attachment')}
+            </>
+          )}
         </Text>
       </Button>
     ) : (
@@ -273,7 +324,11 @@ export const ChannelMessage = ({
   const text = message.content && (
     <MessageText content={message.content} members={mentionedMembers} />
   );
-  const content =
+  const content = deleted ? (
+    <Text italic type="secondary">
+      {t('message.deleted')}
+    </Text>
+  ) : (
     message.content &&
     (collapsible ? (
       <CollapsibleContent
@@ -291,7 +346,8 @@ export const ChannelMessage = ({
       </CollapsibleContent>
     ) : (
       text
-    ));
+    ))
+  );
   const editor = editing && (
     <MessageEditor
       allowEmpty={message.fileIds.length > 0}

@@ -9,7 +9,7 @@ import { channelViewKey } from './projection';
 import { useChannelStore } from './store';
 
 vi.mock('@/services/channel', () => ({
-  channelService: { detail: vi.fn(), editMessage: vi.fn(), list: vi.fn() },
+  channelService: { deleteMessage: vi.fn(), detail: vi.fn(), editMessage: vi.fn(), list: vi.fn() },
 }));
 
 const channel: ChannelListItem = {
@@ -94,5 +94,48 @@ describe('editing a Channel message', () => {
 
     expect(shown().main).toMatchObject({ content: 'Helo', editedAt: null });
     expect(shown().root).toMatchObject({ content: 'Helo', editedAt: null });
+  });
+});
+
+describe('deleting a Channel message', () => {
+  beforeEach(async () => {
+    const scope = crypto.randomUUID();
+    vi.spyOn(cacheScope, 'get').mockImplementation(() => scope);
+    vi.spyOn(cacheScope, 'use').mockImplementation(() => scope);
+    vi.spyOn(cacheScope, 'canPersist').mockReturnValue(false);
+    vi.mocked(channelService.list).mockResolvedValue([channel]);
+    vi.mocked(channelService.detail).mockImplementation(async (params) =>
+      detail(params.threadId ? message : null),
+    );
+    channelActions.reset();
+    await channelActions.refreshDetail(main);
+    await channelActions.refreshDetail(thread);
+  });
+  afterEach(() => {
+    channelActions.reset();
+    vi.restoreAllMocks();
+    vi.clearAllMocks();
+  });
+
+  it('turns the message into a tombstone in every view before the server confirms', async () => {
+    const request = Promise.withResolvers<never>();
+    vi.mocked(channelService.deleteMessage).mockReturnValue(request.promise);
+
+    const deleting = channelActions.deleteMessage(channel.id, message.id);
+
+    const { main: inMain, root } = shown();
+    expect(inMain).toMatchObject({ content: '', deletedAt: expect.any(Date) });
+    expect(root).toMatchObject({ content: '', deletedAt: expect.any(Date) });
+    request.resolve(undefined as never);
+    await deleting;
+  });
+
+  it('puts the message back when the server refuses', async () => {
+    vi.mocked(channelService.deleteMessage).mockRejectedValue(new Error('FORBIDDEN'));
+
+    await expect(channelActions.deleteMessage(channel.id, message.id)).rejects.toThrow();
+
+    expect(shown().main).toMatchObject({ content: 'Helo' });
+    expect(shown().main?.deletedAt).toBeUndefined();
   });
 });

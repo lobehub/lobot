@@ -7,6 +7,7 @@ import {
   channelTimeFormatters,
   foldsByDefault,
   presentChannelTimeline,
+  visibleChannelMessages,
 } from './messagePresentation';
 
 const message = (at: Date, patch: Partial<ChannelPublicMessage> = {}): TimelineItem => ({
@@ -107,5 +108,20 @@ describe('foldsByDefault', () => {
     expect(foldsByDefault(new Date(2026, 10, 15, 0, 1), now)).toBe(false);
     expect(foldsByDefault(new Date(2026, 10, 14, 0, 1), now)).toBe(false);
     expect(foldsByDefault(new Date(2026, 10, 13, 23, 59), now)).toBe(true);
+  });
+});
+
+describe('visibleChannelMessages', () => {
+  it('drops a deleted message unless a Thread grew from it', () => {
+    const messages = [
+      { deletedAt: null, id: 'kept' },
+      { deletedAt: new Date(), id: 'gone' },
+      { deletedAt: new Date(), id: 'root' },
+    ];
+
+    expect(visibleChannelMessages(messages, [{ rootMessageId: 'root' }]).map((m) => m.id)).toEqual([
+      'kept',
+      'root',
+    ]);
   });
 });

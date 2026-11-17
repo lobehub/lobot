@@ -56,8 +56,10 @@ vi.mock('@/features/AgentProfileCard/AgentProfilePopup', () => ({
       children,
     ),
 }));
+const confirmModal = vi.hoisted(() => vi.fn());
 vi.mock('@lobehub/ui', async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
+  confirmModal,
   DropdownMenu: ({ items }: { items: { key: string; label: string; onClick: () => void }[] }) =>
     createElement(
       'div',
@@ -99,7 +101,8 @@ vi.mock('./MemberProfilePopup', () => ({
     createElement('div', { 'data-member-id': member?.id, 'data-testid': 'member-popup' }, children),
 }));
 const editMessage = vi.hoisted(() => vi.fn());
-vi.mock('@/store/channel', () => ({ channelActions: { editMessage } }));
+const deleteMessage = vi.hoisted(() => vi.fn());
+vi.mock('@/store/channel', () => ({ channelActions: { deleteMessage, editMessage } }));
 vi.mock('./MessageAttachments', () => ({ MessageAttachments: () => null }));
 vi.mock('./MessageReceipts', () => ({
   MessageFailureMark: () => null,
@@ -592,5 +595,67 @@ describe('ChannelMessage editing', () => {
       />,
     );
     expect(screen.getByText('message.edited')).toBeTruthy();
+  });
+});
+
+describe('ChannelMessage deletion', () => {
+  const by = (id: string, name: string) => ({
+    ...message({ avatar: null, id, name, type: 'user' }),
+    content: 'Oops',
+  });
+  const asAdmin = {
+    ...detail,
+    members: [
+      ...detail.members,
+      { actorType: 'user', id: 'mem_self', role: 'admin', userId: 'user-self' },
+    ],
+  } as unknown as ChannelDetail;
+
+  it('offers deleting one’s own message, and anyone’s to an admin', () => {
+    const { unmount } = render(
+      <ChannelMessage detail={detail} message={by('user-other', 'Ann')} />,
+    );
+    expect(screen.queryByText('message.delete')).toBeNull();
+    unmount();
+
+    const own = render(<ChannelMessage detail={detail} message={by('user-self', 'Me')} />);
+    expect(screen.getByText('message.delete')).toBeTruthy();
+    own.unmount();
+
+    render(
+      <ChannelMessage
+        detail={asAdmin}
+        message={{
+          ...message({ avatar: null, id: 'agt_1', name: 'Sanjo', type: 'agent' }),
+          content: 'Done',
+        }}
+      />,
+    );
+    expect(screen.getByText('message.delete')).toBeTruthy();
+  });
+
+  it('deletes only after confirmation', async () => {
+    deleteMessage.mockResolvedValue(undefined);
+    render(<ChannelMessage detail={detail} message={by('user-self', 'Me')} />);
+
+    fireEvent.click(screen.getByText('message.delete'));
+    expect(deleteMessage).not.toHaveBeenCalled();
+    await act(() => confirmModal.mock.calls.at(-1)[0].onOk());
+
+    expect(deleteMessage).toHaveBeenCalledWith('chn_1', 'msg_1');
+  });
+
+  it('shows a deleted message as deleted, with nothing to act on', () => {
+    render(
+      <ChannelMessage
+        detail={asAdmin}
+        message={{ ...by('user-self', 'Me'), content: '', deletedAt: new Date() }}
+        onReply={() => {}}
+      />,
+    );
+
+    expect(screen.getByText('message.deleted')).toBeTruthy();
+    expect(screen.queryByLabelText('reply.action')).toBeNull();
+    expect(screen.queryByText('message.delete')).toBeNull();
   });
 });

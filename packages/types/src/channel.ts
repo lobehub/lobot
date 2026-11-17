@@ -467,6 +467,11 @@ export interface ChannelPublicMessage {
   };
   content: string;
   createdAt: Date;
+  /**
+   * Set once the message was deleted. The server keeps it as a tombstone, without text, mentions
+   * or attachments, so Threads and replies that point at it still resolve.
+   */
+  deletedAt?: Date | null;
   /** Set once the author has edited the text; shown as "(edited)". */
   editedAt?: Date | null;
   fileIds: string[];
@@ -478,7 +483,7 @@ export interface ChannelPublicMessage {
   /** Bounded public quote, including when its original is outside the loaded page. */
   replyTo?: Pick<
     ChannelPublicMessage,
-    'id' | 'author' | 'content' | 'sequence' | 'threadId'
+    'id' | 'author' | 'content' | 'deletedAt' | 'sequence' | 'threadId'
   > | null;
   replyToId: string | null;
   routingStatus: ChannelMessageRoutingStatus;
