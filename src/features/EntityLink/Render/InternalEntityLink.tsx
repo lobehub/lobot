@@ -2,12 +2,13 @@
 
 import { isDesktop } from '@lobechat/const';
 import { RENDERER_HANDLED_LINK_ATTR } from '@lobechat/desktop-bridge';
-import { ActionIcon, createStaticStyles, Icon } from '@lobehub/ui';
+import { ActionIcon, copyToClipboard, createStaticStyles, Icon, toast } from '@lobehub/ui';
 import {
   BadgeCheckIcon,
   BotIcon,
   CheckCircleIcon,
   CheckSquareIcon,
+  CopyIcon,
   ExternalLinkIcon,
   FileTextIcon,
   TargetIcon,
@@ -39,10 +40,13 @@ import {
   internalEntityPreviewKey,
 } from './InternalEntityPreview';
 import { useAcceptanceBrowserUrl } from './useAcceptanceBrowserUrl';
+import { useTaskLinkUrl } from './useTaskLinkUrl';
 
 const styles = createStaticStyles(({ css, cssVar }) => ({
-  browser: css`
+  action: css`
+    margin-inline-start: 2px;
     color: ${cssVar.colorTextTertiary};
+    vertical-align: middle;
     transition: color 0.15s;
 
     &:hover {
@@ -83,10 +87,10 @@ const styles = createStaticStyles(({ css, cssVar }) => ({
       outline-offset: 2px;
     }
   `,
+  /* Inline, not inline-flex: a long title must keep wrapping with the
+     sentence it sits in, the actions trailing its last line. */
   wrapper: css`
-    display: inline-flex;
-    gap: 2px;
-    align-items: center;
+    display: inline;
   `,
 }));
 
@@ -108,6 +112,7 @@ interface InternalEntityLinkProps {
 export const InternalEntityLink = memo<InternalEntityLinkProps>(({ href, label, reference }) => {
   const { t } = useTranslation('chat');
   const { t: tVerify } = useTranslation('verify');
+  const { t: tPortal } = useTranslation('portal');
   const navigate = useWorkspaceAwareNavigate();
   const activeAgentId = useAgentStore((s) => s.activeAgentId);
   const portalAvailable = useEntityLinkPortal(reference.type);
@@ -154,6 +159,21 @@ export const InternalEntityLink = memo<InternalEntityLinkProps>(({ href, label, 
   const isMobile = typeof __MOBILE__ !== 'undefined' && __MOBILE__;
   const acceptanceBrowserUrl = useAcceptanceBrowserUrl(reference);
   const browserUrl = isMobile ? undefined : acceptanceBrowserUrl;
+  // A task is the entity most often handed on (to a teammate, an issue, a PR),
+  // so its link carries a copy action beside it — the shareable web URL, not
+  // whatever relative path the message happened to contain.
+  const taskLinkUrl = useTaskLinkUrl(reference);
+  const copyUrl = isMobile ? undefined : taskLinkUrl;
+
+  const handleCopy = useCallback(async () => {
+    if (!copyUrl) return;
+    try {
+      await copyToClipboard(copyUrl);
+      toast.success(tPortal('moreMenu.copyLinkSuccess'));
+    } catch {
+      toast.error(t('copyFail', { ns: 'common' }));
+    }
+  }, [copyUrl, t, tPortal]);
 
   const linkedAgentId = reference.type === 'document' ? reference.agentId : undefined;
   const shouldResolveAgentDocument = !!linkedAgentId && linkedAgentId === activeAgentId;
@@ -336,22 +356,35 @@ export const InternalEntityLink = memo<InternalEntityLinkProps>(({ href, label, 
       </InternalEntityPreview>
     );
 
-  if (!browserUrl) return preview;
+  if (!browserUrl && !copyUrl) return preview;
 
   return (
     <span className={styles.wrapper}>
       {preview}
       {/* Outside the anchor, like the side-browser action: the desktop preload
           claims clicks via `closest('a')`, so a nested button would never fire. */}
-      <ActionIcon
-        data-acceptance-browser
-        aria-label={tVerify('report.actions.openInBrowser')}
-        className={styles.browser}
-        icon={ExternalLinkIcon}
-        size={'small'}
-        title={tVerify('report.actions.openInBrowser')}
-        onClick={() => openTrustedExternalUrl(browserUrl)}
-      />
+      {browserUrl && (
+        <ActionIcon
+          data-acceptance-browser
+          aria-label={tVerify('report.actions.openInBrowser')}
+          className={styles.action}
+          icon={ExternalLinkIcon}
+          size={'small'}
+          title={tVerify('report.actions.openInBrowser')}
+          onClick={() => openTrustedExternalUrl(browserUrl)}
+        />
+      )}
+      {copyUrl && (
+        <ActionIcon
+          data-task-link-copy
+          aria-label={tPortal('moreMenu.copyLink')}
+          className={styles.action}
+          icon={CopyIcon}
+          size={'small'}
+          title={tPortal('moreMenu.copyLink')}
+          onClick={handleCopy}
+        />
+      )}
     </span>
   );
 });

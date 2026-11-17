@@ -20,6 +20,12 @@ vi.mock('@lobechat/const', async (importOriginal) => ({
   },
 }));
 
+const mockClipboard = vi.hoisted(() => ({
+  copy: vi.fn(),
+  error: vi.fn(),
+  success: vi.fn(),
+}));
+
 vi.mock('@lobehub/ui', async (importOriginal) => {
   const actual = await importOriginal<Record<string, unknown>>();
   const factories: ((original: typeof importOriginal) => unknown)[] = [
@@ -28,6 +34,8 @@ vi.mock('@lobehub/ui', async (importOriginal) => {
       ActionIcon: ({ icon: _icon, onClick, title, ...rest }: any) => (
         <button {...rest} aria-label={title} type="button" onClick={onClick} />
       ),
+      copyToClipboard: (text: string) => mockClipboard.copy(text),
+      toast: { error: mockClipboard.error, success: mockClipboard.success },
     }),
     async (importOriginal) => ({
       ...(await importOriginal<object>()),
@@ -392,6 +400,57 @@ describe('Link Render — internal entities', () => {
       linkLabel: 'Acceptance',
     });
     expect(container.querySelector('[data-acceptance-browser]')).toBeNull();
+  });
+
+  it('copies a task link as its absolute web URL from beside the link', async () => {
+    const { container } = renderLink({
+      linkHref: '/task/T-198',
+      linkKind: 'generic',
+      linkLabel: 'T-198',
+    });
+
+    const action = container.querySelector<HTMLElement>('[data-task-link-copy]')!;
+    expect(action).toHaveAttribute('aria-label', 'moreMenu.copyLink');
+    // Outside the anchor: the desktop preload claims clicks via closest('a').
+    expect(action.closest('a')).toBeNull();
+
+    fireEvent.click(action);
+
+    expect(mockClipboard.copy).toHaveBeenCalledWith('https://app.lobehub.com/task/T-198');
+    await vi.waitFor(() => expect(mockClipboard.success).toHaveBeenCalled());
+    expect(mockOpenTaskDetail).not.toHaveBeenCalled();
+  });
+
+  it('keeps a workspace-qualified task link scoped when copying it', () => {
+    const { container } = renderLink({
+      linkHref: '/lobe-team/task/T-198',
+      linkKind: 'generic',
+      linkLabel: 'T-198',
+    });
+
+    fireEvent.click(container.querySelector('[data-task-link-copy]')!);
+
+    expect(mockClipboard.copy).toHaveBeenCalledWith('https://app.lobehub.com/lobe-team/task/T-198');
+  });
+
+  it('offers no copy action without an origin, on other entities, or on mobile', () => {
+    for (const linkHref of ['/acceptance/acceptance-1', '/verify/run-1', '/goal/goal-1']) {
+      const { container } = renderLink({ linkHref, linkKind: 'generic', linkLabel: 'Entity' });
+      expect(container.querySelector('[data-task-link-copy]')).toBeNull();
+    }
+
+    mockAppOrigin = '';
+    const noOrigin = renderLink({ linkHref: '/task/T-198', linkKind: 'generic', linkLabel: 'T' });
+    expect(noOrigin.container.querySelector('[data-task-link-copy]')).toBeNull();
+    mockAppOrigin = 'https://app.lobehub.com';
+
+    vi.stubGlobal('__MOBILE__', true);
+    try {
+      const mobile = renderLink({ linkHref: '/task/T-198', linkKind: 'generic', linkLabel: 'T' });
+      expect(mobile.container.querySelector('[data-task-link-copy]')).toBeNull();
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it('keeps the inline browser action off mobile, where a tap beside the link would misfire', () => {
