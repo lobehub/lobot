@@ -298,21 +298,16 @@ describe('MacOSMenu', () => {
       expect(mainWindow.broadcast).toHaveBeenCalledWith('createNewTab', { path: '/settings' });
     });
 
-    it('should place New Window after New Topic in the File menu, with no New Tab', () => {
+    it('should only keep New Agent and New Agent Group in the File menu', () => {
       macOSMenu.buildAndSetAppMenu();
 
       const template = (Menu.buildFromTemplate as any).mock.calls[0][0];
       const fileMenu = template.find((item: any) => item.label === 'File');
-      const labels = fileMenu.submenu.map((item: any) => item.label);
-      const newWindowItem = fileMenu.submenu.find((item: any) => item.label === 'New Window');
+      const labels = fileMenu.submenu
+        .filter((item: any) => item.label)
+        .map((item: any) => item.label);
 
-      expect(labels).not.toContain('New Tab');
-      expect(labels.indexOf('New Window')).toBe(labels.indexOf('New Topic') + 1);
-      expect(newWindowItem.accelerator).toBe('Shift+Command+N');
-
-      newWindowItem.click(undefined, null);
-      const mainWindow = (mockApp.browserManager.getMainWindow as any).mock.results.at(-1).value;
-      expect(mainWindow.broadcast).toHaveBeenCalledWith('openNewWindow');
+      expect(labels).toEqual(['New Agent', 'New Agent Group', 'Close']);
     });
 
     it('should handle visit website click', async () => {
@@ -373,19 +368,6 @@ describe('MacOSMenu', () => {
       const preferencesItem = appMenu.submenu.find((item: any) => item.label === 'Preferences...');
 
       expect(preferencesItem.accelerator).toBe('Command+,');
-    });
-
-    it('should not show a fixed accelerator for Quick Composer', () => {
-      macOSMenu.buildAndSetAppMenu();
-
-      const template = (Menu.buildFromTemplate as any).mock.calls[0][0];
-      const fileMenu = template.find((item: any) => item.label === 'File');
-      const quickComposerItem = fileMenu.submenu.find(
-        (item: any) => item.label === 'Quick Composer',
-      );
-
-      expect(quickComposerItem).toBeDefined();
-      expect(quickComposerItem.accelerator).toBeUndefined();
     });
 
     it('should use role for quit (accelerator handled by Electron)', () => {

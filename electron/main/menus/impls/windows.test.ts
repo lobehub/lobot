@@ -145,10 +145,10 @@ describe('WindowsMenu', () => {
 
       const template = (Menu.buildFromTemplate as any).mock.calls[0][0];
       const fileMenu = template.find((item: any) => item.label === 'File');
-      const newWindow = fileMenu.submenu.find((item: any) => item.accelerator === 'Ctrl+Shift+N');
+      const newAgent = fileMenu.submenu.find((item: any) => item.accelerator === 'Alt+Ctrl+A');
 
       expect(fileMenu.id).toBe('app-0');
-      expect(newWindow.id).toBe('app-0-1');
+      expect(newAgent.id).toBe('app-0-0');
     });
   });
 

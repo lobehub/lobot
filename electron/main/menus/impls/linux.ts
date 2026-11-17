@@ -1,12 +1,9 @@
-import path from 'node:path';
-
 import { DOWNLOAD_URL, GITHUB, OFFICIAL_SITE } from '@lobechat/const/url';
 import type { TrayNavigationSnapshot } from '@lobechat/electron-client-ipc';
 import type { MenuItemConstructorOptions } from 'electron';
 import { app, clipboard, dialog, Menu, shell } from 'electron';
 
 import { isDev } from '@/const/env';
-import { HETERO_AGENT_DIR } from '@/const/heteroAgent';
 
 import { buildTrayMenuTemplate } from '../trayMenu';
 import type { ContextMenuData, IMenuPlatform, MenuOptions } from '../types';
@@ -62,21 +59,6 @@ export class LinuxMenu extends BaseMenuPlatform implements IMenuPlatform {
         label: t('file.title'),
         submenu: [
           {
-            accelerator: 'Ctrl+N',
-            click: () => {
-              const mainWindow = this.app.browserManager.getMainWindow();
-              mainWindow.show();
-              mainWindow.broadcast('createNewTopic');
-            },
-            label: t('file.newTopic'),
-          },
-          {
-            accelerator: 'Ctrl+Shift+N',
-            click: (_item, targetWindow) => this.openNewWindow(targetWindow),
-            label: t('file.newWindow'),
-          },
-          { type: 'separator' },
-          {
             accelerator: 'Alt+Ctrl+A',
             click: () => {
               const mainWindow = this.app.browserManager.getMainWindow();
@@ -93,15 +75,6 @@ export class LinuxMenu extends BaseMenuPlatform implements IMenuPlatform {
               mainWindow.broadcast('createNewAgentGroup');
             },
             label: t('file.newAgentGroup'),
-          },
-          {
-            accelerator: 'Alt+Ctrl+P',
-            click: () => {
-              const mainWindow = this.app.browserManager.getMainWindow();
-              mainWindow.show();
-              mainWindow.broadcast('createNewPage');
-            },
-            label: t('file.newPage'),
           },
           { type: 'separator' },
           {
@@ -207,24 +180,6 @@ export class LinuxMenu extends BaseMenuPlatform implements IMenuPlatform {
               this.app.browserManager.retrieveByIdentifier('processExplorer').show();
             },
             label: t('help.processExplorer'),
-          },
-          {
-            click: () => {
-              const heteroAgentPath = path.join(this.app.appStoragePath, HETERO_AGENT_DIR);
-              console.info(`[Menu] Opening HeteroAgent directory: ${heteroAgentPath}`);
-              shell.openPath(heteroAgentPath).catch((err) => {
-                console.error(`[Menu] Error opening path ${heteroAgentPath}:`, err);
-              });
-            },
-            label: t('help.openHeteroAgentDir'),
-          },
-          {
-            checked: this.app.storeManager.get('heteroTracingEnabled', false),
-            click: (item) => {
-              this.app.storeManager.set('heteroTracingEnabled', item.checked);
-            },
-            label: t('help.toggleHeteroTracing'),
-            type: 'checkbox',
           },
           { type: 'separator' },
           {
