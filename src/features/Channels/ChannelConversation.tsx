@@ -33,6 +33,7 @@ import { ReplyActivity } from './ReplyActivity';
 import type { ReplyTopic } from './ReplyTopicPanel';
 import { styles } from './styles';
 import type { ChannelThreadDraft } from './threadDraft';
+import { markThreadRead } from './threadReads';
 import { useChannelEvents } from './useChannelEvents';
 import { channelDraftKey } from './useComposerDraft';
 import { useFollowSent } from './useFollowSent';
@@ -125,6 +126,12 @@ const Timeline = ({
       .markRead(channelId, sequence)
       .catch((error: unknown) => console.error('Failed to mark Channel read', error));
   }, [channelId, threadId, sequence, before]);
+
+  // The server's read position is per Channel, so an open thread records its own on this device.
+  const newestInThread = threadId && before === undefined ? detail?.messages.at(-1) : undefined;
+  useEffect(() => {
+    if (threadId && newestInThread) markThreadRead(threadId, newestInThread.createdAt);
+  }, [threadId, newestInThread]);
 
   const activeMembers = detail?.members.filter((member) => member.status === 'active') ?? [];
   const thread = threadId ? detail?.threads.find((entry) => entry.id === threadId) : undefined;

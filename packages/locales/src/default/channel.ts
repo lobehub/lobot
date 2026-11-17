@@ -165,6 +165,8 @@ export default {
   'closeThread': 'Close thread',
   'thread': 'Thread',
   'threadList': 'Threads',
+  'threadListUnread': 'Threads, {{count}} unread',
+  'threadUnread': 'Unread',
   'threadDivider': 'Replies in this thread',
   'threadPreview': '↳ {{title}}: {{content}}',
   'followers': 'Replies from: {{names}}',

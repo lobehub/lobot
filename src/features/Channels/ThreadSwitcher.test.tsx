@@ -3,8 +3,9 @@
  */
 import { fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { markThreadRead, useThreadReadStore } from './threadReads';
 import { threadOwner, ThreadsButton, ThreadSwitchMenu } from './ThreadSwitcher';
 
 vi.mock('./MemberAvatar', () => ({
@@ -76,6 +77,16 @@ const items = () =>
     checked: !!item.querySelector('[data-check]'),
     label: item.textContent,
   }));
+
+const unreadRows = () =>
+  screen
+    .getAllByRole('menuitem')
+    .filter((item) => item.querySelector('[aria-label="threadUnread"]'))
+    .map((item) => item.textContent);
+
+beforeEach(() => {
+  useThreadReadStore.setState({ readAt: {}, since: 0 });
+});
 
 const avatars = () =>
   screen.getAllByRole('menuitem').map((item) => item.querySelector('img')?.dataset.member ?? null);
@@ -164,5 +175,33 @@ describe('ThreadsButton', () => {
     );
 
     expect(screen.queryByText('threadList')).toBeNull();
+  });
+});
+
+describe('unread threads', () => {
+  const replied = (iso: string) => ({ author: {}, content: '', createdAt: new Date(iso), id: iso });
+  const withReplies = {
+    ...(detail as object),
+    threads: [
+      { ...(detail as any).threads[0], lastReply: replied('2026-11-18T10:00:00Z') },
+      { ...(detail as any).threads[1], lastReply: replied('2026-11-18T11:00:00Z') },
+    ],
+  } as never;
+
+  it('dots each thread with unseen replies and the header button', () => {
+    render(createElement(ThreadsButton, { activeId: null, detail: withReplies, onOpen: vi.fn() }));
+
+    expect(unreadRows()).toEqual(['Unify Channel members', 'Fix the release flow']);
+    expect(screen.getByText('threadListUnread')).toBeTruthy();
+  });
+
+  it('leaves the open thread and threads read up to their newest reply undotted', () => {
+    markThreadRead('thr_1', '2026-11-18T10:00:00Z');
+    render(
+      createElement(ThreadsButton, { activeId: 'thr_2', detail: withReplies, onOpen: vi.fn() }),
+    );
+
+    expect(unreadRows()).toEqual([]);
+    expect(screen.getByText('threadList')).toBeTruthy();
   });
 });
