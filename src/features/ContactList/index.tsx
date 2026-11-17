@@ -1,6 +1,5 @@
 'use client';
 
-import { agentDisplayName, type SidebarAgentItem } from '@lobot/types';
 import {
   AccordionHeader,
   AccordionItem,
@@ -15,10 +14,11 @@ import {
   Icon,
   Text,
 } from '@lobehub/ui';
+import { agentDisplayName, type SidebarAgentItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import isEqual from 'fast-deep-equal';
 import { ArrowDownUpIcon, Pin, PinOff, UserRoundPlusIcon } from 'lucide-react';
-import { memo, useMemo } from 'react';
+import { type Key, memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
@@ -100,6 +100,10 @@ const Body = memo(() => {
   const items = useHomeStore(homeAgentListSelectors.allAgents, isEqual);
   const activeRouteId = useActiveRouteId();
   const sortBy = useGlobalStore(systemStatusSelectors.contactListSortBy);
+  const collapsedSections = useGlobalStore(
+    systemStatusSelectors.contactListCollapsedSections,
+    isEqual,
+  );
   // People and other people's Agents belong to the Channel experience.
   const channelsEnabled = useChannelsEnabled();
   contactActions.useFetchList(channelsEnabled);
@@ -248,15 +252,36 @@ const Body = memo(() => {
     },
   ];
 
+  // Collapsed keys persist (not expanded ones), so a section that appears
+  // later, like the first pin, still opens expanded.
+  const expandedSections = sections
+    .map((section) => section.key)
+    .filter((key) => !collapsedSections.includes(key));
+  const handleExpandedChange = (keys: Key[]) => {
+    const expanded = new Set(keys.map(String));
+    // Keep collapsed keys of sections not rendered right now (e.g. requests
+    // with nothing pending) so they stay collapsed when they come back.
+    const visible = new Set(sections.map((section) => section.key));
+    updateSystemStatus(
+      {
+        contactListCollapsedSections: [
+          ...collapsedSections.filter((key) => !visible.has(key)),
+          ...[...visible].filter((key) => !expanded.has(key)),
+        ],
+      },
+      'toggleContactListSection',
+    );
+  };
+
   // The standard sidebar accordion (same as the home sidebar sections), so
   // each section collapses independently with the shared header styling.
   return (
     <Flexbox paddingBlock={'4px 12px'} paddingInline={4}>
       <AccordionRoot
-        // Listed up front so a section that appears later, like the first pin, opens expanded.
-        defaultValue={['requests', 'pinned', 'people', 'members', 'externals', 'groups', 'agents']}
         indicatorPlacement={'inline'}
         style={{ gap: 8 }}
+        value={expandedSections}
+        onValueChange={handleExpandedChange}
       >
         {sections.map((section) => (
           <AccordionItem key={section.key} value={section.key}>

@@ -237,6 +237,12 @@ export interface SystemStatus {
    * match and every group would render collapsed.
    */
   collapsedTopicGroupKeysByMode?: Partial<Record<TopicGroupMode, string[]>>;
+  /**
+   * Collapsed section keys of the Contacts list. Collapsed (not expanded) keys
+   * are persisted because sections default to EXPANDED — a section that
+   * appears later, like the first pin, still opens expanded.
+   */
+  contactListCollapsedSections?: string[];
   /** Order of the Contacts list; absent means by name. Device-local view setting. */
   contactListSortBy?: ContactListSortBy;
   disabledModelProvidersSortType?: string;

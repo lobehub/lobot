@@ -5,6 +5,8 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { useGlobalStore } from '@/store/global';
+
 import { ContactListBody } from './index';
 
 const fetch = vi.hoisted(() => ({ error: undefined as unknown, mutate: vi.fn() }));
@@ -21,6 +23,7 @@ vi.mock('@/business/client/hooks/useActiveWorkspaceSlug', () => ({
   useActiveWorkspaceSlug: () => null,
 }));
 vi.mock('@/business/client/hooks/useActiveWorkspaceId', () => ({
+  getActiveWorkspaceId: () => workspace.activeId,
   useActiveWorkspaceId: () => workspace.activeId,
 }));
 vi.mock('@/business/client/hooks/useWorkspaceMembers', () => ({
@@ -292,5 +295,52 @@ describe('ContactListBody', () => {
 
     expect(screen.queryByText('contacts.members')).not.toBeInTheDocument();
     expect(screen.queryByText('contacts.externals')).not.toBeInTheDocument();
+  });
+});
+
+describe('ContactListBody section collapse', () => {
+  beforeEach(() => {
+    // Status writes are dropped until the persisted status has loaded.
+    useGlobalStore.setState((s) => ({
+      isStatusInit: true,
+      status: { ...s.status, contactListCollapsedSections: undefined },
+    }));
+  });
+
+  it('remembers a collapsed section across remounts', () => {
+    agentList.init = true;
+    agentList.items = [{ id: 'agt_1', title: 'Product Helper' }];
+
+    const { unmount } = render(createElement(ContactListBody));
+    expect(screen.getByRole('button', { name: /navPanel.agent/ })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /navPanel.agent/ }));
+    expect(useGlobalStore.getState().status.contactListCollapsedSections).toEqual(['agents']);
+    unmount();
+
+    render(createElement(ContactListBody));
+    expect(screen.getByRole('button', { name: /navPanel.agent/ })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+  });
+
+  it('keeps a hidden section collapsed while another one toggles', () => {
+    agentList.init = true;
+    agentList.items = [{ id: 'agt_1', title: 'Product Helper' }];
+    useGlobalStore.setState((s) => ({
+      status: { ...s.status, contactListCollapsedSections: ['requests'] },
+    }));
+
+    render(createElement(ContactListBody));
+    fireEvent.click(screen.getByRole('button', { name: /navPanel.agent/ }));
+
+    expect(useGlobalStore.getState().status.contactListCollapsedSections).toEqual([
+      'requests',
+      'agents',
+    ]);
   });
 });

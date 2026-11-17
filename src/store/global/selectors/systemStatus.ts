@@ -511,6 +511,9 @@ const DEFAULT_AGENT_DOCUMENT_SORT: AgentDocumentSort = {
   foldersFirst: true,
   order: 'asc',
 };
+const EMPTY_CONTACT_LIST_SECTIONS: string[] = [];
+const contactListCollapsedSections = (s: GlobalState) =>
+  s.status.contactListCollapsedSections ?? EMPTY_CONTACT_LIST_SECTIONS;
 const contactListSortBy = (s: GlobalState): ContactListSortBy =>
   s.status.contactListSortBy ?? 'title';
 // The server lists Channels newest first; keep that as the default view.
@@ -574,6 +577,7 @@ export const systemStatusSelectors = {
   channelSidePanelWidth,
   agentBuilderPanelWidth,
   agentDocumentSort,
+  contactListCollapsedSections,
   contactListSortBy,
   channelListSort,
   projectListSortBy,
