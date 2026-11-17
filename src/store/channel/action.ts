@@ -297,6 +297,14 @@ class ChannelActionImpl {
     await this.#refreshAfterWrite(() => this.refreshDetail({ channelId }));
     return data.id;
   };
+  /** Removes a person or an Agent; an Agent's unfinished replies stop. */
+  removeMember = async (channelId: string, memberId: string) => {
+    try {
+      await channelService.removeMember(channelId, memberId);
+    } finally {
+      await this.#refreshAfterWrite(() => this.refreshDetail({ channelId }));
+    }
+  };
   /** Waits for the server and the views it changed; the first message of a new thread uses it. */
   send = async (input: ChannelSendInput) => {
     const scope = cacheScope.get();

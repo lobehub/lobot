@@ -10,6 +10,7 @@ vi.mock('@/services/channel', () => ({
     createGroupFromDirect: vi.fn(),
     detail: vi.fn(),
     list: vi.fn(),
+    removeMember: vi.fn(),
     send: vi.fn(),
   },
 }));
@@ -62,6 +63,24 @@ describe('channelActions after a committed write', () => {
         agents: [{ agentId: 'agt_a' }, { agentId: 'agt_b' }],
       }),
     ).resolves.toBeUndefined();
+  });
+
+  it('settles a removed member even when the detail refresh fails, and reports a failed removal', async () => {
+    vi.mocked(channelService.removeMember).mockResolvedValueOnce({} as never);
+    vi.mocked(channelService.detail).mockRejectedValue(new Error('offline'));
+
+    await expect(
+      channelActions.removeMember('chn_000000000001', 'mem_agent'),
+    ).resolves.toBeUndefined();
+    expect(channelService.removeMember).toHaveBeenCalledExactlyOnceWith(
+      'chn_000000000001',
+      'mem_agent',
+    );
+
+    vi.mocked(channelService.removeMember).mockRejectedValueOnce(new Error('FORBIDDEN'));
+    await expect(channelActions.removeMember('chn_000000000001', 'mem_agent')).rejects.toThrow(
+      'FORBIDDEN',
+    );
   });
 
   it('still reports a failed add', async () => {
