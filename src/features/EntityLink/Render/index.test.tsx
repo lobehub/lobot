@@ -290,8 +290,7 @@ describe('Link Render — internal entities', () => {
   });
 
   it('opens an acceptance in the browser from its preview, not the side panel', () => {
-    // A click on the link itself opens the side panel; the preview offers the
-    // full page as an explicit alternative, as an absolute URL so the desktop
+    // The preview offers the full page too, as an absolute URL so the desktop
     // system browser can resolve it.
     mockEntityPreview = { title: 'Workspace publishing' };
     const { container } = renderLink({
@@ -352,8 +351,7 @@ describe('Link Render — internal entities', () => {
   });
 
   it('opens an acceptance in the browser from beside the link, without hovering', () => {
-    // The side panel a click opens can sit under another surface (a session
-    // overlay), so the browser page is one click away right next to the link.
+    // The icon beside the link marks that the report opens outside the app.
     const { container } = renderLink({
       linkHref: '/acceptance/acceptance-1',
       linkKind: 'generic',
@@ -535,9 +533,43 @@ describe('Link Render — internal entities', () => {
     expect(container.querySelector('a')!.textContent).toBe('/lobe-team/task/T-198');
   });
 
-  it('opens acceptance links in the conversation portal', () => {
+  it('opens acceptance links in the system browser, not the side panel', () => {
+    // Lobot's side panel has no acceptance view: opening one there showed only
+    // the empty workspace placeholder.
     const assign = vi.spyOn(window.location, 'assign').mockImplementation(() => undefined);
 
+    const { getByRole } = renderLinkInHost(
+      { linkHref: '/acceptance/acceptance-1', linkKind: 'generic', linkLabel: 'Acceptance' },
+      ['acceptance'],
+    );
+
+    fireEvent.click(getByRole('link', { name: 'Acceptance' }));
+
+    expect(mockOpenTrustedExternalUrl).toHaveBeenCalledWith(
+      'https://app.lobehub.com/acceptance/acceptance-1',
+    );
+    expect(mockOpenAcceptance).not.toHaveBeenCalled();
+    expect(assign).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it('keeps a workspace-qualified acceptance link scoped when a click opens it', () => {
+    const { getByRole } = renderLink({
+      linkHref: '/lobe-team/acceptance/acceptance-1',
+      linkKind: 'generic',
+      linkLabel: 'Acceptance',
+    });
+
+    fireEvent.click(getByRole('link', { name: 'Acceptance' }));
+
+    expect(mockOpenTrustedExternalUrl).toHaveBeenCalledWith(
+      'https://app.lobehub.com/lobe-team/acceptance/acceptance-1',
+    );
+    expect(mockOpenAcceptance).not.toHaveBeenCalled();
+  });
+
+  it('falls back to the conversation portal without an origin to open the report at', () => {
+    mockAppOrigin = '';
     const { getByRole } = renderLink({
       linkHref: '/acceptance/acceptance-1',
       linkKind: 'generic',
@@ -547,8 +579,7 @@ describe('Link Render — internal entities', () => {
     fireEvent.click(getByRole('link', { name: 'Acceptance' }));
 
     expect(mockOpenAcceptance).toHaveBeenCalledWith('acceptance-1');
-    expect(assign).not.toHaveBeenCalled();
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(mockOpenTrustedExternalUrl).not.toHaveBeenCalled();
   });
 
   it('opens official document links in the conversation portal', () => {
@@ -892,6 +923,7 @@ describe('Link Render — open an external link in the side browser', () => {
 
 describe('Link Render — host portal scope', () => {
   it('navigates instead of opening a detail when the host has no panel', () => {
+    mockAppOrigin = '';
     const { getByRole } = renderLinkInHost(
       { linkHref: '/acceptance/acceptance-1', linkKind: 'generic', linkLabel: 'Acceptance' },
       false,
@@ -908,6 +940,7 @@ describe('Link Render — host portal scope', () => {
   it('closes the covering reader and opens the acceptance panel on desktop', () => {
     // Electron registers no standalone `/acceptance` route, so the navigation
     // fallback would land on a dead destination.
+    mockAppOrigin = '';
     mockConst.isDesktop = true;
     const onDismiss = vi.fn();
     const { getByRole } = render(
@@ -961,6 +994,7 @@ describe('Link Render — host portal scope', () => {
   });
 
   it('still opens the kinds the host can present', () => {
+    mockAppOrigin = '';
     const { getByRole } = renderLinkInHost(
       { linkHref: '/acceptance/acceptance-1', linkKind: 'generic', linkLabel: 'Acceptance' },
       ['acceptance'],

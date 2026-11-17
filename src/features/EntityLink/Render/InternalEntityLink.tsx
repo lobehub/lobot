@@ -151,11 +151,10 @@ export const InternalEntityLink = memo<InternalEntityLinkProps>(({ href, label, 
     { revalidateOnFocus: false },
   );
   const displayLabel = (shouldResolveTitle && entity?.title) || label;
-  // A click on the link opens the acceptance in the side panel, which another
-  // surface (a session overlay) can cover; this one-click way out to the full
-  // browser page needs no hover on the preview first. Mobile opens it in a
-  // modal on top of everything, and a small icon right beside the link would
-  // be a mis-tap target there, so the action stays off the mobile build.
+  // The absolute report URL: a click on the link opens it in the system
+  // browser, and the icon beside the link marks that it leaves the app. A
+  // small icon right beside the link would be a mis-tap target on mobile, so
+  // the icon stays off the mobile build.
   const isMobile = typeof __MOBILE__ !== 'undefined' && __MOBILE__;
   const acceptanceBrowserUrl = useAcceptanceBrowserUrl(reference);
   const browserUrl = isMobile ? undefined : acceptanceBrowserUrl;
@@ -197,6 +196,15 @@ export const InternalEntityLink = memo<InternalEntityLinkProps>(({ href, label, 
       if (!isDesktop && modifierClick) return;
 
       event.preventDefault();
+
+      // Lobot ships no acceptance view in its side panel: `openAcceptance`
+      // would show the panel's empty workspace placeholder. Open the published
+      // report in the system browser; only without an origin to build an
+      // absolute URL from does the click fall through to the in-app paths.
+      if (acceptanceBrowserUrl) {
+        openTrustedExternalUrl(acceptanceBrowserUrl);
+        return;
+      }
 
       if (
         (reference.type === 'acceptance' ||
@@ -313,6 +321,7 @@ export const InternalEntityLink = memo<InternalEntityLinkProps>(({ href, label, 
       }
     },
     [
+      acceptanceBrowserUrl,
       activeAgentId,
       agentDocuments,
       dismissHost,
