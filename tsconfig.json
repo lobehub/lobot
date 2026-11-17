@@ -21,7 +21,6 @@
       "@/const/*": ["./packages/const/src/*", "./src/const/*"],
       "@/utils/*": ["./packages/utils/src/*", "./src/utils/*"],
       "@/types/*": ["./packages/types/src/*", "./src/types/*"],
-      "@/envs/*": ["./packages/env/src/*", "./src/envs/*"],
       "@/libs/trpc/*": ["./packages/trpc/src/*", "./src/libs/trpc/*"],
       "@/config/*": ["./packages/app-config/src/*", "./src/config/*"],
       "@/locales/*": ["./packages/locales/src/*", "./src/locales/*"],

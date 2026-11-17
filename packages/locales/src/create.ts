@@ -5,7 +5,6 @@ import { initReactI18next } from 'react-i18next';
 import { isRtlLang } from 'rtl-detect';
 
 import { DEFAULT_LANG } from '@/const/locale';
-import { getDebugConfig } from '@/envs/debug';
 // Sync load bundled fallback resources without Suspense on first render.
 import defaultChat from '@/locales/default/chat';
 import defaultCommon from '@/locales/default/common';
@@ -53,7 +52,9 @@ const overlayDevEnglishCopy = async (instance: typeof i18n) => {
 const defaultResources = createBundledResources();
 const bundledNamespaces = Object.keys(defaultResources);
 
-const { I18N_DEBUG, I18N_DEBUG_BROWSER, I18N_DEBUG_SERVER } = getDebugConfig();
+const I18N_DEBUG = process.env.NEXT_PUBLIC_I18N_DEBUG === '1';
+const I18N_DEBUG_BROWSER = process.env.NEXT_PUBLIC_I18N_DEBUG_BROWSER === '1';
+const I18N_DEBUG_SERVER = process.env.NEXT_PUBLIC_I18N_DEBUG_SERVER === '1';
 const debugMode = (I18N_DEBUG ?? isOnServerSide) ? I18N_DEBUG_SERVER : I18N_DEBUG_BROWSER;
 
 export const createI18nNext = (lang?: string) => {

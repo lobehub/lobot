@@ -3,7 +3,6 @@ import { parseDataUri } from '@lobechat/model-runtime/utils/uriParser';
 import { uuid } from '@lobechat/utils';
 import dayjs from 'dayjs';
 
-import { fileEnv } from '@/envs/file';
 import { lambdaClient } from '@/libs/trpc/client';
 import type { FileMetadata, UploadBase64ToS3Result } from '@/types/files';
 import type { FileUploadState, FileUploadStatus } from '@/types/files/upload';
@@ -37,7 +36,7 @@ const generateFilePathMetadata = (
 
   // Generate timestamp-based directory path
   const date = (Date.now() / 1000 / 60 / 60).toFixed(0);
-  const dirname = `${options.directory || fileEnv.NEXT_PUBLIC_S3_FILE_PATH}/${date}`;
+  const dirname = `${options.directory || process.env.NEXT_PUBLIC_S3_FILE_PATH || 'files'}/${date}`;
   const pathname = options.pathname ?? `${dirname}/${filename}`;
 
   return {

@@ -810,7 +810,6 @@ export default defineConfig(
   // CLIs and debug utilities - console output is the primary interface
   {
     files: [
-      'packages/agent-tracing/**/*',
       'packages/style-equivalence/src/cli/**/*',
       'packages/model-runtime/src/utils/debugStream.ts',
     ],
