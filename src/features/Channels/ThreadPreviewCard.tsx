@@ -28,20 +28,19 @@ const MAX_FACES = 3;
 const styles = stylex.create({
   entry: {
     display: 'flex',
-    gap: 6,
-    alignItems: 'center',
+    flexDirection: 'column',
+    gap: 2,
     alignSelf: 'flex-start',
     width: '100%',
     maxWidth: 520,
-    height: 30,
     // Sit close to the message it continues.
     marginBlockStart: -4,
     marginBlockEnd: 0,
     marginInline: 0,
-    paddingBlock: 0,
-    paddingInlineStart: 4,
+    paddingBlock: 4,
+    paddingInlineStart: 6,
     paddingInlineEnd: 8,
-    // One line, not a card: an outline appears only on hover, the way it does in Slack.
+    // Not a card: an outline appears only on hover, the way it does in Slack.
     borderWidth: 1,
     borderStyle: 'solid',
     borderColor: {
@@ -57,6 +56,22 @@ const styles = stylex.create({
       [HOVER]: { 'default': 'transparent', ':hover': cssVar.colorBgContainer },
     },
     cursor: 'pointer',
+  },
+  /** What the thread is about, above its reply line. */
+  title: {
+    overflow: 'hidden',
+    minWidth: 0,
+    fontWeight: 500,
+    color: cssVar.colorText,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  line: {
+    display: 'flex',
+    gap: 6,
+    alignItems: 'center',
+    minWidth: 0,
+    height: 24,
   },
   faces: {
     display: 'inline-flex',
@@ -112,8 +127,8 @@ const styles = stylex.create({
 });
 
 /**
- * A message's thread as one line under it: who is in it, how many replies, and when the last
- * came, or that an Agent is working in it right now.
+ * A message's thread under it: its title, then one line with who is in it, how many replies,
+ * and when the last came, or that an Agent is working in it right now.
  */
 export const ThreadPreviewCard = ({
   detail,
@@ -140,72 +155,68 @@ export const ThreadPreviewCard = ({
   const isOwnReply = useUserStore(
     (s) => !!lastReply && isCurrentUserAuthor(lastReply.author, userProfileSelectors.userId(s)),
   );
-  // The line drops the title; hovering it still says what the thread is about.
   const title = threadTitle(root, thread) ?? t('thread');
   return (
-    <button
-      aria-label={title}
-      title={title}
-      type="button"
-      {...stylex.props(styles.entry)}
-      onClick={onOpen}
-    >
-      <span {...stylex.props(styles.faces)}>
-        {faces.length > 0
-          ? faces.map((member) => <MemberAvatar key={member.id} member={member} size={20} />)
-          : lastReply &&
-            (isOwnReply ? (
-              <UserAvatar shape="circle" size={20} />
-            ) : (
-              <Avatar
-                avatar={authorAvatar(lastReply.author)}
-                shape="circle"
-                size={20}
-                title={lastReply.author.name ?? undefined}
-              />
-            ))}
-      </span>
-      <span {...stylex.props(styles.count)}>
-        {/* Views cached before thread summaries existed only know that the thread exists. */}
-        {replyCount ? t('threadCard.replies', { count: replyCount }) : t('openThread')}
-      </span>
-      {job ? (
-        // The reply on its way is newer than the last one posted, so it takes that place.
-        <span role="status" {...stylex.props(styles.note, styles.working)}>
-          {/* Who is replying, then the same typing dots as everywhere else an Agent works. */}
-          <AgentAvatar
-            agentId={worker?.agentId}
-            avatar={memberAvatar(worker)}
-            name={workerName}
-            shape={'circle'}
-            size={16}
-            title={workerName}
-          />
-          <span {...stylex.props(styles.noteText)}>
-            {activityLabel(
-              t('activity.one', { name: workerName, status: t(memberJobStatus(job)) }),
-            )}
-          </span>
-          <TypingDots />
+    <button type="button" {...stylex.props(styles.entry)} onClick={onOpen}>
+      <span {...stylex.props(styles.title)}>{title}</span>
+      <span {...stylex.props(styles.line)}>
+        <span {...stylex.props(styles.faces)}>
+          {faces.length > 0
+            ? faces.map((member) => <MemberAvatar key={member.id} member={member} size={20} />)
+            : lastReply &&
+              (isOwnReply ? (
+                <UserAvatar shape="circle" size={20} />
+              ) : (
+                <Avatar
+                  avatar={authorAvatar(lastReply.author)}
+                  shape="circle"
+                  size={20}
+                  title={lastReply.author.name ?? undefined}
+                />
+              ))}
         </span>
-      ) : (
-        lastReply && (
-          <span {...stylex.props(styles.note)}>
+        <span {...stylex.props(styles.count)}>
+          {/* Views cached before thread summaries existed only know that the thread exists. */}
+          {replyCount ? t('threadCard.replies', { count: replyCount }) : t('openThread')}
+        </span>
+        {job ? (
+          // The reply on its way is newer than the last one posted, so it takes that place.
+          <span role="status" {...stylex.props(styles.note, styles.working)}>
+            {/* Who is replying, then the same typing dots as everywhere else an Agent works. */}
+            <AgentAvatar
+              agentId={worker?.agentId}
+              avatar={memberAvatar(worker)}
+              name={workerName}
+              shape={'circle'}
+              size={16}
+              title={workerName}
+            />
             <span {...stylex.props(styles.noteText)}>
-              {t('threadCard.lastReply')}{' '}
-              <time
-                dateTime={new Date(lastReply.createdAt).toISOString()}
-                {...stylex.props(styles.time)}
-              >
-                {dayjs(lastReply.createdAt).fromNow()}
-              </time>
+              {activityLabel(
+                t('activity.one', { name: workerName, status: t(memberJobStatus(job)) }),
+              )}
             </span>
+            <TypingDots />
           </span>
-        )
-      )}
-      <span {...stylex.props(styles.go)}>
-        {t('threadCard.view')}
-        <Icon icon={ChevronRight} size={12} />
+        ) : (
+          lastReply && (
+            <span {...stylex.props(styles.note)}>
+              <span {...stylex.props(styles.noteText)}>
+                {t('threadCard.lastReply')}{' '}
+                <time
+                  dateTime={new Date(lastReply.createdAt).toISOString()}
+                  {...stylex.props(styles.time)}
+                >
+                  {dayjs(lastReply.createdAt).fromNow()}
+                </time>
+              </span>
+            </span>
+          )
+        )}
+        <span {...stylex.props(styles.go)}>
+          {t('threadCard.view')}
+          <Icon icon={ChevronRight} size={12} />
+        </span>
       </span>
     </button>
   );

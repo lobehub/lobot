@@ -338,9 +338,9 @@ describe('ChannelMessage thread card', () => {
       />,
     );
 
-    // One line: the title moves to the hover tooltip, the reply text stays in the thread.
-    const entry = screen.getByRole('button', { name: 'Topic header is unclickable' });
-    expect(entry.title).toBe('Topic header is unclickable');
+    // The title on top, then one line; the reply text itself stays in the thread.
+    const entry = screen.getByRole('button', { name: /^Topic header is unclickable/ });
+    expect(entry.firstElementChild?.textContent).toBe('Topic header is unclickable');
     expect(entry.textContent).toContain('threadCard.replies');
     expect(entry.textContent).toContain('threadCard.lastReply');
     expect(entry.textContent).toContain('threadCard.view');
@@ -380,7 +380,7 @@ describe('ChannelMessage thread card', () => {
     );
 
     expect(screen.getByRole('status').textContent).toContain('activity.one');
-    expect(screen.getByRole('button', { name: 'thread' }).textContent).not.toContain(
+    expect(screen.getByRole('button', { name: /^thread/ }).textContent).not.toContain(
       'threadCard.lastReply',
     );
   });
@@ -415,7 +415,7 @@ describe('ChannelMessage thread card', () => {
     );
 
     expect(screen.queryByRole('status')).toBeNull();
-    expect(screen.getByRole('button', { name: 'thread' }).textContent).toContain(
+    expect(screen.getByRole('button', { name: /^thread/ }).textContent).toContain(
       'threadCard.lastReply',
     );
   });
@@ -448,7 +448,7 @@ describe('ChannelMessage thread card', () => {
     );
 
     expect(
-      screen.getByRole('button', { name: 'thread' }).querySelector('[title="Ann"]'),
+      screen.getByRole('button', { name: /^thread/ }).querySelector('[title="Ann"]'),
     ).not.toBeNull();
   });
 
@@ -460,13 +460,13 @@ describe('ChannelMessage thread card', () => {
       />,
     );
 
-    expect(screen.getByRole('button', { name: 'Header click fix' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /^Header click fix/ })).toBeTruthy();
   });
 
   it('still offers the thread when a cached view has no summary', () => {
     render(<ChannelMessage detail={withThread({})} message={root} />);
 
-    expect(screen.getByRole('button', { name: 'thread' }).textContent).toContain('openThread');
+    expect(screen.getByRole('button', { name: /^thread/ }).textContent).toContain('openThread');
     expect(screen.queryByText('threadCard.replies')).toBeNull();
   });
 });
@@ -483,20 +483,7 @@ describe('ChannelMessage layout', () => {
     expect(screen.queryByText('agentBadge')).toBeNull();
   });
 
-  it('shows another person’s name and avatar above their message', () => {
-    const { container } = render(
-      <ChannelMessage
-        detail={detail}
-        message={message({ avatar: null, id: 'user-other', name: 'Ann', type: 'user' })}
-      />,
-    );
-
-    expect(container.querySelector('header')?.textContent).toContain('Ann');
-    expect(screen.getByTitle('Ann')).toBeTruthy();
-    expect(screen.queryByText('agentBadge')).toBeNull();
-  });
-
-  it('shows your own message with your avatar but not your name, keeping its time', () => {
+  it('puts your own message on the left with your avatar, like everyone else’s', () => {
     const { container } = render(
       <ChannelMessage
         detail={detail}
@@ -504,22 +491,8 @@ describe('ChannelMessage layout', () => {
       />,
     );
 
-    expect(screen.queryByText('Me')).toBeNull();
     expect(screen.getByText('me')).toBeTruthy();
-    expect(screen.queryByTestId('member-popup')).toBeNull();
-    expect(container.querySelector('[data-message-meta] time')).toBeTruthy();
-  });
-
-  it('shows your avatar only on the first of your consecutive messages', () => {
-    render(
-      <ChannelMessage
-        continuation
-        detail={detail}
-        message={message({ avatar: null, id: 'user-self', name: 'Me', type: 'user' })}
-      />,
-    );
-
-    expect(screen.queryByText('me')).toBeNull();
+    expect(container.querySelector('header time')).toBeTruthy();
   });
 });
 
@@ -531,12 +504,14 @@ describe('ChannelMessage relay', () => {
       ...extra,
     }) as ChannelPublicMessage;
 
-  it('names the relaying Agent beside the time', () => {
-    render(<ChannelMessage detail={detail} message={relayed({})} />);
+  it('names the relaying Agent in the header, after the time', () => {
+    const { container } = render(<ChannelMessage detail={detail} message={relayed({})} />);
 
-    const meta = screen.getByText('message.relayedBy').closest('[data-message-meta]')!;
-    expect(meta.querySelector('time')).toBeTruthy();
-    expect(meta.querySelector('[data-agent-avatar="Yunuo"]')).toBeTruthy();
+    const header = container.querySelector('header')!;
+    expect(header.textContent).toContain('message.relayedBy');
+    // The time comes first, then the relay label.
+    expect(header.firstElementChild?.tagName).toBe('TIME');
+    expect(header.querySelector('[data-agent-avatar="Yunuo"]')).toBeTruthy();
   });
 
   it('says whose reply a receipt brings back', () => {

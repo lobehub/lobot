@@ -26,7 +26,6 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
-import Avatar from '@/components/Avatar';
 import CollapsibleContent from '@/components/CollapsibleContent';
 import AgentProfilePopup from '@/features/AgentProfileCard/AgentProfilePopup';
 import { ChatItem } from '@/features/Conversation/ChatItem';
@@ -55,9 +54,7 @@ import type { ChannelReplyTarget } from './useReplyTarget';
 
 const rehypePlugins = [EntityLinkElement.rehypePlugin];
 const HISTORIC_FOLD_OVERFLOW = 240;
-/** An Agent's reply: a small avatar beside its name, the body indented to the name. */
-const AGENT_AVATAR_SIZE = 24;
-const AGENT_BODY_INSET = 32;
+const AVATAR_SIZE = 36;
 
 /** Message text with the members it mentioned shown as chips that show who they are on hover. */
 const MessageText = ({ content, members }: { content: string; members: ChannelPublicMember[] }) => {
@@ -255,12 +252,8 @@ export const ChannelMessage = ({
         aria-label={t('reply.viewOriginal')}
         icon={Reply}
         size="small"
+        style={{ alignSelf: 'flex-start', maxWidth: '100%', minWidth: 0 }}
         type="text"
-        style={{
-          alignSelf: isOwnMessage ? 'flex-end' : 'flex-start',
-          maxWidth: '100%',
-          minWidth: 0,
-        }}
         onClick={() => onJumpToMessage?.(message.replyTo!)}
       >
         <Text ellipsis as="span" fontSize={12} type="secondary">
@@ -311,7 +304,7 @@ export const ChannelMessage = ({
     <time
       dateTime={new Date(message.editedAt).toISOString()}
       title={timeFormats.full.format(new Date(message.editedAt))}
-      {...stylex.props(styles.messageEdited, isOwnMessage && styles.messageEditedOwn)}
+      {...stylex.props(styles.messageEdited)}
     >
       {t('message.edited')}
     </time>
@@ -372,94 +365,7 @@ export const ChannelMessage = ({
     'role': 'article',
   };
 
-  // A person speaks in short bubbles, their own on the right; an Agent's reply reads as a
-  // document, full width, so the two tell apart at a glance without reading names.
-  if (!agentAuthorId) {
-    const author = message.author.name || t('deletedMember');
-    // Beside the bubble: your own message carries its time there; another person's
-    // continuation shows it on hover, its group header having shown the first.
-    const sideMeta = (isOwnMessage || compact) && (
-      <span
-        data-message-meta
-        {...stylex.props(
-          styles.bubbleSideMeta,
-          (compact || !isOwnMessage) && styles.bubbleSideMetaHover,
-        )}
-      >
-        {isOwnMessage && !compact && headerMarks}
-        {timestamp}
-      </span>
-    );
-    return (
-      <div
-        {...rowProps}
-        {...stylex.props(
-          styles.messageRow,
-          styles.bubbleRow,
-          compact && styles.bubbleRowCompact,
-          mentionsMe && styles.mentionedMessage,
-          highlighted && styles.highlightedMessage,
-          pending && styles.pendingMessage,
-          stylex.defaultMarker(),
-        )}
-      >
-        {isOwnMessage && !compact && (
-          // Your own run of messages starts with your avatar on the right, like WeChat, so a
-          // busy feed still shows at a glance where you spoke.
-          <span {...stylex.props(styles.bubbleAvatar, styles.bubbleAvatarOwn)}>
-            <UserAvatar shape={'circle'} size={28} />
-          </span>
-        )}
-        {!isOwnMessage && !compact && (
-          // A person shows who they are on hover, the way an Agent shows its profile.
-          <MemberProfilePopup member={userMember}>
-            <span
-              {...stylex.props(styles.bubbleAvatar, !!userMember && styles.messageAvatarHoverable)}
-            >
-              <Avatar
-                avatar={authorAvatar(message.author)}
-                shape={'circle'}
-                size={28}
-                title={author}
-              />
-            </span>
-          </MemberProfilePopup>
-        )}
-        <div
-          {...stylex.props(
-            styles.bubbleColumn,
-            isOwnMessage ? styles.bubbleColumnOwn : styles.bubbleColumnOther,
-            editing && styles.bubbleColumnEditing,
-          )}
-        >
-          {!isOwnMessage && !compact && (
-            <header data-message-meta {...stylex.props(styles.bubbleAuthor)}>
-              <span {...stylex.props(styles.bubbleAuthorName)}>{author}</span>
-              {timestamp}
-              {headerMarks}
-            </header>
-          )}
-          {replyQuote}
-          {editing ? (
-            editor
-          ) : (
-            <div {...stylex.props(styles.bubbleLine, isOwnMessage && styles.bubbleLineOwn)}>
-              <div {...stylex.props(styles.bubbleStack, isOwnMessage && styles.bubbleStackOwn)}>
-                {attachments}
-                {content && <div {...stylex.props(styles.bubble)}>{content}</div>}
-              </div>
-              {sideMeta}
-            </div>
-          )}
-          {edited}
-          {threadCard}
-          {below}
-        </div>
-        {toolbar}
-      </div>
-    );
-  }
-
+  // Everyone on the left under avatar and name, Discord-style: easy to scan in a busy feed.
   return (
     <div
       {...rowProps}
@@ -477,45 +383,59 @@ export const ChannelMessage = ({
         quietHeader
         showAvatar
         showTitle
-        agentId={agentAuthorId}
-        avatarProps={{ shape: 'circle', size: AGENT_AVATAR_SIZE }}
+        agentId={agentAuthorId ?? undefined}
+        avatarProps={{ shape: 'circle', size: AVATAR_SIZE }}
         belowMessage={below}
         gap={4}
         id={message.id}
-        paddingBlock={compact ? 2 : 10}
+        paddingBlock={compact ? 2 : 8}
         placement="left"
         showHeader={!compact}
-        style={{ paddingInlineStart: AGENT_BODY_INSET }}
+        style={{ paddingInlineStart: 48 }}
         avatar={{
           avatar: authorAvatar(message.author),
           title: message.author.name || t('deletedMember'),
         }}
-        customAvatarRender={() => (
+        customAvatarRender={(_, avatar) => (
           <Flexbox {...stylex.props(styles.messageAvatar)}>
-            {/* Same profile card an Agent shows on hover in goals and tasks. */}
-            <AgentProfilePopup
-              agentId={agentAuthorId}
-              trigger={'hover'}
-              agent={{
-                avatar: message.author.avatar,
-                description: agentMember?.description,
-                title: message.author.name,
-              }}
-            >
-              <span {...stylex.props(styles.messageAvatarHoverable)}>
-                <AgentAvatar
-                  agentId={agentAuthorId}
-                  avatar={message.author.avatar}
-                  name={message.author.name}
-                  shape={'circle'}
-                  size={AGENT_AVATAR_SIZE}
-                />
-              </span>
-            </AgentProfilePopup>
+            {!agentAuthorId ? (
+              // A person shows who they are on hover, the way an Agent shows its profile.
+              <MemberProfilePopup member={userMember}>
+                <span
+                  {...stylex.props(
+                    styles.messageAvatarInline,
+                    !!userMember && styles.messageAvatarHoverable,
+                  )}
+                >
+                  {isOwnMessage ? <UserAvatar shape={'circle'} size={AVATAR_SIZE} /> : avatar}
+                </span>
+              </MemberProfilePopup>
+            ) : (
+              // Same profile card an Agent shows on hover in goals and tasks.
+              <AgentProfilePopup
+                agentId={agentAuthorId}
+                trigger={'hover'}
+                agent={{
+                  avatar: message.author.avatar,
+                  description: agentMember?.description,
+                  title: message.author.name,
+                }}
+              >
+                <span {...stylex.props(styles.messageAvatarHoverable)}>
+                  <AgentAvatar
+                    agentId={agentAuthorId}
+                    avatar={message.author.avatar}
+                    name={message.author.name}
+                    shape={'circle'}
+                    size={AVATAR_SIZE}
+                  />
+                </span>
+              </AgentProfilePopup>
+            )}
           </Flexbox>
         )}
         message={
-          <Flexbox gap={8} {...stylex.props(styles.agentBody)}>
+          <Flexbox gap={8}>
             {replyQuote}
             {attachments}
             {editing ? editor : content}

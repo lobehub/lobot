@@ -143,102 +143,6 @@ export const styles = stylex.create({
       },
     },
   },
-  /**
-   * A person's message: a short light bubble, theirs on the left under their avatar and name,
-   * your own on the right with neither, like a chat app. Both sides share one light fill;
-   * the side tells them apart.
-   */
-  bubbleRow: {
-    display: 'flex',
-    paddingBlock: 6,
-  },
-  /** A follow-up from the same person sits close under the bubble before it. */
-  bubbleRowCompact: { paddingBlock: 2 },
-  bubbleAvatar: {
-    position: 'absolute',
-    insetBlockStart: 6,
-    insetInlineStart: 16,
-    display: 'inline-flex',
-  },
-  bubbleAvatarOwn: { insetInlineEnd: 16, insetInlineStart: 'auto' },
-  bubbleColumn: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 4,
-    minWidth: 0,
-    maxWidth: '100%',
-  },
-  // Clear of the avatar column, so every bubble from one person lines up.
-  bubbleColumnOther: { alignItems: 'flex-start', paddingInlineStart: 36 },
-  // Clear of your avatar on the right, and short enough to read as yours at a glance.
-  bubbleColumnOwn: {
-    alignItems: 'flex-end',
-    marginInlineStart: 'auto',
-    paddingInlineStart: 48,
-    paddingInlineEnd: 36,
-  },
-  bubbleColumnEditing: { flexGrow: 1 },
-  bubbleAuthor: {
-    display: 'flex',
-    alignItems: 'baseline',
-    gap: 8,
-    minWidth: 0,
-    fontSize: cssVar.fontSizeSM,
-    color: cssVar.colorTextSecondary,
-  },
-  bubbleAuthorName: {
-    overflow: 'hidden',
-    minWidth: 0,
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  },
-  bubbleLine: {
-    display: 'flex',
-    alignItems: 'flex-end',
-    gap: 8,
-    minWidth: 0,
-    maxWidth: 'min(100%, 640px)',
-  },
-  bubbleLineOwn: { flexDirection: 'row-reverse' },
-  bubbleStack: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: 4,
-    minWidth: 0,
-  },
-  bubbleStackOwn: { alignItems: 'flex-end' },
-  bubble: {
-    minWidth: 0,
-    maxWidth: '100%',
-    paddingBlock: 8,
-    paddingInline: 12,
-    borderRadius: 16,
-    lineHeight: 1.55,
-    overflowWrap: 'anywhere',
-    backgroundColor: cssVar.colorFillTertiary,
-  },
-  /** Time (and any relay or failure mark) beside the bubble, on the side away from it. */
-  bubbleSideMeta: {
-    display: 'inline-flex',
-    flexShrink: 0,
-    alignItems: 'center',
-    gap: 6,
-    paddingBlockEnd: 2,
-  },
-  bubbleSideMetaHover: {
-    opacity: {
-      default: 1,
-      [HOVER]: {
-        default: 0,
-        [stylex.when.ancestor(':hover')]: 1,
-        [stylex.when.ancestor(':focus-within')]: 1,
-      },
-    },
-  },
-  messageEditedOwn: { alignSelf: 'flex-end' },
-  /** An Agent's reply reads as a document: full width, airier lines than chat. */
-  agentBody: { lineHeight: 1.7 },
   /** A plain centered date; a rule on each side read heavier than the messages it separates. */
   dateDivider: {
     display: 'flex',
@@ -263,7 +167,7 @@ export const styles = stylex.create({
   },
   /**
    * Pinned to the row's top right for every message, yours included, and lifted over the
-   * row's top edge so it never covers a bubble, like Slack's.
+   * row's top edge so it never covers the message, like Slack's.
    */
   messageToolbar: {
     position: 'absolute',
