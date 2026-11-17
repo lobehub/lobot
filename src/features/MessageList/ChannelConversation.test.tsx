@@ -6,6 +6,8 @@ import { render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
+import { markThreadRead, useThreadReadStore } from '@/features/Channels/threadReads';
+
 import ChannelConversation from './ChannelConversation';
 
 const store = vi.hoisted(() => ({
@@ -145,6 +147,36 @@ describe('ChannelConversation mention marker', () => {
         active: true,
         activeAt: new Date(),
         channel: channel({ lastMessage, memberAvatars: [member('agt_a')], mentionCount: 1 }),
+      }),
+    );
+    expect(screen.queryByText('mentionedYou')).toBeNull();
+  });
+
+  it('keeps the marker for a Thread mention after the main conversation was read', () => {
+    store.project = undefined;
+    useThreadReadStore.setState({ readAt: {}, since: 0 });
+    renderRow(
+      channel({
+        lastMessage,
+        memberAvatars: [member('agt_a')],
+        mentionCount: 0,
+        threadMentions: [{ createdAt: new Date(), threadId: 'thr_a' }],
+      }),
+    );
+    expect(screen.getByText('mentionedYou')).toBeTruthy();
+  });
+
+  it('drops a Thread mention once its Thread was read', () => {
+    store.project = undefined;
+    useThreadReadStore.setState({ readAt: {}, since: 0 });
+    const createdAt = new Date();
+    markThreadRead('thr_a', createdAt);
+    renderRow(
+      channel({
+        lastMessage,
+        memberAvatars: [member('agt_a')],
+        mentionCount: 0,
+        threadMentions: [{ createdAt, threadId: 'thr_a' }],
       }),
     );
     expect(screen.queryByText('mentionedYou')).toBeNull();

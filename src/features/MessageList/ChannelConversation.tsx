@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import AgentAvatar from '@/components/AgentAvatar';
 import UserAvatar from '@/components/UserAvatar';
 import { useClearedThrough } from '@/features/Channels/clearedChannels';
+import { useHasUnreadThreadMention } from '@/features/Channels/threadReads';
 import { useChannelMenu } from '@/features/Channels/useChannelMenu';
 import GroupAvatar from '@/features/GroupAvatar';
 import ProjectAvatar from '@/features/Projects/ProjectAvatar';
@@ -55,8 +56,10 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
   // Deleted on this device and nothing new since: a search still finds it, with no old preview.
   const clearedThrough = useClearedThrough(channel.id);
   const cleared = clearedThrough !== undefined && channel.sequence <= clearedThrough;
-  // The open Channel is being read; its mentions clear once the read receipt lands.
-  const mentioned = !active && !cleared && (channel.mentionCount ?? 0) > 0;
+  // The open Channel is being read; its mentions clear once the read receipt lands. A Thread
+  // mention stays until its Thread is opened, even after the main conversation was read.
+  const threadMentioned = useHasUnreadThreadMention(channel.threadMentions);
+  const mentioned = !active && !cleared && ((channel.mentionCount ?? 0) > 0 || threadMentioned);
 
   if (counterpart)
     return (

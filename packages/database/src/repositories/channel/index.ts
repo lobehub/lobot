@@ -4,6 +4,7 @@ import type {
   ChannelMemberConfig,
   ChannelMemberRole,
   ChannelReplyJob,
+  ChannelThreadMention,
   ChannelVisibility,
 } from '@lobechat/types';
 import { and, desc, eq, inArray, isNull, or, sql } from 'drizzle-orm';
@@ -38,6 +39,7 @@ import { postAgentMessage } from './post';
 import { retryRouting } from './routing';
 import type { ChannelSendInput } from './send';
 import { sendMessage } from './send';
+import { channelThreadMentions } from './threadMentions';
 import type { ChannelStopScope } from './stop';
 import { stopScope } from './stop';
 import { audit, lockChannel } from './transaction';
@@ -407,6 +409,7 @@ export class ChannelRepository {
         memberAvatars: ChannelAvatarMember[];
         mentionCount: number;
         replyJobs: ChannelReplyJob[];
+        threadMentions: ChannelThreadMention[];
         unreadCount: number;
       }
     >
@@ -498,6 +501,12 @@ export class ChannelRepository {
       : [];
     const mentionCountOf = new Map(mentioned.map(({ channelId, count }) => [channelId, count]));
 
+    // Thread mentions outlive the read position, which opening the main conversation moves.
+    const threadMentionsOf = await channelThreadMentions(
+      this.db,
+      rows.map(({ memberId }) => memberId),
+    );
+
     // A group Channel's list avatar pictures its first members; a direct one shows its Agent.
     const avatarsOf = await channelAvatarMembers(
       this.db,
@@ -512,6 +521,7 @@ export class ChannelRepository {
       memberAvatars: avatarsOf.get(channel.id) ?? [],
       mentionCount: mentionCountOf.get(channel.id) ?? 0,
       replyJobs: replyJobsOf.get(channel.id) ?? [],
+      threadMentions: threadMentionsOf.get(channel.id) ?? [],
       unreadCount: Math.max(0, channel.sequence - (lastReadSequence ?? 0)),
     }));
   };
