@@ -14,6 +14,7 @@ vi.mock('./MemberAvatar', () => ({
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 vi.mock('@lobehub/ui', () => ({
   ActionIcon: ({ title }: { title?: string }) => createElement('button', {}, title),
+  Icon: () => createElement('i', { 'data-check': true }),
   // Renders the trigger and lists the menu flat so each item can be read and picked.
   DropdownMenu: ({ children, items }: { children?: unknown; items: any[] }) =>
     createElement(
@@ -27,12 +28,12 @@ vi.mock('@lobehub/ui', () => ({
           createElement(
             'li',
             {
-              'aria-checked': item.checked,
-              'key': item.key,
-              'onClick': () => item.onCheckedChange(!item.checked),
-              'role': 'menuitemcheckbox',
+              key: item.key,
+              onClick: item.onClick,
+              role: 'menuitem',
             },
             item.label,
+            item.extra,
           ),
         ),
       ),
@@ -71,15 +72,13 @@ const detail = {
 } as never;
 
 const items = () =>
-  screen.getAllByRole('menuitemcheckbox').map((item) => ({
-    checked: item.getAttribute('aria-checked') === 'true',
+  screen.getAllByRole('menuitem').map((item) => ({
+    checked: !!item.querySelector('[data-check]'),
     label: item.textContent,
   }));
 
 const avatars = () =>
-  screen
-    .getAllByRole('menuitemcheckbox')
-    .map((item) => item.querySelector('img')?.dataset.member ?? null);
+  screen.getAllByRole('menuitem').map((item) => item.querySelector('img')?.dataset.member ?? null);
 
 describe('threadOwner', () => {
   it('picks the first Agent following the thread over people', () => {

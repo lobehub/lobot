@@ -1,7 +1,7 @@
 import type { ChannelDetail, ChannelPublicMember, ChannelPublicThread } from '@lobechat/types';
-import { ActionIcon, type DropdownItem, DropdownMenu } from '@lobehub/ui';
+import { ActionIcon, type DropdownItem, DropdownMenu, Icon } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
-import { MessagesCircle } from 'lucide-react';
+import { Check, MessagesCircle } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -44,7 +44,8 @@ export const threadOwner = (
 
 /**
  * The Channel's threads as menu items, the open one checked. Archived threads stay out, as in
- * the sidebar, unless one of them is open.
+ * the sidebar, unless one of them is open. Plain items, not checkbox ones: a checkbox item keeps
+ * an empty check column ahead of the avatar on every row, so the check sits on the right instead.
  */
 const useThreadItems = (
   detail: ChannelDetail,
@@ -62,10 +63,11 @@ const useThreadItems = (
           thread,
         ) || `${t('thread')} ${index + 1}`;
       const owner = threadOwner(thread, detail.members);
+      const active = thread.id === activeId;
       return {
-        checked: thread.id === activeId,
         // Picking a thread navigates, so the menu goes away like any other navigation.
         closeOnClick: true,
+        extra: active ? <Icon icon={Check} size={14} /> : undefined,
         key: thread.id,
         label: (
           <span {...stylex.props(styles.row)}>
@@ -78,10 +80,9 @@ const useThreadItems = (
             </span>
           </span>
         ),
-        onCheckedChange: () => {
-          if (thread.id !== activeId) onOpen(thread.id);
+        onClick: () => {
+          if (!active) onOpen(thread.id);
         },
-        type: 'checkbox' as const,
       };
     });
 };
