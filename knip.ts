@@ -11,10 +11,10 @@ import type { KnipConfig } from 'knip';
  * Platform variants are resolved by Vite plugins that knip does not model:
  * `plugins/vite/platformResolve.ts` swaps `foo.ts` for `foo.desktop.ts` or
  * `foo.vite.ts` in the renderer, and `plugins/vite/osPlatformResolve.ts` swaps
- * in `foo.mac.ts` / `foo.windows.ts` / `foo.linux.ts` in main and preload. They
+ * in `foo.mac.ts` / `foo.windows.ts` / `foo.linux.ts` / `foo.harmony.ts` in main and preload. They
  * are listed as entries so what they import stays reachable.
  */
-const PLATFORM_VARIANTS = '**/*.{desktop,vite,mac,windows,linux}.{ts,tsx}!';
+const PLATFORM_VARIANTS = '**/*.{desktop,vite,mac,windows,linux,harmony}.{ts,tsx}!';
 
 const config: KnipConfig = {
   // Workspace packages are internal source, not published libraries: report an
