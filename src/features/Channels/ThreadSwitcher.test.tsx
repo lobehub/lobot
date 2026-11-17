@@ -5,8 +5,12 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { ThreadsButton, ThreadSwitchMenu } from './ThreadSwitcher';
+import { threadOwner, ThreadsButton, ThreadSwitchMenu } from './ThreadSwitcher';
 
+vi.mock('./MemberAvatar', () => ({
+  MemberAvatar: ({ member }: { member: { id: string } }) =>
+    createElement('img', { 'alt': '', 'data-member': member.id }),
+}));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 vi.mock('@lobehub/ui', () => ({
   ActionIcon: ({ title }: { title?: string }) => createElement('button', {}, title),
@@ -35,14 +39,32 @@ vi.mock('@lobehub/ui', () => ({
     ),
 }));
 
+const members = [
+  { actorType: 'user', id: 'mem_ann', status: 'active' },
+  { actorType: 'agent', id: 'mem_cook', status: 'active' },
+  { actorType: 'agent', id: 'mem_gone', status: 'left' },
+];
+
 const detail = {
+  members,
   messages: [
     { content: 'Unify Channel members\nmore', id: 'msg_1' },
     { content: 'Old release notes', id: 'msg_3' },
   ],
   threads: [
-    { id: 'thr_1', rootMessageId: 'msg_1', status: 'active' },
-    { id: 'thr_2', rootMessageId: 'msg_2', status: 'active', title: 'Fix the release flow' },
+    {
+      followerMemberIds: ['mem_ann', 'mem_cook'],
+      id: 'thr_1',
+      rootMessageId: 'msg_1',
+      status: 'active',
+    },
+    {
+      followerMemberIds: ['mem_ann'],
+      id: 'thr_2',
+      rootMessageId: 'msg_2',
+      status: 'active',
+      title: 'Fix the release flow',
+    },
     { id: 'thr_3', rootMessageId: 'msg_3', status: 'archived' },
     { id: 'thr_4', rootMessageId: 'msg_4', status: 'active' },
   ],
@@ -53,6 +75,26 @@ const items = () =>
     checked: item.getAttribute('aria-checked') === 'true',
     label: item.textContent,
   }));
+
+const avatars = () =>
+  screen
+    .getAllByRole('menuitemcheckbox')
+    .map((item) => item.querySelector('img')?.dataset.member ?? null);
+
+describe('threadOwner', () => {
+  it('picks the first Agent following the thread over people', () => {
+    expect(threadOwner({ followerMemberIds: ['mem_ann', 'mem_cook'] }, members as never)?.id).toBe(
+      'mem_cook',
+    );
+  });
+
+  it('falls back to a person, and skips members who left', () => {
+    expect(threadOwner({ followerMemberIds: ['mem_gone', 'mem_ann'] }, members as never)?.id).toBe(
+      'mem_ann',
+    );
+    expect(threadOwner({ followerMemberIds: ['mem_gone'] }, members as never)).toBeUndefined();
+  });
+});
 
 describe('ThreadSwitchMenu', () => {
   it('lists the Channel’s live threads with the open one checked', () => {
@@ -70,6 +112,8 @@ describe('ThreadSwitchMenu', () => {
       // Not loaded and untitled: numbered by its place in the Channel.
       { checked: false, label: 'thread 4' },
     ]);
+    // Each thread shows who it belongs to; one nobody follows keeps an empty slot.
+    expect(avatars()).toEqual(['mem_cook', 'mem_ann', null]);
   });
 
   it('keeps an archived thread listed while it is open', () => {

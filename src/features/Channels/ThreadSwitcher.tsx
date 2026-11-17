@@ -1,13 +1,26 @@
-import type { ChannelDetail } from '@lobechat/types';
+import type { ChannelDetail, ChannelPublicMember, ChannelPublicThread } from '@lobechat/types';
 import { ActionIcon, type DropdownItem, DropdownMenu } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { MessagesCircle } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { MemberAvatar } from './MemberAvatar';
 import { threadTitle } from './threadTitle';
 
+const AVATAR_SIZE = 20;
+
 const styles = stylex.create({
+  row: {
+    display: 'flex',
+    gap: 8,
+    alignItems: 'center',
+  },
+  avatar: {
+    display: 'flex',
+    flexShrink: 0,
+    width: AVATAR_SIZE,
+  },
   // A title can be a whole first line; the menu stays narrow and the full title shows on hover.
   label: {
     overflow: 'hidden',
@@ -17,6 +30,17 @@ const styles = stylex.create({
     whiteSpace: 'nowrap',
   },
 });
+
+/** Who a thread belongs to: its first Agent still in the Channel, else its first person. */
+export const threadOwner = (
+  thread: Pick<ChannelPublicThread, 'followerMemberIds'>,
+  members: ChannelPublicMember[] = [],
+): ChannelPublicMember | undefined => {
+  const followers = (thread.followerMemberIds ?? [])
+    .map((id) => members.find((member) => member.id === id && member.status === 'active'))
+    .filter((member): member is ChannelPublicMember => !!member);
+  return followers.find((member) => member.actorType === 'agent') ?? followers[0];
+};
 
 /**
  * The Channel's threads as menu items, the open one checked. Archived threads stay out, as in
@@ -37,14 +61,21 @@ const useThreadItems = (
           detail.messages.find((message) => message.id === thread.rootMessageId),
           thread,
         ) || `${t('thread')} ${index + 1}`;
+      const owner = threadOwner(thread, detail.members);
       return {
         checked: thread.id === activeId,
         // Picking a thread navigates, so the menu goes away like any other navigation.
         closeOnClick: true,
         key: thread.id,
         label: (
-          <span title={title} {...stylex.props(styles.label)}>
-            {title}
+          <span {...stylex.props(styles.row)}>
+            {/* An empty slot when nobody follows the thread keeps every title on one line. */}
+            <span {...stylex.props(styles.avatar)}>
+              {owner && <MemberAvatar member={owner} size={AVATAR_SIZE} />}
+            </span>
+            <span title={title} {...stylex.props(styles.label)}>
+              {title}
+            </span>
           </span>
         ),
         onCheckedChange: () => {
