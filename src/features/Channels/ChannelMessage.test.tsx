@@ -463,15 +463,15 @@ describe('ChannelMessage thread card', () => {
 });
 
 describe('ChannelMessage layout', () => {
-  it('marks an Agent reply as an Agent beside its name', () => {
-    const { container } = render(
+  it('shows an Agent reply without an Agent badge', () => {
+    render(
       <ChannelMessage
         detail={detail}
         message={message({ avatar: null, id: 'agt_1', name: 'Cook', type: 'agent' })}
       />,
     );
 
-    expect(container.querySelector('header')?.textContent).toContain('agentBadge');
+    expect(screen.queryByText('agentBadge')).toBeNull();
   });
 
   it('shows another person’s name and avatar above their message', () => {

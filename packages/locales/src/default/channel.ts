@@ -45,8 +45,6 @@ export default {
   'projectAgents': 'Project members',
   'searchAgents': 'Search Agents',
   'unnamedAgent': 'Unnamed Agent',
-  /** Beside an Agent's name on its replies. */
-  'agentBadge': 'Agent',
   'person': 'Person',
   'cancel': 'Cancel',
   'environmentHint':

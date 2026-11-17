@@ -427,11 +427,7 @@ export const ChannelMessage = ({
             <div {...stylex.props(styles.bubbleLine, isOwnMessage && styles.bubbleLineOwn)}>
               <div {...stylex.props(styles.bubbleStack, isOwnMessage && styles.bubbleStackOwn)}>
                 {attachments}
-                {content && (
-                  <div {...stylex.props(styles.bubble, isOwnMessage && styles.bubbleOwn)}>
-                    {content}
-                  </div>
-                )}
+                {content && <div {...stylex.props(styles.bubble)}>{content}</div>}
               </div>
               {sideMeta}
             </div>
@@ -510,7 +506,6 @@ export const ChannelMessage = ({
         }
         titleAddon={
           <>
-            <span {...stylex.props(styles.agentBadge)}>{t('agentBadge')}</span>
             {timestamp}
             {headerMarks}
           </>

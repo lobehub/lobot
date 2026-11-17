@@ -138,8 +138,9 @@ export const styles = stylex.create({
     },
   },
   /**
-   * A person's message: a short bubble, theirs on the left under their avatar and name,
-   * your own on the right with neither, like a chat app.
+   * A person's message: a short light bubble, theirs on the left under their avatar and name,
+   * your own on the right with neither, like a chat app. Both sides share one light fill;
+   * the side tells them apart.
    */
   bubbleRow: {
     display: 'flex',
@@ -205,11 +206,6 @@ export const styles = stylex.create({
     overflowWrap: 'anywhere',
     backgroundColor: cssVar.colorFillTertiary,
   },
-  /** Your own words, inverted: the darkest thing in the feed is what you said. */
-  bubbleOwn: {
-    color: cssVar.colorBgContainer,
-    backgroundColor: cssVar.colorText,
-  },
   /** Time (and any relay or failure mark) beside the bubble, on the side away from it. */
   bubbleSideMeta: {
     display: 'inline-flex',
@@ -231,18 +227,6 @@ export const styles = stylex.create({
   messageEditedOwn: { alignSelf: 'flex-end' },
   /** An Agent's reply reads as a document: full width, airier lines than chat. */
   agentBody: { lineHeight: 1.7 },
-  /** Says "this is an Agent" beside its name, so its long replies are never mistaken for a person's. */
-  agentBadge: {
-    flexShrink: 0,
-    alignSelf: 'center',
-    paddingInline: 5,
-    borderRadius: 4,
-    fontSize: 11,
-    lineHeight: '16px',
-    fontWeight: 500,
-    color: cssVar.colorSuccess,
-    backgroundColor: cssVar.colorSuccessBg,
-  },
   /** A plain centered date; a rule on each side read heavier than the messages it separates. */
   dateDivider: {
     display: 'flex',
