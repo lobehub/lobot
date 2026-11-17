@@ -167,6 +167,24 @@ describe('buildConversationSections with direct Channels', () => {
     });
   });
 
+  // Editing the agent (avatar, model, sync) moved the row to the top with that edit's time.
+  it('times an agent row by its direct Channel latest message, not the agent edit', () => {
+    const direct = {
+      agentId: 'a',
+      createdAt: new Date('2026-10-01'),
+      id: 'chn_a',
+      lastMessage: { content: 'hi', createdAt: new Date('2026-10-03') },
+    } as ChannelListItem;
+    const { recent } = buildConversationSections(
+      [agent('a', '2026-10-09'), agent('b', '2026-10-05')],
+      [topic({ agentId: 'b', updatedAt: '2026-10-05' })],
+      new Map([['a', direct]]),
+    );
+
+    expect(recent.map((c) => c.item.id)).toEqual(['b', 'a']);
+    expect(recent[1].activeAt).toEqual(new Date('2026-10-03'));
+  });
+
   it('falls back to the agent description while its direct Channel is empty', () => {
     const direct = {
       agentId: 'a',
@@ -230,7 +248,15 @@ describe('buildConversationEntries', () => {
       agent('p', '2026-09-01', { title: 'Pinned' }),
     ],
     undefined,
-    new Map([['p', pinnedDirect('p')]]),
+    new Map([
+      [
+        'p',
+        {
+          ...pinnedDirect('p'),
+          lastMessage: { content: 'hi', createdAt: new Date('2026-09-01') },
+        } as ChannelListItem,
+      ],
+    ]),
     { includeIdle: true },
   );
   const ids = (entries: ReturnType<typeof buildConversationEntries>) =>
@@ -396,6 +422,12 @@ describe('inboxActivity', () => {
     expect(
       inboxActivity('2026-10-02', topic({ updatedAt: '2026-10-09' }), direct('2026-10-05')),
     ).toEqual(new Date('2026-10-05'));
+  });
+
+  it('ignores an agent edit newer than the direct Channel latest message', () => {
+    expect(inboxActivity('2026-10-09', undefined, direct('2026-10-05'))).toEqual(
+      new Date('2026-10-05'),
+    );
   });
 
   it('falls back to the latest topic without a direct Channel', () => {

@@ -118,15 +118,15 @@ export const latestActivity = (
   return new Date(Math.max(ownTime, topicTime));
 };
 
-/** The inbox row's activity: once it opens a direct Channel, that replaces its legacy topics. */
+/**
+ * The inbox row's activity: once it opens a direct Channel, that Channel's latest message replaces
+ * its legacy topics, and editing the agent no longer moves it.
+ */
 export const inboxActivity = (
   own: Date | string | undefined,
   topic: RecentItem | undefined,
   direct?: ChannelListItem,
-): Date | undefined =>
-  direct
-    ? new Date(Math.max(own ? toTime(own) : 0, channelActivity(direct).getTime()))
-    : latestActivity(own, topic);
+): Date | undefined => (direct ? channelActivity(direct) : latestActivity(own, topic));
 
 /**
  * Turn the sidebar agent/group list into IM-style conversations: each row
@@ -159,12 +159,12 @@ export const buildConversationSections = (
     if (seen.has(item.id)) continue;
     seen.add(item.id);
 
-    const itemTime = toTime(item.updatedAt);
     const direct = directChannels?.get(item.id);
     if (direct) {
-      // The row opens the direct Channel, so its legacy topics no longer describe it.
+      // The row opens the direct Channel, so its legacy topics no longer describe it, and its time
+      // is that Channel's latest message: editing the agent is not a message.
       conversations.push({
-        activeAt: new Date(Math.max(itemTime, channelActivity(direct).getTime())),
+        activeAt: channelActivity(direct),
         channel: direct,
         item,
         preview: conversationPreview(item.description, undefined, direct),
@@ -177,6 +177,7 @@ export const buildConversationSections = (
     const latest = latestByOwner.get(item.id);
     if (!latest && !includeIdle && item.id !== activeId) continue;
 
+    const itemTime = toTime(item.updatedAt);
     const latestTime = latest ? toTime(latest.updatedAt) : 0;
 
     conversations.push({
