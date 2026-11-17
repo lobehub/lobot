@@ -242,7 +242,8 @@ const Timeline = ({
                     <ChannelWelcome
                       detail={detail}
                       onGreet={
-                        channelArchived
+                        // Once anyone has spoken, there is nothing left to break the ice for.
+                        channelArchived || timeline.some((entry) => entry.kind === 'message')
                           ? undefined
                           : (content) => {
                               followLatest.current = true;
