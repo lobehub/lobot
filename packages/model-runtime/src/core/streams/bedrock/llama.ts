@@ -24,7 +24,7 @@ interface BedrockLlamaStreamChunk {
   'stop_reason'?: null | 'stop' | string;
 }
 
-export const transformLlamaStream = (
+const transformLlamaStream = (
   chunk: BedrockLlamaStreamChunk,
   stack: StreamContext,
 ): StreamProtocolChunk => {

@@ -67,10 +67,7 @@ export const findFoldedMatches = (text: string, needle: string): [number, number
 
 const SKIPPED_TAGS = new Set(['INPUT', 'NOSCRIPT', 'SCRIPT', 'STYLE', 'TEXTAREA']);
 
-export const supportsHighlightApi = () =>
-  typeof CSS !== 'undefined' && 'highlights' in CSS && typeof Highlight !== 'undefined';
-
-export interface FindKeywordRangesOptions {
+interface FindKeywordRangesOptions {
   /**
    * Also match text inside `contenteditable` regions. Off by default: a chat
    * composer is not content. Pages whose content *is* an editor (a task's
@@ -109,23 +106,6 @@ export const findKeywordRanges = (
   }
 
   return ranges;
-};
-
-/** Registers `ranges` under `name`, or drops the registry entry when there are none. */
-export const setHighlightRanges = (name: string, ranges: Range[], priority: number) => {
-  if (!supportsHighlightApi()) return;
-  if (ranges.length === 0) {
-    CSS.highlights.delete(name);
-    return;
-  }
-  const highlight = new Highlight(...ranges);
-  highlight.priority = priority;
-  CSS.highlights.set(name, highlight);
-};
-
-export const clearHighlights = (names: string[]) => {
-  if (!supportsHighlightApi()) return;
-  for (const name of names) CSS.highlights.delete(name);
 };
 
 const SCROLL_MARGIN = 64;

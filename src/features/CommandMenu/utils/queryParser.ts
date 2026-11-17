@@ -1,4 +1,4 @@
-export interface ParsedQuery {
+interface ParsedQuery {
   /**
    * The cleaned query string without modifiers
    */

@@ -11,17 +11,6 @@ import type {
 } from './types';
 
 /**
- * The device a topic runs on: the one its in-flight run was dispatched to,
- * else the one its turns are pinned to. The live dispatch wins because a run
- * does not always follow the pin — an `auto` target, an explicit request
- * device or a fixed workspace target can send it elsewhere. The `deviceId`
- * filter of `TopicModel.queryTopics` applies the same precedence in SQL.
- */
-export const getTopicDeviceId = (
-  metadata: Pick<ChatTopicMetadata, 'boundDeviceId' | 'runningOperation'> | null | undefined,
-): string | undefined => metadata?.runningOperation?.deviceId ?? metadata?.boundDeviceId;
-
-/**
  * How long an operation that still claims `running` / `idle` may hold the topic
  * against a background start before it is treated as abandoned.
  *
@@ -34,13 +23,13 @@ export const getTopicDeviceId = (
  * uninterrupted generation. The real reaper remains the gateway watchdog's
  * `finalize-abandoned` call.
  */
-export const ABANDONED_OPERATION_TTL_MS = 6 * 60 * 60 * 1000;
+const ABANDONED_OPERATION_TTL_MS = 6 * 60 * 60 * 1000;
 
 /**
  * Operation statuses that mean "this run is still the topic's owner". Parked
  * states are included on purpose: a run waiting for approval is not stuck.
  */
-export const LIVE_OPERATION_STATUSES = new Set([
+const LIVE_OPERATION_STATUSES = new Set([
   'idle',
   'running',
   'waiting_for_human',
@@ -49,10 +38,7 @@ export const LIVE_OPERATION_STATUSES = new Set([
 ]);
 
 /** Parked states are exempt from the abandoned-age backstop — see above. */
-export const UNBOUNDED_OPERATION_STATUSES = new Set([
-  'waiting_for_human',
-  'waiting_for_async_tool',
-]);
+const UNBOUNDED_OPERATION_STATUSES = new Set(['waiting_for_human', 'waiting_for_async_tool']);
 
 /**
  * Operation statuses in which the server is still driving the run, so a
@@ -60,7 +46,7 @@ export const UNBOUNDED_OPERATION_STATUSES = new Set([
  * excluded on purpose: a run parked for approval is stream-terminal for the
  * client, which settles it to stop the spinner.
  */
-export const CLIENT_UNSETTLEABLE_OPERATION_STATUSES = new Set<AgentOperationStatus>([
+const CLIENT_UNSETTLEABLE_OPERATION_STATUSES = new Set<AgentOperationStatus>([
   'running',
   'waiting_for_async_tool',
   'waiting_for_client',

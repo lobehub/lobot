@@ -31,7 +31,7 @@ export const replicaWrapper = ({ children }: PropsWithChildren) =>
     children,
   );
 
-export const storageOf = (name: string) =>
+const storageOf = (name: string) =>
   new AppIndexedDBStorage<unknown>({ namespace: `replica:${name}:v1` });
 
 /** Never-resolving fetch: the first frame can only come from storage. */

@@ -8,7 +8,7 @@ import { buildWorkspacePayload, buildWorkspaceWhere } from '../utils/workspace';
 import { type TaskModelContext, taskOwnership } from './task/context';
 
 /** Thrown for caller mistakes the router maps to BAD_REQUEST / CONFLICT. */
-export class TaskLabelError extends Error {
+class TaskLabelError extends Error {
   constructor(
     public readonly code:
       | 'GROUP_CONFLICT'
@@ -23,7 +23,7 @@ export class TaskLabelError extends Error {
   }
 }
 
-export interface CreateTaskLabelParams {
+interface CreateTaskLabelParams {
   color?: string | null;
   description?: string | null;
   isGroup?: boolean;
@@ -32,7 +32,7 @@ export interface CreateTaskLabelParams {
   sortOrder?: number;
 }
 
-export type UpdateTaskLabelParams = Partial<
+type UpdateTaskLabelParams = Partial<
   Pick<TaskLabelItem, 'color' | 'description' | 'name' | 'parentId' | 'sortOrder'>
 >;
 

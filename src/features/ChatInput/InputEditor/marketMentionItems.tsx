@@ -83,7 +83,7 @@ export const toMarketSkillItem = (skill: DiscoverSkillItem): ISlashMenuOption =>
   };
 };
 
-export interface MarketSearchResult {
+interface MarketSearchResult {
   agents: DiscoverAssistantItem[];
   skills: DiscoverSkillItem[];
 }

@@ -1000,6 +1000,6 @@ const azureImageModels: AIImageModelCard[] = [
   },
 ];
 
-export const allModels = [...azureChatModels, ...azureImageModels];
+const allModels = [...azureChatModels, ...azureImageModels];
 
 export default allModels;

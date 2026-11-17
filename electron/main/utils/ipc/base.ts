@@ -121,27 +121,6 @@ export interface IpcServiceConstructor {
 }
 
 // Create services function that infers types from service constructors
-export function createServices<T extends readonly IpcServiceConstructor[]>(
-  serviceConstructors: T,
-  ...constructorArgs: any[]
-): CreateServicesResult<T> {
-  const services = {} as any;
-
-  for (const ServiceConstructor of serviceConstructors) {
-    const instance = new ServiceConstructor(...constructorArgs);
-    const groupName = ServiceConstructor.groupName;
-
-    if (!groupName) {
-      throw new Error(
-        `Service ${ServiceConstructor.name} must define a static readonly groupName property`,
-      );
-    }
-
-    services[groupName] = instance;
-  }
-
-  return services;
-}
 
 // Helper type for createServices return type
 export type CreateServicesResult<T extends readonly IpcServiceConstructor[]> = {

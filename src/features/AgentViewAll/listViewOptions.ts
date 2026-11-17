@@ -1,6 +1,6 @@
 export type AgentGroupBy = 'author' | 'label' | 'none';
 export type AgentOrderBy = 'author' | 'title' | 'updatedAt';
-export type AgentOrderDirection = 'asc' | 'desc';
+type AgentOrderDirection = 'asc' | 'desc';
 
 export interface AgentListViewOptions {
   groupBy: AgentGroupBy;
@@ -10,7 +10,7 @@ export interface AgentListViewOptions {
   showSidebarHidden: boolean;
 }
 
-export const DEFAULT_AGENT_LIST_VIEW_OPTIONS: AgentListViewOptions = {
+const DEFAULT_AGENT_LIST_VIEW_OPTIONS: AgentListViewOptions = {
   groupBy: 'none',
   orderBy: 'updatedAt',
   orderDirection: 'desc',

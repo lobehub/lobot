@@ -15,17 +15,17 @@ import { isGemini3OrAbove, normalizeGoogleModelId, parseGoogleModelId } from './
  * Thinking model category for Google Gemini models
  * Different categories have different thinking budget constraints
  */
-export type GoogleThinkingModelCategory = 'pro' | 'flash' | 'flashLite' | 'robotics' | 'other';
+type GoogleThinkingModelCategory = 'pro' | 'flash' | 'flashLite' | 'robotics' | 'other';
 
 /**
  * Thinking level for Gemini 3.0+ models
  */
-export type GoogleThinkingLevel = 'minimal' | 'low' | 'medium' | 'high';
+type GoogleThinkingLevel = 'minimal' | 'low' | 'medium' | 'high';
 
 /**
  * Options for resolving Google thinking configuration
  */
-export interface GoogleThinkingResolverOptions {
+interface GoogleThinkingResolverOptions {
   /** User-specified thinking budget (tokens) */
   thinkingBudget?: number | null;
   /** User-specified thinking level (for 3.0+ models) */
@@ -35,7 +35,7 @@ export interface GoogleThinkingResolverOptions {
 /**
  * Resolved Google thinking configuration ready for API call
  */
-export interface ResolvedGoogleThinkingConfig {
+interface ResolvedGoogleThinkingConfig {
   /** Whether to include thoughts in the response */
   includeThoughts: boolean | undefined;
   /** Resolved thinking budget in tokens */

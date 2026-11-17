@@ -1,6 +1,6 @@
 import type { EditedFileEntry } from '@/features/Conversation/operationArtifacts/fileEditScan';
 
-export interface EditedFilesTotals {
+interface EditedFilesTotals {
   linesAdded: number;
   linesDeleted: number;
 }

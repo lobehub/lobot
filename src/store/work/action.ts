@@ -27,7 +27,7 @@ type Setter = StoreSetter<WorkState>;
  * confirms); Work mutations keep revalidating them through the `work:` sync
  * keys (`workService.refresh*`).
  */
-export class WorkActionImpl {
+class WorkActionImpl {
   readonly #get: () => WorkState;
   readonly #private: WorkPrivateAction;
   readonly #set: Setter;

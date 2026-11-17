@@ -7,7 +7,7 @@ import type { ReactNode } from 'react';
  * it only carries `title`. Every caller in this app passes an agent meta that also
  * has `name` (see `useAgentMeta`), which is what the author label resolves from.
  */
-export type ChatItemAvatarMeta = MetaData & { name?: string | null };
+type ChatItemAvatarMeta = MetaData & { name?: string | null };
 
 export interface ChatItemProps extends Omit<FlexboxProps, 'children' | 'onChange'> {
   aboveMessage?: ReactNode;

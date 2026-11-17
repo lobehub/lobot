@@ -62,7 +62,7 @@ const modelReasoningConfigLens: ReplicaLens<AiInfraStore, AiModelReasoningConfig
 };
 
 /** Sync result of one provider's model list: replica flags plus the SWR-era aliases. */
-export interface AiProviderModelsSyncResult extends ReplicaSyncResult {
+interface AiProviderModelsSyncResult extends ReplicaSyncResult {
   /** The provider's models, `undefined` until the first entry lands. */
   data: AiProviderModelListItem[] | undefined;
   /** A request is in flight and there is nothing to show for this provider yet. */
@@ -81,7 +81,7 @@ interface ReasoningConfigSeed {
 export const createAiModelSlice = (set: Setter, get: () => AiInfraStore, _api?: unknown) =>
   new AiModelActionImpl(set, get, _api);
 
-export class AiModelActionImpl {
+class AiModelActionImpl {
   readonly #get: () => AiInfraStore;
   readonly #list;
   readonly #reasoningConfig;

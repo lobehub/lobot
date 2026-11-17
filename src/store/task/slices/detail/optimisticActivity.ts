@@ -10,7 +10,7 @@ export const OPTIMISTIC_ACTIVITY_ID_PREFIX = 'optimistic-';
 export const isOptimisticActivityId = (id?: string | null): boolean =>
   !!id && id.startsWith(OPTIMISTIC_ACTIVITY_ID_PREFIX);
 
-export interface BuildOptimisticAssignmentInput {
+interface BuildOptimisticAssignmentInput {
   /** Who is making the change; without one no row is synthesized rather than inventing an actor. */
   actor?: TaskDetailActivityAuthor;
   /** `undefined` = slot untouched, `null` = cleared. Mirrors `TaskUpdatePayload`. */
@@ -83,7 +83,7 @@ export const buildOptimisticAssignmentActivities = ({
   return rows;
 };
 
-export interface BuildOptimisticCommentInput {
+interface BuildOptimisticCommentInput {
   actor?: TaskDetailActivityAuthor;
   content: string;
   editorData?: unknown;
@@ -118,7 +118,7 @@ export const buildOptimisticCommentActivity = ({
   };
 };
 
-export interface BuildOptimisticPropertyInput {
+interface BuildOptimisticPropertyInput {
   actor?: TaskDetailActivityAuthor;
   change: NonNullable<TaskDetailActivity['propertyChange']>;
   now: string;
@@ -149,7 +149,7 @@ export const buildOptimisticPropertyActivity = ({
  * the task service): how long a run of edits to one property by one person
  * stays a single line. Kept in step by hand — the client cannot import it.
  */
-export const OPTIMISTIC_COLLAPSE_WINDOW_MS = 30 * 60_000;
+const OPTIMISTIC_COLLAPSE_WINDOW_MS = 30 * 60_000;
 
 const sameValue = (a: unknown, b: unknown): boolean =>
   JSON.stringify(a ?? null) === JSON.stringify(b ?? null);

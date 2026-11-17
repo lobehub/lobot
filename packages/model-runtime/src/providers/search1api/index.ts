@@ -6,11 +6,11 @@ import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import type { ChatStreamPayload } from '../../types';
 
-export interface Search1APIModelCard {
+interface Search1APIModelCard {
   id: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://api.search1api.com/v1',
   chatCompletion: {
     handlePayload: (payload: ChatStreamPayload) => {

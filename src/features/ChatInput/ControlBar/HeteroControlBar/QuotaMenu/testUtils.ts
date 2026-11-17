@@ -1,7 +1,7 @@
 import type * as ElectronClientIpcModule from '@lobechat/electron-client-ipc';
 import type { KimiCodeQuotaSnapshot } from '@lobechat/heterogeneous-agents/quota';
-import { act, screen, waitFor } from '@testing-library/react';
-import { expect, vi } from 'vitest';
+import { act } from '@testing-library/react';
+import { vi } from 'vitest';
 
 import { cacheScope } from '@/libs/replica';
 import { useAgentQuotaStore } from '@/store/agentQuota';
@@ -58,38 +58,3 @@ export const claudeSnapshot = (
   weekly: null,
   ...overrides,
 });
-
-export const persistedAccount = (updatedAt = Date.now()) => ({
-  externalAccountId: 'ext-1',
-  id: 'acc-1',
-  provider: 'claude-code',
-  updatedAt: new Date(updatedAt),
-});
-
-/** The account's newest persisted session reading, captured at `capturedAt`. */
-export const persistedSessionReading = (capturedAt: number) => ({
-  capturedAt,
-  limitType: 'session',
-  resetsAt: null,
-  scopeKey: '',
-  utilization: 8,
-});
-
-/** A live session reading as fossilized by the desktop sampler at `capturedAt`. */
-export const liveSessionReading = (capturedAt: number) => ({
-  capturedAt,
-  isActive: true,
-  limitType: 'session',
-  resetsAt: null,
-  scopeKey: '',
-  utilization: 8,
-});
-
-/** Persisted quota can render before the initial load finishes; focus is ignored while loading. */
-export const waitForQuotaIdle = async () => {
-  await waitFor(() => expect(screen.getByTestId('refresh').hasAttribute('disabled')).toBe(false));
-  // Let the focus listener's effect observe loading=false before dispatching focus.
-  await act(async () => {
-    await Promise.resolve();
-  });
-};

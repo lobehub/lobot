@@ -9,7 +9,7 @@ import { createQwenImage } from './createImage';
 import { createQwenVideo } from './createVideo';
 import { isThinkingForcedQwenModel } from './modelId';
 
-export interface QwenModelCard {
+interface QwenModelCard {
   id: string;
 }
 
@@ -17,7 +17,7 @@ export interface QwenModelCard {
   QwenLegacyModels: A set of legacy Qwen models that do not support presence_penalty.
   Currently, presence_penalty is only supported on Qwen commercial models and open-source models starting from Qwen 1.5 and later.
 */
-export const QwenLegacyModels = new Set([
+const QwenLegacyModels = new Set([
   'qwen-72b-chat',
   'qwen-14b-chat',
   'qwen-7b-chat',
@@ -25,7 +25,7 @@ export const QwenLegacyModels = new Set([
   'qwen-1.8b-longcontext-chat',
 ]);
 
-export const params = {
+const params = {
   baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
   chatCompletion: {
     handlePayload: (payload) => {

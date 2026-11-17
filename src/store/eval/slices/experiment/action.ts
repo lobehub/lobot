@@ -41,7 +41,7 @@ const experimentListLens: ReplicaLens<EvalStore, AgentEvalExperimentListItem[]> 
 };
 
 /** Pre-migration `useFetchExperiments` return shape, backed by the list replica. */
-export interface ExperimentListSyncResult extends ReplicaSyncResult {
+interface ExperimentListSyncResult extends ReplicaSyncResult {
   /** The list once it has settled (hydrated or fetched), else `undefined`. */
   data: AgentEvalExperimentListItem[] | undefined;
   /** First load in flight with nothing settled yet. */
@@ -51,7 +51,7 @@ export interface ExperimentListSyncResult extends ReplicaSyncResult {
 }
 
 /** Pre-migration `useFetchExperimentDetail` return shape, backed by the detail replica. */
-export interface ExperimentDetailSyncResult {
+interface ExperimentDetailSyncResult {
   error: unknown;
   /** First load in flight with nothing settled yet. */
   isLoading: boolean;
@@ -62,7 +62,7 @@ export interface ExperimentDetailSyncResult {
 export const createExperimentSlice = (set: Setter, get: () => EvalStore, _api?: unknown) =>
   new ExperimentActionImpl(set, get, _api);
 
-export class ExperimentActionImpl {
+class ExperimentActionImpl {
   readonly #detail;
   readonly #entity;
   readonly #get: () => EvalStore;

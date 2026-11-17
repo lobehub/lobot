@@ -4,14 +4,14 @@ import { ModelProvider } from 'model-bank';
 import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible';
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 
-export interface FireworksAIModelCard {
+interface FireworksAIModelCard {
   context_length: number;
   id: string;
   supports_image_input: boolean;
   supports_tools: boolean;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://api.fireworks.ai/inference/v1',
   debug: {
     chatCompletion: () => process.env.DEBUG_FIREWORKSAI_CHAT_COMPLETION === '1',

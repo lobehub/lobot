@@ -11,7 +11,7 @@ export type ManifestImpact = 'blocker' | 'carried' | 'reset' | 'detached';
 
 export type TransferManifestPerspective = 'initiator' | 'recipient';
 
-export interface TransferManifestRow {
+interface TransferManifestRow {
   /** Stable per-field id, used as the render key. */
   id: string;
   impact: ManifestImpact;

@@ -8,7 +8,7 @@ import A from '@/components/Avatar';
 import { contextSelectors, useConversationStore } from '../../store';
 import { type ChatItemProps } from '../type';
 
-export interface AvatarProps {
+interface AvatarProps {
   /** Agent message: render an agent avatar seeded by this id (empty → conversation agent). */
   agentId?: ChatItemProps['agentId'];
   alt?: string;

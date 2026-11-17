@@ -2,7 +2,6 @@ import { randomUUID } from 'node:crypto';
 
 import type {
   BlueBubblesApiConfig,
-  BlueBubblesAttachment,
   BlueBubblesChat,
   BlueBubblesDownloadedAttachment,
   BlueBubblesMessage,
@@ -319,8 +318,4 @@ function inferFileName(mimeType: string | undefined): string {
   if (topLevel === 'video') return `video.${subtype}`;
   if (topLevel === 'audio') return `audio.${subtype}`;
   return `attachment.${subtype}`;
-}
-
-export function resolveAttachmentName(attachment: BlueBubblesAttachment): string {
-  return attachment.transferName || attachment.filename || `${attachment.guid}.bin`;
 }

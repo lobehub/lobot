@@ -14,7 +14,7 @@ export const MARKET_SKILL_ENSURE_BATCH_SIZE = 50;
 
 type EnsureFailure = Extract<EnsureMarketSkillResult, { status: 'failed' }>;
 
-export type AgentPluginsInput = AgentPluginEntry[] | AgentPluginEntry[][] | null | undefined;
+type AgentPluginsInput = AgentPluginEntry[] | AgentPluginEntry[][] | null | undefined;
 
 const unavailable = (identifier: string, error?: unknown): EnsureFailure => ({
   identifier,
@@ -130,7 +130,7 @@ export const ensureAgentMarketSkills = async (
 };
 
 /** One merged warning for the skills that could not be installed. `notSkill` is not a failure. */
-export const warnMarketSkillFailures = (results: EnsureMarketSkillResult[]): void => {
+const warnMarketSkillFailures = (results: EnsureMarketSkillResult[]): void => {
   const failed = results.filter((result) => result.status === 'failed');
   if (failed.length === 0) return;
 

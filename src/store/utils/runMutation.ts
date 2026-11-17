@@ -3,7 +3,7 @@ import { applyPatches, type Draft, type Patch, produceWithPatches } from 'immer'
 import { type StoreSetter } from '@/store/types';
 import { type SaveStatus } from '@/types/saveState';
 
-export interface RunMutationConfig<TStore extends object, T> {
+interface RunMutationConfig<TStore extends object, T> {
   /** The server write. Its resolved value is returned by `runMutation`. */
   mutate: () => Promise<T>;
   /** Debug label for the devtools action names (`<name>/optimistic`, `<name>/rollback`). */

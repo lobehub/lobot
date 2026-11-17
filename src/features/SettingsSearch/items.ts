@@ -20,7 +20,7 @@ export interface SettingsSearchContext {
   showAiImage: boolean;
 }
 
-export interface SettingsSearchItem {
+interface SettingsSearchItem {
   /**
    * Unique anchor id, also used as the URL hash fragment. The target page must
    * wrap the matching label with `<SettingsSearchAnchor id={anchor}>`.

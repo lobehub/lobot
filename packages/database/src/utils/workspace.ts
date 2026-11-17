@@ -17,7 +17,7 @@ import { notTrashed } from './softDelete';
  *
  * Restore / purge internals pass `includeTrashed: true` to reach stamped rows.
  */
-export const TRASH_AWARE_TABLES: ReadonlySet<string> = new Set([
+const TRASH_AWARE_TABLES: ReadonlySet<string> = new Set([
   'agent_cron_jobs',
   'agent_skills',
   'agents',

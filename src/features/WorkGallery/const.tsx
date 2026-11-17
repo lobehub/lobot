@@ -14,7 +14,7 @@ export type WorkGalleryKey = 'all' | 'canvas' | 'document' | 'github' | 'linear'
  * (task / document); `provider` narrows the `external` type to one skill
  * provider (linear / github); `all` carries neither (combined view).
  */
-export interface WorkGalleryFilter {
+interface WorkGalleryFilter {
   provider?: WorkSkillProvider;
   type?: ListedWorkType;
 }
@@ -31,7 +31,3 @@ const FILTER_BY_KEY = new Map<WorkGalleryKey, WorkGalleryFilter>([
 /** Parse the raw `?works=` param into a valid key, or null when absent/invalid. */
 export const parseWorkGalleryKey = (value: string | null): WorkGalleryKey | null =>
   value && FILTER_BY_KEY.has(value as WorkGalleryKey) ? (value as WorkGalleryKey) : null;
-
-/** The type/provider filter a key maps to (`all` → `{}`, no filter). */
-export const workFilterFromKey = (key: WorkGalleryKey): WorkGalleryFilter =>
-  FILTER_BY_KEY.get(key) ?? {};

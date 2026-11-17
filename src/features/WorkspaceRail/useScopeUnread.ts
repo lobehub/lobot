@@ -10,7 +10,7 @@ import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
 /** Scopes the user is not in poll on the Channel list's idle cadence. */
-export const SCOPE_UNREAD_REFRESH_MS = 60_000;
+const SCOPE_UNREAD_REFRESH_MS = 60_000;
 
 /**
  * A scope's Messages unread count for its rail tile. The active scope reads the live list the

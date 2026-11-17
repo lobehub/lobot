@@ -93,6 +93,6 @@ const sensenovaImageModels: AIImageModelCard[] = [
   },
 ];
 
-export const allModels = [...sensenovaChatModels, ...sensenovaImageModels];
+const allModels = [...sensenovaChatModels, ...sensenovaImageModels];
 
 export default allModels;

@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 
-export interface DragRect {
+interface DragRect {
   height: number;
   width: number;
   x: number;
@@ -12,7 +12,7 @@ interface DragPoint {
   y: number;
 }
 
-export interface DragSelectionTracker {
+interface DragSelectionTracker {
   readonly dragRect: DragRect | null;
   finish: () => void;
   readonly isDragging: boolean;

@@ -10,7 +10,7 @@ import { AgentRuntimeErrorType } from '../../types/error';
 import { processMultiProviderModelList } from '../../utils/modelParse';
 import type { HuggingFaceRouterResponse } from './type';
 
-export const params = {
+const params = {
   chatCompletion: {
     handleStreamBizErrorType: (error) => {
       // e.g.: Server meta-llama/Meta-Llama-3.1-8B-Instruct does not seem to support chat completion. Error: Model requires a Pro subscription; check out hf.co/pricing to learn more. Make sure to include your HF token in your query.

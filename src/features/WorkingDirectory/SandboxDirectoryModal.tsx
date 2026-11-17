@@ -25,7 +25,7 @@ import { DirectoryBrowser } from './DirectoryBrowser';
 import { useSandboxDirectorySource } from './sources/useSandboxDirectorySource';
 
 /** The folder a pick on the drive binds the conversation to, and which drive it is on. */
-export interface SandboxDirectoryPick {
+interface SandboxDirectoryPick {
   drive: SandboxDrive;
   workingDirectory: string;
 }

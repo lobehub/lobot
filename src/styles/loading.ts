@@ -34,7 +34,7 @@ export const elapsedTimeStyles = createStaticStyles(({ css, cssVar }) => ({
   `,
 }));
 
-export const errorTextStyles = createStaticStyles(({ css, cssVar }) => ({
+const errorTextStyles = createStaticStyles(({ css, cssVar }) => ({
   errorText: css`
     color: ${cssVar.colorError};
   `,

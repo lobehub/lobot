@@ -14,7 +14,7 @@ interface ResolveAgentAvatarParams {
   title?: string | null;
 }
 
-export type ResolvedAgentAvatar =
+type ResolvedAgentAvatar =
   | { avatar: string; kind: 'custom'; label?: string; seed?: string }
   | { kind: 'generated'; label?: string; seed?: string };
 

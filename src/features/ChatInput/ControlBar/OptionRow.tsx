@@ -118,7 +118,7 @@ const styles = stylex.create({
   },
 });
 
-export interface OptionRowProps {
+interface OptionRowProps {
   active?: boolean;
   /** The row opens a second level, so it ends in an arrow instead of a check. */
   arrow?: boolean;

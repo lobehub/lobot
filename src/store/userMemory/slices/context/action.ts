@@ -19,7 +19,7 @@ import {
 
 const n = setNamespace('userMemory/context');
 
-export interface ContextQueryParams extends Partial<ContextListParams> {
+interface ContextQueryParams extends Partial<ContextListParams> {
   page?: number;
 }
 
@@ -61,7 +61,7 @@ export const createContextSlice = (set: Setter, get: () => UserMemoryStore, _api
  * The user-memory context list: one `MemoryQueryList` (shared with the other
  * offset-paged memory lists) behind the slice's long-standing action names.
  */
-export class ContextActionImpl {
+class ContextActionImpl {
   readonly #list: MemoryQueryList<ContextListParams, DisplayContextMemory, ContextListData>;
 
   constructor(set: Setter, get: () => UserMemoryStore, _api?: unknown) {

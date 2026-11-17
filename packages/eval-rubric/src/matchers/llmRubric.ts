@@ -52,7 +52,7 @@ function buildJudgeUserPrompt(
   return parts.join('\n\n');
 }
 
-export interface MatchLLMRubricParams {
+interface MatchLLMRubricParams {
   actual: string;
   context?: MatchContext;
   expected?: string;

@@ -40,7 +40,7 @@ interface PendingRequest {
   timeout?: ReturnType<typeof setTimeout>;
 }
 
-export interface RpcStdioClientOptions {
+interface RpcStdioClientOptions {
   /** CLI args (protocol-specific flags included). */
   args: string[];
   /** How long to wait for a clean exit after `stdin.end()` before escalating. */

@@ -26,7 +26,7 @@ export interface SkillMarkdownMetadataItem {
   value: string;
 }
 
-export interface SkillMarkdownFrontmatterFields {
+interface SkillMarkdownFrontmatterFields {
   description?: string;
   name?: string;
 }
@@ -35,7 +35,7 @@ interface SkillMarkdownMetadataValidationOptions {
   expectedName?: string;
 }
 
-export type SkillMarkdownMetadataError =
+type SkillMarkdownMetadataError =
   | {
       type: 'required';
     }

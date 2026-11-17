@@ -1,22 +1,22 @@
-export const DEFAULT_AUDIO_INPUT_TOKEN_ESTIMATE = 1000;
+const DEFAULT_AUDIO_INPUT_TOKEN_ESTIMATE = 1000;
 
 export type AudioTokenEstimateSource = 'duration' | 'fallback' | 'mixed' | 'none';
 
-export interface AudioInputTokenEstimate {
+interface AudioInputTokenEstimate {
   durationItemCount: number;
   fallbackItemCount: number;
   source: AudioTokenEstimateSource;
   tokens: number;
 }
 
-export interface AudioTokenEstimateOptions {
+interface AudioTokenEstimateOptions {
   /** Conservative per-item fallback used when duration or the model rate is unavailable. */
   fallbackTokensPerItem?: number;
   /** Model-specific audio input token rate. Invalid or non-positive values are ignored. */
   tokensPerSecond?: number;
 }
 
-export const normalizeAudioDurationMs = (value: unknown): number | undefined => {
+const normalizeAudioDurationMs = (value: unknown): number | undefined => {
   if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return undefined;
 
   return Math.ceil(value);
@@ -26,16 +26,6 @@ export const normalizeAudioTokensPerSecond = (value: unknown): number | undefine
   if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return undefined;
 
   return value;
-};
-
-/**
- * Reads only the supported duration field from file metadata. Other metadata must never be
- * materialized onto chat audio items.
- */
-export const readAudioDurationMs = (metadata: unknown): number | undefined => {
-  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return undefined;
-
-  return normalizeAudioDurationMs((metadata as { durationMs?: unknown }).durationMs);
 };
 
 /**

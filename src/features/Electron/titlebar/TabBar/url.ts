@@ -24,7 +24,7 @@ export const normalizeTabUrl = (url: string): string => {
   return `${pathname}?${sorted.toString()}`;
 };
 
-export interface AgentTabContext {
+interface AgentTabContext {
   agentId: string;
   topicId: string | null;
   workspaceSlug?: string;

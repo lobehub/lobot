@@ -25,7 +25,7 @@ interface RepositoryAvatarProps {
  * GitHub mark when the URL names no GitHub owner.
  */
 /** The owner of `https://github.com/owner/name`, `git@github.com:owner/name` or `owner/name`. */
-export const githubOwner = (url?: string) =>
+const githubOwner = (url?: string) =>
   url
     ? /^(?:https:\/\/github\.com\/|git@github\.com:)?([\w.-]+)\/[\w.-]+/.exec(url.trim())?.[1]
     : undefined;

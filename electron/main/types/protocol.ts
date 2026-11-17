@@ -1,7 +1,7 @@
 /**
  * MCP Schema - stdio configuration type
  */
-export interface McpStdioConfig {
+interface McpStdioConfig {
   args?: string[];
   command: string;
   env?: Record<string, string>;
@@ -11,7 +11,7 @@ export interface McpStdioConfig {
 /**
  * MCP Schema - http configuration type
  */
-export interface McpHttpConfig {
+interface McpHttpConfig {
   headers?: Record<string, string>;
   type: 'http';
   url: string;
@@ -20,7 +20,7 @@ export interface McpHttpConfig {
 /**
  * MCP Schema configuration type
  */
-export type McpConfig = McpStdioConfig | McpHttpConfig;
+type McpConfig = McpStdioConfig | McpHttpConfig;
 
 /**
  * MCP Schema object

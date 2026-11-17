@@ -9,7 +9,7 @@ export interface SaveState {
   saveStatus: SaveStatus;
 }
 
-export interface PublicState {}
+interface PublicState {}
 
 export interface State extends PublicState {
   /**

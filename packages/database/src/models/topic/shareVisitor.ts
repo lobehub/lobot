@@ -16,7 +16,7 @@ import type { VisitorRunningOperation, VisitorTopicItem } from './types';
  * would otherwise have a visitor's list silently truncated below what that
  * visitor is actually allowed to create.
  */
-export const VISITOR_TOPIC_PAGE_SIZE = AGENT_SHARE_VISITOR_TOPIC_LIST_LIMIT;
+const VISITOR_TOPIC_PAGE_SIZE = AGENT_SHARE_VISITOR_TOPIC_LIST_LIMIT;
 
 /**
  * Projects `topics.metadata.runningOperation` down to the visitor-safe subset
@@ -24,7 +24,7 @@ export const VISITOR_TOPIC_PAGE_SIZE = AGENT_SHARE_VISITOR_TOPIC_LIST_LIMIT;
  * so a share visitor's topic list can drive `useGatewayReconnect` without ever
  * receiving the rest of `metadata` (creator-only fields — see the module doc).
  */
-export const pickVisitorRunningOperation = (
+const pickVisitorRunningOperation = (
   metadata: ChatTopicMetadata | null | undefined,
 ): VisitorRunningOperation | null => {
   const runningOperation = metadata?.runningOperation;

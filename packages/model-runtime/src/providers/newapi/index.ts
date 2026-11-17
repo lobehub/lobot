@@ -7,7 +7,7 @@ import { detectModelProvider, processMultiProviderModelList } from '../../utils/
 import { responsesAPIModels } from '../openai/modelId';
 import { resolveProviderRouteModels } from '../utils/resolveProviderRouteModels';
 
-export interface NewAPIModelCard {
+interface NewAPIModelCard {
   created: number;
   id: string;
   object: string;
@@ -15,7 +15,7 @@ export interface NewAPIModelCard {
   supported_endpoint_types?: string[];
 }
 
-export interface NewAPIPricing {
+interface NewAPIPricing {
   completion_ratio?: number;
   description?: string;
   enable_groups: string[];
@@ -71,7 +71,7 @@ const fetchPricing = async (
   }
 };
 
-export const params = {
+const params = {
   debug: {
     chatCompletion: () => process.env.DEBUG_NEWAPI_CHAT_COMPLETION === '1',
   },

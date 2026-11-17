@@ -4,7 +4,7 @@
  * overflows the cap at around 2,100 rows. 500 rows keeps the widest tables
  * around ~15.5k parameters per statement.
  */
-export const INSERT_BATCH_SIZE = 500;
+const INSERT_BATCH_SIZE = 500;
 
 export const insertInBatches = async <T>(
   rows: T[],
@@ -15,7 +15,7 @@ export const insertInBatches = async <T>(
   }
 };
 
-export interface SelfReferenceFixup<F extends string> {
+interface SelfReferenceFixup<F extends string> {
   id: string;
   patch: Partial<Record<F, string>> & { updatedAt?: Date };
 }

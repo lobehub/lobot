@@ -33,7 +33,7 @@ import TrashSkeleton from './Trash';
 import type { SettingsTabSkeleton } from './types';
 import UsageSkeleton from './Usage';
 
-export type { SettingsTabSkeleton, SettingsTabSkeletonProps } from './types';
+export type { SettingsTabSkeleton } from './types';
 
 /** One loading shape per settings tab; tabs without an entry use the generic form. */
 export const SETTINGS_TAB_SKELETONS: Partial<Record<SettingsTabs, SettingsTabSkeleton>> = {

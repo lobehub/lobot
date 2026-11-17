@@ -117,7 +117,7 @@ const chipStyles = createStaticStyles(({ css }) => ({
  * conversation prioritizes it) lives in the tooltip so the header stays calm.
  * Renders nothing once the job completes.
  */
-export const AgentMigrationBadge = memo<MigrationTarget>(({ agentId, groupId }) => {
+const AgentMigrationBadge = memo<MigrationTarget>(({ agentId, groupId }) => {
   const { t } = useTranslation('chat');
   const { data } = useAgentTransferJob({ agentId, groupId });
 

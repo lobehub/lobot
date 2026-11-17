@@ -5,13 +5,13 @@ import { trackProductUsageEvent } from '@/libs/analytics/productUsageEvent';
 
 import type { SettingsSearchResult } from './useSettingsSearch';
 
-export const SETTINGS_SEARCH_EVENTS = {
+const SETTINGS_SEARCH_EVENTS = {
   ABANDONED: 'settings_search_abandoned',
   QUERY: 'settings_search_query',
   RESULT_CLICKED: 'settings_search_result_clicked',
 } as const;
 
-export const SETTINGS_SEARCH_SPM = {
+const SETTINGS_SEARCH_SPM = {
   ABANDONED: 'settings.search.abandoned',
   QUERY: 'settings.search.query',
   RESULT_CLICKED: 'settings.search.result_clicked',

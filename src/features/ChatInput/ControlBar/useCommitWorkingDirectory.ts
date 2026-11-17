@@ -16,7 +16,7 @@ import { getElectronStoreState, useElectronStore } from '@/store/electron';
 
 import { stagedProjectDirectoryIdSelector } from './useProjectTopicDirectory';
 
-export interface CommitWorkingDirectoryOptions extends CommitAgentDefaultOptions {
+interface CommitWorkingDirectoryOptions extends CommitAgentDefaultOptions {
   /**
    * Persist against the `local` execution target on this machine, regardless of
    * what the agent's config currently says. For callers that select the local
@@ -27,7 +27,7 @@ export interface CommitWorkingDirectoryOptions extends CommitAgentDefaultOptions
   localTarget?: boolean;
 }
 
-export interface CommitAgentDefaultOptions {
+interface CommitAgentDefaultOptions {
   /**
    * Reject when persisting the shared agent config fails. The store otherwise
    * swallows the error (and rolls the optimistic value back), so a caller that

@@ -27,7 +27,7 @@ type Setter = StoreSetter<EvalStore>;
 const ALL_DATASETS_PARAMS = {} as Record<string, never>;
 
 /** Pre-migration `useFetchAllDatasets` return shape, backed by the scope-wide entry. */
-export interface DatasetListSyncResult extends ReplicaSyncResult {
+interface DatasetListSyncResult extends ReplicaSyncResult {
   /** The list once it has settled (hydrated or fetched), else `undefined`. */
   data: AgentEvalDatasetListItem[] | undefined;
   /** First load in flight with nothing settled yet. */
@@ -37,7 +37,7 @@ export interface DatasetListSyncResult extends ReplicaSyncResult {
 }
 
 /** Pre-migration `useFetchDatasetDetail` return shape, backed by the detail replica. */
-export interface DatasetDetailSyncResult {
+interface DatasetDetailSyncResult {
   /** The dataset once it has settled (hydrated or fetched), else `undefined`. */
   data: AgentEvalDataset | undefined;
   error: unknown;
@@ -50,7 +50,7 @@ export interface DatasetDetailSyncResult {
 export const createDatasetSlice = (set: Setter, get: () => EvalStore, _api?: unknown) =>
   new DatasetActionImpl(set, get, _api);
 
-export class DatasetActionImpl {
+class DatasetActionImpl {
   readonly #detail;
   /** One dataset across both resources: a delete drops it from lists and detail alike. */
   readonly #entity;

@@ -30,7 +30,7 @@ type Setter = StoreSetter<HomeStore>;
 export const createHomeInboxSlice = (set: Setter, get: () => HomeStore, _api?: unknown) =>
   new HomeInboxActionImpl(set, get, _api);
 
-export class HomeInboxActionImpl {
+class HomeInboxActionImpl {
   readonly #dailyBrief;
   readonly #inboxTopics;
 

@@ -24,7 +24,7 @@ import { canUseGatewayProtocolV2 } from './gatewayProtocol';
  * since switched to the browser, which is why `ClientMessageTransport` refills
  * omitted payloads before building a context rather than trusting this gate.
  */
-export const isProjectedConversationRead = (agentId?: string | null): boolean =>
+const isProjectedConversationRead = (agentId?: string | null): boolean =>
   canUseGatewayProtocolV2() &&
   resolveGatewayModeEnabled(getAgentStoreState(), agentId ?? undefined);
 

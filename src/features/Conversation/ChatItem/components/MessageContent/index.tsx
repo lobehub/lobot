@@ -13,7 +13,7 @@ import { useEditConfirmation } from './useEditConfirmation';
 
 export const MSG_CONTENT_CLASSNAME = 'msg_content_flag';
 
-export const styles = createStaticStyles(({ css, cssVar }) => {
+const styles = createStaticStyles(({ css, cssVar }) => {
   return {
     bubble: css`
       padding-block: 8px;
@@ -33,7 +33,7 @@ export const styles = createStaticStyles(({ css, cssVar }) => {
   };
 });
 
-export interface MessageContentProps {
+interface MessageContentProps {
   children?: ReactNode;
   className?: string;
   disabled?: ChatItemProps['disabled'];

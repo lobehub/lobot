@@ -1,9 +1,4 @@
-import type {
-  HeteroSessionDigest,
-  HeteroSessionImportMessage,
-  HeteroSessionImportPayload,
-  HeteroSessionImportToolCall,
-} from '@lobechat/types';
+import type { HeteroSessionImportMessage, HeteroSessionImportToolCall } from '@lobechat/types';
 
 import {
   parseJsonlRecords,
@@ -33,9 +28,9 @@ import {
  *   `isSidechain: true` records; parse them with `{ sidechain: true }`
  */
 
-export const CLAUDE_CODE_IDENTIFIER = 'claude-code';
+const CLAUDE_CODE_IDENTIFIER = 'claude-code';
 
-export interface ParseClaudeCodeOptions {
+interface ParseClaudeCodeOptions {
   /**
    * Override the sessionId stamped into `metadata.heteroSessionId` (defaults
    * to the transcript's own). Subagent transcripts carry the parent session.
@@ -85,26 +80,7 @@ const stripCcPreamble = (text: string): string => {
   return stripped || text;
 };
 
-/** total input+output tokens, counted once per assistant message.id */
-const sumCcTokens = (records: any[]): number => {
-  let total = 0;
-  const seen = new Set<string>();
-  for (const r of records) {
-    if (r.type !== 'assistant' || r.isSidechain) continue;
-    const id = r.message?.id ?? r.uuid;
-    const usage = r.message?.usage;
-    if (!usage || seen.has(id)) continue;
-    seen.add(id);
-    total += (usage.input_tokens ?? 0) + (usage.output_tokens ?? 0);
-  }
-  return total;
-};
-
-/** main-chain conversational records — the ones the endAt fingerprint is taken from */
-const isMainConversational = (r: any) =>
-  !r.isSidechain && (r.type === 'user' || r.type === 'assistant');
-
-export interface ParsedClaudeCodeSession {
+interface ParsedClaudeCodeSession {
   /** total base64 chars of embedded images replaced by placeholders */
   imageBytes: number;
   imageCount: number;
@@ -299,72 +275,5 @@ export const parseClaudeCodeSession = (
     ),
     title: aiTitle ?? truncateTitle(stripCcPreamble(textOfContent(firstUserRec?.message?.content))),
     workingDirectory,
-  };
-};
-
-/**
- * Build the full normalized import payload for a Claude Code session.
- */
-export const buildClaudeCodeImportPayload = (
-  content: string,
-  options?: ParseClaudeCodeOptions,
-): HeteroSessionImportPayload | null => {
-  const parsed = parseClaudeCodeSession(content, options);
-  if (!parsed) return null;
-
-  return {
-    messages: parsed.messages,
-    metadata: {
-      heteroSessionId: parsed.sessionId,
-      ...(parsed.workingDirectory
-        ? { heteroSessionIdByWorkingDirectory: { [parsed.workingDirectory]: parsed.sessionId } }
-        : {}),
-      importedFrom: 'claude-code-local',
-    },
-    sessionId: parsed.sessionId,
-    source: 'claude-code',
-    sourceEndAt: parsed.sourceEndAt,
-    title: parsed.title,
-    topicClientId: `claude-code-session-${parsed.sessionId}`,
-    workingDirectory: parsed.workingDirectory,
-  };
-};
-
-/**
- * Lightweight digest for the import-picker list. Reads meta rows and counts
- * without building the full message payload.
- */
-export const parseClaudeCodeSessionDigest = (
-  content: string,
-  filePath: string,
-): HeteroSessionDigest | null => {
-  const records = parseJsonlRecords(content);
-  if (records.length === 0) return null;
-
-  const sessionId: string | undefined = records.find((r) => r.sessionId)?.sessionId;
-  if (!sessionId) return null;
-
-  const main = records.filter((r) => isMainConversational(r));
-  if (main.length === 0) return null;
-
-  const aiTitle: string | undefined = records.findLast((r) => r.type === 'ai-title')?.aiTitle;
-  const firstUserRec = records.find((r) => r.type === 'user' && !r.isSidechain);
-  const firstPrompt = truncateTitle(
-    stripCcPreamble(textOfContent(firstUserRec?.message?.content)),
-    200,
-  );
-
-  return {
-    endAt: transcriptEndAt(records, isMainConversational),
-    filePath,
-    firstPrompt,
-    gitBranch: records.find((r) => r.gitBranch)?.gitBranch,
-    messageCount: main.length,
-    sessionId,
-    source: 'claude-code',
-    startAt: main[0]?.timestamp,
-    title: aiTitle ?? truncateTitle(firstPrompt),
-    tokens: sumCcTokens(records),
-    workingDirectory: records.find((r) => r.cwd)?.cwd,
   };
 };

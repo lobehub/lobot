@@ -26,7 +26,7 @@ type Runtime = OpenAICompatibleRuntimeContext;
 type Factory = OpenAICompatibleFactoryOptions;
 
 type GenerateObjectReasoningParams = Pick<GenerateObjectPayload, 'reasoning_effort' | 'thinking'>;
-export const getGenerateObjectResponsesReasoningParams = ({
+const getGenerateObjectResponsesReasoningParams = ({
   model,
   reasoning_effort,
   thinking,

@@ -1,6 +1,6 @@
 import { type TabRouter } from './tabRouterManager';
 
-export type HistoryAction = 'POP' | 'PUSH' | 'REPLACE';
+type HistoryAction = 'POP' | 'PUSH' | 'REPLACE';
 
 export interface HistoryState {
   index: number;

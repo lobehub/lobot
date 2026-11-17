@@ -18,7 +18,7 @@ type Setter = StoreSetter<HomeStore>;
 export const createSidebarUISlice = (set: Setter, get: () => HomeStore, _api?: unknown) =>
   new SidebarUIActionImpl(set, get, _api);
 
-export class SidebarUIActionImpl {
+class SidebarUIActionImpl {
   readonly #get: () => HomeStore;
   readonly #set: Setter;
 

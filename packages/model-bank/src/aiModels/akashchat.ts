@@ -98,6 +98,6 @@ const akashChatModels: AIChatModelCard[] = [
     type: 'chat',
   },
 ];
-export const allModels = [...akashChatModels];
+const allModels = [...akashChatModels];
 
 export default allModels;

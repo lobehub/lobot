@@ -125,7 +125,7 @@ class CopilotTokenManager {
 // Singleton token manager
 const tokenManager = new CopilotTokenManager();
 
-export interface LobeGithubCopilotAIParams {
+interface LobeGithubCopilotAIParams {
   apiKey?: string;
   /**
    * Cached bearer token from previous OAuth exchange
@@ -607,5 +607,3 @@ export class LobeGithubCopilotAI implements LobeRuntimeAI {
     }
   }
 }
-
-export default LobeGithubCopilotAI;

@@ -5,7 +5,7 @@ import * as schema from '../../schemas';
 import type { LobeChatDatabase } from '../../type';
 
 /** One raw result in array row mode, as both node-postgres and PGlite return it. */
-export interface ArrayQueryResult {
+interface ArrayQueryResult {
   fields: { name: string }[];
   rows: unknown[][];
 }
@@ -60,7 +60,3 @@ export const createProxyTestDB = (
       )) as LobeChatDatabase['transaction'],
   });
 };
-
-/** Index of a result column by its SQL name, for rewriters that patch one cell. */
-export const columnIndex = (result: ArrayQueryResult, name: string) =>
-  result.fields.findIndex((field) => field.name === name);

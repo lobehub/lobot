@@ -16,8 +16,6 @@ import * as deletion from './deletion';
 import * as membership from './membership';
 import { type ChatGroupContext, groupAgentsOwnership, groupOwnership } from './scope';
 
-export { CHAT_GROUP_OWNERSHIP_STALE, CHAT_GROUP_TRANSFER_HIDDEN_MEMBER } from './constants';
-
 export class ChatGroupModel {
   private userId: string;
   private db: LobeChatDatabase;

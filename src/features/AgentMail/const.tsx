@@ -1,6 +1,6 @@
-import type { AgentAccountKind, AgentAccountPersistedKind } from '@lobechat/types';
+import type { AgentAccountKind } from '@lobechat/types';
 import type { LucideIcon } from 'lucide-react';
-import { KeyRound, Mail, Phone, Wallet } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 /**
  * One address channel the mail page can open.
@@ -10,7 +10,7 @@ import { KeyRound, Mail, Phone, Wallet } from 'lucide-react';
  * may ask for a specific handle (a mailbox local part, for example); a channel
  * whose handles the provider mints on its own leaves it off.
  */
-export interface IdentityChannel {
+interface IdentityChannel {
   /** What follows the chosen prefix in an address on this channel. */
   addressSuffix: string;
   descKey: 'identity.mail.desc';
@@ -32,33 +32,3 @@ export const IDENTITY_CHANNELS: IdentityChannel[] = [
     titleKey: 'identity.mail.title',
   },
 ];
-
-/**
- * Whether an account belongs to a channel. A channel is the (kind, provider)
- * pair, so a mailbox mounted through another provider (say `user`) is not the
- * Agent Mail channel and must not hide its provisioning card.
- */
-export const isChannelAccount = (
-  account: { kind: AgentAccountPersistedKind; provider: string },
-  channel: Pick<IdentityChannel, 'kind' | 'provider'>,
-): boolean => account.kind === channel.kind && account.provider === channel.provider;
-
-/**
- * Icon for an account that belongs to no built-in channel (a mounted address).
- *
- * Keyed by every *persisted* kind, not just the creatable ones: an unfiltered
- * list still shows the retired `phone` accounts so they can be released, and a
- * missing entry would hand `undefined` to `Icon`'s required prop.
- */
-export const KIND_ICONS: Record<AgentAccountPersistedKind, LucideIcon> = {
-  mail: Mail,
-  phone: Phone,
-  service: KeyRound,
-  wallet: Wallet,
-};
-
-/** Accounts no built-in channel claims — mounted ones, or providers this tab does not offer. */
-export const isUnchanneledAccount = (account: {
-  kind: AgentAccountPersistedKind;
-  provider: string;
-}): boolean => !IDENTITY_CHANNELS.some((channel) => isChannelAccount(account, channel));

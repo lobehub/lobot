@@ -29,6 +29,4 @@ const ExportLayout = ({ actions, children, meta, overlay, toolbar }: ExportLayou
   </Flexbox>
 );
 
-export const ToolbarDivider = () => <span aria-hidden className={styles.toolbarDivider} />;
-
 export default ExportLayout;

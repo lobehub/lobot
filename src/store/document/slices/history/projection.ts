@@ -5,12 +5,12 @@ import type {
 } from '@/server/routers/lambda/_schema/documentHistory';
 
 /** How many documents keep a persisted version list (`persist.maxEntries`). */
-export const MAX_PERSISTED_HISTORY_LISTS = 20;
+const MAX_PERSISTED_HISTORY_LISTS = 20;
 /**
  * How many version comparisons survive a reload. Each row holds two full
  * editor states, so the set is kept small.
  */
-export const MAX_PERSISTED_HISTORY_COMPARES = 10;
+const MAX_PERSISTED_HISTORY_COMPARES = 10;
 
 export interface DocumentHistoryCompareParams {
   documentId: string;

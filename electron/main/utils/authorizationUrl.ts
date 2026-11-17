@@ -7,7 +7,7 @@ import { rename, writeFile } from 'node:fs/promises';
  */
 export const AUTH_URL_FILE_ENV = 'LOBE_DESKTOP_AUTH_URL_FILE';
 
-export interface OpenAuthorizationUrlOptions {
+interface OpenAuthorizationUrlOptions {
   env?: NodeJS.ProcessEnv;
   isDev: boolean;
   move?: typeof rename;

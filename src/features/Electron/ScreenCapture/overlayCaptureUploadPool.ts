@@ -1,6 +1,6 @@
 import type { UploadFileItem } from '@/types/files/upload';
 
-export type OverlayCaptureUploadResult = UploadFileItem | null;
+type OverlayCaptureUploadResult = UploadFileItem | null;
 
 interface Entry {
   promise: Promise<OverlayCaptureUploadResult>;

@@ -1,4 +1,4 @@
-export type ChannelSettingsTab = 'advanced' | 'general' | 'members' | 'reply';
+type ChannelSettingsTab = 'advanced' | 'general' | 'members' | 'reply';
 
 /** An archived Channel takes no writes until it is reopened, so its replies cannot be edited. */
 export const channelSettingsTabs = (archived: boolean): ChannelSettingsTab[] =>

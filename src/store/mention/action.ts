@@ -6,7 +6,7 @@ type Setter = StoreSetter<MentionStore>;
 export const createMentionSlice = (set: Setter, get: () => MentionStore, _api?: unknown) =>
   new MentionActionImpl(set, get, _api);
 
-export class MentionActionImpl {
+class MentionActionImpl {
   readonly #set: Setter;
 
   constructor(set: Setter, get: () => MentionStore, _api?: unknown) {

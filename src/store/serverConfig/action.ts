@@ -23,7 +23,7 @@ export const createServerConfigSlice = (
   _api?: unknown,
 ) => new ServerConfigActionImpl(set, get, _api);
 
-export class ServerConfigActionImpl {
+class ServerConfigActionImpl {
   readonly #set: Setter;
 
   constructor(set: Setter, get: () => ServerConfigStore, _api?: unknown) {

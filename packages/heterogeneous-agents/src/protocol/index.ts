@@ -1,9 +1,4 @@
-export {
-  buildClaudeCodeEntrypointEnv,
-  CLAUDE_CODE_ENTRYPOINT_ENV,
-  DEFAULT_CLAUDE_CODE_ENTRYPOINT,
-  normalizeClaudeCodeEntrypoint,
-} from '../claudeCodeEntrypoint';
+export { buildClaudeCodeEntrypointEnv } from '../claudeCodeEntrypoint';
 /**
  * Wire contract between hetero dispatch sites and the executing
  * `lh hetero exec` CLI. Pure and isomorphic — no fs, no process, no node-only
@@ -19,18 +14,16 @@ export type {
 } from './cancellation';
 export { buildHeteroExecStdinPayload, type HeteroExecImageRef } from './execStdinPayload';
 export {
-  LOBEHUB_CLI_GUIDE_CONTEXT,
   lobeHubCliGuide,
   lobeHubCliGuideBlock,
   lobeHubCliSkillBody,
   lobeHubCliSkillDescription,
 } from './lobeHubCliGuide';
-export { INHERITED_RUN_IDENTITY_ENV_KEYS, stripInheritedRunIdentity } from './runIdentityEnv';
+export { stripInheritedRunIdentity } from './runIdentityEnv';
 export const HETERO_EXEC_INHERIT_PROCESS_GROUP_ENV = 'LOBEHUB_HETERO_EXEC_INHERIT_PROCESS_GROUP';
 export {
   buildHeterogeneousPrompt,
   type HeterogeneousPromptContextProvider,
-  HeterogeneousPromptEngine,
   type HeterogeneousPromptEngineInput,
   type HeterogeneousPromptImage,
 } from './promptEngine';

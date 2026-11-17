@@ -1,4 +1,4 @@
-export interface StaticModelOption {
+interface StaticModelOption {
   label: string;
   value: string;
 }

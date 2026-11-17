@@ -81,7 +81,7 @@ const parentDirectory = (filePath: string): string => {
   return fromSlashPath(isUncPath && directory === '' ? '//' : directory, filePath);
 };
 
-export const isPathInsideWorkspace = (targetPath: string, workingDirectory: string): boolean => {
+const isPathInsideWorkspace = (targetPath: string, workingDirectory: string): boolean => {
   const target = canonicalizeWorkspacePath(targetPath);
   const root = canonicalizeWorkspacePath(workingDirectory);
   return target === root || target.startsWith(`${root}/`);
@@ -182,7 +182,7 @@ export const resolveLocalResourceHref = ({
   return { absolutePath: resolvedPath, href, kind: 'resolved' };
 };
 
-export const createWorkspaceHtmlArtifactIdentifier = (
+const createWorkspaceHtmlArtifactIdentifier = (
   relativePath: string,
   digestPath = relativePath,
 ): string => {

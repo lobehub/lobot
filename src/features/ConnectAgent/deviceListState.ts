@@ -1,6 +1,6 @@
 import type { DeviceListItem } from '@lobechat/types';
 
-export type DeviceListState = 'empty' | 'error' | 'loading' | 'ready';
+type DeviceListState = 'empty' | 'error' | 'loading' | 'ready';
 
 interface GetDeviceListStateOptions {
   /** The last device-list request failed. */

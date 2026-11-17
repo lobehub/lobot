@@ -53,7 +53,7 @@ const withEmoji = (metadata: LobeDocument['metadata'], emoji: string | undefined
     ),
   );
 
-export class PageActionImpl {
+class PageActionImpl {
   readonly #get: () => PageState;
   readonly #private: PagePrivateAction;
   readonly #set: Setter;

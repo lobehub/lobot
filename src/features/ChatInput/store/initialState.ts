@@ -12,7 +12,7 @@ export type SendButtonHandler = (params: {
   getMarkdownContent: () => string;
 }) => Promise<void> | void;
 
-export type VoiceMessageSendHandler = (recording: VoiceMessageRecording) => boolean;
+type VoiceMessageSendHandler = (recording: VoiceMessageRecording) => boolean;
 
 export interface SendButtonProps {
   disabled?: boolean;
@@ -34,9 +34,9 @@ export const initialSendButtonState: SendButtonProps = {
   onStop: () => {},
 };
 
-export type SlashPlacement = 'top' | 'bottom';
+type SlashPlacement = 'top' | 'bottom';
 
-export interface ContextWindowMessage {
+interface ContextWindowMessage {
   content: string;
 }
 

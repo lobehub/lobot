@@ -30,6 +30,6 @@ const longcatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...longcatModels];
+const allModels = [...longcatModels];
 
 export default allModels;

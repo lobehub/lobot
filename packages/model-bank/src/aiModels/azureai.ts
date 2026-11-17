@@ -295,6 +295,6 @@ const azureChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...azureChatModels];
+const allModels = [...azureChatModels];
 
 export default allModels;

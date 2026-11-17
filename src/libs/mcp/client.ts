@@ -170,7 +170,7 @@ async function preCheckStdioCommand(params: {
   });
 }
 
-export interface MCPClientOptions {
+interface MCPClientOptions {
   /**
    * Advertise MCP Apps (SEP-1865) during `initialize`, so servers expose their
    * interactive views. Off: the client announces itself as it did before MCP

@@ -60,7 +60,7 @@ const TierGroup = ({
 );
 
 /** The image-generation form below the model cards: one default-count slider row. */
-export const ImageSettingsSkeleton = () => {
+const ImageSettingsSkeleton = () => {
   const text = useSkeletonText('setting');
 
   return (
@@ -81,7 +81,7 @@ export const ImageSettingsSkeleton = () => {
  * The service-model tab: one grouped form of model cards 16px apart (main and
  * flash carry a folded 「高级」 line), then the image form 36px below.
  */
-export const ServiceModelFormSkeleton = () => {
+const ServiceModelFormSkeleton = () => {
   const text = useSkeletonText('setting');
   const enableChannels = useServerConfigStore(serverConfigSelectors.enableChannels);
 

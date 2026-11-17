@@ -3,7 +3,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 /** `3m` · `2.1h` · `1.4d` — the coarse grain a list row can carry. */
-export const formatGoalDuration = (milliseconds: number) => {
+const formatGoalDuration = (milliseconds: number) => {
   if (!milliseconds || milliseconds <= 0) return '—';
   const minutes = milliseconds / 60_000;
   if (minutes < 60) return `${Math.max(1, Math.round(minutes))}m`;
@@ -66,7 +66,7 @@ const styles = createStaticStyles(({ css }) => ({
   `,
 }));
 
-export interface GoalProgressProps {
+interface GoalProgressProps {
   pendingDecisions: number;
   taskDone: number;
   taskTotal: number;
@@ -78,7 +78,7 @@ export interface GoalProgressProps {
  * The list row's roll-up: how far the graph got, whether anything is blocked
  * on the user right now, and how long it ran and what it cost.
  */
-export const GoalProgress = memo<GoalProgressProps>(
+const GoalProgress = memo<GoalProgressProps>(
   ({ pendingDecisions, totalRunCost, totalRunDuration, taskDone, taskTotal }) => {
     const { t } = useTranslation('chat');
     const progress = taskTotal > 0 ? Math.round((taskDone / taskTotal) * 100) : 0;

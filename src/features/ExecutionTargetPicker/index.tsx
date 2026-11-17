@@ -112,7 +112,7 @@ const styles = createStaticStyles(({ css }) => ({
   `,
 }));
 
-export const SHARED_EXECUTION_TARGETS = ['auto', 'device', 'none', 'sandbox'] as const;
+const SHARED_EXECUTION_TARGETS = ['auto', 'device', 'none', 'sandbox'] as const;
 
 export const isSharedExecutionTarget = (
   target: DeviceExecutionTarget | undefined,
@@ -136,7 +136,7 @@ export const parseExecutionTargetValue = (
   return ['auto', 'local', 'none', 'sandbox'].includes(target) ? { target } : undefined;
 };
 
-export interface ExecutionTargetSelection {
+interface ExecutionTargetSelection {
   deviceId?: string;
   target: DeviceExecutionTarget;
 }
@@ -286,13 +286,6 @@ export const ExecutionTargetDeviceStatus = memo<ExecutionTargetDeviceStatusProps
 
 ExecutionTargetDeviceStatus.displayName = 'ExecutionTargetPicker.ExecutionTargetDeviceStatus';
 
-/** Select slots for execution-environment pickers that render {@link ExecutionTargetLabel}. */
-export const executionTargetSelectClassNames = {
-  item: styles.selectItem,
-  popup: styles.selectPopup,
-  value: styles.selectValue,
-};
-
 interface ExecutionTargetLabelProps {
   compact?: boolean;
   description: string;
@@ -304,7 +297,7 @@ interface ExecutionTargetLabelProps {
   unknownLabel: string;
 }
 
-export const ExecutionTargetLabel = memo<ExecutionTargetLabelProps>(
+const ExecutionTargetLabel = memo<ExecutionTargetLabelProps>(
   ({ compact, description, device, label, offlineLabel, onlineLabel, target, unknownLabel }) => {
     const icon = <ExecutionTargetIcon devicePlatform={device?.platform} target={target} />;
     const secondary = device ? (

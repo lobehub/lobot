@@ -3,7 +3,7 @@ import { ModelProvider } from 'model-bank';
 
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 
-export interface XinferenceModelCard {
+interface XinferenceModelCard {
   context_length: number;
   id: string;
   model_ability: string[];

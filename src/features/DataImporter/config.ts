@@ -1,6 +1,6 @@
 import { type ImportPgDataStructure } from '@/types/export';
 
-export type ConfigFileParseResult =
+type ConfigFileParseResult =
   { data: ImportPgDataStructure; success: true } | { error: string; success: false };
 
 export const parseConfigFile = async (file: File): Promise<ConfigFileParseResult> => {

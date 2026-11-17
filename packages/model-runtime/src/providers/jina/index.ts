@@ -4,11 +4,11 @@ import { ModelProvider } from 'model-bank';
 import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible';
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 
-export interface JinaModelCard {
+interface JinaModelCard {
   id: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://deepsearch.jina.ai/v1',
   debug: {
     chatCompletion: () => process.env.DEBUG_JINA_CHAT_COMPLETION === '1',

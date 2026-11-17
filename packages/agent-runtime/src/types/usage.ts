@@ -3,7 +3,7 @@ import type { ModelUsage } from '@lobechat/types';
 /**
  * Token usage tracking for different types of operations
  */
-export interface TokenUsage {
+interface TokenUsage {
   /** Input tokens consumed */
   input: number;
   /** Output tokens generated */
@@ -122,16 +122,4 @@ export interface CostLimit {
   maxTotalCost: number;
   /** Action to take when limit is exceeded */
   onExceeded: 'stop' | 'warn' | 'interrupt';
-}
-
-/**
- * Cost calculation context passed to Agent
- */
-export interface CostCalculationContext {
-  /** Cost limits configuration */
-  costLimit?: CostLimit;
-  /** Previous cost calculation (if any) */
-  previousCost?: Cost;
-  /** Current usage statistics */
-  usage: Usage;
 }

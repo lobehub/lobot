@@ -6,19 +6,19 @@ import {
 
 import { lambdaClient } from '@/libs/trpc/client';
 
-export interface MemoryExtractionTask {
+interface MemoryExtractionTask {
   error?: IAsyncTaskError | null;
   id: string;
   metadata: UserMemoryExtractionMetadata;
   status: AsyncTaskStatus;
 }
 
-export interface RequestMemoryExtractionParams {
+interface RequestMemoryExtractionParams {
   fromDate?: Date;
   toDate?: Date;
 }
 
-export interface RequestMemoryExtractionResult extends MemoryExtractionTask {
+interface RequestMemoryExtractionResult extends MemoryExtractionTask {
   deduped: boolean;
 }
 

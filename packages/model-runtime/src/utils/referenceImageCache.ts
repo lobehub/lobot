@@ -1,5 +1,6 @@
-import { imageUrlToBase64 } from './imageToBase64';
 import type { Buffer } from 'buffer.js';
+
+import { imageUrlToBase64 } from './imageToBase64';
 
 /**
  * Short-lived in-process cache for downloaded image/video generation reference
@@ -24,7 +25,7 @@ interface CacheEntry {
   size: number;
 }
 
-export interface DownloadCacheOptions {
+interface DownloadCacheOptions {
   /** Values larger than this are returned but not kept. */
   maxEntryBytes: number;
   /** Total bytes kept across settled entries; least recently used entries are evicted first. */
@@ -123,7 +124,7 @@ const referenceImageCache = new DownloadCache({
   ttlMs: 60 * 1000,
 });
 
-export interface ReferenceImageBytes {
+interface ReferenceImageBytes {
   buffer: Buffer;
   mimeType: string;
 }

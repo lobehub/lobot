@@ -3,9 +3,9 @@ import type { AssistantContentBlock } from '@lobechat/types';
 import { parse } from '../parse';
 import type { FlatMessage, Message } from '../types';
 
-export type ConversationTailKind = 'group' | 'single';
+type ConversationTailKind = 'group' | 'single';
 
-export interface ConversationTail {
+interface ConversationTail {
   kind: ConversationTailKind;
   message: FlatMessage;
 }

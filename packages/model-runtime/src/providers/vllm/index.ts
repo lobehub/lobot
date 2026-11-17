@@ -3,7 +3,7 @@ import { ModelProvider } from 'model-bank';
 
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 
-export interface VLLMModelCard {
+interface VLLMModelCard {
   id: string;
 }
 

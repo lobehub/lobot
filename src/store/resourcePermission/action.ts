@@ -31,12 +31,12 @@ type Setter = StoreSetter<ResourcePermissionState>;
  * Failures that are the server's answer rather than a transport fault: the
  * resource went private, left the workspace, or the caller lost access.
  */
-export const isAccessDenialError = (error: unknown): boolean =>
+const isAccessDenialError = (error: unknown): boolean =>
   isTrpcErrorCode(error, 'NOT_FOUND') ||
   isTrpcErrorCode(error, 'FORBIDDEN') ||
   isTrpcErrorCode(error, 'UNAUTHORIZED');
 
-export class ResourcePermissionActionImpl {
+class ResourcePermissionActionImpl {
   readonly #access;
   readonly #collaborators;
   readonly #set: Setter;

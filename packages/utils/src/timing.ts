@@ -2,16 +2,16 @@ import debug from 'debug';
 
 import { isRecord, pickString } from './object';
 
-export interface TimingContext {
+interface TimingContext {
   requestId: string;
   startedAt: number;
 }
 
-export interface TimingMetadata {
+interface TimingMetadata {
   [key: string]: unknown;
 }
 
-export interface TimingParams {
+interface TimingParams {
   timingRequestId?: string;
   timingStartedAt?: number;
 }
@@ -22,7 +22,7 @@ export interface TimingSink {
 
 export type TimingLogger = (formatter: string, ...args: unknown[]) => void;
 
-export const createDebugTimingLogger = (namespace: string): TimingLogger => debug(namespace);
+const createDebugTimingLogger = (namespace: string): TimingLogger => debug(namespace);
 
 export const getDurationMs = (startedAt: number) => Date.now() - startedAt;
 
@@ -47,7 +47,7 @@ const DURATION_UNITS = [
   { ms: 1000, suffix: 's' },
 ] as const;
 
-export interface FormatDurationOptions {
+interface FormatDurationOptions {
   /**
    * Smallest unit to print. By default seconds are shown below one hour and
    * dropped above it, where they only add noise.
@@ -88,11 +88,7 @@ export const formatDuration = (ms: number, options: FormatDurationOptions = {}):
   return parts.map((part) => `${part.text}${part.suffix}`).join(' ');
 };
 
-export const createTimingRequestId = () =>
-  globalThis.crypto?.randomUUID?.() ??
-  `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
-
-export const getTimingErrorMetadata = (error: unknown): TimingMetadata => {
+const getTimingErrorMetadata = (error: unknown): TimingMetadata => {
   if (error instanceof Error) {
     return {
       errorMessage: error.message,
@@ -110,12 +106,12 @@ export const getTimingErrorMetadata = (error: unknown): TimingMetadata => {
   return { errorMessage: String(error) };
 };
 
-export const toTimingContext = (params?: TimingParams): TimingContext | undefined =>
+const toTimingContext = (params?: TimingParams): TimingContext | undefined =>
   params?.timingRequestId
     ? { requestId: params.timingRequestId, startedAt: params.timingStartedAt ?? Date.now() }
     : undefined;
 
-export const logTiming = (
+const logTiming = (
   logger: TimingLogger,
   context: TimingContext | undefined,
   event: string,
@@ -165,7 +161,7 @@ export const markTimingSinkStageDone = (
   });
 };
 
-export const runTimedStage = async <T>(
+const runTimedStage = async <T>(
   logger: TimingLogger,
   context: TimingContext | undefined,
   stage: string,
@@ -226,7 +222,7 @@ export const runTimedSinkStage = async <T>(
   }
 };
 
-export const createPrefixedTimingContext = (
+const createPrefixedTimingContext = (
   logger: TimingLogger,
   context: TimingContext | undefined,
   prefix: string,

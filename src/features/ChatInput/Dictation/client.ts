@@ -23,12 +23,12 @@ import { clearPerformanceMarks, getMonotonicNow, markPerformance, reportTiming }
 import { DictationTranscript } from './transcript';
 
 export type { RealtimeAsrWebSocket } from './connection';
-export type { RealtimeDictationTiming, RealtimeDictationTimingStage } from './timing';
+export type { RealtimeDictationTiming } from './timing';
 export { REALTIME_DICTATION_PERFORMANCE_MARKS } from './timing';
 
-export type DictationCancelReason = 'audio_interruption' | 'network_change' | 'user_cancelled';
+type DictationCancelReason = 'audio_interruption' | 'network_change' | 'user_cancelled';
 
-export interface RealtimeDictationDependencies {
+interface RealtimeDictationDependencies {
   createCapture: (stream: MediaStream) => Promise<RealtimeAudioCapture>;
   createSession: (signal: AbortSignal) => Promise<RealtimeAsrSessionResponse>;
   createWebSocket: (url: string) => RealtimeAsrWebSocket;

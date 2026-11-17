@@ -1,4 +1,4 @@
-import type { AgentSignalSource, BaseSource } from '../base/types';
+import type { BaseSource } from '../base/types';
 import type { AgentSignalSourceEvent } from './sourceEvent';
 
 /** AgentSignal source type identifiers shared by browser producers and server executors. */
@@ -277,126 +277,44 @@ export interface AgentSignalSourcePayloadMap {
 }
 
 /** AgentSignal source variant with source-type-specific payload typing. */
-export type AgentSignalSourceVariant<
-  TSourceType extends AgentSignalSourceType = AgentSignalSourceType,
-> = BaseSource & {
-  payload: AgentSignalSourcePayloadMap[TSourceType];
-  sourceType: TSourceType;
-};
+type AgentSignalSourceVariant<TSourceType extends AgentSignalSourceType = AgentSignalSourceType> =
+  BaseSource & {
+    payload: AgentSignalSourcePayloadMap[TSourceType];
+    sourceType: TSourceType;
+  };
 
 /** Union of every known AgentSignal source variant. */
-export type AgentSignalSourceVariants = {
+type AgentSignalSourceVariants = {
   [TSourceType in AgentSignalSourceType]: AgentSignalSourceVariant<TSourceType>;
 }[AgentSignalSourceType];
 
 /** User-message source variant. */
-export type SourceAgentUserMessage = AgentSignalSourceVariant<'agent.user.message'>;
-
-/** Agent execution-completed source variant. */
-export type SourceAgentExecutionCompleted = AgentSignalSourceVariant<'agent.execution.completed'>;
-
-/** Agent execution-failed source variant. */
-export type SourceAgentExecutionFailed = AgentSignalSourceVariant<'agent.execution.failed'>;
-
-/** Agent nightly-review requested source variant. */
-export type SourceAgentNightlyReviewRequested =
-  AgentSignalSourceVariant<'agent.nightly_review.requested'>;
-
-/** Agent self-reflection requested source variant. */
-export type SourceAgentSelfReflectionRequested =
-  AgentSignalSourceVariant<'agent.self_reflection.requested'>;
-
-/** Agent-declared self-feedback intent source variant. */
-export type SourceAgentSelfFeedbackIntentDeclared =
-  AgentSignalSourceVariant<'agent.self_feedback_intent.declared'>;
-
-/** Runtime before-step source variant. */
-export type SourceRuntimeBeforeStep = AgentSignalSourceVariant<'runtime.before_step'>;
-
-/** Runtime after-step source variant. */
-export type SourceRuntimeAfterStep = AgentSignalSourceVariant<'runtime.after_step'>;
-
-/** Bot-message merged source variant. */
-export type SourceBotMessageMerged = AgentSignalSourceVariant<'bot.message.merged'>;
-
-/** Client gateway stream-start source variant. */
-export type SourceClientGatewayStreamStart =
-  AgentSignalSourceVariant<'client.gateway.stream_start'>;
-
-/** Client gateway step-complete source variant. */
-export type SourceClientGatewayStepComplete =
-  AgentSignalSourceVariant<'client.gateway.step_complete'>;
-
-/** Client gateway runtime-end source variant. */
-export type SourceClientGatewayRuntimeEnd = AgentSignalSourceVariant<'client.gateway.runtime_end'>;
-
-/** Client gateway error source variant. */
-export type SourceClientGatewayError = AgentSignalSourceVariant<'client.gateway.error'>;
+type SourceAgentUserMessage = AgentSignalSourceVariant<'agent.user.message'>;
 
 /** Client runtime-start source variant. */
-export type SourceClientRuntimeStart = AgentSignalSourceVariant<'client.runtime.start'>;
-
-/** Client runtime-complete source variant. */
-export type SourceClientRuntimeComplete = AgentSignalSourceVariant<'client.runtime.complete'>;
-
-/** Tool outcome-completed source variant. */
-export type SourceToolOutcomeCompleted = AgentSignalSourceVariant<'tool.outcome.completed'>;
-
-/** Tool outcome-failed source variant. */
-export type SourceToolOutcomeFailed = AgentSignalSourceVariant<'tool.outcome.failed'>;
+type SourceClientRuntimeStart = AgentSignalSourceVariant<'client.runtime.start'>;
 
 /** Normalized client runtime-start source event. */
-export type SourceEventClientRuntimeStart = AgentSignalSourceEvent<'client.runtime.start'>;
+type SourceEventClientRuntimeStart = AgentSignalSourceEvent<'client.runtime.start'>;
 
 /** Normalized agent user-message source event. */
-export type SourceEventAgentUserMessage = AgentSignalSourceEvent<'agent.user.message'>;
+type SourceEventAgentUserMessage = AgentSignalSourceEvent<'agent.user.message'>;
 
 /** Normalized agent nightly-review requested source event. */
-export type SourceEventAgentNightlyReviewRequested =
+type SourceEventAgentNightlyReviewRequested =
   AgentSignalSourceEvent<'agent.nightly_review.requested'>;
 
 /** Normalized agent self-reflection requested source event. */
-export type SourceEventAgentSelfReflectionRequested =
+type SourceEventAgentSelfReflectionRequested =
   AgentSignalSourceEvent<'agent.self_reflection.requested'>;
 
 /** Normalized agent-declared self-feedback intent source event. */
-export type SourceEventAgentSelfFeedbackIntentDeclared =
+type SourceEventAgentSelfFeedbackIntentDeclared =
   AgentSignalSourceEvent<'agent.self_feedback_intent.declared'>;
 
 /** Normalized tool outcome source event. */
-export type SourceEventToolOutcome =
+type SourceEventToolOutcome =
   AgentSignalSourceEvent<'tool.outcome.completed'> | AgentSignalSourceEvent<'tool.outcome.failed'>;
-
-/** Source types accepted by browser producers through the authenticated edge. */
-export const AGENT_SIGNAL_CLIENT_SOURCE_TYPES = [
-  AGENT_SIGNAL_SOURCE_TYPES.clientGatewayError,
-  AGENT_SIGNAL_SOURCE_TYPES.clientGatewayRuntimeEnd,
-  AGENT_SIGNAL_SOURCE_TYPES.clientGatewayStepComplete,
-  AGENT_SIGNAL_SOURCE_TYPES.clientGatewayStreamStart,
-  AGENT_SIGNAL_SOURCE_TYPES.clientRuntimeComplete,
-  AGENT_SIGNAL_SOURCE_TYPES.clientRuntimeStart,
-] as const satisfies readonly Extract<AgentSignalSourceType, `client.${string}`>[];
-
-/**
- * Narrows a generic source node to the shared AgentSignal source catalog.
- *
- * Use when:
- * - Runtime middleware receives generic source nodes
- * - Callers need source-type-specific payload typing after validation
- *
- * Expects:
- * - `source.sourceType` is a string-like type identifier
- *
- * Returns:
- * - Whether the source belongs to the built-in AgentSignal source catalog
- */
-export const isAgentSignalKnownSource = (
-  source: AgentSignalSource,
-): source is AgentSignalSourceVariants => {
-  return Object.values(AGENT_SIGNAL_SOURCE_TYPES).includes(
-    source.sourceType as AgentSignalSourceType,
-  );
-};
 
 /**
  * Narrows a source event or source variant to `client.runtime.start`.

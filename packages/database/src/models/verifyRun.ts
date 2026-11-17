@@ -28,7 +28,7 @@ import { VerifyCriterionModel } from './verifyCriterion';
 /** What auto-repair decided for a failed round (`verify_runs.metadata.autoRepair`). */
 export type VerifyAutoRepairOutcome = 'declined' | 'spawned';
 
-export interface VerifyRunState {
+interface VerifyRunState {
   /** `declined` makes a failed round with `auto_repair` checks final. */
   verifyAutoRepair: VerifyAutoRepairOutcome | null;
   verifyPlan: VerifyCheckItem[] | null;

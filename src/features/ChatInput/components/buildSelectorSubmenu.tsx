@@ -14,7 +14,7 @@ const styles = stylex.create({
 
 const checkIcon = <Icon icon={CheckIcon} size={16} />;
 
-export interface SelectorOption<T extends string> {
+interface SelectorOption<T extends string> {
   desc?: string;
   disabled?: boolean;
   label: string;
@@ -25,7 +25,7 @@ export interface SelectorOption<T extends string> {
  * `renderDropdownMenuItems` renders `extra` on submenu rows too, but @lobehub/ui
  * only declares it on leaf items — widen it so the current-value column stays typed.
  */
-export type SelectorSubmenuItem = DropdownItem & { extra?: ReactNode };
+type SelectorSubmenuItem = DropdownItem & { extra?: ReactNode };
 
 export const buildSelectorSubmenu = <T extends string>({
   current,

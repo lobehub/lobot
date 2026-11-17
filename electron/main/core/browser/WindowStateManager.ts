@@ -1,5 +1,5 @@
-import type { BrowserWindow} from 'electron';
 import type Electron from 'electron';
+import type { BrowserWindow } from 'electron';
 import { screen } from 'electron';
 
 import { createLogger } from '@/utils/logger';
@@ -8,14 +8,14 @@ import type { App } from '../App';
 
 const logger = createLogger('core:WindowStateManager');
 
-export interface WindowState {
+interface WindowState {
   height?: number;
   width?: number;
   x?: number;
   y?: number;
 }
 
-export interface WindowStateManagerOptions {
+interface WindowStateManagerOptions {
   identifier: string;
   keepAlive?: boolean;
 }

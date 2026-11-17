@@ -10,7 +10,7 @@ import type { DeviceMetricPoint, DeviceMetricSeries } from '@lobechat/types';
  * - `pending` — the most recent buckets, whose samples may simply not have
  *   been uploaded yet.
  */
-export type HealthSlotStatus = 'online' | 'offline' | 'missing' | 'pending';
+type HealthSlotStatus = 'online' | 'offline' | 'missing' | 'pending';
 
 /** CPU / memory / load, each as a percentage (load relative to the core count). */
 export interface HealthUsage {
@@ -33,7 +33,7 @@ export interface HealthSlot extends HealthUsage {
   status: HealthSlotStatus;
 }
 
-export interface HealthTimeline {
+interface HealthTimeline {
   /** Newest reading of each metric, for the chart headers and the row preview. */
   latest: LatestUsage | null;
   /** Upper bound for the load chart — at least 100%, so an overloaded machine still fits. */
@@ -94,7 +94,7 @@ export const buildHealthTimeline = (series: DeviceMetricSeries): HealthTimeline 
   };
 };
 
-export interface HealthStripBlock {
+interface HealthStripBlock {
   end: number;
   /** Highest CPU / memory / load inside the block — what its color reflects. */
   peak: HealthUsage;

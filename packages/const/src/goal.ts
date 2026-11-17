@@ -39,18 +39,6 @@ export const GOAL_TITLE_MAX_LENGTH = 255;
  */
 export const goalSubjectTypes = ['task', 'topic', 'standalone'] as const;
 
-export type GoalSubjectType = (typeof goalSubjectTypes)[number];
-
-/**
- * `actorId` the coordinator stamps on the graph transitions it makes itself.
- *
- * Goal events used to record every transition as the goal's owner, because the
- * model falls back to its `userId`. That made the coordinator's own moves
- * indistinguishable from the user's, and "what did the system decide on its own"
- * unanswerable — a stable id for the one non-human actor is what separates them.
- */
-export const GOAL_COORDINATOR_ACTOR_ID = 'goal-coordinator';
-
 /**
  * Fixed title of the terminal Goal-acceptance Work the coordinator creates
  * once every other Work is terminal. Stored in English as data; clients
@@ -82,12 +70,6 @@ export const GOAL_MACHINE_GATE_TITLE = 'Fix the setup, then retry';
  */
 export const GOAL_MANAGER_QUESTION_TITLE = 'Answer the main Agent';
 
-/**
- * `briefs.trigger` of every brief a goal raises — its decision gates, its
- * sign-off and its progress reports. `metadata.goal` says which one it is.
- */
-export const GOAL_BRIEF_TRIGGER = 'goal';
-
 /** Option ids every clarification decision carries besides the planner's own choices. */
 export const GOAL_CLARIFICATION_OPTION = {
   /** Answer in the free-text note; the note is the answer. */
@@ -95,95 +77,6 @@ export const GOAL_CLARIFICATION_OPTION = {
   /** Proceed on the assumption the planner stated for this question. */
   assume: 'assume',
 } as const;
-
-/**
- * Task error strings the Goal coordinator matches on to route a paused Task.
- *
- * These are a contract between whoever pauses a Task and the coordinator that
- * reads it back, not user-facing copy. A string with no branch here falls
- * through to the human decision gate, so an unmatched infrastructure failure
- * stops a long-horizon goal until a person clicks retry.
- */
-export const LEASE_EXPIRED_ERROR = 'Goal Task operation lease expired.';
-/**
- * Prefix of the error the runtime writes when the gateway's inactivity watchdog
- * abandons a run whose worker went silent (a device that slept or restarted, a
- * CLI that died). The run is lost exactly the way an expired lease is, so the
- * coordinator recovers it the same way instead of asking a person.
- */
-export const ABANDONED_OPERATION_ERROR_PREFIX = 'Operation abandoned:';
-/**
- * `task_topics.status` of a run that ended because its device was unavailable:
- * the dispatch could not reach it, or the run was lost while the device was
- * offline. Nothing judged the work, so the Goal coordinator does not charge the
- * run to the Task's attempt budget and retries it on its own offline schedule.
- */
-export const DEVICE_OFFLINE_RUN_STATUS = 'device_offline';
-/**
- * `task_topics.status` of a run that ended on a provider or CLI usage limit
- * ("You've hit your session limit · resets 4:30am"). The limit resets on its own
- * and nothing judged the work, so the run is not charged to the attempt budget;
- * the coordinator holds the Task until the reset and retries it.
- */
-export const QUOTA_LIMITED_RUN_STATUS = 'quota_limited';
-/**
- * `task_topics.status` of a run lost to a transport or runtime fault a retry
- * plausibly fixes (a timeout, an output the server discarded, a write that did
- * not persist). Not charged to the attempt budget; retried on a short bounded
- * schedule before a person is asked.
- */
-export const TRANSIENT_FAILED_RUN_STATUS = 'transient_failed';
-/** The verifier ran and judged the delivery short of the criteria. */
-export const VERIFICATION_FAILED_ERROR = 'Delivery did not pass verification.';
-/** The verifier itself could not run, so the delivery was never evaluated. */
-export const VERIFICATION_ERRORED_ERROR =
-  'Verification could not run (internal error); the delivery was not evaluated.';
-/**
- * The verifier could not run because the account has no credits left for its
- * model. The delivery was never evaluated, and nothing a builder does changes
- * that.
- *
- * Deliberately has NO recovery branch. Recovering it like any other verifier
- * error started a fresh builder attempt, which re-delivered the same evidence
- * into the same refused verifier and spent attempt after attempt until the
- * budget ran out. The `InsufficientBudgetForModel` code in the text classifies
- * it as a setup problem, so the gate asks for credits instead of a judgment.
- */
-export const VERIFICATION_OUT_OF_CREDITS_ERROR =
-  'Verification could not run: the verifier model was refused for lack of balance (InsufficientBudgetForModel); the delivery was not evaluated.';
-/**
- * The review read the evidence and found the criterion undecidable from it — it
- * asks for an action the review layer cannot perform (re-running the delivered
- * scripts, building, driving a live system).
- *
- * Deliberately has NO recovery branch, so it falls through to the human gate.
- * Another attempt cannot help: the builder would re-deliver the same artifacts
- * against the same unprovable criterion, which is how one such check ate an
- * entire attempt budget before this outcome existed.
- */
-export const VERIFICATION_UNJUDGEABLE_ERROR =
-  'Acceptance review could not judge the delivery from evidence alone; the criterion needs a judge that can act on the system.';
-/**
- * The delivery's own verifiers ran and passed, but the Acceptance review layered
- * on top of them could not run — a provider outage that outlived the in-place
- * retry, a reviewer without credentials, an artifact the review model could not
- * open.
- *
- * Deliberately has NO recovery branch. Recovering it like a rejection started a
- * fresh builder attempt, which re-delivered into the same broken review and spent
- * the Task's attempt budget without the delivery ever being judged.
- */
-export const ACCEPTANCE_REVIEW_ERRORED_ERROR =
-  'Acceptance review could not run; the delivery passed its verifiers but was never reviewed.';
-
-/**
- * Fixed title of the wrap-up Task the coordinator dispatches once the
- * Goal-level acceptance has ended (passed, failed / exhausted, or the Goal was
- * failed / canceled). It writes the Goal report storyline. Stored in English as
- * data; clients recognize it by this title. It never takes part in deciding the
- * Goal's status — the coordinator ignores it when choosing its next move.
- */
-export const GOAL_REPORT_TASK_TITLE = 'Write the Goal report';
 
 // ============================================
 // Batch rollout (STAMP) — one repeated mould, delivered as a class
@@ -231,23 +124,6 @@ export const GOAL_BATCH_RELEASE_TITLE = 'Approve releasing the next wave';
 /** Fixed title of the Template (recipe) finding node a batch distills. */
 export const GOAL_BATCH_TEMPLATE_TITLE = 'Batch recipe';
 
-/** Default probe size K — representative units that run before the gate. */
-export const ROLLOUT_CANARY_SIZE_DEFAULT = 5;
-/** Default mass wave size M — units released per wave after the gate passes. */
-export const ROLLOUT_WAVE_SIZE_DEFAULT = 5;
-/**
- * Below this many structurally identical units the batch ceremony costs more
- * than it saves, so the planner decomposes per unit instead.
- */
-export const ROLLOUT_MIN_HOMOGENEOUS_UNITS = 10;
-/** Probes never exceed the planner's per-turn task cap. */
-export const ROLLOUT_MAX_CANARY_SIZE = 5;
-/**
- * Prefix of the reason recorded when a batch hits a pattern break and the
- * coordinator hands the choice to a person (revise the recipe vs. new class).
- */
-export const PATTERN_BREAK_PAUSE_REASON = 'Batch pattern break needs a decision';
-
 /**
  * The batch pattern-break gate's option ids. Shared by the server that opens the
  * gate and the client that localizes it, the same way `GOAL_CLARIFICATION_OPTION`
@@ -258,9 +134,6 @@ export const GOAL_BATCH_BREAK_OPTION = {
   revise: 'revise',
 } as const;
 
-/** Prefix of the reason recorded while a passed batch gate waits on a person to approve the release. */
-export const RELEASE_REVIEW_PAUSE_REASON = 'Batch release needs approval';
-
 /**
  * The release-approval gate's option ids. `revise` shares the pattern break's
  * id, but here the correction goes to the main Agent, whose rewritten plan
@@ -270,16 +143,6 @@ export const GOAL_BATCH_RELEASE_OPTION = {
   release: 'release',
   revise: GOAL_BATCH_BREAK_OPTION.revise,
 } as const;
-
-/** The release-approval question's fixed English tail, localized on the client. */
-export const GOAL_BATCH_RELEASE_QUESTION_TAIL = 'Release the next wave?';
-
-/**
- * The batch pattern-break question's fixed English tail. The client strips it to
- * reach the coordinator's dynamic reason, then renders the tail in the reader's
- * language — mirroring the other coordinator question tails.
- */
-export const GOAL_BATCH_BREAK_QUESTION_TAIL = 'How should this batch proceed?';
 
 /**
  * Keys of the goal asks a person waved off the approval island. They are kept

@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import type { RendererTreeFile } from './manifest';
 
-export const RENDERER_ROOT = 'dist/renderer';
+const RENDERER_ROOT = 'dist/renderer';
 const RENDERER_PREFIX = `${RENDERER_ROOT}/`;
 
 export const isRendererPath = (treePath: string) => treePath.startsWith(RENDERER_PREFIX);

@@ -6,7 +6,7 @@ import { aiProviderSelectors, useAiInfraStore } from '@/store/aiInfra';
 import { useEffectiveAgentModePreference } from './effectiveAgentModePreference';
 import { useEffectiveModel } from './useEffectiveModel';
 
-export type ChatInputMode = 'agent' | 'chat';
+type ChatInputMode = 'agent' | 'chat';
 
 interface ResolveEffectiveAgentModeParams {
   enableAgentMode: boolean;

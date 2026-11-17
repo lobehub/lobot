@@ -16,15 +16,15 @@ export interface FavoriteStatus {
   isFavorited: boolean;
 }
 
-export interface LikeStatus {
+interface LikeStatus {
   isLiked: boolean;
 }
 
-export interface ToggleLikeResult {
+interface ToggleLikeResult {
   liked: boolean;
 }
 
-export interface PaginationParams {
+interface PaginationParams {
   page?: number;
   pageSize?: number;
 }
@@ -45,7 +45,7 @@ export interface FollowUserItem {
   userName: string | null;
 }
 
-export interface FavoriteItem {
+interface FavoriteItem {
   createdAt: string;
   id: number;
   targetId: number;
@@ -78,7 +78,7 @@ class SocialService {
    * @deprecated This method is no longer needed as authentication is now handled
    * automatically through tRPC middleware. Keeping for backward compatibility.
    */
-   
+
   setAccessToken(_token: string | undefined) {
     // No-op: Authentication is now handled through tRPC authedProcedure middleware
   }

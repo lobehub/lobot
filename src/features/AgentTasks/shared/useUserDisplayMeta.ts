@@ -2,7 +2,7 @@ import { useAuthorInfo } from '@/business/client/hooks/useAuthorInfo';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
-export interface UserDisplayMeta {
+interface UserDisplayMeta {
   avatar?: string | null;
   title?: string | null;
 }

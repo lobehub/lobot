@@ -961,6 +961,6 @@ const infiniaiChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...infiniaiChatModels];
+const allModels = [...infiniaiChatModels];
 
 export default allModels;

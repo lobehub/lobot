@@ -8,7 +8,7 @@ import type { ConversationContext, UIChatMessage } from '@lobechat/types';
 import type { ChatStore } from '@/store/chat/store';
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';
 
-export interface GatewayMemberStreamHandlerParams {
+interface GatewayMemberStreamHandlerParams {
   /**
    * The shared group conversation context (groupId / topicId / scope='group').
    * Members render in the same `messageMapKey` bucket as the supervisor — the

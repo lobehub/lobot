@@ -41,7 +41,7 @@ const ManifestRow = ({ icon, text, warning }: Omit<RenderRow, 'id'>) => (
   </Flexbox>
 );
 
-export interface TransferManifestListProps {
+interface TransferManifestListProps {
   /** The manifest request failed — say so instead of rendering an empty summary. */
   error?: unknown;
   /** The manifest request is still in flight and there is no data to show yet. */

@@ -1,8 +1,7 @@
 /** Query param the Tasks tab uses to scope `/tasks` to one project. */
-export const TASK_PROJECT_PARAM = 'project';
+const TASK_PROJECT_PARAM = 'project';
 
-export type TaskScope =
-  { type: 'all' } | { type: 'goals' } | { projectId: string; type: 'project' };
+type TaskScope = { type: 'all' } | { type: 'goals' } | { projectId: string; type: 'project' };
 
 /**
  * Which Tasks-tab list entry a location belongs to: a project scope

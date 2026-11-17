@@ -9,7 +9,7 @@
  * converges onto the same protocol (P6). `operationId` is bound by the adapter,
  * not carried here.
  */
-export interface RuntimeStreamEvent {
+interface RuntimeStreamEvent {
   data: unknown;
   stepIndex: number;
   type: string;
@@ -22,14 +22,14 @@ export interface RuntimeStreamEvent {
  * client adapters may carry text, reasoning, tool-call, grounding, or image
  * fields while sharing the stable step scope.
  */
-export interface StreamChunkInput {
+interface StreamChunkInput {
   [key: string]: unknown;
   reasoning?: string;
   stepIndex: number;
   text?: string;
 }
 
-export interface StreamErrorInput {
+interface StreamErrorInput {
   error: unknown;
   phase: string;
   stepIndex: number;

@@ -7,7 +7,7 @@ import type { DeviceListItem } from '@lobechat/types';
  * - `offline`: the gateway does not see the device; the reply waits for it to connect
  * - `online`: the device is back; the next dispatch round starts the reply
  */
-export type BlockedDeviceState =
+type BlockedDeviceState =
   | { kind: 'checking' }
   | { kind: 'missing' }
   | { device: DeviceListItem; kind: 'offline' | 'online' };

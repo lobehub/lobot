@@ -16,9 +16,6 @@ import type {
   FtsSearchResultType,
 } from './types';
 
-export * from './elasticsearch';
-export { PgLikeFtsSearchBackend } from './pgLike';
-export { PgSearchFtsSearchBackend } from './pgSearch';
 export * from './types';
 
 interface FtsSearchLimits {

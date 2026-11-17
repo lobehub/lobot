@@ -1787,6 +1787,6 @@ const vercelAIGatewayEmbeddingModels: AIEmbeddingModelCard[] = [
   },
 ];
 
-export const allModels = [...vercelAIGatewayChatModels, ...vercelAIGatewayEmbeddingModels];
+const allModels = [...vercelAIGatewayChatModels, ...vercelAIGatewayEmbeddingModels];
 
 export default allModels;

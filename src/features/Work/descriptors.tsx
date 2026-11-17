@@ -60,7 +60,7 @@ const tintIcon = (Glyph: LucideIcon, color: string): WorkIcon => {
 };
 
 /** `topic` namespace label of a GitHub state, the tooltip of its glyph. */
-export type WorkStateLabelKey = PullRequestStateVisual['labelKey'] | 'metaCard.pr.draft';
+type WorkStateLabelKey = PullRequestStateVisual['labelKey'] | 'metaCard.pr.draft';
 
 interface GithubStateVisual {
   icon: WorkIcon;
@@ -123,7 +123,7 @@ export interface WorkBranch {
  * (chat portal, preview modal, router navigate, `window.open`) — the descriptor
  * only names the destination, it never reaches into a store or the DOM itself.
  */
-export type WorkOpenTarget =
+type WorkOpenTarget =
   | { agentDocumentId?: string; documentId: string; kind: 'document' }
   | { taskId: string; identifier?: string; kind: 'task'; name?: string | null }
   | { kind: 'external'; url: string }
@@ -253,7 +253,7 @@ const getFileWorkMetadata = (item: WorkItemOfType<'file'>): WorkVersionMetadata 
 const getFileWorkPath = (item: WorkItemOfType<'file'>): string | null =>
   getFileWorkMetadata(item)?.filePath ?? item.description?.trim() ?? null;
 
-export const WORK_TYPE_DESCRIPTORS: {
+const WORK_TYPE_DESCRIPTORS: {
   [T in ListedWorkType]: WorkTypeDescriptor<WorkItemOfType<T>>;
 } = {
   canvas: {

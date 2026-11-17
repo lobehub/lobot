@@ -119,7 +119,7 @@ const normalizeQuotaSourcePart = (part: QuotaSourcePart) => {
 export const createQuotaSourceKey = (...parts: QuotaSourcePart[]) =>
   JSON.stringify(parts.map((part) => normalizeQuotaSourcePart(part)));
 
-export interface QuotaSnapshotBase {
+interface QuotaSnapshotBase {
   error: string | null;
   /**
    * The live sample failed (transport / IPC) instead of reporting a state: the

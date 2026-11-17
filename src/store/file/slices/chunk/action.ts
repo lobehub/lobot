@@ -7,7 +7,7 @@ type Setter = StoreSetter<FileStore>;
 export const createFileChunkSlice = (set: Setter, get: () => FileStore, _api?: unknown) =>
   new FileChunkActionImpl(set, get, _api);
 
-export class FileChunkActionImpl {
+class FileChunkActionImpl {
   readonly #set: Setter;
 
   constructor(set: Setter, get: () => FileStore, _api?: unknown) {

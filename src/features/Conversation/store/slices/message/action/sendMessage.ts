@@ -14,7 +14,7 @@ const throwIfAborted = (signal?: AbortSignal) => {
     : new DOMException('Message send was cancelled', 'AbortError');
 };
 
-export interface ConversationSendMessageParams extends SendMessageParams {
+interface ConversationSendMessageParams extends SendMessageParams {
   /** Internal override used by long-lived media transactions after a topic is created. */
   conversationContext?: ConversationContext;
   onPreflightFailure?: () => void;

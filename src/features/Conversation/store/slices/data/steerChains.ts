@@ -5,13 +5,13 @@ export interface SteerContinuation {
   steerUserId: string;
 }
 
-export interface SteerChain {
+interface SteerChain {
   continuations: SteerContinuation[];
   hostId: string;
   memberIds: string[];
 }
 
-export interface SteerChainIndex {
+interface SteerChainIndex {
   byHost: Map<string, SteerChain>;
   hostOf: Map<string, string>;
 }

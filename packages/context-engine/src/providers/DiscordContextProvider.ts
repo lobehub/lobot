@@ -13,7 +13,7 @@ export interface DiscordContext {
   thread?: DiscordThreadInfo;
 }
 
-export interface DiscordContextProviderConfig {
+interface DiscordContextProviderConfig {
   context?: DiscordContext;
   enabled?: boolean;
 }

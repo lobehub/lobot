@@ -10,7 +10,7 @@ import type { GoalGraphShape, GoalTrajectory } from './types';
  * operation's messages stay in its `ExecutionSnapshot` rather than on
  * `agent_operations`.
  */
-export interface GoalTraceRollup {
+interface GoalTraceRollup {
   advancesByOutcome: Record<string, number>;
   advancesByTrigger: Record<string, number>;
   advancesTotal: number;

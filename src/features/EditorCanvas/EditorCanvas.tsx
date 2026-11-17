@@ -262,5 +262,3 @@ export const EditorCanvas = memo<EditorCanvasWithEditorProps>(
 );
 
 EditorCanvas.displayName = 'EditorCanvas';
-
-export default EditorCanvas;

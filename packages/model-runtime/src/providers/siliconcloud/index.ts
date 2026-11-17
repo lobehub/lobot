@@ -8,7 +8,7 @@ import { processMultiProviderModelList } from '../../utils/modelParse';
 import { createSiliconCloudImage } from './createImage';
 import { createSiliconCloudVideo } from './createVideo';
 
-export interface SiliconCloudModelCard {
+interface SiliconCloudModelCard {
   id: string;
 }
 
@@ -52,7 +52,7 @@ const siliconFetch: typeof fetch = async (input, init) => {
   return response;
 };
 
-export const params = {
+const params = {
   baseURL: 'https://api.siliconflow.cn/v1',
   chatCompletion: {
     handleError: (error: any): Omit<ChatCompletionErrorPayload, 'provider'> | undefined => {

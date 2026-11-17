@@ -36,7 +36,7 @@ export interface MentionWatermark {
   ids: Set<string>;
 }
 
-export interface PickNewMentionsResult {
+interface PickNewMentionsResult {
   /** Rows to announce, oldest first. */
   fresh: MentionNotificationRow[];
   watermark: MentionWatermark;

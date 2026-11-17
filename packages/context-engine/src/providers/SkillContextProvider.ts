@@ -44,7 +44,7 @@ export interface SkillMeta {
 /**
  * Skill Context Provider Configuration
  */
-export interface SkillContextProviderConfig {
+interface SkillContextProviderConfig {
   enabled?: boolean;
   enabledSkills?: SkillMeta[];
 }
@@ -57,7 +57,7 @@ export interface SkillContextProviderConfig {
  * predicate, whether an activateSkill tool result's full content is already
  * carried by the system prompt and can therefore be trimmed from history.
  */
-export const selectActivatedSkills = (enabledSkills?: SkillMeta[]): SkillMeta[] =>
+const selectActivatedSkills = (enabledSkills?: SkillMeta[]): SkillMeta[] =>
   (enabledSkills ?? []).filter((s) => s.activated && s.content);
 
 /**

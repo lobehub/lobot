@@ -35,7 +35,7 @@ const $selectStartLine = (text: string) => {
  * Lexical editor, or a detached one whose content is about to be replaced —
  * anything written there would be lost.
  */
-export const getWritableLexicalEditor = (editor: IEditor | undefined) => {
+const getWritableLexicalEditor = (editor: IEditor | undefined) => {
   const lexicalEditor = editor?.getLexicalEditor?.();
   if (!lexicalEditor?.getRootElement() || !lexicalEditor.isEditable()) return null;
   return lexicalEditor;

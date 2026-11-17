@@ -94,7 +94,7 @@ export const createIdentitySlice = (set: Setter, get: () => UserMemoryStore, _ap
  * owns hydration, paging, optimistic overlays with rollback and scope
  * isolation.
  */
-export class IdentityActionImpl {
+class IdentityActionImpl {
   readonly #globalIdentities;
   /** The identity list is a paged replica; the engine owns its paging. */
   readonly #identities;

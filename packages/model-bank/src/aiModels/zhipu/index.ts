@@ -1025,6 +1025,6 @@ const zhipuChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...zhipuChatModels, ...zhipuImageModels, ...zhipuVideoModels];
+const allModels = [...zhipuChatModels, ...zhipuImageModels, ...zhipuVideoModels];
 
 export default allModels;

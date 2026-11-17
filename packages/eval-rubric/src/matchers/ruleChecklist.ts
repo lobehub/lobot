@@ -73,7 +73,7 @@ const checklistSchema = (count: number): Record<string, unknown> => ({
   type: 'object',
 });
 
-export interface ChecklistRule {
+interface ChecklistRule {
   kind: 'must' | 'must-not' | 'rule';
   text: string;
 }
@@ -189,7 +189,7 @@ const answerInstruction = (count: number, problem?: string) =>
     `[Answer]\nThere ${count === 1 ? 'is' : 'are'} ${plural(count, 'rule')}. Return exactly ${plural(count, 'verdict')}, numbered 1 to ${count}, one per rule as listed: never split a rule into several verdicts or merge rules. Return only valid JSON matching the schema.`,
   ].join('\n\n');
 
-export interface MatchRuleChecklistParams {
+interface MatchRuleChecklistParams {
   actual: string;
   context?: MatchContext;
   expected?: string;

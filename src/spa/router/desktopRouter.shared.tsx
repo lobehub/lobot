@@ -41,7 +41,7 @@ export const createMainAreaRouteFactory = (options: MainAreaRouteOptions = {}) =
   return (): RouteObject[] => [...routes];
 };
 
-export interface SharedDesktopRouteOptions {
+interface SharedDesktopRouteOptions {
   mainAreaChildren: RouteObject[];
   /** Runtime-only routes, such as Electron `/desktop-onboarding`. */
   platformRoutes?: RouteObject[];

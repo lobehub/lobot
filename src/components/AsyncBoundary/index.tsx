@@ -27,7 +27,7 @@ import AsyncError, { type AsyncErrorVariant } from '../AsyncError';
  * error until the revalidation settles) shows the skeleton instead of a frozen
  * error block with a still-clickable Retry.
  */
-export interface AsyncBoundaryProps {
+interface AsyncBoundaryProps {
   children: ReactNode;
   /**
    * The fetch result, passed through untouched (SWR's `data`). `undefined`

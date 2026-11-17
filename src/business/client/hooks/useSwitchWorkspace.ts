@@ -3,7 +3,7 @@ import { userProfileSelectors } from '@/store/user/selectors';
 
 import { useWorkspaceStore, writeLastWorkspaceId } from '../workspace/store';
 
-export interface SwitchWorkspaceActions {
+interface SwitchWorkspaceActions {
   switchToPersonal: () => Promise<void>;
   switchWorkspace: (id: string) => Promise<void>;
 }
@@ -46,7 +46,7 @@ export const useSwitchWorkspace = (): SwitchWorkspaceActions => {
  * sync) where the active workspace is being aligned with external state
  * rather than chosen by the user. Does not remember the choice.
  */
-export const useSilentSwitchWorkspace = (): SwitchWorkspaceActions => {
+const useSilentSwitchWorkspace = (): SwitchWorkspaceActions => {
   const switchToPersonal = useWorkspaceStore((s) => s.switchToPersonal);
   const switchWorkspace = useWorkspaceStore((s) => s.switchWorkspace);
   return {

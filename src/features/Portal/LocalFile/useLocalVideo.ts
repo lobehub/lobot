@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { localFileService } from '@/services/electron/localFileService';
 
-export type LocalVideoState =
+type LocalVideoState =
   | { status: 'loading' }
   | { src: string; status: 'ready' }
   | { oversized: boolean; status: 'unplayable' };

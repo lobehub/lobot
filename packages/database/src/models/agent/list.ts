@@ -156,11 +156,7 @@ export const queryAgencyRoutingByIds = async (
  * rather than being filtered afterwards, so `limit` is never spent on an inbox
  * the caller would drop.
  */
-export const buildQueryAgentsWhere = (
-  ctx: AgentModelContext,
-  keyword?: string,
-  includeInbox = false,
-) => {
+const buildQueryAgentsWhere = (ctx: AgentModelContext, keyword?: string, includeInbox = false) => {
   // Include agents where virtual is false OR null (legacy data without virtual
   // field), plus the inbox when the caller opts into it.
   const baseConditions = and(

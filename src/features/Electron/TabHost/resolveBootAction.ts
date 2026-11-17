@@ -6,7 +6,7 @@ import {
 import { type TabItem } from '@/features/Electron/titlebar/TabBar/types';
 import { normalizeTabUrl } from '@/features/Electron/titlebar/TabBar/url';
 
-export type BootAction =
+type BootAction =
   { type: 'keep' } | { id: string; type: 'activate'; url?: string } | { type: 'add'; url: string };
 
 export const resolveBootAction = (

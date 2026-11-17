@@ -68,8 +68,6 @@ const OUTPUT_PREVIEW_TOTAL_MAX_BYTES = 22 * 1024;
 const OUTPUT_PREVIEW_STREAM_MAX_BYTES = 18 * 1024;
 const OUTPUT_PREVIEW_SECONDARY_MIN_BYTES = 4 * 1024;
 
-export type { ShellOutputFile, ShellOutputFiles } from './backend';
-
 export interface ShellProcess {
   /** Backend that spawned the command; defaults to the manager's own. */
   backend?: ShellBackend;

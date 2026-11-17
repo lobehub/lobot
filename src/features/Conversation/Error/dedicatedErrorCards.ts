@@ -9,7 +9,7 @@ import { AgentRuntimeErrorType, ChatErrorType } from '@lobechat/types';
  * make an explicit per-type decision; a new entry then fails their type check until
  * they decide how to handle it.
  */
-export const DEDICATED_ERROR_CARD_TYPES = [
+const DEDICATED_ERROR_CARD_TYPES = [
   ChatErrorType.FreePlanLimit,
   ChatErrorType.SubscriptionPlanLimit,
   ChatErrorType.InsufficientBudgetForModel,

@@ -48,13 +48,13 @@ export interface CollectedLocalResourceRef {
   href: string;
 }
 
-export interface SkippedLocalResourceRef {
+interface SkippedLocalResourceRef {
   absolutePath?: string;
   href: string;
   reason: LocalResourceSkipReason;
 }
 
-export interface CollectLocalResourceResult {
+interface CollectLocalResourceResult {
   refs: CollectedLocalResourceRef[];
   skipped: SkippedLocalResourceRef[];
 }

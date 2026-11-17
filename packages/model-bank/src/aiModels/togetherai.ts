@@ -502,6 +502,6 @@ const togetheraiChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...togetheraiChatModels];
+const allModels = [...togetheraiChatModels];
 
 export default allModels;

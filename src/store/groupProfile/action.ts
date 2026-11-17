@@ -15,7 +15,7 @@ type SaveContentPayload = {
   editorData: Record<string, any>;
 };
 
-export type Action = Pick<ActionImpl, keyof ActionImpl>;
+type Action = Pick<ActionImpl, keyof ActionImpl>;
 export type Store = State & Action;
 
 // Store the latest saveCallback and tabId references to avoid stale closures
@@ -25,7 +25,7 @@ let currentTabIdRef: string | null = null;
 const DEFAULT_SAVE_STATE: SaveState = { lastUpdatedTime: null, saveStatus: 'idle' };
 
 type Setter = StoreSetter<Store>;
-export class ActionImpl {
+class ActionImpl {
   #debouncedSave: ReturnType<typeof debounce>;
   #get: () => Store;
   /** Local-first replica of the per-tab save status (`saveStateMap` is its view). */

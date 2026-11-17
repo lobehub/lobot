@@ -1,7 +1,7 @@
 import { useWorkspaces } from '@/business/client/hooks/useWorkspaces';
 import { type RouteMetaParams } from '@/spa/router/routeMeta';
 
-export type RouteWorkspaceId = string | null | undefined;
+type RouteWorkspaceId = string | null | undefined;
 
 export const useRouteWorkspaceId = (params: RouteMetaParams): RouteWorkspaceId => {
   const workspaces = useWorkspaces();

@@ -45,7 +45,7 @@ export const createTopicCommentSlice = (
  * confirmed by the network in the background. The store also keeps the
  * client-only drafts and optimistic overlays the comment UI writes through.
  */
-export class TopicCommentActionImpl {
+class TopicCommentActionImpl {
   readonly #detail;
   readonly #get: () => TopicCommentStore;
   /** Topics with a warmup in flight, so a remount cannot double-fetch the feed. */

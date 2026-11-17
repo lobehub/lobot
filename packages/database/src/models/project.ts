@@ -38,9 +38,7 @@ import {
 } from './projectIdentifier';
 import { topicHasGoal } from './topicGoal';
 
-export { normalizeProjectIdentifier, ProjectIdentifierTakenError } from './projectIdentifier';
-
-export interface CreateProjectInput {
+interface CreateProjectInput {
   avatar?: string;
   /** Lead the project with an existing agent instead of creating one named after it. */
   coordinatorAgentId?: string;
@@ -63,16 +61,13 @@ export interface CreateProjectInput {
  * aggregate, so `ProjectRepository.create` resolves or creates it first and only
  * its id reaches this model.
  */
-export interface InsertProjectInput extends Omit<
-  CreateProjectInput,
-  'dedicatedAgentId' | 'repository'
-> {
+interface InsertProjectInput extends Omit<CreateProjectInput, 'dedicatedAgentId' | 'repository'> {
   coordinatorAgentId: string;
 }
 
 const BUILTIN_SLUGS: ReadonlySet<string> = new Set<string>(Object.values(BUILTIN_AGENT_SLUGS));
 
-export interface UpdateProjectInput {
+interface UpdateProjectInput {
   avatar?: string | null;
   description?: string | null;
   name?: string;
@@ -80,7 +75,7 @@ export interface UpdateProjectInput {
   visibility?: ProjectVisibility;
 }
 
-export interface ProjectAgentInput {
+interface ProjectAgentInput {
   agentId: string;
   enabled?: boolean;
   responsibility?: string | null;
@@ -88,18 +83,18 @@ export interface ProjectAgentInput {
   sortOrder?: number;
 }
 
-export type ProjectAgentPatch = Partial<Omit<ProjectAgentInput, 'agentId'>>;
+type ProjectAgentPatch = Partial<Omit<ProjectAgentInput, 'agentId'>>;
 
-export interface ProjectKnowledgeBaseInput {
+interface ProjectKnowledgeBaseInput {
   enabled?: boolean;
   knowledgeBaseId: string;
   sortOrder?: number;
 }
 
-export type ProjectKnowledgeBasePatch = Partial<Omit<ProjectKnowledgeBaseInput, 'knowledgeBaseId'>>;
+type ProjectKnowledgeBasePatch = Partial<Omit<ProjectKnowledgeBaseInput, 'knowledgeBaseId'>>;
 
 /** Display meta of a project's main agent, joined into list rows only. */
-export interface ProjectCoordinatorAgentMeta {
+interface ProjectCoordinatorAgentMeta {
   avatar: string | null;
   backgroundColor: string | null;
   id: string;
@@ -107,11 +102,11 @@ export interface ProjectCoordinatorAgentMeta {
   title: string | null;
 }
 
-export type ProjectListRow = typeof projects.$inferSelect & {
+type ProjectListRow = typeof projects.$inferSelect & {
   coordinatorAgent: ProjectCoordinatorAgentMeta | null;
 };
 
-export interface ProjectModelOptions {
+interface ProjectModelOptions {
   /**
    * Workspace owners and admins manage the agent members of every readable
    * project, not only the projects they created.
@@ -124,7 +119,7 @@ export interface ProjectModelOptions {
   readOnly?: boolean;
 }
 
-export interface ProjectWorkInput {
+interface ProjectWorkInput {
   sortOrder?: number;
   workId: string;
 }

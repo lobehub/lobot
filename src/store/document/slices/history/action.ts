@@ -60,7 +60,7 @@ export const createDocumentHistorySlice = (set: Setter, get: () => DocumentStore
  * diffs live in replicas next to the document detail, so reopening the
  * history panel (or a compare) after a reload paints the last copy first.
  */
-export class DocumentHistoryActionImpl {
+class DocumentHistoryActionImpl {
   readonly #compare;
   readonly #list;
 

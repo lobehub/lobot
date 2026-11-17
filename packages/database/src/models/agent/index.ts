@@ -21,14 +21,6 @@ import * as trash from './trash';
 import { type AgentTransferOptions } from './types';
 import * as update from './update';
 
-export {
-  AGENT_OWNED_BY_GROUP,
-  AGENT_OWNERSHIP_STALE,
-  AGENT_SHARED_TRANSFER_BLOCKED,
-  AgentOwnedByGroupError,
-} from './errors';
-export type { AgentGroupMembershipRef, DeviceBindingCandidate } from './types';
-
 export class AgentModel {
   private ctx: AgentModelContext;
 

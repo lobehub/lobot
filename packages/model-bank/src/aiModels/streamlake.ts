@@ -434,6 +434,6 @@ const streamlakeModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...streamlakeModels];
+const allModels = [...streamlakeModels];
 
 export default allModels;

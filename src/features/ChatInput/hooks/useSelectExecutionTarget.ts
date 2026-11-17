@@ -13,7 +13,7 @@ import { agentByIdSelectors } from '@/store/agent/selectors';
 import { useElectronStore } from '@/store/electron';
 import { useUserStore } from '@/store/user';
 
-export interface SelectExecutionTargetOptions {
+interface SelectExecutionTargetOptions {
   /**
    * Confine this agent's shell commands to the device sandbox. Only meaningful
    * alongside `target: 'local'`; the picker passes `false` for the plain local

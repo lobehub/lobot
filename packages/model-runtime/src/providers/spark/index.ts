@@ -25,7 +25,7 @@ const getBaseURLByModel = (model: string): string => {
   }
 };
 
-export const params = {
+const params = {
   baseURL: 'https://spark-api-open.xf-yun.com/v1',
   chatCompletion: {
     handlePayload: (payload: ChatStreamPayload, options) => {

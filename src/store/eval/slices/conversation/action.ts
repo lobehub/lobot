@@ -14,8 +14,6 @@ import {
   type EvalConversationTopic,
 } from './projection';
 
-export type { EvalConversationTopic } from './projection';
-
 const n = setNamespace('evalConversation');
 
 type Setter = StoreSetter<EvalStore>;
@@ -34,7 +32,7 @@ const recentTopic = (topic: RecentTopic): EvalConversationTopic => ({
 });
 
 /** Search matches for a query, or the recent agent conversations for an empty one. */
-export const fetchConversationTopics = async ({
+const fetchConversationTopics = async ({
   query,
 }: {
   query: string;
@@ -49,7 +47,7 @@ export const fetchConversationTopics = async ({
 export const createConversationSlice = (set: Setter, get: () => EvalStore, api?: unknown) =>
   new ConversationActionImpl(set, get, api);
 
-export class ConversationActionImpl {
+class ConversationActionImpl {
   readonly #topics;
 
   constructor(set: Setter, get: () => EvalStore, _api?: unknown) {

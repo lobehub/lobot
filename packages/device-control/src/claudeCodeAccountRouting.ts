@@ -12,7 +12,7 @@ import {
   readClaudeCodeIdentity,
 } from '@lobechat/heterogeneous-agents/quota-sampler';
 
-export interface ResolveClaudeAccountSpawnEnvDeps {
+interface ResolveClaudeAccountSpawnEnvDeps {
   /** Env the spawned CLI inherits on this device (Bedrock / Vertex flags). */
   inheritedEnv: Record<string, string | undefined>;
   /** Every Claude Code login this device holds, default first. */
@@ -24,7 +24,7 @@ export interface ResolveClaudeAccountSpawnEnvDeps {
   prepareLogin?: (externalAccountId: string) => Promise<ClaudeCodeAccountResolution>;
 }
 
-export type ClaudeAccountSpawnEnv =
+type ClaudeAccountSpawnEnv =
   { env: Record<string, string>; kind: 'spawn' } | { kind: 'reject'; reason: string };
 
 const NO_OVERRIDE: ClaudeAccountSpawnEnv = { env: {}, kind: 'spawn' };

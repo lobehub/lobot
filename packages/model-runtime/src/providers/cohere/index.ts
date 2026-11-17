@@ -5,14 +5,14 @@ import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { resolveParameters } from '../../core/parameterResolver';
 
-export interface CohereModelCard {
+interface CohereModelCard {
   context_length: number;
   features: string[] | null;
   name: string;
   supports_vision: boolean;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://api.cohere.ai/compatibility/v1',
   chatCompletion: {
     // https://docs.cohere.com/v2/docs/compatibility-api#unsupported-parameters

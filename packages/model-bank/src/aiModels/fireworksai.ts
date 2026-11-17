@@ -400,6 +400,6 @@ const fireworksaiChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...fireworksaiChatModels];
+const allModels = [...fireworksaiChatModels];
 
 export default allModels;

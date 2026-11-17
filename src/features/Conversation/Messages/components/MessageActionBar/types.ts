@@ -2,7 +2,7 @@ import { type AssistantContentBlock, type UIChatMessage } from '@lobechat/types'
 
 import { type MessageActionItem } from '../../../types';
 
-export type MessageRole = 'user' | 'assistant' | 'group';
+type MessageRole = 'user' | 'assistant' | 'group';
 
 /**
  * Runtime context an action builder receives. All fields except `role`/`id`
@@ -31,7 +31,7 @@ export interface MessageActionDefinition {
  * registry entry — grouping is a property of the menu that shows it, not of
  * the action.
  */
-export interface MessageActionGroupSlot {
+interface MessageActionGroupSlot {
   /** Action keys to nest, in order. */
   children: string[];
   /** Registry key of the action that provides the submenu's label and icon. */

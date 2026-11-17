@@ -7,13 +7,11 @@
     "./components": "./src/components/index.ts",
     "./goal-command": "./src/utils/goalCommand.ts",
     "./inspectors/linear-labels": "./src/Inspector/Linear/labels.ts",
-    "./pending-hotkeys": "./src/pendingHotkeys.ts",
     "./styles": "./src/styles.ts"
   },
   "dependencies": {
     "@lobechat/tool-runtime": "workspace:*",
-    "@lobechat/utils": "workspace:*",
-    "anser": "^2.3.5"
+    "@lobechat/utils": "workspace:*"
   },
   "devDependencies": {
     "@lobechat/types": "workspace:*"

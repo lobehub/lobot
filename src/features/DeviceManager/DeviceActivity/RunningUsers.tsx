@@ -39,7 +39,7 @@ const styles = createStaticStyles(({ css }) => ({
 const userName = (user: DeviceEnroller) => user.fullName || user.username || '';
 
 /** The member who started a run, named on hover. */
-export const RunUserAvatar = memo<{ className?: string; size?: number; user: DeviceEnroller }>(
+const RunUserAvatar = memo<{ className?: string; size?: number; user: DeviceEnroller }>(
   ({ className, size = 20, user }) => (
     <Tooltip title={userName(user)}>
       <UserAvatar
@@ -60,7 +60,7 @@ RunUserAvatar.displayName = 'RunUserAvatar';
  * Running-topic counts for every device in the list, from one request. Keyed
  * per workspace by `useClientDataSWR`, like the device list itself.
  */
-export const useDeviceRunningSummary = () =>
+const useDeviceRunningSummary = () =>
   useClientDataSWR(['device/runningSummary'], () => deviceService.getRunningSummary(), {
     focusThrottleInterval: 1000,
     refreshInterval: REFRESH_INTERVAL_MS,

@@ -17,7 +17,7 @@ export const DOCUMENT_COMMENT_PAGE_SIZE = 20;
  * its own height), so its pages are fetched at the router's cap and drained
  * in the background rather than behind a "load more" button.
  */
-export const DOCUMENT_COMMENT_ANCHORED_PAGE_SIZE = 50;
+const DOCUMENT_COMMENT_ANCHORED_PAGE_SIZE = 50;
 
 /**
  * `'anchored'` / `'document'` page one subset of a document's roots (the
@@ -34,7 +34,7 @@ export interface DocumentCommentThreadsParams {
   scope: DocumentCommentThreadScope;
 }
 
-export interface DocumentCommentRepliesParams {
+interface DocumentCommentRepliesParams {
   rootCommentId: string;
 }
 
@@ -59,7 +59,7 @@ export const documentCommentThreadPageSize = (scope: DocumentCommentThreadScope)
  * twice. The cursor still walks the server's own order, so paging stays
  * consistent; a page may just carry fewer items than asked for.
  */
-export const partitionThreadPage = (
+const partitionThreadPage = (
   page: DocumentCommentThreadPage,
   scope: DocumentCommentThreadScope,
 ): DocumentCommentThreadPage => {

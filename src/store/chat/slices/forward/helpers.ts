@@ -13,7 +13,7 @@ export const getForwardableMessages = (messages: UIChatMessage[]): UIChatMessage
         !!message.children?.some((child) => !!child.content?.trim())),
   );
 
-export const getForwardedMessageText = (message: UIChatMessage): string =>
+const getForwardedMessageText = (message: UIChatMessage): string =>
   message.role === 'assistantGroup'
     ? message.children
         ?.map((child) => child.content?.trim())

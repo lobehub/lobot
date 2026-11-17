@@ -114,7 +114,7 @@ export const indexLocal = (
       .map((file) => [file.sha256, path.join(coreDir, file.path)]),
   );
 
-export const decodeCorePack = (content: Buffer): Promise<Map<string, Buffer>> =>
+const decodeCorePack = (content: Buffer): Promise<Map<string, Buffer>> =>
   new Promise((resolve, reject) => {
     unzip(new Uint8Array(content), (error, unpacked) => {
       if (error) return reject(error);

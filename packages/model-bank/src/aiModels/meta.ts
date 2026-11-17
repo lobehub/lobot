@@ -65,6 +65,6 @@ const metaChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...metaChatModels];
+const allModels = [...metaChatModels];
 
 export default allModels;

@@ -361,6 +361,6 @@ const ppioChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...ppioChatModels];
+const allModels = [...ppioChatModels];
 
 export default allModels;

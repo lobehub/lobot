@@ -1,4 +1,4 @@
-export type ControlBarView = 'controls' | 'hidden' | 'skeleton';
+type ControlBarView = 'controls' | 'hidden' | 'skeleton';
 
 export interface ResolveControlBarViewParams {
   agentId?: string;

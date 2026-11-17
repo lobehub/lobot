@@ -25,7 +25,7 @@ export interface AgentInfo {
 /**
  * Configuration for GroupRoleTransformProcessor
  */
-export interface GroupRoleTransformConfig {
+interface GroupRoleTransformConfig {
   /**
    * Mapping from agentId to agent info
    * Used to look up agent name for each message

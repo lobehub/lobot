@@ -36,7 +36,7 @@ import type { QueryTopicParams, TopicListItem } from './types';
  * markdown never do — anything past it is marked with an ellipsis, and the full
  * text is one click away in the topic itself.
  */
-export const LAST_MESSAGE_PREVIEW_LENGTH = 2000;
+const LAST_MESSAGE_PREVIEW_LENGTH = 2000;
 
 // Status priority for the sidebar "group by status" ordering. Lower rank =
 // higher in the list. A NULL / unknown status falls through to `active` (3),
@@ -46,7 +46,7 @@ export const LAST_MESSAGE_PREVIEW_LENGTH = 2000;
 // into the top `pending` bucket, so they must float to the top here too —
 // otherwise such a topic could fall off the first page and vanish from the
 // pending group.
-export const STATUS_SORT_RANK = sql`CASE ${topics.status}
+const STATUS_SORT_RANK = sql`CASE ${topics.status}
   WHEN 'waitingForHuman' THEN 0
   WHEN 'failed' THEN 1
   WHEN 'unread' THEN 2
@@ -59,7 +59,7 @@ export const STATUS_SORT_RANK = sql`CASE ${topics.status}
 
 // Favorites always float to the top; the rest are ordered by the requested
 // strategy. `status` adds the priority bucket before the recency tiebreaker.
-export const buildTopicOrderBy = (topicActivityAt: SQL, sortBy?: TopicQuerySortBy): SQL[] =>
+const buildTopicOrderBy = (topicActivityAt: SQL, sortBy?: TopicQuerySortBy): SQL[] =>
   sortBy === 'status'
     ? [desc(topics.favorite), asc(STATUS_SORT_RANK), desc(topicActivityAt)]
     : [desc(topics.favorite), desc(topicActivityAt)];

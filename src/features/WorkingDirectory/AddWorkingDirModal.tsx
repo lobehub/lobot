@@ -161,7 +161,7 @@ export const openAddWorkingDirModal = (options: AddWorkingDirContentProps): Moda
     width: 'min(90vw, 560px)',
   });
 
-export interface PickedWorkingDir {
+interface PickedWorkingDir {
   /** The code environment picked with the folder — metadata only on a device. */
   environmentId?: string;
   path: string;

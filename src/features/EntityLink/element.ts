@@ -14,7 +14,7 @@ import { type EntityLinkElementProps } from './types';
  * reading surface mounts the same element through `useEntityMarkdown()`, so one
  * place owns what an internal link looks like and where it opens.
  */
-export const EntityLinkElement = {
+const EntityLinkElement = {
   Component: Render as FC<EntityLinkElementProps>,
   rehypePlugin: rehypeLobeLink,
   scope: 'all' as const,

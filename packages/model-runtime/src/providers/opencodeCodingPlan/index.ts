@@ -279,7 +279,7 @@ const isEmptyContent = (content: any) =>
  * Recursively remove `null` values from `enum` arrays in a JSON Schema.
  * The opencode-go backend rejects nullable enums produced by Zod `.nullable()` / `.nullish()`.
  */
-export const sanitizeJsonSchema = (schema: any): any => {
+const sanitizeJsonSchema = (schema: any): any => {
   if (!schema || typeof schema !== 'object') return schema;
   if (Array.isArray(schema)) return schema.map(sanitizeJsonSchema);
 
@@ -461,7 +461,7 @@ const stripV1 = (url?: string) => url?.replace(/\/v1$/, '');
 // Provider Export
 // ============================================================================
 
-export const params = {
+const params = {
   debug: {
     chatCompletion: () => process.env.DEBUG_OPENCODE_GO_CHAT_COMPLETION === '1',
   },

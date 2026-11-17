@@ -36,7 +36,7 @@ import { initialState, useChannelStore } from './store';
  * minute.
  */
 export const CHANNEL_ACTIVE_REFRESH_MS = 3000;
-export const CHANNEL_IDLE_REFRESH_MS = 60_000;
+const CHANNEL_IDLE_REFRESH_MS = 60_000;
 
 type ChannelSendInput = Parameters<typeof channelService.send>[0];
 

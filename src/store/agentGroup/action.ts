@@ -51,7 +51,7 @@ const toAgentGroupDetail = (group: ChatGroupItem): AgentGroupDetail =>
  * Where a seed row comes from. A `list` row is the server's group list row; a
  * `session` row is synthesized from a session and only its real fields count.
  */
-export type GroupSeedSource = 'list' | 'session';
+type GroupSeedSource = 'list' | 'session';
 
 /**
  * The fields a session-derived group row actually carries. The rest of that row

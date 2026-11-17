@@ -5,7 +5,7 @@ import { getRunCommandDisplayCommand } from './runCommand';
  * agent conversation reaches LobeHub this way instead of through the builtin
  * goal tool, so these commands are the only record of the goal in the turn.
  */
-export type GoalCommand =
+type GoalCommand =
   | {
       /** `--conversation`: the goal is bound to, and supervised from, this conversation. */
       conversation: boolean;

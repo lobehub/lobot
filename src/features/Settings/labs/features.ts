@@ -7,7 +7,7 @@ import { type labPreferSelectors } from '@/store/user/slices/preference/selector
  * - alpha: internal testing only, not recommended for daily use yet
  * - beta: relatively usable — core flow works, details still being polished
  */
-export type LabStage = 'alpha' | 'beta';
+type LabStage = 'alpha' | 'beta';
 
 /**
  * Locale key stems under the `labs` namespace (`features.${stem}.title|desc`),

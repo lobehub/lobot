@@ -3,7 +3,7 @@ import type { UIChatMessage } from '@lobechat/types';
 
 const MAX_LINE = 80;
 
-export interface ThreadProgress {
+interface ThreadProgress {
   /** What the child is doing right now. */
   activity?: { text: string; type: 'thinking' } | { name: string; type: 'tool' };
   /** The newest line of the answer it is writing. */

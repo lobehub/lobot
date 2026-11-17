@@ -3,7 +3,7 @@ import type { ChatToolPayload } from '@lobechat/types';
 import type { AgentRuntimeHost } from '../transport';
 import type { AgentState } from '../types';
 
-export const ABORTED_TOOL_CONTENT = 'Tool execution was aborted by user.';
+const ABORTED_TOOL_CONTENT = 'Tool execution was aborted by user.';
 
 const TOOL_MESSAGE_PERSIST_PHASE = 'tool_message_persist';
 
@@ -30,7 +30,7 @@ const getErrorMessage = (error: unknown): string => {
   return 'Unknown error';
 };
 
-export const publishPersistError = async (host: AgentRuntimeHost, error: unknown) => {
+const publishPersistError = async (host: AgentRuntimeHost, error: unknown) => {
   const { stepIndex } = host.operation;
 
   if (host.transports.stream.publishError) {

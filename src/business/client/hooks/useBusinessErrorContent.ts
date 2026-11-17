@@ -1,6 +1,6 @@
 import type { ChatMessageError } from '@lobechat/types';
 
-export interface BusinessErrorContentResult {
+interface BusinessErrorContentResult {
   errorType?: string;
   hideMessage?: boolean;
   message?: string;

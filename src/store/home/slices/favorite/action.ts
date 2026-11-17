@@ -78,7 +78,7 @@ type Setter = StoreSetter<HomeStore>;
 export const createFavoriteSlice = (set: Setter, get: () => HomeStore, _api?: unknown) =>
   new FavoriteActionImpl(set, get, _api);
 
-export class FavoriteActionImpl {
+class FavoriteActionImpl {
   readonly #get: () => HomeStore;
   readonly #list;
   /** Writes per target reach the server in order, so a quick re-toggle cannot land reversed. */

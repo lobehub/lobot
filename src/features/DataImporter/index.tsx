@@ -21,13 +21,13 @@ import ImportPreviewModal from './ImportDetail';
 import DataLoading from './Loading';
 import SuccessResult from './SuccessResult';
 
-export interface ImportResult {
+interface ImportResult {
   added: number;
   errors: number;
   skips: number;
   updated?: number;
 }
-export interface ImportResults {
+interface ImportResults {
   messages?: ImportResult;
   sessionGroups?: ImportResult;
   sessions?: ImportResult;

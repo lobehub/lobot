@@ -6,7 +6,7 @@ type Setter = StoreSetter<HomeStore>;
 export const createGroupSlice = (set: Setter, get: () => HomeStore, _api?: unknown) =>
   new GroupActionImpl(set, get, _api);
 
-export class GroupActionImpl {
+class GroupActionImpl {
   constructor(set: Setter, get: () => HomeStore, _api?: unknown) {
     void _api;
     void set;

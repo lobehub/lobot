@@ -20,7 +20,7 @@ export interface RuntimeMessageRef {
 }
 
 /** Durable tool payload, including the fields that distinguish a result from a placeholder. */
-export type RuntimeToolMessage = Pick<
+type RuntimeToolMessage = Pick<
   UIChatMessage,
   | 'id'
   | 'content'

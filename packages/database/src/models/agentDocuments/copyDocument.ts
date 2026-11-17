@@ -18,7 +18,7 @@ const RAW_TEXT_DOCUMENT_FILE_TYPE = 'text/plain';
  * would duplicate the shell, so the clone is stored as raw text instead — the
  * description/metadata survive and the clone is deletable/editable.
  */
-export const isEmptyParseShell = (doc: {
+const isEmptyParseShell = (doc: {
   content: string | null;
   editorData: Record<string, any> | null;
 }): boolean => {

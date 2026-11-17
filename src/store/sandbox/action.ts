@@ -19,7 +19,7 @@ interface UseFetchEntitlementOptions {
   revalidateOnFocus?: boolean;
 }
 
-export class SandboxActionImpl {
+class SandboxActionImpl {
   readonly #private: SandboxPrivateAction;
   readonly #set: Setter;
 

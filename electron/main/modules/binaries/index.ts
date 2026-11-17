@@ -14,5 +14,4 @@ export {
 export { astSearchBinaries, contentSearchBinaries } from './contentSearchBinaries';
 export { fileSearchBinaries } from './fileSearchBinaries';
 export { runtimeEnvironmentBinaries } from './runtimeEnvironmentBinaries';
-export type { BinaryCategory, BinarySpec, BinaryStatus } from '@/core/infrastructure/BinaryManager';
-export { defineCommandBinary } from '@/core/infrastructure/BinaryManager';
+export type { BinaryCategory, BinarySpec } from '@/core/infrastructure/BinaryManager';

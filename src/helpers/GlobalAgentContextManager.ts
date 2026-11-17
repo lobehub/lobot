@@ -1,4 +1,4 @@
-export interface LobeGlobalAgentContext {
+interface LobeGlobalAgentContext {
   /** CPU architecture reported by the desktop main process (e.g. 'arm64', 'x64'). */
   arch?: string;
 

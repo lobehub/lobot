@@ -11,7 +11,7 @@ import type { OpenAICompatibleRuntimeContext } from './context';
 import type { OpenAICompatibleFactoryOptions } from './factoryOptions';
 
 // the model contains the following keywords is not a chat model, so we should filter them out
-export const CHAT_MODELS_BLOCK_LIST = [
+const CHAT_MODELS_BLOCK_LIST = [
   'embedding',
   'davinci',
   'curie',

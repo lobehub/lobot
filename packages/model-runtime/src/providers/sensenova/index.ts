@@ -4,7 +4,7 @@ import { LOBE_DEFAULT_MODEL_LIST, ModelProvider } from 'model-bank';
 import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible';
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 
-export interface SenseNovaModelCard {
+interface SenseNovaModelCard {
   context_length: number;
   created: number;
   description: string;
@@ -22,7 +22,7 @@ export interface SenseNovaModelCard {
   supported_features: string[];
 }
 
-export const params = {
+const params = {
   baseURL: 'https://token.sensenova.cn/v1',
   chatCompletion: {
     handlePayload: (payload) => {

@@ -1,10 +1,10 @@
-export interface BootMetricSpan {
+interface BootMetricSpan {
   durMs: number;
   name: string;
   startMs: number;
 }
 
-export interface BootMetricPayload {
+interface BootMetricPayload {
   anonId?: string;
   appVersion: string;
   cold: boolean;

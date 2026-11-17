@@ -15,7 +15,7 @@ export type RunScope = 'sub_agent' | 'top_level';
 export type RunTerminalStatus = 'cancelled' | 'completed' | 'failed';
 
 /** The two non-terminal parked states a run can enter and later resume from. */
-export type RunParkedReason = 'waiting_for_async_tool' | 'waiting_for_human';
+type RunParkedReason = 'waiting_for_async_tool' | 'waiting_for_human';
 
 /**
  * Identity + scope of a single logical run.
@@ -25,7 +25,7 @@ export type RunParkedReason = 'waiting_for_async_tool' | 'waiting_for_human';
  * NEW operation resumes the same logical run. Terminal side effects fire once per
  * logical run — keyed by `runId` — not once per operation.
  */
-export interface RunLifecycleContext {
+interface RunLifecycleContext {
   context: ConversationContext;
   runId: string;
   runScope: RunScope;
@@ -49,7 +49,7 @@ export interface UserMessagePersistedEvent extends RunLifecycleEventBase {
   topicId?: string;
 }
 
-export type RunStartedEvent = RunLifecycleEventBase;
+type RunStartedEvent = RunLifecycleEventBase;
 
 export interface RunParkedEvent extends RunLifecycleEventBase {
   reason: RunParkedReason;
@@ -60,7 +60,7 @@ export interface RunResumedEvent extends RunLifecycleEventBase {
   resumedOperationId: string;
 }
 
-export interface TerminalPersistedEvent extends RunLifecycleEventBase {
+interface TerminalPersistedEvent extends RunLifecycleEventBase {
   assistantMessageId?: string;
 }
 
@@ -100,7 +100,7 @@ export interface RunCompleteResult {
   requeued: boolean;
 }
 
-export interface RunErrorEvent extends RunLifecycleEventBase {
+interface RunErrorEvent extends RunLifecycleEventBase {
   error?: unknown;
 }
 

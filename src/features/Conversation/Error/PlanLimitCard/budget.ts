@@ -6,7 +6,7 @@ export type PlanLimitPricingBasis = 'approximate' | 'estimated' | 'exact' | 'unk
  * Budget context snapshot attached to plan-limit error bodies by the server.
  * Only the fields needed for the lightweight fallback card are typed here.
  */
-export interface PlanLimitBudgetContext {
+interface PlanLimitBudgetContext {
   modelId?: string;
   planAtError?: string;
   pricingBasis?: PlanLimitPricingBasis;

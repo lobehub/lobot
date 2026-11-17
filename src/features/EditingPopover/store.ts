@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export interface EditingTarget {
+interface EditingTarget {
   anchor: HTMLElement;
   avatar?: string;
   backgroundColor?: string;
@@ -24,5 +24,3 @@ export const useEditingPopoverStore = create<EditingPopoverState>((set) => ({
 
 export const openEditingPopover = (target: EditingTarget) =>
   useEditingPopoverStore.getState().open(target);
-
-export const closeEditingPopover = () => useEditingPopoverStore.getState().close();

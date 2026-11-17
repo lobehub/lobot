@@ -47,7 +47,7 @@ const persistDevice = (device: DeviceListItem | undefined, input: UpdateDeviceIn
 export const deviceSlice = (set: Setter, get: () => DeviceStore, _api?: unknown) =>
   new DeviceActionImpl(set, get, _api);
 
-export class DeviceActionImpl {
+class DeviceActionImpl {
   readonly #get: () => DeviceStore;
   readonly #list;
   readonly #metricSeries;

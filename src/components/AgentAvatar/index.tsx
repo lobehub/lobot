@@ -9,7 +9,7 @@ import { pickDomProps, resolveAgentAvatar } from './resolve';
 
 export { isDefaultAgentAvatar } from './resolve';
 
-export interface AgentAvatarProps extends Omit<AvatarProps, 'avatar' | 'brokenFallback' | 'name'> {
+interface AgentAvatarProps extends Omit<AvatarProps, 'avatar' | 'brokenFallback' | 'name'> {
   /**
    * Stable seed of the generated character. Pass the agent id so a rename does
    * not reshuffle it; falls back to the name.

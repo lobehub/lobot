@@ -1,6 +1,6 @@
 import { isNil, omitBy } from 'es-toolkit/compat';
 
-export type UnknownRecord = Record<PropertyKey, unknown>;
+type UnknownRecord = Record<PropertyKey, unknown>;
 
 /**
  * Checks for any non-null object, including arrays.
@@ -8,7 +8,7 @@ export type UnknownRecord = Record<PropertyKey, unknown>;
  * Prefer `isRecord` for normal object maps. Use this only when unknown object-shaped payloads
  * must be preserved instead of being classified as empty or invalid.
  */
-export const isObjectLike = (value: unknown): value is UnknownRecord =>
+const isObjectLike = (value: unknown): value is UnknownRecord =>
   typeof value === 'object' && value !== null;
 
 /**
@@ -33,22 +33,11 @@ export const toRecord = (value: unknown): UnknownRecord | undefined =>
 export const pickString = (value: unknown): string | undefined =>
   typeof value === 'string' ? value : undefined;
 
-export const isNonEmptyString = (value: unknown): value is string =>
+const isNonEmptyString = (value: unknown): value is string =>
   typeof value === 'string' && value.length > 0;
 
 export const pickNonEmptyString = (value: unknown): string | undefined =>
   isNonEmptyString(value) ? value : undefined;
-
-export const isTrimmedNonEmptyString = (value: unknown): value is string =>
-  typeof value === 'string' && value.trim().length > 0;
-
-export const pickTrimmedString = (value: unknown): string | undefined => {
-  const stringValue = pickString(value);
-  if (stringValue === undefined) return undefined;
-
-  const trimmed = stringValue.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
-};
 
 /**
  * Clean empty values (undefined, null, empty string) from an object

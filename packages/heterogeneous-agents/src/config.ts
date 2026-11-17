@@ -1,10 +1,6 @@
 import type {
-  HeterogeneousAgentDescriptor,
-  HeterogeneousAgentMenuLabelKey,
   HeterogeneousAgentType,
-  LocalHeterogeneousAgentDescriptor,
   LocalHeterogeneousAgentType,
-  LocalRuntimeHeterogeneousAgentDescriptor,
   LocalRuntimeHeterogeneousAgentType,
   RemoteHeterogeneousAgentDescriptor,
   RemoteHeterogeneousAgentType,
@@ -17,12 +13,8 @@ import {
 } from '@lobechat/types';
 
 export type {
-  HeterogeneousAgentDescriptor,
-  HeterogeneousAgentMenuLabelKey,
   HeterogeneousAgentType,
-  LocalHeterogeneousAgentDescriptor,
   LocalHeterogeneousAgentType,
-  LocalRuntimeHeterogeneousAgentDescriptor,
   LocalRuntimeHeterogeneousAgentType,
   RemoteHeterogeneousAgentDescriptor,
   RemoteHeterogeneousAgentType,
@@ -33,11 +25,6 @@ export {
   LOCAL_RUNTIME_HETEROGENEOUS_AGENT_CONFIGS,
   REMOTE_HETEROGENEOUS_AGENT_CONFIGS,
 };
-
-/** @deprecated Use `LocalHeterogeneousAgentDescriptor`. */
-export type HeterogeneousAgentConfig = LocalHeterogeneousAgentDescriptor;
-/** @deprecated Use `RemoteHeterogeneousAgentDescriptor`. */
-export type RemoteHeterogeneousAgentConfig = RemoteHeterogeneousAgentDescriptor;
 
 const LOCAL_HETERO_TYPES = new Set<string>(LOCAL_HETEROGENEOUS_AGENT_TYPES);
 const REMOTE_HETERO_TYPES = new Set<string>(
@@ -68,23 +55,12 @@ export const getHeterogeneousAgentConfigOrThrow = (
   return config;
 };
 
-const SESSION_INITIAL_MODEL_TYPES = new Set<string>([
-  'copilot',
-  'deepseek-harness',
-  'devin',
-  'droid',
-  'trae',
-]);
-
-export const usesHeterogeneousSessionInitialModel = (type: string): boolean =>
-  SESSION_INITIAL_MODEL_TYPES.has(type);
-
 export const resolveHeterogeneousAgentCommand = (type: string, command?: string): string => {
   const configuredCommand = command?.trim();
   return configuredCommand || getHeterogeneousAgentConfigOrThrow(type).defaultCommand;
 };
 
-export interface HeterogeneousAgentCliError {
+interface HeterogeneousAgentCliError {
   agentType: LocalHeterogeneousAgentType;
   code: 'auth_required' | 'cli_not_found';
   command: string;

@@ -61,7 +61,7 @@ export const createHomeNotificationSlice = (set: Setter, get: () => HomeStore, _
  * confirms it. The unread badge (`inbox:unreadCount`) is a poll and stays on
  * SWR.
  */
-export class HomeNotificationActionImpl {
+class HomeNotificationActionImpl {
   readonly #counts;
   readonly #get: () => HomeStore;
   readonly #manifest;

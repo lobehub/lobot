@@ -28,7 +28,7 @@ type Setter = StoreSetter<SessionStore>;
 export const createSessionSlice = (set: Setter, get: () => SessionStore, _api?: unknown) =>
   new SessionActionImpl(set, get, _api);
 
-export class SessionActionImpl {
+class SessionActionImpl {
   readonly #get: () => SessionStore;
   readonly #set: Setter;
 

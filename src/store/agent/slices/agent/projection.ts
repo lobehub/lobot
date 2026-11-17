@@ -5,7 +5,7 @@ import type { AvailableAgentItem } from '@/services/agent';
 import type { aiAgentService } from '@/services/aiAgent';
 import type { AgentItem, LobeAgentConfig } from '@/types/agent';
 
-export interface AgentConfigParams {
+interface AgentConfigParams {
   agentId: string;
 }
 
@@ -26,7 +26,7 @@ export const agentConfigResource = defineReplica<
 /** Custom agent slugs whose `slug → id` lookup survives a reload, most recently used first. */
 const MAX_PERSISTED_AGENT_SLUGS = 50;
 
-export interface AgentSlugParams {
+interface AgentSlugParams {
   /** A user-chosen agent slug (`/agent/<slug>`); builtin slugs resolve elsewhere. */
   slug: string;
 }

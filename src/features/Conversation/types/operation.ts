@@ -4,7 +4,7 @@
  * Represents the current operation state for a specific message.
  * These states indicate what actions are currently being performed on the message.
  */
-export interface MessageOperationState {
+interface MessageOperationState {
   /**
    * Message is continuing generation
    */
@@ -46,7 +46,7 @@ export interface MessageOperationState {
  *
  * Represents the current operation state for a specific tool call.
  */
-export interface ToolOperationState {
+interface ToolOperationState {
   /**
    * Tool API is currently being invoked
    */

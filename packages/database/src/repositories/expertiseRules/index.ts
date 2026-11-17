@@ -8,10 +8,10 @@ import type {
 import { ExpertiseModel } from '../../models/expertise';
 import type { LobeChatDatabase } from '../../type';
 
-export type RuleSectionPatch = Partial<Record<'rule' | 'why' | 'how' | 'limits', string | null>>;
+type RuleSectionPatch = Partial<Record<'rule' | 'why' | 'how' | 'limits', string | null>>;
 
 /** Where a distilled rule was read from, as the distill step resolved it. */
-export interface DistilledMaterial {
+interface DistilledMaterial {
   subjectId: string | null;
   subjectType: 'document' | 'standalone' | 'topic';
   title: string;
@@ -19,7 +19,7 @@ export interface DistilledMaterial {
 }
 
 /** One candidate the reviewer kept: filed as a new rule, or recorded on a rule that says it. */
-export type DistilledItem =
+type DistilledItem =
   | {
       domainId?: string;
       kind: 'create';
@@ -37,7 +37,7 @@ export type DistilledItem =
     }
   | { intoId: string; kind: 'merge'; quote: string };
 
-export interface UpdateRulePatch {
+interface UpdateRulePatch {
   compilability?: 'compilable' | 'not-compilable';
   direction?: ExpertiseRuleDirection;
   enforcement?: ExpertiseEnforcement;

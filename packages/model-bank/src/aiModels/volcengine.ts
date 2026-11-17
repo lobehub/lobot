@@ -1410,6 +1410,6 @@ const volcengineVideoModels: AIVideoModelCard[] = [
   },
 ];
 
-export const allModels = [...doubaoChatModels, ...volcengineImageModels, ...volcengineVideoModels];
+const allModels = [...doubaoChatModels, ...volcengineImageModels, ...volcengineVideoModels];
 
 export default allModels;

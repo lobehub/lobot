@@ -41,7 +41,7 @@ interface SettingsRouteMetaOptions {
 }
 
 /** The settings title alone, for routes whose layout owns the loading skeleton (mobile). */
-export const createSettingsTitleRouteMeta = (tab?: SettingsTabs) =>
+const createSettingsTitleRouteMeta = (tab?: SettingsTabs) =>
   routeMeta({
     DynamicMeta: createSettingsDynamicMeta(tab),
     icon: Settings,
@@ -49,7 +49,7 @@ export const createSettingsTitleRouteMeta = (tab?: SettingsTabs) =>
   });
 
 /** Settings route meta; explicit tab routes pass their tab and page-shaped skeleton. */
-export const createSettingsRouteMeta = ({ Skeleton, tab }: SettingsRouteMetaOptions = {}) =>
+const createSettingsRouteMeta = ({ Skeleton, tab }: SettingsRouteMetaOptions = {}) =>
   routeMeta({
     ...createSettingsTitleRouteMeta(tab),
     Skeleton: Skeleton ?? SettingsPageSkeleton,

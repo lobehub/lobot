@@ -37,26 +37,26 @@ export interface SaveMetadata {
   title?: string;
 }
 
-export interface SaveExecutionOptions {
+interface SaveExecutionOptions {
   /** Persist title/emoji without reading, writing or acknowledging the editor body. */
   metadataOnly?: boolean;
   restoreFromHistoryId?: string;
   saveSource?: 'autosave' | 'manual' | 'restore' | 'system' | 'llm_call';
 }
 
-export interface RemoteDocumentRow extends DocumentFormatFields {
+interface RemoteDocumentRow extends DocumentFormatFields {
   content?: string | null;
   editorData?: unknown;
   updatedAt: Date | string;
 }
 
-export type ReconcileResult = 'unchanged' | 'rebased' | 'adopted';
+type ReconcileResult = 'unchanged' | 'rebased' | 'adopted';
 
 type Setter = StoreSetter<DocumentStore>;
 export const createEditorSlice = (set: Setter, get: () => DocumentStore, _api?: unknown) =>
   new EditorActionImpl(set, get, _api);
 
-export class EditorActionImpl {
+class EditorActionImpl {
   readonly #get: () => DocumentStore;
   readonly #set: Setter;
   readonly #inflightSaves = new Map<string, Promise<void>>();

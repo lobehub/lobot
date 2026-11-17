@@ -7,7 +7,7 @@ import { createLogger } from '@/utils/logger';
 const logger = createLogger('utils:idleRendererGc');
 
 export const IDLE_GC_RESIDENT_BYTES = 1.5 * 1024 ** 3;
-export const IDLE_GC_TICK_MS = 30_000;
+const IDLE_GC_TICK_MS = 30_000;
 export const IDLE_GC_COOLDOWN_MS = 5 * 60_000;
 
 // HeapProfiler.collectGarbage is the DevTools trash icon: a full V8 + Oilpan GC that

@@ -25,7 +25,7 @@ import { getMessageTranscript } from '../transcript';
 const log = debug('lobe-store:message-transcript');
 
 /** Fetch flags of a transcript sync. The rows live in `dbMessagesMap`. */
-export interface MessageSyncResult {
+interface MessageSyncResult {
   error: unknown;
   /** A first fetch is in flight and nothing is on screen yet. */
   isLoading: boolean;
@@ -34,7 +34,7 @@ export interface MessageSyncResult {
   mutate: () => Promise<unknown>;
 }
 
-export interface MessageSyncOptions {
+interface MessageSyncOptions {
   refreshInterval?: number;
   /**
    * Override SWR's default focus revalidate. Pass `false` while a streaming

@@ -17,7 +17,7 @@ const SECTIONS = [
  * rank, 24px icon, name, small switch). Rendered as the page's own loading
  * state too, so the swap is in place.
  */
-export const ToolsChannelsSkeleton = () => {
+const ToolsChannelsSkeleton = () => {
   const { t } = useTranslation('setting');
 
   return (

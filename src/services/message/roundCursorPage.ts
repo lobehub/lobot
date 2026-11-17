@@ -9,13 +9,13 @@ import type { MessageListPage, MessageRoundCursor } from './cache';
  * Rows walked per round-cursor page: whole rounds up to this many mainline rows,
  * matching the newest-first window `getMessages` serves.
  */
-export const MESSAGE_PAGE_ROW_BUDGET = 1000;
+const MESSAGE_PAGE_ROW_BUDGET = 1000;
 
 // Client-mode reads keep the full budget: the client runtime replays the loaded rows as model history.
-export const GATEWAY_PAGE_ROW_BUDGET = 500;
+const GATEWAY_PAGE_ROW_BUDGET = 500;
 
 /** Page sizes for reading a topic forward from its first round. */
-export interface ForwardPageSize {
+interface ForwardPageSize {
   countBudget: number;
   roundLimit: number;
 }
@@ -24,9 +24,9 @@ export interface ForwardPageSize {
 export const SHARED_TOPIC_FIRST_PAGE: ForwardPageSize = { countBudget: 200, roundLimit: 3 };
 
 /** Each page a reader appends while scrolling a shared topic. */
-export const FORWARD_PAGE: ForwardPageSize = { countBudget: 1000, roundLimit: 5 };
+const FORWARD_PAGE: ForwardPageSize = { countBudget: 1000, roundLimit: 5 };
 
-export interface RoundCursorReadParams extends MessageListQueryContext {
+interface RoundCursorReadParams extends MessageListQueryContext {
   projectToolPayloads?: boolean;
   skipWorks?: boolean;
 }
@@ -49,11 +49,11 @@ export const toRoundCursorQueryInput = (
   topicShareId: params.topicShareId,
 });
 
-export type RoundCursorQueryResult = Awaited<
+type RoundCursorQueryResult = Awaited<
   ReturnType<typeof lambdaClient.message.getMessagesByCursor.query>
 >;
 
-export const toMessageListPage = (page: RoundCursorQueryResult): MessageListPage => ({
+const toMessageListPage = (page: RoundCursorQueryResult): MessageListPage => ({
   messages: page.messages as unknown as UIChatMessage[],
   olderCursor: page.nextCursor,
 });
@@ -83,7 +83,7 @@ export const isPartialHeadWindow = (context: MessageListQueryContext): boolean =
   partialHeadWindows.has(primeKey(context));
 
 /** The `getMessagesByCursor` input for one forward page, starting after `cursor`. */
-export const toForwardRoundCursorQueryInput = (
+const toForwardRoundCursorQueryInput = (
   params: MessageListQueryContext,
   cursor: MessageRoundCursor | null,
   size: ForwardPageSize = FORWARD_PAGE,
@@ -107,7 +107,7 @@ export class ForwardPagingUnsupportedError extends Error {
   }
 }
 
-export interface ForwardMessagePage {
+interface ForwardMessagePage {
   messages: UIChatMessage[];
   /** Cursor for the rounds after this page, or null at the topic's end. */
   newerCursor: MessageRoundCursor | null;
@@ -187,14 +187,6 @@ export const takePrimedMessageListPage = (
 
 /** First forward pages handed over by the document, by conversation. */
 const primedForwardPages = new Map<string, Promise<ForwardMessagePage>>();
-
-/** Hand over a conversation's first forward page; its forward head read takes it once. */
-export const primeForwardMessagePage = (
-  context: MessageListQueryContext,
-  page: ForwardMessagePage,
-): void => {
-  primedForwardPages.set(primeKey(context), Promise.resolve(page));
-};
 
 export const takePrimedForwardMessagePage = (
   context: MessageListQueryContext,

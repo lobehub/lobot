@@ -24,7 +24,7 @@ import { transformResponseToStream } from './nonStreamToStream';
 import type { OpenAIStreamOptions } from './stream';
 import { OpenAIStream } from './stream';
 
-export interface ChatCompletionsRequest {
+interface ChatCompletionsRequest {
   handledPayload: OpenAI.ChatCompletionCreateParamsStreaming;
   inputStartAt: number;
   log: debug.Debugger;

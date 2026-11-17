@@ -41,7 +41,7 @@ export const getTabHistorySnapshot = (tabId: string): HistorySnapshot =>
 export const subscribeTabHistory = (tabId: string, listener: () => void): (() => void) =>
   trackers.get(tabId)?.subscribe(listener) ?? NOOP;
 
-export const disposeTabRouter = (tabId: string): void => {
+const disposeTabRouter = (tabId: string): void => {
   const tracker = trackers.get(tabId);
   if (tracker) {
     tracker.dispose();

@@ -1,6 +1,6 @@
 import { isSameTabScope, resolveTabScope, type TabScope } from './scope';
 
-export type TabUpdate = { type: 'rewrite' } | { scope: TabScope; type: 'scope-swap'; url: string };
+type TabUpdate = { type: 'rewrite' } | { scope: TabScope; type: 'scope-swap'; url: string };
 
 export const resolveTabUpdate = (activeTabScope: TabScope, reportedUrl: string): TabUpdate => {
   const scope = resolveTabScope(reportedUrl);

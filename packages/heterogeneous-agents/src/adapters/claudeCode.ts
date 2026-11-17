@@ -1002,7 +1002,7 @@ const toUsageData = (
 
 // ─── Adapter ───
 
-export interface ClaudeCodeAdapterOptions {
+interface ClaudeCodeAdapterOptions {
   /**
    * CLI print-mode treats `result` as the end of the whole process. The Agent
    * SDK streaming transport can emit multiple `result` messages from one Query,

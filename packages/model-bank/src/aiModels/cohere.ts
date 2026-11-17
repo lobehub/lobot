@@ -137,6 +137,6 @@ const cohereChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...cohereChatModels];
+const allModels = [...cohereChatModels];
 
 export default allModels;

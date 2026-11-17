@@ -38,7 +38,7 @@ export interface AgentKnowledgeSyncResult extends ReplicaSyncResult {
 export const createKnowledgeSlice = (set: Setter, get: () => AgentStore, _api?: unknown) =>
   new KnowledgeSliceActionImpl(set, get, _api);
 
-export class KnowledgeSliceActionImpl {
+class KnowledgeSliceActionImpl {
   readonly #get: () => AgentStore;
   readonly #knowledgeList;
 

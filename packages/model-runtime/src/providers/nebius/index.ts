@@ -4,11 +4,7 @@ import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { processMultiProviderModelList } from '../../utils/modelParse';
 
-export interface NebiusModelCard {
-  id: string;
-}
-
-export const params = {
+const params = {
   baseURL: 'https://api.studio.nebius.com/v1',
   chatCompletion: {
     handlePayload: (payload) => {

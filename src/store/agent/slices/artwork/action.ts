@@ -23,7 +23,7 @@ type Setter = StoreSetter<AgentStore>;
 export const createAgentArtworkSlice = (set: Setter, get: () => AgentStore, _api?: unknown) =>
   new AgentArtworkActionImpl(set, get, _api);
 
-export class AgentArtworkActionImpl {
+class AgentArtworkActionImpl {
   readonly #generationJobs = new Map<string, AgentArtworkGenerationJob>();
   readonly #get: () => AgentStore;
   readonly #set: Setter;

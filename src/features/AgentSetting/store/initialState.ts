@@ -1,5 +1,3 @@
-import { DEFAULT_AGENT_META } from '@/const/meta';
-import { DEFAULT_AGENT_CONFIG } from '@/const/settings';
 import { type LobeAgentConfig } from '@/types/agent';
 import { type MetaData } from '@/types/meta';
 
@@ -18,19 +16,3 @@ export interface State {
   onMetaChange?: (meta: MetaData) => void;
   saveStatus?: SaveStatus;
 }
-
-export const initialState: State = {
-  config: DEFAULT_AGENT_CONFIG,
-  disabled: false,
-  lastUpdatedTime: null,
-  loading: true,
-  loadingState: {
-    avatar: false,
-    backgroundColor: false,
-    description: false,
-    tags: false,
-    title: false,
-  },
-  meta: DEFAULT_AGENT_META,
-  saveStatus: 'idle',
-};

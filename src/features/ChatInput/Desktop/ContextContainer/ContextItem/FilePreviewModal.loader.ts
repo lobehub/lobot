@@ -6,7 +6,7 @@ const importFilePreviewModal = () => import('./FilePreviewModal');
 
 let filePreviewModalPromise: ReturnType<typeof importFilePreviewModal> | undefined;
 
-export const preloadFilePreviewModal = (): ReturnType<typeof importFilePreviewModal> =>
+const preloadFilePreviewModal = (): ReturnType<typeof importFilePreviewModal> =>
   (filePreviewModalPromise ??= importFilePreviewModal().catch((error) => {
     filePreviewModalPromise = undefined;
     throw error;

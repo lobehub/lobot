@@ -20,7 +20,7 @@ import { addInputHistory } from '../inputHistoryStorage';
 import { type PublicState, type State } from './initialState';
 import { initialState } from './initialState';
 
-export interface Action {
+interface Action {
   clearInputCompletionError: () => void;
   dismissInputCompletionError: () => void;
   getJSONState: () => Record<string, any> | undefined;

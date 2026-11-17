@@ -51,7 +51,7 @@ const VoiceMessageIcon = ({
 
 VoiceMessageIcon.displayName = 'VoiceMessageIcon';
 
-export interface VoiceMessageControlProps {
+interface VoiceMessageControlProps {
   actionLabel: string;
   actionText?: string;
   cancelLabel: string;
@@ -86,7 +86,7 @@ const SendDots = ({ busy, hidden }: { busy?: boolean; hidden?: boolean }) => (
   </span>
 );
 
-export const VoiceMessageControl = memo<VoiceMessageControlProps>(
+const VoiceMessageControl = memo<VoiceMessageControlProps>(
   ({
     actionLabel,
     actionText,

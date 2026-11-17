@@ -16,15 +16,15 @@ type InboxRow = AgentAccountRouterOutputs['inbox']['get'];
  * rather than restated, so the client can never drift from the contract; the
  * credential is structurally absent, and `hasCredential` is all a read knows.
  */
-export type AgentAccountView = AgentAccountRouterOutputs['list'][number];
+type AgentAccountView = AgentAccountRouterOutputs['list'][number];
 
-export interface ListAgentAccountsParams {
+interface ListAgentAccountsParams {
   agentId?: string;
   kind?: AgentAccountKind;
   provider?: string;
 }
 
-export interface ProvisionAgentAccountParams {
+interface ProvisionAgentAccountParams {
   agentId: string;
   displayName?: string;
   /** Preferred local part for a mail address; the provider may ignore it. */
@@ -32,7 +32,7 @@ export interface ProvisionAgentAccountParams {
   provider: string;
 }
 
-export interface ListAgentInboxParams {
+interface ListAgentInboxParams {
   accountId?: string;
   agentId: string;
   /** Keyset cursor: the last row of the previous page. */

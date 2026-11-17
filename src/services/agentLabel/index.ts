@@ -2,7 +2,7 @@ import type { AgentLabelListItem } from '@lobechat/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 
-export class AgentLabelService {
+class AgentLabelService {
   getLabels = (): Promise<AgentLabelListItem[]> => {
     return lambdaClient.agentLabel.getLabels.query();
   };

@@ -17,7 +17,7 @@ type Setter = StoreSetter<GlobalStore>;
 export const globalWorkspaceSlice = (set: Setter, get: () => GlobalStore, _api?: unknown) =>
   new GlobalWorkspacePaneActionImpl(set, get, _api);
 
-export class GlobalWorkspacePaneActionImpl {
+class GlobalWorkspacePaneActionImpl {
   readonly #get: () => GlobalStore;
   readonly #set: Setter;
 

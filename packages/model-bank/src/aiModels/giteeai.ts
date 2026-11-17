@@ -526,6 +526,6 @@ const giteeaiImageModels: AIImageModelCard[] = [
   },
 ];
 
-export const allModels = [...giteeaiChatModels, ...giteeaiImageModels];
+const allModels = [...giteeaiChatModels, ...giteeaiImageModels];
 
 export default allModels;

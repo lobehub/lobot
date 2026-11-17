@@ -16,10 +16,10 @@ export const coerceDate = (input: unknown): Date | null => {
   return null;
 };
 
-export const escapeLikePattern = (value: string) =>
+const escapeLikePattern = (value: string) =>
   value.replaceAll('\\', '\\\\').replaceAll('%', '\\%').replaceAll('_', '\\_');
 
-export const buildContainsCondition = (column: unknown, q?: string) => {
+const buildContainsCondition = (column: unknown, q?: string) => {
   const normalized = q?.trim();
   if (!normalized) return undefined;
 

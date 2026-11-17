@@ -31,7 +31,7 @@ export const READ_PAGE_MAX_CHARS = 12_000;
  */
 export type AgentBrowserExec = (session: string, commands: string[][]) => Promise<string>;
 
-export interface AgentBrowserCallOptions {
+interface AgentBrowserCallOptions {
   exec: AgentBrowserExec;
   /** OS of the browser's host, for `ControlOrMeta` and macOS editing shortcuts. */
   platform?: string;
@@ -41,14 +41,14 @@ export interface AgentBrowserCallOptions {
   screenshotPath: string;
 }
 
-export interface AgentBrowserCommandContext {
+interface AgentBrowserCommandContext {
   /** `fill` only: the target is a native `<select>`; see {@link runAgentBrowserCall}. */
   fillsSelect?: boolean;
   /** OS of the browser's host, for `ControlOrMeta` and macOS editing shortcuts. */
   platform?: string;
 }
 
-export interface AgentBrowserToolResult {
+interface AgentBrowserToolResult {
   content: string;
   error?: string;
   state?: Record<string, unknown>;

@@ -6,7 +6,7 @@ const BM25_MAX_TERMS = 48;
 // to prevent parser-hostile queries (for example, huge tool-output payloads
 // containing many boolean-like tokens), while exposing options so specific
 // call sites can tune behavior if they have stricter/looser requirements.
-export interface SanitizeBm25QueryOptions {
+interface SanitizeBm25QueryOptions {
   dropBooleanOperators?: boolean;
   maxTerms?: number;
 }

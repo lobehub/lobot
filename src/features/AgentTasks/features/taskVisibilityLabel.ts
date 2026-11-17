@@ -1,4 +1,4 @@
-export type TaskVisibility = 'private' | 'public';
+type TaskVisibility = 'private' | 'public';
 
 export const getTaskVisibilityDefaultLabel = (visibility: TaskVisibility) =>
   visibility === 'private' ? 'Private' : 'Workspace';

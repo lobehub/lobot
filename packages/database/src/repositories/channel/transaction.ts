@@ -3,7 +3,7 @@ import { eq } from 'drizzle-orm';
 
 import type { ChannelItem } from '../../schemas';
 import { channelAudit, channels } from '../../schemas';
-import type { LobeChatDatabase, Transaction } from '../../type';
+import type { Transaction } from '../../type';
 import { ChannelError } from './error';
 
 /**
@@ -20,17 +20,6 @@ export const lockChannel = async (tx: Transaction, channelId: string): Promise<C
 
   return channel;
 };
-
-/** Lock and run `fn` in one transaction. For system callers. */
-export const withChannelLock = async <T>(
-  db: LobeChatDatabase,
-  channelId: string,
-  fn: (tx: Transaction, channel: ChannelItem) => Promise<T>,
-): Promise<T> =>
-  db.transaction(async (tx) => {
-    const channel = await lockChannel(tx, channelId);
-    return fn(tx, channel);
-  });
 
 export const audit = async (
   tx: Transaction,

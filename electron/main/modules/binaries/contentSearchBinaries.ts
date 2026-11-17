@@ -12,7 +12,7 @@ import { defineCommandBinary } from '@/core/infrastructure/BinaryManager';
  * ripgrep (rg) - Fastest grep alternative
  * https://github.com/BurntSushi/ripgrep
  */
-export const ripgrepBinary: BinarySpec = defineCommandBinary('rg', {
+const ripgrepBinary: BinarySpec = defineCommandBinary('rg', {
   description: 'ripgrep - fast grep alternative',
   priority: 1,
 });
@@ -21,7 +21,7 @@ export const ripgrepBinary: BinarySpec = defineCommandBinary('rg', {
  * ast-grep (sg) - AST-based code search tool
  * https://ast-grep.github.io/
  */
-export const astGrepBinary: BinarySpec = defineCommandBinary('sg', {
+const astGrepBinary: BinarySpec = defineCommandBinary('sg', {
   description: 'ast-grep - AST-based code search',
   priority: 1,
 });
@@ -30,7 +30,7 @@ export const astGrepBinary: BinarySpec = defineCommandBinary('sg', {
  * The Silver Searcher (ag) - Fast code searching tool
  * https://github.com/ggreer/the_silver_searcher
  */
-export const agBinary: BinarySpec = defineCommandBinary('ag', {
+const agBinary: BinarySpec = defineCommandBinary('ag', {
   description: 'The Silver Searcher',
   priority: 2,
 });
@@ -38,7 +38,7 @@ export const agBinary: BinarySpec = defineCommandBinary('ag', {
 /**
  * GNU grep - Standard text search tool
  */
-export const grepBinary: BinarySpec = defineCommandBinary('grep', {
+const grepBinary: BinarySpec = defineCommandBinary('grep', {
   description: 'GNU grep',
   priority: 3,
 });

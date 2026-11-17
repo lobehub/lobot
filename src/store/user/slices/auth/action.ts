@@ -14,7 +14,7 @@ interface AuthProvidersData {
 const fetchAuthProvidersData = async (): Promise<AuthProvidersData> => {
   const { accountInfo, listAccounts } = await import('@/libs/better-auth/auth-client');
   const result = await listAccounts();
-  const accounts = result.data || [];
+  const accounts: { accountId: string; providerId: string }[] = result.data || [];
   const hasPasswordAccount = accounts.some((account) => account.providerId === 'credential');
   const providers = await Promise.all(
     accounts
@@ -38,7 +38,7 @@ type Setter = StoreSetter<UserStore>;
 export const createAuthSlice = (set: Setter, get: () => UserStore, _api?: unknown) =>
   new UserAuthActionImpl(set, get, _api);
 
-export class UserAuthActionImpl {
+class UserAuthActionImpl {
   readonly #get: () => UserStore;
   readonly #set: Setter;
 

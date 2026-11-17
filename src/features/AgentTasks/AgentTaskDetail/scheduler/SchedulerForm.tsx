@@ -60,7 +60,7 @@ const HOUR_OPTIONS = Array.from({ length: 24 }, (_, hour) => ({ label: pad(hour)
 /** Sentinel minute option that opens the upgrade flow instead of changing the value. */
 const CUSTOM_MINUTE_UPGRADE = -1;
 
-export interface SchedulerFormChange {
+interface SchedulerFormChange {
   maxExecutions: number | null;
   pattern: string;
   timezone: string;

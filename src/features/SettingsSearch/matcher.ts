@@ -1,6 +1,6 @@
 import Fuse, { type FuseResult } from 'fuse.js';
 
-export interface SearchableEntry {
+interface SearchableEntry {
   /** Lowercased searchable texts (label / desc / keywords / pinyin variants) */
   haystack: string[];
   /** Result key (`tab-*` / `item-*` / `provider-*` / `connector-*`) */
@@ -18,9 +18,9 @@ export const MAX_SEARCH_RESULTS = 20;
  * `search1api`, `cometapi`). Exact keyword hits on tabs/items must outrank
  * those name collisions.
  */
-export const GENERIC_PROVIDER_QUERIES = new Set(['ai', 'api', 'key', 'model']);
+const GENERIC_PROVIDER_QUERIES = new Set(['ai', 'api', 'key', 'model']);
 
-export type SettingsSearchResultKind = 'connector' | 'item' | 'provider' | 'tab';
+type SettingsSearchResultKind = 'connector' | 'item' | 'provider' | 'tab';
 
 const KIND_RANK: Record<SettingsSearchResultKind, number> = {
   connector: 2,
@@ -32,7 +32,7 @@ const KIND_RANK: Record<SettingsSearchResultKind, number> = {
 /**
  * Result keys are prefixed by their index source.
  */
-export const getSettingsSearchResultKind = (resultKey: string): SettingsSearchResultKind => {
+const getSettingsSearchResultKind = (resultKey: string): SettingsSearchResultKind => {
   if (resultKey.startsWith('item-')) return 'item';
   if (resultKey.startsWith('provider-')) return 'provider';
   if (resultKey.startsWith('connector-')) return 'connector';

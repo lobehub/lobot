@@ -5,7 +5,7 @@ import { memo } from 'react';
 
 import GroupAvatar from '@/features/GroupAvatar';
 
-export interface AgentGroupAvatarProps {
+interface AgentGroupAvatarProps {
   /**
    * Custom avatar for the group (emoji or url)
    */

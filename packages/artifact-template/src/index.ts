@@ -2,12 +2,12 @@
 // package is the single source of truth for React artifact boilerplate,
 // dependencies, and runtime aliases.
 
-export interface ReactArtifactPackageJsonOverride {
+interface ReactArtifactPackageJsonOverride {
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
 }
 
-export interface ReactArtifactTemplateOverrides {
+interface ReactArtifactTemplateOverrides {
   appCode?: string;
   entry?: string;
   indexHtml?: string;
@@ -15,14 +15,14 @@ export interface ReactArtifactTemplateOverrides {
   viteConfig?: string;
 }
 
-export interface ReactArtifactTemplateOptions {
+interface ReactArtifactTemplateOptions {
   appCode: string;
   extraFiles?: Record<string, string>;
   overrides?: ReactArtifactTemplateOverrides;
   title?: string;
 }
 
-export interface ReactArtifactProject {
+interface ReactArtifactProject {
   dependencies: Record<string, string>;
   devDependencies: Record<string, string>;
   entry: string;
@@ -31,15 +31,15 @@ export interface ReactArtifactProject {
 }
 
 // The HTML shell loaded by the browser when visiting the deployed site.
-export const REACT_ARTIFACT_ENTRY_PATH = '/index.html';
+const REACT_ARTIFACT_ENTRY_PATH = '/index.html';
 // The JS bootstrap module the HTML shell references via <script type="module">.
-export const REACT_ARTIFACT_BOOTSTRAP_PATH = '/index.tsx';
-export const REACT_ARTIFACT_APP_PATH = '/App.tsx';
-export const REACT_ARTIFACT_INDEX_HTML_PATH = '/index.html';
-export const REACT_ARTIFACT_VITE_CONFIG_PATH = '/vite.config.ts';
-export const REACT_ARTIFACT_PACKAGE_JSON_PATH = '/package.json';
+const REACT_ARTIFACT_BOOTSTRAP_PATH = '/index.tsx';
+const REACT_ARTIFACT_APP_PATH = '/App.tsx';
+const REACT_ARTIFACT_INDEX_HTML_PATH = '/index.html';
+const REACT_ARTIFACT_VITE_CONFIG_PATH = '/vite.config.ts';
+const REACT_ARTIFACT_PACKAGE_JSON_PATH = '/package.json';
 
-export const REACT_ARTIFACT_DEFAULT_DEPENDENCIES: Record<string, string> = {
+const REACT_ARTIFACT_DEFAULT_DEPENDENCIES: Record<string, string> = {
   '@ant-design/icons': 'latest',
   '@lshay/ui': 'latest',
   '@radix-ui/react-accordion': 'latest',
@@ -87,7 +87,7 @@ export const REACT_ARTIFACT_DEFAULT_DEPENDENCIES: Record<string, string> = {
   'zustand': 'latest',
 };
 
-export const REACT_ARTIFACT_DEFAULT_DEV_DEPENDENCIES: Record<string, string> = {
+const REACT_ARTIFACT_DEFAULT_DEV_DEPENDENCIES: Record<string, string> = {
   '@types/react': 'latest',
   '@types/react-dom': 'latest',
   // The preview runs inside Sandpack's Nodebox, which emulates Node 16 and cannot load
@@ -126,7 +126,7 @@ const IMPORT_SPECIFIER_RE = /\b(?:import|export)\b(?:[^'"]+?\bfrom)?\s*['"]([^'"
  * listed in `optimizeDeps.include`. Relative and absolute paths are skipped; alias
  * prefixes are mapped to their real package target.
  */
-export const collectArtifactBareImports = (appCode: string): string[] => {
+const collectArtifactBareImports = (appCode: string): string[] => {
   const specifiers = new Set<string>();
 
   for (const match of appCode.matchAll(IMPORT_SPECIFIER_RE)) {
@@ -149,10 +149,10 @@ export const collectArtifactBareImports = (appCode: string): string[] => {
   return [...specifiers];
 };
 
-export const REACT_ARTIFACT_TAILWIND_CDN = 'https://cdn.tailwindcss.com';
-export const REACT_ARTIFACT_EXTERNAL_RESOURCES: readonly string[] = [REACT_ARTIFACT_TAILWIND_CDN];
+const REACT_ARTIFACT_TAILWIND_CDN = 'https://cdn.tailwindcss.com';
+const REACT_ARTIFACT_EXTERNAL_RESOURCES: readonly string[] = [REACT_ARTIFACT_TAILWIND_CDN];
 
-export const REACT_ARTIFACT_VITE_ALIASES: Record<string, string> = {
+const REACT_ARTIFACT_VITE_ALIASES: Record<string, string> = {
   '@/components/ui': '@lshay/ui/components/default',
 };
 

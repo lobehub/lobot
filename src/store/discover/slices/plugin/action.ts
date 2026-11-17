@@ -34,7 +34,7 @@ const n = setNamespace('discover/plugin');
  * (`isLoading` / `mutate`) so a call site only has to move its `data` read to
  * the matching `pluginSelectors` entry.
  */
-export interface PluginSyncResult extends ReplicaSyncResult {
+interface PluginSyncResult extends ReplicaSyncResult {
   /** A request is in flight and this entry has no value to show yet. */
   isLoading: boolean;
   /** Alias of `revalidate`. */
@@ -48,7 +48,7 @@ type Setter = StoreSetter<DiscoverStore>;
 export const createPluginSlice = (set: Setter, get: () => DiscoverStore, _api?: unknown) =>
   new PluginActionImpl(set, get, _api);
 
-export class PluginActionImpl {
+class PluginActionImpl {
   readonly #categories;
   readonly #detail;
   readonly #get: () => DiscoverStore;

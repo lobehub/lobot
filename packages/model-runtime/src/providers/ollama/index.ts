@@ -31,17 +31,9 @@ import { StreamingResponse } from '../../utils/response';
 import { parseDataUri } from '../../utils/uriParser';
 import type { OllamaMessage } from './type';
 
-export interface OllamaModelCard {
+interface OllamaModelCard {
   name: string;
 }
-
-export const params = {
-  baseURL: undefined,
-  debug: {
-    chatCompletion: () => process.env.DEBUG_OLLAMA_CHAT_COMPLETION === '1',
-  },
-  provider: ModelProvider.Ollama,
-};
 
 export class LobeOllamaAI implements LobeRuntimeAI {
   private client: Ollama;
@@ -386,5 +378,3 @@ export class LobeOllamaAI implements LobeRuntimeAI {
     }
   }
 }
-
-export default LobeOllamaAI;

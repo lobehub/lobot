@@ -7,12 +7,12 @@ export const DEFAULT_AI_IMAGE_MODEL = 'gemini-3.1-flash-image:image';
  * Minimal shape of an enabled image provider with its enabled image models, in display order.
  * Both the client store's `enabledImageModelList` and the server runtime state can produce it.
  */
-export interface EnabledImageProviderModels {
+interface EnabledImageProviderModels {
   children: { id: string }[];
   id: string;
 }
 
-export interface ImageModelSelection {
+interface ImageModelSelection {
   model: string;
   provider: string;
 }

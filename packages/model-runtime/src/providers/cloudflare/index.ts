@@ -23,7 +23,7 @@ import { debugStream } from '../../utils/debugStream';
 import { StreamingResponse } from '../../utils/response';
 import { recordCloudflareStreamChunk } from './providerDiagnostics';
 
-export interface CloudflareModelCard {
+interface CloudflareModelCard {
   description: string;
   name: string;
   properties?: Record<string, string>;

@@ -31,7 +31,8 @@ const EditorModalFooter = memo<EditorModalFooterProps>((props) => {
 
     setConfirmLoading(true);
     try {
-      const finalValue = (editor.getDocument('markdown', { format: false }) as unknown as string) || '';
+      const finalValue =
+        (editor.getDocument('markdown', { format: false }) as unknown as string) || '';
       const editorData = editor.getDocument('json');
       await onConfirm?.(finalValue, editorData);
       close();
@@ -57,7 +58,7 @@ const EditorModalFooter = memo<EditorModalFooterProps>((props) => {
 
 EditorModalFooter.displayName = 'EditorModalFooter';
 
-export interface OpenEditorModalOptions {
+interface OpenEditorModalOptions {
   editorData?: unknown;
   /** Short consequence shown beside the actions (e.g. what a resend will not undo). */
   notice?: ReactNode;

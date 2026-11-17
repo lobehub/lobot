@@ -3,7 +3,7 @@ import type { AgentSignalScope } from '../base/types';
 /**
  * Bot-thread identity used to route source events that originate outside a LobeChat topic.
  */
-export interface AgentSignalBotScopeKeyInput {
+interface AgentSignalBotScopeKeyInput {
   /** Application identifier from the external bot platform. */
   applicationId: string;
   /** Platform identifier, such as `discord` or `slack`. */
@@ -15,7 +15,7 @@ export interface AgentSignalBotScopeKeyInput {
 /**
  * Producer metadata used to derive a stable source-event scope key.
  */
-export interface AgentSignalProducerScopeInput {
+interface AgentSignalProducerScopeInput {
   /** Optional assistant or agent identifier for broad agent-user scoped events. */
   agentId?: string;
   /** Optional external application identifier for bot-originated events. */
@@ -35,7 +35,7 @@ export interface AgentSignalProducerScopeInput {
 /**
  * Task identity used when an AgentSignal chain is scoped to async task execution.
  */
-export interface AgentSignalTaskScopeKeyInput {
+interface AgentSignalTaskScopeKeyInput {
   /** Stable task identifier. */
   taskId: string;
 }
@@ -43,7 +43,7 @@ export interface AgentSignalTaskScopeKeyInput {
 /**
  * Topic identity used when an AgentSignal chain is scoped to one LobeChat topic.
  */
-export interface AgentSignalTopicScopeKeyInput {
+interface AgentSignalTopicScopeKeyInput {
   /** Stable LobeChat topic identifier. */
   topicId: string;
 }
@@ -51,7 +51,7 @@ export interface AgentSignalTopicScopeKeyInput {
 /**
  * Agent/user identity used when no narrower topic or task scope is available.
  */
-export interface AgentSignalUserAgentScopeKeyInput {
+interface AgentSignalUserAgentScopeKeyInput {
   /** Stable assistant or agent identifier. */
   agentId: string;
   /** Stable user identifier. */
@@ -61,7 +61,7 @@ export interface AgentSignalUserAgentScopeKeyInput {
 /**
  * User identity used as the broadest authenticated AgentSignal scope.
  */
-export interface AgentSignalUserScopeKeyInput {
+interface AgentSignalUserScopeKeyInput {
   /** Stable user identifier. */
   userId: string;
 }
@@ -87,7 +87,7 @@ const pickString = (input: Record<string, unknown>, key: string) => {
  * Returns:
  * - A deterministic scope key string
  */
-export const AgentSignalScopeKey = {
+const AgentSignalScopeKey = {
   forAgentUser: (input: AgentSignalUserAgentScopeKeyInput) =>
     joinScopeKey('agent', input.agentId, 'user', input.userId),
   forBotThread: (input: AgentSignalBotScopeKeyInput) =>

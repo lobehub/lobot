@@ -37,7 +37,7 @@ export class PiRpcConnectionError extends Error {
   }
 }
 
-export interface PiRpcClientOptions {
+interface PiRpcClientOptions {
   /** Extra CLI args after `--mode rpc` (e.g. `--session-id <id>`, `--provider`). */
   args: string[];
   /** How long to wait for a clean exit after `stdin.end()` before escalating. */

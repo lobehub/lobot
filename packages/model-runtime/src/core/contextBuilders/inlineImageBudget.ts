@@ -33,12 +33,12 @@ import { DownloadCache } from '../../utils/referenceImageCache';
 
 const MB = 1024 * 1024;
 
-export interface InlineImage {
+interface InlineImage {
   base64: string;
   mimeType: string;
 }
 
-export interface InlineImageLimits {
+interface InlineImageLimits {
   /** Largest allowed base64 length for one image. */
   maxBase64Bytes: number;
   /** Longest allowed edge in pixels. */
@@ -66,7 +66,7 @@ export interface InlineImageBudgetOptions {
   maxTotalBase64Bytes: number;
 }
 
-export const DEFAULT_INLINE_IMAGE_BUDGET: InlineImageBudgetOptions = {
+const DEFAULT_INLINE_IMAGE_BUDGET: InlineImageBudgetOptions = {
   lowWatermark: 0.6,
   maxImageBase64Bytes: 5 * MB,
   // A fixed cap instead of resizing only once a request crosses 20 images: crossing

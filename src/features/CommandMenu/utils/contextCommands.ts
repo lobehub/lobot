@@ -19,7 +19,7 @@ import {
 
 import { type ContextType, type MenuContext } from '../types';
 
-export interface ContextCommand {
+interface ContextCommand {
   icon: LucideIcon;
   keywords: string[];
   keywordsKey?: string;
@@ -87,7 +87,7 @@ const BUSINESS_SETTINGS_COMMANDS: ContextCommand[] = [
  * Map of context types to their core (non-business) commands.
  * Business commands are appended at runtime via {@link buildContextCommands}.
  */
-export const CONTEXT_COMMANDS: Record<ContextType, ContextCommand[]> = {
+const CONTEXT_COMMANDS: Record<ContextType, ContextCommand[]> = {
   agent: [],
   group: [],
   page: [],

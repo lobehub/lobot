@@ -4,7 +4,7 @@ import type { scmService } from '@/services/scm';
 type Resolved<T extends (...args: any[]) => Promise<unknown>> = Awaited<ReturnType<T>>;
 
 export type ScmConfig = Resolved<typeof scmService.getConfig>;
-export type ScmIdentity = NonNullable<Resolved<typeof scmService.getIdentity>>;
+type ScmIdentity = NonNullable<Resolved<typeof scmService.getIdentity>>;
 export type ScmInstallationItem = Resolved<typeof scmService.listInstallations>[number];
 
 /**
@@ -17,9 +17,9 @@ export interface ScmIdentityEntry {
 }
 
 /** Each integration read has one entry; the scope partitions it per user + workspace. */
-export type IntegrationParams = Record<string, never>;
+type IntegrationParams = Record<string, never>;
 export const INTEGRATION_PARAMS: IntegrationParams = {};
-export const INTEGRATION_KEY = 'github';
+const INTEGRATION_KEY = 'github';
 
 /** Whether this deployment runs the GitHub App, and where installs start. */
 export const scmConfigResource = defineReplica<IntegrationParams, ScmConfig>({

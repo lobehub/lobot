@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "exports": {
-    ".": "./src/index.ts",
-    "./schemas": "./src/schemas/index.ts",
-    "./test-utils": "./tests/test-utils.ts"
+    "./schemas": "./src/schemas/index.ts"
   },
   "scripts": {
     "test": "npm run test:client-db && npm run test:server-db",
@@ -25,7 +23,6 @@
     "p-map": "^7.0.6",
     "random-words": "^2.0.1",
     "remove-markdown": "^0.6.4",
-    "ts-md5": "^2.0.1",
     "type-fest": "^5.7.0",
     "ws": "^8.21.0"
   },

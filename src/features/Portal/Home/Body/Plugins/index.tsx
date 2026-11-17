@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import ArtifactList from './ArtifactList';
 
-export const Artifacts = memo(() => {
+const Artifacts = memo(() => {
   const { t } = useTranslation('portal');
 
   return (

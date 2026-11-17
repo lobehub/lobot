@@ -18,7 +18,7 @@ const logger = createLogger('core:TrayManager');
 /**
  * Tray identifier type
  */
-export type TrayIdentifiers = 'main';
+type TrayIdentifiers = 'main';
 
 export class TrayManager {
   app: App;

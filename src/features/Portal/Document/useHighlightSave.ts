@@ -75,7 +75,7 @@ const takeRefusedDraft = (documentId: string, updatedAt?: Date) => {
   return null;
 };
 
-export interface UseHighlightSaveParams {
+interface UseHighlightSaveParams {
   content: string;
   documentId: string;
   /**
@@ -87,7 +87,7 @@ export interface UseHighlightSaveParams {
   updatedAt?: Date;
 }
 
-export interface UseHighlightSaveResult {
+interface UseHighlightSaveResult {
   editingValue: string;
   handleChange: (next: string) => void;
   handleSave: () => Promise<void>;

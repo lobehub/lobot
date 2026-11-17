@@ -4,9 +4,9 @@ import type { ChatCompletionTool } from '../types/chat';
 import { AgentRuntimeErrorType } from '../types/error';
 import { AgentRuntimeError } from './createError';
 
-export const TOOL_LIMIT_ERROR_TYPE = 'ToolLimitExceeded' as const;
+const TOOL_LIMIT_ERROR_TYPE = 'ToolLimitExceeded' as const;
 
-export class ToolLimitExceededError extends Error {
+class ToolLimitExceededError extends Error {
   readonly type = TOOL_LIMIT_ERROR_TYPE;
   readonly provider: string;
   readonly model: string;
@@ -71,7 +71,7 @@ function measureToolPayloadBytes(tools: ChatCompletionTool[]): number {
   return new TextEncoder().encode(JSON.stringify(tools)).length;
 }
 
-export interface ValidateToolLimitsParams {
+interface ValidateToolLimitsParams {
   model: string;
   provider: string;
   tools: ChatCompletionTool[];
@@ -86,7 +86,7 @@ export interface ValidateToolLimitsParams {
  * - Skips the check silently when the provider has no declared limits
  *   or isn't registered in the built-in list.
  */
-export function validateToolLimits({ model, provider, tools }: ValidateToolLimitsParams): void {
+function validateToolLimits({ model, provider, tools }: ValidateToolLimitsParams): void {
   if (!tools || tools.length === 0) return;
 
   const limits = resolveProviderLimits(provider);

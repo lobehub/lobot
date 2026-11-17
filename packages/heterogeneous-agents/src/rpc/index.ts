@@ -12,33 +12,3 @@ export {
   type PiRpcStartupControl,
   toPiRpcPrompt,
 } from './piRpcAgentHandle';
-export { PiRpcClient, PiRpcConnectionError, PiRpcResponseError } from './piRpcClient';
-export {
-  PI_RPC_DEFAULT_REQUEST_TIMEOUT_MS,
-  PI_RPC_HANDSHAKE_TIMEOUT_MS,
-  PI_RPC_MIN_CLI_VERSION,
-  type PiAgentSettledEvent,
-  type PiExtensionUiDialogMethod,
-  type PiExtensionUiFireAndForgetMethod,
-  type PiExtensionUiRequest,
-  type PiExtensionUiResponse,
-  type PiMessageEndEvent,
-  type PiMessageUpdateEvent,
-  type PiRpcCommand,
-  type PiRpcEvent,
-  type PiRpcImage,
-  type PiRpcPromptDisposition,
-  type PiRpcPromptResponseData,
-  type PiRpcResponse,
-  type PiRpcStateData,
-  type PiSessionEvent,
-  type PiStreamingBehavior,
-} from './piRpcProtocol';
-export {
-  type PiRpcPromptInput,
-  PiRpcSession,
-  type PiRpcSessionCallbacks,
-  type PiRpcSessionOptions,
-} from './piRpcSession';
-export { preparePiRpcInput } from './preparePiRpcInput';
-export { RpcStdioClient, RpcStdioConnectionError } from './rpcStdioClient';

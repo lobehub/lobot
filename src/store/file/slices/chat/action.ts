@@ -56,7 +56,7 @@ const getErrorMessage = (error: unknown): string => {
   return String(error);
 };
 
-export interface ChatUploadOptions {
+interface ChatUploadOptions {
   /**
    * Upload as an agent-share VISITOR: files go through the share-scoped
    * endpoints onto the CREATOR's account and storage quota (see
@@ -94,7 +94,7 @@ const getUploadErrorDescription = (error: unknown): string => {
 
 const EMPTY_CHAT_UPLOAD_FILE_LIST: UploadFileItem[] = [];
 
-export class FileActionImpl {
+class FileActionImpl {
   readonly #get: () => FileStore;
   readonly #set: Setter;
   /**

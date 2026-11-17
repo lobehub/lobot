@@ -5,7 +5,7 @@ import { resolveParameters } from '../../core/parameterResolver';
 import { getModelMaxOutputs } from '../../utils/getModelMaxOutputs';
 import { MODEL_LIST_CONFIGS, processModelList } from '../../utils/modelParse';
 
-export interface LongCatModelCard {
+interface LongCatModelCard {
   id: string;
 }
 

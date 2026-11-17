@@ -9,7 +9,7 @@ import { agentByIdSelectors } from '@/store/agent/selectors';
 
 import { useProjectSkills } from './useProjectSkills';
 
-export interface ResolvedProjectSkill {
+interface ResolvedProjectSkill {
   description?: string;
   name: string;
   /**

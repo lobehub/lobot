@@ -42,12 +42,12 @@ const DOCUMENT_PREVIEW_MIME_TYPES = new Set([
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ]);
 const MAX_DOCUMENT_PREVIEW_BYTES = 20 * 1024 * 1024;
-export const PREVIEW_CONTENT_SIZE_HEADER = 'X-Preview-Content-Size';
+const PREVIEW_CONTENT_SIZE_HEADER = 'X-Preview-Content-Size';
 /**
  * The file's mtime in ms. Lets the renderer tell a replaced file from the
  * previous one at the same path when a preview is refreshed.
  */
-export const PREVIEW_MODIFIED_AT_HEADER = 'X-Preview-Modified-At';
+const PREVIEW_MODIFIED_AT_HEADER = 'X-Preview-Modified-At';
 
 // Edited-file records can carry `~`-prefixed paths (the file tools expand the
 // home directory at write time) — expand them here so previews resolve the
@@ -109,7 +109,7 @@ interface PreviewRootTokenRecord {
   realRoot: string;
 }
 
-export interface PreviewFileReadResult {
+interface PreviewFileReadResult {
   buffer: Buffer;
   contentType: string;
   /**

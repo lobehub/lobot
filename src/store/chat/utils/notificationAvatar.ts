@@ -74,7 +74,7 @@ const renderEmojiAvatar = (avatar: string, backgroundColor?: string): string | u
   return canvas.toDataURL('image/png');
 };
 
-export interface NotificationAvatarMeta {
+interface NotificationAvatarMeta {
   avatar?: string;
   backgroundColor?: string;
 }

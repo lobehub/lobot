@@ -6,18 +6,18 @@ export interface TaskResult<T> {
   status: 'pending' | 'success' | 'failed';
 }
 
-export interface PollingErrorContext {
+interface PollingErrorContext {
   consecutiveFailures: number;
   error: any;
   retries: number;
 }
 
-export interface PollingErrorResult {
+interface PollingErrorResult {
   error?: any;
   isContinuePolling: boolean; // If provided, will replace the original error when thrown
 }
 
-export interface AsyncifyPollingOptions<T, R> {
+interface AsyncifyPollingOptions<T, R> {
   // Default 5000ms
   backoffMultiplier?: number;
 
@@ -190,7 +190,7 @@ export async function asyncifyPolling<T, R>(options: AsyncifyPollingOptions<T, R
 
     // Handle max retries exceeded
     if (error instanceof PendingError) {
-      throw new Error(`Task timeout after ${maxRetries} attempts`);
+      throw new Error(`Task timeout after ${maxRetries} attempts`, { cause: error });
     }
 
     throw error;

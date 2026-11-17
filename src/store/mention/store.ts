@@ -32,5 +32,3 @@ const devtools = createDevtools('mention');
 export const useMentionStore = createWithEqualityFn<MentionStore>()(devtools(createStore), shallow);
 
 expose('mention', useMentionStore);
-
-export const getMentionStoreState = () => useMentionStore.getState();

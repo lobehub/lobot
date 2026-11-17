@@ -1,6 +1,6 @@
 import type { LocalDatabaseEntry } from '@/libs/localDatabase';
 
-export interface LocalDatabaseField {
+interface LocalDatabaseField {
   id: string;
   label: string;
   type: string;
@@ -18,7 +18,7 @@ export interface LocalDatabaseTableRow {
   replica?: ReplicaStorageKey;
 }
 
-export interface ReplicaStorageKey {
+interface ReplicaStorageKey {
   query: string;
   resource: string;
   scope: string;
@@ -90,7 +90,7 @@ const serialize = (value: unknown, indent?: number): string => {
   }
 };
 
-export const getLocalDatabaseValueType = (value: unknown): string => {
+const getLocalDatabaseValueType = (value: unknown): string => {
   if (value === null) return 'null';
   if (Array.isArray(value)) return `array[${value.length}]`;
   if (value instanceof Date) return 'date';
@@ -143,7 +143,7 @@ const pushValueFields = (fields: LocalDatabaseField[], prefix: string, value: un
   }
 };
 
-export const getLocalDatabaseFields = (
+const getLocalDatabaseFields = (
   entry: LocalDatabaseEntry,
   replica?: ReplicaStorageKey,
 ): LocalDatabaseField[] => {

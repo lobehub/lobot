@@ -29,7 +29,7 @@ import Favorites from './Favorites';
 import Private from './Private';
 import { useSyncWorkspaceSidebarPreference } from './useSyncWorkspaceSidebarPreference';
 
-export enum GroupKey {
+enum GroupKey {
   Agent = 'agent',
   Community = 'community',
   Favorites = 'favorites',

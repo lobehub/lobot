@@ -4,7 +4,7 @@ import type {
   ExecVirtualSubAgentParams,
 } from '@lobechat/types';
 
-export type SubAgentExecutionStatus = 'cancelled' | 'completed' | 'failed' | 'timed_out';
+type SubAgentExecutionStatus = 'cancelled' | 'completed' | 'failed' | 'timed_out';
 
 /**
  * Server transports normally return after dispatch, while client transports
@@ -12,7 +12,7 @@ export type SubAgentExecutionStatus = 'cancelled' | 'completed' | 'failed' | 'ti
  * fields let the shared executor support both modes without importing client
  * polling concerns into the package.
  */
-export interface SubAgentExecutionResult extends ExecSubAgentResult {
+interface SubAgentExecutionResult extends ExecSubAgentResult {
   result?: string;
   status?: SubAgentExecutionStatus;
 }

@@ -14,8 +14,6 @@ import type { ModelRuntimeDiagnostics } from '../../types/providerDiagnostics';
 import { AgentRuntimeError } from '../../utils/createError';
 import type { RouteAttemptFinished, RouteAttemptOutcome, RouteAttemptStart } from './routeAttempt';
 
-export type { RouteAttemptFinished, RouteAttemptOutcome, RouteAttemptStart } from './routeAttempt';
-
 export interface ChatAttemptObservation {
   commit: () => Promise<void>;
   discard: () => void;

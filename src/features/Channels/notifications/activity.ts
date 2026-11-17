@@ -11,7 +11,7 @@ export type ChannelNotificationLevel = 'all' | 'mentions' | 'off';
 /** A burst (reconnect, many Channels at once) announces this many and stays quiet about the rest. */
 export const MAX_CHANNEL_BANNERS_PER_UPDATE = 3;
 
-export interface ChannelActivitySnapshot {
+interface ChannelActivitySnapshot {
   lastAt: number;
   mentions: number;
   unread: number;

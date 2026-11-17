@@ -2,7 +2,7 @@ export const LOBE_LINK_TAG = 'lobeLink';
 
 export type LobeLinkKind = 'github' | 'linear' | 'email' | 'generic';
 
-export interface ParsedLobeLink {
+interface ParsedLobeLink {
   /**
    * Canonical label used when the link has no author-provided text, e.g.
    * `lobehub/lobehub#15554` / `TST-10001` / `@lobehub/ui` / the full URL.

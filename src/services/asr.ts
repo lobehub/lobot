@@ -1,6 +1,6 @@
 import { lambdaClient } from '@/libs/trpc/client';
 
-export interface TranscribeFileParams {
+interface TranscribeFileParams {
   fileId: string;
   language?: string;
   model: string;

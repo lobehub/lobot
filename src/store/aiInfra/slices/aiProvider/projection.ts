@@ -73,7 +73,7 @@ export interface AiProviderRuntimeStateParams {
 }
 
 /** Entry key of one runtime-state fetch (`aiProviderRuntimeStateMap[key]`). */
-export const aiProviderRuntimeStateQueryKey = (params: AiProviderRuntimeStateParams): string =>
+const aiProviderRuntimeStateQueryKey = (params: AiProviderRuntimeStateParams): string =>
   stableQueryKey(params);
 
 /**
@@ -115,7 +115,7 @@ const RUNTIME_STATE_DISPLAY_FIELDS = [
  * not mark the runtime state ready, so nothing sends a request with the empty
  * `runtimeConfig` before the server answers.
  */
-export const toRuntimeStateDisplaySnapshot = (
+const toRuntimeStateDisplaySnapshot = (
   data: AiProviderRuntimeStateView,
 ): AiProviderRuntimeStateView => {
   const snapshot: Record<string, unknown> = {};

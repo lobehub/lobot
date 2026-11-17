@@ -11,7 +11,7 @@ import {
   useDeviceStore,
 } from '@/store/device';
 
-export type RemoteAgentDeviceStatus =
+type RemoteAgentDeviceStatus =
   'checking' | 'device-offline' | 'no-device' | 'ok' | 'platform-unavailable';
 
 interface UseRemoteAgentDeviceGuardOptions {

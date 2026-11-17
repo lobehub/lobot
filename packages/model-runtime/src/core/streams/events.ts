@@ -11,7 +11,7 @@ import type {
   StreamToolCallChunkData,
 } from './protocol';
 
-export interface ModelStreamEventDataMap {
+interface ModelStreamEventDataMap {
   base64_image: string | { image: { data: string; id: string } };
   content_part: StreamPartChunkData;
   data: unknown;

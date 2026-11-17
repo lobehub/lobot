@@ -13,7 +13,7 @@ export type LogProcess = (typeof LOG_PROCESSES)[number];
 
 export const getLogFileName = (process: LogProcess) => `${process}.jsonl`;
 
-export const LOG_LEVELS = ['debug', 'info', 'warn', 'error'] as const;
+const LOG_LEVELS = ['debug', 'info', 'warn', 'error'] as const;
 export type LogLevel = (typeof LOG_LEVELS)[number];
 
 export const LOG_LEVEL_RANK: Record<LogLevel, number> = {

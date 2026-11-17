@@ -41,7 +41,7 @@ export interface ChannelSendInput {
 const sameList = (a: string[], b: string[]) =>
   a.length === b.length && a.every((value, index) => value === b[index]);
 
-export const validateSendInput = (input: ChannelSendInput) => {
+const validateSendInput = (input: ChannelSendInput) => {
   if (input.replyToId && input.rootMessageId)
     throw new ChannelError('BAD_REQUEST', 'Choose a reply or a thread root, not both');
   if (input.rootMessageId && input.threadId)

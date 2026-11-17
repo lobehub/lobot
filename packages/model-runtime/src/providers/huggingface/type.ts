@@ -16,7 +16,7 @@ interface HFProviderInfo {
   supports_tools?: boolean;
 }
 
-export interface HuggingFaceRouterModelCard {
+interface HuggingFaceRouterModelCard {
   architecture: HFArchitecture;
   created: number;
   id: string;

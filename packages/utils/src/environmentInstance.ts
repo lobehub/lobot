@@ -1,21 +1,4 @@
 /**
- * Rules about an environment's instances that the server and the client both
- * apply. Kept in one place because the two sides answer the same questions —
- * which instance is the default, what a derived directory is called — and an
- * answer that differs between them shows the person one thing and enforces
- * another.
- */
-
-/**
- * How many derived directories to try before giving up.
- *
- * A bound rather than a loop until success: the only way to exhaust it is a
- * member who already holds fifty directories under one name, and at that point
- * the honest answer is to say so rather than keep probing the index.
- */
-export const MAX_DERIVED_DIRECTORY_ATTEMPTS = 50;
-
-/**
  * A directory name derived from an environment's name.
  *
  * Letters and digits of any script survive — a Chinese environment name should
@@ -27,7 +10,7 @@ export const MAX_DERIVED_DIRECTORY_ATTEMPTS = 50;
  * Leading dots are stripped rather than escaped, which also puts `.sandbox`
  * (the reserved platform directory) out of reach without naming it here.
  */
-export const environmentDirectorySlug = (name: string): string => {
+const environmentDirectorySlug = (name: string): string => {
   const slug = name
     .normalize('NFKC')
     .toLowerCase()
@@ -52,7 +35,7 @@ export const derivedInstanceDirectory = (environmentName: string, attempt: numbe
 };
 
 /** The fields the default rule reads; any instance row satisfies it. */
-export interface DefaultInstanceCandidate {
+interface DefaultInstanceCandidate {
   createdAt: Date | string;
   id: string;
 }
@@ -65,7 +48,7 @@ const createdAtMs = (value: Date | string): number =>
  * first, and by id when two were created at the same moment, so every caller
  * agrees on the winner no matter what order the list arrived in.
  */
-export const compareInstancesForDefault = (
+const compareInstancesForDefault = (
   a: DefaultInstanceCandidate,
   b: DefaultInstanceCandidate,
 ): number => {

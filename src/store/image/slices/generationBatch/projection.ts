@@ -1,7 +1,7 @@
 import { defineReplica } from '@/libs/replica';
 import type { GenerationBatch } from '@/types/generation';
 
-export interface GenerationBatchesParams {
+interface GenerationBatchesParams {
   topicId: string;
 }
 

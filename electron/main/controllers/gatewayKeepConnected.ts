@@ -8,7 +8,7 @@ import { powerMonitor } from 'electron';
  */
 export const KEEP_CONNECTED_INTERVAL_MS = 30_000;
 
-export interface KeepConnectedDeps {
+interface KeepConnectedDeps {
   /** The connection is down and nothing rules out retrying it automatically. */
   canAutoReconnect: () => boolean;
   connect: () => Promise<unknown>;

@@ -1,6 +1,6 @@
-export type KimiModelIdSource = 'moonshot' | 'openRouter';
+type KimiModelIdSource = 'moonshot' | 'openRouter';
 
-export interface ParsedKimiModelId {
+interface ParsedKimiModelId {
   family: 'k';
   majorVersion: number;
   minorVersion?: number;
@@ -100,7 +100,7 @@ export const isKimiReasoningEffortModel = (model: string): boolean => {
   return parsed.majorVersion >= 3;
 };
 
-export type KimiReasoningEffort = 'low' | 'high' | 'max';
+type KimiReasoningEffort = 'low' | 'high' | 'max';
 
 /**
  * K3+ accepts only low/high/max. Generic values such as `medium` are dropped so

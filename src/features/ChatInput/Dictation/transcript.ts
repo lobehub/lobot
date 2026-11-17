@@ -1,6 +1,6 @@
 import { type RealtimeAsrServerEvent } from './contract';
 
-export interface DictationTextSnapshot {
+interface DictationTextSnapshot {
   anchor: number;
   committed: string;
   partial: string;
@@ -10,7 +10,7 @@ export interface DictationTextSnapshot {
   text: string;
 }
 
-export interface DictationEventResult {
+interface DictationEventResult {
   accepted: boolean;
   changed: boolean;
 }

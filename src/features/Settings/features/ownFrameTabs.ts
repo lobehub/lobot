@@ -13,7 +13,7 @@ export const OWN_FRAME_TABS = new Set<string>([
 ]);
 
 /** In-frame tabs whose container spans the pane, e.g. a card grid that adds columns as it widens. */
-export const FULL_WIDTH_TABS = new Set<string>([SettingsTabs.Devices]);
+const FULL_WIDTH_TABS = new Set<string>([SettingsTabs.Devices]);
 
 /**
  * Tabs laid out as Telegram-style inset groups: rounded cards straight on the

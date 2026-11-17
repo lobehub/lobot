@@ -9,7 +9,7 @@ import { arrayEntity, defineReplica, type ReplicaEntityAdapter } from '@/libs/re
  */
 export const INSTALLED_PLUGINS_KEY = 'installed';
 
-export type InstalledPluginsParams = Record<string, never>;
+type InstalledPluginsParams = Record<string, never>;
 
 export const INSTALLED_PLUGINS_PARAMS: InstalledPluginsParams = {};
 
@@ -54,7 +54,7 @@ export const installedPluginsEntity: ReplicaEntityAdapter<LobeTool[], LobeTool> 
  * selectors (`pluginSelectors.confirmedInstalledPlugins` and the by-id record
  * lookups) and every write wait for the server-confirmed list.
  */
-export const toInstalledPluginProjection = (plugin: LobeTool): LobeTool => {
+const toInstalledPluginProjection = (plugin: LobeTool): LobeTool => {
   const { customParams, identifier, manifest, runtimeType, source, type } = plugin;
   const row: LobeTool = { identifier, type };
   if (manifest !== undefined) row.manifest = manifest;

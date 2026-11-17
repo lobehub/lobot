@@ -6,11 +6,11 @@ import type { ChatCompletionErrorPayload } from '../../types';
 import { AgentRuntimeErrorType } from '../../types/error';
 import { processMultiProviderModelList } from '../../utils/modelParse';
 
-export interface Ai302ModelCard {
+interface Ai302ModelCard {
   id: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://api.302.ai/v1',
   chatCompletion: {
     handleError: (error: any): Omit<ChatCompletionErrorPayload, 'provider'> | undefined => {

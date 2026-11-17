@@ -12,7 +12,7 @@ import { getHeterogeneousAgentConfigOrThrow } from '../config';
 import type { HeterogeneousAgentEvent, UsageData } from '../types';
 import { ClaudeCodeAdapter } from './claudeCode';
 
-export const QODER_IDENTIFIER = 'qoder';
+const QODER_IDENTIFIER = 'qoder';
 
 const CLAUDE_CODE_AUTH_DOCS_URL = getHeterogeneousAgentConfigOrThrow('claude-code').auth.docsUrl;
 const QODER_AUTH_DOCS_URL = getHeterogeneousAgentConfigOrThrow(QODER_IDENTIFIER).auth.docsUrl;

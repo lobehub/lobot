@@ -16,7 +16,7 @@ export interface CaptureFormValues {
   expected?: string;
 }
 
-export interface CapturePayload {
+interface CapturePayload {
   content: {
     expected?: string;
     input: string;

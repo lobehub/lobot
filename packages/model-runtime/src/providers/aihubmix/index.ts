@@ -8,52 +8,6 @@ import { responsesAPIModels } from '../openai/modelId';
 import { resolveProviderRouteModels } from '../utils/resolveProviderRouteModels';
 
 /**
- * Response schema for GET https://aihubmix.com/api/v1/models
- * See https://docs.aihubmix.com/cn/api/Models-API
- */
-export interface AiHubMixModelCard {
-  /** Context window size in tokens. */
-  context_length?: number;
-  /** Model description (English). */
-  desc?: string;
-  /**
-   * Comma-separated capability flags.
-   * Known values: thinking | tools | function_calling | web | structured_outputs
-   */
-  features?: string;
-  /**
-   * Comma-separated input modalities.
-   * Known values: text | image | audio | video | pdf
-   */
-  input_modalities?: string;
-  /** Maximum output length in tokens. */
-  max_output?: number;
-  /** Unique model identifier (new endpoint uses model_id; legacy endpoint uses id). */
-  model_id?: string;
-  /**
-   * Display name of the model.
-   * Note: not present in official API response examples; kept for forward compatibility.
-   */
-  model_name?: string;
-  /**
-   * Pricing in USD per million tokens.
-   * cache_write is the cache-write price (present in field docs but absent from response examples).
-   */
-  pricing?: {
-    cache_read?: number;
-    cache_write?: number;
-    input?: number;
-    output?: number;
-  };
-  /**
-   * Model type.
-   * Current values: llm | image_generation | video | tts | stt | embedding | rerank
-   * Legacy aliases (auto-mapped by the platform): t2t→llm | t2i→image_generation | t2v→video | reranking→rerank
-   */
-  types?: string;
-}
-
-/**
  * Maps AiHubMix `types` field values to LobeHub AiModelType.
  * Both current identifiers and legacy aliases are included; the platform
  * auto-maps them server-side, but we handle both defensively on the client.
@@ -151,7 +105,7 @@ const DEFAULT_BASE_URL = 'https://aihubmix.com';
 const resolveBaseURL = (options: { baseURL?: string | null }) =>
   options.baseURL?.trim().replace(/\/v\d+[a-z]*\/?$/, '') || DEFAULT_BASE_URL;
 
-export const params: CreateRouterRuntimeOptions = {
+const params: CreateRouterRuntimeOptions = {
   debug: {
     chatCompletion: () => process.env.DEBUG_AIHUBMIX_CHAT_COMPLETION === '1',
   },

@@ -6,7 +6,7 @@ import { defineReplica } from '@/libs/replica';
  * Visibility surface of the agent-knowledge picker. `undefined` is the
  * unfiltered surface used in personal scope (see `resolvePickerScope`).
  */
-export type AgentKnowledgeVisibility = 'private' | 'public';
+type AgentKnowledgeVisibility = 'private' | 'public';
 
 export interface AgentKnowledgeListParams {
   agentId: string;

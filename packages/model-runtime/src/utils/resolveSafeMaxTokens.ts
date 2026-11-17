@@ -20,9 +20,9 @@ export const CONTEXT_EXCEEDED_PRE_FLIGHT_TYPE = 'context_exceeded_pre_flight' as
 
 export const DEFAULT_PRE_FLIGHT_SUGGESTIONS = ['fork_topic', 'switch_to_larger_ctx_model'] as const;
 
-export type PreFlightSuggestion = (typeof DEFAULT_PRE_FLIGHT_SUGGESTIONS)[number];
+type PreFlightSuggestion = (typeof DEFAULT_PRE_FLIGHT_SUGGESTIONS)[number];
 
-export interface ResolveSafeMaxTokensOptions {
+interface ResolveSafeMaxTokensOptions {
   /** Safety buffer reserved on top of estimated input tokens. */
   bufferTokens?: number;
   /** Minimum acceptable `max_tokens`; below this we throw. */

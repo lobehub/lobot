@@ -33,12 +33,12 @@ export const isMarkupEmpty = (markup: ImageMarkup) =>
 export const anchorOrigin = (anchor: MarkupAnchor): Point =>
   anchor.type === 'point' ? anchor.point : { x: anchor.rect.x, y: anchor.rect.y };
 
-export const anchorCenter = (anchor: MarkupAnchor): Point =>
+const anchorCenter = (anchor: MarkupAnchor): Point =>
   anchor.type === 'point'
     ? anchor.point
     : { x: anchor.rect.x + anchor.rect.width / 2, y: anchor.rect.y + anchor.rect.height / 2 };
 
-export type MarkupArea =
+type MarkupArea =
   | 'bottom'
   | 'bottomLeft'
   | 'bottomRight'

@@ -1,6 +1,6 @@
 import type { ISlashMenuOption } from '@lobehub/editor';
 
-export interface UseLocalFileTagResult {
+interface UseLocalFileTagResult {
   enableLocalFileTag: boolean;
   searchLocalFiles: (matchingString: string) => Promise<ISlashMenuOption[]>;
 }

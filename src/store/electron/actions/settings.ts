@@ -22,7 +22,7 @@ type Setter = StoreSetter<ElectronStore>;
 export const settingsSlice = (set: Setter, get: () => ElectronStore, _api?: unknown) =>
   new ElectronSettingsActionImpl(set, get, _api);
 
-export class ElectronSettingsActionImpl {
+class ElectronSettingsActionImpl {
   readonly #get: () => ElectronStore;
   readonly #set: Setter;
 

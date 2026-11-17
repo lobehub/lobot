@@ -8,7 +8,7 @@ import { useActivityTime } from '@/hooks/useActivityTime';
 
 import { type ChatItemProps } from '../type';
 
-export interface TitleProps {
+interface TitleProps {
   avatar: ChatItemProps['avatar'];
   quiet?: boolean;
   showTitle?: ChatItemProps['showTitle'];

@@ -6,7 +6,7 @@
  * The prefix alone says nothing about another provider's ids: a `group/…` id
  * elsewhere may be an ordinary model's name, so the check is scoped to magpie.
  */
-export const ROUTING_GROUP_PROVIDER = 'magpie';
+const ROUTING_GROUP_PROVIDER = 'magpie';
 
 /**
  * Whether a model id names a magpie routing group rather than one provider's

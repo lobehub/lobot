@@ -37,7 +37,7 @@ interface LegacyModalStyles {
   wrapper?: CSSProperties;
 }
 
-export interface ImperativeModalProps extends Omit<
+interface ImperativeModalProps extends Omit<
   BaseImperativeModalProps,
   'children' | 'classNames' | 'content' | 'footer' | 'open' | 'styles'
 > {

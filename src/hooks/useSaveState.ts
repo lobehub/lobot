@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react';
 
 import { type SaveStatus } from '@/types/saveState';
 
-export interface SaveStateHandle {
+interface SaveStateHandle {
   /** Timestamp of the last successful save, for `AutoSaveHint`'s "Saved {fromNow}". */
   lastSavedAt: Date | null;
   /** Re-run the most recent save task — wire to the Retry affordance of a failed hint. */

@@ -95,7 +95,7 @@ function normalizeStatus(status: PermissionType | 'not determined'): PermissionS
 /**
  * Get the authorization status for a specific permission type
  */
-export function getPermissionStatus(type: AuthType): PermissionStatus {
+function getPermissionStatus(type: AuthType): PermissionStatus {
   const macPermissions = getMacPermissionsModule();
   if (!macPermissions) {
     logger.debug(`[Permission] Not macOS, returning granted for ${type}`);
@@ -135,13 +135,6 @@ export function requestAccessibilityAccess(): boolean {
 }
 
 /**
- * Check if Microphone permission is granted
- */
-export function getMicrophoneStatus(): PermissionStatus {
-  return getPermissionStatus('microphone');
-}
-
-/**
  * Request Microphone permission
  * Shows the system permission dialog if not determined
  */
@@ -176,52 +169,6 @@ export async function requestMicrophoneAccess(): Promise<boolean> {
   logger.info(`[Microphone] Status is ${currentStatus}, opening System Settings...`);
   await shell.openExternal(
     'x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone',
-  );
-  return false;
-}
-
-/**
- * Check if Camera permission is granted
- */
-export function getCameraStatus(): PermissionStatus {
-  return getPermissionStatus('camera');
-}
-
-/**
- * Request Camera permission
- * Shows the system permission dialog if not determined
- */
-export async function requestCameraAccess(): Promise<boolean> {
-  const macPermissions = getMacPermissionsModule();
-  if (!macPermissions) {
-    logger.info('[Camera] Not macOS, returning true');
-    return true;
-  }
-
-  const currentStatus = getPermissionStatus('camera');
-  logger.info(`[Camera] Current status: ${currentStatus}`);
-
-  if (currentStatus === 'granted') {
-    logger.info('[Camera] Already granted');
-    return true;
-  }
-
-  if (currentStatus === 'not-determined') {
-    logger.info('[Camera] Status is not-determined, requesting access...');
-    try {
-      const result = await macPermissions.askForCameraAccess();
-      logger.info(`[Camera] askForCameraAccess result: ${result}`);
-      return result === 'authorized';
-    } catch (error) {
-      logger.error('[Camera] askForCameraAccess failed:', error);
-      return false;
-    }
-  }
-
-  // If denied or restricted, open System Settings for manual enable
-  logger.info(`[Camera] Status is ${currentStatus}, opening System Settings...`);
-  await shell.openExternal(
-    'x-apple.systempreferences:com.apple.preference.security?Privacy_Camera',
   );
   return false;
 }
@@ -268,23 +215,6 @@ export async function requestScreenCaptureAccess(openPreferences = true): Promis
  */
 export function getFullDiskAccessStatus(): PermissionStatus {
   return getPermissionStatus('full-disk-access');
-}
-
-/**
- * Request Full Disk Access permission
- * Opens System Preferences to the Full Disk Access pane
- * Note: Full Disk Access cannot be granted programmatically,
- * user must manually add the app in System Settings
- */
-export function requestFullDiskAccess(): void {
-  const macPermissions = getMacPermissionsModule();
-  if (!macPermissions) {
-    logger.info('[FullDiskAccess] Not macOS, skipping');
-    return;
-  }
-
-  logger.info('[FullDiskAccess] Opening Full Disk Access settings...');
-  macPermissions.askForFullDiskAccess();
 }
 
 /**

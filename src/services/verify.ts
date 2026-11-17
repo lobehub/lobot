@@ -28,33 +28,24 @@ import type {
 import { lambdaClient } from '@/libs/trpc/client';
 
 /** Criterion row plus the judge instruction resolved from its linked document. */
-export type GoalCriterionWithInstruction = VerifyCriterionItem & { instruction?: string };
+type GoalCriterionWithInstruction = VerifyCriterionItem & { instruction?: string };
 
-export type AcceptanceBundle = Awaited<ReturnType<typeof lambdaClient.acceptance.getBundle.query>>;
-export type AcceptanceBySubject = Awaited<
-  ReturnType<typeof lambdaClient.acceptance.getBySubject.query>
->;
-export type AcceptanceListItem = Awaited<
-  ReturnType<typeof lambdaClient.acceptance.list.query>
->[number];
+type AcceptanceBundle = Awaited<ReturnType<typeof lambdaClient.acceptance.getBundle.query>>;
+type AcceptanceListItem = Awaited<ReturnType<typeof lambdaClient.acceptance.list.query>>[number];
 
-export type AcceptanceListPage = Awaited<ReturnType<typeof lambdaClient.acceptance.listPage.query>>;
-
-export type AcceptancePurgePreview = Awaited<
-  ReturnType<typeof lambdaClient.acceptance.purgePreview.query>
->;
+type AcceptanceListPage = Awaited<ReturnType<typeof lambdaClient.acceptance.listPage.query>>;
 
 /** The list's status split, shared by the flat and paged reads. */
-export type AcceptanceListFilter = 'active' | 'all' | 'completed';
+type AcceptanceListFilter = 'active' | 'all' | 'completed';
 
 /** Whose acceptances: the active scope, only mine, or any I commented on. */
-export type AcceptanceListScope = 'all' | 'created' | 'participated';
+type AcceptanceListScope = 'all' | 'created' | 'participated';
 
 /** Where the acceptance came from; `standalone` also covers documents. */
-export type AcceptanceListSource = 'all' | 'goal' | 'standalone' | 'task' | 'topic';
+type AcceptanceListSource = 'all' | 'goal' | 'standalone' | 'task' | 'topic';
 
 /** Every list narrowing beyond search. `projectId: null` = filed under no project. */
-export interface AcceptanceListQuery {
+interface AcceptanceListQuery {
   filter?: AcceptanceListFilter;
   projectId?: string | null;
   scope?: AcceptanceListScope;
@@ -62,10 +53,10 @@ export interface AcceptanceListQuery {
 }
 
 /** The lifecycle states a reviewer may set by hand from the acceptance list. */
-export type AcceptanceStatusOverride = 'accepted' | 'closed' | 'delivered' | 'rejected';
+type AcceptanceStatusOverride = 'accepted' | 'closed' | 'delivered' | 'rejected';
 
 /** Editable fields of a single delivery-check criterion. */
-export interface UpdateCriterionValue {
+interface UpdateCriterionValue {
   archivedAt?: Date | null;
   definition?: VerifyCheckDefinition | null;
   description?: string | null;
@@ -79,7 +70,7 @@ export interface UpdateCriterionValue {
 }
 
 /** Fields for authoring a new delivery-check criterion. */
-export interface CreateCriterionInput {
+interface CreateCriterionInput {
   definition?: VerifyCheckDefinition;
   description?: string;
   documentId?: string;
@@ -92,7 +83,7 @@ export interface CreateCriterionInput {
 }
 
 /** Fields for authoring a new rubric (named criteria group). */
-export interface CreateRubricInput {
+interface CreateRubricInput {
   config?: VerifyRubricConfig;
   description?: string;
   title: string;
@@ -102,7 +93,7 @@ export interface CreateRubricInput {
  * A proposed (or user-edited) acceptance criterion before it is persisted. The
  * shape returned by `generateCriteria` and the shape `createCriteria` accepts.
  */
-export interface VerifyCriterionDraft {
+interface VerifyCriterionDraft {
   description?: string;
   /** Reuse an existing instruction doc (preserves the rubric on re-save). */
   documentId?: string | null;
@@ -114,7 +105,7 @@ export interface VerifyCriterionDraft {
   verifierType?: VerifierType;
 }
 
-export interface VerifyStateResponse {
+interface VerifyStateResponse {
   /** The server's auto-repair decision for a failed round; absent until it decided. */
   verifyAutoRepair?: VerifyAutoRepairOutcome | null;
   verifyPlan: VerifyCheckItem[] | null;
@@ -123,7 +114,7 @@ export interface VerifyStateResponse {
 }
 
 /** One evidence artifact plus resolved display metadata, when file-backed. */
-export type VerifyEvidenceWithUrl = VerifyEvidence & {
+type VerifyEvidenceWithUrl = VerifyEvidence & {
   fileName: string | null;
   fileUrl: string | null;
   /** `terminal` evidence only: signed URLs for the stdout / stderr / output / recording files. */
@@ -136,12 +127,12 @@ export type VerifyEvidenceWithUrl = VerifyEvidence & {
 };
 
 /** One check result plus the evidence artifacts attached to it. */
-export type VerifyResultWithEvidence = VerifyCheckResultItem & {
+type VerifyResultWithEvidence = VerifyCheckResultItem & {
   evidence: VerifyEvidenceWithUrl[];
 };
 
 /** Everything the standalone report viewer needs for one verification session. */
-export interface VerifyReportBundle {
+interface VerifyReportBundle {
   /**
    * Whether the viewer authored this run. Report URLs are public, so
    * author-only affordances (the origin conversation) gate on this — the server
@@ -154,12 +145,12 @@ export interface VerifyReportBundle {
 }
 
 /** The acceptance round a verify run belongs to — where its old `/verify/:runId` link lands. */
-export interface VerifyRunAcceptanceRound {
+interface VerifyRunAcceptanceRound {
   acceptanceId: string;
   roundIndex: number | null;
 }
 
-export interface GenerateDraftPlanInput {
+interface GenerateDraftPlanInput {
   context?: string;
   enableAiGeneration?: boolean;
   goal: string;
@@ -170,7 +161,7 @@ export interface GenerateDraftPlanInput {
 }
 
 /** Client wrapper around the `verify` lambda router. */
-export class VerifyService {
+class VerifyService {
   startFlow = (input: Parameters<typeof lambdaClient.acceptance.startFlow.mutate>[0]) =>
     lambdaClient.acceptance.startFlow.mutate(input);
 

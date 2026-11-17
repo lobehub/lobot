@@ -3,7 +3,7 @@ import type { GoalGraphNode, GoalGraphSnapshot, GoalNodeStatus } from '@lobechat
 type Graph = Pick<GoalGraphSnapshot, 'nodes' | 'edges'>;
 
 /** Containment is a tree; reasoning/provenance edges remain a graph. */
-export const experimentOwner = (graph: Graph, nodeId: string) =>
+const experimentOwner = (graph: Graph, nodeId: string) =>
   graph.edges.find((edge) => edge.kind === 'contains' && edge.targetNodeId === nodeId)
     ?.sourceNodeId;
 
@@ -71,13 +71,6 @@ export const graphScopeIds = (graph: Graph, scopeId?: string): Set<string> => {
   );
 };
 
-/**
- * How many corrected protocols one experiment may take. Bounding them keeps a planner
- * that keeps "fixing" the same instrument from spending the goal's budget without ever
- * changing the question.
- */
-export const MAX_PROTOCOL_REVISIONS = 2;
-
 /** A node that replaces an earlier protocol, rather than opening a new branch. */
 export const isProtocolRevision = (graph: Graph, nodeId: string): boolean =>
   graph.edges.some((edge) => edge.kind === 'revises' && edge.sourceNodeId === nodeId);
@@ -118,25 +111,3 @@ export const provenanceParentId = (graph: Graph, nodeId: string): string | undef
         edge.sourceNodeId === (experimentOwner(graph, nodeId) ?? nodeId),
     )
   )?.targetNodeId;
-
-/**
- * Every node whose work belongs to this experiment: its container members plus the
- * corrections aimed at it. A correction re-runs the same question, so its findings and
- * produced versions are the experiment's evidence — without this the planner would
- * keep reading the pre-correction result and never see what the rerun found.
- */
-export const experimentScope = (graph: Graph, nodeId: string): Set<string> => {
-  const scope = experimentMembers(graph, nodeId);
-  scope.add(nodeId);
-  for (;;) {
-    const next = graph.edges.filter(
-      (edge) =>
-        edge.kind === 'revises' && scope.has(edge.targetNodeId) && !scope.has(edge.sourceNodeId),
-    );
-    if (!next.length) return scope;
-    for (const edge of next) {
-      scope.add(edge.sourceNodeId);
-      for (const member of experimentMembers(graph, edge.sourceNodeId)) scope.add(member);
-    }
-  }
-};

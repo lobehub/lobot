@@ -7,7 +7,7 @@ import { acquireHintClock, HINT_DELAY, releaseHintClock } from './hintClock';
  * whose caption is already on screen, so the handoff doesn't replay the
  * fade-in.
  */
-export type LoadingHintState = 'enter' | 'static';
+type LoadingHintState = 'enter' | 'static';
 
 export const useLoadingHint = (): LoadingHintState | undefined => {
   const [hint, setHint] = useState<LoadingHintState>();

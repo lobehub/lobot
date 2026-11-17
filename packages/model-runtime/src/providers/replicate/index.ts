@@ -424,5 +424,3 @@ export class LobeReplicateAI implements LobeRuntimeAI {
     console.info(...args);
   }
 }
-
-export default LobeReplicateAI;

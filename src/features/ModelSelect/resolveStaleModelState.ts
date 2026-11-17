@@ -2,7 +2,7 @@ import { type LobeDefaultAiModelListItem } from 'model-bank';
 
 import { type EnabledProviderWithModels } from '@/types/aiProvider';
 
-export interface StaleModelState {
+interface StaleModelState {
   meta?: LobeDefaultAiModelListItem;
   /**
    * `notEnabled`: the model exists in the builtin bank but is not enabled —
@@ -18,7 +18,7 @@ export interface StaleModelState {
   successorId?: string;
 }
 
-export interface ResolveStaleModelStateContext {
+interface ResolveStaleModelStateContext {
   builtinAiModelList: LobeDefaultAiModelListItem[];
   enabledList: EnabledProviderWithModels[];
   modelRedirects?: Record<string, string>;

@@ -13,7 +13,7 @@ export const COMPOSIO_SERVERS_KEY = 'all';
  * so the stamp is what lets the slice tell a response the server produced
  * *before* a local write (which must not be applied) from one produced after it.
  */
-export interface ComposioServersResponse {
+interface ComposioServersResponse {
   servers: ComposioServer[];
   /** `writeSeq` at the moment the request was issued. */
   since: number;

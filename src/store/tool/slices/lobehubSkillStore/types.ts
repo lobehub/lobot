@@ -30,22 +30,6 @@ export interface LobehubSkillTool {
 }
 
 /**
- * LobeHub Skill Provider definition (from Market API)
- */
-export interface LobehubSkillProvider {
-  /** Provider icon URL */
-  icon?: string;
-  /** Provider ID (e.g., 'linear', 'github') */
-  id: string;
-  /** Display name */
-  name: string;
-  /** Whether token refresh is supported */
-  refreshSupported?: boolean;
-  /** Provider type */
-  type?: 'mcp' | 'rest';
-}
-
-/**
  * LobeHub Skill Server instance (user-connected provider)
  */
 export interface LobehubSkillServer {

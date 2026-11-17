@@ -30,8 +30,6 @@ import { reconcileAssistantToolLinks } from '../utils/reconcileTools';
 const log = debug('lobe-client:message-query');
 
 type Setter = StoreSetter<ChatStore>;
-export const messageQuery = (set: Setter, get: () => ChatStore, _api?: unknown) =>
-  new MessageQueryActionImpl(set, get, _api);
 
 export class MessageQueryActionImpl {
   readonly #get: () => ChatStore;

@@ -5,7 +5,7 @@ import { MemoryTypeSchema } from './common';
 /**
  * Experience-specific fields
  */
-export const WithExperienceSchema = z.object({
+const WithExperienceSchema = z.object({
   action: z.string().describe('Narrative describing actions taken or behaviors exhibited'),
   keyLearning: z.string().describe('Narrative describing key insights or lessons learned'),
   knowledgeValueScore: z
@@ -47,18 +47,3 @@ export const ExperienceMemoryItemSchema = z.object({
   title: z.string().describe('Brief descriptive title'),
   withExperience: WithExperienceSchema,
 });
-
-/**
- * Experience memory extraction result
- */
-export const ExperienceMemorySchema = z.object({
-  memories: z
-    .array(ExperienceMemoryItemSchema)
-    .describe(
-      'Array of extracted experience memory items, could be empty if decided no relevant experience to extract',
-    ),
-});
-
-export type WithExperience = z.infer<typeof WithExperienceSchema>;
-export type ExperienceMemoryItem = z.infer<typeof ExperienceMemoryItemSchema>;
-export type ExperienceMemory = z.infer<typeof ExperienceMemorySchema>;

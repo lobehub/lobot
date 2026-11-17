@@ -1,9 +1,3 @@
-export interface ChatMessage {
-  content: string;
-  id: string;
-  role: 'user' | 'assistant';
-}
-
 export interface SelectedAgent {
   avatar: string;
   id: string;

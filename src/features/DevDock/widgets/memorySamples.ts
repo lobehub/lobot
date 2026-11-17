@@ -8,7 +8,7 @@ export interface MemorySample {
   renderer: RendererMemoryInfo | null;
 }
 
-export interface MemorySamples {
+interface MemorySamples {
   history: MemorySample[];
   latest: MemorySample;
 }

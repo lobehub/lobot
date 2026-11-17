@@ -1,6 +1,6 @@
 import { isDesktop } from '@lobechat/const';
 
-export interface ExportTextFileOptions {
+interface ExportTextFileOptions {
   /** File name before the extension; an existing matching extension is kept once. */
   baseName: string;
   content: string;
@@ -16,7 +16,7 @@ export interface ExportTextFileOptions {
  * - `downloaded`: the browser download started; the caller confirms it.
  * - `canceled`: the user closed the desktop save dialog.
  */
-export type ExportTextFileResult = 'canceled' | 'downloaded' | 'saved';
+type ExportTextFileResult = 'canceled' | 'downloaded' | 'saved';
 
 export const exportFileName = (baseName: string, extension: string) => {
   const name = baseName.trim() || 'Untitled';
@@ -24,7 +24,7 @@ export const exportFileName = (baseName: string, extension: string) => {
 };
 
 /** Save text as a local file: the desktop save dialog, or a browser download. */
-export const exportTextFile = async ({
+const exportTextFile = async ({
   baseName,
   content,
   extension,

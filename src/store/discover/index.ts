@@ -1,1 +1,1 @@
-export { type DiscoverStore, getDiscoverStoreState, useDiscoverStore } from './store';
+export { type DiscoverStore, useDiscoverStore } from './store';

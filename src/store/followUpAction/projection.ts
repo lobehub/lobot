@@ -2,7 +2,7 @@ import { defineReplica } from '@/libs/replica';
 
 import type { FollowUpActionSlot } from './initialState';
 
-export interface FollowUpSlotParams {
+interface FollowUpSlotParams {
   conversationKey: string;
 }
 

@@ -6,7 +6,7 @@ import { windowSecondsForKind } from './types';
  * Round to the provider-visible minute before using it as a persisted natural
  * key; truncating to seconds still splits one real window around :59.xxx / :00.xxx.
  */
-export const canonicalizeWindowResetAt = (resetsAt: number): number =>
+const canonicalizeWindowResetAt = (resetsAt: number): number =>
   Math.round(resetsAt / 60_000) * 60_000;
 
 const keyOf = (r: Pick<QuotaLimitReading, 'limitType' | 'scopeKey' | 'resetsAt'>): string =>
@@ -66,24 +66,3 @@ export const projectWindows = (
 
   return [...byWindow.values()].sort((a, b) => a.resetsAt - b.resetsAt);
 };
-
-/** The window that contains `atMs`, if any (used to find the current window). */
-export const findWindowAt = (
-  windows: QuotaWindowProjection[],
-  atMs: number,
-): QuotaWindowProjection | undefined =>
-  windows.find((w) => atMs >= w.windowStartAt && atMs < w.resetsAt);
-
-/** Minimum utilization movement for a window to count as "someone used it". */
-export const CONTAMINATION_MIN_UTIL = 3;
-/** Below this ledger spend, a utilization rise must have come from elsewhere. */
-export const CONTAMINATION_MAX_COST_USD = 0.5;
-
-/**
- * A window is contaminated when the provider's meter moved but our ledger saw
- * (essentially) no spend — i.e. an external consumer (a CLI run outside
- * LobeHub) drove the utilization. Contaminated windows must be excluded from
- * calibration, else capacity is systematically under-estimated.
- */
-export const isWindowContaminated = (peakUtilization: number, ledgerCostUsd: number): boolean =>
-  peakUtilization >= CONTAMINATION_MIN_UTIL && ledgerCostUsd < CONTAMINATION_MAX_COST_USD;

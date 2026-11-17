@@ -6,7 +6,7 @@ import type { FileUploadState, FileUploadStatus } from '@/types/files/upload';
 import { registerAttachment } from './attachmentRegistry';
 import { getExistingEditorAttachment } from './editorAttachments';
 
-export type EditorAttachmentUploadProgress = (
+type EditorAttachmentUploadProgress = (
   status: FileUploadStatus,
   uploadState?: FileUploadState,
 ) => void;

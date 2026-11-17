@@ -41,7 +41,7 @@ export type ConstructorOptions<T extends Record<string, any> = any> = ClientOpti
   ModelIdMappingOptions &
   T;
 
-export const DEFAULT_ANTHROPIC_BASE_URL = 'https://api.anthropic.com';
+const DEFAULT_ANTHROPIC_BASE_URL = 'https://api.anthropic.com';
 const ANTHROPIC_CLIENT_TIMEOUT_ENV = 'ANTHROPIC_CLIENT_TIMEOUT';
 /**
  * Keep Anthropic SDK's timeout explicit so non-streaming structured output
@@ -61,12 +61,9 @@ const resolveDefaultAnthropicTimeout = () => {
   return Number.isInteger(timeout) && timeout > 0 ? timeout : DEFAULT_ANTHROPIC_TIMEOUT;
 };
 
-export {
-  buildDefaultAnthropicPayload,
-  resolveDefaultAnthropicPricingOptions,
-} from '../protocols/anthropicMessages/payload';
+export { buildDefaultAnthropicPayload } from '../protocols/anthropicMessages/payload';
 
-export interface CustomClientOptions<T extends Record<string, any> = any> {
+interface CustomClientOptions<T extends Record<string, any> = any> {
   createClient?: (options: ConstructorOptions<T>) => Anthropic;
 }
 
@@ -124,7 +121,7 @@ export interface AnthropicCompatibleFactoryOptions<T extends Record<string, any>
   provider: string;
 }
 
-export interface AnthropicCompatibleParamsInput<T extends Record<string, any> = any> extends Omit<
+interface AnthropicCompatibleParamsInput<T extends Record<string, any> = any> extends Omit<
   AnthropicCompatibleFactoryOptions<T>,
   'chatCompletion' | 'customClient' | 'generateObject' | 'models'
 > {
@@ -255,7 +252,7 @@ export const handleDefaultAnthropicError = <T extends Record<string, any> = any>
 /**
  * Default Anthropic models list fetcher.
  */
-export const createDefaultAnthropicModels = async ({
+const createDefaultAnthropicModels = async ({
   apiKey,
   baseURL,
 }: {

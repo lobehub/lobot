@@ -8,7 +8,7 @@ import { isDev } from '@/utils/env';
 import { contextSelectors, useConversationStore } from '../../store';
 import type { ChatItemProps } from '../type';
 
-export interface ActionsProps {
+interface ActionsProps {
   actionAddon?: ChatItemProps['actionAddon'];
   actions: ChatItemProps['actions'];
   placement?: ChatItemProps['placement'];

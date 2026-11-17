@@ -1,5 +1,5 @@
 /** Postgres SQLSTATE for `unique_violation`. */
-export const PG_UNIQUE_VIOLATION = '23505';
+const PG_UNIQUE_VIOLATION = '23505';
 
 interface PgErrorFields {
   cause?: unknown;
@@ -17,7 +17,7 @@ interface PgErrorFields {
  * reaches us unwrapped (raw client calls, node-postgres or PGlite alike)
  * carries them on the error itself, so read both levels.
  */
-export const getUniqueViolation = (error: unknown): PgErrorFields | undefined => {
+const getUniqueViolation = (error: unknown): PgErrorFields | undefined => {
   if (!error || typeof error !== 'object') return undefined;
 
   const pgError = error as PgErrorFields;
@@ -30,12 +30,3 @@ export const getUniqueViolation = (error: unknown): PgErrorFields | undefined =>
 };
 
 export const isUniqueViolation = (error: unknown): boolean => !!getUniqueViolation(error);
-
-/**
- * The violated constraint name when `error` is a unique violation, `''` when
- * the driver did not report one, and `undefined` for any other error.
- */
-export const uniqueViolationConstraint = (error: unknown): string | undefined => {
-  const violation = getUniqueViolation(error);
-  return violation ? (violation.constraint ?? '') : undefined;
-};

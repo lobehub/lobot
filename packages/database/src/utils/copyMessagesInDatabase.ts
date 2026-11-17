@@ -1,4 +1,3 @@
-import type { MessageMetadata } from '@lobechat/types';
 import { getTableColumns, type SQL, sql } from 'drizzle-orm';
 import type { PgColumn, PgTable } from 'drizzle-orm/pg-core';
 
@@ -19,28 +18,8 @@ import type { LobeChatDatabase } from '../type';
 
 export type IdPair = [sourceId: string, newId: string];
 
-/**
- * JS counterpart of the `metadata` rewrite this module applies in SQL, for
- * duplication paths that build their rows in memory (`TopicModel.duplicate`).
- * Keep in sync with `metadataExpr` below.
- *
- * The row keeps its token/cost figures: they are facts about the generation
- * the transcript records, and the chat UI, subagent chips and the context
- * engine's token accounting all read them. Only the `copied` marker is added,
- * and usage REPORTS filter on it — see `notCopiedTranscript` in
- * `./copiedTranscript`. Marking, not erasing, is what keeps a copy honest without
- * degrading it.
- */
-export const markCopiedMessageMetadata = (metadata: unknown): MessageMetadata => {
-  const next: Record<string, unknown> =
-    metadata && typeof metadata === 'object' && !Array.isArray(metadata)
-      ? { ...(metadata as Record<string, unknown>) }
-      : {};
-  return { ...next, copied: true } as MessageMetadata;
-};
-
 /** Message child table carrying the denormalized ownership snapshot columns. */
-export type ScopedMessageChildTable = PgTable & {
+type ScopedMessageChildTable = PgTable & {
   userId: PgColumn;
   workspaceId: PgColumn;
 };
@@ -68,7 +47,7 @@ export type ScopedMessageChildTable = PgTable & {
  * - `_amap_target` — agent id remap, LEFT JOINed on `messages.target_id`
  *   (only when `agentIdPairs` is provided)
  */
-export interface CopyMessagesInDatabaseParams {
+interface CopyMessagesInDatabaseParams {
   /** SQL expression producing the copied rows' `agent_id` */
   agentIdExpr: SQL;
   /** Remap for `messages.agent_id` (only the pairs; expressions decide usage) */

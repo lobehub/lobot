@@ -12,31 +12,31 @@
  * deserialization will fail unless the path being deserialized is already
  * absolute.
  */
-export type AbsolutePathBuf = string;
+type AbsolutePathBuf = string;
 
 // Source: AgentPath.ts
-export type AgentPath = string;
+type AgentPath = string;
 
 // Source: ClientInfo.ts
-export type ClientInfo = { name: string, title: string | null, version: string, };
+type ClientInfo = { name: string, title: string | null, version: string, };
 
 // Source: ClientNotification.ts
 export type ClientNotification = { "method": "initialized" };
 
 // Source: ImageDetail.ts
-export type ImageDetail = "auto" | "low" | "high" | "original";
+type ImageDetail = "auto" | "low" | "high" | "original";
 
 // Source: ImageGenerationFailure.ts
-export type ImageGenerationFailure = { "type": "usageLimitExceeded", limitId: string, resetsAt: number | null, };
+type ImageGenerationFailure = { "type": "usageLimitExceeded", limitId: string, resetsAt: number | null, };
 
 // Source: ImageGenerationItem.ts
-export type ImageGenerationItem = { id: string, status: string, revisedPrompt: string | null, result: string, transparentBackground?: boolean, failure: ImageGenerationFailure | null, savedPath?: AbsolutePathBuf, };
+type ImageGenerationItem = { id: string, status: string, revisedPrompt: string | null, result: string, transparentBackground?: boolean, failure: ImageGenerationFailure | null, savedPath?: AbsolutePathBuf, };
 
 // Source: InitializeCapabilities.ts
 /**
  * Client-declared capabilities negotiated during initialize.
  */
-export type InitializeCapabilities = {
+type InitializeCapabilities = {
 /**
  * Opt into receiving experimental API methods and fields.
  */
@@ -104,7 +104,7 @@ platformOs: string, };
  * path text remains valid until an operation such as [`Self::to_path_uri`]
  * requires an absolute path.
  */
-export type LegacyAppPathString = string;
+type LegacyAppPathString = string;
 
 // Source: MessagePhase.ts
 /**
@@ -113,16 +113,16 @@ export type LegacyAppPathString = string;
  * Providers do not emit this consistently, so callers must treat `None` as
  * "phase unknown" and keep compatibility behavior for legacy models.
  */
-export type MessagePhase = "commentary" | "final_answer";
+type MessagePhase = "commentary" | "final_answer";
 
 // Source: Personality.ts
-export type Personality = "none" | "friendly" | "pragmatic";
+type Personality = "none" | "friendly" | "pragmatic";
 
 // Source: ReasoningEffort.ts
 /**
  * See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#get-started-with-reasoning
  */
-export type ReasoningEffort = string;
+type ReasoningEffort = string;
 
 // Source: ReasoningSummary.ts
 /**
@@ -130,7 +130,7 @@ export type ReasoningEffort = string;
  * debugging and understanding the model's reasoning process.
  * See https://platform.openai.com/docs/guides/reasoning?api-mode=responses#reasoning-summaries
  */
-export type ReasoningSummary = "auto" | "concise" | "detailed" | "none";
+type ReasoningSummary = "auto" | "concise" | "detailed" | "none";
 
 // Source: RequestId.ts
 export type RequestId = string | number;
@@ -139,10 +139,10 @@ export type RequestId = string | number;
 /**
  * Display item emitted by the interruptible `clock.sleep` tool.
  */
-export type SleepItem = { id: string, durationMs: number, };
+type SleepItem = { id: string, durationMs: number, };
 
 // Source: SubAgentSource.ts
-export type SubAgentSource = "review" | "compact" | { "thread_spawn": { parent_thread_id: ThreadId, depth: number, agent_path: AgentPath | null, agent_nickname: string | null, agent_role: string | null, } } | "memory_consolidation" | { "other": string };
+type SubAgentSource = "review" | "compact" | { "thread_spawn": { parent_thread_id: ThreadId, depth: number, agent_path: AgentPath | null, agent_nickname: string | null, agent_role: string | null, } } | "memory_consolidation" | { "other": string };
 
 // Source: ThreadId.ts
 /**
@@ -150,10 +150,10 @@ export type SubAgentSource = "review" | "compact" | { "thread_spawn": { parent_t
  *
  * Codex-generated thread IDs are UUIDv7, and some use cases rely on that.
  */
-export type ThreadId = string;
+type ThreadId = string;
 
 // Source: WebSearchItem.ts
-export type WebSearchItem = { id: string, query: string, action: WebSearchAction | null,
+type WebSearchItem = { id: string, query: string, action: WebSearchAction | null,
 /**
  * Structured search results returned out-of-band by standalone web search.
  *
@@ -176,13 +176,13 @@ export type AgentMessageDeltaNotification = { threadId: string, turnId: string, 
  * prompted subagent to gather relevant context and apply a risk-based
  * decision framework before approving or denying the request.
  */
-export type ApprovalsReviewer = "user" | "auto_review" | "guardian_subagent";
+type ApprovalsReviewer = "user" | "auto_review" | "guardian_subagent";
 
 // Source: v2/AskForApproval.ts
-export type AskForApproval = "untrusted" | "on-request" | { "granular": { sandbox_approval: boolean, rules: boolean, skill_approval: boolean, request_permissions: boolean, mcp_elicitations: boolean, } } | "never";
+type AskForApproval = "untrusted" | "on-request" | { "granular": { sandbox_approval: boolean, rules: boolean, skill_approval: boolean, request_permissions: boolean, mcp_elicitations: boolean, } } | "never";
 
 // Source: v2/ByteRange.ts
-export type ByteRange = { start: number, end: number, };
+type ByteRange = { start: number, end: number, };
 
 // Source: v2/CodexErrorInfo.ts
 /**
@@ -194,107 +194,49 @@ export type ByteRange = { start: number, end: number, };
 export type CodexErrorInfo = "contextWindowExceeded" | "sessionBudgetExceeded" | "usageLimitExceeded" | "serverOverloaded" | "cyberPolicy" | { "httpConnectionFailed": { httpStatusCode: number | null, } } | { "responseStreamConnectionFailed": { httpStatusCode: number | null, } } | "internalServerError" | "unauthorized" | "badRequest" | "threadRollbackFailed" | "sandboxError" | { "responseStreamDisconnected": { httpStatusCode: number | null, } } | { "responseTooManyFailedAttempts": { httpStatusCode: number | null, } } | { "activeTurnNotSteerable": { turnKind: NonSteerableTurnKind, } } | "other";
 
 // Source: v2/CollabAgentState.ts
-export type CollabAgentState = { status: CollabAgentStatus, message: string | null, };
+type CollabAgentState = { status: CollabAgentStatus, message: string | null, };
 
 // Source: v2/CollabAgentStatus.ts
-export type CollabAgentStatus = "pendingInit" | "running" | "interrupted" | "completed" | "errored" | "shutdown" | "notFound";
+type CollabAgentStatus = "pendingInit" | "running" | "interrupted" | "completed" | "errored" | "shutdown" | "notFound";
 
 // Source: v2/CollabAgentTool.ts
-export type CollabAgentTool = "spawnAgent" | "sendInput" | "resumeAgent" | "wait" | "closeAgent";
+type CollabAgentTool = "spawnAgent" | "sendInput" | "resumeAgent" | "wait" | "closeAgent";
 
 // Source: v2/CollabAgentToolCallStatus.ts
-export type CollabAgentToolCallStatus = "inProgress" | "completed" | "failed";
+type CollabAgentToolCallStatus = "inProgress" | "completed" | "failed";
 
 // Source: v2/CommandAction.ts
-export type CommandAction = { "type": "read", command: string, name: string, path: LegacyAppPathString, } | { "type": "listFiles", command: string, path: string | null, } | { "type": "search", command: string, query: string | null, path: string | null, } | { "type": "unknown", command: string, };
+type CommandAction = { "type": "read", command: string, name: string, path: LegacyAppPathString, } | { "type": "listFiles", command: string, path: string | null, } | { "type": "search", command: string, query: string | null, path: string | null, } | { "type": "unknown", command: string, };
 
 // Source: v2/CommandExecutionOutputDeltaNotification.ts
 export type CommandExecutionOutputDeltaNotification = { threadId: string, turnId: string, itemId: string, delta: string, };
 
-// Source: v2/CommandExecutionRequestApprovalParams.ts
-export type CommandExecutionRequestApprovalParams = {threadId: string, turnId: string, itemId: string, /**
- * Unix timestamp (in milliseconds) when this approval request started.
- */
-startedAtMs: number, /**
- * Unique identifier for this specific approval callback.
- *
- * For regular shell/unified_exec approvals, this is null.
- *
- * For zsh-exec-bridge subcommand approvals, multiple callbacks can belong to
- * one parent `itemId`, so `approvalId` is a distinct opaque callback id
- * (a UUID) used to disambiguate routing.
- */
-approvalId?: string | null, /**
- * Environment in which the command will run.
- */
-environmentId: string | null, /**
- * Optional explanatory reason (e.g. request for network access).
- */
-reason?: string | null, /**
- * Optional context for a managed-network approval prompt.
- */
-networkApprovalContext?: NetworkApprovalContext | null, /**
- * The command to be executed.
- */
-command?: string | null, /**
- * The command's working directory.
- */
-cwd?: LegacyAppPathString | null, /**
- * Best-effort parsed command actions for friendly display.
- */
-commandActions?: Array<CommandAction> | null, /**
- * Optional proposed execpolicy amendment to allow similar commands without prompting.
- */
-proposedExecpolicyAmendment?: ExecPolicyAmendment | null, /**
- * Optional proposed network policy amendments (allow/deny host) for future requests.
- */
-proposedNetworkPolicyAmendments?: Array<NetworkPolicyAmendment> | null};
-
 // Source: v2/CommandExecutionSource.ts
-export type CommandExecutionSource = "agent" | "userShell" | "unifiedExecStartup" | "unifiedExecInteraction";
+type CommandExecutionSource = "agent" | "userShell" | "unifiedExecStartup" | "unifiedExecInteraction";
 
 // Source: v2/CommandExecutionStatus.ts
-export type CommandExecutionStatus = "inProgress" | "completed" | "failed" | "declined";
+type CommandExecutionStatus = "inProgress" | "completed" | "failed" | "declined";
 
 // Source: v2/DynamicToolCallOutputContentItem.ts
-export type DynamicToolCallOutputContentItem = { "type": "inputText", text: string, } | { "type": "inputImage", imageUrl: string, } | { "type": "inputAudio", audioUrl: string, };
+type DynamicToolCallOutputContentItem = { "type": "inputText", text: string, } | { "type": "inputImage", imageUrl: string, } | { "type": "inputAudio", audioUrl: string, };
 
 // Source: v2/DynamicToolCallStatus.ts
-export type DynamicToolCallStatus = "inProgress" | "completed" | "failed";
+type DynamicToolCallStatus = "inProgress" | "completed" | "failed";
 
 // Source: v2/ErrorNotification.ts
 export type ErrorNotification = { error: TurnError, willRetry: boolean, threadId: string, turnId: string, };
 
-// Source: v2/ExecPolicyAmendment.ts
-export type ExecPolicyAmendment = Array<string>;
-
 // Source: v2/FileChangePatchUpdatedNotification.ts
 export type FileChangePatchUpdatedNotification = { threadId: string, turnId: string, itemId: string, changes: Array<FileUpdateChange>, };
-
-// Source: v2/FileChangeRequestApprovalParams.ts
-export type FileChangeRequestApprovalParams = { threadId: string, turnId: string, itemId: string,
-/**
- * Unix timestamp (in milliseconds) when this approval request started.
- */
-startedAtMs: number,
-/**
- * Optional explanatory reason (e.g. request for extra write access).
- */
-reason?: string | null,
-/**
- * [UNSTABLE] When set, the agent is asking the user to allow writes under this root
- * for the remainder of the session (unclear if this is honored today).
- */
-grantRoot?: string | null, };
 
 // Source: v2/FileUpdateChange.ts
 export type FileUpdateChange = { path: string, kind: PatchChangeKind, diff: string, };
 
 // Source: v2/GitInfo.ts
-export type GitInfo = { sha: string | null, branch: string | null, originUrl: string | null, };
+type GitInfo = { sha: string | null, branch: string | null, originUrl: string | null, };
 
 // Source: v2/HookPromptFragment.ts
-export type HookPromptFragment = { text: string, hookRunId: string, };
+type HookPromptFragment = { text: string, hookRunId: string, };
 
 // Source: v2/ItemCompletedNotification.ts
 export type ItemCompletedNotification = { item: ThreadItem, threadId: string, turnId: string,
@@ -311,52 +253,37 @@ export type ItemStartedNotification = { item: ThreadItem, threadId: string, turn
 startedAtMs: number, };
 
 // Source: v2/McpToolCallAppContext.ts
-export type McpToolCallAppContext = { connectorId: string, linkId: string | null, resourceUri: string | null, appName: string | null, actionName: string | null, };
+type McpToolCallAppContext = { connectorId: string, linkId: string | null, resourceUri: string | null, appName: string | null, actionName: string | null, };
 
 // Source: v2/McpToolCallError.ts
-export type McpToolCallError = { message: string, };
+type McpToolCallError = { message: string, };
 
 // Source: v2/McpToolCallProgressNotification.ts
 export type McpToolCallProgressNotification = { threadId: string, turnId: string, itemId: string, message: string, };
 
 // Source: v2/McpToolCallResult.ts
-export type McpToolCallResult = { content: Array<JsonValue>, structuredContent: JsonValue | null, _meta: JsonValue | null, };
+type McpToolCallResult = { content: Array<JsonValue>, structuredContent: JsonValue | null, _meta: JsonValue | null, };
 
 // Source: v2/McpToolCallStatus.ts
-export type McpToolCallStatus = "inProgress" | "completed" | "failed";
+type McpToolCallStatus = "inProgress" | "completed" | "failed";
 
 // Source: v2/MemoryCitation.ts
-export type MemoryCitation = { entries: Array<MemoryCitationEntry>, threadIds: Array<string>, };
+type MemoryCitation = { entries: Array<MemoryCitationEntry>, threadIds: Array<string>, };
 
 // Source: v2/MemoryCitationEntry.ts
-export type MemoryCitationEntry = { path: string, lineStart: number, lineEnd: number, note: string, };
+type MemoryCitationEntry = { path: string, lineStart: number, lineEnd: number, note: string, };
 
 // Source: v2/NetworkAccess.ts
-export type NetworkAccess = "restricted" | "enabled";
-
-// Source: v2/NetworkApprovalContext.ts
-export type NetworkApprovalContext = { host: string, protocol: NetworkApprovalProtocol, };
-
-// Source: v2/NetworkApprovalProtocol.ts
-export type NetworkApprovalProtocol = "http" | "https" | "socks5Tcp" | "socks5Udp";
-
-// Source: v2/NetworkPolicyAmendment.ts
-export type NetworkPolicyAmendment = { host: string, action: NetworkPolicyRuleAction, };
-
-// Source: v2/NetworkPolicyRuleAction.ts
-export type NetworkPolicyRuleAction = "allow" | "deny";
+type NetworkAccess = "restricted" | "enabled";
 
 // Source: v2/NonSteerableTurnKind.ts
-export type NonSteerableTurnKind = "review" | "compact";
+type NonSteerableTurnKind = "review" | "compact";
 
 // Source: v2/PatchApplyStatus.ts
-export type PatchApplyStatus = "inProgress" | "completed" | "failed" | "declined";
+type PatchApplyStatus = "inProgress" | "completed" | "failed" | "declined";
 
 // Source: v2/PatchChangeKind.ts
-export type PatchChangeKind = { "type": "add" } | { "type": "delete" } | { "type": "update", move_path: string | null, };
-
-// Source: v2/ReasoningSummaryPartAddedNotification.ts
-export type ReasoningSummaryPartAddedNotification = { threadId: string, turnId: string, itemId: string, summaryIndex: number, };
+type PatchChangeKind = { "type": "add" } | { "type": "delete" } | { "type": "update", move_path: string | null, };
 
 // Source: v2/ReasoningSummaryTextDeltaNotification.ts
 export type ReasoningSummaryTextDeltaNotification = { threadId: string, turnId: string, itemId: string, delta: string, summaryIndex: number, };
@@ -368,16 +295,16 @@ export type ReasoningTextDeltaNotification = { threadId: string, turnId: string,
 export type SandboxMode = "read-only" | "workspace-write" | "danger-full-access";
 
 // Source: v2/SandboxPolicy.ts
-export type SandboxPolicy = { "type": "dangerFullAccess" } | { "type": "readOnly", networkAccess: boolean, } | { "type": "externalSandbox", networkAccess: NetworkAccess, } | { "type": "workspaceWrite", writableRoots: Array<AbsolutePathBuf>, networkAccess: boolean, excludeTmpdirEnvVar: boolean, excludeSlashTmp: boolean, };
+type SandboxPolicy = { "type": "dangerFullAccess" } | { "type": "readOnly", networkAccess: boolean, } | { "type": "externalSandbox", networkAccess: NetworkAccess, } | { "type": "workspaceWrite", writableRoots: Array<AbsolutePathBuf>, networkAccess: boolean, excludeTmpdirEnvVar: boolean, excludeSlashTmp: boolean, };
 
 // Source: v2/SessionSource.ts
-export type SessionSource = "cli" | "vscode" | "exec" | "appServer" | { "custom": string } | { "subAgent": SubAgentSource } | "unknown";
+type SessionSource = "cli" | "vscode" | "exec" | "appServer" | { "custom": string } | { "subAgent": SubAgentSource } | "unknown";
 
 // Source: v2/SubAgentActivityKind.ts
-export type SubAgentActivityKind = "started" | "interacted" | "interrupted";
+type SubAgentActivityKind = "started" | "interacted" | "interrupted";
 
 // Source: v2/TextElement.ts
-export type TextElement = {
+type TextElement = {
 /**
  * Byte range in the parent `text` buffer that this element occupies.
  */
@@ -388,7 +315,7 @@ byteRange: ByteRange,
 placeholder: string | null, };
 
 // Source: v2/Thread.ts
-export type Thread = {/**
+type Thread = {/**
  * Identifier for this thread. Codex-generated thread IDs are UUIDv7.
  */
 id: string, /**
@@ -463,7 +390,7 @@ name: string | null, /**
 turns: Array<Turn>};
 
 // Source: v2/ThreadActiveFlag.ts
-export type ThreadActiveFlag = "waitingOnApproval" | "waitingOnUserInput";
+type ThreadActiveFlag = "waitingOnApproval" | "waitingOnUserInput";
 
 // Source: v2/ThreadItem.ts
 export type ThreadItem = { "type": "userMessage", id: string, clientId: string | null, content: Array<UserInput>, } | { "type": "hookPrompt", id: string, fragments: Array<HookPromptFragment>, } | { "type": "agentMessage", id: string, text: string, phase: MessagePhase | null, memoryCitation: MemoryCitation | null, } | { "type": "plan", id: string, text: string, } | { "type": "reasoning", id: string, summary: Array<string>, content: Array<string>, } | { "type": "commandExecution", id: string,
@@ -559,7 +486,7 @@ agentsStates: { [key in string]?: CollabAgentState }, } | { "type": "subAgentAct
 /**
  * An independently persisted, user-visible thread section.
  */
-export type ThreadSection = {
+type ThreadSection = {
 /**
  * Opaque UUIDv7 identity that remains stable when the section is renamed.
  */
@@ -577,7 +504,7 @@ appearance: ThreadSectionAppearance | null, };
 /**
  * Extensible visual presentation for a custom thread section.
  */
-export type ThreadSectionAppearance = { icon: string | null, color: string | null, };
+type ThreadSectionAppearance = { icon: string | null, color: string | null, };
 
 // Source: v2/ThreadResumeParams.ts
 /**
@@ -606,7 +533,7 @@ approvalsReviewer: ApprovalsReviewer, /**
 sandbox: SandboxPolicy, reasoningEffort: ReasoningEffort | null};
 
 // Source: v2/ThreadSource.ts
-export type ThreadSource = string;
+type ThreadSource = string;
 
 // Source: v2/ThreadStartParams.ts
 export type ThreadStartParams = {model?: string | null, modelProvider?: string | null, serviceTier?: string | null | null, cwd?: string | null, approvalPolicy?: AskForApproval | null, /**
@@ -632,13 +559,13 @@ approvalsReviewer: ApprovalsReviewer, /**
 sandbox: SandboxPolicy, reasoningEffort: ReasoningEffort | null};
 
 // Source: v2/ThreadStartSource.ts
-export type ThreadStartSource = "startup" | "clear";
+type ThreadStartSource = "startup" | "clear";
 
 // Source: v2/ThreadStatus.ts
-export type ThreadStatus = { "type": "notLoaded" } | { "type": "idle" } | { "type": "systemError" } | { "type": "active", activeFlags: Array<ThreadActiveFlag>, };
+type ThreadStatus = { "type": "notLoaded" } | { "type": "idle" } | { "type": "systemError" } | { "type": "active", activeFlags: Array<ThreadActiveFlag>, };
 
 // Source: v2/ThreadTokenUsage.ts
-export type ThreadTokenUsage = { total: TokenUsageBreakdown, last: TokenUsageBreakdown, modelContextWindow: number | null, };
+type ThreadTokenUsage = { total: TokenUsageBreakdown, last: TokenUsageBreakdown, modelContextWindow: number | null, };
 
 // Source: v2/ThreadTokenUsageUpdatedNotification.ts
 export type ThreadTokenUsageUpdatedNotification = { threadId: string, turnId: string, tokenUsage: ThreadTokenUsage, };
@@ -650,13 +577,13 @@ export type ThreadUnsubscribeParams = { threadId: string, };
 export type ThreadUnsubscribeResponse = { status: ThreadUnsubscribeStatus, };
 
 // Source: v2/ThreadUnsubscribeStatus.ts
-export type ThreadUnsubscribeStatus = "notLoaded" | "notSubscribed" | "unsubscribed";
+type ThreadUnsubscribeStatus = "notLoaded" | "notSubscribed" | "unsubscribed";
 
 // Source: v2/TokenUsageBreakdown.ts
 export type TokenUsageBreakdown = { totalTokens: number, inputTokens: number, cachedInputTokens: number, cacheWriteInputTokens: number, outputTokens: number, reasoningOutputTokens: number, };
 
 // Source: v2/Turn.ts
-export type Turn = {
+type Turn = {
 /**
  * Identifier for this turn. Codex-generated turn IDs are UUIDv7.
  */
@@ -695,17 +622,14 @@ export type TurnError = { message: string, codexErrorInfo: CodexErrorInfo | null
 // Source: v2/TurnInterruptParams.ts
 export type TurnInterruptParams = { threadId: string, turnId: string, };
 
-// Source: v2/TurnInterruptResponse.ts
-export type TurnInterruptResponse = Record<string, never>;
-
 // Source: v2/TurnItemsView.ts
-export type TurnItemsView = "notLoaded" | "summary" | "full";
+type TurnItemsView = "notLoaded" | "summary" | "full";
 
 // Source: v2/TurnPlanStep.ts
-export type TurnPlanStep = { step: string, status: TurnPlanStepStatus, };
+type TurnPlanStep = { step: string, status: TurnPlanStepStatus, };
 
 // Source: v2/TurnPlanStepStatus.ts
-export type TurnPlanStepStatus = "pending" | "inProgress" | "completed";
+type TurnPlanStepStatus = "pending" | "inProgress" | "completed";
 
 // Source: v2/TurnPlanUpdatedNotification.ts
 export type TurnPlanUpdatedNotification = { threadId: string, turnId: string, explanation: string | null, plan: Array<TurnPlanStep>, };
@@ -752,7 +676,7 @@ export type TurnStartResponse = { turn: Turn, };
 export type TurnStartedNotification = { threadId: string, turn: Turn, };
 
 // Source: v2/TurnStatus.ts
-export type TurnStatus = "completed" | "interrupted" | "failed" | "inProgress";
+type TurnStatus = "completed" | "interrupted" | "failed" | "inProgress";
 
 // Source: v2/UserInput.ts
 export type UserInput = { "type": "text", text: string,
@@ -762,4 +686,4 @@ export type UserInput = { "type": "text", text: string,
 text_elements: Array<TextElement>, } | { "type": "image", detail?: ImageDetail, url: string, } | { "type": "localImage", detail?: ImageDetail, path: string, } | { "type": "audio", url: string, } | { "type": "localAudio", path: string, } | { "type": "skill", name: string, path: string, } | { "type": "mention", name: string, path: string, };
 
 // Source: v2/WebSearchAction.ts
-export type WebSearchAction = { "type": "search", query: string | null, queries: Array<string> | null, } | { "type": "openPage", url: string | null, } | { "type": "findInPage", url: string | null, pattern: string | null, } | { "type": "other" };
+type WebSearchAction = { "type": "search", query: string | null, queries: Array<string> | null, } | { "type": "openPage", url: string | null, } | { "type": "findInPage", url: string | null, pattern: string | null, } | { "type": "other" };

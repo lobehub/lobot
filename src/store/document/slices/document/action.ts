@@ -94,7 +94,7 @@ type Setter = StoreSetter<DocumentStore>;
 export const createDocumentSlice = (set: Setter, get: () => DocumentStore, _api?: unknown) =>
   new DocumentActionImpl(set, get, _api);
 
-export class DocumentActionImpl {
+class DocumentActionImpl {
   readonly #get: () => DocumentStore;
   readonly #set: Setter;
   readonly #debouncedSaves = new Map<string, ReturnType<typeof debounce>>();

@@ -5,9 +5,9 @@
  * helper drives both the live hover indicator and the document-level drop
  * handler so the line the user sees is exactly where the row lands.
  */
-export type DropPosition = 'before' | 'inside' | 'after' | null;
+type DropPosition = 'before' | 'inside' | 'after' | null;
 
-export type DragItemKind = 'file' | 'folder';
+type DragItemKind = 'file' | 'folder';
 
 /** The row being dragged, as recorded in `DndContextWrapper`. */
 export interface DragItem {

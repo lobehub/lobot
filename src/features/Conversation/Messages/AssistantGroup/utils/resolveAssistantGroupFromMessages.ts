@@ -1,6 +1,6 @@
 import type { AssistantContentBlock, UIChatMessage } from '@lobechat/types';
 
-export interface ResolvedAssistantGroup {
+interface ResolvedAssistantGroup {
   assistantId: string;
   blocks: AssistantContentBlock[];
   instruction?: string;

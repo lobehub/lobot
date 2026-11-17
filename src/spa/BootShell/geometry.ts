@@ -7,7 +7,7 @@ import { INITIAL_STATUS } from '@/store/global/initialState';
 import { systemStatusSelectors } from '@/store/global/selectors';
 import { isMacOS } from '@/utils/platform';
 
-export interface BootShellGeometry {
+interface BootShellGeometry {
   isDark: boolean;
   navPanelBackground: string;
   navPanelWidth: number;

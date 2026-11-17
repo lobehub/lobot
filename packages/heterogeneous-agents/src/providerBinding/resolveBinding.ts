@@ -8,15 +8,6 @@ import type {
   ResolveHeterogeneousProviderBindingResult,
 } from './types';
 
-export const HETEROGENEOUS_PROVIDER_BINDING_AGENT_TYPES = [
-  'claude-code',
-  'codex',
-  'grok-build',
-  'kimi-code',
-  'pi',
-  'trae',
-] as const;
-
 const CAPABILITIES: Partial<
   Record<LocalHeterogeneousAgentType, HeterogeneousProviderBindingCapability>
 > = {
@@ -99,7 +90,7 @@ const normalizeEndpoint = (
   }
 };
 
-export const getHeterogeneousProviderBindingCapability = (
+const getHeterogeneousProviderBindingCapability = (
   agentType: string | undefined,
 ): HeterogeneousProviderBindingCapability | undefined =>
   agentType ? CAPABILITIES[agentType as LocalHeterogeneousAgentType] : undefined;
@@ -127,7 +118,7 @@ export const getProviderInferenceProtocols = (
   return protocols;
 };
 
-export const resolveProviderBindingProtocol = (
+const resolveProviderBindingProtocol = (
   agentType: string,
   providerId: string,
   runtimeConfig: ResolveHeterogeneousProviderBindingInput['runtimeConfig'],
@@ -259,38 +250,4 @@ export const resolveHeterogeneousProviderBinding = ({
       runtimeConfig,
     },
   };
-};
-
-export const formatHeterogeneousProviderBindingError = (
-  error: HeterogeneousProviderBindingError,
-): string => {
-  switch (error.code) {
-    case 'agentUnsupported': {
-      return `${error.agentType} does not support LobeHub Provider binding.`;
-    }
-    case 'configMissing': {
-      return 'A provider and model binding is required.';
-    }
-    case 'credentialUnsupported': {
-      return `Provider "${error.providerId}" uses an authentication scheme this agent does not support.`;
-    }
-    case 'credentialsMissing': {
-      return `Provider "${error.providerId}" has no API key configured.`;
-    }
-    case 'endpointMissing': {
-      return `Provider "${error.providerId}" requires a base URL for this agent.`;
-    }
-    case 'endpointUnsupported': {
-      return `Provider "${error.providerId}" has an unsupported base URL.`;
-    }
-    case 'modelUnavailable': {
-      return `Model "${error.providerId}/${error.model}" is disabled or unavailable.`;
-    }
-    case 'protocolMismatch': {
-      return `Provider "${error.providerId}" does not expose a protocol supported by ${error.agentType}.`;
-    }
-    case 'providerUnavailable': {
-      return `Provider "${error.providerId}" is disabled or unavailable.`;
-    }
-  }
 };

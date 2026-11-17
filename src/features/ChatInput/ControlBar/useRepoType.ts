@@ -10,7 +10,7 @@ import { useElectronStore } from '@/store/electron';
 
 import { getRecentDirs, setRecentDirRepoType } from './recentDirs';
 
-export type RepoType = 'git' | 'github' | undefined;
+type RepoType = 'git' | 'github' | undefined;
 
 /**
  * Resolve the repo type for a working directory on `deviceId` (the local machine

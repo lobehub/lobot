@@ -4,18 +4,6 @@ import { z } from 'zod';
 export type { FtsSearchDocumentEntity } from '@lobechat/types';
 export { FTS_SEARCH_DOCUMENT_ENTITIES } from '@lobechat/types';
 
-export const FTS_SEARCH_MEMORY_DOCUMENT_ENTITIES = [
-  'memoryActivities',
-  'memoryContexts',
-  'memoryExperiences',
-  'memoryIdentities',
-  'memoryPreferences',
-  'personaDocuments',
-  'userMemories',
-] as const satisfies readonly FtsSearchDocumentEntity[];
-
-export type FtsSearchMemoryDocumentEntity = (typeof FTS_SEARCH_MEMORY_DOCUMENT_ENTITIES)[number];
-
 const dateTime = z.string().datetime();
 const nullableDateTime = dateTime.nullable();
 const nullableString = z.string().nullable();
@@ -37,7 +25,7 @@ const ownershipShape = {
   workspace_id: nullableString,
 };
 
-export const FTS_SEARCH_DOCUMENT_SCHEMAS = {
+const FTS_SEARCH_DOCUMENT_SCHEMAS = {
   agents: z
     .object({
       ...ownershipShape,

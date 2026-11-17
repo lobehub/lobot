@@ -4,11 +4,11 @@ import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { processMultiProviderModelList } from '../../utils/modelParse';
 
-export interface GiteeAIModelCard {
+interface GiteeAIModelCard {
   id: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://ai.gitee.com/v1',
   debug: {
     chatCompletion: () => process.env.DEBUG_GITEE_AI_CHAT_COMPLETION === '1',

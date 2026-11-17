@@ -22,7 +22,7 @@ import {
 
 const GUIDE_PREPARE_TIMEOUT = 60 * 1000;
 
-export type AIEditState =
+type AIEditState =
   | { status: 'idle' }
   | { phase: AIEditPhase; startedAt: number; status: 'running' }
   | {

@@ -32,7 +32,7 @@ import {
   gitWorktreesResource,
 } from './projection';
 
-export interface GitStatusStoreState {
+interface GitStatusStoreState {
   /** `gitStatusKey(params)` → ahead/behind counts. */
   gitAheadBehindMap: Record<string, GitStatusRead<DeviceGitAheadBehind>>;
   gitAheadBehindReplica: ReplicaState<GitStatusRead<DeviceGitAheadBehind>>;
@@ -73,7 +73,7 @@ export const initialGitStatusState: GitStatusStoreState = {
   gitWorktreesReplica: createReplicaState(),
 };
 
-export type GitStatusKind =
+type GitStatusKind =
   | 'aheadBehind'
   | 'branch'
   | 'branches'

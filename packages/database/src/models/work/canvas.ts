@@ -16,7 +16,7 @@ import { registerWorkVersion } from './writes';
 
 export const canvasWorkAdapter = createDisplayWorkAdapter({ type: 'canvas' });
 
-export class CanvasVersionConflictError extends Error {
+class CanvasVersionConflictError extends Error {
   constructor() {
     super('Canvas version conflict; read the latest version before saving again');
   }
@@ -98,7 +98,7 @@ export const registerCanvasWork = async (
   );
 };
 
-export interface CanvasWorkWithVersion {
+interface CanvasWorkWithVersion {
   version: WorkVersionItem;
   work: WorkItem & { metadata: WorkMetadata | null };
 }

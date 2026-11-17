@@ -16,7 +16,7 @@ import type { TaskModelContext } from './context';
  * internals run in, so a trashed row is reachable. Visibility still applies:
  * a member can only bring back (or purge) a task they could see.
  */
-export const taskTrashScope = (ctx: TaskModelContext): SQL =>
+const taskTrashScope = (ctx: TaskModelContext): SQL =>
   buildWorkspaceWhere(
     { userId: ctx.userId, workspaceId: ctx.workspaceId },
     {

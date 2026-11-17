@@ -44,25 +44,6 @@ import { audit, lockChannel } from './transaction';
 import type { ChannelAccess, ChannelWriteOptions } from './types';
 import { createChannelThread, readChannelView } from './view';
 
-export type { ChannelAddAgentInput } from './agent';
-export {
-  CHANNEL_ROUTING_BATCH_SIZE,
-  CHANNEL_ROUTING_LEASE_MS,
-  ChannelRoutingRepository,
-} from './ChannelRoutingRepository';
-export type { ChannelClaim, ChannelClaimOptions } from './claim';
-export type { ChannelErrorCode } from './error';
-export { ChannelError } from './error';
-export { ChannelExecutionRepository } from './execution';
-export { ChannelHistoryRepository } from './history';
-export type { ChannelOpeningCandidate, ChannelOpeningDecision } from './opening';
-export type { ChannelAgentPostInput } from './post';
-export type { AppliedChannelRouting, ChannelRoutingDecision } from './routing';
-export type { ChannelSendInput } from './send';
-export type { ChannelStopScope } from './stop';
-export type { ChannelAccess, ChannelWriteOptions } from './types';
-export type { ChannelWorktreeCandidate } from './worktree';
-
 /** Recycle-bin row title: the start of the thread's root message. */
 const CHANNEL_THREAD_TITLE_LENGTH = 120;
 

@@ -121,7 +121,7 @@ export const mergeAgentConfig = (
 };
 
 /** `useFetchAgentConfig` result: replica sync flags plus the SWR-era aliases. */
-export interface AgentConfigSyncResult extends ReplicaSyncResult {
+interface AgentConfigSyncResult extends ReplicaSyncResult {
   /** A request is in flight and there is nothing in `agentMap` to show yet. */
   isLoading: boolean;
   /** Alias of `revalidate`. */
@@ -160,7 +160,7 @@ type Setter = StoreSetter<AgentStore>;
 export const createAgentSlice = (set: Setter, get: () => AgentStore, _api?: unknown) =>
   new AgentSliceActionImpl(set, get, _api);
 
-export class AgentSliceActionImpl {
+class AgentSliceActionImpl {
   readonly #get: () => AgentStore;
   readonly #set: Setter;
   readonly #pendingAgentDocuments = new Map<string, Promise<AgentContextDocument[] | undefined>>();

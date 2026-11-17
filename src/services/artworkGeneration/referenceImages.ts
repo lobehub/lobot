@@ -15,7 +15,7 @@ interface ResolvedArtworkReferences extends AttachedArtworkReferences {
   imageUrls?: string[];
 }
 
-export interface ResolvedArtworkReferenceSource {
+interface ResolvedArtworkReferenceSource {
   imageUrl?: string;
   text?: string;
 }

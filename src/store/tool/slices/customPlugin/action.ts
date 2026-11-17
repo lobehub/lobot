@@ -16,7 +16,7 @@ type Setter = StoreSetter<ToolStore>;
 export const createCustomPluginSlice = (set: Setter, get: () => ToolStore, _api?: unknown) =>
   new CustomPluginActionImpl(set, get, _api);
 
-export class CustomPluginActionImpl {
+class CustomPluginActionImpl {
   readonly #get: () => ToolStore;
   readonly #set: Setter;
 

@@ -69,7 +69,7 @@ const restoreEditingDraft = (state: VideoStore) => {
 export const createCreateVideoSlice = (set: Setter, get: () => VideoStore, _api?: unknown) =>
   new CreateVideoActionImpl(set, get, _api);
 
-export class CreateVideoActionImpl {
+class CreateVideoActionImpl {
   readonly #get: () => VideoStore;
   readonly #set: Setter;
 

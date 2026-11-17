@@ -169,6 +169,6 @@ const internlmChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...internlmChatModels];
+const allModels = [...internlmChatModels];
 
 export default allModels;

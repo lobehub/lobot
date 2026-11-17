@@ -24,13 +24,11 @@ import {
 } from './projection';
 
 export {
-  isPersistableLocalFilePreviewKey,
   localFilePreviewKey,
   localFilePreviewResource,
   type LocalFilePreviewTarget,
   MAX_PERSISTED_PREVIEW_CHARS,
   MAX_PERSISTED_PREVIEWS,
-  toPersistedLocalFilePreview,
 } from './projection';
 
 /**
@@ -76,12 +74,12 @@ const fetchLocalFilePreview = (key: string): Promise<LocalFilePreview> => {
 };
 
 /** What `useFetchPreview` reports; the preview itself is read with `useLocalFilePreview`. */
-export interface LocalFilePreviewSyncResult extends ReplicaSyncResult {
+interface LocalFilePreviewSyncResult extends ReplicaSyncResult {
   /** No preview yet (neither persisted nor fetched) and no error. */
   isLoading: boolean;
 }
 
-export interface LocalFilePreviewStoreState {
+interface LocalFilePreviewStoreState {
   /** Previews by {@link localFilePreviewKey}. */
   previewMap: Record<string, LocalFilePreview>;
   /** Replica bookkeeping for `previewMap`. */

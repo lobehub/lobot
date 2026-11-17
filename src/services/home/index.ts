@@ -1,7 +1,7 @@
 import { type SidebarAgentItem, type SidebarAgentListResponse } from '@/database/repositories/home';
 import { lambdaClient } from '@/libs/trpc/client';
 
-export interface HomeDailyBriefPair {
+interface HomeDailyBriefPair {
   hint: string;
   welcome: string;
 }
@@ -10,7 +10,7 @@ export interface HomeDailyBriefResponse {
   pairs: HomeDailyBriefPair[];
 }
 
-export class HomeService {
+class HomeService {
   /**
    * Get sidebar agent list with pinned, grouped, and ungrouped items
    */

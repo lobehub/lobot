@@ -27,7 +27,7 @@ export interface TopicAgentViewParams {
 }
 
 /** Sidebar page size when the caller does not name one. */
-export const DEFAULT_TOPIC_PAGE_SIZE = 20;
+const DEFAULT_TOPIC_PAGE_SIZE = 20;
 
 /**
  * The one canonical shape of a sidebar list request.

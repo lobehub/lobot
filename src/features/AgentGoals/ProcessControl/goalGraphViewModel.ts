@@ -33,7 +33,7 @@ const DEFAULT_LEASE_TIMEOUT_MS = 15 * 60 * 1000;
 const VERIFY_SETTLE_GRACE_MS = 60 * 60 * 1000;
 
 /** How many just-finished tasks stay visible so the list fades instead of items vanishing. */
-export const RECENT_DONE = 2;
+const RECENT_DONE = 2;
 
 const TERMINAL_NODE_STATUSES = new Set(['resolved', 'rejected', 'retired']);
 
@@ -47,9 +47,9 @@ const nodeAcceptance = (node: GoalGraphNode, acceptance: GoalNodeAcceptance): Go
     ? { ...acceptance, status: 'closed' }
     : acceptance;
 
-export type GoalAttemptOutcome = 'passed' | 'failed' | 'retired' | 'running';
+type GoalAttemptOutcome = 'passed' | 'failed' | 'retired' | 'running';
 
-export interface GoalAttempt {
+interface GoalAttempt {
   endedAt?: Date;
   /** 1-based attempt number on its node. */
   index: number;
@@ -65,7 +65,7 @@ export interface GoalAttempt {
  * relation so a future `input` / `supports` link can render differently without
  * another shape.
  */
-export interface GoalArtifactView {
+interface GoalArtifactView {
   /**
    * Set when a document deliverable is bound to an agent, which is what makes
    * it openable in-app. The link itself addresses {@link resourceId}.
@@ -103,13 +103,13 @@ export interface GoalArtifactView {
  * - `clarification` — the planner needs an answer before it can plan.
  * - `judgment`      — a call about the work itself.
  */
-export type GoalDecisionCategory = 'clarification' | 'judgment' | 'machine';
+type GoalDecisionCategory = 'clarification' | 'judgment' | 'machine';
 
 /**
  * Read off the coordinator's fixed node titles, the same contract the server
  * uses to recognise its clarification gate.
  */
-export const decisionCategoryOf = (
+const decisionCategoryOf = (
   node: Pick<GoalGraphNode, 'kind' | 'title'>,
 ): GoalDecisionCategory | undefined => {
   if (node.kind !== 'decision') return undefined;
@@ -176,57 +176,14 @@ export interface GoalNodeView {
   startedAt?: Date;
 }
 
-/**
- * Whether a Task node is in trouble — lost its heartbeat, or its latest attempt
- * failed / was rejected.
- *
- * A healthy Task opens on its result surface: the delivery is the thing to read
- * and the implementation metadata stays one step deeper. A broken one inverts
- * that — there is no result worth reviewing, and the question is what the run
- * actually did — so it opens the original Task instead.
- */
-export const isTroubledTaskNode = (view: GoalNodeView): boolean => {
-  if (view.node.kind !== 'task') return false;
-  if (view.isStale) return true;
-  if (view.node.status === 'rejected') return true;
-  return view.attempts.at(-1)?.outcome === 'failed';
-};
-
-/**
- * Whether a Task node has a delivery worth opening the result surface on: it
- * settled successfully, or it delivered and its Acceptance is being judged.
- * A Task that is still running (or was never dispatched) has no result yet —
- * opening the result panel there shows an empty shell, so those open the
- * original Task detail, where progress and configuration live.
- */
-export const hasReviewableResult = (view: GoalNodeView): boolean => {
-  if (view.node.kind !== 'task') return false;
-  if (isTroubledTaskNode(view)) return false;
-  return view.node.status === 'resolved' || view.isVerifying;
-};
-
-/**
- * Whether a node reads as "running" on the map — the animated ring, the chip
- * and the elapsed clock all hang off this.
- *
- * A question is excluded: an open question is not work in flight, its state is
- * whether it has an answer yet, and the card already says that. A "Running"
- * chip on a question that nobody is working promises activity that isn't there.
- */
-export const isRunningNode = (view: GoalNodeView): boolean => {
-  if (view.node.kind === 'problem') return false;
-  return view.node.status === 'active' && !view.isStale && !view.halted && !view.quotaRetryAt;
-};
-
 /** A goal in one of these states runs nothing, whatever its nodes still say. */
 const CLOSED_GOAL_STATUSES = new Set<string>(['achieved', 'canceled', 'failed']);
 /** Ended by a person or by success: `GoalService.decide` refuses gates until a reopen. */
 const GOAL_ENDED_STATUSES = new Set<string>(['achieved', 'canceled']);
 
-export type FrontierItemKind =
-  'gate' | 'stale' | 'quota' | 'verifying' | 'running' | 'ready' | 'done';
+type FrontierItemKind = 'gate' | 'stale' | 'quota' | 'verifying' | 'running' | 'ready' | 'done';
 
-export interface FrontierItem {
+interface FrontierItem {
   key: string;
   kind: FrontierItemKind;
   /** 0 = needs you, 1 = running, 2 = ready, -1 = recently finished. */
@@ -234,7 +191,7 @@ export interface FrontierItem {
   view: GoalNodeView;
 }
 
-export interface GoalGraphView {
+interface GoalGraphView {
   /** Every node the frontier can move now, excluding the fading done rows. */
   advanceable: number;
   /**
@@ -594,25 +551,6 @@ export const buildGoalGraphView = (
     spend,
   };
 };
-
-/**
- * The same graph narrowed to a set of nodes: edges, frontier and blocked rows
- * keep only what stays inside. `edges` overrides the edge set for a host that
- * already projected its own (the experiment scope).
- */
-export const scopeGraphView = (
-  graph: GoalGraphView,
-  nodeIds: ReadonlySet<string>,
-  edges?: GoalGraphEdge[],
-): GoalGraphView => ({
-  ...graph,
-  blocked: graph.blocked.filter((view) => nodeIds.has(view.node.id)),
-  edges:
-    edges ??
-    graph.edges.filter((edge) => nodeIds.has(edge.sourceNodeId) && nodeIds.has(edge.targetNodeId)),
-  frontier: graph.frontier.filter((item) => nodeIds.has(item.view.node.id)),
-  nodes: graph.nodes.filter((view) => nodeIds.has(view.node.id)),
-});
 
 const resolvedTime = (node: GoalGraphNode) =>
   (node.resolvedAt ?? node.updatedAt ?? node.createdAt).getTime();

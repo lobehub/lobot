@@ -1,4 +1,3 @@
-import { CREDITS_PER_DOLLAR, USD_TO_CNY } from '../../../const/currency';
 import debug from 'debug';
 import type {
   FixedPricingUnit,
@@ -9,6 +8,8 @@ import type {
   PricingUnitType,
   TieredPricingUnit,
 } from 'model-bank';
+
+import { CREDITS_PER_DOLLAR, USD_TO_CNY } from '../../../const/currency';
 
 const log = debug('lobe-cost:computeVideoCost');
 
@@ -36,7 +37,7 @@ export interface VideoRequestPricingInputs {
   referenceImageTokens?: number;
 }
 
-export interface VideoRequestCostItem {
+interface VideoRequestCostItem {
   cost: number;
   lookupKey?: string;
   name: PricingUnitName;
@@ -44,7 +45,7 @@ export interface VideoRequestCostItem {
   unit: PricingUnitType;
 }
 
-export interface VideoCostResult {
+interface VideoCostResult {
   breakdown?: {
     completionTokens: number;
     /** Billed output seconds, set when the model is priced per second */

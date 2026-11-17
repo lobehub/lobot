@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-export const BAR_COUNT = 56;
+const BAR_COUNT = 56;
 
 // Skip decoding files larger than this. decodeAudioData holds the full decoded PCM in memory, so
 // big recordings would spike memory for what is only a decorative waveform — fall back instead.

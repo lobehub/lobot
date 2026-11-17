@@ -1,4 +1,5 @@
 import type { StepActivatedSkill, StepContextTodos, UIChatMessage } from '@lobechat/types';
+
 import { isNonEmptyString, isPlainRecord } from './object';
 
 /**
@@ -15,7 +16,7 @@ const ACTIVATOR_IDENTIFIER = 'lobe-activator';
 /**
  * Options for message visitor traversal
  */
-export interface MessageVisitorOptions {
+interface MessageVisitorOptions {
   /**
    * Filter by message role (e.g. 'tool', 'user', 'assistant')
    */
@@ -173,9 +174,7 @@ export const normalizeTodosState = (
   if (!items || !items.every(isTodoItem)) return undefined;
 
   const updatedAt =
-    isPlainRecord(value) && isNonEmptyString(value.updatedAt)
-      ? value.updatedAt
-      : fallbackUpdatedAt;
+    isPlainRecord(value) && isNonEmptyString(value.updatedAt) ? value.updatedAt : fallbackUpdatedAt;
 
   return { items, updatedAt };
 };

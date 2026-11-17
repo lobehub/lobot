@@ -15,7 +15,7 @@ import { topicSelectors } from '@/store/chat/selectors';
 import { useElectronStore } from '@/store/electron';
 import { useUserStore } from '@/store/user';
 
-export interface UseEffectiveAgencyConfigResult {
+interface UseEffectiveAgencyConfigResult {
   /**
    * Shared `agents.agencyConfig` merged with the caller's per-agent override,
    * then pinned to the topic's machine when that conversation already ran on
@@ -53,7 +53,7 @@ export interface UseEffectiveAgencyConfigResult {
   workspaceScoped: boolean;
 }
 
-export interface UseEffectiveAgencyConfigOptions {
+interface UseEffectiveAgencyConfigOptions {
   /**
    * The conversation whose machine binding applies. Defaults to the active
    * topic; pass `null` for agent-level surfaces (e.g. the profile editor) that

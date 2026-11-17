@@ -636,6 +636,6 @@ const githubChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...githubChatModels];
+const allModels = [...githubChatModels];
 
 export default allModels;

@@ -64,7 +64,7 @@ const BEDROCK_INLINE_IMAGE_BUDGET = { maxTotalBase64Bytes: 12 * 1024 * 1024 };
  * Does not support `function` messages.
  * @see https://huggingface.co/meta-llama/Llama-2-70b-chat-hf and https://huggingface.co/blog/llama2#how-to-prompt-llama-2
  */
-export function experimental_buildLlama2Prompt(messages: { content: string; role: string }[]) {
+function experimental_buildLlama2Prompt(messages: { content: string; role: string }[]) {
   const startPrompt = `<s>[INST] `;
   const endPrompt = ` [/INST]`;
   const conversation = messages.map(({ content, role }, index) => {
@@ -524,5 +524,3 @@ export class LobeBedrockAI implements LobeRuntimeAI {
     }
   };
 }
-
-export default LobeBedrockAI;

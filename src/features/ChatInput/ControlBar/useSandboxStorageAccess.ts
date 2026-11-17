@@ -18,9 +18,9 @@ import { useTopicId } from '../hooks/useTopicId';
  * - `upgrade` — this account has no persistent workspace.
  * - `ready`   — entitled.
  */
-export type SandboxStorageAccess = 'hidden' | 'ready' | 'upgrade';
+type SandboxStorageAccess = 'hidden' | 'ready' | 'upgrade';
 
-export interface SandboxStorageAccessResult {
+interface SandboxStorageAccessResult {
   /**
    * Whether this run could have a drive at all — a business deployment, an
    * agent that runs in the cloud sandbox — known before the entitlement is.

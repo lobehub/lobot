@@ -28,7 +28,7 @@ import {
   resolveKimiReasoningEffort,
 } from './modelId';
 
-export interface MoonshotModelCard {
+interface MoonshotModelCard {
   context_length?: number;
   id: string;
   supports_image_in?: boolean;
@@ -463,7 +463,7 @@ export const LobeMoonshotAnthropicAI = createAnthropicCompatibleRuntime(anthropi
  * thinking is enabled, so tool-based structured output falls back to `auto` plus a prompt
  * instruction, as on the Anthropic-compatible endpoint.
  */
-export const relaxMoonshotGenerateObjectToolChoice = (
+const relaxMoonshotGenerateObjectToolChoice = (
   payload: GenerateObjectPayload,
   requestPayload: any,
 ) => {
@@ -544,7 +544,7 @@ const createOpenAIRouter = () => ({
   runtime: LobeMoonshotOpenAI,
 });
 
-export const params: CreateRouterRuntimeOptions = {
+const params: CreateRouterRuntimeOptions = {
   id: ModelProvider.Moonshot,
   models: fetchMoonshotModelsWithOpenAI,
   routers: (options) => {

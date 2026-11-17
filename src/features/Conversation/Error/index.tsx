@@ -47,10 +47,6 @@ import { isHeterogeneousAgentStatusGuideError } from './heterogeneous';
 import { useHeterogeneousAutoRetry } from './useHeterogeneousAutoRetry';
 import WorkingDirectoryStatusGuide from './WorkingDirectoryStatusGuide';
 
-// Re-export so existing barrel consumers (ContentBlock, message action bar) can
-// keep importing the guard from '@/features/Conversation/Error'.
-export { isHeterogeneousAgentStatusGuideError } from './heterogeneous';
-
 interface ErrorMessageData {
   error?: ChatMessageError | null;
   id: string;

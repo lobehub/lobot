@@ -22,7 +22,7 @@ interface CreateChatInputRichPluginsOptions {
   mathPlugin?: EditorPlugins[number] | false;
 }
 
-export const CHAT_INPUT_EMBED_PLUGINS: EditorPlugins = [
+const CHAT_INPUT_EMBED_PLUGINS: EditorPlugins = [
   ReactActionTagPlugin,
   ReactReferTopicPlugin,
   ReactReferDocumentPlugin,

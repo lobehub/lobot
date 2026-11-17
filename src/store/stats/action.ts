@@ -115,7 +115,7 @@ const fetchRank = (kind: StatsRankKind): Promise<StatsRankMap[StatsRankKind]> =>
   }
 };
 
-export class StatsActionImpl {
+class StatsActionImpl {
   readonly #agentUsage;
   readonly #count;
   readonly #heatmap;

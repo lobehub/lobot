@@ -1,11 +1,4 @@
 /**
- * Normalize language code
- */
-export const normalizeLocale = (locale: string) => {
-  return locale.toLowerCase().replace('_', '-');
-};
-
-/**
  * Load translation resources on demand
  */
 export const loadResources = async (lng: string, ns: string) => {

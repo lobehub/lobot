@@ -44,7 +44,7 @@ const SDXL_ASPECT_RATIOS = [
  * FLUX.1 Schnell model parameter configuration
  * Ultra-fast text-to-image mode, generates in 1-4 steps, Apache 2.0 license
  */
-export const fluxSchnellParamsSchema: ModelParamsSchema = {
+const fluxSchnellParamsSchema: ModelParamsSchema = {
   aspectRatio: {
     default: '1:1',
     enum: FLUX_ASPECT_RATIOS,
@@ -63,7 +63,7 @@ export const fluxSchnellParamsSchema: ModelParamsSchema = {
  * FLUX.1 Dev model parameter configuration
  * High-quality text-to-image mode, supports guidance scale adjustment, non-commercial license
  */
-export const fluxDevParamsSchema: ModelParamsSchema = {
+const fluxDevParamsSchema: ModelParamsSchema = {
   aspectRatio: {
     default: '1:1',
     enum: FLUX_ASPECT_RATIOS,
@@ -82,7 +82,7 @@ export const fluxDevParamsSchema: ModelParamsSchema = {
  * FLUX.1 Krea-dev model parameter configuration
  * Enhanced safety text-to-image mode, developed in collaboration with Krea, non-commercial license
  */
-export const fluxKreaDevParamsSchema: ModelParamsSchema = {
+const fluxKreaDevParamsSchema: ModelParamsSchema = {
   aspectRatio: {
     default: '1:1',
     enum: FLUX_ASPECT_RATIOS,
@@ -101,7 +101,7 @@ export const fluxKreaDevParamsSchema: ModelParamsSchema = {
  * FLUX.1 Kontext-dev model parameter configuration
  * Image editing mode, supports modifying existing images based on text instructions, non-commercial license
  */
-export const fluxKontextDevParamsSchema: ModelParamsSchema = {
+const fluxKontextDevParamsSchema: ModelParamsSchema = {
   cfg: { default: 3.5, max: 10, min: 1, step: 0.5 },
   imageUrl: { default: '' }, // Input image URL (supports text-to-image and image-to-image)
   prompt: { default: '' },
@@ -114,7 +114,7 @@ export const fluxKontextDevParamsSchema: ModelParamsSchema = {
  * SD3.5 model parameter configuration
  * Stable Diffusion 3.5, supports Large and Medium versions, automatically selects by priority
  */
-export const sd35ParamsSchema: ModelParamsSchema = {
+const sd35ParamsSchema: ModelParamsSchema = {
   aspectRatio: {
     default: '1:1',
     enum: FLUX_ASPECT_RATIOS, // SD3.5 also supports multiple aspect ratios
@@ -133,7 +133,7 @@ export const sd35ParamsSchema: ModelParamsSchema = {
  * SD1.5 text-to-image model parameter configuration
  * Stable Diffusion 1.5 text-to-image generation, suitable for 512x512 resolution
  */
-export const sd15T2iParamsSchema: ModelParamsSchema = {
+const sd15T2iParamsSchema: ModelParamsSchema = {
   aspectRatio: {
     default: '1:1',
     enum: SD_ASPECT_RATIOS,
@@ -152,7 +152,7 @@ export const sd15T2iParamsSchema: ModelParamsSchema = {
  * SDXL text-to-image model parameter configuration
  * SDXL text-to-image generation, suitable for 1024x1024 resolution
  */
-export const sdxlT2iParamsSchema: ModelParamsSchema = {
+const sdxlT2iParamsSchema: ModelParamsSchema = {
   aspectRatio: {
     default: '1:1',
     enum: SDXL_ASPECT_RATIOS,
@@ -171,7 +171,7 @@ export const sdxlT2iParamsSchema: ModelParamsSchema = {
  * SDXL image-to-image model parameter configuration
  * SDXL image-to-image generation, supports input image modification
  */
-export const sdxlI2iParamsSchema: ModelParamsSchema = {
+const sdxlI2iParamsSchema: ModelParamsSchema = {
   cfg: { default: 8, max: 20, min: 1, step: 0.5 },
   imageUrl: { default: '' }, // Input image URL
   prompt: { default: '' },
@@ -186,7 +186,7 @@ export const sdxlI2iParamsSchema: ModelParamsSchema = {
  * Custom SD text-to-image model parameter configuration
  * Custom Stable Diffusion text-to-image model with flexible parameter settings
  */
-export const customSdT2iParamsSchema: ModelParamsSchema = {
+const customSdT2iParamsSchema: ModelParamsSchema = {
   aspectRatio: {
     default: '1:1',
     enum: SDXL_ASPECT_RATIOS, // Use broader aspect ratio support
@@ -205,7 +205,7 @@ export const customSdT2iParamsSchema: ModelParamsSchema = {
  * Custom SD image-to-image model parameter configuration
  * Custom Stable Diffusion image-to-image model, supports image editing
  */
-export const customSdI2iParamsSchema: ModelParamsSchema = {
+const customSdI2iParamsSchema: ModelParamsSchema = {
   cfg: { default: 7, max: 30, min: 1, step: 0.5 },
   imageUrl: { default: '' }, // Input image URL
   prompt: { default: '' },
@@ -333,6 +333,6 @@ const comfyuiImageModels: AIImageModelCard[] = [
   },
 ];
 
-export const allModels = [...comfyuiImageModels];
+const allModels = [...comfyuiImageModels];
 
 export default allModels;

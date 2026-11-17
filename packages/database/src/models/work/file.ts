@@ -27,7 +27,7 @@ export const fileWorkAdapter = createDisplayWorkAdapter({ type: 'file' });
  * shared topic, two members editing a same-named path would otherwise collide on
  * one private Work that only the first registrant can resolve.
  */
-export const fileWorkResourceId = (userId: string, topicId: string, filePath: string): string =>
+const fileWorkResourceId = (userId: string, topicId: string, filePath: string): string =>
   `${userId}:${topicId}:${filePath}`;
 
 /**

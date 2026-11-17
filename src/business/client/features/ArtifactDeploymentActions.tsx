@@ -1,4 +1,4 @@
-export interface ArtifactDeploymentActionsProps {
+interface ArtifactDeploymentActionsProps {
   artifactIdentifier?: string;
   artifactTitle?: string;
   artifactType?: string;

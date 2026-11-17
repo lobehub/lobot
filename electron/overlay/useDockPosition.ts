@@ -7,7 +7,7 @@ export interface Rect {
   y: number;
 }
 
-export type DockSide = 'right' | 'below' | 'left' | 'above' | 'edge';
+type DockSide = 'right' | 'below' | 'left' | 'above' | 'edge';
 
 export interface DockResult {
   left: number;

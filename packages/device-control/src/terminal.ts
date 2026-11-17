@@ -18,7 +18,7 @@ import type {
 } from './types';
 
 /** The slice of a `node-pty` PTY this manager drives. */
-export interface TerminalPty {
+interface TerminalPty {
   kill: () => void;
   onData: (listener: (data: string) => void) => unknown;
   onExit: (listener: (event: { exitCode: number }) => void) => unknown;
@@ -28,7 +28,7 @@ export interface TerminalPty {
 }
 
 /** The slice of the `node-pty` module this manager needs. */
-export interface TerminalPtyModule {
+interface TerminalPtyModule {
   spawn: (
     file: string,
     args: string[],
@@ -94,7 +94,7 @@ interface TerminalSession {
   shell: string;
 }
 
-export interface TerminalManagerOptions {
+interface TerminalManagerOptions {
   /** Which client this host is; returned on create so callers can pin the session to it. */
   client: DeviceClient;
   /**

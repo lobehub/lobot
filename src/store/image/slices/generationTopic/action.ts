@@ -25,7 +25,7 @@ const TOPICS_PARAMS = {} as Record<string, never>;
  * least once, so an absent routed topic is a settled "not found"); the replica
  * flags are what the owner should use going forward.
  */
-export interface GenerationTopicsSyncResult extends ReplicaSyncResult {
+interface GenerationTopicsSyncResult extends ReplicaSyncResult {
   data?: ImageGenerationTopic[];
   /** A request is in flight and the list has never loaded. */
   isLoading: boolean;
@@ -57,7 +57,7 @@ type Setter = StoreSetter<ImageStore>;
 export const createGenerationTopicSlice = (set: Setter, get: () => ImageStore, _api?: unknown) =>
   new GenerationTopicActionImpl(set, get, _api);
 
-export class GenerationTopicActionImpl {
+class GenerationTopicActionImpl {
   readonly #get: () => ImageStore;
   readonly #set: Setter;
   readonly #topics;

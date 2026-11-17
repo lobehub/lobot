@@ -6,11 +6,11 @@ import { processMultiProviderModelList } from '../../utils/modelParse';
 import { createWenxinImage } from './createImage';
 import { createWenxinVideo } from './createVideo';
 
-export interface WenxinModelCard {
+interface WenxinModelCard {
   id: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://qianfan.baidubce.com/v2',
   chatCompletion: {
     handlePayload: (payload) => {

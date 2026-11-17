@@ -6,7 +6,7 @@ import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { resolveParameters } from '../../core/parameterResolver';
 import type { ChatStreamPayload } from '../../types';
 
-export interface BaichuanModelCard {
+interface BaichuanModelCard {
   function_call: boolean;
   max_input_length: number;
   max_tokens: number;
@@ -14,7 +14,7 @@ export interface BaichuanModelCard {
   model_show_name: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://api.baichuan-ai.com/v1',
   chatCompletion: {
     handlePayload: (payload: ChatStreamPayload) => {

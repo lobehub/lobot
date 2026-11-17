@@ -28,7 +28,7 @@ import { useTopicId } from '../hooks/useTopicId';
  */
 export type WorkspaceSurface = 'cloudRepo' | 'sandbox' | 'workingDirectory';
 
-export interface ResolveWorkspaceSurfaceParams {
+interface ResolveWorkspaceSurfaceParams {
   /** The EFFECTIVE config — shared row merged with this member's device override. */
   agencyConfig: LobeAgentAgencyConfig | undefined;
   /** Heterogeneous agents always run inside a working directory. */

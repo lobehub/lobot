@@ -16,7 +16,7 @@ export interface PendingMarketAgent {
   visibility: MarketInstallVisibility;
 }
 
-export interface ComposerContent {
+interface ComposerContent {
   editorData: Record<string, any> | undefined;
   markdown: string;
 }

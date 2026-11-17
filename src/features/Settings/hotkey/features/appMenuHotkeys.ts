@@ -1,6 +1,6 @@
 import type { AppMenuNode } from '@lobechat/electron-client-ipc';
 
-export interface AppMenuHotkey {
+interface AppMenuHotkey {
   id: string;
   /** Hotkey string understood by `@lobehub/ui` `Hotkey` / `HotkeyInput`, e.g. `alt+ctrl+a`. */
   keys: string;

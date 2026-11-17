@@ -12,7 +12,7 @@ const trimTrailingSlashes = (value: string): string => {
   return value.slice(0, end);
 };
 
-export interface BuildAgentDocumentUrlOptions {
+interface BuildAgentDocumentUrlOptions {
   workspaceSlug?: string | null;
 }
 

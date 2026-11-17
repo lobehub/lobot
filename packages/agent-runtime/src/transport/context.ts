@@ -8,7 +8,7 @@ import type { AgentState, CallLLMPayload } from '../types';
  * The package passes the runtime-owned payload/state while adapters bind host
  * sources such as knowledge, skills, documents, persona, and topic references.
  */
-export interface ContextBuildInput {
+interface ContextBuildInput {
   [key: string]: unknown;
   model: string;
   payload: CallLLMPayload;

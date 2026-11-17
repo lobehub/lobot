@@ -33,7 +33,7 @@ AgentNotFound.displayName = 'AgentNotFound';
  * The not-found flag is cleared by any later successful fetch (e.g. the agent
  * is made public again), so the guard recovers without a manual refresh.
  */
-export const AgentNotFoundGuard: FC<PropsWithChildren> = memo(({ children }) => {
+const AgentNotFoundGuard: FC<PropsWithChildren> = memo(({ children }) => {
   const params = useParams<{ aid?: string }>();
   const aid = params.aid && !BUILTIN_SLUG_SET.has(params.aid) ? params.aid : '';
   const isNotFound = useAgentStore(agentByIdSelectors.isAgentNotFoundById(aid));

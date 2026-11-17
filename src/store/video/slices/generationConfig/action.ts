@@ -78,7 +78,7 @@ type Setter = StoreSetter<VideoStore>;
 export const createGenerationConfigSlice = (set: Setter, get: () => VideoStore, _api?: unknown) =>
   new GenerationConfigActionImpl(set, get, _api);
 
-export class GenerationConfigActionImpl {
+class GenerationConfigActionImpl {
   readonly #get: () => VideoStore;
   readonly #set: Setter;
 

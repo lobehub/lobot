@@ -88,5 +88,3 @@ export const useDiscoverStore = createWithEqualityFn<DiscoverStore>()(
 );
 
 expose('discover', useDiscoverStore);
-
-export const getDiscoverStoreState = () => useDiscoverStore.getState();

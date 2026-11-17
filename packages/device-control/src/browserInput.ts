@@ -6,7 +6,7 @@
  * an unknown key fails the call instead of reporting a press that never landed.
  */
 
-export type BrowserKeyModifier = 'Alt' | 'Control' | 'Meta' | 'Shift';
+type BrowserKeyModifier = 'Alt' | 'Control' | 'Meta' | 'Shift';
 
 export interface BrowserKeyCombo {
   /** Normalized `Modifier+…+Key`, the form `agent-browser press` takes. */
@@ -17,7 +17,7 @@ export interface BrowserKeyCombo {
 }
 
 /** Text-editing shortcut the browser leaves to the native menu on macOS. */
-export type BrowserEditCommand = 'copy' | 'cut' | 'paste' | 'redo' | 'selectAll' | 'undo';
+type BrowserEditCommand = 'copy' | 'cut' | 'paste' | 'redo' | 'selectAll' | 'undo';
 
 const MODIFIER_ORDER: BrowserKeyModifier[] = ['Control', 'Alt', 'Shift', 'Meta'];
 

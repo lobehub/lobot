@@ -8,7 +8,7 @@ import { MAX_WIDTH } from '@/const/layoutTokens';
 
 const Highlighter = lazy(() => import('@lobehub/ui/es/Highlighter/index'));
 
-export type ErrorType = Error & { digest?: string };
+type ErrorType = Error & { digest?: string };
 
 interface ErrorCaptureProps {
   error: ErrorType;

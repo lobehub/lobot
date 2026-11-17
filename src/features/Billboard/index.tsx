@@ -9,7 +9,7 @@ import { useServerConfigStore } from '@/store/serverConfig';
 import BillboardCarousel from './Carousel';
 
 export const billboardDismissKey = (slug: string) => `billboard:${slug}`;
-export const BILLBOARD_ANCHOR_ATTR = 'data-billboard-anchor';
+const BILLBOARD_ANCHOR_ATTR = 'data-billboard-anchor';
 const CARD_ATTR = 'data-billboard-card';
 
 const Billboard = memo(() => {

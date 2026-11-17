@@ -26,13 +26,7 @@ import {
 } from './projection';
 import type { TreeDataState, TreeItem, TreeState, TreeStoreHandle } from './types';
 
-export {
-  isExpandable,
-  revalidateHierarchySearch,
-  sortTreeItems,
-  toTreeItem,
-  toTreeItemFromResource,
-} from './items';
+export { isExpandable, sortTreeItems, toTreeItem, toTreeItemFromResource } from './items';
 
 type Setter = StoreSetter<TreeState>;
 

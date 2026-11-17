@@ -15,7 +15,7 @@ type Setter = StoreSetter<AgentStore>;
 export const createPluginSlice = (set: Setter, get: () => AgentStore, _api?: unknown) =>
   new PluginSliceActionImpl(set, get, _api);
 
-export class PluginSliceActionImpl {
+class PluginSliceActionImpl {
   readonly #get: () => AgentStore;
 
   constructor(set: Setter, get: () => AgentStore, _api?: unknown) {

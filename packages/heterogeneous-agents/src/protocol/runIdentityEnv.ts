@@ -7,7 +7,7 @@
  * conversation, and an inherited `LOBEHUB_JWT_FILE` points at the ancestor's
  * token, which the CLI prefers over the fresh `LOBEHUB_JWT` the launcher injects.
  */
-export const INHERITED_RUN_IDENTITY_ENV_KEYS = [
+const INHERITED_RUN_IDENTITY_ENV_KEYS = [
   'LOBEHUB_AGENT_ID',
   'LOBEHUB_ASSISTANT_MESSAGE_ID',
   'LOBEHUB_JWT_FILE',

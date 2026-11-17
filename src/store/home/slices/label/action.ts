@@ -42,7 +42,7 @@ type Setter = StoreSetter<HomeStore>;
 export const createLabelSlice = (set: Setter, get: () => HomeStore, _api?: unknown) =>
   new LabelActionImpl(set, get, _api);
 
-export class LabelActionImpl {
+class LabelActionImpl {
   readonly #get: () => HomeStore;
   readonly #labels;
   readonly #set: Setter;

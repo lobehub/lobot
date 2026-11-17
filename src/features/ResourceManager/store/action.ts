@@ -34,19 +34,13 @@ import { getDefaultLibrarySort, getExplorerSearchParams } from './selectors';
 
 const n = setNamespace('resourceManager');
 
-export type MultiSelectActionType =
+type MultiSelectActionType =
   | 'addToKnowledgeBase'
   | 'moveToOtherKnowledgeBase'
   | 'batchChunking'
   | 'delete'
   | 'deleteLibrary'
   | 'removeFromKnowledgeBase';
-
-export interface FolderCrumb {
-  id: string;
-  name: string;
-  slug: string;
-}
 
 export type Store = Action & State;
 
@@ -130,7 +124,7 @@ const fetchHierarchySearchPage = async (
  * and IndexedDB together: searching all day cannot grow either without limit,
  * and the queries just used still paint from their own rows when revisited.
  */
-export const MAX_RECENT_SEARCHES = 8;
+const MAX_RECENT_SEARCHES = 8;
 
 /** Where the explorer search views live in the store — one entry per query. */
 const explorerSearchLens = recordLens<Store, ExplorerSearchValue>('explorerSearchEntries');
@@ -150,7 +144,7 @@ type SearchReplicaSlice = {
   remove: (key: string) => unknown;
 };
 
-export class ResourceManagerStoreActionImpl {
+class ResourceManagerStoreActionImpl {
   readonly #get: () => Store;
   readonly #set: Setter;
   readonly #explorerSearch;
@@ -751,9 +745,9 @@ export class ResourceManagerStoreActionImpl {
     this.#hierarchySearch.loadMore(key);
 }
 
-export type Action = Pick<ResourceManagerStoreActionImpl, keyof ResourceManagerStoreActionImpl>;
+type Action = Pick<ResourceManagerStoreActionImpl, keyof ResourceManagerStoreActionImpl>;
 
-export const createResourceManagerStoreSlice = (set: Setter, get: () => Store, _api?: unknown) =>
+const createResourceManagerStoreSlice = (set: Setter, get: () => Store, _api?: unknown) =>
   new ResourceManagerStoreActionImpl(set, get, _api);
 
 type CreateStore = (

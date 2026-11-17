@@ -3,9 +3,7 @@ import type { TimingSink } from '@lobechat/utils';
 
 import { type TopicItem } from '../../schemas';
 
-export type OnboardingSessionMetadataPatch = Partial<
-  NonNullable<ChatTopicMetadata['onboardingSession']>
->;
+type OnboardingSessionMetadataPatch = Partial<NonNullable<ChatTopicMetadata['onboardingSession']>>;
 
 export type RunningOperation = NonNullable<ChatTopicMetadata['runningOperation']>;
 

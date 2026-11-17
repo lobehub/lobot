@@ -388,7 +388,7 @@ const AgentScanRow = memo<{
   return row;
 });
 
-export interface ConnectAgentContentProps {
+interface ConnectAgentContentProps {
   groupId?: string;
   initialDevice?: DeviceListItem;
   /** Shows a back button on the device step, for a host with a step before this one. */
@@ -1082,7 +1082,7 @@ export const ConnectAgentContent = memo<ConnectAgentContentProps>(
 
 ConnectAgentContent.displayName = 'ConnectAgentContent';
 
-export interface OpenConnectAgentModalOptions {
+interface OpenConnectAgentModalOptions {
   groupId?: string;
   /** Skip the machine picker and scan this device's agents right away. */
   initialDevice?: DeviceListItem;

@@ -141,7 +141,7 @@ const buildCloudMcpManifest = (params: {
 };
 
 // Test connection result type
-export interface TestMcpConnectionResult {
+interface TestMcpConnectionResult {
   error?: string;
   /** STDIO process output logs for debugging */
   errorLog?: string;
@@ -165,7 +165,7 @@ type Setter = StoreSetter<ToolStore>;
 export const createMCPPluginStoreSlice = (set: Setter, get: () => ToolStore, _api?: unknown) =>
   new PluginMCPStoreActionImpl(set, get, _api);
 
-export class PluginMCPStoreActionImpl {
+class PluginMCPStoreActionImpl {
   readonly #get: () => ToolStore;
   /**
    * The MCP marketplace list is a `local-replica` paged resource: the

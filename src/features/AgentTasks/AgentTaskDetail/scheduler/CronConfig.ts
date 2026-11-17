@@ -77,7 +77,7 @@ export const WEEKDAYS = [
 ] as const;
 
 /** Minutes every plan can pick; any other exact minute is the gated custom time. */
-export const STANDARD_MINUTES = [0, 30] as const;
+const STANDARD_MINUTES = [0, 30] as const;
 
 /**
  * The minutes a picker offers. Without custom-time access it stays on the

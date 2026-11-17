@@ -87,14 +87,14 @@ export interface AIEditDeps {
   }) => Promise<{ id: string; url: string } | undefined>;
 }
 
-export interface AIEditSource {
+interface AIEditSource {
   fileId: string;
   name?: string;
   parentId?: string | null;
   url: string;
 }
 
-export interface RunAIImageEditParams {
+interface RunAIImageEditParams {
   deps: AIEditDeps;
   /** Erase only: the image with the region to remove painted in the mark color. */
   guide?: Blob;

@@ -51,7 +51,7 @@ type Setter = StoreSetter<AgentStore>;
 export const createBotSlice = (set: Setter, get: () => AgentStore, _api?: unknown) =>
   new BotSliceActionImpl(set, get, _api);
 
-export class BotSliceActionImpl {
+class BotSliceActionImpl {
   readonly #get: () => AgentStore;
   readonly #platformDefinitions;
   readonly #providers;

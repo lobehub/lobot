@@ -14,7 +14,7 @@ const CONVERSATION_ACTION_KEYS = new Set(['pin', 'unpin', 'unarchive']);
  * atop the person's own list and frees one that was archived earlier. Keys are prefixed so they cannot collide with the Agent's
  * own menu.
  */
-export const conversationActions = (menu: DropdownItem[]): DropdownItem[] =>
+const conversationActions = (menu: DropdownItem[]): DropdownItem[] =>
   menu.flatMap((item) => {
     if (!item || !('key' in item)) return [];
     const key = String(item.key);

@@ -10,7 +10,7 @@ import {
   type StaticRouteMeta,
 } from '@/spa/router/routeMeta';
 
-export interface MatchedRouteMeta {
+interface MatchedRouteMeta {
   meta?: RouteMeta;
   params: RouteMetaParams;
   static: StaticRouteMeta;

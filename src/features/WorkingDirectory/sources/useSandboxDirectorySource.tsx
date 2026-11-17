@@ -17,7 +17,7 @@ import { displayDrivePath, driveParentPath, joinDrivePath } from './driveFolders
 
 const FOLDERS_KEY = 'sandbox-drive-folders';
 
-export interface UseSandboxDirectorySourceOptions {
+interface UseSandboxDirectorySourceOptions {
   /** Which of the caller's drives is browsed; a personal account's is `personal`. */
   drive: SandboxDrive;
   /**

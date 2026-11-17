@@ -14,7 +14,7 @@ import { getNavHeaderLeading } from './leading';
 import MobileHeaderNav from './MobileHeaderNav';
 import MobileRouteTitle from './MobileRouteTitle';
 
-export interface NavHeaderProps extends Omit<FlexboxProps, 'children'> {
+interface NavHeaderProps extends Omit<FlexboxProps, 'children'> {
   children?: ReactNode;
   left?: ReactNode;
   right?: ReactNode;

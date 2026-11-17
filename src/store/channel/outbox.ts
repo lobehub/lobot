@@ -3,7 +3,7 @@ import type { ChannelDetail, ChannelPublicMessage } from '@lobechat/types';
 import type { ChannelViewParams } from '@/services/channel';
 
 /** `sent` waits until a loaded page of its conversation holds the stored message. */
-export type ChannelOutgoingStatus = 'failed' | 'sending' | 'sent';
+type ChannelOutgoingStatus = 'failed' | 'sending' | 'sent';
 
 /** A message this tab sent before the conversation it belongs to holds it. Never persisted. */
 export interface ChannelOutgoingMessage {

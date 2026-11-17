@@ -21,7 +21,7 @@ const gptModels = LOBE_DEFAULT_MODEL_LIST.map((m) => m.id).filter(
 // Anthropic SDK auto-appends /v1/messages to baseURL, so we need to strip trailing /v1
 const stripV1 = (url?: string) => url?.replace(/\/v1$/, '');
 
-export const params = {
+const params = {
   debug: {
     chatCompletion: () => process.env.DEBUG_OPENCODE_ZEN_CHAT_COMPLETION === '1',
   },

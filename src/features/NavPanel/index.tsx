@@ -66,7 +66,4 @@ const NavPanel = memo(() => {
 });
 
 NavPanel.displayName = 'NavPanel';
-
-export { NavPanelPortal } from './NavPanelPortal';
-export { useActiveNavKey } from './useActiveNavKey';
 export default NavPanel;

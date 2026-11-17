@@ -36,7 +36,7 @@ export const repositorySlug = (environment: {
  * load, says nothing about the topic's environment — so it is not reported as
  * "none", which would read as initialization being off.
  */
-export type EnvironmentChipState =
+type EnvironmentChipState =
   | { kind: 'loading' }
   | { kind: 'loadFailed' }
   | { kind: 'missing' }

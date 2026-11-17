@@ -15,7 +15,7 @@ import { useUserStore } from '@/store/user';
 import { userProfileSelectors, workspaceUserSettingsSelectors } from '@/store/user/selectors';
 import type { ChatTopic } from '@/types/topic';
 
-export interface EffectiveConversationModelConfig {
+interface EffectiveConversationModelConfig {
   model?: string;
   provider?: string;
 }

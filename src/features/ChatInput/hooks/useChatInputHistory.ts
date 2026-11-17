@@ -5,7 +5,7 @@ import { useCallback, useRef, useState } from 'react';
 import type { ChatInputHistoryEntry, ChatInputHistoryScope } from '../inputHistoryStorage';
 import { getInputHistory } from '../inputHistoryStorage';
 
-export interface ChatInputHistoryPopupState {
+interface ChatInputHistoryPopupState {
   /** Index into `entries`; 0 is the most recent prompt. */
   activeIndex: number;
   entries: ChatInputHistoryEntry[];

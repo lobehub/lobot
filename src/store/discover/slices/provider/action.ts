@@ -29,7 +29,7 @@ const n = setNamespace('discover/provider');
  * (`isLoading` / `mutate`) so a call site only has to move its `data` read to
  * the matching `providerSelectors` entry.
  */
-export interface ProviderSyncResult extends ReplicaSyncResult {
+interface ProviderSyncResult extends ReplicaSyncResult {
   /** A request is in flight and this entry has no value to show yet. */
   isLoading: boolean;
   /** Alias of `revalidate`. */
@@ -43,7 +43,7 @@ type Setter = StoreSetter<DiscoverStore>;
 export const createProviderSlice = (set: Setter, get: () => DiscoverStore, _api?: unknown) =>
   new ProviderActionImpl(set, get, _api);
 
-export class ProviderActionImpl {
+class ProviderActionImpl {
   readonly #detail;
   readonly #get: () => DiscoverStore;
   readonly #identifiers;

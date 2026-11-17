@@ -117,7 +117,7 @@ export const createWorkspaceUserSettingsSlice = (
   _api?: PreferenceStoreApi,
 ) => new WorkspaceUserSettingsActionImpl(set, get, _api);
 
-export class WorkspaceUserSettingsActionImpl {
+class WorkspaceUserSettingsActionImpl {
   readonly #api: PreferenceStoreApi | undefined;
   readonly #get: () => UserStore;
   readonly #set: Setter;

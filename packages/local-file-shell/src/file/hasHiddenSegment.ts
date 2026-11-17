@@ -7,7 +7,7 @@
  *
  * Skips `.` and `..` (relative path indicators), which are not hidden segments.
  */
-export const HIDDEN_SEGMENT_RE = /(?:^|\/)\.[^./]/;
+const HIDDEN_SEGMENT_RE = /(?:^|\/)\.[^./]/;
 
 export const hasHiddenSegment = (pattern: string | undefined): boolean =>
   !!pattern && HIDDEN_SEGMENT_RE.test(pattern);

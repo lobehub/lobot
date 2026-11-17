@@ -13,7 +13,7 @@ import { toolSelectors } from '@/store/tool/selectors';
 
 import { styles } from './style';
 
-export interface ArtifactItemProps {
+interface ArtifactItemProps {
   identifier?: string;
   messageId: string;
   payload?: ChatPluginPayload;

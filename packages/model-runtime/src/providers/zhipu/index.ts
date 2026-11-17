@@ -13,7 +13,7 @@ import { createZhipuImage } from './createImage';
 import { createZhipuVideo } from './createVideo';
 import { isAlwaysOnThinkingGLMModel, isToolStreamSupportedGLMModel } from './modelId';
 
-export interface ZhipuModelCard {
+interface ZhipuModelCard {
   description: string;
   modelCode: string;
   modelName: string;

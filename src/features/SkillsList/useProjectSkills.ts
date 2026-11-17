@@ -10,7 +10,7 @@ import { projectSkillsSelectors } from '@/store/tool/selectors';
 
 import type { SkillListItem, SkillRowAction } from './SkillsList';
 
-export interface UseProjectSkillsResult {
+interface UseProjectSkillsResult {
   deviceItems: SkillListItem[];
   /** The thrown error from the latest scan, if it failed. */
   error: unknown;

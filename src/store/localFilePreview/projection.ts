@@ -89,7 +89,7 @@ export const toPersistedLocalFilePreview = (preview: LocalFilePreview): LocalFil
  * its content must not outlive the session in IndexedDB. Sandbox previews stay
  * memory-only (no persist, no hydrate).
  */
-export const isPersistableLocalFilePreviewKey = (key: string): boolean =>
+const isPersistableLocalFilePreviewKey = (key: string): boolean =>
   !localFilePreviewTargetFromKey(key).sandboxTopicId;
 
 /**

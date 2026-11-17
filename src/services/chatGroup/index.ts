@@ -21,7 +21,7 @@ export interface GroupMemberConfig {
   title?: string;
 }
 
-export interface SupervisorConfig {
+interface SupervisorConfig {
   avatar?: string;
   backgroundColor?: string;
   description?: string;

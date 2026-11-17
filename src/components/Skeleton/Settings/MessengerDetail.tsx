@@ -56,7 +56,7 @@ const Line = ({ bar, height, width }: { bar: number; height: number; width: numb
  * 720px) of outlined cards with a 48px avatar, a name + description stack and a
  * chevron. Which platforms the server offers is data, so the cards are bars.
  */
-export const MessengerListGridSkeleton = ({ cards = 4 }: { cards?: number }) => (
+const MessengerListGridSkeleton = ({ cards = 4 }: { cards?: number }) => (
   <div aria-busy data-testid={'messenger-list-skeleton'} {...stylex.props(styles.grid)}>
     {Array.from({ length: cards }, (_, index) => (
       <div key={index} {...stylex.props(styles.listCard)}>
@@ -128,7 +128,7 @@ interface IntegrationDetailSkeletonProps {
  * the platform card with its link button, one connection card and the static
  * Commands section, which renders for real since it needs no data.
  */
-export const IntegrationDetailSkeleton = memo<IntegrationDetailSkeletonProps>(
+const IntegrationDetailSkeleton = memo<IntegrationDetailSkeletonProps>(
   ({ platform, withNestedContent = false }) => {
     const { t } = useTranslation('messenger');
     const known = isPlatform(platform) ? platform : undefined;

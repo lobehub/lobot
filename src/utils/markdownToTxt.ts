@@ -16,5 +16,3 @@ export const markdownToTxt = (markdown: string): string => {
     return markdown;
   }
 };
-
-export default markdownToTxt;

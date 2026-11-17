@@ -18,10 +18,10 @@ const sessionStatusOf = (event: AgentStreamEvent): SessionStatus => {
  * queued follow-ups.
  */
 /** A session-ending signal a gateway echoes for a mirrored member terminal. */
-export type MirroredTerminalEchoSignal = 'session_complete' | 'status_change';
+type MirroredTerminalEchoSignal = 'session_complete' | 'status_change';
 
 /** Which gateway protocol the guarded subscription speaks. */
-export type MirroredTerminalEchoProtocol = 'v1' | 'v2';
+type MirroredTerminalEchoProtocol = 'v1' | 'v2';
 
 /**
  * The echoes a gateway sends for an `agent_runtime_end` that left `status`.

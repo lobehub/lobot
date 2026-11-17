@@ -8,11 +8,11 @@ import { getCliWrapperDir } from './generateCliWrapper';
  * uses) re-run the user's profile and can move a pnpm/npm bin dir back in front
  * of the PATH entry below, so the path alone is the reliable handle.
  */
-export const LOBEHUB_CLI_ENV = 'LOBEHUB_CLI';
+const LOBEHUB_CLI_ENV = 'LOBEHUB_CLI';
 
 const CLI_WRAPPER_NAME = process.platform === 'win32' ? 'lh.cmd' : 'lh';
 
-export const getEmbeddedCliPath = (wrapperDir: string = getCliWrapperDir()): string =>
+const getEmbeddedCliPath = (wrapperDir: string = getCliWrapperDir()): string =>
   path.join(wrapperDir, CLI_WRAPPER_NAME);
 
 /**

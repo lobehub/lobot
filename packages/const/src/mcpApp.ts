@@ -5,7 +5,7 @@ import { sha256Hex } from './sha256';
  * `"model"` is the agent's tool list, `"app"` is an interactive view's
  * `tools/call`.
  */
-export type McpToolAudience = 'app' | 'model';
+type McpToolAudience = 'app' | 'model';
 
 /** The `_meta.ui.visibility` a tool declares, or `undefined` when it declares none. */
 export const getMcpToolVisibility = (meta: unknown): string[] | undefined => {

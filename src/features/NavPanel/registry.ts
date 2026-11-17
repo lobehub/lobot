@@ -1,13 +1,13 @@
 import { type ReactNode } from 'react';
 
-export type NavPanelOwner = symbol;
+type NavPanelOwner = symbol;
 
-export interface NavPanelRegistryEntry {
+interface NavPanelRegistryEntry {
   node: ReactNode;
   owner: NavPanelOwner;
 }
 
-export type NavPanelRegistrySnapshot = ReadonlyMap<string, NavPanelRegistryEntry>;
+type NavPanelRegistrySnapshot = ReadonlyMap<string, NavPanelRegistryEntry>;
 
 let snapshot: NavPanelRegistrySnapshot = new Map();
 const listeners = new Set<() => void>();

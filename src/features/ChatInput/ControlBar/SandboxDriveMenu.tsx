@@ -28,7 +28,7 @@ const styles = stylex.create({
   },
 });
 
-export interface SandboxDriveFolderPick {
+interface SandboxDriveFolderPick {
   drive?: SandboxDrive;
   workingDirectory: string;
 }

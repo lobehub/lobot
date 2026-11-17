@@ -160,7 +160,7 @@ export const isInCodeContext = (node: TextNode): boolean => {
   return false;
 };
 
-export interface ActionTagPluginOptions {
+interface ActionTagPluginOptions {
   decorator: (node: ActionTagNode, editor: LexicalEditor) => any;
   theme?: { actionTag?: string };
 }

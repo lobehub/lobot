@@ -86,6 +86,6 @@ const imageModels: AIImageModelCard[] = [
   },
 ];
 
-export const allModels = [...imageModels];
+const allModels = [...imageModels];
 
 export default allModels;

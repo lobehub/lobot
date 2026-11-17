@@ -12,7 +12,7 @@ import {
  * UI-only page state that no replica owns: the search box, the "not in a
  * library" filter and the router navigate function the actions call.
  */
-export interface PageUiState {
+interface PageUiState {
   navigate?: NavigateFunction;
   /** Search keywords for filtering pages in the sidebar. */
   searchKeywords: string;

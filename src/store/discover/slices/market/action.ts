@@ -38,7 +38,7 @@ const n = setNamespace('discover/market');
 const SHARED_READ_DEDUPING_INTERVAL = 10_000;
 
 /** Sync flags of a market read, plus the entry key to read it by. */
-export interface MarketSyncResult extends ReplicaSyncResult {
+interface MarketSyncResult extends ReplicaSyncResult {
   /** A request is in flight and this entry has no value to show yet. */
   isLoading: boolean;
   /** Read the value with `marketSelectors.*(queryKey)`; undefined while disabled. */
@@ -46,10 +46,10 @@ export interface MarketSyncResult extends ReplicaSyncResult {
 }
 
 /** Page size of the "agents using this plugin" grids. */
-export const PLUGIN_AGENTS_PAGE_SIZE = 12;
+const PLUGIN_AGENTS_PAGE_SIZE = 12;
 
 /** Params of one page of a plugin's agents, in the current UI language. */
-export const pluginAgentsParams = (pluginId: string, page: number): PluginAgentsParams => ({
+const pluginAgentsParams = (pluginId: string, page: number): PluginAgentsParams => ({
   locale: globalHelpers.getCurrentLanguage(),
   page,
   pageSize: PLUGIN_AGENTS_PAGE_SIZE,
@@ -72,7 +72,7 @@ const toSyncResult = (
 export const createMarketSlice = (set: Setter, get: () => DiscoverStore, _api?: unknown) =>
   new MarketActionImpl(set, get, _api);
 
-export class MarketActionImpl {
+class MarketActionImpl {
   readonly #agentForkSource;
   readonly #agentGroupForkSource;
   readonly #agentGroupStatus;

@@ -5,11 +5,11 @@
 import type { EventSourceMessage } from './parse';
 import { getBytes, getLines, getMessages } from './parse';
 
-export const EventStreamContentType = 'text/event-stream';
+const EventStreamContentType = 'text/event-stream';
 
 const LastEventId = 'last-event-id';
 
-export interface FetchEventSourceInit extends RequestInit {
+interface FetchEventSourceInit extends RequestInit {
   /** The Fetch function to use. Defaults to window.fetch */
   fetch?: typeof fetch;
 

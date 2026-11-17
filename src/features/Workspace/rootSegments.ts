@@ -39,7 +39,7 @@ export const WORKSPACE_MIRRORED_ROOT_SEGMENTS: ReadonlySet<string> = new Set([
  * Roots outside the SPA route table: Next.js pages, the share micro-app, Cloud
  * business routes, and the retired `/verify` that persisted tabs may still hold.
  */
-export const OFF_TABLE_ROOT_SEGMENTS: ReadonlySet<string> = new Set([
+const OFF_TABLE_ROOT_SEGMENTS: ReadonlySet<string> = new Set([
   'a',
   'devtools',
   'embed',

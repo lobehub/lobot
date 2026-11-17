@@ -1,5 +1,4 @@
-import { and, count, eq, inArray, isNull, not, notExists, notInArray, or, sql } from 'drizzle-orm';
-import { alias } from 'drizzle-orm/pg-core';
+import { and, eq, inArray, isNull, notInArray, sql } from 'drizzle-orm';
 
 import {
   AGENT_SKILL_TEMPLATE_ID,
@@ -58,28 +57,6 @@ const isDedicatedToAgents = (
   const [provenanceAgentId] = source!.slice(AGENT_DOCUMENT_SOURCE_PREFIX.length).split('/');
   return agentIds.has(provenanceAgentId);
 };
-
-/**
- * SQL form of {@link isDedicatedToAgents} for one agent, over `documents` joined to `agent_documents`.
- *
- * Use when:
- * - Candidates must be selected in the database instead of classified row by row.
- *
- * Returns:
- * - A predicate that fails safe the same way: unknown provenance is not dedicated.
- */
-export const isDedicatedToAgentWhere = (agentId: string) =>
-  and(
-    inArray(documents.sourceType, [...DEDICATED_AGENT_DOCUMENT_SOURCE_TYPES]),
-    or(
-      // `starts_with`, not LIKE: agent ids contain `_`, a LIKE wildcard.
-      sql`starts_with(${documents.source}, ${`${AGENT_DOCUMENT_SOURCE_PREFIX}${agentId}/`})`,
-      and(
-        eq(documents.source, SKILL_MANAGEMENT_SOURCE),
-        eq(agentDocuments.templateId, AGENT_SKILL_TEMPLATE_ID),
-      ),
-    ),
-  );
 
 /**
  * A document tree moves or stays as a WHOLE.
@@ -270,65 +247,6 @@ export const rehomeAgentDocumentsForRecipient = async (
         ),
       );
   }
-};
-
-/**
- * Read-only companion for the transfer manifest: associated document bindings
- * the handover above will DETACH (backing document invisible to the
- * recipient). Must stay predicate-identical to the detach branch.
- */
-export const countAssociatedAgentDocumentsToDetach = async (
-  db: Db,
-  params: AgentDocumentsHandoverParams,
-): Promise<number> => {
-  const { agentIds, fromUserId, recipientId, workspaceId } = params;
-  if (agentIds.length === 0) return 0;
-  const externalBinding = alias(agentDocuments, 'external_agent_document');
-  const [row] = await db
-    .select({ value: count() })
-    .from(agentDocuments)
-    .innerJoin(documents, eq(documents.id, agentDocuments.documentId))
-    .where(
-      and(
-        inArray(agentDocuments.agentId, agentIds),
-        eq(agentDocuments.userId, fromUserId),
-        not(
-          and(
-            eq(documents.userId, fromUserId),
-            inArray(documents.sourceType, [...DEDICATED_AGENT_DOCUMENT_SOURCE_TYPES]),
-            or(
-              sql`${documents.source} LIKE ${`${AGENT_DOCUMENT_SOURCE_PREFIX}%`}`,
-              eq(documents.source, SKILL_MANAGEMENT_SOURCE),
-            ),
-            notExists(
-              db
-                .select({ one: sql`1` })
-                .from(externalBinding)
-                .where(
-                  and(
-                    eq(externalBinding.documentId, agentDocuments.documentId),
-                    notInArray(externalBinding.agentId, agentIds),
-                  ),
-                ),
-            ),
-            notExists(
-              db
-                .select({ one: sql`1` })
-                .from(topicDocuments)
-                .where(eq(topicDocuments.documentId, agentDocuments.documentId)),
-            ),
-            notExists(
-              db
-                .select({ one: sql`1` })
-                .from(taskDocuments)
-                .where(eq(taskDocuments.documentId, agentDocuments.documentId)),
-            ),
-          )!,
-        ),
-        not(buildWorkspaceWhere({ userId: recipientId, workspaceId }, documents)),
-      ),
-    );
-  return row.value;
 };
 
 /**

@@ -19,7 +19,7 @@ import {
 
 const n = setNamespace('userMemory/preference');
 
-export interface PreferenceQueryParams extends Partial<PreferenceListParams> {
+interface PreferenceQueryParams extends Partial<PreferenceListParams> {
   page?: number;
 }
 
@@ -61,7 +61,7 @@ export const createPreferenceSlice = (set: Setter, get: () => UserMemoryStore, _
  * The user-memory preference list: one `MemoryQueryList` (shared with the other
  * offset-paged memory lists) behind the slice's long-standing action names.
  */
-export class PreferenceActionImpl {
+class PreferenceActionImpl {
   readonly #list: MemoryQueryList<
     PreferenceListParams,
     DisplayPreferenceMemory,

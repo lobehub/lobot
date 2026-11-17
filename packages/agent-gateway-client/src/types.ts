@@ -95,7 +95,7 @@ export interface AgentStreamEvent {
   type: AgentStreamEventType;
 }
 
-export interface MessagePatchUpsert {
+interface MessagePatchUpsert {
   /** Immediate predecessor in the canonical top-level message list. */
   afterId: string | null;
   message: UIChatMessage;
@@ -111,7 +111,7 @@ export interface MessagePatchData {
   upserts: MessagePatchUpsert[];
 }
 
-export type StreamChunkType =
+type StreamChunkType =
   | 'text'
   | 'reasoning'
   | 'tool_state'
@@ -178,7 +178,7 @@ export interface ToolStateChunkData {
  *. Older servers send only `{ id}`; clients fall back to a DB
  * refetch in that case.
  */
-export interface StreamStartAssistantMessage {
+interface StreamStartAssistantMessage {
   agentId?: string | null;
   /** Server creation time (epoch ms). Absent from older servers. */
   createdAt?: number;
@@ -198,7 +198,7 @@ export interface StreamStartAssistantMessage {
  * `step_start` snapshot, so without it the client has no copy until the step
  * ends and the queued message vanishes from both the tray and the chat.
  */
-export interface StreamStartParentMessage {
+interface StreamStartParentMessage {
   content: string;
   /** Server creation time (epoch ms). Absent from older servers. */
   createdAt?: number;
@@ -266,43 +266,12 @@ export interface SubAgentProgressData extends StepCompleteData {
   totalToolCalls?: number;
 }
 
-/**
- * A heterogeneous CLI lease renewal carried by `step_complete` while the
- * underlying process is alive but has no user-visible output. It deliberately
- * uses a phase instead of a new event type so the out-of-repo gateway worker
- * can treat the stream write as activity without a coordinated protocol
- * rollout. UI and persistence consumers ignore this advisory event.
- */
-export interface OperationHeartbeatData extends StepCompleteData {
-  phase: 'operation_heartbeat';
-}
-
 /** Semantic interaction shape, independent of the legacy tool renderer id. */
 export type AgentInterventionInteractionKind = 'permission' | 'plan' | 'question';
 
 /** Producer that owns the blocked interaction. */
 export type AgentInterventionProvider =
   'claude-code' | 'codex' | 'copilot' | 'cursor' | 'devin' | 'droid' | 'opencode' | 'qoder';
-
-/** Whitelisted option surface that may be persisted for cold-start review. */
-export interface AgentInterventionRenderOption {
-  description?: string;
-  /** Required for provider-owned permission/plan choices. */
-  id?: string;
-  label: string;
-}
-
-/** Canonical AskUserQuestion surface shared by every supported provider. */
-export interface AgentInterventionRenderQuestion {
-  header: string;
-  multiSelect: boolean;
-  options: AgentInterventionRenderOption[];
-  question: string;
-}
-
-export interface AgentInterventionRenderArguments {
-  questions: AgentInterventionRenderQuestion[];
-}
 
 /**
  * Producer → consumer: structured-input request the user must answer
@@ -355,130 +324,10 @@ export interface AgentInterventionResponseData {
   toolCallId: string;
 }
 
-/**
- * Server → Client: request the client to execute a tool locally and return the result.
- */
-export interface ToolExecuteData {
-  /** Agent currently running the tool. */
-  agentId?: string | null;
-  /** Tool function name (e.g. "readFile"). */
-  apiName: string;
-  /** JSON-encoded argument string as returned by the LLM. */
-  arguments: string;
-  /** Assistant message that carries this tool call. */
-  assistantMessageId?: string;
-  /** Current page document ID for page-scoped conversations. */
-  documentId?: string | null;
-  /** Per-invocation deadline. Server caps against its own function budget. */
-  executionTimeoutMs: number;
-  /** Group chat ID, when the run belongs to a group conversation. */
-  groupId?: string | null;
-  /** Tool plugin identifier (e.g. "local-system"). */
-  identifier: string;
-  /** Root server-side runtime operation ID for this assistant run. */
-  rootOperationId?: string;
-  /** Conversation scope captured by the server runtime. */
-  scope?: string | null;
-  /** Source user message ID for tools that need the current turn. */
-  sourceMessageId?: string | null;
-  /** Current task identifier or database id when task-scoped. */
-  taskId?: string | null;
-  /** Current thread ID when thread-scoped. */
-  threadId?: string | null;
-  /** Unique tool call id; used as the correlation key for the returned result. */
-  toolCallId: string;
-  /** Tool result message id, when the server created it before dispatch. */
-  toolMessageId?: string;
-  /** Current topic ID. */
-  topicId?: string | null;
-}
-
-/** Deadlines a relayed LLM attempt runs under, in milliseconds. */
-export interface LlmRelayDeadlines {
-  /** From dispatch until the first uploaded batch (an empty batch counts). */
-  claimMs: number;
-  /** From the first batch until the first non-empty chunk (model cold start). */
-  firstChunkMs: number;
-  /** Longest gap between two batches; idle executors send an empty batch as heartbeat. */
-  idleMs: number;
-  /** Whole attempt, dispatch included. The client should stop a little earlier. */
-  totalMs: number;
-}
-
-/**
- * Model-runtime method a relayed call runs on the device. `chat` streams the
- * normalized protocol chunks; `generateObject` and `models` upload their
- * return value as JSON text split into `result_part` chunks; `pullModel`
- * uploads the provider's raw progress stream as `progress` chunks (text).
- */
-export type LlmRelayMethod = 'chat' | 'generateObject' | 'models' | 'pullModel';
-
-/**
- * Server → Client (`llm_execute`): run one LLM attempt locally and stream its
- * normalized protocol chunks back. Carries no messages and no credentials: the
- * request body is fetched from `GET /api/agent/llm-relay/:callId/payload`, and
- * the client uses its own provider configuration.
- */
-export interface LlmExecuteData {
-  /** Assistant message the attempt streams into, for local optimistic rendering. */
-  assistantMessageId?: string;
-  attempt: number;
-  /** Idempotency key of this attempt: `${operationId}:${stepIndex}:${attempt}`. */
-  callId: string;
-  deadlines: LlmRelayDeadlines;
-  /**
-   * Capability for the relay endpoints of this call (payload + chunk upload),
-   * sent as the `x-llm-relay-lease` header. Expires with the attempt.
-   */
-  leaseToken: string;
-  /** Runtime method to call; absent ⇒ `chat` (servers before one-shot relay). */
-  method?: LlmRelayMethod;
-  model: string;
-  operationId: string;
-  /**
-   * Client that started the run (`host.llmExecutor.clientId`). It executes;
-   * other clients only take over when it is gone. The first batch to arrive
-   * claims the call, later claimants get 409.
-   */
-  preferredClientId?: string;
-  /** Provider id, for the client's own key vault / endpoint lookup. */
-  provider: string;
-  /** SDK the provider speaks (`sdkType` for custom providers). */
-  runtimeProvider: string;
-  stepIndex: number;
-}
-
-/** Server → Client (`llm_cancel`): stop the relayed attempt and upload a final `aborted` batch. */
-export interface LlmCancelData {
-  callId: string;
-  reason: 'interrupted' | 'timeout' | 'superseded' | 'error';
-}
-
-/** Client → Server: one batch of a relayed attempt's output. */
-export interface LlmRelayBatch {
-  /** Sorted, gap-free per call starting at 1; the server dedupes and reorders by it. */
-  chunks: Array<{ data: unknown; id?: string; type: string }>;
-  /** Uploading client; the first batch claims the call for it. */
-  clientId: string;
-  /** Last batch of the attempt. */
-  final?: {
-    error?: unknown;
-    reason: 'aborted' | 'done' | 'error';
-  };
-  seq: number;
-}
-
-/** Server → Client reply to an uploaded batch. */
-export interface LlmRelayBatchAck {
-  ackSeq: number;
-  /** The server no longer wants this attempt (stopped, timed out, superseded): abort now. */
-  cancel?: boolean;
-}
-
 // ─── WebSocket Protocol Messages ───
 
 // Client → Server
-export interface AuthMessage {
+interface AuthMessage {
   /**
    * This page's client id. The gateway delivers `llm_execute` to the client
    * that started the run (`preferredClientId`); older gateways ignore it.
@@ -488,7 +337,7 @@ export interface AuthMessage {
   type: 'auth';
 }
 
-export interface ResumeMessage {
+interface ResumeMessage {
   lastEventId: string;
   type: 'resume';
   /**
@@ -499,7 +348,7 @@ export interface ResumeMessage {
   wantStatus?: boolean;
 }
 
-export interface HeartbeatMessage {
+interface HeartbeatMessage {
   type: 'heartbeat';
 }
 
@@ -535,11 +384,11 @@ export interface ToolResultMessage {
 export type ClientMessage = AuthMessage | HeartbeatMessage | ResumeMessage | ToolResultMessage;
 
 // Server → Client
-export interface AuthSuccessMessage {
+interface AuthSuccessMessage {
   type: 'auth_success';
 }
 
-export interface AuthFailedMessage {
+interface AuthFailedMessage {
   reason: string;
   type: 'auth_failed';
 }
@@ -551,21 +400,21 @@ export interface AuthFailedMessage {
  * connection. Treat this as recoverable, NOT terminal — `auth_failed` remains
  * the terminal "this op no longer exists / token is bogus" signal.
  */
-export interface AuthExpiredMessage {
+interface AuthExpiredMessage {
   type: 'auth_expired';
 }
 
-export interface AgentEventMessage {
+interface AgentEventMessage {
   event: AgentStreamEvent;
   id?: string;
   type: 'agent_event';
 }
 
-export interface HeartbeatAckMessage {
+interface HeartbeatAckMessage {
   type: 'heartbeat_ack';
 }
 
-export interface SessionCompleteMessage {
+interface SessionCompleteMessage {
   type: 'session_complete';
 }
 
@@ -607,7 +456,7 @@ export type AgentStreamSessionCompletion =
  * "completed" from silence (which would clear the shared `runningOperation` and
  * cancel the run on every device).
  */
-export interface ResumeCompleteMessage {
+interface ResumeCompleteMessage {
   status: SessionStatus;
   type: 'resume_complete';
 }

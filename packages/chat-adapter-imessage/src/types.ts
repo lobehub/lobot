@@ -11,41 +11,6 @@ export interface BlueBubblesApiConfig {
   serverUrl: string;
 }
 
-export interface ImessageBridgeTransport {
-  getChat?: (guid: string, withParts?: string[]) => Promise<BlueBubblesChat>;
-  getChatMessages?: (
-    chatGuid: string,
-    options?: {
-      after?: number | string;
-      before?: number | string;
-      limit?: number;
-      offset?: number;
-      sort?: 'ASC' | 'DESC';
-      withParts?: string[];
-    },
-  ) => Promise<BlueBubblesQueryResult<BlueBubblesMessage>>;
-  sendText?: (
-    chatGuid: string,
-    message: string,
-    options?: BlueBubblesSendOptions,
-  ) => Promise<BlueBubblesMessage>;
-  startTyping?: (chatGuid: string) => Promise<void>;
-}
-
-export interface ImessageAdapterConfig {
-  botUserId?: string;
-  password?: string;
-  requestTimeoutMs?: number;
-  serverUrl?: string;
-  transport?: ImessageBridgeTransport;
-  userName?: string;
-  /**
-   * Shared secret appended to the LobeHub webhook URL. BlueBubbles webhooks are
-   * not signed, so the route-level secret is the lightweight authenticity gate.
-   */
-  webhookSecret: string;
-}
-
 export interface BlueBubblesResponse<T = unknown> {
   data?: T;
   message?: string;
@@ -59,7 +24,7 @@ export interface BlueBubblesResponse<T = unknown> {
   status?: number;
 }
 
-export interface BlueBubblesHandle {
+interface BlueBubblesHandle {
   address?: string;
   country?: string;
   guid?: string;
@@ -77,7 +42,7 @@ export interface BlueBubblesChat {
   style?: number;
 }
 
-export interface BlueBubblesAttachment {
+interface BlueBubblesAttachment {
   filename?: string;
   guid: string;
   mimeType?: string;
@@ -130,8 +95,4 @@ export interface BlueBubblesOutboundAttachment {
 export interface BlueBubblesDownloadedAttachment {
   buffer: Buffer;
   mimeType?: string;
-}
-
-export interface ImessageThreadId {
-  chatGuid: string;
 }

@@ -1,11 +1,11 @@
 import type { ChatContextContent } from '@lobechat/types';
 
-export interface SelectionToolbarPosition {
+interface SelectionToolbarPosition {
   left: number;
   top: number;
 }
 
-export interface TextSelectionContextParams {
+interface TextSelectionContextParams {
   id: string;
   selectedText: string;
   title: string;

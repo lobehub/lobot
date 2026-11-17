@@ -8,16 +8,7 @@ import { expose } from '@/store/middleware/expose';
 
 import { type Store, store } from './action';
 
-export type { State } from './initialState';
-export type {
-  QuotaAccount,
-  QuotaBinding,
-  QuotaHistory,
-  QuotaLatestReading,
-  QuotaPanelSnapshot,
-  QuotaUsageTurn,
-  QuotaWindowRow,
-} from './projection';
+export type { QuotaAccount, QuotaBinding, QuotaLatestReading, QuotaWindowRow } from './projection';
 
 const devtools = createDevtools('agentQuota');
 

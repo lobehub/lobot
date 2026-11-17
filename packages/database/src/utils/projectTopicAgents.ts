@@ -6,7 +6,7 @@ import { projectAgents, projects } from '../schemas/project';
 import { topics } from '../schemas/topic';
 import type { LobeChatDatabase, Transaction } from '../type';
 
-export type ProjectTopicAgentsFilter = { projectId: string } | { topicIds: string[] };
+type ProjectTopicAgentsFilter = { projectId: string } | { topicIds: string[] };
 
 /**
  * An agent that works on a project topic is a member of that project: add the

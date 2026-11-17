@@ -12,7 +12,7 @@ import { defineCommandBinary } from '@/core/infrastructure/BinaryManager';
  *
  * https://github.com/vercel-labs/agent-browser
  */
-export const agentBrowserBinary: BinarySpec = defineCommandBinary('agent-browser', {
+const agentBrowserBinary: BinarySpec = defineCommandBinary('agent-browser', {
   description: 'Vercel agent-browser - headless browser automation for AI agents',
   manage: {
     githubRepo: 'vercel-labs/agent-browser',

@@ -9,7 +9,7 @@ import { useChatStore } from '@/store/chat';
 
 import { styles } from './style';
 
-export interface ChunkItemProps extends ChatFileChunk {
+interface ChunkItemProps extends ChatFileChunk {
   index: number;
 }
 

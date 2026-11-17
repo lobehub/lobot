@@ -32,7 +32,7 @@ export const errorInScope = (
 
 const NETWORK_MESSAGE_PATTERN = /failed to fetch|network|load failed/i;
 
-export const getConnectorActionErrorCode = (error: unknown): string | undefined => {
+const getConnectorActionErrorCode = (error: unknown): string | undefined => {
   const data = (
     error as
       { data?: { code?: string; errorData?: { code?: string }; httpStatus?: number } } | undefined

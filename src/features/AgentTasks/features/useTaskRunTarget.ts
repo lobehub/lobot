@@ -17,7 +17,7 @@ import { agentByIdSelectors } from '@/store/agent/selectors';
 import { useDeviceList } from '@/store/device';
 import { useElectronStore } from '@/store/electron';
 
-export type DeviceLabelSource = Pick<DeviceListItem, 'deviceId' | 'friendlyName' | 'hostname'>;
+type DeviceLabelSource = Pick<DeviceListItem, 'deviceId' | 'friendlyName' | 'hostname'>;
 
 export const deviceLabel = (device: DeviceLabelSource, unknownLabel: string) =>
   device.friendlyName || device.hostname || unknownLabel;
@@ -53,7 +53,7 @@ export const getTaskDeviceLockReason = ({
  * - `none` — nothing choosable here; report the inherited state as a hint
  *   rather than offering a control that cannot take effect.
  */
-export type TaskDirectoryKind = 'device' | 'none' | 'repo';
+type TaskDirectoryKind = 'device' | 'none' | 'repo';
 
 export interface TaskRunTarget {
   /** Whether the task may pick a target at all — the assignee's policy owns this. */

@@ -5289,6 +5289,6 @@ const qwenVideoModels: AIVideoModelCard[] = [
   },
 ];
 
-export const allModels = [...qwenChatModels, ...qwenImageModels, ...qwenVideoModels];
+const allModels = [...qwenChatModels, ...qwenImageModels, ...qwenVideoModels];
 
 export default allModels;

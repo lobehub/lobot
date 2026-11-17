@@ -1,6 +1,6 @@
 import type { Pricing, RuntimeImageGenParams } from 'model-bank';
 
-export interface ImageSinglePriceResult {
+interface ImageSinglePriceResult {
   approximatePrice?: number;
   price?: number;
 }

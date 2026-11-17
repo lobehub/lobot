@@ -11,10 +11,9 @@ import { notebookDocumentsResource } from '@/store/notebook/projection';
 import { pageDetailResource, pageListResource } from '@/store/page/projection';
 import { agentDocumentSkillsResource } from '@/store/tool/slices/agentDocumentSkills/projection';
 
-export type DocumentMutationCause =
-  'agent-document' | 'document-service' | 'notebook' | 'page-title';
+type DocumentMutationCause = 'agent-document' | 'document-service' | 'notebook' | 'page-title';
 
-export interface InvalidateDocumentMutationParams {
+interface InvalidateDocumentMutationParams {
   agentId?: string;
   cause?: DocumentMutationCause;
   documentId?: string;

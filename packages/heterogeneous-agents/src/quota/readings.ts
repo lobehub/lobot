@@ -30,7 +30,7 @@ const clampPercent = (value: number) => Math.min(100, Math.max(0, Math.round(val
  * captured in — so a reading older than one full window counts as rolled over
  * too.
  */
-export const hasWindowRolledOver = (reading: QuotaDisplayReading, now: number): boolean =>
+const hasWindowRolledOver = (reading: QuotaDisplayReading, now: number): boolean =>
   reading.resetsAt == null
     ? now - reading.capturedAt >
       (reading.windowMinutes == null
@@ -55,7 +55,7 @@ export const currentUtilization = (reading: QuotaDisplayReading, now: number): n
  * refilled window forever. A limit missing while its window is still live may
  * just have landed in another batch, so it stays.
  */
-export const dropRetiredLimits = <T extends QuotaDisplayReading>(readings: T[]): T[] => {
+const dropRetiredLimits = <T extends QuotaDisplayReading>(readings: T[]): T[] => {
   const newestSampleAt = readings.reduce((newest, r) => Math.max(newest, r.capturedAt), 0);
 
   return readings.filter(
@@ -80,7 +80,7 @@ export const toQuotaWindow = (reading: QuotaDisplayReading, now: number): Hetero
 };
 
 /** The 5-hour window; `five_hour` is the pre-`limits[]` spelling. */
-export const isSessionLimit = (reading: QuotaDisplayReading): boolean =>
+const isSessionLimit = (reading: QuotaDisplayReading): boolean =>
   reading.limitType === 'session' || reading.limitType === 'five_hour';
 
 /**
@@ -92,7 +92,7 @@ export const isWeeklyAllLimit = (reading: QuotaDisplayReading): boolean =>
   reading.limitType.startsWith('weekly') && !reading.scopeKey;
 
 /** A weekly window scoped to one model, e.g. Fable. */
-export const isScopedWeeklyLimit = (reading: QuotaDisplayReading): boolean =>
+const isScopedWeeklyLimit = (reading: QuotaDisplayReading): boolean =>
   reading.limitType.startsWith('weekly') && !!reading.scopeKey;
 
 const newestMatch = <T extends QuotaDisplayReading>(
@@ -105,7 +105,7 @@ const newestMatch = <T extends QuotaDisplayReading>(
     undefined,
   );
 
-export interface ClaudeQuotaWindows {
+interface ClaudeQuotaWindows {
   scopedWeekly: ClaudeCodeScopedWeekly | null;
   session: HeteroQuotaWindow | null;
   weekly: HeteroQuotaWindow | null;

@@ -10,7 +10,7 @@ import { systemStatusSelectors } from '@/store/global/selectors';
  * `../Body` — not imported from there to avoid a hooks ⇄ Body import cycle
  * (Body renders sections that consume these hooks).
  */
-export type RevealableSidebarSection = 'agent' | 'private';
+type RevealableSidebarSection = 'agent' | 'private';
 
 /**
  * Compute the system-status patch that makes a sidebar section visible after

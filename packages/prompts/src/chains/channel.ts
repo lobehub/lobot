@@ -1,15 +1,8 @@
-import type {
-  ChannelContextMessage,
-  ChannelHistoryMessage,
-  ChannelHistoryMessageDetail,
-  ChannelHistoryPage,
-  ChannelInputManifest,
-  ChannelJobWake,
-} from '@lobechat/types';
+import type { ChannelContextMessage, ChannelInputManifest, ChannelJobWake } from '@lobechat/types';
 
 import { formatOptionalReplyBody } from '../prompts/optionalReply';
 
-export const CHANNEL_REPLY_GUIDELINES = `Channel replies are conversation, not execution reports. Keep simple questions brief.
+const CHANNEL_REPLY_GUIDELINES = `Channel replies are conversation, not execution reports. Keep simple questions brief.
 Refer to participants by their display names. Refer to earlier messages by their author and a short quote or description, never by internal sequence numbers as citations.
 IDs, sequence numbers, cursors and execution metadata are for internal lookup and tool arguments. Do not volunteer them or unrelated runtime/configuration details in replies. Provide relevant technical details only when the user explicitly asks and disclosure is authorized; preserve paths, code and numbers that answer the actual request.
 Match the answer to the scope of the question, using the current Channel context first. Answer what was asked, not a dossier of past messages, directories or tasks. Asked who a participant is or what they do, give their display name and role in one or two sentences, without their recent messages, files, tasks or issue numbers. Do not append unrelated agents, workspace inventory or unrequested offers to help, investigate or delegate.
@@ -204,26 +197,3 @@ export const buildChannelPrompt = (
       : []),
   ].join('\n');
 };
-
-const projectHistoryMessage = ({
-  author,
-  content,
-  contentLength,
-  fileIds,
-  id,
-  truncated,
-}: ChannelHistoryMessage) => ({ author, content, contentLength, fileIds, id, truncated });
-
-/** Model-facing projection shared by the builtin and CLI; retain the original data for UI/debugging. */
-export const projectChannelHistory = (history: ChannelHistoryPage | ChannelHistoryMessageDetail) =>
-  'messages' in history
-    ? {
-        messages: history.messages.map(projectHistoryMessage),
-        nextBeforeSequence: history.nextBeforeSequence,
-      }
-    : {
-        attachments: history.attachments,
-        message: projectHistoryMessage(history.message),
-        nextOffset: history.nextOffset,
-        offset: history.offset,
-      };

@@ -5,7 +5,7 @@ import { usePermission } from '@/hooks/usePermission';
 import { openCreateAgentIdentityModal, type OpenCreateAgentIdentityModalOptions } from './index';
 import { useLandOnCreatedAgent } from './useLandOnCreatedAgent';
 
-export type OpenCreateAgentModalParams = Pick<
+type OpenCreateAgentModalParams = Pick<
   OpenCreateAgentIdentityModalOptions,
   'groupId' | 'onClosed' | 'visibility'
 >;

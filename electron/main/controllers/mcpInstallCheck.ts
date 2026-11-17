@@ -11,7 +11,7 @@ const execPromise = promisify(exec);
 
 // ---------- MCP Install Check (local system) ----------
 
-export const getInstallInstructions = (installInstructions: any) => {
+const getInstallInstructions = (installInstructions: any) => {
   if (!installInstructions) return undefined;
 
   let current: string | undefined;
@@ -34,7 +34,7 @@ export const getInstallInstructions = (installInstructions: any) => {
   return { current, manual: installInstructions.manual };
 };
 
-export const checkSystemDependency = async (dependency: any) => {
+const checkSystemDependency = async (dependency: any) => {
   const checkCommand = dependency.checkCommand || `${dependency.name} --version`;
 
   try {
@@ -114,7 +114,7 @@ export const checkSystemDependency = async (dependency: any) => {
   }
 };
 
-export const checkPackageInstalled = async (installationMethod: string, details: any) => {
+const checkPackageInstalled = async (installationMethod: string, details: any) => {
   if (installationMethod === 'npm') {
     const packageName = details?.packageName;
     if (!packageName) return { installed: false };

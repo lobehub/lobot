@@ -17,7 +17,7 @@ export const nonNull = <T>(value: T | null | undefined, context: string): T => {
 };
 
 /** Returns the row a query must yield, or throws when it is missing. */
-export const firstRow = <T>(rows: readonly T[], context: string): T =>
+const firstRow = <T>(rows: readonly T[], context: string): T =>
   nonNull(rows[0], `the first row of ${context}`);
 
 /**

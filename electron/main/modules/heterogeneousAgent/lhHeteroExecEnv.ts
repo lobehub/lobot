@@ -5,7 +5,7 @@ import {
 
 import { withEmbeddedCliEnv } from '@/modules/cliEmbedding';
 
-export interface LhHeteroExecEnvParams {
+interface LhHeteroExecEnvParams {
   /** Account-routing env (`CLAUDE_CONFIG_DIR` of the routed login), if any. */
   accountEnv?: Record<string, string>;
   agentId?: string;

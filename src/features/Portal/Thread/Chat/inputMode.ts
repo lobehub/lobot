@@ -1,4 +1,4 @@
-export type ThreadInputMode = 'default' | 'heterogeneous' | 'hidden';
+type ThreadInputMode = 'default' | 'heterogeneous' | 'hidden';
 
 export const getThreadInputMode = ({
   isExternallyOwnedThread,

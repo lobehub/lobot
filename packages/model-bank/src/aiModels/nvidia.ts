@@ -92,6 +92,6 @@ const nvidiaChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...nvidiaChatModels];
+const allModels = [...nvidiaChatModels];
 
 export default allModels;

@@ -5,7 +5,7 @@
 
 import { type CSSProperties, type ImgHTMLAttributes } from 'react';
 
-export interface StaticImageData {
+interface StaticImageData {
   blurDataURL?: string;
   height: number;
   src: string;

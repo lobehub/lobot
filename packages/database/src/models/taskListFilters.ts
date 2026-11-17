@@ -44,7 +44,7 @@ import { taskLabelLinks, taskLabels } from '../schemas/taskLabel';
  * complements and no row falls into neither bucket. `isTaskArchiveBlocked`
  * in `@lobechat/types` mirrors it in JS; keep the two in step.
  */
-export const RUNNABLE_AUTOMATION = and(
+const RUNNABLE_AUTOMATION = and(
   notInArray(tasks.status, ['canceled', 'completed', 'failed']),
   or(
     and(
@@ -252,7 +252,7 @@ const buildDateCondition = (
 /** `%`, `_` and the escape character itself are literal in a content search. */
 const escapeLikePattern = (value: string) => value.replaceAll(/[%\\_]/g, (char) => `\\${char}`);
 
-export const buildTaskFilterConditions = (filter: TaskListFilter, now?: number): SQL[] => {
+const buildTaskFilterConditions = (filter: TaskListFilter, now?: number): SQL[] => {
   const content = filter.content?.trim();
   const pattern = content ? `%${escapeLikePattern(content)}%` : undefined;
 

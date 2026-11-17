@@ -19,7 +19,7 @@ export interface AgentTopPendant {
   label: string;
 }
 
-export interface AgentBadge {
+interface AgentBadge {
   /** Short identity chip pinned to the avatar's bottom edge. */
   bottom?: AgentBottomPendant;
   /** Cover color the agent picked; absent lets the card derive one from the avatar. */

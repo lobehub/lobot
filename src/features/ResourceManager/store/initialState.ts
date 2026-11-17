@@ -38,7 +38,7 @@ export const DEFAULT_WORKSPACE_LIST_VISIBILITY: ResourceListVisibilityFilter = '
  * for a network round-trip before anything was on screen. The replica paints the
  * persisted head page first and lets the network confirm it.
  */
-export interface ResourceSearchState {
+interface ResourceSearchState {
   /**
    * Replica views of the explorer's search overlay (`SearchResultsOverlay`),
    * one entry per query so revisiting a keyword restores its own rows.

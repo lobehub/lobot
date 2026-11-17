@@ -1,4 +1,4 @@
-import type { ChatTopicStatus, ProjectStatus, TaskStatus } from '@lobechat/types';
+import type { ProjectStatus, TaskStatus } from '@lobechat/types';
 import { PROJECT_STATUSES } from '@lobechat/types';
 import { cssVar } from '@lobehub/ui';
 import type { LucideIcon } from 'lucide-react';
@@ -12,9 +12,6 @@ import {
   CircleX,
   Clock,
   HandIcon,
-  PauseCircle,
-  StarIcon,
-  TriangleAlert,
 } from 'lucide-react';
 
 export interface ExecutionStatusVisual {
@@ -54,48 +51,8 @@ export const TASK_STATUS_VISUALS: Record<TaskStatus, ExecutionStatusVisual> = {
   scheduled: VISUALS.scheduled,
 };
 
-export const PROJECT_STATUS_VISUALS: Record<ProjectStatus, ExecutionStatusVisual> = {
-  active: VISUALS.running,
-  archived: VISUALS.archived,
-  backlog: VISUALS.backlog,
-  canceled: VISUALS.canceled,
-  completed: VISUALS.completed,
-  paused: { color: cssVar.colorTextSecondary, icon: PauseCircle },
-  reviewing: VISUALS.waitingForHuman,
-};
-
 const PROJECT_STATUS_SET = new Set<string>(PROJECT_STATUSES);
 
 /** Normalize untrusted persisted/API values before rendering a project status. */
 export const resolveProjectStatus = (status: null | string | undefined): ProjectStatus =>
   status && PROJECT_STATUS_SET.has(status) ? (status as ProjectStatus) : 'backlog';
-
-export const TOPIC_STATUS_VISUALS: Record<ChatTopicStatus, ExecutionStatusVisual> = {
-  active: VISUALS.idle,
-  archived: VISUALS.archived,
-  // Topic lists are mostly history: mute completed to keep long lists quiet,
-  // unlike task boards where a green check marks an achievement.
-  completed: { ...VISUALS.completed, color: cssVar.colorTextDescription },
-  // A failed topic is an alert the user should act on, not a terminal outcome
-  // like a failed task run — the warning triangle reads that way, the circled X
-  // reads as "closed/rejected".
-  failed: { ...VISUALS.failed, icon: TriangleAlert },
-  running: VISUALS.running,
-  scheduled: VISUALS.scheduled,
-  // `unread` rows render a custom ripple dot; this is the fallback glyph.
-  unread: { color: cssVar.colorInfo, icon: CircleDot },
-  waitingForHuman: VISUALS.waitingForHuman,
-};
-
-/**
- * Synthetic sidebar group buckets that don't map 1:1 to a persisted status:
- * `favorite` is split out by `buildGroupedTopics`; `pending` collapses the
- * attention-needing states (waiting for human / failed / unread) and borrows
- * the waiting-for-human glyph since "needs your attention" is its semantic.
- */
-export const TOPIC_GROUP_VISUALS = {
-  favorite: { color: cssVar.colorTextTertiary, icon: StarIcon },
-  pending: VISUALS.waitingForHuman,
-} satisfies Record<string, ExecutionStatusVisual>;
-
-export const EXECUTION_STATUS_VISUALS = VISUALS;

@@ -297,7 +297,7 @@ export interface SearchFilesResult {
 /** Alias for {@link SearchFilesParams} kept for the legacy `SearchOptions` import path. */
 export type SearchOptions = SearchFilesParams;
 
-export interface MoveFileItem {
+interface MoveFileItem {
   newPath: string;
   oldPath: string;
 }
@@ -351,7 +351,7 @@ export interface CreateEntryResult {
   success: boolean;
 }
 
-export interface CopyFileItem {
+interface CopyFileItem {
   sourcePath: string;
   /**
    * Where the copy lands. Omit it to duplicate next to the source under a

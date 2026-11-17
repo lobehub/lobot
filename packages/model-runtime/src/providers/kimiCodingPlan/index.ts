@@ -115,7 +115,7 @@ const buildKimiCodingPlanAnthropicPayload = async (
   };
 };
 
-export const params = createAnthropicCompatibleParams({
+const params = createAnthropicCompatibleParams({
   baseURL: DEFAULT_KIMI_CODING_BASE_URL,
   chatCompletion: {
     handlePayload: buildKimiCodingPlanAnthropicPayload,
@@ -134,5 +134,3 @@ export const params = createAnthropicCompatibleParams({
 });
 
 export const LobeKimiCodingPlanAI = createAnthropicCompatibleRuntime(params);
-
-export default LobeKimiCodingPlanAI;

@@ -1,7 +1,7 @@
 import { execFile } from 'node:child_process';
 
 /** A live `lh hetero exec` wrapper process found in the OS process table. */
-export interface HeteroExecProcess {
+interface HeteroExecProcess {
   pid: number;
 }
 

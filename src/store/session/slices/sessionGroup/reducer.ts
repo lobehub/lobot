@@ -1,13 +1,13 @@
 import { type SessionGroupItem } from '@/types/session';
 
-export type AddSessionGroupAction = { item: SessionGroupItem; type: 'addSessionGroupItem' };
-export type DeleteSessionGroupAction = { id: string; type: 'deleteSessionGroupItem' };
-export type UpdateSessionGroupAction = {
+type AddSessionGroupAction = { item: SessionGroupItem; type: 'addSessionGroupItem' };
+type DeleteSessionGroupAction = { id: string; type: 'deleteSessionGroupItem' };
+type UpdateSessionGroupAction = {
   id: string;
   item: Partial<SessionGroupItem>;
   type: 'updateSessionGroupItem';
 };
-export type UpdateSessionGroupOrderAction = {
+type UpdateSessionGroupOrderAction = {
   sortMap: { id: string; sort?: number }[];
   type: 'updateSessionGroupOrder';
 };

@@ -1,10 +1,10 @@
-export interface BlobPersistResult {
+interface BlobPersistResult {
   fileId: string;
   key: string;
   url: string;
 }
 
-export interface BlobRef {
+interface BlobRef {
   fileId?: string | null;
   id?: string | null;
   url?: string | null;

@@ -51,6 +51,6 @@ const upstageChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...upstageChatModels];
+const allModels = [...upstageChatModels];
 
 export default allModels;

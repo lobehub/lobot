@@ -10,7 +10,7 @@ import type { ChatStore } from '@/store/chat/store';
  * agent (e.g. a direct @Agent) sent those rows as its new topic's messages and
  * moved them out of the topic they belong to.
  */
-export const clearBlankConversationBucket = (
+const clearBlankConversationBucket = (
   get: () => ChatStore,
   { agentId, groupId, scope }: Pick<ConversationContext, 'agentId' | 'groupId' | 'scope'>,
 ) =>

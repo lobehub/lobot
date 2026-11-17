@@ -2,7 +2,7 @@ const HEURISTIC_SAMPLE_BYTES = 512;
 const HEURISTIC_THRESHOLD = 0.3;
 
 /** UTF-16 byte ordering supported by the shared text detector. */
-export type Utf16Variant = 'utf-16le' | 'utf-16be';
+type Utf16Variant = 'utf-16le' | 'utf-16be';
 
 /**
  * Detect UTF-16 without BOM by sampling and counting ASCII-shaped code-unit

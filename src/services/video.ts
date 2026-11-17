@@ -6,7 +6,7 @@ import { type CreateVideoServicePayload } from '@/server/routers/lambda/video';
 
 const log = debug('lobe-video:service');
 
-export class AiVideoService {
+class AiVideoService {
   async createVideo(payload: CreateVideoServicePayload) {
     log('Creating video with payload: %O', payload);
 

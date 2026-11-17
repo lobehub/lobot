@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useFetchGitBranches } from '@/store/device';
 
-export interface WorktreeBranchSeed {
+interface WorktreeBranchSeed {
   /** Whether the branch list has settled. No name may be drawn before this. */
   isReady: boolean;
   /** The generated default, `undefined` until the branch list has settled. */

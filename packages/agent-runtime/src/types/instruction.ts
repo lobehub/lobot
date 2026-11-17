@@ -7,8 +7,7 @@ import type {
 } from '@lobechat/types';
 
 import type { FinishReason } from './event';
-import type { AgentState, ToolRegistry } from './state';
-import type { Cost, CostCalculationContext, Usage } from './usage';
+import type { AgentState } from './state';
 
 /**
  * Runtime execution context passed to Agent runner
@@ -67,56 +66,6 @@ export interface AgentRuntimeContext {
   stepUsage?: ModelUsage | unknown;
 }
 
-/**
- * Represents the "Brain" of an agent.
- * It contains all the decision-making logic and is completely stateless.
- */
-export interface Agent {
-  /**
-   * Calculate cost from usage statistics
-   * @param context - Cost calculation context with usage and limits
-   * @returns Updated cost information
-   */
-  calculateCost?: (context: CostCalculationContext) => Cost;
-
-  /**
-   * Calculate usage statistics from operation results
-   * @param operationType - Type of operation that was performed
-   * @param operationResult - Result data from the operation
-   * @param previousUsage - Previous usage statistics
-   * @returns Updated usage statistics
-   */
-  calculateUsage?: (
-    operationType: 'llm' | 'tool' | 'human_interaction',
-    operationResult: any,
-    previousUsage: Usage,
-  ) => Usage;
-
-  /** Optional custom executors mapping to extend runtime behaviors */
-  executors?: Partial<Record<AgentInstruction['type'], any>>;
-
-  /**
-   * Model runtime function for LLM calls - Agent owns its model integration
-   * @param payload - LLM call payload (messages, tools, etc.)
-   * @returns Async iterable of streaming response chunks
-   */
-  modelRuntime?: (payload: unknown) => AsyncIterable<any>;
-
-  /**
-   * The core runner method. Based on the current execution context and state,
-   * it decides what the next action should be.
-   * @param context - Current runtime context with phase and payload
-   * @param state - Complete agent state for reference
-   */
-  runner: (
-    context: AgentRuntimeContext,
-    state: AgentState,
-  ) => Promise<AgentInstruction | AgentInstruction[]>;
-
-  /** Optional tools registry held by the agent */
-  tools?: ToolRegistry;
-}
-
 // ── Payloads ──────────────────────────────────────────────
 
 export interface CallLLMPayload {
@@ -135,34 +84,10 @@ export interface CallLLMPayload {
   tools: any[];
 }
 
-export interface CallingToolPayload {
-  apiName: string;
-  arguments: string;
-  id: string;
-  identifier: string;
-  type: 'mcp' | 'default' | 'markdown' | 'standalone';
-}
-
-export interface HumanAbortPayload {
-  /** Whether there are pending tool calls */
-  hasToolsCalling?: boolean;
-  /** Parent message ID (assistant message) */
-  parentMessageId: string;
-  /** Reason for the abort */
-  reason: string;
-  /** LLM result including content and tool_calls */
-  result?: {
-    content: string;
-    tool_calls?: any[];
-  };
-  /** Pending tool calls that need to be cancelled */
-  toolsCalling?: ChatToolPayload[];
-}
-
 /**
  * Sub-agent definition for exec_sub_agents instruction
  */
-export interface SubAgentTask {
+interface SubAgentTask {
   /** Brief description of what this sub-agent does (shown in UI) */
   description: string;
   /** Whether to inherit context messages from parent conversation */
@@ -190,65 +115,27 @@ export interface SubAgentTask {
   timeout?: number;
 }
 
-/**
- * Payload for sub_agent_result phase (single sub-agent)
- */
-export interface SubAgentResultPayload {
-  /** Parent message ID */
-  parentMessageId: string;
-  /** Result from executed sub-agent */
-  result: {
-    /** Error message if sub-agent failed */
-    error?: string;
-    /** Sub-agent result content */
-    result?: string;
-    /** Whether the sub-agent completed successfully */
-    success: boolean;
-    /** Thread ID where the sub-agent was executed */
-    threadId: string;
-  };
-}
-
-/**
- * Payload for sub_agents_batch_result phase (multiple sub-agents)
- */
-export interface SubAgentsBatchResultPayload {
-  /** Parent message ID */
-  parentMessageId: string;
-  /** Results from executed sub-agents */
-  results: Array<{
-    /** Error message if sub-agent failed */
-    error?: string;
-    /** Sub-agent result content */
-    result?: string;
-    /** Whether the sub-agent completed successfully */
-    success: boolean;
-    /** Thread ID where the sub-agent was executed */
-    threadId: string;
-  }>;
-}
-
 // ── Instructions ──────────────────────────────────────────
 
 /**
  * Common fields shared across all instruction types.
  * Agents can set `stepLabel` to label the current step for display in streaming events and hooks.
  */
-export interface AgentInstructionBase {
+interface AgentInstructionBase {
   /** Human-readable label for this step (e.g. graph node name). Propagated to stream events and hooks. */
   stepLabel?: string;
 }
 
 // ─ LLM ───────────────────────────────────────────────────
 
-export interface AgentInstructionCallLlm extends AgentInstructionBase {
+interface AgentInstructionCallLlm extends AgentInstructionBase {
   payload: any;
   type: 'call_llm';
 }
 
 // ─ Tool ──────────────────────────────────────────────────
 
-export interface AgentInstructionCallTool extends AgentInstructionBase {
+interface AgentInstructionCallTool extends AgentInstructionBase {
   payload: {
     parentMessageId: string;
     /**
@@ -263,7 +150,7 @@ export interface AgentInstructionCallTool extends AgentInstructionBase {
   type: 'call_tool';
 }
 
-export interface AgentInstructionCallToolsBatch extends AgentInstructionBase {
+interface AgentInstructionCallToolsBatch extends AgentInstructionBase {
   payload: {
     /**
      * `tool_call_id → existing tool message id`, for tools whose row already
@@ -279,7 +166,7 @@ export interface AgentInstructionCallToolsBatch extends AgentInstructionBase {
   type: 'call_tools_batch';
 }
 
-export interface AgentInstructionResolveAbortedTools extends AgentInstructionBase {
+interface AgentInstructionResolveAbortedTools extends AgentInstructionBase {
   payload: {
     /**
      * `tool_call_id → existing tool message id`, for calls whose row is already
@@ -300,7 +187,7 @@ export interface AgentInstructionResolveAbortedTools extends AgentInstructionBas
   type: 'resolve_aborted_tools';
 }
 
-export interface AgentInstructionResolveBlockedTools extends AgentInstructionBase {
+interface AgentInstructionResolveBlockedTools extends AgentInstructionBase {
   payload: {
     /** Optional message to write into blocked tool result content */
     blockedContent?: string;
@@ -336,7 +223,7 @@ export interface AgentInstructionResolveBlockedTools extends AgentInstructionBas
 
 // ─ Sub-Agent ─────────────────────────────────────────────
 
-export interface AgentInstructionExecSubAgent extends AgentInstructionBase {
+interface AgentInstructionExecSubAgent extends AgentInstructionBase {
   payload: {
     /** Parent message ID (tool message that dispatched the sub-agent) */
     parentMessageId: string;
@@ -346,7 +233,7 @@ export interface AgentInstructionExecSubAgent extends AgentInstructionBase {
   type: 'exec_sub_agent';
 }
 
-export interface AgentInstructionExecSubAgents extends AgentInstructionBase {
+interface AgentInstructionExecSubAgents extends AgentInstructionBase {
   payload: {
     /** Parent message ID (tool message that dispatched the sub-agents) */
     parentMessageId: string;
@@ -358,14 +245,14 @@ export interface AgentInstructionExecSubAgents extends AgentInstructionBase {
 
 // ─ Human Interaction ─────────────────────────────────────
 
-export interface AgentInstructionRequestHumanPrompt extends AgentInstructionBase {
+interface AgentInstructionRequestHumanPrompt extends AgentInstructionBase {
   metadata?: Record<string, unknown>;
   prompt: string;
   reason?: string;
   type: 'request_human_prompt';
 }
 
-export interface AgentInstructionRequestHumanSelect extends AgentInstructionBase {
+interface AgentInstructionRequestHumanSelect extends AgentInstructionBase {
   metadata?: Record<string, unknown>;
   multi?: boolean;
   options: Array<{ label: string; value: string }>;
@@ -401,7 +288,7 @@ export interface AgentInstructionRequestHumanApprove extends AgentInstructionBas
 
 // ─ Control ───────────────────────────────────────────────
 
-export interface AgentInstructionCompressContext extends AgentInstructionBase {
+interface AgentInstructionCompressContext extends AgentInstructionBase {
   payload: {
     /** Current token count before compression */
     currentTokenCount: number;
@@ -413,7 +300,7 @@ export interface AgentInstructionCompressContext extends AgentInstructionBase {
   type: 'compress_context';
 }
 
-export interface AgentInstructionFinish extends AgentInstructionBase {
+interface AgentInstructionFinish extends AgentInstructionBase {
   reason: FinishReason;
   reasonDetail?: string;
   type: 'finish';

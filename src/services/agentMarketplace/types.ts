@@ -34,32 +34,3 @@ export interface AgentTemplate {
   /** Human-readable title (English Title Case). */
   title: string;
 }
-
-/**
- * Args to open the Marketplace picker.
- * categoryHints must contain at least one MarketplaceCategory slug and controls tab priority.
- */
-export interface ShowAgentMarketplaceArgs {
-  categoryHints: MarketplaceCategory[];
-  description?: string;
-  prompt: string;
-  requestId: string;
-}
-
-export interface SubmitAgentPickArgs {
-  requestId: string;
-  /** Template IDs the user selected from the picker. */
-  selectedTemplateIds: string[];
-}
-
-export type PickStatus = 'pending' | 'submitted';
-
-export interface PickState {
-  categoryHints: MarketplaceCategory[];
-  description?: string;
-  prompt: string;
-  requestId: string;
-  selectedTemplateIds?: string[];
-  status: PickStatus;
-  topicId?: string;
-}

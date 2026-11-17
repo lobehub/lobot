@@ -63,7 +63,7 @@ const findEnabledChatModel = (
  * Returns:
  * - Notices ordered from the broadest input blocker to narrower configuration issues
  */
-export const resolveChatInputNotices = ({
+const resolveChatInputNotices = ({
   currentChatModel,
   isEffectiveModelPending,
   isGroupContext,
@@ -129,7 +129,7 @@ export const resolveChatInputNotices = ({
  * Returns:
  * - The first applicable notice, or undefined when the input has no notice
  */
-export const resolveChatInputNotice = (params: ResolveChatInputNoticeParams) =>
+const resolveChatInputNotice = (params: ResolveChatInputNoticeParams) =>
   resolveChatInputNotices(params)[0];
 
 /** Union of every notice shape `resolveChatInputNotice` can return. */

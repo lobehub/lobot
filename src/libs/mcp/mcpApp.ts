@@ -9,15 +9,15 @@
 import { getMcpToolVisibility, isMcpToolVisibleTo } from '@lobechat/const/mcpApp';
 
 /** Capability key a client advertises to tell servers it can render MCP Apps. */
-export const MCP_APPS_EXTENSION_ID = 'io.modelcontextprotocol/ui';
-export const MCP_APP_MIME_TYPE = 'text/html;profile=mcp-app';
+const MCP_APPS_EXTENSION_ID = 'io.modelcontextprotocol/ui';
+const MCP_APP_MIME_TYPE = 'text/html;profile=mcp-app';
 
 /** Client capabilities that advertise MCP Apps support during `initialize`. */
 export const MCP_APPS_CLIENT_CAPABILITIES = {
   extensions: { [MCP_APPS_EXTENSION_ID]: { mimeTypes: [MCP_APP_MIME_TYPE] } },
 };
 
-export interface McpAppToolState {
+interface McpAppToolState {
   /**
    * The desktop whose local MCP process (stdio, localhost / LAN) produced the
    * result. Its view and the view's calls run in that process, so only that
@@ -56,13 +56,6 @@ export const getToolUiResourceUri = (tool: { _meta?: unknown } | undefined): str
  */
 export const isToolVisibleToApp = (tool: { _meta?: unknown } | undefined): boolean =>
   isMcpToolVisibleTo(getMcpToolVisibility(tool?._meta), 'app');
-
-/**
- * Whether this tool may be in the model's tool list. A tool whose
- * `_meta.ui.visibility` leaves out `"model"` exists only for its view.
- */
-export const isToolVisibleToModel = (tool: { _meta?: unknown } | undefined): boolean =>
-  isMcpToolVisibleTo(getMcpToolVisibility(tool?._meta), 'model');
 
 /**
  * The raw MCP tool result state. Server AgentRuntime calls persist the whole

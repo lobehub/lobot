@@ -17,7 +17,7 @@ import type { SettingsTabSkeleton } from './types';
  * every experiment's real title and description. The labs page renders it
  * below its settled intro alert while user state loads.
  */
-export const LabsFormSkeleton = () => {
+const LabsFormSkeleton = () => {
   const { t, ready } = useTranslation('labs');
   // Workspaces exist wherever business features are enabled.
   const enableWorkspace = useServerConfigStore(serverConfigSelectors.enableBusinessFeatures);

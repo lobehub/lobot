@@ -1,6 +1,6 @@
 import type { ItemType } from '@lobehub/ui';
 
-export interface DocumentTransferMenuItemOptions {
+interface DocumentTransferMenuItemOptions {
   defaultTargetVisibility?: 'private' | 'public';
   preferCurrentWorkspace?: boolean;
   transferLabel?: string;

@@ -28,14 +28,13 @@ import {
   projectDetailResource,
   type ProjectListItem,
   projectListResource,
-  type ProjectOverview,
   type ProjectOverviewMap,
   projectOverviewResource,
 } from './projection';
 
-export type { ProjectDetail, ProjectListItem, ProjectOverview } from './projection';
+export type { ProjectDetail, ProjectListItem } from './projection';
 
-export interface ProjectStoreState {
+interface ProjectStoreState {
   /** Project pages by route param (id or slug). */
   projectDetailMap: Record<string, ProjectDetail>;
   /** Replica bookkeeping for `projectDetailMap`. */
@@ -373,14 +372,6 @@ export const useCurrentProjectList = () =>
 export const useLoadedProjectList = () =>
   useProjectStore((state): ProjectListItem[] | undefined => state.projectListMap[PROJECT_LIST_KEY]);
 
-/** A project's folder-card content; `undefined` until loaded or when it has none. */
-export const useProjectOverview = (projectId: string): ProjectOverview | undefined =>
-  useProjectStore((state) => state.projectOverviewMap[PROJECT_LIST_KEY]?.[projectId]);
-
-/** Whether the overview batch has arrived, so a card without a row really has no content. */
-export const useProjectOverviewsLoaded = () =>
-  useProjectStore((state) => state.projectOverviewMap[PROJECT_LIST_KEY] !== undefined);
-
 /** One row of the cached project list; `undefined` when it is not (yet) in the list. */
 export const projectListItemSelector =
   (id: string | null | undefined) =>
@@ -389,43 +380,3 @@ export const projectListItemSelector =
 
 export const useCurrentProjectDetail = (idOrSlug?: string) =>
   useProjectStore((state) => (idOrSlug ? state.projectDetailMap[idOrSlug] : undefined));
-
-/**
- * The project a route param (id or slug) points at: its loaded page, else its
- * row in the project list. The list is light and persisted, so a project page
- * can resolve the project without waiting for the much heavier detail request.
- */
-export const projectByRefSelector =
-  (idOrSlug?: string) =>
-  (state: ProjectStoreState): ProjectListItem | undefined => {
-    if (!idOrSlug) return undefined;
-    const detail = state.projectDetailMap[idOrSlug];
-    if (detail) return detail.project;
-
-    // An exact id wins over a slug, as on the server (`findByReference`): one
-    // project's slug may equal another's id.
-    const list = state.projectListMap[PROJECT_LIST_KEY];
-    return (
-      list?.find((project) => project.id === idOrSlug) ??
-      list?.find((project) => project.slug === idOrSlug)
-    );
-  };
-
-export const useProjectByRef = (idOrSlug?: string) =>
-  useProjectStore(projectByRefSelector(idOrSlug));
-
-const PROJECT_ID_PREFIX = 'prj_';
-
-/**
- * The project id behind a route param, for requests keyed by id (topics,
- * directories). `confirmed` is false while the id is only guessed from a
- * `prj_`-shaped param: a slug may take that shape too, so callers must not
- * treat an empty answer for a guessed id as final.
- */
-export const useProjectIdByRef = (idOrSlug?: string) => {
-  const project = useProjectByRef(idOrSlug);
-  if (project) return { confirmed: true, id: project.id };
-  if (idOrSlug?.startsWith(PROJECT_ID_PREFIX)) return { confirmed: false, id: idOrSlug };
-
-  return { confirmed: false, id: undefined };
-};

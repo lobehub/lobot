@@ -19,7 +19,7 @@ import { notTrashed } from '../../utils/softDelete';
 import { ChannelError } from './error';
 
 /** Why a deferred `followup` has not started; see {@link deliver} and `claimJob`. */
-export const AWAITING_PRIMARY_REASON = 'Waiting for the first responder to finish';
+const AWAITING_PRIMARY_REASON = 'Waiting for the first responder to finish';
 
 /** The Thread a message belongs to, or null for the main channel. */
 export const findThread = async (

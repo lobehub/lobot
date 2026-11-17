@@ -17,7 +17,7 @@ export { buildCaptureDraft, type CaptureDraft } from './buildCaptureDraft';
 
 let formIdSeed = 0;
 
-export interface CreateEvalCaptureModalOptions {
+interface CreateEvalCaptureModalOptions {
   draft: CaptureDraft;
   /** Navigate to the saved case. Saving and inspecting are separate intents. */
   onView: (testCaseId: string) => void;

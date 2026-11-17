@@ -45,7 +45,7 @@ interface AppRowsSkeletonProps {
  * description lines, then the type / last-used meta on the right, matching
  * `AppItem` so rows swap in place.
  */
-export const AppRowsSkeleton = ({ rows = 2 }: AppRowsSkeletonProps) => (
+const AppRowsSkeleton = ({ rows = 2 }: AppRowsSkeletonProps) => (
   <>
     {Array.from({ length: rows }).map((_, index) => (
       <Flexbox

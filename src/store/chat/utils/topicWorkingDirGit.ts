@@ -13,13 +13,13 @@ import { getAgentStoreState } from '@/store/agent';
 import { agentByIdSelectors } from '@/store/agent/selectors';
 import { getElectronStoreState } from '@/store/electron';
 
-export interface TopicGitTransport {
+interface TopicGitTransport {
   deviceId?: string;
   isLocalDevice: boolean;
   targetDeviceId?: string;
 }
 
-export interface TopicLinkedPullRequestBase {
+interface TopicLinkedPullRequestBase {
   branch: string;
   currentConfig?: WorkingDirConfig;
   path: string;

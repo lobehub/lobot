@@ -4,11 +4,11 @@ import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { MODEL_LIST_CONFIGS, processModelList } from '../../utils/modelParse';
 
-export interface ZeroOneModelCard {
+interface ZeroOneModelCard {
   id: string;
 }
 
-export const params = {
+const params = {
   baseURL: 'https://api.lingyiwanwu.com/v1',
   debug: {
     chatCompletion: () => process.env.DEBUG_ZEROONE_CHAT_COMPLETION === '1',

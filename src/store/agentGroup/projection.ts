@@ -11,7 +11,7 @@ import {
 /** The group list is one entry per scope, so every sync shares these params. */
 export const AGENT_GROUP_LIST_KEY = 'all';
 
-export interface AgentGroupDetailParams {
+interface AgentGroupDetailParams {
   groupId: string;
 }
 

@@ -44,14 +44,14 @@ import { type HeadRequestBoundary, mergeFetchedMessagesWithLocalState } from './
 
 const log = debug('lobe-store:message-transcript');
 
-export interface InterventionSnapshot {
+interface InterventionSnapshot {
   dbMessages: UIChatMessage[];
   topic: ChatTopic | null;
   topicAtRequest?: ChatTopic;
 }
 
 /** What a head response resolved to, handed from `prepareHead` to the sync's `onSuccess`. */
-export interface HeadResolution {
+interface HeadResolution {
   completed: boolean;
   /** The response changed nothing during a stream: kept off the transcript. */
   dropped: boolean;
@@ -582,7 +582,7 @@ const createMessageTranscript = (set: StoreSetter<ChatStore>, get: () => ChatSto
   };
 };
 
-export type MessageTranscript = ReturnType<typeof createMessageTranscript>;
+type MessageTranscript = ReturnType<typeof createMessageTranscript>;
 
 const transcripts = new WeakMap<() => ChatStore, MessageTranscript>();
 

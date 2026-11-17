@@ -14,7 +14,7 @@ export const createRagEvalEvaluationSlice = (
   _api?: unknown,
 ) => new RAGEvalEvaluationActionImpl(set, get, _api);
 
-export class RAGEvalEvaluationActionImpl {
+class RAGEvalEvaluationActionImpl {
   readonly #get: () => KnowledgeBaseStore;
   readonly #set: Setter;
 

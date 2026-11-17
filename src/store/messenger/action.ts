@@ -44,7 +44,7 @@ const matchesTarget =
 
 type Setter = StoreSetter<MessengerState>;
 
-export class MessengerActionImpl {
+class MessengerActionImpl {
   readonly #private: MessengerPrivateAction;
   readonly #set: Setter;
 

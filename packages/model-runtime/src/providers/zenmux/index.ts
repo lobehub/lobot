@@ -12,7 +12,7 @@ interface ZenMuxPricingEntry {
   value: number;
 }
 
-export interface ZenMuxModelCard {
+interface ZenMuxModelCard {
   capabilities?: {
     reasoning?: boolean;
   };
@@ -37,7 +37,7 @@ const getPerMTokensPrice = (entries?: ZenMuxPricingEntry[]): number | undefined 
 
 const DEFAULT_BASE_URL = 'https://zenmux.ai';
 
-export const params = {
+const params = {
   chatCompletion: {
     handlePayload: (payload) => {
       const { reasoning_effort, thinking, reasoning, ...rest } = payload;

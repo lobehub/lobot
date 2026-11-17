@@ -13,7 +13,7 @@ type Setter = StoreSetter<UserStore>;
 export const createPreferenceSlice = (set: Setter, get: () => UserStore, _api?: unknown) =>
   new PreferenceActionImpl(set, get, _api);
 
-export class PreferenceActionImpl {
+class PreferenceActionImpl {
   readonly #get: () => UserStore;
   readonly #set: Setter;
 

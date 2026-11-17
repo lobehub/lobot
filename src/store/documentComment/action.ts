@@ -89,7 +89,7 @@ export interface CreateDocumentCommentReplyParams extends CreateDocumentCommentP
  * back to the confirmed value and a revalidation landing mid-request cannot
  * drop the pending row.
  */
-export class DocumentCommentActionImpl {
+class DocumentCommentActionImpl {
   readonly #get: () => DocumentCommentState;
   /**
    * Reply creates in flight per root, and whether two of them overlapped. An

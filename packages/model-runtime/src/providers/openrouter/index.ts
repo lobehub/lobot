@@ -23,7 +23,7 @@ const fetchOpenRouterModels = async (outputModality?: string) => {
   return data.data;
 };
 
-export const params = {
+const params = {
   baseURL: 'https://openrouter.ai/api/v1',
   chatCompletion: {
     handlePayload: (payload) => {

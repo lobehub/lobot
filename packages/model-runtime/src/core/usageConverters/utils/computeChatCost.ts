@@ -14,7 +14,7 @@ import { DEFAULT_CACHE_TTL } from '../../protocols/anthropicMessages/resolveCach
 
 const log = debug('lobe-cost:computeChatPricing');
 
-export interface PricingUnitBreakdown {
+interface PricingUnitBreakdown {
   cost: number;
   credits: number;
   currency: string | 'USD' | 'CNY';
@@ -30,7 +30,7 @@ export interface PricingUnitBreakdown {
   unit: PricingUnit;
 }
 
-export interface PricingComputationIssue {
+interface PricingComputationIssue {
   reason: string;
   unit: PricingUnit;
 }

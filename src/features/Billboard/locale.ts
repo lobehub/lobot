@@ -5,7 +5,7 @@ import type {
   GlobalBillboardLocaleFields,
 } from '@/types/serverConfig';
 
-export interface ResolvedBillboardItem {
+interface ResolvedBillboardItem {
   description: string;
   linkLabel: string | null;
   title: string;

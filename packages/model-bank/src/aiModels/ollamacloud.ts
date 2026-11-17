@@ -166,6 +166,6 @@ const ollamaCloudModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...ollamaCloudModels];
+const allModels = [...ollamaCloudModels];
 
 export default allModels;

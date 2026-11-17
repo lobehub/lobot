@@ -45,7 +45,7 @@ const syncAppStateToAgentContext = (state: ElectronAppState): void => {
   });
 };
 
-export class ElectronAppActionImpl {
+class ElectronAppActionImpl {
   readonly #get: () => ElectronStore;
   readonly #set: Setter;
 

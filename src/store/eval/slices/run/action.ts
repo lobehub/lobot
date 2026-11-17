@@ -35,7 +35,7 @@ type FetchConfig = { refreshInterval?: number };
 export const createRunSlice = (set: Setter, get: () => EvalStore, _api?: unknown) =>
   new RunActionImpl(set, get, _api);
 
-export class RunActionImpl {
+class RunActionImpl {
   readonly #get: () => EvalStore;
   readonly #set: Setter;
 

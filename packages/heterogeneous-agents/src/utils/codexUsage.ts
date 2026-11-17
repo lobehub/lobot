@@ -1,6 +1,6 @@
 import type { UsageData } from '../types';
 
-export interface CodexUsagePayload {
+interface CodexUsagePayload {
   cached_input_tokens?: number;
   input_tokens?: number;
   output_tokens?: number;

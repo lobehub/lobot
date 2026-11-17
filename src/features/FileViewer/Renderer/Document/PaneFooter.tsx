@@ -89,7 +89,7 @@ const styles = createStaticStyles(({ css }) => ({
   `,
 }));
 
-export interface PaneTab {
+interface PaneTab {
   key: string;
   label: ReactNode;
   title?: string;

@@ -15,7 +15,7 @@ const goalStatusKeyMap = {
   verifying: 'goalList.status.verifying',
 } as const satisfies Record<GoalStatus, string>;
 
-export type GoalStatusKey = (typeof goalStatusKeyMap)[GoalStatus];
+type GoalStatusKey = (typeof goalStatusKeyMap)[GoalStatus];
 
 export const goalStatusKey = (status: GoalStatus): GoalStatusKey => goalStatusKeyMap[status];
 
@@ -61,7 +61,7 @@ export const formatUsd = (amount: number): string => `$${Math.round(amount * 100
  * units wearing the costume of a ratio; there the rounds are the meaningful
  * numerator and the dollars move into the drill-down.
  */
-export type GoalBudgetSummary =
+type GoalBudgetSummary =
   | { cap: number; kind: 'cost'; spent: number }
   | { cap: number; kind: 'rounds'; runs: number }
   | { kind: 'uncapped'; spent: number };

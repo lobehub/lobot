@@ -8,7 +8,7 @@ import type {
 const ASSISTANT_GROUP_STATUS_TEXT_MAX_LENGTH = 100;
 const MARKDOWN_HEADING_MAX_LEVEL = 6;
 
-export type AssistantGroupBlockProjection = 'answer' | 'workflow';
+type AssistantGroupBlockProjection = 'answer' | 'workflow';
 
 /**
  * A semantic view of an assistant block. `projection` is present only when one
@@ -41,7 +41,7 @@ export type AssistantGroupSegment<
   Block extends AssistantContentBlock = AssistantGroupSemanticBlock,
 > = AssistantGroupAnswerSegment<Block> | AssistantGroupWorkflowSegment<Block>;
 
-export interface PartitionAssistantGroupOptions {
+interface PartitionAssistantGroupOptions {
   /** Tools whose result should surface between collapsed workflow runs instead of inside one. */
   isBreakoutTool?: (tool: ChatToolPayloadWithResult) => boolean;
   isGenerating: boolean;
@@ -52,13 +52,13 @@ export interface PartitionAssistantGroupOptions {
   toolsPhaseComplete?: boolean;
 }
 
-export interface PartitionedAssistantGroup {
+interface PartitionedAssistantGroup {
   /** Whether a generating post-tool answer was promoted outside the workflow. */
   postToolTailPromoted: boolean;
   segments: AssistantGroupSegment[];
 }
 
-export interface SplitAssistantGroupSegments<
+interface SplitAssistantGroupSegments<
   Block extends AssistantContentBlock = AssistantGroupSemanticBlock,
 > {
   finalSegments: AssistantGroupSegment<Block>[];

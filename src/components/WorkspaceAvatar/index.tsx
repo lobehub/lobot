@@ -4,7 +4,7 @@ import { memo } from 'react';
 
 import Avatar, { type AvatarProps } from '@/components/Avatar';
 
-export interface WorkspaceAvatarProps extends Omit<AvatarProps, 'avatar' | 'name'> {
+interface WorkspaceAvatarProps extends Omit<AvatarProps, 'avatar' | 'name'> {
   /** The workspace's own logo (image URL or emoji). Empty draws the generated fallback. */
   avatar?: string | null;
   /** Workspace name: seeds the generated fallback and labels the image. */

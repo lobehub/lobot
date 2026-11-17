@@ -8,7 +8,7 @@ const USER_HIDDEN_BUILTIN_SKILLS = new Set<string>(['task']);
 /** Builtin skills that only work where the run can execute commands on a device. */
 const DEVICE_ONLY_BUILTIN_SKILLS = new Set<string>(['lobe-agent-browser']);
 
-export interface ToolAvailabilityInstalledPlugin {
+interface ToolAvailabilityInstalledPlugin {
   customParams?: {
     mcp?: {
       type?: string;
@@ -17,14 +17,14 @@ export interface ToolAvailabilityInstalledPlugin {
   identifier: string;
 }
 
-export interface ToolAvailabilityContext {
+interface ToolAvailabilityContext {
   installedPlugins?: ToolAvailabilityInstalledPlugin[];
   isDesktop?: boolean;
 }
 
-export const isBuiltinToolAvailableInCurrentEnv = (id: string) => shouldEnableTool(id);
+const isBuiltinToolAvailableInCurrentEnv = (id: string) => shouldEnableTool(id);
 
-export const isBuiltinSkillAvailableInCurrentEnv = (
+const isBuiltinSkillAvailableInCurrentEnv = (
   id: string,
   context: Omit<ToolAvailabilityContext, 'installedPlugins'> = {},
 ) => {

@@ -9,7 +9,7 @@ import type { FtsSearchBackendScope } from '../types';
 import type { PostgresFtsSearchDialect } from './dialect';
 
 /** Columns shared by the workspace-aware tables searched by the PostgreSQL providers. */
-export interface PostgresFtsSearchWorkspaceScopedColumns {
+interface PostgresFtsSearchWorkspaceScopedColumns {
   isDeleted?: AnyPgColumn;
   userId: AnyPgColumn;
   visibility?: AnyPgColumn;
@@ -114,4 +114,4 @@ export function createPostgresFtsSearchContext(
   };
 }
 
-export { AGENT_SCOPE_CANDIDATE_POOL, WORKSPACE_FILTER_CANDIDATE_MULTIPLIER };
+export { AGENT_SCOPE_CANDIDATE_POOL };

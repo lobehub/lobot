@@ -11,7 +11,7 @@ type Setter = StoreSetter<UserMemoryStore>;
 export const createAgentMemorySlice = (set: Setter, get: () => UserMemoryStore, _api?: unknown) =>
   new AgentMemoryActionImpl(set, get, _api);
 
-export class AgentMemoryActionImpl {
+class AgentMemoryActionImpl {
   /**
    * Topic-based memory bundles, keyed by topic id — the replica view the chat
    * send path reads synchronously (see `resolveTopicMemories`).

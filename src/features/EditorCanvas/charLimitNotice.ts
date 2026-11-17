@@ -1,5 +1,5 @@
 /** Share of the limit at which the softer "near the limit" warning appears. */
-export const CHAR_LIMIT_WARN_RATIO = 0.9;
+const CHAR_LIMIT_WARN_RATIO = 0.9;
 
 export interface CharLimitNotice {
   /**

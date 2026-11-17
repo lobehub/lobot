@@ -43,7 +43,7 @@ export const createCrudSlice = (set: Setter, get: () => KnowledgeBaseStore, _api
  * not loaded). Read the values through `knowledgeBaseSelectors`; the two
  * `useFetch*` hooks only orchestrate fetching and return flags.
  */
-export class KnowledgeBaseCrudActionImpl {
+class KnowledgeBaseCrudActionImpl {
   readonly #agentSpaceList;
   readonly #get: () => KnowledgeBaseStore;
   readonly #kbEntity;

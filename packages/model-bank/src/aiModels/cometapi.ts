@@ -399,6 +399,6 @@ const cometapiChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...cometapiChatModels];
+const allModels = [...cometapiChatModels];
 
 export default allModels;

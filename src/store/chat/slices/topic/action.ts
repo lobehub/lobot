@@ -133,7 +133,7 @@ type TopicPatchScope = {
 /**
  * Options for switchTopic action
  */
-export interface SwitchTopicOptions {
+interface SwitchTopicOptions {
   /**
    * Clear the _new key data even when switching to an existing topic
    * This is useful when creating a new topic, where the _new key data should be cleared
@@ -187,15 +187,12 @@ export interface SwitchTopicOptions {
   skipRefreshMessage?: boolean;
 }
 
-export interface RemoveUnstarredTopicOptions {
+interface RemoveUnstarredTopicOptions {
   /** Restrict the bulk delete to topics created by the signed-in user. */
   onlyOwn?: boolean;
 }
 
 type Setter = StoreSetter<ChatStore>;
-
-export const chatTopic = (set: Setter, get: () => ChatStore, _api?: unknown) =>
-  new ChatTopicActionImpl(set, get, _api);
 
 export class ChatTopicActionImpl {
   readonly #get: () => ChatStore;

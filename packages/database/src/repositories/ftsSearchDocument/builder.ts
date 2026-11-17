@@ -25,7 +25,6 @@ import type {
   FtsSearchBuiltDocument,
   FtsSearchDocumentEntity,
   FtsSearchDocumentKey,
-  FtsSearchDocumentSourceMap,
 } from './zodSchema';
 import { FTS_SEARCH_DOCUMENT_ENTITIES, parseFtsSearchDocumentSource } from './zodSchema';
 
@@ -37,19 +36,19 @@ interface FtsSearchDocumentSelection {
   limit: number;
 }
 
-export interface FtsSearchDocumentBatchOptions {
+interface FtsSearchDocumentBatchOptions {
   afterId?: string;
   limit: number;
 }
 
-export interface FtsSearchDocumentRangeBatchOptions {
+interface FtsSearchDocumentRangeBatchOptions {
   afterId?: string;
   beforeId?: string;
   fromId?: string;
   limit: number;
 }
 
-export type FtsSearchDocumentRelationChange =
+type FtsSearchDocumentRelationChange =
   | { fileIds: readonly string[]; relation: 'knowledgeBaseFiles' }
   | { memoryIds: readonly string[]; relation: 'userMemoryReferences' };
 
@@ -66,7 +65,7 @@ export type FtsSearchDocumentRelationChange =
  * Even at 6 JSON-escaped bytes per character this stays far below
  * `FTS_SEARCH_SYNC_BULK_MAX_BYTES`, so one document can no longer outgrow a bulk request.
  */
-export const FTS_SEARCH_DOCUMENT_CONTENT_MAX_CHARS = 1_000_000;
+const FTS_SEARCH_DOCUMENT_CONTENT_MAX_CHARS = 1_000_000;
 
 const entityOrder = new Map(FTS_SEARCH_DOCUMENT_ENTITIES.map((entity, index) => [entity, index]));
 
@@ -1069,8 +1068,3 @@ export class FtsSearchDocumentBuilder {
     );
   }
 }
-
-export type FtsSearchDocumentFor<Entity extends FtsSearchDocumentEntity> = Extract<
-  FtsSearchBuiltDocument,
-  { entity: Entity; source: FtsSearchDocumentSourceMap[Entity] }
->;

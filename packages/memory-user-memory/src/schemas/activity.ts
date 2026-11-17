@@ -1,5 +1,4 @@
 import type { GenerateObjectSchema } from '@lobechat/model-runtime';
-import type { LayersEnum } from '@lobechat/types';
 import { ActivityTypeEnum, TypesEnum } from '@lobechat/types';
 import type { JSONSchema7 } from 'json-schema';
 import { z } from 'zod';
@@ -18,7 +17,7 @@ const ActivityAssociationSchema = z.object({
   type: z.string().nullish(),
 });
 
-export const WithActivitySchema = z.object({
+const WithActivitySchema = z.object({
   associatedLocations: z.array(ActivityAssociatedLocationSchema).nullish(),
   associatedObjects: z.array(ActivityAssociationSchema).nullish(),
   associatedSubjects: z.array(ActivityAssociationSchema).nullish(),
@@ -44,17 +43,6 @@ export const ActivityMemoryItemSchema = z.object({
   title: z.string(),
   withActivity: WithActivitySchema,
 });
-
-export const ActivityMemoriesSchema = z.object({
-  memories: z.array(ActivityMemoryItemSchema),
-});
-
-export type WithActivity = z.infer<typeof WithActivitySchema>;
-export type ActivityMemoryItem = z.infer<typeof ActivityMemoryItemSchema> & {
-  memoryLayer?: LayersEnum.Activity;
-  memoryType: TypesEnum.Activity;
-};
-export type ActivityMemory = z.infer<typeof ActivityMemoriesSchema>;
 
 export const ActivityMemorySchema: GenerateObjectSchema = {
   description:

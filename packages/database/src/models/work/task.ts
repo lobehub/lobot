@@ -30,7 +30,7 @@ import { registerWorkVersion } from './writes';
  * the `tasks` row (joined by every query); snapshots provide the deletion
  * fallback when the backing task is later deleted.
  */
-export const taskDisplayColumns = (task: TaskItem): WorkDisplayColumns => ({
+const taskDisplayColumns = (task: TaskItem): WorkDisplayColumns => ({
   content: task.instruction,
   description: truncateSummaryText(task.instruction),
   identifier: task.identifier,

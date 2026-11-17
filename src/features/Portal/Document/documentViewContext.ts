@@ -19,14 +19,7 @@ interface DocumentViewContextValue {
 const DocumentViewContext = createContext<DocumentViewContextValue | null>(null);
 
 /**
- * Provide an explicit document id to the shared Document viewer primitives
- * (Wrapper / Header / Body / EditorCanvas), so they can render outside the chat
- * portal stack — e.g. on the standalone `/agent/:aid/docs/:docId` route.
- */
-export const DocumentViewProvider = DocumentViewContext.Provider;
-
-/**
- * Document id for the current viewer. Inside a {@link DocumentViewProvider} it
+ * Document id for the current viewer. Inside a `DocumentViewProvider` it
  * returns the provided id; otherwise it falls back to the portal stack, so the
  * in-chat portal keeps working unchanged.
  */

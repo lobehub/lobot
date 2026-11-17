@@ -2,7 +2,7 @@
 
 import { cssVar, Skeleton } from '@lobehub/ui';
 
-export interface SkeletonBarProps {
+interface SkeletonBarProps {
   height: number;
   radius?: number | string;
   width?: number | string;

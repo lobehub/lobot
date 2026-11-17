@@ -11,7 +11,7 @@ export type TabScope =
       type: 'workspace';
     };
 
-export interface ScopedTabTarget {
+interface ScopedTabTarget {
   scope?: TabScope;
   url: string;
 }
@@ -33,8 +33,6 @@ export const tabScopeHomeUrl = (scope: TabScope): string =>
 
 export const tabScopeKey = (scope: TabScope): string =>
   scope.type === 'personal' ? 'personal' : `workspace:${encodeURIComponent(scope.slug)}`;
-
-export const resolveTabScopeKey = (url: string): string => tabScopeKey(resolveTabScope(url));
 
 export const normalizeTabScope = (scope: unknown, url: string): TabScope => {
   if (!scope || typeof scope !== 'object') return resolveTabScope(url);

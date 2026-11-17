@@ -38,7 +38,7 @@ type DetailRead = GitReviewRead<DeviceGitPullRequestDetailResult>;
 type ActivityRead = GitReviewRead<DeviceGitPullRequestActivity>;
 type MergeContextRead = GitReviewRead<DeviceGitPullRequestMergeContext | null>;
 
-export interface GitReviewStoreState {
+interface GitReviewStoreState {
   /** `gitLinkedPRKey(params)` → PR linked to a branch. */
   gitLinkedPRMap: Record<string, LinkedPRRead>;
   gitLinkedPRReplica: ReplicaState<LinkedPRRead>;

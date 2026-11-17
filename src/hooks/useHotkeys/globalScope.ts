@@ -23,7 +23,7 @@ export const isAgentProfilePanelRoute = (pathname: string) =>
   /^\/agent\/[^/]+\/profile\/?$/.test(pathname);
 
 // Switch to chat tab (and focus on Lobe AI)
-export const useNavigateToChatHotkey = () => {
+const useNavigateToChatHotkey = () => {
   const navigateToAgent = useNavigateToAgent();
   const [, { unpinAgent }] = usePinnedAgentState();
 
@@ -33,7 +33,7 @@ export const useNavigateToChatHotkey = () => {
   });
 };
 
-export const useOpenHotkeyHelperHotkey = () => {
+const useOpenHotkeyHelperHotkey = () => {
   const [open, updateSystemStatus] = useGlobalStore((s) => [
     s.status.showHotkeyHelper,
     s.updateSystemStatus,
@@ -44,7 +44,7 @@ export const useOpenHotkeyHelperHotkey = () => {
   );
 };
 
-export const useToggleLeftPanelHotkey = () => {
+const useToggleLeftPanelHotkey = () => {
   const toggleLeftPanel = useGlobalStore((s) => s.toggleLeftPanel);
   return useHotkeyById(HotkeyEnum.ToggleLeftPanel, () => toggleLeftPanel(), {
     enableOnContentEditable: true,
@@ -90,7 +90,7 @@ export const useToggleRightPanelHotkey = () => {
 };
 
 // CMDK
-export const useCommandPaletteHotkey = () => {
+const useCommandPaletteHotkey = () => {
   const toggleCommandMenu = useGlobalStore((s) => s.toggleCommandMenu);
 
   return useHotkeyById(HotkeyEnum.CommandPalette, () => toggleCommandMenu(), {

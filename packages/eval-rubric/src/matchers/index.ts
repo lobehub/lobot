@@ -15,7 +15,7 @@ import { matchRuleChecklist } from './ruleChecklist';
 import { matchStartsWith } from './startsWith';
 import type { MatchContext, MatchResult } from './types';
 
-export type { GenerateObjectPayload, MatchContext, MatchResult } from './types';
+export type { MatchContext } from './types';
 
 /**
  * Run a single rubric matcher against actual vs expected

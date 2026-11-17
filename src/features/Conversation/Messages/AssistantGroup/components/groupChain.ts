@@ -58,7 +58,7 @@ const toEpochMs = (createdAt: DbMessageLike['createdAt']): number | undefined =>
  * `dbMessages`). The group record's own `createdAt/updatedAt` only covers its
  * final step, so it under-reports multi-step turns.
  */
-export const getTurnDurationMs = (
+const getTurnDurationMs = (
   dbMessages: DbMessageLike[] | undefined,
   blocks: AssistantContentBlock[],
 ): number => {

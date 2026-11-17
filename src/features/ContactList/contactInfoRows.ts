@@ -1,4 +1,4 @@
-export type ContactInfoRow =
+type ContactInfoRow =
   | { key: string; kind: 'handle'; value: string }
   | { key: string; kind: 'mail'; value: string }
   | { key: string; kind: 'bio'; value: string };

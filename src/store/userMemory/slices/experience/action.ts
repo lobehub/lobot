@@ -17,7 +17,7 @@ import {
 
 const n = setNamespace('userMemory/experience');
 
-export interface ExperienceQueryParams extends Partial<ExperienceListParams> {
+interface ExperienceQueryParams extends Partial<ExperienceListParams> {
   page?: number;
 }
 
@@ -49,7 +49,7 @@ export const createExperienceSlice = (set: Setter, get: () => UserMemoryStore, _
  * The user-memory experience list: one `MemoryQueryList` (shared with the other
  * offset-paged memory lists) behind the slice's long-standing action names.
  */
-export class ExperienceActionImpl {
+class ExperienceActionImpl {
   readonly #list: MemoryQueryList<ExperienceListParams, ExperienceListItem, ExperienceListData>;
 
   constructor(set: Setter, get: () => UserMemoryStore, _api?: unknown) {

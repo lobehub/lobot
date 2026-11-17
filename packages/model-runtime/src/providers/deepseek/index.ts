@@ -46,7 +46,7 @@ const resolveDeepSeekSDKType = (sdkType: unknown): DeepSeekSDKType | undefined =
   throw new Error(`Unsupported DeepSeek sdkType: ${String(sdkType)}`);
 };
 
-export const anthropicParams = createAnthropicCompatibleParams({
+const anthropicParams = createAnthropicCompatibleParams({
   baseURL: DEFAULT_DEEPSEEK_ANTHROPIC_BASE_URL,
   chatCompletion: {
     handlePayload: buildDeepSeekAnthropicPayload,
@@ -121,7 +121,7 @@ const createAnthropicRouter = ({
   runtime: LobeDeepSeekAnthropicAI,
 });
 
-export const params: CreateRouterRuntimeOptions = {
+const params: CreateRouterRuntimeOptions = {
   id: ModelProvider.DeepSeek,
   models: fetchDeepSeekModelsWithOpenAI,
   routers: (options) => {

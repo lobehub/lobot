@@ -27,7 +27,7 @@ import { SkillSorts } from '@/types/discover';
  */
 
 /** How many related skills the detail view shows alongside the skill itself */
-export const RELATED_SKILLS_COUNT = 6;
+const RELATED_SKILLS_COUNT = 6;
 
 // ============================== List ==============================
 

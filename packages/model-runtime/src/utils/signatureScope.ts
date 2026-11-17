@@ -1,6 +1,6 @@
 export type SignatureScopeKind = 'reasoning' | 'thought_signature';
 
-export interface SignatureScopeSource {
+interface SignatureScopeSource {
   apiType: string;
   channelId?: string;
   provider: string;

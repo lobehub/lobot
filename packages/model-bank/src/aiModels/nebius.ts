@@ -79,6 +79,6 @@ const nebiusChatModels: AIChatModelCard[] = [
 //   },
 // ];
 
-export const allModels = [...nebiusChatModels];
+const allModels = [...nebiusChatModels];
 
 export default allModels;

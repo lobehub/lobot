@@ -1,7 +1,6 @@
 import type { EnvironmentVisibility } from '@lobechat/types';
 import { useSWRConfig } from 'swr';
 
-import { useClientDataSWR } from '@/libs/swr';
 import {
   environmentService,
   type NewEnvironmentSpecification,
@@ -10,33 +9,8 @@ import {
 
 const ENVIRONMENTS_KEY = 'sandbox-environments';
 
-/**
- * Specifications. Answered from the database alone, so this settles fast and is
- * safe to render the page on.
- *
- * Keyed by pool, so the workspace page's two tabs do not overwrite each other's
- * cache — and so switching back to one shows what it held rather than a
- * skeleton. A mutation refreshes every pool, because publishing moves a row
- * from one to the other.
- *
- * `useClientDataSWR` rather than plain SWR, because it adds the active
- * workspace to the key. Without that dimension a list fetched in one workspace
- * keeps being served after switching to another — the same trap the device list
- * documents, and a worse one here, where the answer is which environments exist
- * for whom.
- */
-export const useEnvironments = (visibility?: EnvironmentVisibility) =>
-  useClientDataSWR<Awaited<ReturnType<typeof environmentService.listEnvironments>>>(
-    [ENVIRONMENTS_KEY, visibility ?? 'all'],
-    () => environmentService.listEnvironments(visibility ? { visibility } : undefined),
-  );
-
 /** A new environment as `createEnvironment` returns it: the definition alone. */
 export type CreatedEnvironment = Awaited<ReturnType<typeof environmentService.createEnvironment>>;
-
-export type SandboxEnvironment = NonNullable<
-  ReturnType<typeof useEnvironments>['data']
->['environments'][number];
 
 /**
  * Mutations, each refreshing exactly the lists it can have changed.

@@ -1,4 +1,4 @@
-export interface UserPanelAccountSectionProps {
+interface UserPanelAccountSectionProps {
   /** Called right before navigating away, so the host popover can close itself. */
   onNavigate?: () => void;
 }

@@ -3,40 +3,27 @@ import { lambdaClient } from '@/libs/trpc/client';
 export type ExpertiseOverview = Awaited<
   ReturnType<typeof lambdaClient.expertise.listByAgent.query>
 >;
-export type ExpertiseDomainItem = ExpertiseOverview['domains'][number];
-export type ExpertiseHabit = ExpertiseDomainItem['lessons'][number];
 export type ExpertiseDomainDetail = NonNullable<
   Awaited<ReturnType<typeof lambdaClient.expertise.getDomain.query>>
 >;
 export type ExpertiseLessonDetail = NonNullable<
   Awaited<ReturnType<typeof lambdaClient.expertise.getLesson.query>>
 >;
-export type ExpertiseDomainDraft = Awaited<
-  ReturnType<typeof lambdaClient.expertise.draftDomain.mutate>
->;
+type ExpertiseDomainDraft = Awaited<ReturnType<typeof lambdaClient.expertise.draftDomain.mutate>>;
 
 export type RulesOverview = Awaited<ReturnType<typeof lambdaClient.expertise.listRules.query>>;
-export type RuleGroup = RulesOverview['groups'][number];
-export type RuleItem = RuleGroup['rules'][number];
-export type RuleScope = RuleGroup['scopes'][number];
 export type RuleSource = Awaited<
   ReturnType<typeof lambdaClient.expertise.ruleSources.query>
 >[number];
 export type RuleRevision = Awaited<
   ReturnType<typeof lambdaClient.expertise.ruleRevisions.query>
 >[number];
-export type RuleDraft = Awaited<ReturnType<typeof lambdaClient.expertise.draftRule.mutate>>;
-export type DistillResult = Awaited<ReturnType<typeof lambdaClient.expertise.distillRules.mutate>>;
-export type DistillCandidate = DistillResult['candidates'][number];
-export type DistillInput = Parameters<typeof lambdaClient.expertise.distillRules.mutate>[0];
-export type CommitDistilledInput = Parameters<
+type DistillInput = Parameters<typeof lambdaClient.expertise.distillRules.mutate>[0];
+type CommitDistilledInput = Parameters<
   typeof lambdaClient.expertise.commitDistilledRules.mutate
 >[0];
-export type RuleGroupDraft = Awaited<
-  ReturnType<typeof lambdaClient.expertise.draftRuleGroup.mutate>
->;
-export type CreateRuleInput = Parameters<typeof lambdaClient.expertise.createRule.mutate>[0];
-export type UpdateRuleInput = Omit<
+type CreateRuleInput = Parameters<typeof lambdaClient.expertise.createRule.mutate>[0];
+type UpdateRuleInput = Omit<
   Parameters<typeof lambdaClient.expertise.updateRule.mutate>[0],
   'lessonId'
 >;

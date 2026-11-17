@@ -55,7 +55,7 @@ const CLOSED_NODE_STATUSES = new Set(['resolved', 'rejected', 'retired']);
 const CLOSED_STEP_STATES = new Set<PlanStepState>(['done', 'failed', 'retired']);
 
 /** Same vocabulary as the goal map's task chips, reduced to what a chip can show. */
-export const planStepState = (view: GoalNodeView): PlanStepState => {
+const planStepState = (view: GoalNodeView): PlanStepState => {
   const { status } = view.node;
   if (status === 'resolved') return 'done';
   if (status === 'rejected') return 'failed';

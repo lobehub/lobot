@@ -2,7 +2,7 @@ import { formatSize } from '../format';
 
 const VIDEO_SIZE_LIMIT = 100 * 1024 * 1024; // 100MB in bytes
 
-export interface VideoValidationResult {
+interface VideoValidationResult {
   actualSize?: string;
   isValid: boolean;
   maxSize?: string;

@@ -14,12 +14,6 @@ export interface BflAsyncResponse {
   polling_url: string;
 }
 
-export interface BflAsyncWebhookResponse {
-  id: string;
-  status: string;
-  webhook_url: string;
-}
-
 export interface BflResultResponse {
   details?: Record<string, any> | null;
   id: string;
@@ -30,7 +24,7 @@ export interface BflResultResponse {
 }
 
 // Kontext series request (flux-kontext-pro, flux-kontext-max)
-export interface BflFluxKontextRequest {
+interface BflFluxKontextRequest {
   aspect_ratio?: string | null;
   input_image?: string | null;
   input_image_2?: string | null;
@@ -46,7 +40,7 @@ export interface BflFluxKontextRequest {
 }
 
 // FLUX 1.1 Pro request
-export interface BflFluxPro11Request {
+interface BflFluxPro11Request {
   height?: number;
   image_prompt?: string | null;
   output_format?: 'jpeg' | 'png' | null;
@@ -60,7 +54,7 @@ export interface BflFluxPro11Request {
 }
 
 // FLUX 1.1 Pro Ultra request
-export interface BflFluxPro11UltraRequest {
+interface BflFluxPro11UltraRequest {
   aspect_ratio?: string;
   prompt: string;
   raw?: boolean;
@@ -69,7 +63,7 @@ export interface BflFluxPro11UltraRequest {
 }
 
 // FLUX Pro request
-export interface BflFluxProRequest {
+interface BflFluxProRequest {
   guidance?: number;
   height?: number;
   image_prompt?: string | null;
@@ -81,7 +75,7 @@ export interface BflFluxProRequest {
 }
 
 // FLUX Dev request
-export interface BflFluxDevRequest {
+interface BflFluxDevRequest {
   guidance?: number;
   height?: number;
   image_prompt?: string | null;

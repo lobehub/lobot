@@ -157,6 +157,6 @@ const sparkChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...sparkChatModels];
+const allModels = [...sparkChatModels];
 
 export default allModels;

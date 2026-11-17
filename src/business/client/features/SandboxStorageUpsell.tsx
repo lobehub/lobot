@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
  */
 export const openSandboxStorageUpsell = (): void => {};
 
-export interface SandboxStorageUpgradeGuideProps {
+interface SandboxStorageUpgradeGuideProps {
   /**
    * One short block instead of a page — for the drive picker, a dialog where a
    * full-page guide would crowd out the choice the dialog is for.

@@ -36,7 +36,7 @@ interface TaskLabelChipProps {
   label: Pick<TaskLabelRef, 'color' | 'name'>;
 }
 
-export const TaskLabelChip = memo<TaskLabelChipProps>(({ label }) => (
+const TaskLabelChip = memo<TaskLabelChipProps>(({ label }) => (
   <span {...stylex.props(styles.chip, styles.shrinkable)} title={label.name}>
     <TaskLabelDot color={label.color} />
     <Text ellipsis fontSize={12} type={'secondary'}>

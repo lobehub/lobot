@@ -4,7 +4,7 @@ import type { MenuInfo } from '@lobehub/ui';
 import { isSubmenuShaped } from './canGoNative';
 import type { NativeContextMenuItem } from './types';
 
-export interface ToNativeTemplateResult {
+interface ToNativeTemplateResult {
   handlers: Map<string, () => void>;
   template: NativeContextMenuItemTemplate[];
 }

@@ -200,6 +200,6 @@ const zerooneChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...zerooneChatModels];
+const allModels = [...zerooneChatModels];
 
 export default allModels;

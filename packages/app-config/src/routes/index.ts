@@ -13,7 +13,7 @@ import {
   Video,
 } from 'lucide-react';
 
-export interface NavigationRoute {
+interface NavigationRoute {
   /** CMDK i18n key in common namespace */
   cmdkKey: string;
   /** Electron i18n key in electron namespace */
@@ -38,7 +38,7 @@ export interface NavigationRoute {
  * Shared navigation route configuration
  * Used by both Electron navigation and CommandMenu (CMDK)
  */
-export const NAVIGATION_ROUTES: NavigationRoute[] = [
+const NAVIGATION_ROUTES: NavigationRoute[] = [
   {
     cmdkKey: 'cmdk.community',
     electronKey: 'navigation.discover',

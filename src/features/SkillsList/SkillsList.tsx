@@ -510,5 +510,3 @@ const SkillsList = memo<SkillsListProps>(
 );
 
 SkillsList.displayName = 'SkillsList';
-
-export default SkillsList;

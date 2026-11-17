@@ -1,7 +1,7 @@
 import { type ChatInputEditor } from '@/features/ChatInput';
 import type { GatewayConnection } from '@/store/chat/slices/agentRun/actions/transports/gateway/gateway';
 
-export type MainConversationScrollToIndex = (
+type MainConversationScrollToIndex = (
   index: number,
   options?: { align?: 'start' | 'center' | 'end'; smooth?: boolean },
 ) => void;
@@ -12,7 +12,7 @@ export type MainConversationScrollToIndex = (
  * over the multiplexed socket; the hub emits one for every op the user owns,
  * whether or not this tab is subscribed to it.
  */
-export interface GatewayFeedEntry {
+interface GatewayFeedEntry {
   /** Hub timestamp (epoch ms) of the lifecycle transition. */
   at: number;
   /** Op routing metadata (topicId, agentId, parent/root op...) as sent by the hub. */

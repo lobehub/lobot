@@ -102,7 +102,7 @@ export const createConnectorSlice = (set: Setter, get: () => ToolStore, _api?: u
  * `agentConnectors`) as the replica views, so every selector and consumer is
  * unchanged; the slab below only orchestrates fetching and writes.
  */
-export class ConnectorActionImpl {
+class ConnectorActionImpl {
   readonly #agentBoundConnectors;
   readonly #agentConnectors;
   /** One connector lives in the base list, the aggregate and per-agent buckets. */

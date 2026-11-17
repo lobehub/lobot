@@ -1,11 +1,11 @@
 import type { ChatToolPayloadWithResult, UIChatMessage } from '@lobechat/types';
 
-export interface StoredToolPayload {
+interface StoredToolPayload {
   content: string;
   pluginState?: unknown;
 }
 
-export interface HydratedToolMessages {
+interface HydratedToolMessages {
   messages: UIChatMessage[];
   /** Ids whose stored payload could not be fetched — the row is still projected. */
   missing: string[];

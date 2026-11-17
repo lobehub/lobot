@@ -13,7 +13,7 @@ export interface DroppedLocalPath {
   path: string;
 }
 
-export interface PartitionedDroppedLocalPaths {
+interface PartitionedDroppedLocalPaths {
   files: File[];
   localPaths: DroppedLocalPath[];
 }
@@ -155,7 +155,7 @@ export const partitionDroppedItemsAsLocalPaths = async (
   return { files, localPaths };
 };
 
-export interface UseLocalDragUploadOptions {
+interface UseLocalDragUploadOptions {
   /**
    * Whether the drag upload is disabled
    */
@@ -177,7 +177,7 @@ export interface UseLocalDragUploadOptions {
   onUploadFiles: (files: File[]) => void | Promise<void>;
 }
 
-export interface UseLocalDragUploadResult {
+interface UseLocalDragUploadResult {
   /**
    * Props to spread on the container element
    */

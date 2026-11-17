@@ -860,6 +860,6 @@ const hunyuanVideoModels: AIVideoModelCard[] = [
   },
 ];
 
-export const allModels = [...hunyuanChatModels, ...hunyuanImageModels, ...hunyuanVideoModels];
+const allModels = [...hunyuanChatModels, ...hunyuanImageModels, ...hunyuanVideoModels];
 
 export default allModels;

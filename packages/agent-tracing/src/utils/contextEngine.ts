@@ -1,6 +1,6 @@
 import type { StepSnapshot } from '../types';
 
-export interface ResolvedContextEngine {
+interface ResolvedContextEngine {
   input?: unknown;
   metadata?: unknown;
   output?: unknown;

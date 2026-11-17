@@ -1,5 +1,4 @@
 export const CLAUDE_CODE_ENTRYPOINT_ENV = 'CLAUDE_CODE_ENTRYPOINT';
-export const DEFAULT_CLAUDE_CODE_ENTRYPOINT = 'lobehub';
 
 const ENTRYPOINT_PATTERN = /^[\w.-]{1,64}$/;
 
@@ -8,22 +7,10 @@ const ENTRYPOINT_PATTERN = /^[\w.-]{1,64}$/;
  * plain identifier. A dispatched run carries this value to another machine,
  * so anything else is dropped instead of reaching a process environment.
  */
-export const normalizeClaudeCodeEntrypoint = (value: unknown): string | undefined => {
+const normalizeClaudeCodeEntrypoint = (value: unknown): string | undefined => {
   if (typeof value !== 'string') return;
   const entrypoint = value.trim();
   return ENTRYPOINT_PATTERN.test(entrypoint) ? entrypoint : undefined;
-};
-
-/**
- * What a dispatched run carries for the agent's setting: the name, an empty
- * string when the agent turned it off (so the receiving host clears one it
- * inherited), or `undefined` when the agent never set it.
- */
-export const resolveDispatchedClaudeCodeEntrypoint = (
-  agentEnv: Readonly<Record<string, string>> | undefined,
-): string | undefined => {
-  const value = agentEnv?.[CLAUDE_CODE_ENTRYPOINT_ENV];
-  return value === undefined ? undefined : (normalizeClaudeCodeEntrypoint(value) ?? '');
 };
 
 /**

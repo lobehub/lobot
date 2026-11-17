@@ -1,4 +1,4 @@
-export interface Permission {
+interface Permission {
   allowed: boolean;
   /**
    * Localised tooltip text explaining why the action is blocked. `undefined`

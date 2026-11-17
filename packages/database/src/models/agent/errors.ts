@@ -1,6 +1,6 @@
 import { type AgentGroupMembershipRef } from './types';
 
-export const AGENT_OWNED_BY_GROUP = 'AGENT_OWNED_BY_GROUP';
+const AGENT_OWNED_BY_GROUP = 'AGENT_OWNED_BY_GROUP';
 
 /**
  * Ownership handover rejected: the agent's owner changed (or the agent left

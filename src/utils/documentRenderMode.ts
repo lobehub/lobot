@@ -22,7 +22,7 @@ interface DocumentRenderModeFields {
 }
 
 /** Content surface selected for an uploaded file or an editable document. */
-export type DocumentRenderMode =
+type DocumentRenderMode =
   | { mode: 'editor' }
   | { language: string; mode: 'highlight' }
   | { mode: 'file' }

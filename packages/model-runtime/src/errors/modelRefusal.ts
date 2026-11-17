@@ -2,7 +2,7 @@ import { AgentRuntimeErrorType } from '@lobechat/types';
 
 import type { ModelEmptyCompletionDiagnostics } from './modelEmptyCompletion';
 
-export type ModelRefusalDiagnostics = ModelEmptyCompletionDiagnostics;
+type ModelRefusalDiagnostics = ModelEmptyCompletionDiagnostics;
 
 /**
  * Terminal finish reasons that mean the provider declined to answer or blocked the output.

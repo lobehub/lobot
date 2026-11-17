@@ -23,7 +23,7 @@ import type {
 import type { ApiType, RuntimeClass } from './apiTypes';
 import type { RouteAttemptFinished, RouteAttemptResult } from './routeAttempt';
 
-export interface ProviderIniOptions extends Record<string, any> {
+interface ProviderIniOptions extends Record<string, any> {
   accessKeyId?: string;
   accessKeySecret?: string;
   apiKey?: string;
@@ -64,7 +64,7 @@ export interface RouterInstance {
 // OpenAI SDK v6 widened `apiKey` to `string | ApiKeySetter`; lobehub only ever
 // passes a plain string, so narrow it back to keep `.trim()` / string assignments valid.
 export type LobeClientOptions = Omit<ClientOptions, 'apiKey'> & { apiKey?: string };
-export type ConstructorOptions<T extends Record<string, any> = any> = LobeClientOptions & T;
+type ConstructorOptions<T extends Record<string, any> = any> = LobeClientOptions & T;
 
 export type Routers =
   | RouterInstance[]
@@ -73,7 +73,7 @@ export type Routers =
       runtimeContext: RouterRuntimeRequestContext,
     ) => RouterInstance[] | Promise<RouterInstance[]>);
 
-export interface SortRouterOptionsParams {
+interface SortRouterOptionsParams {
   metadata?: Record<string, unknown>;
   method: RouterRuntimeMethod;
   model: string;

@@ -371,10 +371,6 @@ const EnabledChannelSection = ({ itemKey = 'channels', projectId }: ChannelSecti
   );
 };
 
-/** One accordion item; place it inside an `AccordionRoot`. */
-export const ChannelSection = (props: ChannelSectionProps) =>
-  useChannelsEnabled() ? <EnabledChannelSection {...props} /> : null;
-
 /** The home sidebar's standalone Channels, outside any project. */
 const ChannelList = () =>
   useChannelsEnabled() ? (

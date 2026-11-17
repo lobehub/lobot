@@ -42,7 +42,7 @@ import type {
 } from '../../models/agentDocuments/types';
 import type { LobeChatDatabase, Transaction } from '../../type';
 
-export interface AgentDocumentUpsertParams {
+interface AgentDocumentUpsertParams {
   createdAt?: Date;
   editorData?: Record<string, any>;
   loadPosition?: DocumentLoadPosition;

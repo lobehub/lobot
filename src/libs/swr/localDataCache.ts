@@ -13,12 +13,12 @@ export interface ScopeEntry extends CacheRow {
   key: string;
 }
 
-export interface LocalDataCachePutEntry extends CacheRow {
+interface LocalDataCachePutEntry extends CacheRow {
   /** Full composite key, including the identity scope prefix. */
   key: string;
 }
 
-export interface LocalDataCacheBatch {
+interface LocalDataCacheBatch {
   deleteKeys: string[];
   putEntries: LocalDataCachePutEntry[];
 }

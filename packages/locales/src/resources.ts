@@ -4,10 +4,9 @@ import { DEFAULT_LANG } from '@/const/locale';
 
 import type resources from './default';
 
-export const locales = appLocales;
+const locales = appLocales;
 
 export type DefaultResources = typeof resources;
-export type NS = keyof DefaultResources;
 export type Locales = (typeof locales)[number];
 
 export const matchLocale = (locale?: string): Locales | undefined =>
@@ -94,5 +93,3 @@ export const localeOptions: LocaleOptions = [
     value: 'fa-IR',
   },
 ] as LocaleOptions;
-
-export const supportLocales: string[] = [...locales, 'en', 'zh'];

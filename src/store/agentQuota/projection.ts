@@ -10,7 +10,7 @@ export type QuotaLatestReading = Awaited<
   ReturnType<typeof agentQuotaService.getLatestReadings>
 >[number];
 export type QuotaWindowRow = Awaited<ReturnType<typeof agentQuotaService.getWindows>>[number];
-export type QuotaUsageTurn = Awaited<ReturnType<typeof agentQuotaService.listUsageTurns>>[number];
+type QuotaUsageTurn = Awaited<ReturnType<typeof agentQuotaService.listUsageTurns>>[number];
 
 /** The calendar reads 90 days of history: complete data for this month and the last. */
 export const QUOTA_HISTORY_DAYS = 90;

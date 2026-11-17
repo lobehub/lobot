@@ -150,10 +150,7 @@ async function readJson<T>(filePath: string): Promise<T | null> {
   }
 }
 
-export function partialToTrajectory(
-  goalId: string,
-  partial: Partial<GoalTrajectory>,
-): GoalTrajectory {
+function partialToTrajectory(goalId: string, partial: Partial<GoalTrajectory>): GoalTrajectory {
   const advances = partial.advances ?? [];
   return {
     ...partial,
@@ -173,7 +170,7 @@ export function partialToTrajectory(
   };
 }
 
-export function toSummary(trajectory: GoalTrajectory): GoalTraceSummary {
+function toSummary(trajectory: GoalTrajectory): GoalTraceSummary {
   return {
     advances: trajectory.totalAdvances,
     completionReason: trajectory.completionReason,

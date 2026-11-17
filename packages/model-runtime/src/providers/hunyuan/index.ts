@@ -5,7 +5,7 @@ import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { createHunyuanImage } from './createImage';
 import { createHunyuanVideo } from './createVideo';
 
-export const params = {
+const params = {
   baseURL: 'https://tokenhub.tencentmaas.com/v1',
   chatCompletion: {
     handlePayload: (payload) => {

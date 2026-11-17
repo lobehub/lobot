@@ -1,6 +1,6 @@
 import { isRailContactsRoute } from '@/features/NavPanel/railRouteKey';
 
-export type RailTabKey =
+type RailTabKey =
   'contacts' | 'discover' | 'messages' | 'more' | 'projects' | 'resource' | 'settings' | 'tasks';
 
 const TAB_BY_ROOT: Record<string, RailTabKey> = {

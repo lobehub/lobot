@@ -7,10 +7,3 @@ export enum TRPCAttribute {
   RPC_TRPC_SUCCESS = 'rpc.trpc.success',
   RPC_TRPC_TYPE = 'rpc.trpc.type',
 }
-
-export {
-  ATTR_ERROR_TYPE,
-  ATTR_EXCEPTION_MESSAGE,
-  ATTR_EXCEPTION_STACKTRACE,
-  ATTR_EXCEPTION_TYPE,
-} from '@opentelemetry/semantic-conventions';

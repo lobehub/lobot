@@ -43,7 +43,7 @@ const benchmarkListLens: ReplicaLens<EvalStore, BenchmarkListItem[]> = {
 };
 
 /** Pre-migration `useFetchBenchmarks` return shape, backed by the list replica. */
-export interface BenchmarkListSyncResult extends ReplicaSyncResult {
+interface BenchmarkListSyncResult extends ReplicaSyncResult {
   /** The list once it has settled (hydrated or fetched), else `undefined`. */
   data: BenchmarkListItem[] | undefined;
   /** First load in flight with nothing settled yet. */
@@ -53,7 +53,7 @@ export interface BenchmarkListSyncResult extends ReplicaSyncResult {
 }
 
 /** Pre-migration `useFetchBenchmarkDetail` return shape, backed by the detail replica. */
-export interface BenchmarkDetailSyncResult {
+interface BenchmarkDetailSyncResult {
   error: unknown;
   /** First load in flight with nothing settled yet. */
   isLoading: boolean;
@@ -64,7 +64,7 @@ export interface BenchmarkDetailSyncResult {
 export const createBenchmarkSlice = (set: Setter, get: () => EvalStore, _api?: unknown) =>
   new BenchmarkActionImpl(set, get, _api);
 
-export class BenchmarkActionImpl {
+class BenchmarkActionImpl {
   readonly #detail;
   readonly #entity;
   readonly #get: () => EvalStore;

@@ -25,7 +25,7 @@ const isTaskStatus = (status: string | undefined): status is TaskStatus =>
 export const createTaskLifecycleSlice = (set: Setter, get: () => TaskStore, _api?: unknown) =>
   new TaskLifecycleSliceActionImpl(set, get, _api);
 
-export class TaskLifecycleSliceActionImpl {
+class TaskLifecycleSliceActionImpl {
   readonly #get: () => TaskStore;
   #nextStatusTransitionVersion = 0;
   readonly #set: Setter;

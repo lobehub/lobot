@@ -17,7 +17,7 @@ export interface ForwardTarget {
   title?: string | null;
 }
 
-export interface ForwardResultItem {
+interface ForwardResultItem {
   agentId: string;
   error?: unknown;
   topicId?: string;
@@ -29,7 +29,7 @@ export interface ForwardResult {
   succeeded: ForwardResultItem[];
 }
 
-export interface ForwardMessagesParams extends ForwardContentOptions {
+interface ForwardMessagesParams extends ForwardContentOptions {
   messages: UIChatMessage[];
   note?: string;
   onTopicCreated?: (target: ForwardTarget, topicId: string) => void | Promise<void>;

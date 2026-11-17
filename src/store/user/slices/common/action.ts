@@ -56,7 +56,7 @@ type Setter = StoreSetter<UserStore>;
 export const createCommonSlice = (set: Setter, get: () => UserStore, _api?: unknown) =>
   new CommonActionImpl(set, get, _api);
 
-export class CommonActionImpl {
+class CommonActionImpl {
   readonly #get: () => UserStore;
   readonly #set: Setter;
   /**

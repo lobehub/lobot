@@ -1,4 +1,4 @@
-export interface AuthorInfo {
+interface AuthorInfo {
   avatar?: string | null;
   fullName?: string | null;
 }

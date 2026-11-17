@@ -17,9 +17,9 @@ import { type TabPagesState } from './actions/tabPages';
 import { tabPagesInitialState } from './actions/tabPages';
 import { type GatewayStableDeviceId } from './projection';
 
-export type RemoteServerError = 'CONFIG_ERROR' | 'AUTH_ERROR' | 'DISCONNECT_ERROR';
+type RemoteServerError = 'CONFIG_ERROR' | 'AUTH_ERROR' | 'DISCONNECT_ERROR';
 
-export const defaultProxySettings: NetworkProxySettings = {
+const defaultProxySettings: NetworkProxySettings = {
   enableProxy: false,
   proxyBypass: 'localhost, 127.0.0.1, ::1',
   proxyPort: '',

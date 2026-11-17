@@ -23,7 +23,7 @@ import type {
  */
 
 /** One recorded interaction atom. Unknown fields are ignored, not rejected. */
-export interface KlmTraceEvent {
+interface KlmTraceEvent {
   durationMs?: number;
   klm?: {
     category?: string;

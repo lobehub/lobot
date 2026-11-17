@@ -36,7 +36,7 @@ const getVisibleTopicIds = (): string[] => {
   return ids.slice(0, 1000);
 };
 
-export interface AgentTransferJobStatus {
+interface AgentTransferJobStatus {
   completedTopics: number;
   jobId: string;
   pendingTopicIds: string[];

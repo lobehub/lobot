@@ -20,7 +20,7 @@ const topicOperations = (state: ChatStore, topicId: string) =>
 export const RUN_WATCH_INTERVAL = 15_000;
 
 /** Include terminal bookkeeping: its stream still owns the conversation. */
-export const hasLocalTopicRun = (state: ChatStore, topicId: string) =>
+const hasLocalTopicRun = (state: ChatStore, topicId: string) =>
   topicOperations(state, topicId).some((op) => op.status === 'running');
 
 /** Topic details also discover runs started by SCM, schedules, or another client. */

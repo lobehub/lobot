@@ -122,7 +122,7 @@ const styles = createStaticStyles(({ css }) => ({
   `,
 }));
 
-export interface CaptureContentProps {
+interface CaptureContentProps {
   draft: CaptureDraft;
   formId: string;
   onLoadingChange?: (loading: boolean) => void;

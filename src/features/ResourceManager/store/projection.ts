@@ -40,7 +40,7 @@ export interface HierarchySearchParams {
 export const DEFAULT_SEARCH_PAGE_SIZE = 50;
 
 /** The replica value plus the query it answers, so a surface can tell whether it is current. */
-export type SearchReplicaValue<TParams> = ReplicaPagedData<ResourceItem, number> & {
+type SearchReplicaValue<TParams> = ReplicaPagedData<ResourceItem, number> & {
   /** Absent only on a view written before its query identity was known. */
   searchParams?: TParams;
 };

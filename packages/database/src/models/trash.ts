@@ -32,7 +32,7 @@ import { buildWorkspaceWhere } from '../utils/workspace';
 /** Rows per multi-row registry insert — well under Postgres' bind-parameter cap. */
 const REGISTER_CHUNK_SIZE = 500;
 
-export interface TrashRegisterEntry {
+interface TrashRegisterEntry {
   meta?: TrashItemMeta | null;
   projectId: string | null;
   resourceId: string;
@@ -40,7 +40,7 @@ export interface TrashRegisterEntry {
   title?: string | null;
 }
 
-export interface TrashRegisterParams {
+interface TrashRegisterParams {
   /** Rows stamped along with the root; registered under `rootId` and never listed on their own. */
   children?: TrashRegisterEntry[];
   deletedAt: Date;

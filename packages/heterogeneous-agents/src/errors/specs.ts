@@ -39,7 +39,7 @@ export type HeteroErrorKind =
   | 'model_unavailable'
   | 'agent_failed';
 
-export interface HeteroErrorSpec {
+interface HeteroErrorSpec {
   attribution: HeteroErrorAttribution;
   category: HeteroErrorCategory;
   /** Whether this kind counts toward operational failure metrics. */

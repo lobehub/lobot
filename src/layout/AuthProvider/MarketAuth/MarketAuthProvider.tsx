@@ -2,7 +2,7 @@
 
 import { toast } from '@lobehub/ui';
 import { type ReactNode } from 'react';
-import { createContext, lazy, Suspense, use, useCallback, useEffect, useState } from 'react';
+import { createContext, lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSingleton } from '@/hooks/useSingleton';
@@ -847,15 +847,4 @@ export const MarketAuthProvider = ({ children, isDesktop }: MarketAuthProviderPr
       )}
     </MarketAuthContext>
   );
-};
-
-/**
- * Hook for using Market authorization
- */
-export const useMarketAuth = (): MarketAuthContextType => {
-  const context = use(MarketAuthContext);
-  if (!context) {
-    throw new Error('useMarketAuth must be used within a MarketAuthProvider');
-  }
-  return context;
 };

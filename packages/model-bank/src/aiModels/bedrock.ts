@@ -638,6 +638,6 @@ const bedrockChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...bedrockChatModels];
+const allModels = [...bedrockChatModels];
 
 export default allModels;

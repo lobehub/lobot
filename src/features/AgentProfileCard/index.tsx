@@ -51,7 +51,7 @@ const styles = createStaticStyles(({ css, cssVar }) => ({
   `,
 }));
 
-export interface AgentProfileCardProps {
+interface AgentProfileCardProps {
   /** Seeds the generated avatar of an agent without one. */
   agentId?: string | null;
   avatar?: string | null;

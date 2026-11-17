@@ -22,7 +22,7 @@ export type RendererRequestInterceptor = (request: Request) => Promise<Response 
  * (production) and Vite-proxy (development) implementations live below; the
  * protocol manager is agnostic to which one is plugged in.
  */
-export interface RendererFallbackStrategy {
+interface RendererFallbackStrategy {
   handle: (request: Request, url: URL) => Promise<Response>;
 }
 

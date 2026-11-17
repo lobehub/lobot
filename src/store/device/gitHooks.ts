@@ -6,7 +6,6 @@ import type {
   DeviceGitPullRequestDetail,
   DeviceGitPullRequestDetailResult,
   DeviceGitPullRequestMergeContext,
-  DeviceGitRemoteBranchListItem,
   DeviceGitWorkingTreeStatus,
   DeviceGitWorktreeListItem,
 } from '@lobechat/types';
@@ -38,9 +37,6 @@ import {
 } from './gitStatus/projection';
 import { type GitStatusStore, useGitStatusStore } from './gitStatus/store';
 
-export type { ReviewMode, ReviewPatchesData } from './gitReview/projection';
-export { getReviewSummaryState, toReviewPatchesSummary } from './gitReview/projection';
-
 const UNSTAGED_REVIEW_REFRESH_INTERVAL = 10 * 1000;
 const BRANCH_REVIEW_REFRESH_INTERVAL = 30 * 1000;
 const PULL_REQUEST_DETAIL_REFRESH_INTERVAL = 30 * 1000;
@@ -55,7 +51,7 @@ const PULL_REQUEST_DETAIL_REFRESH_INTERVAL = 30 * 1000;
 const isEnabled = (deviceId: string | undefined, path: string | undefined): path is string =>
   !!path && (!!deviceId || isDesktop);
 
-export const getReviewRefreshInterval = (mode: ReviewMode, active: boolean) => {
+const getReviewRefreshInterval = (mode: ReviewMode, active: boolean) => {
   if (!active) return 0;
   return mode === 'branch' ? BRANCH_REVIEW_REFRESH_INTERVAL : UNSTAGED_REVIEW_REFRESH_INTERVAL;
 };
@@ -66,14 +62,6 @@ interface GitReviewCacheParams {
   dirPath?: string;
   mode: ReviewMode;
 }
-
-export const getGitReviewPatchesKey = ({
-  baseRef,
-  deviceId,
-  dirPath,
-  mode,
-}: GitReviewCacheParams) =>
-  dirPath ? deviceKeys.gitReviewPatches(deviceId ?? 'local', dirPath, mode, baseRef ?? '') : null;
 
 export const invalidateGitReviewCaches = async ({
   baseRef,
@@ -94,7 +82,7 @@ export const invalidateGitReviewCaches = async ({
   ]);
 };
 
-export interface GitReplicaReadResult<T> {
+interface GitReplicaReadResult<T> {
   data: T | undefined;
   error: unknown;
   /**
@@ -350,7 +338,6 @@ const useGitStatusRead = <T>(
 
 const selectBranchMap = (s: GitStatusStore) => s.gitBranchMap;
 const selectBranchListMap = (s: GitStatusStore) => s.gitBranchListMap;
-const selectRemoteBranchListMap = (s: GitStatusStore) => s.gitRemoteBranchListMap;
 const selectAheadBehindMap = (s: GitStatusStore) => s.gitAheadBehindMap;
 const selectWorkingTreeStatusMap = (s: GitStatusStore) => s.gitWorkingTreeStatusMap;
 const selectWorktreesMap = (s: GitStatusStore) => s.gitWorktreesMap;
@@ -359,7 +346,6 @@ const selectDiffStatsMap = (s: GitStatusStore) => s.gitDiffStatsMap;
 
 const selectBranchEntries = (s: GitStatusStore) => s.gitBranchReplica.entries;
 const selectBranchListEntries = (s: GitStatusStore) => s.gitBranchListReplica.entries;
-const selectRemoteBranchListEntries = (s: GitStatusStore) => s.gitRemoteBranchListReplica.entries;
 const selectAheadBehindEntries = (s: GitStatusStore) => s.gitAheadBehindReplica.entries;
 const selectDiffStatsEntries = (s: GitStatusStore) => s.gitDiffStatsReplica.entries;
 const selectWorkingTreeStatusEntries = (s: GitStatusStore) => s.gitWorkingTreeStatusReplica.entries;
@@ -618,25 +604,6 @@ export const useFetchGitBranches = (
     selectBranchListEntries,
     deviceId,
     path,
-    { dedupingInterval: 10 * 1000, revalidateOnFocus: false },
-    enabled,
-  );
-
-/**
- * Remote branches under `refs/remotes/origin/*`, read once a base-ref picker
- * opens. The persisted list paints the picker immediately; the read refreshes it.
- */
-export const useGitRemoteBranches = (
-  dirPath: string | undefined,
-  enabled: boolean,
-  deviceId?: string,
-) =>
-  useGitStatusRead<DeviceGitRemoteBranchListItem[]>(
-    useGitStatusStore.getState().slices.remoteBranches,
-    selectRemoteBranchListMap,
-    selectRemoteBranchListEntries,
-    deviceId,
-    dirPath,
     { dedupingInterval: 10 * 1000, revalidateOnFocus: false },
     enabled,
   );

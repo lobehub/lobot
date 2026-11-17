@@ -2,26 +2,26 @@ import type { ChatToolPayload } from '@lobechat/types';
 
 import type { AgentState, ToolsCalling } from './state';
 
-export interface AgentEventInit {
+interface AgentEventInit {
   type: 'init';
 }
 
-export interface AgentEventLlmStart {
+interface AgentEventLlmStart {
   payload: unknown;
   type: 'llm_start';
 }
 
-export interface AgentEventLlmStream {
+interface AgentEventLlmStream {
   chunk: unknown;
   type: 'llm_stream';
 }
 
-export interface AgentEventLlmResult {
+interface AgentEventLlmResult {
   result: unknown;
   type: 'llm_result';
 }
 
-export interface AgentEventStreamRetry {
+interface AgentEventStreamRetry {
   data: {
     attempt: number;
     delayMs: number;
@@ -32,31 +32,31 @@ export interface AgentEventStreamRetry {
   type: 'stream_retry';
 }
 
-export interface AgentEventToolPending {
+interface AgentEventToolPending {
   toolCalls: ToolsCalling[];
   type: 'tool_pending';
 }
 
-export interface AgentEventToolResult {
+interface AgentEventToolResult {
   id: string;
   result: any;
   type: 'tool_result';
 }
 
-export interface AgentEventHumanApproveRequired {
+interface AgentEventHumanApproveRequired {
   operationId: string;
   pendingToolsCalling: ChatToolPayload[];
   type: 'human_approve_required';
 }
 
-export interface AgentEventHumanPromptRequired {
+interface AgentEventHumanPromptRequired {
   metadata?: Record<string, unknown>;
   operationId: string;
   prompt: string;
   type: 'human_prompt_required';
 }
 
-export interface AgentEventHumanSelectRequired {
+interface AgentEventHumanSelectRequired {
   metadata?: Record<string, unknown>;
   multi?: boolean;
   operationId: string;
@@ -81,19 +81,19 @@ export type FinishReason =
   | 'error_recovery' // Finished due to unrecoverable error
   | 'system_shutdown'; // System is shutting down
 
-export interface AgentEventDone {
+interface AgentEventDone {
   finalState: AgentState;
   reason: FinishReason;
   reasonDetail?: string;
   type: 'done';
 }
 
-export interface AgentEventError {
+interface AgentEventError {
   error: any;
   type: 'error';
 }
 
-export interface AgentEventInterrupted {
+interface AgentEventInterrupted {
   canResume: boolean;
   interruptedAt: string;
   interruptedInstruction?: any;
@@ -102,7 +102,7 @@ export interface AgentEventInterrupted {
   type: 'interrupted';
 }
 
-export interface AgentEventResumed {
+interface AgentEventResumed {
   metadata?: Record<string, unknown>;
   reason: string;
   resumedAt: string;
@@ -110,13 +110,13 @@ export interface AgentEventResumed {
   type: 'resumed';
 }
 
-export interface AgentEventCompressionComplete {
+interface AgentEventCompressionComplete {
   groupId: string;
   parentMessageId?: string;
   type: 'compression_complete';
 }
 
-export interface AgentEventCompressionError {
+interface AgentEventCompressionError {
   error: unknown;
   type: 'compression_error';
 }

@@ -1,2 +1,2 @@
 export * from './selectors';
-export { getFollowUpActionStoreState, useFollowUpActionStore } from './store';
+export { useFollowUpActionStore } from './store';

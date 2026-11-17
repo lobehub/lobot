@@ -20,7 +20,7 @@ const DEFAULT_PROVIDER = 'trae';
  * session-lifecycle payloads (`{prefix}_session` / `{prefix}_prompt_completed`
  * / `{prefix}_error`) the owning session emits.
  */
-export interface AcpSessionAdapterOptions {
+interface AcpSessionAdapterOptions {
   eventPrefix?: string;
   provider?: string;
 }

@@ -1,3 +1,2 @@
-export { useAgentMeta, useIsBuiltinAgent } from './useAgentMeta';
-export { useClearActiveTopicUnread } from './useClearActiveTopicUnread';
+export { useAgentMeta } from './useAgentMeta';
 export { useDoubleClickEdit } from './useDoubleClickEdit';

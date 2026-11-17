@@ -355,7 +355,7 @@ export interface LiteTableColumn<RecordType> {
   width?: number | string;
 }
 
-export interface LiteTableProps<RecordType> {
+interface LiteTableProps<RecordType> {
   className?: string;
   columns: LiteTableColumn<RecordType>[];
   dataSource?: RecordType[];

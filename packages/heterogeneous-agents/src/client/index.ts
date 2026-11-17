@@ -17,23 +17,17 @@ import {
   Trae,
 } from '@lobehub/icons';
 
-import {
-  getHeterogeneousAgentConfig,
-  HETEROGENEOUS_AGENT_CONFIGS,
-  isLocalRuntimeHeterogeneousType,
-  isRemoteHeterogeneousType,
-  LOCAL_RUNTIME_HETEROGENEOUS_AGENT_CONFIGS,
-} from '../config';
+import { HETEROGENEOUS_AGENT_CONFIGS, LOCAL_RUNTIME_HETEROGENEOUS_AGENT_CONFIGS } from '../config';
 import { DROID_AVATAR_URL, DroidIcon } from './DroidIcon';
 
-export { DROID_AVATAR_URL, DroidIcon, isLocalRuntimeHeterogeneousType, isRemoteHeterogeneousType };
+export { DroidIcon };
 
-export type HeterogeneousAgentClientConfig = (typeof HETEROGENEOUS_AGENT_CONFIGS)[number] & {
+type HeterogeneousAgentClientConfig = (typeof HETEROGENEOUS_AGENT_CONFIGS)[number] & {
   avatar: string;
   icon: IconType;
 };
 
-export type LocalRuntimeHeterogeneousAgentClientConfig =
+type LocalRuntimeHeterogeneousAgentClientConfig =
   (typeof LOCAL_RUNTIME_HETEROGENEOUS_AGENT_CONFIGS)[number] & {
     avatar: string;
     icon: IconType;
@@ -76,17 +70,3 @@ export const LOCAL_RUNTIME_HETEROGENEOUS_AGENT_CLIENT_CONFIGS =
     avatar: createAgentAvatar(config.iconId),
     icon: DeepSeek,
   })) as readonly LocalRuntimeHeterogeneousAgentClientConfig[];
-
-export const getHeterogeneousAgentClientConfig = (type: string) => {
-  const config = getHeterogeneousAgentConfig(type);
-
-  if (!config) {
-    return LOCAL_RUNTIME_HETEROGENEOUS_AGENT_CLIENT_CONFIGS.find((item) => item.type === type);
-  }
-
-  return {
-    ...config,
-    avatar: createAgentAvatar(config.iconId),
-    icon: heterogeneousAgentIcons[config.type as keyof typeof heterogeneousAgentIcons],
-  } satisfies HeterogeneousAgentClientConfig;
-};

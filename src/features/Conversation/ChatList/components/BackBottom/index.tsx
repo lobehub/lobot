@@ -14,7 +14,7 @@ const ScrollDebugThresholdOverlay = lazy(() =>
   })),
 );
 
-export interface BackBottomProps {
+interface BackBottomProps {
   atBottom: boolean;
   /**
    * Extra space (px) to lift the button above its default 16px bottom offset.

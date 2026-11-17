@@ -1,4 +1,4 @@
-import { and, count, eq, exists, inArray, notExists, sql } from 'drizzle-orm';
+import { and, eq, exists, inArray, notExists, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
 import { agentsFiles, agentsKnowledgeBases, files, knowledgeBases } from '../schemas';
@@ -145,23 +145,4 @@ export const rehomeRetainedAgentKnowledgeMounts = async (
         buildWorkspaceWhere(workspaceCtx, agentsFiles),
       ),
     );
-};
-
-/**
- * Read-only companion for the transfer manifest: how many mounts the detach
- * above WOULD remove. Must stay predicate-identical to it.
- */
-export const countAgentKnowledgeMountsToDetach = async (
-  db: Db,
-  params: AgentKnowledgeMountParams,
-): Promise<number> => {
-  if (params.agentIds.length === 0) return 0;
-  const [[kbRow], [fileRow]] = await Promise.all([
-    db
-      .select({ value: count() })
-      .from(agentsKnowledgeBases)
-      .where(inaccessibleKnowledgeBaseMounts(db, params)),
-    db.select({ value: count() }).from(agentsFiles).where(inaccessibleFileMounts(db, params)),
-  ]);
-  return kbRow.value + fileRow.value;
 };

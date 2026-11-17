@@ -49,7 +49,7 @@ export interface ChatPanelSubmitPayload {
   provider?: string;
 }
 
-export interface ChatPanelProps {
+interface ChatPanelProps {
   agentId?: string;
   agents?: ScreenCaptureAgentOption[];
   capturing?: boolean;
@@ -582,13 +582,13 @@ const ChatPanel = memo<ChatPanelProps>(
               <button
                 aria-label={OVERLAY_COPY.captureLabel}
                 aria-pressed={capturing}
+                title={OVERLAY_COPY.captureLabel}
+                type="button"
                 className={cn(
                   styles.iconBtn,
                   styles.captureBtn,
                   capturing && styles.captureBtnActive,
                 )}
-                title={OVERLAY_COPY.captureLabel}
-                type="button"
                 onClick={onStartCapture}
               >
                 <CameraIcon size={16} strokeWidth={2} />

@@ -2,14 +2,6 @@ import type { AskUserQuestionArgs } from '@lobechat/shared-tool-ui/ask-user';
 
 export const UserInteractionIdentifier = 'lobe-user-interaction';
 
-export const UserInteractionApiName = {
-  askUserQuestion: 'askUserQuestion',
-  cancelUserResponse: 'cancelUserResponse',
-  getInteractionState: 'getInteractionState',
-  skipUserResponse: 'skipUserResponse',
-  submitUserResponse: 'submitUserResponse',
-} as const;
-
 export type InteractionStatus = 'cancelled' | 'pending' | 'skipped' | 'submitted';
 
 /**

@@ -20,8 +20,8 @@ import dayjs from 'dayjs';
  * `windowMinutes` rather than a fixed span.
  */
 
-export const WEEKLY_WINDOW_MS = CLAUDE_WEEKLY_WINDOW_SECONDS * 1000;
-export const SESSION_WINDOW_MS = CLAUDE_SESSION_WINDOW_SECONDS * 1000;
+const WEEKLY_WINDOW_MS = CLAUDE_WEEKLY_WINDOW_SECONDS * 1000;
+const SESSION_WINDOW_MS = CLAUDE_SESSION_WINDOW_SECONDS * 1000;
 /** Kimi reports its month buckets as a 43200-minute (30-day) window. */
 export const MONTHLY_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -74,7 +74,7 @@ export const windowMsOf = (series: QuotaSeriesKey) =>
 const readingWindowMs = (reading: QuotaLimitReading, fallback: number) =>
   reading.windowMinutes && reading.windowMinutes > 0 ? reading.windowMinutes * 60_000 : fallback;
 
-export interface BurnPoint {
+interface BurnPoint {
   time: number;
   utilization: number;
 }
@@ -101,7 +101,7 @@ export interface DaySpend {
   tokens: number;
 }
 
-export type TrackedCost =
+type TrackedCost =
   { cost: number; kind: 'exact' } | { cost: number; kind: 'lower-bound' } | { kind: 'unknown' };
 
 export const trackedCostOf = (spend: Pick<DaySpend, 'cost' | 'hasUnpricedTurn'>): TrackedCost => {
@@ -256,7 +256,7 @@ export const buildDailyBurn = (
  * heavy relative to this user's own month, and an absolute threshold flagged
  * almost every working day at once.
  */
-export const heatLevelOf = (value: number, max: number): 0 | 1 | 2 | 3 | 4 => {
+const heatLevelOf = (value: number, max: number): 0 | 1 | 2 | 3 | 4 => {
   if (value <= 0 || max <= 0) return 0;
   const ratio = value / max;
   if (ratio <= 0.25) return 1;
@@ -349,7 +349,7 @@ export const spendInWindow = (turns: UsageTurn[], window: QuotaWindowSpan): DayS
       { cost: 0, hasUnpricedTurn: false, tokens: 0 },
     );
 
-export type BurnProjection =
+type BurnProjection =
   | { exhaustAt: number; kind: 'exhaust' }
   | { kind: 'exhausted' }
   | { kind: 'safe'; projectedEndUtilization: number };
@@ -458,14 +458,14 @@ export const buildWindowStats = (
     .map((window) => withSpend(window, turns, now));
 };
 
-export interface SessionGridColumn {
+interface SessionGridColumn {
   date: dayjs.Dayjs;
   key: string;
   /** Windows that started on this local day, earliest first. */
   slots: (WindowStat | null)[];
 }
 
-export interface SessionGrid {
+interface SessionGrid {
   columns: SessionGridColumn[];
   rowCount: number;
 }
@@ -522,7 +522,7 @@ export const utilizationStatusOf = (utilization: number): 'error' | 'safe' | 'wa
   return 'safe';
 };
 
-export interface CalendarDayCell {
+interface CalendarDayCell {
   date: dayjs.Dayjs;
   inMonth: boolean;
   key: string;

@@ -16,8 +16,6 @@ import type {
 import { canUseGatewayProtocolV2 } from '@/helpers/gatewayProtocol';
 import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
 
-export type { ExecAgentResult, ScheduleAgentRunParams, ScheduleAgentRunResult };
-
 /** Gateway stream features every run started from this client handles. */
 const STREAM_FEATURES: AgentStreamClientFeature[] = ['file_works', 'member_runtime_end'];
 
@@ -112,7 +110,7 @@ export type ResolveAgentInterventionBySourceResult =
       state: 'already_resolved' | 'claimed';
     };
 
-export interface GetAgentInterventionReviewBySourceParams {
+interface GetAgentInterventionReviewBySourceParams {
   batchId: string;
   operationId: string;
   targets: Array<{ toolCallId: string; toolMessageId: string }>;
@@ -128,7 +126,7 @@ export interface ClientOperationSnapshot {
   visibleLoadingDone?: boolean;
 }
 
-export interface ExecAgentTaskParams {
+interface ExecAgentTaskParams {
   agentId?: string;
   appContext?: ExecAgentAppContext;
   autoStart?: boolean;
@@ -211,7 +209,7 @@ export type QueuedFollowUpRequest = Omit<
   | 'steer'
 >;
 
-export interface QueuedFollowUpSurface {
+interface QueuedFollowUpSurface {
   threadId?: string | null;
   topicId: string;
 }
@@ -220,7 +218,7 @@ export interface QueuedFollowUpSurface {
  * Parameters for execSubAgentTask
  * Supports both Group mode (with groupId) and Single Agent mode (without groupId)
  */
-export interface ExecSubAgentTaskParams {
+interface ExecSubAgentTaskParams {
   agentId: string;
   /** Optional for Single Agent mode, required for Group mode */
   groupId?: string;
@@ -234,11 +232,11 @@ export interface ExecSubAgentTaskParams {
   topicId: string;
 }
 
-export interface GetSubAgentTaskStatusParams {
+interface GetSubAgentTaskStatusParams {
   threadId: string;
 }
 
-export interface InterruptTaskParams {
+interface InterruptTaskParams {
   operationId?: string;
   threadId?: string;
   topicId?: string;
@@ -248,7 +246,7 @@ export interface InterruptTaskParams {
  * Parameters for createClientTaskThread
  * Creates a Thread for client-side task execution (desktop only, single agent mode)
  */
-export interface CreateClientTaskThreadParams {
+interface CreateClientTaskThreadParams {
   agentId: string;
   /**
    * Seed an assistant placeholder for transports that stream into an existing
@@ -267,7 +265,7 @@ export interface CreateClientTaskThreadParams {
  * Parameters for createClientGroupAgentTaskThread
  * Creates a Thread for client-side task execution in Group mode
  */
-export interface CreateClientGroupAgentTaskThreadParams {
+interface CreateClientGroupAgentTaskThreadParams {
   /** The Group ID (required for Group mode) */
   groupId: string;
   /** Initial user message content (task instruction) */
@@ -283,7 +281,7 @@ export interface CreateClientGroupAgentTaskThreadParams {
  * Parameters for updateClientTaskThreadStatus
  * Updates Thread status after client-side execution completes
  */
-export interface UpdateClientTaskThreadStatusParams {
+interface UpdateClientTaskThreadStatusParams {
   completionReason: 'done' | 'error' | 'interrupted';
   error?: string;
   metadata?: {

@@ -14,7 +14,7 @@ const MAX_PENDING_BYTES = 4 * 1024 * 1024;
 /** Batches lines so a chatty `debug` stream costs one append per window, not one per line. */
 const FLUSH_DELAY_MS = 200;
 
-export interface JsonlLogWriterOptions {
+interface JsonlLogWriterOptions {
   filePath: string;
   flushDelayMs?: number;
   maxBytes?: number;

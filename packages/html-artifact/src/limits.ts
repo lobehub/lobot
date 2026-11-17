@@ -5,16 +5,16 @@ export const WORKSPACE_HTML_ARTIFACT_MAX_TOTAL_BYTES = 50 * 1024 * 1024;
 export const WORKSPACE_HTML_ARTIFACT_MAX_FILES = 64;
 export const WORKSPACE_HTML_ARTIFACT_INLINE_MAX_BYTES = 32 * 1024;
 
-export type ReadWorkspaceAssetFailure = 'missing' | 'oversized' | 'unreadable';
+type ReadWorkspaceAssetFailure = 'missing' | 'oversized' | 'unreadable';
 
-export interface ReadWorkspaceAssetSuccess {
+interface ReadWorkspaceAssetSuccess {
   bytes: Uint8Array;
   contentType: string;
   ok: true;
   text?: string;
 }
 
-export interface ReadWorkspaceAssetError {
+interface ReadWorkspaceAssetError {
   ok: false;
   reason: ReadWorkspaceAssetFailure;
   sizeBytes?: number;

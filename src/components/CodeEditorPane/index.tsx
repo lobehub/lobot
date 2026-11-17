@@ -229,7 +229,7 @@ const readCursor = (view: EditorViewInternals): CursorPosition => {
   return { column: head - line.from + 1, line: line.number, selectionLength: to - from };
 };
 
-export interface CodeEditorPaneProps {
+interface CodeEditorPaneProps {
   className?: string;
   /**
    * Path or filename of the edited file. Selects the grammar and names the

@@ -30,7 +30,7 @@ import { readMessagesByRoundCursor, takePrimedMessageListPage } from './roundCur
  * Query context for message operations
  * Contains identifiers needed for querying/filtering messages after mutations
  */
-export interface MessageQueryContext {
+interface MessageQueryContext {
   agentId?: string;
   groupId?: string;
   threadId?: string | null;
@@ -60,7 +60,7 @@ export interface MessageReadQueryContext {
   topicShareId?: string;
 }
 
-export type MessageBatchOperation =
+type MessageBatchOperation =
   | {
       message: CreateMessageParams;
       type: 'createMessage';
@@ -82,7 +82,7 @@ export type MessageBatchOperation =
       };
     };
 
-export interface MessageBatchMutationResult {
+interface MessageBatchMutationResult {
   results?: Array<{
     error?: string;
     id?: string;
@@ -93,7 +93,7 @@ export interface MessageBatchMutationResult {
   success?: boolean;
 }
 
-export class MessageBatchMutationError extends Error {
+class MessageBatchMutationError extends Error {
   constructor(public readonly result: MessageBatchMutationResult) {
     const failed = result.results?.filter((item) => !item.success) ?? [];
     const reasons = [...new Set(failed.map((item) => item.error).filter(Boolean))];

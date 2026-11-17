@@ -4,7 +4,7 @@ import type { OpenAICompatibleFactoryOptions } from '../../core/openaiCompatible
 import { createOpenAICompatibleRuntime } from '../../core/openaiCompatible';
 import { processMultiProviderModelList } from '../../utils/modelParse';
 
-export interface VercelAIGatewayModelCard {
+interface VercelAIGatewayModelCard {
   context_window?: number;
   created?: number | string;
   description?: string;
@@ -22,12 +22,12 @@ export interface VercelAIGatewayModelCard {
   type?: string;
 }
 
-export interface VercelAIGatewayReasoning {
+interface VercelAIGatewayReasoning {
   enabled?: boolean;
   max_tokens?: number;
 }
 
-export const formatPrice = (price?: string | number) => {
+const formatPrice = (price?: string | number) => {
   if (price === undefined || price === null) return undefined;
   const n = typeof price === 'number' ? price : Number(price);
   if (Number.isNaN(n)) return undefined;
@@ -35,7 +35,7 @@ export const formatPrice = (price?: string | number) => {
   return Number((n * 1e6).toPrecision(5));
 };
 
-export const params = {
+const params = {
   baseURL: 'https://ai-gateway.vercel.sh/v1',
   chatCompletion: {
     handlePayload: (payload) => {

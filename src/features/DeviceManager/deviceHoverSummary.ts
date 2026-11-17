@@ -2,7 +2,7 @@ import type { DeviceListItem, DeviceMetricSeries } from '@lobechat/types';
 
 import { getPlatformLabel } from './getDeviceIcon';
 
-export interface DeviceHoverSummary {
+interface DeviceHoverSummary {
   architecture?: string;
   /** Live connections; only meaningful while online. */
   connections: number;

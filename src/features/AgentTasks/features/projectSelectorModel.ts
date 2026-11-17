@@ -10,7 +10,7 @@ export const filterProjectsByName = <T extends Pick<ProjectListItem, 'name'>>(
   return projects.filter((project) => project.name.toLowerCase().includes(query));
 };
 
-export type TaskProjectDisplay =
+type TaskProjectDisplay =
   | { kind: 'none' }
   /** The list has not loaded, so nothing can be said about this id yet. */
   | { kind: 'pending' }

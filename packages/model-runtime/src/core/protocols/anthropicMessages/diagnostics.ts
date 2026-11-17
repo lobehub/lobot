@@ -213,7 +213,7 @@ export const recordAnthropicResponseMetadata = (
     headers['x-stainless-request-id'];
 };
 
-export const recordAnthropicStreamEvent = (
+const recordAnthropicStreamEvent = (
   diagnostics: ProviderResponseDiagnostics,
   chunk: Anthropic.MessageStreamEvent,
 ) => {

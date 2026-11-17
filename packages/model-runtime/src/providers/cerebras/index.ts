@@ -7,7 +7,7 @@ import {
 } from '../../core/openaiCompatible';
 import { processMultiProviderModelList } from '../../utils/modelParse';
 
-export const params = {
+const params = {
   baseURL: 'https://api.cerebras.ai/v1',
   chatCompletion: {
     handlePayload: (payload) => {

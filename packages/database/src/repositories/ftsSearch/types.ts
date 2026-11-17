@@ -15,7 +15,7 @@ export type FtsSearchResultType =
   | 'task'
   | 'goal';
 
-export interface FtsSearchBaseResult {
+interface FtsSearchBaseResult {
   createdAt: Date;
   description?: string | null;
   id: string;
@@ -31,7 +31,7 @@ export interface FtsSearchPageResult extends FtsSearchBaseResult {
   type: 'page';
 }
 
-export interface FtsSearchPageContentResult extends FtsSearchBaseResult {
+interface FtsSearchPageContentResult extends FtsSearchBaseResult {
   id: string;
   type: 'pageContent';
 }
@@ -93,7 +93,7 @@ export interface FtsSearchMemoryResult extends FtsSearchBaseResult {
   type: 'memory';
 }
 
-export interface FtsSearchMCPResult extends FtsSearchBaseResult {
+interface FtsSearchMCPResult extends FtsSearchBaseResult {
   author: string;
   avatar?: string | null;
   category?: string | null;
@@ -106,7 +106,7 @@ export interface FtsSearchMCPResult extends FtsSearchBaseResult {
   type: 'mcp';
 }
 
-export interface FtsSearchPluginResult extends FtsSearchBaseResult {
+interface FtsSearchPluginResult extends FtsSearchBaseResult {
   author: string;
   avatar?: string | null;
   category?: string | null;
@@ -121,7 +121,7 @@ export interface FtsSearchKnowledgeBaseResult extends FtsSearchBaseResult {
 }
 
 /** Task lookup result. Tasks are not indexed; `TaskSearchRepo` queries them directly. */
-export interface FtsSearchTaskResult extends FtsSearchBaseResult {
+interface FtsSearchTaskResult extends FtsSearchBaseResult {
   /** Assignee agent, when the task is agent-assigned. */
   agentId: string | null;
   identifier: string;
@@ -130,7 +130,7 @@ export interface FtsSearchTaskResult extends FtsSearchBaseResult {
 }
 
 /** Goal lookup result. Goals are not indexed; `GoalSearchRepo` queries them directly. */
-export interface FtsSearchGoalResult extends FtsSearchBaseResult {
+interface FtsSearchGoalResult extends FtsSearchBaseResult {
   /** Supervising agent, when one is assigned. */
   agentId: string | null;
   completedAt: Date | null;
@@ -153,7 +153,7 @@ export interface FtsSearchKnowledgeBaseDocumentHit {
   updatedAt: Date;
 }
 
-export interface FtsSearchAssistantResult extends FtsSearchBaseResult {
+interface FtsSearchAssistantResult extends FtsSearchBaseResult {
   author: string;
   avatar?: string | null;
   homepage?: string | null;
@@ -196,7 +196,7 @@ export interface FtsSearchOptions {
 }
 
 /** Entities implemented by the current product search repository contract. */
-export const FTS_SEARCH_BACKEND_ENTITIES = [
+const FTS_SEARCH_BACKEND_ENTITIES = [
   'agents',
   'chatGroups',
   'documents',
@@ -268,12 +268,12 @@ export interface FtsSearchBackendFilters {
   };
 }
 
-export interface FtsSearchBackendPagination {
+interface FtsSearchBackendPagination {
   /** Omitted for legacy/list paths whose public contract is currently unbounded. */
   limit?: number;
 }
 
-export interface FtsSearchBackendQuery {
+interface FtsSearchBackendQuery {
   /** Exact mapped fields for a candidate-only production path. */
   fields?: string[];
   text: string;
@@ -289,7 +289,7 @@ export interface FtsSearchBackendRequest {
 }
 
 /** Raw provider candidate before authorization hydration and product-specific post-ranking. */
-export interface FtsSearchBackendCandidate {
+interface FtsSearchBackendCandidate {
   id: string;
   /** Provider-native score where higher is better; legacy pg_search can emit null. */
   score: number | null;
@@ -318,7 +318,7 @@ export interface FtsSearchBackend {
   search: (request: FtsSearchBackendRequest) => Promise<FtsSearchBackendResponse>;
 }
 
-export interface FtsSearchBackendMeasurementRequest {
+interface FtsSearchBackendMeasurementRequest {
   entity: FtsSearchBackendEntity;
   filterKeys: (keyof FtsSearchBackendFilters)[];
   limit: number;

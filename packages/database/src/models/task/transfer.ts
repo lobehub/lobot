@@ -20,7 +20,7 @@ import { DEFAULT_TASK_IDENTIFIER_PREFIX } from './utils';
  * Allocate a contiguous block of seq numbers + identifiers in the target
  * scope. Returns the next available seq baseline.
  */
-export const nextSeqIn = async (
+const nextSeqIn = async (
   runner: LobeChatDatabase,
   targetWorkspaceId: string | null,
   targetUserId: string,

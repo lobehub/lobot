@@ -1,6 +1,6 @@
 import type { UIChatMessage } from '@lobechat/types';
 
-export interface BranchSwitch {
+interface BranchSwitch {
   branchIndex: number;
   /** The branch child to activate; `switchMessageBranch` stores the index on its parent. */
   messageId: string;

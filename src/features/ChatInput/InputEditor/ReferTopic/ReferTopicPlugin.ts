@@ -26,7 +26,7 @@ export const INSERT_REFER_TOPIC_COMMAND = createCommand<{ topicId: string; topic
 
 type IEditorKernel = ReturnType<typeof getKernelFromEditor>;
 
-export interface ReferTopicPluginOptions {
+interface ReferTopicPluginOptions {
   decorator: (node: ReferTopicNode, editor: LexicalEditor) => any;
   theme?: { referTopic?: string };
 }

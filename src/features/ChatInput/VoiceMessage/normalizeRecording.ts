@@ -28,7 +28,7 @@ const writeAscii = (view: DataView, offset: number, value: string) => {
   }
 };
 
-export const downmixAndResample = (
+const downmixAndResample = (
   audioBuffer: AudioBufferLike,
   targetSampleRate = WAVE_SAMPLE_RATE,
 ): Float32Array => {
@@ -79,7 +79,7 @@ export const downmixAndResample = (
   return result;
 };
 
-export const encodePcm16Wav = (samples: Float32Array, sampleRate = WAVE_SAMPLE_RATE): Blob => {
+const encodePcm16Wav = (samples: Float32Array, sampleRate = WAVE_SAMPLE_RATE): Blob => {
   const bytesPerSample = 2;
   const arrayBuffer = new ArrayBuffer(WAVE_HEADER_SIZE + samples.length * bytesPerSample);
   const view = new DataView(arrayBuffer);

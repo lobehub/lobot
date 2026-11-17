@@ -73,7 +73,7 @@ type Setter = StoreSetter<UserMemoryStore>;
 export const createBaseSlice = (set: Setter, get: () => UserMemoryStore, _api?: unknown) =>
   new BaseActionImpl(set, get, _api);
 
-export class BaseActionImpl {
+class BaseActionImpl {
   readonly #detail;
   readonly #get: () => UserMemoryStore;
   readonly #retrieve;

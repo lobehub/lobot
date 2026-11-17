@@ -6,7 +6,7 @@ import { chatPortalSelectors } from '@/store/chat/selectors';
 import { PortalViewType } from '@/store/chat/slices/portal/initialState';
 
 /** Portal views a Channel shows beside its feed: a linked report, or a page in the side browser. */
-export const isChannelPortalView = (viewType: PortalViewType | null) =>
+const isChannelPortalView = (viewType: PortalViewType | null) =>
   isAcceptancePortalView(viewType) || viewType === PortalViewType.Browser;
 
 /** Each Channel browses in its own retained page, apart from every agent topic's. */

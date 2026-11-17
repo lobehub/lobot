@@ -178,7 +178,7 @@ export interface ListFilesState {
  * never reach the DB). Same shape as the hetero
  * `HeterogeneousToolResultImage` post-upload.
  */
-export interface ToolResultImage {
+interface ToolResultImage {
   /** File record id in the file store. */
   fileId?: string;
   /** MIME type, e.g. `image/png`. */

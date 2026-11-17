@@ -1,4 +1,4 @@
-export interface ParsedQwenModelId {
+interface ParsedQwenModelId {
   family: string;
   majorVersion?: number;
   minorVersion?: number;

@@ -161,6 +161,6 @@ const groqChatModels: AIChatModelCard[] = [
   },
 ];
 
-export const allModels = [...groqChatModels];
+const allModels = [...groqChatModels];
 
 export default allModels;
