@@ -58,6 +58,8 @@ class ChannelService {
     (await lambdaClient.channel.userCandidates.query({ channelId, search })).data;
   addAgent = (channelId: string, agent: ChannelAgentSelection) =>
     lambdaClient.channel.addAgent.mutate({ agent, channelId });
+  removeMember = (channelId: string, memberId: string) =>
+    lambdaClient.channel.removeMember.mutate({ channelId, memberId });
   create = (input: {
     agents: ChannelAgentSelection[];
     projectId?: string;

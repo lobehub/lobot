@@ -108,6 +108,15 @@ export default {
   'deleteThreadForbidden': 'Only the channel owner or an administrator can move threads to trash.',
   'deleteThreadSuccess': 'Thread moved to trash',
   'deletedMember': 'Former member',
+  'member.remove': 'Remove from channel',
+  'member.removeConfirmTitle': 'Remove {{name}} from the channel?',
+  'member.removeConfirmPerson':
+    'They will no longer see this channel unless an admin invites them again.',
+  'member.removeConfirmAgent':
+    'Its replies in progress here will stop. It stays in the project and can be invited again later.',
+  'member.removeConfirmAgentStandalone':
+    'Its replies in progress here will stop. It can be invited again later.',
+  'member.removeFailed': "Couldn't remove {{name}}. Try again.",
   'members.agents': 'Agents · {{count}}',
   'memberActionsNamed': 'Actions for {{name}}',
   'membersTitle': 'Members',
