@@ -6,7 +6,6 @@ import {
   type ProcessRow,
   type ProcessSnapshot,
   processTree,
-  ResourceAlerts,
 } from './state';
 
 vi.mock('@/services/electron/devtools', () => ({ electronDevtoolsService: {} }));
@@ -49,21 +48,6 @@ describe('background resources', () => {
       severity: 'warning',
     });
     expect(activities[1].topicId).toBeUndefined();
-  });
-  it('deduplicates sustained warnings, escalates immediately and rearms after recovery', () => {
-    const alerts = new ResourceAlerts();
-    const activities = groupActivities(snapshot);
-    expect(alerts.update(activities)).toEqual([]);
-    expect(alerts.update(activities)).toEqual([]);
-    expect(alerts.update(activities)).toHaveLength(1);
-    expect(alerts.update(activities)).toEqual([]);
-    activities[0].severity = 'critical';
-    expect(alerts.update(activities)).toHaveLength(1);
-    expect(alerts.update(activities)).toEqual([]);
-    activities[0].severity = 'normal';
-    for (let i = 0; i < 3; i++) alerts.update(activities);
-    activities[0].severity = 'critical';
-    expect(alerts.update(activities)).toHaveLength(1);
   });
   it('orders processes depth-first under their parent and survives pid cycles', () => {
     const row = (pid: number, ppid: number) =>

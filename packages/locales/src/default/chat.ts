@@ -26,13 +26,10 @@ export default {
   'sharePage.app.fallback.download': 'Get the app',
   'sharePage.app.fallback.title': 'App didn’t open?',
 
-  'backgroundActivity.alertDesc': '{{name}} is using {{memory}} of memory and {{cpu}} CPU.',
   'backgroundActivity.cpu': 'CPU',
-  'backgroundActivity.details': 'View details',
   'backgroundActivity.empty': 'No background activity',
   'backgroundActivity.emptyDesc':
     'Dev servers, shells, and agents started from conversations appear here while they run.',
-  'backgroundActivity.highUsage': 'High resource usage',
   'backgroundActivity.memory': 'Memory',
   'backgroundActivity.processCount_one': '{{count}} process',
   'backgroundActivity.processCount_other': '{{count}} processes',
