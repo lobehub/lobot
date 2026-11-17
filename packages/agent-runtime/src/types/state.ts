@@ -1,18 +1,4 @@
 import type {
-  ActivatedStepSkill,
-  ActivatedStepTool,
-  AgentGroupConfig,
-  BotPlatformContext,
-  DiscordContext,
-  EvalContext,
-  OperationSkillSet,
-  OperationToolSet,
-  ProjectInstructionFile,
-  ToolExecutor,
-  ToolSource,
-  UserMemoryConfig,
-} from '@lobechat/context-engine';
-import type {
   AgentRunInitRequest,
   AgentShareVisitorContext,
   AgentSignalOperationMarker,
@@ -31,6 +17,20 @@ import type {
   UserInterventionConfig,
 } from '@lobechat/types';
 
+import type {
+  ActivatedStepSkill,
+  ActivatedStepTool,
+  AgentGroupConfig,
+  BotPlatformContext,
+  DiscordContext,
+  EvalContext,
+  OperationSkillSet,
+  OperationToolSet,
+  ProjectInstructionFile,
+  ToolExecutor,
+  ToolSource,
+  UserMemoryConfig,
+} from './context';
 import type { AgentInstructionRequestHumanApprove, AgentRuntimeContext } from './instruction';
 import type { Cost, CostLimit, Usage } from './usage';
 

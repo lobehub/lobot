@@ -68,7 +68,6 @@ git submodules.
 │   ├── agent-tracing/        # Tracing / snapshots
 │   ├── builtin-tool-*/       # Per-tool packages (calculator, web-browsing, claude-code, ...)
 │   ├── builtin-tools/        # Central registries that compose builtin-tool-*
-│   ├── context-engine/
 │   ├── database/             # src/{models,schemas,repositories}
 │   ├── model-bank/           # Model definitions & provider cards
 │   ├── model-runtime/        # src/{core,providers}

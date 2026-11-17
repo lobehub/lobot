@@ -1,4 +1,3 @@
-import type { OnboardingUserInfo } from '@lobechat/context-engine';
 import { type MarkdownPatchHunk } from '@lobechat/markdown-patch';
 import type {
   ConfirmOnboardingUnderstandingInput,
@@ -11,6 +10,7 @@ import type {
 import { type PartialDeep } from 'type-fest';
 
 import { lambdaClient } from '@/libs/trpc/client';
+import type { OnboardingUserInfo } from '@/types/agentContext';
 import {
   type SaveUserQuestionInput,
   type SSOProvider,

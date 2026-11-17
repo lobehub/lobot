@@ -1,11 +1,11 @@
 import { CUSTOM_FOLDER_FILE_TYPE, WEB_DOCUMENT_SOURCE_TYPE } from '@lobechat/const';
+
+import type { AgentDocumentContextPayload } from '@/database/models/agentDocuments';
 import {
   AGENT_DOCUMENT_INJECTION_POSITIONS,
   type AgentContextDocument,
   type AgentDocumentInjectionPosition,
-} from '@lobechat/context-engine/agent-document';
-
-import type { AgentDocumentContextPayload } from '@/database/models/agentDocuments';
+} from '@/types/agentContext';
 
 const VALID_DOCUMENT_POSITIONS = new Set<AgentDocumentInjectionPosition>(
   AGENT_DOCUMENT_INJECTION_POSITIONS,
@@ -23,9 +23,9 @@ export const normalizeAgentDocumentPosition = (
 
 /**
  * Map a database `AgentDocumentWithRules` row into the `AgentContextDocument`
- * shape consumed by the context-engine providers.
+ * shape the agent prompt builders consume.
  *
- * Lives in the app layer (not in `@lobechat/database` nor `@lobechat/context-engine`)
+ * Lives in the app layer (not in `@lobechat/database`)
  * because it bridges two independent packages — adding a field here propagates
  * to every caller (client SWR fetch, server agent runtime) at once. Two
  * hand-rolled copies of this map previously diverged when `sourceType` was

@@ -1,6 +1,5 @@
 import { DEFAULT_PROVIDER } from '@lobechat/business-const';
 import { DEFAULT_MODEL, DEFAUTT_AGENT_TTS_CONFIG, isDesktop } from '@lobechat/const';
-import { type AgentBuilderContext } from '@lobechat/context-engine';
 import {
   type AgentMode,
   getActivePluginIds,
@@ -12,6 +11,7 @@ import {
 
 import { resolveTargetDeviceId } from '@/helpers/agentWorkingDirectory';
 import { globalAgentContextManager } from '@/helpers/GlobalAgentContextManager';
+import { type AgentBuilderContext } from '@/types/agentContext';
 
 import { type AgentStoreState } from '../initialState';
 import { agentSelectors } from './selectors';

@@ -1,9 +1,9 @@
-import type { AgentContextDocument } from '@lobechat/context-engine';
 import type { PartialDeep } from 'type-fest';
 
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 import { type AvailableAgentItem } from '@/services/agent';
 import { type AgentItem } from '@/types/agent';
+import type { AgentContextDocument } from '@/types/agentContext';
 import { type MetaData } from '@/types/meta';
 
 import { readAllLocalAgentWorkingDirectories } from '../../utils/localAgentWorkingDirectoryStorage';

@@ -172,7 +172,6 @@
     "@lobechat/chat-adapter-imessage": "workspace:*",
     "@lobechat/config": "workspace:*",
     "@lobechat/const": "workspace:*",
-    "@lobechat/context-engine": "workspace:*",
     "@lobechat/conversation-flow": "workspace:*",
     "@lobechat/database": "workspace:*",
     "@lobechat/desktop-bridge": "workspace:*",

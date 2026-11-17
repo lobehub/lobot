@@ -1,6 +1,5 @@
-import type { ResolvedToolSet } from '@lobechat/context-engine';
-
 import type { AgentState, CallLLMPayload } from '../types';
+import type { ResolvedToolSet } from '../types/context';
 
 /**
  * Inputs for building the final prompt sent to the model.

@@ -1,8 +1,8 @@
 import type { DocumentLoadFormat, DocumentLoadRule } from '@lobechat/agent-templates';
-import { type AgentContextDocument } from '@lobechat/context-engine';
 
 import { lambdaClient } from '@/libs/trpc/client';
 import { invalidateDocumentMutation } from '@/services/document/invalidation';
+import { type AgentContextDocument } from '@/types/agentContext';
 import { toAgentContextDocuments } from '@/utils/agentDocumentContextMapping';
 
 const revalidateAgentDocuments = async (agentId: string) => {

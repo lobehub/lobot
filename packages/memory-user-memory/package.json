@@ -14,7 +14,6 @@
     "test:coverage": "vitest --coverage --silent='passed-only'"
   },
   "dependencies": {
-    "@lobechat/context-engine": "workspace:*",
     "@lobechat/model-runtime": "workspace:*",
     "@lobechat/prompts": "workspace:*",
     "@lobechat/types": "workspace:*",

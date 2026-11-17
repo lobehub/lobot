@@ -1,5 +1,4 @@
 import { isDesktop, randomAgentName } from '@lobechat/const';
-import { type AgentContextDocument } from '@lobechat/context-engine';
 import { getHeterogeneousTypeLabel } from '@lobechat/heterogeneous-agents';
 import {
   applyWorkingDirByDevicePatch,
@@ -43,6 +42,7 @@ import type {
   LobeAgentConfig,
   RuntimeEnvConfig,
 } from '@/types/agent';
+import { type AgentContextDocument } from '@/types/agentContext';
 import { merge } from '@/utils/merge';
 
 import type { AgentStore } from '../../store';
