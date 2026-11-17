@@ -77,7 +77,8 @@ export const styles = stylex.create({
     overflowY: 'auto',
     flex: '1',
     minHeight: 0,
-    paddingBlockStart: 8,
+    // Room for the first message's toolbar, which floats above its row.
+    paddingBlockStart: 16,
     paddingBlockEnd: 24,
   },
   /**
@@ -93,6 +94,11 @@ export const styles = stylex.create({
       default: 'transparent',
       [HOVER]: { 'default': 'transparent', ':hover': cssVar.colorFillQuaternary },
     },
+  },
+  /** Someone mentioned you: a pale yellow row with a gold bar down its left edge. */
+  mentionedMessage: {
+    backgroundColor: cssVar.colorWarningBg,
+    boxShadow: `inset 3px 0 0 ${cssVar.colorWarning}`,
   },
   highlightedMessage: { backgroundColor: cssVar.colorInfoBg },
   /** A message still on its way shows faded instead of carrying a status line. */
@@ -163,7 +169,7 @@ export const styles = stylex.create({
   },
   // Clear of the avatar column, so every bubble from one person lines up.
   bubbleColumnOther: { alignItems: 'flex-start', paddingInlineStart: 36 },
-  // Clear of the hover toolbar on the left, and short enough to read as yours at a glance.
+  // Short enough to read as yours at a glance.
   bubbleColumnOwn: { alignItems: 'flex-end', marginInlineStart: 'auto', paddingInlineStart: 48 },
   bubbleColumnEditing: { flexGrow: 1 },
   bubbleAuthor: {
@@ -249,9 +255,13 @@ export const styles = stylex.create({
       },
     },
   },
+  /**
+   * Pinned to the row's top right for every message, yours included, and lifted over the
+   * row's top edge so it never covers a bubble, like Slack's.
+   */
   messageToolbar: {
     position: 'absolute',
-    insetBlockStart: 6,
+    insetBlockStart: -14,
     insetInlineEnd: 16,
     zIndex: 1,
     display: 'flex',
@@ -280,8 +290,6 @@ export const styles = stylex.create({
       },
     },
   },
-  /** Your bubble sits on the right, so its toolbar floats on the left instead. */
-  messageToolbarOwn: { insetInlineEnd: 'auto', insetInlineStart: 16 },
   /** Inline system line in the timeline, such as who joined. */
   event: {
     paddingBlock: 8,

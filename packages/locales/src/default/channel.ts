@@ -148,8 +148,11 @@ export default {
   'startThread': 'Start thread',
   'openThread': 'Open thread',
   'openThreadPage': 'Open as page',
-  'threadCard.messages_one': '{{count}} message',
-  'threadCard.messages_other': '{{count}} messages',
+  /** Before "3 minutes ago" on a thread's line under its root message. */
+  'threadCard.lastReply': 'Last reply',
+  'threadCard.replies_one': '{{count}} reply',
+  'threadCard.replies_other': '{{count}} replies',
+  'threadCard.view': 'View thread',
   'closeThread': 'Close thread',
   'thread': 'Thread',
   'threadList': 'Threads',

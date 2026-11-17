@@ -320,7 +320,7 @@ describe('ChannelMessage thread card', () => {
       threads: [{ followerMemberIds: [], id: 'cht_1', rootMessageId: root.id, ...thread }],
     }) as unknown as ChannelDetail;
 
-  it('shows the thread title, reply count and latest reply, and opens the thread', () => {
+  it('shows the reply count and when the last reply came, and opens the thread', () => {
     const onOpenThread = vi.fn();
     render(
       <ChannelMessage
@@ -338,16 +338,13 @@ describe('ChannelMessage thread card', () => {
       />,
     );
 
-    expect(screen.getByText('Topic header is unclickable')).toBeTruthy();
-    expect(screen.getByText('threadCard.messages')).toBeTruthy();
-    // The sidebar's thread glyph, not a branch, leads the title row only.
-    const card = screen.getByRole('button', { name: /Topic header is unclickable/ });
-    const [titleRow, replyRow] = card.children;
-    expect(titleRow.firstElementChild?.querySelector('.lucide-corner-down-right')).not.toBeNull();
-    expect(replyRow.querySelector('.lucide-corner-down-right')).toBeNull();
-    expect(card.querySelector('.lucide-git-branch')).toBeNull();
-    expect(screen.getByText('Nasa')).toBeTruthy();
-    expect(screen.getByText('PR is up')).toBeTruthy();
+    // One line: the title moves to the hover tooltip, the reply text stays in the thread.
+    const entry = screen.getByRole('button', { name: 'Topic header is unclickable' });
+    expect(entry.title).toBe('Topic header is unclickable');
+    expect(entry.textContent).toContain('threadCard.replies');
+    expect(entry.textContent).toContain('threadCard.lastReply');
+    expect(entry.textContent).toContain('threadCard.view');
+    expect(screen.queryByText('PR is up')).toBeNull();
 
     fireEvent.click(screen.getByRole('button', { name: /Topic header is unclickable/ }));
     expect(onOpenThread).toHaveBeenCalledWith('cht_1');
@@ -383,7 +380,9 @@ describe('ChannelMessage thread card', () => {
     );
 
     expect(screen.getByRole('status').textContent).toContain('activity.one');
-    expect(screen.queryByText('Earlier answer')).toBeNull();
+    expect(screen.getByRole('button', { name: 'thread' }).textContent).not.toContain(
+      'threadCard.lastReply',
+    );
   });
 
   it('keeps the latest reply when the work is in another thread', () => {
@@ -416,7 +415,9 @@ describe('ChannelMessage thread card', () => {
     );
 
     expect(screen.queryByRole('status')).toBeNull();
-    expect(screen.getByText('Earlier answer')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'thread' }).textContent).toContain(
+      'threadCard.lastReply',
+    );
   });
 
   it('shows the viewer’s own latest reply with their live avatar', () => {
@@ -438,7 +439,20 @@ describe('ChannelMessage thread card', () => {
     expect(screen.getByText('me')).toBeTruthy();
   });
 
-  it('names the card after the title an Agent gave the thread', () => {
+  it('shows the faces of who follows the thread', () => {
+    render(
+      <ChannelMessage
+        detail={withThread({ followerMemberIds: ['mem_ann', 'mem_gone'], replyCount: 1 })}
+        message={root}
+      />,
+    );
+
+    expect(
+      screen.getByRole('button', { name: 'thread' }).querySelector('[title="Ann"]'),
+    ).not.toBeNull();
+  });
+
+  it('names the line after the title an Agent gave the thread', () => {
     render(
       <ChannelMessage
         detail={withThread({ replyCount: 1, title: 'Header click fix' })}
@@ -446,19 +460,14 @@ describe('ChannelMessage thread card', () => {
       />,
     );
 
-    expect(screen.getByText('Header click fix')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Header click fix' })).toBeTruthy();
   });
 
   it('still offers the thread when a cached view has no summary', () => {
     render(<ChannelMessage detail={withThread({})} message={root} />);
 
-    expect(screen.getByText('thread')).toBeTruthy();
-    expect(screen.getByText('openThread')).toBeTruthy();
-    // A cached view without a reply row still shows the glyph in front of the title.
-    expect(
-      screen.getByRole('button', { name: /openThread/ }).querySelector('.lucide-corner-down-right'),
-    ).not.toBeNull();
-    expect(screen.queryByText('threadCard.messages')).toBeNull();
+    expect(screen.getByRole('button', { name: 'thread' }).textContent).toContain('openThread');
+    expect(screen.queryByText('threadCard.replies')).toBeNull();
   });
 });
 

@@ -36,7 +36,7 @@ import { channelActions } from '@/store/channel';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
-import { authorAvatar, isCurrentUserAuthor, memberName } from './memberName';
+import { authorAvatar, isCurrentUserAuthor, isCurrentUserMember, memberName } from './memberName';
 import { MemberProfilePopup } from './MemberProfilePopup';
 import { CHANNEL_MENTION_TAG, remarkChannelMentions } from './mentionMarkdown';
 import { MessageAttachments } from './MessageAttachments';
@@ -151,6 +151,16 @@ export const ChannelMessage = ({
   const isOwnMessage = useUserStore((s) =>
     isCurrentUserAuthor(message.author, userProfileSelectors.userId(s)),
   );
+  // Someone else's message that @-mentions you stands out in the feed, the way Slack marks it.
+  const mentionsMe = useUserStore((s) => {
+    const userId = userProfileSelectors.userId(s);
+    return (
+      !isCurrentUserAuthor(message.author, userId) &&
+      detail.members.some(
+        (member) => message.mentions.includes(member.id) && isCurrentUserMember(member, userId),
+      )
+    );
+  });
   // Inside a thread, its root and replies link nowhere else.
   const thread =
     !threadId && !isRoot && detail.threads.find((entry) => entry.rootMessageId === message.id);
@@ -322,7 +332,7 @@ export const ChannelMessage = ({
   );
   const toolbar = hasToolbar && (
     // Icon-only, like a chat app's hover toolbar; rarer actions sit behind "more".
-    <div {...stylex.props(styles.messageToolbar, isOwnMessage && styles.messageToolbarOwn)}>
+    <div {...stylex.props(styles.messageToolbar)}>
       {onReply && (
         <ActionIcon
           aria-label={t('reply.action')}
@@ -386,6 +396,7 @@ export const ChannelMessage = ({
           styles.messageRow,
           styles.bubbleRow,
           compact && styles.bubbleRowCompact,
+          mentionsMe && styles.mentionedMessage,
           highlighted && styles.highlightedMessage,
           pending && styles.pendingMessage,
           stylex.defaultMarker(),
@@ -447,6 +458,7 @@ export const ChannelMessage = ({
       {...stylex.props(
         styles.messageRow,
         compact && hasToolbar && styles.continuationWithAction,
+        mentionsMe && styles.mentionedMessage,
         highlighted && styles.highlightedMessage,
         pending && styles.pendingMessage,
         stylex.defaultMarker(),
