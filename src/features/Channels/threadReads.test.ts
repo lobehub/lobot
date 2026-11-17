@@ -6,6 +6,7 @@ import { cacheScope } from '@/libs/replica';
 import {
   markThreadRead,
   useHasUnreadThreadMention,
+  useMentionedThreadIds,
   useThreadReadStore,
   useUnreadThreadIds,
 } from './threadReads';
@@ -94,5 +95,27 @@ describe('useHasUnreadThreadMention', () => {
   it('is false without Thread mentions', () => {
     const { result } = renderHook(() => useHasUnreadThreadMention(undefined));
     expect(result.current).toBe(false);
+  });
+});
+
+describe('useMentionedThreadIds', () => {
+  beforeEach(() => {
+    vi.spyOn(cacheScope, 'get').mockReturnValue('personal');
+    vi.spyOn(cacheScope, 'use').mockReturnValue('personal');
+    useThreadReadStore.setState({ readAt: {}, since: at('2026-11-10T00:00:00Z').getTime() });
+  });
+  afterEach(() => vi.restoreAllMocks());
+
+  it('lists the Threads whose mention came after what was read there', () => {
+    const mentions = [
+      { createdAt: at('2026-11-18T00:37:00Z'), threadId: 'thr_a' },
+      { createdAt: at('2026-11-18T00:40:00Z'), threadId: 'thr_b' },
+      { createdAt: at('2026-11-01T00:00:00Z'), threadId: 'thr_old' },
+    ];
+    const { result } = renderHook(() => useMentionedThreadIds(mentions));
+    expect([...result.current]).toEqual(['thr_a', 'thr_b']);
+
+    act(() => markThreadRead('thr_a', '2026-11-18T01:00:00Z'));
+    expect([...result.current]).toEqual(['thr_b']);
   });
 });

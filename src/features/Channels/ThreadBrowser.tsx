@@ -9,11 +9,12 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCloseOnNavigate } from '@/hooks/useCloseOnNavigate';
+import { channelSelectors, useChannelStore } from '@/store/channel';
 import { markdownToTxt } from '@/utils/markdownToTxt';
 
 import { MemberAvatar } from './MemberAvatar';
 import { authorAvatar } from './memberName';
-import { useUnreadThreadIds } from './threadReads';
+import { useMentionedThreadIds, useUnreadThreadIds } from './threadReads';
 import { threadTitle } from './threadTitle';
 
 dayjs.extend(relativeTime);
@@ -131,6 +132,23 @@ const styles = stylex.create({
     fontWeight: 600,
     color: cssVar.colorText,
   },
+  // Discord's mention pill: someone @mentioned the person in this thread since they last looked.
+  mention: {
+    display: 'inline-flex',
+    flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 18,
+    height: 16,
+    marginInlineStart: 'auto',
+    paddingInline: 4,
+    borderRadius: 8,
+    fontSize: 11,
+    fontWeight: 700,
+    lineHeight: 1,
+    color: cssVar.colorTextLightSolid,
+    backgroundColor: cssVar.colorError,
+  },
   dot: {
     display: 'inline-block',
     flexShrink: 0,
@@ -198,6 +216,7 @@ const lastActive = (thread: ChannelPublicThread) =>
 export interface BrowsedThread {
   active: boolean;
   archived: boolean;
+  mentioned: boolean;
   preview?: string;
   thread: ChannelPublicThread;
   title: string;
@@ -213,11 +232,13 @@ export const browseThreads = (
   {
     activeId,
     fallbackTitle,
+    mentionedIds = new Set(),
     query,
     unreadIds,
   }: {
     activeId: string | null;
     fallbackTitle: (index: number) => string;
+    mentionedIds?: Set<string>;
     query: string;
     unreadIds: Set<string>;
   },
@@ -239,7 +260,8 @@ export const browseThreads = (
       // The open thread is being read, and an archived one takes no new replies, so neither
       // counts as unread.
       const unread = !active && !archived && unreadIds.has(thread.id);
-      return { active, archived, preview, thread, title, unread };
+      const mentioned = !active && !archived && mentionedIds.has(thread.id);
+      return { active, archived, mentioned, preview, thread, title, unread };
     })
     .filter(
       ({ preview, title }) =>
@@ -263,7 +285,9 @@ const ThreadCard = ({
   onOpen: () => void;
 }) => {
   const { t } = useTranslation('channel');
-  const { active, archived, preview, thread, title, unread } = entry;
+  const { active, archived, mentioned, preview, thread, title, unread } = entry;
+  // A mention is unread news even when the reply after it was read elsewhere.
+  const bright = unread || mentioned;
   const faces = thread.followerMemberIds
     .map((id) => detail.members.find((member) => member.id === id && member.status === 'active'))
     .filter((member) => !!member)
@@ -278,12 +302,17 @@ const ThreadCard = ({
     >
       <span {...stylex.props(styles.body)}>
         <span {...stylex.props(styles.titleRow)}>
-          {unread && (
+          {bright && (
             <span aria-label={t('threadUnread')} role="img" {...stylex.props(styles.dot)} />
           )}
-          <span title={title} {...stylex.props(styles.title, unread && styles.unreadTitle)}>
+          <span title={title} {...stylex.props(styles.title, bright && styles.unreadTitle)}>
             {title}
           </span>
+          {mentioned && (
+            <span aria-label={t('threadMentioned')} role="img" {...stylex.props(styles.mention)}>
+              @
+            </span>
+          )}
         </span>
         {lastReply && (
           <span {...stylex.props(styles.reply)}>
@@ -333,9 +362,13 @@ export const ThreadBrowser = ({
   const { t } = useTranslation('channel');
   const [query, setQuery] = useState('');
   const unreadIds = useUnreadThreadIds(detail.threads);
+  const mentionedIds = useMentionedThreadIds(
+    useChannelStore(channelSelectors.listed(detail.channel.id))?.threadMentions,
+  );
   const entries = browseThreads(detail, {
     activeId,
     fallbackTitle: (index) => `${t('thread')} ${index + 1}`,
+    mentionedIds,
     query,
     unreadIds,
   });
@@ -411,10 +444,15 @@ export const ThreadsButton = ({
   const [open, setOpen] = useState(false);
   const popoverKey = useCloseOnNavigate(open, () => setOpen(false));
   const unreadIds = useUnreadThreadIds(detail.threads);
+  const mentionedIds = useMentionedThreadIds(
+    useChannelStore(channelSelectors.listed(detail.channel.id))?.threadMentions,
+  );
   if (!detail.threads.length) return null;
   const unread = detail.threads.filter(
     (thread) =>
-      thread.status !== 'archived' && thread.id !== activeId && unreadIds.has(thread.id),
+      thread.status !== 'archived' &&
+      thread.id !== activeId &&
+      (unreadIds.has(thread.id) || mentionedIds.has(thread.id)),
   ).length;
   const label = unread ? t('threadListUnread', { count: unread }) : t('threadList');
   return (

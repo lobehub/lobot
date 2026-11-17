@@ -11,10 +11,10 @@ import AgentAvatar from '@/components/AgentAvatar';
 import UserAvatar from '@/features/User/UserAvatar';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
+import { markdownToTxt } from '@/utils/markdownToTxt';
 
 import { activityLabel } from './activityLabel';
 import { memberJobStatus, workingJob } from './jobStatus';
-import { MemberAvatar } from './MemberAvatar';
 import { authorAvatar, isCurrentUserAuthor, memberAvatar, memberName } from './memberName';
 import { threadTitle } from './threadTitle';
 import { TypingDots } from './TypingDots';
@@ -22,8 +22,8 @@ import { TypingDots } from './TypingDots';
 dayjs.extend(relativeTime);
 
 const HOVER = '@media (hover: hover)';
-/** Faces enough to say who is in it; the count says how much. */
-const MAX_FACES = 3;
+
+const oneLine = (text: string) => text.replaceAll(/\s+/g, ' ').trim();
 
 const styles = stylex.create({
   entry: {
@@ -80,75 +80,69 @@ const styles = stylex.create({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
+  /** "N replies ›" right after the title: how much was said, and that the row opens it. */
+  count: {
+    display: 'inline-flex',
+    flexShrink: 0,
+    gap: 2,
+    alignItems: 'center',
+    fontSize: 12,
+    fontWeight: 600,
+    color: cssVar.colorLink,
+    whiteSpace: 'nowrap',
+  },
+  /** The latest word in the thread, under the title like Discord's thread card. */
   line: {
     display: 'flex',
     gap: 6,
     alignItems: 'center',
     minWidth: 0,
-    height: 24,
-    // Past the arrow column (16px glyph + 6px gap), so the faces line up with the title.
+    height: 22,
+    // Past the arrow column (16px glyph + 6px gap), so the avatar lines up with the title.
     paddingInlineStart: 22,
+    fontSize: 12,
+    color: cssVar.colorTextTertiary,
   },
-  faces: {
-    display: 'inline-flex',
+  author: {
     flexShrink: 0,
-    gap: 2,
-    alignItems: 'center',
-  },
-  count: {
-    flexShrink: 0,
+    maxWidth: 160,
+    overflow: 'hidden',
     fontWeight: 600,
-    color: cssVar.colorLink,
+    color: cssVar.colorTextSecondary,
+    textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
-  note: {
+  preview: {
+    overflow: 'hidden',
+    minWidth: 0,
+    color: cssVar.colorTextSecondary,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  working: {
     overflow: 'hidden',
     display: 'inline-flex',
     gap: 6,
     alignItems: 'center',
     minWidth: 0,
-    fontSize: 12,
-    color: cssVar.colorTextTertiary,
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
+    color: cssVar.colorTextSecondary,
   },
-  working: { color: cssVar.colorTextSecondary },
-  // An archived thread steps back: a quieter title, a grey count, fainter faces.
-  archivedTitle: { color: cssVar.colorTextSecondary },
-  archivedCount: { fontWeight: 500, color: cssVar.colorTextTertiary },
-  archivedFaces: { opacity: 0.5 },
-  noteText: {
+  workingText: {
     overflow: 'hidden',
     minWidth: 0,
     textOverflow: 'ellipsis',
-  },
-  // ChatItem hides every `time` inside a message until hover; this one is content, not a stamp.
-  time: { opacity: 1 },
-  /** "View thread ›" at the far end, shown only while the line is hovered. */
-  go: {
-    display: 'inline-flex',
-    flexShrink: 0,
-    gap: 2,
-    alignItems: 'center',
-    marginInlineStart: 'auto',
-    paddingInlineStart: 8,
-    fontSize: 12,
-    color: cssVar.colorTextSecondary,
     whiteSpace: 'nowrap',
-    opacity: {
-      default: 1,
-      [HOVER]: {
-        default: 0,
-        [stylex.when.ancestor(':hover')]: 1,
-        [stylex.when.ancestor(':focus-visible')]: 1,
-      },
-    },
   },
+  // An archived thread steps back: a quieter title and a grey count.
+  archivedTitle: { color: cssVar.colorTextSecondary },
+  archivedCount: { fontWeight: 500, color: cssVar.colorTextTertiary },
+  // ChatItem hides every `time` inside a message until hover; this one is content, not a stamp.
+  time: { flexShrink: 0, whiteSpace: 'nowrap', opacity: 1 },
 });
 
 /**
- * A message's thread under it: its title, then one line with who is in it, how many replies,
- * and when the last came, or that an Agent is working in it right now.
+ * A message's thread under it, the way Discord shows one: its title and reply count, then the
+ * latest reply with who wrote it and when, or the Agent working in it right now.
  */
 export const ThreadPreviewCard = ({
   detail,
@@ -167,16 +161,13 @@ export const ThreadPreviewCard = ({
   const job = workingJob((detail.jobs ?? []).filter((entry) => entry.threadId === thread.id));
   const worker = job && members.find((member) => member.id === job.memberId);
   const workerName = job && memberName(worker, t('unnamedAgent'));
-  const faces = thread.followerMemberIds
-    .map((id) => members.find((member) => member.id === id))
-    .filter((member) => !!member)
-    .slice(0, MAX_FACES);
   // Same rule as the message header: the viewer's own replies use their live avatar.
   const isOwnReply = useUserStore(
     (s) => !!lastReply && isCurrentUserAuthor(lastReply.author, userProfileSelectors.userId(s)),
   );
   const title = threadTitle(root, thread) ?? t('thread');
   const archived = thread.status === 'archived';
+  const preview = lastReply && oneLine(markdownToTxt(lastReply.content));
   return (
     <button type="button" {...stylex.props(styles.entry)} onClick={onOpen}>
       <span {...stylex.props(styles.head)}>
@@ -185,30 +176,16 @@ export const ThreadPreviewCard = ({
           <Icon icon={CornerDownRight} size={14} />
         </span>
         <span {...stylex.props(styles.title, archived && styles.archivedTitle)}>{title}</span>
-      </span>
-      <span {...stylex.props(styles.line)}>
-        <span {...stylex.props(styles.faces, archived && styles.archivedFaces)}>
-          {faces.length > 0
-            ? faces.map((member) => <MemberAvatar key={member.id} member={member} size={20} />)
-            : lastReply &&
-              (isOwnReply ? (
-                <UserAvatar shape="circle" size={20} />
-              ) : (
-                <Avatar
-                  avatar={authorAvatar(lastReply.author)}
-                  shape="circle"
-                  size={20}
-                  title={lastReply.author.name ?? undefined}
-                />
-              ))}
-        </span>
         <span {...stylex.props(styles.count, archived && styles.archivedCount)}>
           {/* Views cached before thread summaries existed only know that the thread exists. */}
           {replyCount ? t('threadCard.replies', { count: replyCount }) : t('openThread')}
+          <Icon icon={ChevronRight} size={12} />
         </span>
-        {job ? (
-          // The reply on its way is newer than the last one posted, so it takes that place.
-          <span role="status" {...stylex.props(styles.note, styles.working)}>
+      </span>
+      {job ? (
+        // The reply on its way is newer than the last one posted, so it takes that place.
+        <span {...stylex.props(styles.line)}>
+          <span role="status" {...stylex.props(styles.working)}>
             {/* Who is replying, then the same typing dots as everywhere else an Agent works. */}
             <AgentAvatar
               agentId={worker?.agentId}
@@ -218,33 +195,50 @@ export const ThreadPreviewCard = ({
               size={16}
               title={workerName}
             />
-            <span {...stylex.props(styles.noteText)}>
+            <span {...stylex.props(styles.workingText)}>
               {activityLabel(
                 t('activity.one', { name: workerName, status: t(memberJobStatus(job)) }),
               )}
             </span>
             <TypingDots />
           </span>
-        ) : (
-          lastReply && (
-            <span {...stylex.props(styles.note)}>
-              <span {...stylex.props(styles.noteText)}>
-                {t('threadCard.lastReply')}{' '}
-                <time
-                  dateTime={new Date(lastReply.createdAt).toISOString()}
-                  {...stylex.props(styles.time)}
-                >
-                  {dayjs(lastReply.createdAt).fromNow()}
-                </time>
-              </span>
-            </span>
-          )
-        )}
-        <span {...stylex.props(styles.go)}>
-          {t('threadCard.view')}
-          <Icon icon={ChevronRight} size={12} />
         </span>
-      </span>
+      ) : (
+        lastReply && (
+          <span {...stylex.props(styles.line)}>
+            {isOwnReply ? (
+              <UserAvatar shape="circle" size={16} />
+            ) : lastReply.author.type === 'agent' ? (
+              // Without an image of its own, an Agent draws the character generated from its id,
+              // so the card shows the face the thread shows.
+              <AgentAvatar
+                agentId={lastReply.author.id}
+                avatar={lastReply.author.avatar}
+                name={lastReply.author.name}
+                shape="circle"
+                size={16}
+              />
+            ) : (
+              <Avatar
+                avatar={authorAvatar(lastReply.author)}
+                shape="circle"
+                size={16}
+                title={lastReply.author.name ?? undefined}
+              />
+            )}
+            <span {...stylex.props(styles.author)}>
+              {lastReply.author.name || t('deletedMember')}
+            </span>
+            <span {...stylex.props(styles.preview)}>{preview || t('reply.attachment')}</span>
+            <time
+              dateTime={new Date(lastReply.createdAt).toISOString()}
+              {...stylex.props(styles.time)}
+            >
+              {dayjs(lastReply.createdAt).fromNow()}
+            </time>
+          </span>
+        )
+      )}
     </button>
   );
 };

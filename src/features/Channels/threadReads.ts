@@ -88,3 +88,20 @@ export const useHasUnreadThreadMention = (mentions: ChannelThreadMention[] | und
       ),
   );
 };
+
+/** Ids of the Threads whose newest @mention of the person came after what they last saw there. */
+export const useMentionedThreadIds = (
+  mentions: ChannelThreadMention[] | undefined,
+): Set<string> => {
+  const scope = cacheScope.use();
+  const state = useThreadReadStore();
+  return new Set(
+    (mentions ?? [])
+      .filter(
+        ({ createdAt, threadId }) =>
+          (toTime(createdAt) ?? 0) >
+          Math.max(state.since, state.readAt[scopedKey(scope, threadId)] ?? 0),
+      )
+      .map(({ threadId }) => threadId),
+  );
+};

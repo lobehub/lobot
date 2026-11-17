@@ -320,7 +320,7 @@ describe('ChannelMessage thread card', () => {
       threads: [{ followerMemberIds: [], id: 'cht_1', rootMessageId: root.id, ...thread }],
     }) as unknown as ChannelDetail;
 
-  it('shows the reply count and when the last reply came, and opens the thread', () => {
+  it('shows the title and reply count, then the latest reply, and opens the thread', () => {
     const onOpenThread = vi.fn();
     render(
       <ChannelMessage
@@ -338,13 +338,12 @@ describe('ChannelMessage thread card', () => {
       />,
     );
 
-    // The title on top, then one line; the reply text itself stays in the thread.
+    // Like Discord: the title and count on top, then who said what last, on one line.
     const entry = screen.getByRole('button', { name: /^Topic header is unclickable/ });
-    expect(entry.firstElementChild?.textContent).toBe('Topic header is unclickable');
-    expect(entry.textContent).toContain('threadCard.replies');
-    expect(entry.textContent).toContain('threadCard.lastReply');
-    expect(entry.textContent).toContain('threadCard.view');
-    expect(screen.queryByText('PR is up')).toBeNull();
+    expect(entry.firstElementChild?.textContent).toContain('Topic header is unclickable');
+    expect(entry.firstElementChild?.textContent).toContain('threadCard.replies');
+    expect(entry.lastElementChild?.textContent).toContain('Nasa');
+    expect(screen.getByText('PR is up second line')).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: /Topic header is unclickable/ }));
     expect(onOpenThread).toHaveBeenCalledWith('cht_1');
@@ -380,9 +379,7 @@ describe('ChannelMessage thread card', () => {
     );
 
     expect(screen.getByRole('status').textContent).toContain('activity.one');
-    expect(screen.getByRole('button', { name: /^thread/ }).textContent).not.toContain(
-      'threadCard.lastReply',
-    );
+    expect(screen.queryByText('Earlier answer')).toBeNull();
   });
 
   it('keeps the latest reply when the work is in another thread', () => {
@@ -415,9 +412,7 @@ describe('ChannelMessage thread card', () => {
     );
 
     expect(screen.queryByRole('status')).toBeNull();
-    expect(screen.getByRole('button', { name: /^thread/ }).textContent).toContain(
-      'threadCard.lastReply',
-    );
+    expect(screen.getByText('Earlier answer')).toBeTruthy();
   });
 
   it('shows the viewer’s own latest reply with their live avatar', () => {
@@ -437,19 +432,6 @@ describe('ChannelMessage thread card', () => {
     );
 
     expect(screen.getByText('me')).toBeTruthy();
-  });
-
-  it('shows the faces of who follows the thread', () => {
-    render(
-      <ChannelMessage
-        detail={withThread({ followerMemberIds: ['mem_ann', 'mem_gone'], replyCount: 1 })}
-        message={root}
-      />,
-    );
-
-    expect(
-      screen.getByRole('button', { name: /^thread/ }).querySelector('[title="Ann"]'),
-    ).not.toBeNull();
   });
 
   it('names the line after the title an Agent gave the thread', () => {

@@ -5,6 +5,8 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { useChannelStore } from '@/store/channel';
+
 import { browseThreads, ThreadBrowser, ThreadsButton } from './ThreadBrowser';
 import { useThreadReadStore } from './threadReads';
 
@@ -38,6 +40,7 @@ const replied = (iso: string, content = '') => ({
 });
 
 const detail = {
+  channel: { id: 'chn_1' },
   members: [{ actorType: 'agent', id: 'mem_cook', status: 'active' }],
   messages: [{ content: 'Unify Channel members', id: 'msg_1' }],
   threads: [
@@ -60,16 +63,23 @@ const detail = {
   ],
 } as never;
 
-const browse = (query = '', activeId: string | null = null, unread: string[] = []) =>
+const browse = (
+  query = '',
+  activeId: string | null = null,
+  unread: string[] = [],
+  mentioned: string[] = [],
+) =>
   browseThreads(detail, {
     activeId,
     fallbackTitle: (index) => `thread ${index + 1}`,
+    mentionedIds: new Set(mentioned),
     query,
     unreadIds: new Set(unread),
   });
 
 beforeEach(() => {
   useThreadReadStore.setState({ readAt: {}, since: 0 });
+  useChannelStore.setState({ listMap: {} } as never);
 });
 
 describe('browseThreads', () => {
@@ -91,6 +101,16 @@ describe('browseThreads', () => {
     expect(browse('nothing like it')).toEqual([]);
   });
 
+  it('marks a thread that @mentioned the person, but not the open or an archived one', () => {
+    const entries = browse('', 'thr_1', [], ['thr_1', 'thr_2', 'thr_3']);
+
+    expect(entries.map(({ mentioned, thread }) => [thread.id, mentioned])).toEqual([
+      ['thr_2', true],
+      ['thr_1', false],
+      ['thr_3', false],
+    ]);
+  });
+
   it('never marks the open thread unread', () => {
     const entries = browse('', 'thr_1', ['thr_1', 'thr_2']);
 
@@ -109,6 +129,22 @@ describe('ThreadBrowser', () => {
     expect(screen.getByText('threadBrowser.count:3')).toBeTruthy();
     expect(screen.getByText('Release fixed')).toBeTruthy();
     expect(screen.getAllByRole('img', { name: 'threadUnread' })).toHaveLength(2);
+  });
+
+  it('puts an @ pill on a thread whose mention of the person is unseen', () => {
+    useChannelStore.setState({
+      listMap: {
+        all: [
+          {
+            id: 'chn_1',
+            threadMentions: [{ createdAt: new Date('2026-11-18T10:00:00Z'), threadId: 'thr_1' }],
+          },
+        ],
+      },
+    } as never);
+    render(createElement(ThreadBrowser, { activeId: null, detail, onOpen: vi.fn() }));
+
+    expect(screen.getAllByRole('img', { name: 'threadMentioned' })).toHaveLength(1);
   });
 
   it('groups archived threads at the bottom', () => {
@@ -147,7 +183,7 @@ describe('ThreadsButton', () => {
     render(
       createElement(ThreadsButton, {
         activeId: null,
-        detail: { members: [], messages: [], threads: [] } as never,
+        detail: { channel: { id: 'chn_2' }, members: [], messages: [], threads: [] } as never,
         onOpen: vi.fn(),
       }),
     );
