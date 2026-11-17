@@ -2,7 +2,11 @@ import type { ChannelListItem } from '@lobechat/types';
 import { type DropdownItem } from '@lobehub/ui';
 import { useCallback } from 'react';
 
-import { directAvatarState, replyAvatarState } from '@/features/Channels/jobStatus';
+import {
+  directAvatarState,
+  replyAvatarState,
+  workingConversationCount,
+} from '@/features/Channels/jobStatus';
 import { useChannelMenu } from '@/features/Channels/useChannelMenu';
 import { channelSelectors, useChannelStore } from '@/store/channel';
 
@@ -35,10 +39,19 @@ export const useDirectChannelRow = (channel: ChannelListItem | undefined, active
       : undefined;
     return detail ? directAvatarState(detail) : replyAvatarState(channel.replyJobs ?? []);
   });
+  // Conversations (the main one and its Threads) the Agent is working in at once, from the same
+  // source as the state: two or more read "Working on N things" instead of "Working".
+  const workingCount = useChannelStore((s) => {
+    if (!channel) return 0;
+    const detail = active
+      ? channelSelectors.detail({ channelId: channel.id, threadId: null })(s)
+      : undefined;
+    return workingConversationCount(detail ? (detail.jobs ?? []) : (channel.replyJobs ?? []));
+  });
   const channelActions = useCallback(
     () => (channel ? conversationActions(channelMenu(channel)) : []),
     [channel, channelMenu],
   );
 
-  return { channelActions, replyState };
+  return { channelActions, replyState, workingCount };
 };

@@ -40,7 +40,7 @@ const InboxConversation = memo<{
   const { onClick, url } = useInboxConversationLink();
   const title = agentDisplayName(meta, DEFAULT_INBOX_TITLE);
   const active = !!activeRouteId && (activeRouteId === routeId || activeRouteId === inboxAgentId);
-  const { channelActions, replyState } = useDirectChannelRow(channel, active);
+  const { channelActions, replyState, workingCount } = useDirectChannelRow(channel, active);
   const avatarState = replyState ?? (running ? 'working' : undefined);
   const activity = replyActivity(avatarState);
 
@@ -48,6 +48,7 @@ const InboxConversation = memo<{
     <ConversationRow
       closeOnReselect
       active={active}
+      activity={activity}
       hideKey={'inbox'}
       previewThread={channelPreviewThread(channel)}
       title={title}
@@ -68,7 +69,7 @@ const InboxConversation = memo<{
       activeAt={activeAt}
       // Its direct Channel is the only thing this row acts on: pin it, or free an archived one.
       contextMenuItems={channel ? channelActions : undefined}
-      activity={activity}
+      activityCount={workingCount}
       // Same preview and time as every other Agent row; its tagline when it has nothing yet.
       preview={conversationPreview(meta.description, topic, channel) ?? t('inbox.desc')}
     />

@@ -8,7 +8,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { DirectAgentRole } from './DirectAgentRole';
 
 vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({
+    t: (key: string, options?: { count?: number }) =>
+      options?.count === undefined ? key : `${key}:${options.count}`,
+  }),
 }));
 vi.mock('@/store/agent', () => ({
   useAgentStore: (selector: (s: unknown) => unknown) =>
@@ -45,5 +48,17 @@ describe('DirectAgentRole', () => {
 
     expect(screen.getByRole('status').textContent).toContain('status.working');
     expect(screen.queryByText('Coordinator')).toBeNull();
+  });
+
+  it('says how many conversations the Agent works in at once', () => {
+    render(<DirectAgentRole agentId="agt_1" count={3} job={running} />);
+
+    expect(screen.getByRole('status').textContent).toContain('activity.parallel:3');
+  });
+
+  it('keeps the plain status while it works in one', () => {
+    render(<DirectAgentRole agentId="agt_1" count={1} job={running} />);
+
+    expect(screen.getByRole('status').textContent).toContain('status.working');
   });
 });

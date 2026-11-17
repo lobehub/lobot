@@ -13,6 +13,7 @@ import {
   replyActivityJobs,
   replyAvatarState,
   unresolvedFailures,
+  workingConversationCount,
   workingJob,
 } from './jobStatus';
 
@@ -216,7 +217,10 @@ describe('directAvatarState', () => {
 
   it('stays idle once the conversation settles', () => {
     expect(directAvatarState(detail([job({ status: 'completed' })]))).toBeUndefined();
-    expect(directAvatarState(detail([job({ threadId: 'thr_1' })]))).toBeUndefined();
+  });
+
+  it('works while the Agent replies in one of the conversation’s Threads', () => {
+    expect(directAvatarState(detail([job({ threadId: 'thr_1' })]))).toBe('working');
   });
 });
 
@@ -235,6 +239,15 @@ describe('replyAvatarState', () => {
 
   it('prefers the running reply over a queued one of the same Agent', () => {
     expect(replyAvatarState([job({ id: 'next', status: 'queued' }), job()])).toBe('working');
+  });
+
+  it('works when one reply runs while another, in a Thread, is blocked', () => {
+    expect(
+      replyAvatarState([
+        job({ blockedCode: 'device_offline', id: 'blocked', status: 'queued' }),
+        job({ id: 'thread', threadId: 'thr_1' }),
+      ]),
+    ).toBe('working');
   });
 
   it('ignores settled replies and stays idle without any', () => {
@@ -321,5 +334,42 @@ describe('isDeviceFailure', () => {
     expect(isDeviceFailure({ errorType: 'DeviceGatewayNotConfigured', status: 'queued' })).toBe(
       false,
     );
+  });
+});
+
+describe('workingConversationCount', () => {
+  const job = (patch: Partial<ChannelPublicJob> = {}) =>
+    ({
+      blockedCode: null,
+      id: 'job_1',
+      memberId: 'mem_cook',
+      publicationRevoked: false,
+      status: 'running',
+      threadId: null,
+      writerHeld: true,
+      ...patch,
+    }) as ChannelPublicJob;
+
+  it('counts the main conversation and each Thread with a reply at work once', () => {
+    expect(
+      workingConversationCount([
+        job(),
+        job({ id: 'a', threadId: 'thr_1' }),
+        job({ id: 'b', status: 'queued', threadId: 'thr_1' }),
+        job({ id: 'c', status: 'queued', threadId: 'thr_2' }),
+      ]),
+    ).toBe(3);
+  });
+
+  it('leaves out blocked, stopping, deferred and settled replies', () => {
+    expect(
+      workingConversationCount([
+        job({ blockedCode: 'device_offline', status: 'queued', threadId: 'thr_1' }),
+        job({ publicationRevoked: true, status: 'cancelled', threadId: 'thr_2' }),
+        job({ blockedCode: 'awaiting_primary', status: 'queued', threadId: 'thr_3' }),
+        job({ status: 'completed', threadId: 'thr_4' }),
+      ]),
+    ).toBe(0);
+    expect(workingConversationCount([])).toBe(0);
   });
 });

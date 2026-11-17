@@ -11,8 +11,12 @@ const navigate = vi.fn();
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, values?: Record<string, string>) =>
-      values ? `${key}(${values.title}|${values.content})` : key,
+    t: (key: string, values?: Record<string, string | number>) =>
+      values?.count !== undefined
+        ? `${key}(${values.count})`
+        : values
+          ? `${key}(${values.title}|${values.content})`
+          : key,
   }),
 }));
 vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
@@ -138,5 +142,21 @@ describe('ConversationRow', () => {
     );
 
     expect(screen.getByRole('status')).toHaveTextContent('status.working');
+  });
+
+  it('says how many things the Agent works on at once', () => {
+    render(
+      createElement(ConversationRow, {
+        activity: 'working',
+        activityCount: 2,
+        avatar: null,
+        preview: 'last message',
+        title: 'Cook',
+        url: '/channels/chn_cook',
+      }),
+    );
+
+    expect(screen.getByRole('status')).toHaveTextContent('activity.parallel(2)');
+    expect(screen.queryByText('last message')).toBeNull();
   });
 });

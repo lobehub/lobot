@@ -32,7 +32,10 @@ const AgentConversation = memo<AgentConversationProps>(({ active, conversation }
   const chatRunning = useChatStore(operationSelectors.isAgentVisiblyRunning(id));
   const agentUrl = usePreservedAgentUrl(id);
   const { onClick, url } = useAgentConversationLink(id, agentUrl);
-  const { channelActions, replyState } = useDirectChannelRow(conversation.channel, active);
+  const { channelActions, replyState, workingCount } = useDirectChannelRow(
+    conversation.channel,
+    active,
+  );
   const avatarState = replyState ?? (chatRunning ? 'working' : undefined);
   // Only the direct Channel's own reply shows on the preview: a run in one of the Agent's other topics
   // only animates the avatar. A blocked reply keeps the preview; its avatar shows it waiting.
@@ -81,6 +84,7 @@ const AgentConversation = memo<AgentConversationProps>(({ active, conversation }
       active={active}
       activeAt={activeAt}
       activity={activity}
+      activityCount={workingCount}
       contextMenuItems={menuItems}
       hideKey={id}
       preview={preview}

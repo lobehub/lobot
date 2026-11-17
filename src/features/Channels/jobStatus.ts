@@ -102,26 +102,39 @@ export const hasReplyActivity = (detail: ChannelDetail, threadId: string | null)
 };
 
 /**
- * How a direct conversation's Agent avatar acts out its pending replies: `working` while it
- * writes, `thinking` while a message is routed or the reply is prepared, `waiting` when blocked
- * or stopping. Undefined when nothing is pending, so the avatar stays idle.
+ * How a direct conversation's Agent avatar acts out its pending replies, in the main conversation
+ * and its Threads alike: `working` while any of them writes, `thinking` while a message is routed
+ * or a reply is prepared, `waiting` when every pending one is blocked or stopping. Undefined when
+ * nothing is pending, so the avatar stays idle.
  */
 export const replyAvatarState = (
   jobs: ChannelReplyJob[],
   receiving = false,
 ): AgentAvatarState | undefined => {
   const pending = replyActivityJobs(jobs);
-  const job = pending[0] && memberCurrentJob(pending, pending[0].memberId);
-  if (!job) return receiving ? 'thinking' : undefined;
-  if (channelJobTone(job) !== 'working') return 'waiting';
-  return job.status === 'running' ? 'working' : 'thinking';
+  if (pending.some((job) => isChannelJobActive(job) && job.status === 'running')) return 'working';
+  if (receiving || pending.some((job) => channelJobTone(job) === 'working')) return 'thinking';
+  return pending.length > 0 ? 'waiting' : undefined;
 };
 
-/** The avatar state of a loaded direct conversation; see `replyAvatarState`. */
-export const directAvatarState = (detail: ChannelDetail) => {
-  const { jobs, receiving } = conversationReplies(detail, null);
-  return replyAvatarState(jobs, receiving);
-};
+/** The avatar state of a loaded direct conversation, Threads included; see `replyAvatarState`. */
+export const directAvatarState = (detail: ChannelDetail) =>
+  replyAvatarState(
+    detail.jobs ?? [],
+    (detail.messages ?? []).some((message) => message.routingStatus === 'pending'),
+  );
+
+/**
+ * How many conversations an Agent is working in at once: the main one and each Thread with a
+ * reply running or about to, counted once however many replies it holds. Blocked, stopping and
+ * deferred replies do not count.
+ */
+export const workingConversationCount = (jobs: ChannelReplyJob[]) =>
+  new Set(
+    replyActivityJobs(jobs)
+      .filter((job) => channelJobTone(job) === 'working')
+      .map((job) => job.threadId ?? null),
+  ).size;
 
 /**
  * The reply a member (or, without one, the first replying member) is visibly working on: running

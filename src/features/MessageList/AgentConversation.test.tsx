@@ -58,10 +58,14 @@ vi.mock('./useAgentConversationLink', () => ({
   useAgentConversationLink: (_: string, url: string) => ({ url }),
 }));
 vi.mock('./ConversationRow', () => ({
-  default: ({ activity, avatar, contextMenuItems, title }: any) =>
+  default: ({ activity, activityCount, avatar, contextMenuItems, title }: any) =>
     createElement(
       'div',
-      { 'data-activity': activity ?? 'none', 'data-testid': 'row' },
+      {
+        'data-activity': activity ?? 'none',
+        'data-activity-count': activityCount ?? 0,
+        'data-testid': 'row',
+      },
       title,
       avatar as never,
       createElement(
@@ -210,6 +214,43 @@ describe('AgentConversation reply activity', () => {
 
     expect(screen.getByTestId('agent-avatar')).toHaveAttribute('data-state', 'working');
     expect(screen.getByTestId('row')).toHaveAttribute('data-activity', 'working');
+  });
+
+  // The header said "working" while the row kept its last message: the Agent was replying in
+  // two Threads and the row only read the main conversation.
+  it('works and counts conversations while the Agent replies in Threads', () => {
+    const running = (id: string, threadId: string) => ({
+      blockedCode: null,
+      id,
+      memberId: 'mem_cook',
+      publicationRevoked: false,
+      status: 'running',
+      threadId,
+      writerHeld: true,
+    });
+    showReply({ status: 'completed' });
+    render(
+      createElement(AgentConversation, {
+        active: false,
+        conversation: conversation(undefined, {
+          replyJobs: [running('job_a', 'thr_a'), running('job_b', 'thr_b')],
+        } as never),
+      }),
+    );
+
+    expect(screen.getByTestId('agent-avatar')).toHaveAttribute('data-state', 'working');
+    expect(screen.getByTestId('row')).toHaveAttribute('data-activity', 'working');
+    expect(screen.getByTestId('row')).toHaveAttribute('data-activity-count', '2');
+  });
+
+  it('reads an open row’s Thread replies from its loaded view', () => {
+    showReply({ status: 'running', threadId: 'thr_a' });
+    render(
+      createElement(AgentConversation, { active: true, conversation: conversation(undefined, {}) }),
+    );
+
+    expect(screen.getByTestId('row')).toHaveAttribute('data-activity', 'working');
+    expect(screen.getByTestId('row')).toHaveAttribute('data-activity-count', '1');
   });
 
   // The row said typing while the Channel was idle: the Agent was running in its other topics.

@@ -24,7 +24,7 @@ import { ChannelConversation } from './ChannelConversation';
 import { ChannelEmpty } from './ChannelEmpty';
 import { ChannelSyncing } from './ChannelSyncing';
 import { DirectAgentRole } from './DirectAgentRole';
-import { workingJob } from './jobStatus';
+import { workingConversationCount, workingJob } from './jobStatus';
 import { MEMBER_FLOAT_BREAKPOINT, MemberPanel } from './MemberPanel';
 import { MemberStatus } from './MemberStatus';
 import { openTopic } from './openTopic';
@@ -64,12 +64,19 @@ function EnabledChannelPage() {
   const directAgent = detail?.channel.agentId
     ? detail.members.find((member) => member.agentId === detail.channel.agentId)
     : undefined;
-  // The open conversation's jobs cover its threads too; the list row only knows the main one.
+  // The open conversation's jobs and a direct Channel's list row both cover its Threads too.
   const directWorkingJob = isDirect
     ? detail
       ? workingJob(detail.jobs, directAgent?.id)
       : workingJob(listItem?.replyJobs ?? [])
     : undefined;
+  const directWorkingCount = isDirect
+    ? workingConversationCount(
+        detail
+          ? detail.jobs.filter((job) => !directAgent || job.memberId === directAgent.id)
+          : (listItem?.replyJobs ?? []),
+      )
+    : 0;
   const [topic, setTopic] = useState<(ReplyTopic & { channelId: string }) | null>(null);
   const portalOpen = usePortalPanelOpen();
   const clearPortalStack = useChatStore((s) => s.clearPortalStack);
@@ -122,7 +129,13 @@ function EnabledChannelPage() {
                   {t('sharedAgent.tag')}
                 </Text>
               )}
-              {directAgentId && <DirectAgentRole agentId={directAgentId} job={directWorkingJob} />}
+              {directAgentId && (
+                <DirectAgentRole
+                  agentId={directAgentId}
+                  count={directWorkingCount}
+                  job={directWorkingJob}
+                />
+              )}
               {detail?.channel.status === 'archived' && <Tag size="small">{t('archived')}</Tag>}
               <ChannelSyncing failed={!!sync.error} params={view} />
             </Flexbox>

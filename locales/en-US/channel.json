@@ -2,6 +2,7 @@
   "actionFailed": "Something went wrong. Try again.",
   "activity.many": "{{count}} members are working…",
   "activity.one": "{{name}} · {{status}}",
+  "activity.parallel": "Working on {{count}} things…",
   "activity.two": "{{names}} are working…",
   "activity.typing": "typing…",
   "agents": "Agents",

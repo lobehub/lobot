@@ -221,6 +221,7 @@ export default {
   'blockedDevice.online': 'Connected · starting shortly',
   'activity.many': '{{count}} members are working…',
   'activity.one': '{{name}} · {{status}}',
+  'activity.parallel': 'Working on {{count}} things…',
   'activity.two': '{{names}} are working…',
   'activity.typing': 'typing…',
   'message.copy': 'Copy text',

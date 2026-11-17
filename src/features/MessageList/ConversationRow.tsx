@@ -28,6 +28,11 @@ interface ConversationRowProps {
    * uses, "typing" while the reply is prepared and "working" once it runs.
    */
   activity?: ConversationActivity;
+  /**
+   * How many conversations the reply runs in at once (an Agent's main one and its Threads); two
+   * or more say "Working on N things" instead.
+   */
+  activityCount?: number;
   avatar: ReactNode;
   /**
    * Clicking the open conversation again closes it, back to the Messages home with no row
@@ -111,6 +116,7 @@ const ConversationRow = memo<ConversationRowProps>(
     tag,
     title,
     activity,
+    activityCount = 0,
     unread,
     url,
   }) => {
@@ -163,7 +169,11 @@ const ConversationRow = memo<ConversationRowProps>(
               {mentioned && <span {...stylex.props(styles.mentioned)}>{t('mentionedYou')}</span>}
               {activity ? (
                 <span role="status" {...stylex.props(styles.preview, styles.typing)}>
-                  {activityLabel(t(activity === 'working' ? 'status.working' : 'activity.typing'))}
+                  {activityLabel(
+                    activityCount > 1
+                      ? t('activity.parallel', { count: activityCount })
+                      : t(activity === 'working' ? 'status.working' : 'activity.typing'),
+                  )}
                   <TypingDots />
                 </span>
               ) : (
