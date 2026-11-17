@@ -4,7 +4,7 @@ import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, CornerDownRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
@@ -57,7 +57,21 @@ const styles = stylex.create({
     },
     cursor: 'pointer',
   },
-  /** What the thread is about, above its reply line. */
+  /** The ↳ glyph, then what the thread is about, above its reply line. */
+  head: {
+    display: 'flex',
+    gap: 6,
+    alignItems: 'center',
+    minWidth: 0,
+  },
+  arrow: {
+    display: 'inline-flex',
+    flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 16,
+    color: cssVar.colorTextSecondary,
+  },
   title: {
     overflow: 'hidden',
     minWidth: 0,
@@ -72,6 +86,8 @@ const styles = stylex.create({
     alignItems: 'center',
     minWidth: 0,
     height: 24,
+    // Past the arrow column (16px glyph + 6px gap), so the faces line up with the title.
+    paddingInlineStart: 22,
   },
   faces: {
     display: 'inline-flex',
@@ -158,7 +174,13 @@ export const ThreadPreviewCard = ({
   const title = threadTitle(root, thread) ?? t('thread');
   return (
     <button type="button" {...stylex.props(styles.entry)} onClick={onOpen}>
-      <span {...stylex.props(styles.title)}>{title}</span>
+      <span {...stylex.props(styles.head)}>
+        {/* The sidebar's thread glyph: this continues the message above. */}
+        <span {...stylex.props(styles.arrow)}>
+          <Icon icon={CornerDownRight} size={14} />
+        </span>
+        <span {...stylex.props(styles.title)}>{title}</span>
+      </span>
       <span {...stylex.props(styles.line)}>
         <span {...stylex.props(styles.faces)}>
           {faces.length > 0
