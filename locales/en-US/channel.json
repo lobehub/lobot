@@ -342,5 +342,12 @@
   "unarchiveThreadSuccess": "Thread unarchived",
   "unmuteNotifications": "Unmute notifications",
   "unnamedAgent": "Unnamed Agent",
-  "unreadMentions": "Unread mentions: {{count}}"
+  "unreadMentions": "Unread mentions: {{count}}",
+  "welcome.addMembers": "Add members",
+  "welcome.direct": "This is the beginning of your conversation with {{name}}.",
+  "welcome.editChannel": "Edit channel",
+  "welcome.greet": "Say hi to {{name}}",
+  "welcome.greeting": "Hi 👋",
+  "welcome.group": "This is the start of the #{{name}} channel.",
+  "welcome.groupTitle": "Welcome to #{{name}}!"
 }

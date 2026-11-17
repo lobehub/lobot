@@ -342,5 +342,12 @@
   "unarchiveThreadSuccess": "线程已取消归档",
   "unmuteNotifications": "取消免打扰",
   "unnamedAgent": "未命名 Agent",
-  "unreadMentions": "{{count}} 条未读提及"
+  "unreadMentions": "{{count}} 条未读提及",
+  "welcome.addMembers": "添加成员",
+  "welcome.direct": "这是你和 {{name}} 对话的开头。",
+  "welcome.editChannel": "编辑频道",
+  "welcome.greet": "向 {{name}} 打招呼",
+  "welcome.greeting": "你好 👋",
+  "welcome.group": "这是 #{{name}} 频道的起点。",
+  "welcome.groupTitle": "欢迎来到 #{{name}}！"
 }

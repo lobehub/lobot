@@ -1,7 +1,6 @@
 import type { ChannelPublicMessage } from '@lobechat/types';
-import { Button, Empty, Flexbox } from '@lobehub/ui';
+import { Button, Flexbox } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
-import { MessageSquare } from 'lucide-react';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,6 +19,7 @@ import { userProfileSelectors } from '@/store/user/selectors';
 import { ArchivedNotice } from './ArchivedNotice';
 import { showsListedShell, visibleChannelDetail } from './channelAccess';
 import { ChannelMessage, ThreadRootMessage } from './ChannelMessage';
+import { ChannelWelcome } from './ChannelWelcome';
 import { useAfterCleared } from './clearedChannels';
 import { Composer } from './Composer';
 import { hasReplyActivity } from './jobStatus';
@@ -182,7 +182,6 @@ const Timeline = ({
             {detail ? (
               <Flexbox
                 aria-label={t(threadId ? 'thread' : 'main')}
-                justify={!threadId && !timeline.length ? 'center' : undefined}
                 ref={feedRef}
                 onScroll={(event) => {
                   const feed = event.currentTarget;
@@ -225,13 +224,32 @@ const Timeline = ({
                       }
                     />
                   )}
-                  {/* A new one-to-one conversation starts blank, like an IM chat. */}
-                  {!timeline.length &&
-                    (threadId ? (
-                      <p {...stylex.props(styles.muted)}>{t('threadEmpty')}</p>
-                    ) : oneToOne ? null : (
-                      <Empty icon={MessageSquare} title={t('conversationEmpty')} />
-                    ))}
+                  {/* The welcome heads the whole history, so it shows only above its first page. */}
+                  {!threadId && !detail.hasMore && before === undefined && (
+                    <ChannelWelcome
+                      detail={detail}
+                      onGreet={
+                        channelArchived
+                          ? undefined
+                          : (content) => {
+                              followLatest.current = true;
+                              followSent(
+                                channelActions.queueSend({
+                                  attachments: [],
+                                  channelId,
+                                  content,
+                                  fileIds: [],
+                                  mentions: [],
+                                  threadId,
+                                }),
+                              );
+                            }
+                      }
+                    />
+                  )}
+                  {threadId && !timeline.length && (
+                    <p {...stylex.props(styles.muted)}>{t('threadEmpty')}</p>
+                  )}
                   {presentChannelTimeline(timeline).map(
                     ({ item, date, startsDay, continuation }) => (
                       <Fragment key={item.kind === 'event' ? item.event.id : item.message.id}>
