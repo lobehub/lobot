@@ -27,8 +27,9 @@ import { useMessageSearch } from './SearchContext';
 const CREATE_ICON_SIZE = { blockSize: 32, size: 20, strokeWidth: 1.5 };
 
 /**
- * A WeChat-style "+" menu row: a large line icon and roomier text than a dense action menu.
- * The menu's own icon slot is fixed at 14px, so the icon rides in the label instead.
+ * A WeChat-style "+" menu row: a line icon a step larger than a dense action menu's, at body
+ * text size, so the menu stays small beside the list. The menu's own icon slot is fixed at
+ * 14px, so the icon rides in the label instead.
  */
 const createRow = (item: DropdownItem, icon: IconProps['icon'], label?: string): DropdownItem =>
   item && item.type !== 'group' && item.type !== 'divider'
@@ -36,9 +37,9 @@ const createRow = (item: DropdownItem, icon: IconProps['icon'], label?: string):
         ...item,
         icon: undefined,
         label: (
-          <Flexbox horizontal align={'center'} gap={12} paddingBlock={4}>
-            <Icon icon={icon} size={20} />
-            <span style={{ fontSize: 15 }}>{label ?? ('label' in item ? item.label : null)}</span>
+          <Flexbox horizontal align={'center'} gap={10}>
+            <Icon icon={icon} size={18} />
+            <span style={{ fontSize: 14 }}>{label ?? ('label' in item ? item.label : null)}</span>
           </Flexbox>
         ),
       }
@@ -117,7 +118,7 @@ const Header = memo(() => {
       <DropdownMenu
         items={createItems}
         placement={'bottomRight'}
-        popupProps={{ style: { minWidth: 168, padding: 6 } }}
+        popupProps={{ style: { minWidth: 136, padding: 4 } }}
       >
         <ActionIcon
           icon={CirclePlusIcon}
