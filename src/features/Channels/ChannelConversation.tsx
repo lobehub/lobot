@@ -10,6 +10,7 @@ import AsyncError from '@/components/AsyncError';
 import { ChannelConversationSkeleton } from '@/components/Skeleton/Channel';
 import { delayed } from '@/components/Skeleton/Delayed';
 import { createStore, Provider } from '@/features/Conversation/store';
+import { directCounterpart } from '@/features/MessageList/conversations';
 import WideScreenContainer from '@/features/WideScreenContainer';
 import { cacheScope } from '@/libs/replica';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
@@ -17,7 +18,7 @@ import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
 import { ArchivedNotice } from './ArchivedNotice';
-import { visibleChannelDetail } from './channelAccess';
+import { showsListedShell, visibleChannelDetail } from './channelAccess';
 import { ChannelMessage, ThreadRootMessage } from './ChannelMessage';
 import { useAfterCleared } from './clearedChannels';
 import { Composer } from './Composer';
@@ -82,6 +83,11 @@ const Timeline = ({
         : visible,
     [kept, visible],
   );
+  const listed = useChannelStore(channelSelectors.listed(channelId));
+  const shell = showsListedShell({ before, error: sync.error, loaded: !!detail, threadId })
+    ? listed
+    : undefined;
+  const channel = detail?.channel ?? shell;
   const scope = cacheScope.use();
   useEffect(() => channelActions.restoreOutbox(scope), [scope]);
   const userId = useUserStore(userProfileSelectors.userId);
@@ -136,8 +142,8 @@ const Timeline = ({
   const activeMembers = detail?.members.filter((member) => member.status === 'active') ?? [];
   const thread = threadId ? detail?.threads.find((entry) => entry.id === threadId) : undefined;
   const selectReply = (message: ChannelPublicMessage) => reply.select(message);
-  const channelArchived = detail?.channel.status === 'archived';
-  const oneToOne = !!(detail?.channel.agentId || detail?.channel.peerUserId);
+  const channelArchived = channel?.status === 'archived';
+  const oneToOne = !!(channel?.agentId || channel?.peerUserId);
   const timeline = detail
     ? channelTimeline(
         outgoing.length
@@ -155,139 +161,153 @@ const Timeline = ({
       {...stylex.props(styles.body)}
     >
       <AsyncBoundary
-        data={detail}
+        data={detail ?? shell}
         error={sync.error}
         errorVariant="page"
-        isLoading={!detail && !sync.error}
+        isLoading={!detail && !shell && !sync.error}
         // Delayed so a fast fetch (switching Channels, opening a thread) paints no placeholder;
         // right after the route skeleton it hands over immediately.
         loading={delayed(<ChannelConversationSkeleton />)}
         onRetry={() => void channelActions.refreshDetail(params)}
       >
-        {detail && (
+        {channel && (
           <>
-            {!!sync.error && (
+            {!!detail && !!sync.error && (
               <AsyncError
                 error={sync.error}
                 variant="inline"
                 onRetry={() => void channelActions.refreshDetail(params)}
               />
             )}
-            <Flexbox
-              aria-label={t(threadId ? 'thread' : 'main')}
-              justify={!threadId && !timeline.length ? 'center' : undefined}
-              ref={feedRef}
-              onScroll={(event) => {
-                const feed = event.currentTarget;
-                followLatest.current = feed.scrollHeight - feed.scrollTop - feed.clientHeight < 64;
-              }}
-              {...stylex.props(styles.feed)}
-            >
-              <WideScreenContainer fullWidth paddingInline={16}>
-                {(detail.hasMore || before !== undefined) && (
-                  <Flexbox horizontal align="center" gap={8} justify="center" paddingBlock={8}>
-                    <Button
-                      disabled={!detail.hasMore}
-                      size="small"
-                      onClick={() => setBefore(detail.messages[0]?.sequence)}
-                    >
-                      {t('olderMessages')}
-                    </Button>
-                    {before !== undefined && (
+            {detail ? (
+              <Flexbox
+                aria-label={t(threadId ? 'thread' : 'main')}
+                justify={!threadId && !timeline.length ? 'center' : undefined}
+                ref={feedRef}
+                onScroll={(event) => {
+                  const feed = event.currentTarget;
+                  followLatest.current =
+                    feed.scrollHeight - feed.scrollTop - feed.clientHeight < 64;
+                }}
+                {...stylex.props(styles.feed)}
+              >
+                <WideScreenContainer fullWidth paddingInline={16}>
+                  {(detail.hasMore || before !== undefined) && (
+                    <Flexbox horizontal align="center" gap={8} justify="center" paddingBlock={8}>
                       <Button
+                        disabled={!detail.hasMore}
                         size="small"
-                        type="text"
-                        onClick={() => {
-                          followLatest.current = true;
-                          setBefore(undefined);
-                        }}
+                        onClick={() => setBefore(detail.messages[0]?.sequence)}
                       >
-                        {t('latestMessages')}
+                        {t('olderMessages')}
                       </Button>
-                    )}
-                  </Flexbox>
-                )}
-                {detail.rootMessage && (
-                  <ThreadRootMessage
-                    detail={detail}
-                    highlighted={highlighted === detail.rootMessage.id}
-                    root={detail.rootMessage}
-                    onReply={
-                      channelArchived || thread?.status === 'archived' ? undefined : selectReply
-                    }
-                  />
-                )}
-                {/* A new one-to-one conversation starts blank, like an IM chat. */}
-                {!timeline.length &&
-                  (threadId ? (
-                    <p {...stylex.props(styles.muted)}>{t('threadEmpty')}</p>
-                  ) : oneToOne ? null : (
-                    <Empty icon={MessageSquare} title={t('conversationEmpty')} />
-                  ))}
-                {presentChannelTimeline(timeline).map(({ item, date, startsDay, continuation }) => (
-                  <Fragment key={item.kind === 'event' ? item.event.id : item.message.id}>
-                    {startsDay && (
-                      <div
-                        aria-label={timeFormats.date.format(date)}
-                        role="separator"
-                        {...stylex.props(styles.dateDivider)}
-                      >
-                        <time dateTime={date.toISOString()} title={timeFormats.date.format(date)}>
-                          {timeFormats.date.format(date)}
-                        </time>
-                      </div>
-                    )}
-                    {item.kind === 'event' ? (
-                      <JoinEventLine event={item.event} />
-                    ) : outgoingById.has(item.message.id) ? (
-                      <ChannelMessage
-                        continuation={continuation}
-                        message={item.message}
-                        pending={outgoingById.get(item.message.id)!.status === 'sending'}
-                        threadId={threadId}
-                        delivery={
-                          <OutgoingStatus
-                            message={outgoingById.get(item.message.id)!}
-                            onRetry={(failed) => followSent(channelActions.retrySend(failed))}
+                      {before !== undefined && (
+                        <Button
+                          size="small"
+                          type="text"
+                          onClick={() => {
+                            followLatest.current = true;
+                            setBefore(undefined);
+                          }}
+                        >
+                          {t('latestMessages')}
+                        </Button>
+                      )}
+                    </Flexbox>
+                  )}
+                  {detail.rootMessage && (
+                    <ThreadRootMessage
+                      detail={detail}
+                      highlighted={highlighted === detail.rootMessage.id}
+                      root={detail.rootMessage}
+                      onReply={
+                        channelArchived || thread?.status === 'archived' ? undefined : selectReply
+                      }
+                    />
+                  )}
+                  {/* A new one-to-one conversation starts blank, like an IM chat. */}
+                  {!timeline.length &&
+                    (threadId ? (
+                      <p {...stylex.props(styles.muted)}>{t('threadEmpty')}</p>
+                    ) : oneToOne ? null : (
+                      <Empty icon={MessageSquare} title={t('conversationEmpty')} />
+                    ))}
+                  {presentChannelTimeline(timeline).map(
+                    ({ item, date, startsDay, continuation }) => (
+                      <Fragment key={item.kind === 'event' ? item.event.id : item.message.id}>
+                        {startsDay && (
+                          <div
+                            aria-label={timeFormats.date.format(date)}
+                            role="separator"
+                            {...stylex.props(styles.dateDivider)}
+                          >
+                            <time
+                              dateTime={date.toISOString()}
+                              title={timeFormats.date.format(date)}
+                            >
+                              {timeFormats.date.format(date)}
+                            </time>
+                          </div>
+                        )}
+                        {item.kind === 'event' ? (
+                          <JoinEventLine event={item.event} />
+                        ) : outgoingById.has(item.message.id) ? (
+                          <ChannelMessage
+                            continuation={continuation}
+                            message={item.message}
+                            pending={outgoingById.get(item.message.id)!.status === 'sending'}
+                            threadId={threadId}
+                            delivery={
+                              <OutgoingStatus
+                                message={outgoingById.get(item.message.id)!}
+                                onRetry={(failed) => followSent(channelActions.retrySend(failed))}
+                              />
+                            }
+                            detail={{
+                              ...detail,
+                              attachments: outgoingById.get(item.message.id)!.attachments,
+                            }}
+                            onJumpToMessage={jumpToMessage}
                           />
-                        }
-                        detail={{
-                          ...detail,
-                          attachments: outgoingById.get(item.message.id)!.attachments,
-                        }}
-                        onJumpToMessage={jumpToMessage}
-                      />
-                    ) : (
-                      <ChannelMessage
-                        continuation={continuation}
-                        detail={detail}
-                        highlighted={highlighted === item.message.id}
-                        message={item.message}
-                        threadId={threadId}
-                        onJumpToMessage={jumpToMessage}
-                        onOpenThread={onOpenThread}
-                        onOpenTopic={onOpenTopic}
-                        onStartThread={channelArchived ? undefined : onStartThread}
-                        onReply={
-                          channelArchived || thread?.status === 'archived' ? undefined : selectReply
-                        }
-                      />
-                    )}
-                  </Fragment>
-                ))}
-              </WideScreenContainer>
-            </Flexbox>
+                        ) : (
+                          <ChannelMessage
+                            continuation={continuation}
+                            detail={detail}
+                            highlighted={highlighted === item.message.id}
+                            message={item.message}
+                            threadId={threadId}
+                            onJumpToMessage={jumpToMessage}
+                            onOpenThread={onOpenThread}
+                            onOpenTopic={onOpenTopic}
+                            onStartThread={channelArchived ? undefined : onStartThread}
+                            onReply={
+                              channelArchived || thread?.status === 'archived'
+                                ? undefined
+                                : selectReply
+                            }
+                          />
+                        )}
+                      </Fragment>
+                    ),
+                  )}
+                </WideScreenContainer>
+              </Flexbox>
+            ) : (
+              // Opened before its first page arrives: no placeholder, just the input, so the
+              // conversation is usable at once and fills in when it loads.
+              <Flexbox aria-label={t('main')} {...stylex.props(styles.feed)} />
+            )}
             {channelArchived || thread?.status === 'archived' ? (
-              <ArchivedNotice channel={detail.channel} threadId={threadId} />
+              <ArchivedNotice channel={channel} threadId={threadId} />
             ) : (
               <Composer
-                channel={detail.channel}
+                channel={channel}
                 draftKey={channelDraftKey(channelId, threadId)}
                 key={channelDraftKey(channelId, threadId)}
                 members={activeMembers}
                 replyTarget={reply.target}
                 activity={
-                  hasReplyActivity(detail, threadId) ? (
+                  detail && hasReplyActivity(detail, threadId) ? (
                     <ReplyActivity detail={detail} threadId={threadId} />
                   ) : null
                 }
@@ -295,7 +315,9 @@ const Timeline = ({
                   threadId
                     ? t('threadComposer')
                     : t(oneToOne ? 'directComposer' : 'composer', {
-                        name: channelTitle(detail, userId),
+                        name: detail
+                          ? channelTitle(detail, userId)
+                          : directCounterpart(channel)?.name || channel.title,
                       })
                 }
                 onCancelReply={() => reply.clear()}
