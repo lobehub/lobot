@@ -21,6 +21,9 @@ import ConversationRow from './ConversationRow';
 import { channelPreview, channelPreviewThread, directCounterpart } from './conversations';
 import { AVATAR_SIZE, styles } from './style';
 
+/** Title the server gives the Channel a project starts with. */
+const DEFAULT_CHANNEL_TITLE = 'General';
+
 interface ChannelConversationProps {
   active: boolean;
   activeAt: Date;
@@ -37,6 +40,10 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
   // A Channel grouped under a project wears that project's logo; a standalone one pictures
   // its members like a group chat, and keeps "#" until someone else joins.
   const project = useProjectStore(projectListItemSelector(channel.projectId));
+  // A project Channel goes by its project's name; one renamed from the default "General" keeps
+  // its own name as a tag, so a project's Channels stay apart.
+  const title = project?.name || channel.title;
+  const tag = project && channel.title !== DEFAULT_CHANNEL_TITLE ? channel.title : undefined;
   const members = channel.memberAvatars ?? [];
   const channelMark = (
     <span {...stylex.props(styles.channelMark)}>
@@ -93,8 +100,8 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
       mentioned={mentioned}
       preview={channelPreview(channel)}
       previewThread={channelPreviewThread(channel)}
-      tag={project?.name}
-      title={channel.title}
+      tag={tag}
+      title={title}
       unread={channel.unreadCount}
       url={CHANNEL_URL(channel.id)}
       avatar={

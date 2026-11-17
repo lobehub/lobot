@@ -70,6 +70,28 @@ describe('ChannelConversation avatar', () => {
   });
 });
 
+describe('ChannelConversation project title', () => {
+  it("names a project's General Channel after the project alone", () => {
+    store.project = { id: 'prj_1', name: 'Lobe Write' };
+    renderRow(channel({ memberAvatars: [], projectId: 'prj_1', title: 'General' }));
+    expect(screen.getByText('Lobe Write')).toBeTruthy();
+    expect(screen.queryByText('General')).toBeNull();
+  });
+
+  it('keeps a renamed project Channel apart by its own name', () => {
+    store.project = { id: 'prj_1', name: 'Lobe Write' };
+    renderRow(channel({ memberAvatars: [], projectId: 'prj_1', title: 'Launch' }));
+    expect(screen.getByText('Lobe Write')).toBeTruthy();
+    expect(screen.getByText('Launch')).toBeTruthy();
+  });
+
+  it('names a standalone Channel by its own title', () => {
+    store.project = undefined;
+    renderRow(channel({ memberAvatars: [], title: 'Marketing' }));
+    expect(screen.getByText('Marketing')).toBeTruthy();
+  });
+});
+
 describe('ChannelConversation shared Agent', () => {
   it("tags another person's Agent as shared", () => {
     store.project = undefined;
