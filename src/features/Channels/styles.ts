@@ -430,6 +430,13 @@ export const statusStyles = stylex.create({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
+  /** A muted Agent's line: a bell-off icon before why it stays quiet. */
+  memberMuted: {
+    display: 'inline-flex',
+    gap: 4,
+    alignItems: 'center',
+    color: cssVar.colorTextTertiary,
+  },
   memberAvatar: {
     position: 'relative',
     display: 'inline-flex',

@@ -1,11 +1,19 @@
 import type { ChannelDetail, ChannelPublicMember } from '@lobechat/types';
 import type { DropdownItem } from '@lobehub/ui';
-import { ActionIcon, DropdownMenu, Flexbox, Icon, Text, Tooltip } from '@lobehub/ui';
+import { ActionIcon, DropdownMenu, Flexbox, Icon, Text, toast, Tooltip } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
-import { ExternalLink, FolderCog, MoreHorizontal, UserMinus } from 'lucide-react';
+import {
+  BellOff,
+  BellRing,
+  ExternalLink,
+  FolderCog,
+  MoreHorizontal,
+  UserMinus,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
+import { channelActions } from '@/store/channel';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
@@ -93,7 +101,15 @@ export function useMemberEntries(detail: ChannelDetail) {
  * shows the state, so the line carries no icon of its own.
  */
 const MemberState = ({ entry }: { entry: MemberEntry }) => {
-  if (!entry.label) return null;
+  const { t } = useTranslation('channel');
+  // An idle muted Agent says why it stays quiet; a reply it was @mentioned into still shows.
+  if (!entry.label)
+    return entry.member.muted ? (
+      <span {...stylex.props(statusStyles.memberState, statusStyles.memberMuted)}>
+        <Icon icon={BellOff} size={12} />
+        {t('member.muted')}
+      </span>
+    ) : null;
   const state = (
     <span {...stylex.props(statusStyles.memberState)}>
       {entry.tone === 'working' ? (
@@ -128,6 +144,8 @@ interface MemberRowProps {
   channelId: string;
   entry: MemberEntry;
   manageable: boolean;
+  /** A group Channel's admin can mute its Agents; a direct conversation's Agent never is. */
+  mutable: boolean;
   onAction?: () => void;
   onRemove: () => void;
   removable: boolean;
@@ -138,6 +156,7 @@ const MemberRow = ({
   channelId,
   entry,
   manageable,
+  mutable,
   onAction,
   onRemove,
   removable,
@@ -158,6 +177,21 @@ const MemberRow = ({
         openChannelAgentEnvironment(channelId, entry.member);
       },
     });
+  if (agentId && entry.member.status === 'active' && mutable) {
+    const muted = !!entry.member.muted;
+    menuItems.push({
+      icon: <Icon icon={muted ? BellRing : BellOff} />,
+      key: 'mute',
+      label: t(muted ? 'member.unmute' : 'member.mute'),
+      onClick: () => {
+        onAction?.();
+        channelActions.setMemberMuted(channelId, entry.member.id, !muted).catch((error) => {
+          console.error('Failed to update a Channel member mute', error);
+          toast.error(t('member.muteFailed', { name: entry.name }));
+        });
+      },
+    });
+  }
   if (agentId)
     menuItems.push({
       icon: <Icon icon={ExternalLink} />,
@@ -254,6 +288,7 @@ export function MemberList({
       entry={entry}
       key={entry.member.id}
       manageable={manageable}
+      mutable={manageable && !channel.agentId}
       showDescription={showDescription}
       removable={canRemoveMember(channel, entry.member, {
         isSelf: isCurrentUserMember(entry.member, userId),

@@ -446,6 +446,8 @@ export interface ChannelPublicMember {
   environment?: ChannelMemberEnvironmentPreview | null;
   id: string;
   joinedAt: Date;
+  /** An Agent that answers only when @mentioned; set by `channel.setMemberMuted`. */
+  muted?: boolean;
   name: string | null;
   role: ChannelMemberRole | null;
   status: ChannelMemberStatus;

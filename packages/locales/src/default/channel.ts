@@ -115,6 +115,10 @@ export default {
   'deleteThreadForbidden': 'Only the channel owner or an administrator can move threads to trash.',
   'deleteThreadSuccess': 'Thread moved to trash',
   'deletedMember': 'Former member',
+  'member.mute': 'Mute',
+  'member.muted': 'Replies only when @mentioned',
+  'member.muteFailed': "Couldn't update mute for {{name}}. Try again.",
+  'member.unmute': 'Unmute',
   'member.remove': 'Remove from channel',
   'member.removeConfirmTitle': 'Remove {{name}} from the channel?',
   'member.removeConfirmPerson':

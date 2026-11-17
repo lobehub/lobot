@@ -316,6 +316,14 @@ class ChannelActionImpl {
       await this.#refreshAfterWrite(() => this.refreshDetail({ channelId }));
     }
   };
+  /** Mutes an Agent so only an @mention reaches it, or lets it answer on its own again. */
+  setMemberMuted = async (channelId: string, memberId: string, muted: boolean) => {
+    try {
+      await channelService.setMemberMuted(channelId, memberId, muted);
+    } finally {
+      await this.#refreshAfterWrite(() => this.refreshDetail({ channelId }));
+    }
+  };
   /** Waits for the server and the views it changed; the first message of a new thread uses it. */
   send = async (input: ChannelSendInput) => {
     const scope = cacheScope.get();

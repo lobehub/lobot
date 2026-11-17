@@ -61,6 +61,8 @@ class ChannelService {
     lambdaClient.channel.addAgent.mutate({ agent, channelId, joinProject });
   removeMember = (channelId: string, memberId: string) =>
     lambdaClient.channel.removeMember.mutate({ channelId, memberId });
+  setMemberMuted = (channelId: string, memberId: string, muted: boolean) =>
+    lambdaClient.channel.setMemberMuted.mutate({ channelId, memberId, muted });
   create = (input: {
     agents: ChannelAgentSelection[];
     /** Seats Agents from outside the project in the project first. */
