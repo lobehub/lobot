@@ -1,6 +1,5 @@
 'use client';
 
-import { agentDisplayName, type ChannelMemberEnvironmentPreview } from '@lobot/types';
 import {
   ActionIcon,
   createStaticStyles,
@@ -11,17 +10,20 @@ import {
   Text,
 } from '@lobehub/ui';
 import { SkillsIcon } from '@lobehub/ui/icons';
+import { agentDisplayName, type ChannelMemberEnvironmentPreview } from '@lobot/types';
 import { BookOpen, FileText, Folder, Laptop, Settings, SquareTerminal } from 'lucide-react';
 import { memo, type PropsWithChildren, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ModelIcon } from '@/components/LobeIcons';
 import { ArticleSkeleton } from '@/components/Skeleton';
+import { CONTACT_URL } from '@/features/ContactList/const';
 import ModelSelect from '@/features/ModelSelect';
 import { useResourceAccess } from '@/features/ResourcePermission/useResourceAccess';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { usePermission } from '@/hooks/usePermission';
 import { useAgentGroupStore } from '@/store/agentGroup';
+import { contactSelectors, useContactStore } from '@/store/contact';
 import { useHomeStore } from '@/store/home';
 import { homeAgentListSelectors } from '@/store/home/selectors';
 
@@ -100,6 +102,9 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
 
     const updateMemberAgentConfig = useAgentGroupStore((s) => s.updateMemberAgentConfig);
     const listEntry = useHomeStore(homeAgentListSelectors.getAgentById(agentId));
+    // An Agent in my Contacts, mine or one shared with me, opens its contact card.
+    const isContact = useContactStore((s) => !!contactSelectors.agentById(agentId)(s));
+    const contactUrl = listEntry || isContact ? CONTACT_URL(agentId) : undefined;
 
     const { detail: fetched, isLoading } = useAgentProfileDetail(agentId, open && !!canConfigure);
 
@@ -141,7 +146,7 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
 
     const handleHeaderClick = () => {
       setOpen(false);
-      navigate(`/agent/${agentId}/profile`);
+      navigate(contactUrl ?? `/agent/${agentId}/profile`);
     };
 
     const hasDisplay = Boolean(agentDisplayName(merged) || merged.avatar || merged.description);
@@ -275,7 +280,7 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
             </Flexbox>
           ) : undefined
         }
-        onHeaderClick={canConfigure ? handleHeaderClick : undefined}
+        onHeaderClick={contactUrl || canConfigure ? handleHeaderClick : undefined}
       >
         {modelSection}
         {environmentSection}
