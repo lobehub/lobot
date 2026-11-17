@@ -12,3 +12,9 @@ export const linux = (): boolean => process.platform === 'linux';
 export const macOS = (): boolean => process.platform === 'darwin';
 
 export const windows = (): boolean => process.platform === 'win32';
+
+/**
+ * HarmonyOS PC, running Huawei's Electron port. Node's `Platform` type has no
+ * `openharmony`, hence the widening.
+ */
+export const openHarmony = (): boolean => (process.platform as string) === 'openharmony';

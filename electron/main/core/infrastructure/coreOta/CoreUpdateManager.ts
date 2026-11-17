@@ -8,6 +8,7 @@ import type { UpdateChannel } from '@lobechat/electron-client-ipc';
 import { readBlobWithLimit } from '@lobechat/utils/imageToBase64';
 import { app as electronApp, BrowserWindow, net } from 'electron';
 
+import { isOpenHarmony } from '@/const/env';
 import {
   type ShellGlobal,
   shellInfo,
@@ -117,6 +118,8 @@ export class CoreUpdateManager {
       this.shell && !this.builtinManifest && 'missing-builtin-manifest',
       this.shell && !this.shell.publicKey && 'missing-public-key',
       !FEED_BASE_URL && 'missing-server-url',
+      // AppGallery forbids code fetched after review; a HAP updates only through the store.
+      isOpenHarmony && 'store-distribution',
     ].filter((reason): reason is string => typeof reason === 'string');
   }
 

@@ -18,7 +18,7 @@ const createFixture = async (files: Record<string, string>) => {
 };
 
 const resolveWithPlugin = async (
-  os: 'linux' | 'mac' | 'windows',
+  os: 'harmony' | 'linux' | 'mac' | 'windows',
   source: string,
   importer: string,
   resolvedId: string,
@@ -41,6 +41,7 @@ describe('resolveOsPlatform', () => {
     expect(resolveOsPlatform('darwin')).toBe('mac');
     expect(resolveOsPlatform('win32')).toBe('windows');
     expect(resolveOsPlatform('linux')).toBe('linux');
+    expect(resolveOsPlatform('openharmony')).toBe('harmony');
     expect(resolveOsPlatform('freebsd')).toBe('linux');
   });
 });

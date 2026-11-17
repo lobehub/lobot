@@ -9,3 +9,4 @@ export const DESKTOP_EXTERNAL_NAVIGATION_HOSTS = getDesktopEnv().DESKTOP_EXTERNA
 export const isMac = electronIs.macOS();
 export const isWindows = electronIs.windows();
 export const isLinux = electronIs.linux();
+export const isOpenHarmony = electronIs.openHarmony();

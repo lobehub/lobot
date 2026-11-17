@@ -2,11 +2,18 @@ import { access } from 'node:fs/promises';
 
 import type { Plugin } from 'vite';
 
-export type OsPlatform = 'linux' | 'mac' | 'windows';
+/**
+ * `harmony` is HarmonyOS PC (2in1). Huawei's Electron port reports
+ * `process.platform === 'openharmony'`; build for it with
+ * `npm_config_platform=openharmony`. Its `.harmony.*` variants stand in for
+ * modules whose native addons have no HarmonyOS build.
+ */
+export type OsPlatform = 'harmony' | 'linux' | 'mac' | 'windows';
 
 const NODE_TO_OS = {
   darwin: 'mac',
   linux: 'linux',
+  openharmony: 'harmony',
   win32: 'windows',
 } as const satisfies Record<string, OsPlatform>;
 
@@ -15,7 +22,7 @@ export const resolveOsPlatform = (
 ): OsPlatform => NODE_TO_OS[nodePlatform as keyof typeof NODE_TO_OS] ?? 'linux';
 
 const EXT_RE = /\.(ts|tsx|js|jsx|mts|mjs|cts|cjs)$/;
-const OS_FILE_RE = /\.(?:linux|mac|windows)\.(?:ts|tsx|js|jsx|mts|mjs|cts|cjs)$/;
+const OS_FILE_RE = /\.(?:harmony|linux|mac|windows)\.(?:ts|tsx|js|jsx|mts|mjs|cts|cjs)$/;
 
 export function viteOsPlatformResolve(os: OsPlatform = resolveOsPlatform()): Plugin {
   const suffix = `.${os}`;
