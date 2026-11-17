@@ -14,6 +14,7 @@ import { authSelectors } from '@/store/user/selectors';
 
 import { useChannelEvents } from '../useChannelEvents';
 import { useChannelsEnabled } from '../useChannelsEnabled';
+import { useContactEvents } from '../useContactEvents';
 import { type ChannelActivitySnapshots, diffChannelActivity, snapshotChannels } from './activity';
 import { notifyChannelActivity } from './notify';
 import { useUnreadBadge } from './useUnreadBadge';
@@ -28,12 +29,14 @@ const openChannelId = (pathname: string) => {
 /**
  * Desktop notifications for Channels, mounted once with the app shell:
  * - keeps the Channel list live from gateway events even when the Messages tab is closed;
+ * - keeps the address book (and the Contacts tab's request badge) live the same way;
  * - raises a banner (with sound) for each new message or @mention, per the user's level;
  * - mirrors the Messages tab's unread count on the dock / taskbar badge.
  */
 const ActiveChannelNotifier = memo(() => {
   channelActions.useFetchList();
   useChannelEvents();
+  useContactEvents();
 
   const list = useChannelStore(channelSelectors.list);
   const level = useGlobalStore(systemStatusSelectors.channelNotificationLevel);

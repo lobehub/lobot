@@ -1,5 +1,6 @@
 import type { ContactItem, ContactRequestItem, ContactSearchResult } from '@lobechat/types';
 
+import { useGatewayUserFeed } from '@/hooks/useGatewayUserFeed';
 import { createReplicaSlice, recordLens } from '@/libs/replica';
 import { contactService, type ContactUserProfileData } from '@/services/contact';
 
@@ -45,9 +46,17 @@ class ContactActionImpl {
   });
 
   useFetchList = (enabled = true) => this.#list.useSync({}, { enabled });
-  /** No push yet: incoming requests are polled so the badge appears without a reload. */
-  useFetchRequests = (enabled = true) =>
-    this.#requests.useSync({}, { enabled, refreshInterval: REQUESTS_REFRESH_MS });
+  /**
+   * The gateway pushes contact changes (`useContactEvents`), so requests are polled only when
+   * its feed is unavailable, e.g. a self-hosted server without the Agent Gateway.
+   */
+  useFetchRequests = (enabled = true) => {
+    const pushed = !!useGatewayUserFeed();
+    return this.#requests.useSync(
+      {},
+      { enabled, refreshInterval: pushed ? undefined : REQUESTS_REFRESH_MS },
+    );
+  };
   useFetchProfile = (userId: string | undefined) =>
     this.#profile.useSync(userId ? { userId } : null);
   useFetchShare = (share: string | undefined) => this.#share.useSync(share ? { share } : null);
@@ -63,6 +72,19 @@ class ContactActionImpl {
     } catch (error) {
       console.error('Failed to refresh contacts after a write', error);
     }
+  };
+
+  /** Another person or device changed the address book: re-read everything loaded. */
+  refreshAll = async () => {
+    const profiles = Object.keys(useContactStore.getState().profileMap);
+    const results = await Promise.allSettled([
+      this.#list.fetch({}, { fresh: true }),
+      this.#requests.fetch({}, { fresh: true }),
+      ...profiles.map((userId) => this.#profile.fetch({ userId }, { fresh: true })),
+    ]);
+    for (const result of results)
+      if (result.status === 'rejected')
+        console.error('Failed to refresh contacts after a change', result.reason);
   };
 
   sendRequest = async (userId: string, message?: string) => {
