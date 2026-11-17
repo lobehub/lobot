@@ -6,6 +6,7 @@ import {
   MessageCircleIcon,
   PencilLineIcon,
   Settings2Icon,
+  Share2Icon,
   UserRoundIcon,
   UserRoundXIcon,
 } from 'lucide-react';
@@ -30,6 +31,7 @@ import { contactActions, contactSelectors, useContactStore } from '@/store/conta
 import { AgentPresenceDot, AgentPresenceLabel } from './AgentPresenceBadge';
 import { AVATAR_SIZE, COVER_HEIGHT, MenuTile, styles, TileContent } from './cardParts';
 import { ContactInfo } from './ContactInfo';
+import { openShareAgentModal } from './ShareAgentModal';
 import SharedAgentCard from './SharedAgentCard';
 import { useAgentPresence } from './useAgentPresence';
 import { type ContactCardState, useContactCard } from './useContactCard';
@@ -49,6 +51,17 @@ const ContactCard = memo<Extract<ContactCardState, { status: 'ready' }>>(
     const copyIdItem = useCopyAgentIdMenuItem(agentId);
     const presence = useAgentPresence(agentId);
     const moreItems = [
+      // Only someone who may edit the Agent can open it to visitors; the server checks again.
+      ...(agentId && canEdit
+        ? [
+            {
+              icon: Share2Icon,
+              key: 'share',
+              label: t('contacts.share'),
+              onClick: () => openShareAgentModal(agentId),
+            },
+          ]
+        : []),
       {
         icon: canEdit ? PencilLineIcon : UserRoundIcon,
         key: 'profile',

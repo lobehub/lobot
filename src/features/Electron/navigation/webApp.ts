@@ -64,16 +64,21 @@ export const isLobotPath = (path: string): boolean => {
  * the web app's `/:workspaceSlug` prefix is added here.
  */
 export const webAppUrl = (path: string): string => {
+  const { activeWorkspaceId, workspaces } = getWorkspaceStoreState();
+  const slug = workspaces.find((workspace) => workspace.id === activeWorkspaceId)?.slug ?? null;
+
+  return `${webAppOrigin()}${buildWorkspaceAwarePath(path, slug)}`;
+};
+
+/** The LobeHub web app this client syncs with: the self-hosted server, else LobeHub Cloud. */
+export const webAppOrigin = (): string => {
   const { dataSyncConfig } = getElectronStoreState();
   const base =
     dataSyncConfig.storageMode === 'selfHost' && dataSyncConfig.remoteServerUrl
       ? dataSyncConfig.remoteServerUrl
       : OFFICIAL_URL;
 
-  const { activeWorkspaceId, workspaces } = getWorkspaceStoreState();
-  const slug = workspaces.find((workspace) => workspace.id === activeWorkspaceId)?.slug ?? null;
-
-  return `${base.replace(/\/+$/, '')}${buildWorkspaceAwarePath(path, slug)}`;
+  return base.replace(/\/+$/, '');
 };
 
 export const openInWebApp = (path: string): void => {

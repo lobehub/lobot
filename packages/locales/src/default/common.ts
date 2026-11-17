@@ -443,6 +443,16 @@ export default {
   'contacts.noDescription': 'No description yet',
   'contacts.notFound': 'This contact no longer exists or is not visible to you',
   'contacts.sendMessage': 'Send message',
+  'contacts.share': 'Share',
+  'contacts.share.copied': 'Share link copied',
+  'contacts.share.copy': 'Copy',
+  'contacts.share.create': 'Create share link',
+  'contacts.share.createFailed': 'Could not create the share link. Please try again.',
+  'contacts.share.desc':
+    'Anyone with this link can chat with this Agent. Usage runs on your account.',
+  'contacts.share.emptyDesc':
+    'Create a link anyone can open to chat with this Agent. Usage runs on your account.',
+  'contacts.share.title': 'Share Agent',
   'contacts.viewProfile': 'View profile',
   'contacts.pinned': 'Pinned',
   'contacts.presence.idle': 'Idle',
