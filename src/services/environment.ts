@@ -87,10 +87,6 @@ class EnvironmentService {
    * picker that is a state to resolve, not an error.
    */
   listGithubRepositories = async () => lambdaClient.environment.listGithubRepositories.query();
-
-  /** The branches of one repository, or `connected: false` when GitHub is not linked. */
-  listGithubBranches = async (params: { owner: string; repository: string }) =>
-    lambdaClient.environment.listGithubBranches.query(params);
 }
 
 export const environmentService = new EnvironmentService();

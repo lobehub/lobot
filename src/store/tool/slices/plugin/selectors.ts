@@ -23,10 +23,6 @@ const installedPlugins = (s: ToolStoreState) => s.installedPlugins;
 const isInstalledPluginsCacheOnly = (s: ToolStoreState) =>
   s.installedPluginsReplica?.entries[INSTALLED_PLUGINS_KEY]?.source === 'storage';
 
-/** Whether the list holds the server's full records (not unloaded, not the cached projection). */
-const isInstalledPluginsServerConfirmed = (s: ToolStoreState) =>
-  s.installedPluginsReplica?.entries[INSTALLED_PLUGINS_KEY]?.source === 'server';
-
 /**
  * The full installed-plugin records — settings and MCP connection included —
  * that tool assembly, tool execution, edit forms and writes may act on. Empty
@@ -35,16 +31,6 @@ const isInstalledPluginsServerConfirmed = (s: ToolStoreState) =>
  */
 const confirmedInstalledPlugins = (s: ToolStoreState) =>
   isInstalledPluginsCacheOnly(s) ? EMPTY_PLUGINS : s.installedPlugins;
-
-const isPluginInstalled = (id: string) => (s: ToolStoreState) =>
-  installedPlugins(s).some((i) => i.identifier === id);
-
-/** The full record of an installed plugin (see {@link confirmedInstalledPlugins}). */
-const getInstalledPluginById = (id?: string) => (s: ToolStoreState) => {
-  if (!id) return;
-
-  return confirmedInstalledPlugins(s).find((p) => p.identifier === id);
-};
 
 /**
  * Marketplace `PluginManifest` shape (`@lobehub/market-types`): flat
@@ -95,12 +81,6 @@ const getCustomPluginById = (id: string) => (s: ToolStoreState) =>
 const getToolManifestById = (id: string) => (s: ToolStoreState) =>
   installedPlugins(s).find((p) => p.identifier === id)?.manifest;
 
-const getPluginSettingsById = (id: string) => (s: ToolStoreState) =>
-  getInstalledPluginById(id)(s)?.settings || {};
-
-const storeAndInstallPluginsIdList = (s: ToolStoreState) =>
-  installedPlugins(s).map((i) => i.identifier);
-
 /** Manifests offered to the model: only plugins whose full record is loaded. */
 const installedPluginManifestList = (s: ToolStoreState) =>
   confirmedInstalledPlugins(s)
@@ -125,29 +105,14 @@ const installedPluginMetaList = (s: ToolStoreState) =>
       type: p.source || p.type,
       ...getPluginMetaById(p.identifier)(s),
     }));
-const installedCustomPluginMetaList = (s: ToolStoreState) =>
-  installedPluginMetaList(s).filter((p) => p.type === 'customPlugin');
-
-const isPluginHasUI = (id: string) => (s: ToolStoreState) => {
-  const plugin = getToolManifestById(id)(s);
-
-  return !!plugin?.ui;
-};
 
 export const pluginSelectors = {
   confirmedInstalledPlugins,
   getCustomPluginById,
-  getInstalledPluginById,
   getPluginMetaById,
-  getPluginSettingsById,
   getToolManifestById,
-  installedCustomPluginMetaList,
   installedPluginManifestList,
   installedPluginMetaList,
   installedPlugins,
   isInstalledPluginsCacheOnly,
-  isInstalledPluginsServerConfirmed,
-  isPluginHasUI,
-  isPluginInstalled,
-  storeAndInstallPluginsIdList,
 };

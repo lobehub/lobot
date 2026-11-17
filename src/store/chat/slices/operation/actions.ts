@@ -276,47 +276,6 @@ export class OperationActionsImpl {
     );
   };
 
-  updateOperationStatus = (
-    operationId: string,
-    status: OperationStatus,
-    metadata?: Partial<OperationMetadata>,
-  ): void => {
-    this.#set(
-      produce((state: ChatStore) => {
-        const operation = state.operations[operationId];
-        if (!operation) return;
-
-        operation.status = status;
-
-        if (metadata) {
-          operation.metadata = {
-            ...operation.metadata,
-            ...metadata,
-          };
-        }
-      }),
-      false,
-      n(`updateOperationStatus/${operationId}/${status}`),
-    );
-  };
-
-  updateOperationProgress = (operationId: string, current: number, total?: number): void => {
-    this.#set(
-      produce((state: ChatStore) => {
-        const operation = state.operations[operationId];
-        if (!operation) return;
-
-        operation.metadata.progress = {
-          current,
-          total: total ?? operation.metadata.progress?.total ?? current,
-          percentage: total ? Math.round((current / total) * 100) : undefined,
-        };
-      }),
-      false,
-      n(`updateOperationProgress/${operationId}`),
-    );
-  };
-
   completeOperation = (operationId: string, metadata?: Partial<OperationMetadata>): void => {
     const operation = this.#get().operations[operationId];
     // Late stream/session callbacks cannot overwrite the persisted terminal
@@ -401,43 +360,6 @@ export class OperationActionsImpl {
       }),
       false,
       n(`onOperationCancel/${operationId}`),
-    );
-  };
-
-  registerAfterCompletionCallback = (
-    operationId: string,
-    callback: AfterCompletionCallback,
-  ): void => {
-    this.#set(
-      produce((state: ChatStore) => {
-        const operation = state.operations[operationId];
-        if (!operation) {
-          log('[registerAfterCompletionCallback] WARNING: Operation not found: %s', operationId);
-          return;
-        }
-
-        // Initialize runtimeHooks if not exists
-        if (!operation.metadata.runtimeHooks) {
-          operation.metadata.runtimeHooks = {};
-        }
-
-        // Initialize afterCompletionCallbacks array if not exists
-        if (!operation.metadata.runtimeHooks.afterCompletionCallbacks) {
-          operation.metadata.runtimeHooks.afterCompletionCallbacks = [];
-        }
-
-        // Add callback to array
-        operation.metadata.runtimeHooks.afterCompletionCallbacks.push(callback);
-
-        log(
-          '[registerAfterCompletionCallback] registered callback for %s (type=%s), total callbacks: %d',
-          operationId,
-          operation.type,
-          operation.metadata.runtimeHooks.afterCompletionCallbacks.length,
-        );
-      }),
-      false,
-      n(`registerAfterCompletionCallback/${operationId}`),
     );
   };
 
@@ -673,16 +595,6 @@ export class OperationActionsImpl {
       });
 
     return matchedIds;
-  };
-
-  cancelAllOperations = (reason: string = 'Cancel all operations'): void => {
-    const operations = Object.values(this.#get().operations);
-
-    operations.forEach((op) => {
-      if (op.status === 'running') {
-        this.#get().cancelOperation(op.id, reason);
-      }
-    });
   };
 
   cleanupCompletedOperations = (olderThan: number = 60_000): number => {
@@ -1050,18 +962,6 @@ export class OperationActionsImpl {
     // turn normally.
     if (!this.#get().queuedMessages[contextKey]?.some(isClientHeldQueuedMessage))
       this.#get().internal_syncQueuedMessagesFlag(contextKey);
-  };
-
-  clearMessageQueue = (contextKey: string): void => {
-    this.#set(
-      produce((state: ChatStore) => {
-        delete state.queuedMessages[contextKey];
-      }),
-      false,
-      n(`clearMessageQueue/${contextKey}`),
-    );
-
-    this.#get().internal_syncQueuedMessagesFlag(contextKey);
   };
 }
 

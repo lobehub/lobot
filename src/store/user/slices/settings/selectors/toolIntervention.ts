@@ -7,8 +7,6 @@ import { currentSettings } from './settings';
  */
 export type ApprovalMode = 'auto-run' | 'allow-list' | 'manual';
 
-const humanInterventionConfig = (s: UserStore) => currentSettings(s).tool?.humanIntervention || {};
-
 const interventionApprovalMode = (s: UserStore): ApprovalMode => {
   const mode = currentSettings(s).tool?.humanIntervention?.approvalMode;
   // Filter out 'headless' mode as it's not user-selectable (fallback to auto-run as similar behavior)
@@ -22,5 +20,4 @@ const interventionAllowList = (s: UserStore) =>
 export const toolInterventionSelectors = {
   allowList: interventionAllowList,
   approvalMode: interventionApprovalMode,
-  config: humanInterventionConfig,
 };

@@ -85,54 +85,12 @@ const normalizeNavPanelWidth = (width: number | string | undefined): number => {
   return Math.min(NAV_PANEL_MAX_WIDTH, Math.max(NAV_PANEL_MIN_WIDTH, parsed));
 };
 
-const agentBuilderPanelWidth = (s: GlobalState) => s.status.agentBuilderPanelWidth || 360;
-
 const sessionGroupKeys =
   (workspaceId: string | null) =>
   (s: GlobalState): string[] => {
     const value = readOverridableField(s.status, 'expandSessionGroupKeys', workspaceId);
     return value || INITIAL_STATUS.expandSessionGroupKeys;
   };
-
-const collapsedTopicGroupKeys =
-  (mode: TopicGroupMode) =>
-  (s: GlobalState): string[] | undefined =>
-    s.status.collapsedTopicGroupKeysByMode?.[mode];
-
-const docsPageSectionView =
-  (section: DocsPageSectionKey) =>
-  (s: GlobalState): DocsPageSectionView => {
-    const stored = s.status.docsPageSectionViews?.[section];
-    return stored
-      ? { ...DEFAULT_DOCS_PAGE_SECTION_VIEW, ...stored }
-      : DEFAULT_DOCS_PAGE_SECTION_VIEW;
-  };
-
-const projectTopicSubGroupMode =
-  (groupId: string) =>
-  (s: GlobalState): ProjectTopicSubGroupMode =>
-    s.status.projectTopicSubGroupModeByGroup?.[groupId] ?? 'none';
-
-const agentSidebarSections =
-  (agentId: string | undefined) =>
-  (s: GlobalState): Record<string, boolean> | undefined =>
-    agentId ? s.status.expandAgentSidebarSectionsByAgent?.[agentId] : undefined;
-
-const projectSidebarSections =
-  (projectId: string | undefined) =>
-  (s: GlobalState): Record<string, boolean> | undefined =>
-    projectId ? s.status.expandProjectSidebarSectionsByProject?.[projectId] : undefined;
-
-const projectOnboardingDismissed =
-  (projectId: string | undefined) =>
-  (s: GlobalState): boolean =>
-    Boolean(projectId && s.status.dismissedProjectOnboarding?.[projectId]);
-
-/** Whether the topic list owned by `ownerId` (agent / group / project) shows only my topics. */
-const topicOnlyMine =
-  (ownerId: string | undefined) =>
-  (s: GlobalState): boolean =>
-    !!ownerId && !!s.status.topicOnlyMineByAgent?.[ownerId];
 
 /** Upper bound of `topic.getTopics`'s `pageSize` input on the server. */
 const MAX_TOPIC_PAGE_SIZE = 100;
@@ -151,40 +109,9 @@ const privateAgentPageSize = (s: GlobalState): number => s.status.privateAgentPa
 
 const recentPageSize = (s: GlobalState): number => s.status.recentPageSize || 5;
 
-const pagePageSize = (s: GlobalState): number => s.status.pagePageSize || 20;
-const taskListViewOptions = (s: GlobalState) =>
-  s.status.taskListViewOptions || {
-    groupBy: 'status',
-    nestedSubTasks: true,
-    orderBy: 'updatedAt',
-    orderCompletedByRecency: true,
-    orderDirection: 'asc',
-    showSubTasks: false,
-    subGroupBy: 'none',
-  };
-
 const EMPTY_TASK_LIST_FILTERS: NonNullable<GlobalState['status']['taskListFilters']> = [];
 
-const taskListFilters = (s: GlobalState) => s.status.taskListFilters ?? EMPTY_TASK_LIST_FILTERS;
-
-const taskListFilter = (scope: string) => (s: GlobalState) =>
-  taskListFilters(s).find((entry) => entry.scope === scope)?.filter;
-
-const taskListViewMode = (s: GlobalState) => s.status.taskListViewMode ?? 'list';
-
-// Default the inline composer to collapsed so a populated task list keeps the
-// records at the top of the fold; the empty-state hero still shows the full
-// composer, and the header "+" expands it inline on demand.
-const taskCreateInlineCollapsed = (s: GlobalState): boolean =>
-  s.status.taskCreateInlineCollapsed ?? true;
-
 const DEFAULT_KANBAN_HIDDEN_COLUMNS: string[] = ['done', 'canceled'];
-
-const taskKanbanHiddenColumns = (s: GlobalState): string[] =>
-  s.status.taskKanbanHiddenColumns ?? DEFAULT_KANBAN_HIDDEN_COLUMNS;
-
-const taskKanbanHiddenPanelCollapsed = (s: GlobalState): boolean =>
-  s.status.taskKanbanHiddenPanelCollapsed ?? false;
 
 export const DEFAULT_HIDDEN_SECTIONS: string[] = [];
 
@@ -455,56 +382,17 @@ const sidebarItems =
 
     return DEFAULT_SIDEBAR_ITEMS;
   };
-const showSystemRole = (s: GlobalState) => s.status.showSystemRole;
-const mobileShowTopic = (s: GlobalState) => s.status.mobileShowTopic;
-const mobileShowPortal = (s: GlobalState) => s.status.mobileShowPortal;
-const showAgentBuilderPanel = (s: GlobalState) => s.status.showAgentBuilderPanel;
-const showHomeRail = (s: GlobalState) => s.status.showHomeRail ?? false;
-const showHomePortrait = (s: GlobalState) => s.status.showHomePortrait ?? true;
-const hiddenHomeWidgets = (s: GlobalState): string[] => s.status.hiddenHomeWidgets ?? [];
-const homeGoalsCollapsed = (s: GlobalState): boolean => s.status.homeGoalsCollapsed ?? false;
-const teamBoardAttentionCollapsed = (s: GlobalState): boolean =>
-  s.status.teamBoardAttentionCollapsed ?? false;
-const homeRecentsCount = (s: GlobalState): number => s.status.homeRecentsCount ?? 8;
-const homeTaskCount = (s: GlobalState): number => s.status.homeTaskCount ?? 8;
 const showRightPanel = (s: GlobalState) => s.status.showRightPanel;
-const showWorkingOverview = (s: GlobalState) =>
-  s.status.showWorkingOverview ?? !s.status.showRightPanel;
 const showLeftPanel = (s: GlobalState) => s.status.showLeftPanel;
 /** Channel desktop notifications are on for every message unless the user narrows them. */
 const channelNotificationLevel = (s: GlobalState) => s.status.channelNotificationLevel ?? 'all';
 const channelSidePanelWidth = (s: GlobalState) => s.status.channelSidePanelWidth || 256;
-const showPageAgentPanel = (s: GlobalState) => s.status.showPageAgentPanel;
-const showTaskAgentPanel = (s: GlobalState) => s.status.showTaskAgentPanel;
-const showTerminalPanel = (s: GlobalState) => s.status.showTerminalPanel;
-const terminalPanelHeight = (s: GlobalState) => s.status.terminalPanelHeight || 320;
-const showFilePanel = (s: GlobalState) => s.status.showFilePanel;
-const showVerifyReportPanel = (s: GlobalState) => s.status.showVerifyReportPanel ?? true;
-const showImagePanel = (s: GlobalState) => s.status.showImagePanel;
-const showImageTopicPanel = (s: GlobalState) => s.status.showImageTopicPanel;
-const hidePWAInstaller = (s: GlobalState) => s.status.hidePWAInstaller;
 const isShowCredit = (s: GlobalState) => s.status.isShowCredit;
 const language = (s: GlobalState) => s.status.language || 'auto';
-const modelDetailPanelExpandedKeys = (s: GlobalState): ModelDetailPanelExpandedKey[] => {
-  const collapsedKeys = s.status.modelDetailPanelCollapsedKeys ?? [];
-
-  return MODEL_DETAIL_PANEL_EXPANDABLE_KEYS.filter((key) => !collapsedKeys.includes(key));
-};
-// Reads only the user-written key; the legacy `modelSwitchPanelGroupMode`
-// was seeded into persisted status and must not influence the default.
-const modelSwitchPanelGroupMode = (s: GlobalState) => s.status.modelSwitchPanelGroupBy || 'byModel';
-const modelSwitchPanelWidth = (s: GlobalState) => s.status.modelSwitchPanelWidth || 460;
-const pageAgentPanelWidth = (s: GlobalState) => s.status.pageAgentPanelWidth || 360;
-const workingSidebarWidth = (s: GlobalState) => s.status.workingSidebarWidth || 360;
 
 const leftPanelWidth = (s: GlobalState): number => {
   return normalizeNavPanelWidth(s.status.leftPanelWidth);
 };
-const portalWidth = (s: GlobalState) => s.status.portalWidth || 400;
-const portalWidths = (s: GlobalState) => s.status.portalWidths;
-const filePanelWidth = (s: GlobalState) => s.status.filePanelWidth;
-const groupAgentBuilderPanelWidth = (s: GlobalState) => s.status.groupAgentBuilderPanelWidth || 360;
-const imagePanelWidth = (s: GlobalState) => s.status.imagePanelWidth;
 const agentListViewMode = (s: GlobalState) => s.status.agentListViewMode || 'card';
 const DEFAULT_AGENT_DOCUMENT_SORT: AgentDocumentSort = {
   by: 'name',
@@ -520,149 +408,44 @@ const contactListSortBy = (s: GlobalState): ContactListSortBy =>
 const DEFAULT_CHANNEL_LIST_SORT: ChannelListSort = { by: 'createdAt', order: 'desc' };
 const channelListSort = (s: GlobalState): ChannelListSort =>
   s.status.channelListSort ?? DEFAULT_CHANNEL_LIST_SORT;
-const projectListSortBy = (s: GlobalState): ProjectListSortBy =>
-  s.status.projectListSortBy ?? 'manual';
-const projectListViewMode = (s: GlobalState): ProjectListViewMode =>
-  s.status.projectListViewMode ?? 'folder';
-const agentDocumentSort = (s: GlobalState): AgentDocumentSort =>
-  s.status.agentDocumentSort ?? DEFAULT_AGENT_DOCUMENT_SORT;
 const agentListViewOptions = (s: GlobalState) => s.status.agentListViewOptions;
 const agentListExpandedGroupKeys = (s: GlobalState) => s.status.agentListExpandedGroupKeys ?? [];
 const agentListSidebarSectionCollapsed = (s: GlobalState) =>
   s.status.agentListSidebarSectionCollapsed ?? false;
-const imageTopicViewMode = (s: GlobalState) => s.status.imageTopicViewMode || 'grid';
-const imageTopicPanelWidth = (s: GlobalState) => s.status.imageTopicPanelWidth;
-const verifyReportPanelWidth = (s: GlobalState) => s.status.verifyReportPanelWidth || 300;
-const videoPanelWidth = (s: GlobalState) => s.status.videoPanelWidth;
-const videoTopicViewMode = (s: GlobalState) => s.status.videoTopicViewMode || 'grid';
-const videoTopicPanelWidth = (s: GlobalState) => s.status.videoTopicPanelWidth;
-const showVideoPanel = (s: GlobalState) => s.status.showVideoPanel;
-const showVideoTopicPanel = (s: GlobalState) => s.status.showVideoTopicPanel;
 const wideScreen = (s: GlobalState) => !s.status.noWideScreen;
 const chatInputHeight = (s: GlobalState) => s.status.chatInputHeight || 64;
 const expandInputActionbar = (s: GlobalState) => s.status.expandInputActionbar;
 const isStatusInit = (s: GlobalState) => !!s.isStatusInit;
-
-const getAgentSystemRoleExpanded =
-  (agentId: string) =>
-  (s: GlobalState): boolean => {
-    const map = s.status.systemRoleExpandedMap || {};
-    return map[agentId] === true; // System role is collapsed by default
-  };
-
-const disabledModelProvidersSortType = (s: GlobalState) =>
-  s.status.disabledModelProvidersSortType || 'default';
-const disabledModelsSortType = (s: GlobalState) => s.status.disabledModelsSortType || 'default';
-
-const isNotificationRead =
-  (slug: string) =>
-  (s: GlobalState): boolean => {
-    const slugs = s.status.readNotificationSlugs || [];
-    return slugs.includes(slug);
-  };
-
-const isBannerDismissed =
-  (bannerId: string) =>
-  (s: GlobalState): boolean => {
-    const ids = s.status.dismissedBannerIds || [];
-    return ids.includes(bannerId);
-  };
 const tokenDisplayFormatShort = (s: GlobalState) =>
   s.status.tokenDisplayFormatShort !== undefined ? s.status.tokenDisplayFormatShort : true;
-
-const homeSelectedAgentId = (s: GlobalState) => s.status.homeSelectedAgentId;
 
 export const systemStatusSelectors = {
   channelNotificationLevel,
   channelSidePanelWidth,
-  agentBuilderPanelWidth,
-  agentDocumentSort,
   contactListCollapsedSections,
   contactListSortBy,
   channelListSort,
-  projectListSortBy,
-  projectListViewMode,
   agentListExpandedGroupKeys,
   agentListSidebarSectionCollapsed,
   agentListViewMode,
   agentListViewOptions,
   agentPageSize,
   chatInputHeight,
-  disabledModelProvidersSortType,
-  disabledModelsSortType,
   expandInputActionbar,
-  docsPageSectionView,
-  filePanelWidth,
-  getAgentSystemRoleExpanded,
-  groupAgentBuilderPanelWidth,
-  hiddenHomeWidgets,
   hiddenSidebarSections,
-  hidePWAInstaller,
-  homeGoalsCollapsed,
-  homeRecentsCount,
-  homeSelectedAgentId,
-  homeTaskCount,
-  imagePanelWidth,
-  imageTopicViewMode,
-  imageTopicPanelWidth,
-  isBannerDismissed,
-  isNotificationRead,
   isShowCredit,
   isStatusInit,
   language,
   leftPanelWidth,
-  mobileShowPortal,
-  mobileShowTopic,
-  modelDetailPanelExpandedKeys,
-  modelSwitchPanelGroupMode,
-  modelSwitchPanelWidth,
-  pageAgentPanelWidth,
-  pagePageSize,
-  portalWidth,
-  portalWidths,
   privateAgentPageSize,
   recentPageSize,
-  taskCreateInlineCollapsed,
-  taskKanbanHiddenColumns,
-  taskKanbanHiddenPanelCollapsed,
-  taskListViewMode,
-  taskListFilter,
-  taskListFilters,
-  taskListViewOptions,
-  teamBoardAttentionCollapsed,
   sidebarExpandedKeys,
-  agentSidebarSections,
-  projectOnboardingDismissed,
-  projectSidebarSections,
   sidebarItems,
   sessionGroupKeys,
-  showAgentBuilderPanel,
-  showFilePanel,
-  showHomePortrait,
-  showHomeRail,
-  showImagePanel,
-  showImageTopicPanel,
   showLeftPanel,
-  showPageAgentPanel,
   showRightPanel,
-  showSystemRole,
-  showTaskAgentPanel,
-  showWorkingOverview,
-  showTerminalPanel,
-  showVerifyReportPanel,
-  showVideoPanel,
-  showVideoTopicPanel,
   systemStatus,
-  terminalPanelHeight,
-  verifyReportPanelWidth,
   tokenDisplayFormatShort,
-  collapsedTopicGroupKeys,
-  projectTopicSubGroupMode,
-  topicOnlyMine,
   topicPageSize,
-  videoPanelWidth,
-  videoTopicViewMode,
-  videoTopicPanelWidth,
   wideScreen,
-  workingSidebarWidth,
 };

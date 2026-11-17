@@ -36,9 +36,6 @@ export const createRunSlice = (set: Setter, get: () => EvalStore, _api?: unknown
   new RunActionImpl(set, get, _api);
 
 class RunActionImpl {
-  readonly #get: () => EvalStore;
-  readonly #set: Setter;
-
   /**
    * Four local-first resources over the run entity, each owning ONE store
    * location (selectors keep reading those maps):
@@ -52,13 +49,9 @@ class RunActionImpl {
   readonly #benchmarkRunList;
   readonly #datasetRunList;
   readonly #runDetail;
-  readonly #runResults;
-  readonly #runEntity;
 
   constructor(set: Setter, get: () => EvalStore, _api?: unknown) {
     void _api;
-    this.#set = set;
-    this.#get = get;
 
     this.#benchmarkRunList = createReplicaSlice(benchmarkRunListResource, {
       actionPrefix: n('benchmarkRunList'),
@@ -91,7 +84,7 @@ class RunActionImpl {
       stateKey: 'runDetailReplica',
       view: recordLens<EvalStore, AgentEvalRunDetail>('runDetailMap'),
     });
-    this.#runResults = createReplicaSlice(runResultsResource, {
+    createReplicaSlice(runResultsResource, {
       actionPrefix: n('runResults'),
       fetcher: (runId) => agentEvalService.getRunResults(runId),
       get,
@@ -99,115 +92,12 @@ class RunActionImpl {
       stateKey: 'runResultsReplica',
       view: recordLens<EvalStore, AgentEvalRunResults>('runResultsMap'),
     });
-    this.#runEntity = linkReplicaEntity<AgentEvalRunListItem>([
+    linkReplicaEntity<AgentEvalRunListItem>([
       this.#benchmarkRunList,
       this.#datasetRunList,
       this.#runDetail,
     ]);
   }
-
-  abortRun = async (id: string): Promise<void> => {
-    await agentEvalService.abortRun(id);
-    await this.refreshRunDetail(id);
-  };
-
-  createRun = async (params: {
-    config?: EvalRunInputConfig;
-    datasetId: string;
-    experimentId?: string;
-    name?: string;
-    parentRunId?: string;
-    targetAgentId?: string;
-  }): Promise<any> => {
-    this.#set({ isCreatingRun: true }, false, n('createRun/start'));
-    try {
-      const result = await agentEvalService.createRun(params);
-      // Experiment-scoped runs are served by the experiment detail payload;
-      // benchmark-scoped runs by the benchmark run list.
-      if (params.experimentId) {
-        await this.#get().refreshExperimentDetail(params.experimentId);
-      } else {
-        await this.refreshRuns();
-      }
-      return result;
-    } finally {
-      this.#set({ isCreatingRun: false }, false, n('createRun/end'));
-    }
-  };
-
-  deleteRun = async (id: string): Promise<void> => {
-    await agentEvalService.deleteRun(id);
-    // Drop the run from every list / detail copy that currently holds it, plus
-    // its (unlinked) result payload.
-    this.#runEntity.remove(id);
-    this.#runResults.remove(id);
-    await this.refreshRuns();
-  };
-
-  refreshDatasetRuns = async (datasetId: string): Promise<void> => {
-    await this.#datasetRunList.revalidate(datasetId);
-  };
-
-  refreshRunDetail = async (id: string): Promise<void> => {
-    await this.#runDetail.revalidate(id);
-  };
-
-  refreshRuns = async (benchmarkId?: string): Promise<void> => {
-    await this.#benchmarkRunList.revalidate(benchmarkId);
-  };
-
-  batchResumeRunCases = async (
-    runId: string,
-    targets: Array<{ testCaseId: string; threadId?: string }>,
-  ): Promise<void> => {
-    await agentEvalService.batchResumeRunCases(runId, targets);
-    await Promise.all([this.refreshRunDetail(runId), this.#runResults.revalidate(runId)]);
-  };
-
-  retryRunCase = async (runId: string, testCaseId: string): Promise<void> => {
-    await agentEvalService.retryRunCase(runId, testCaseId);
-    await this.refreshRunDetail(runId);
-  };
-
-  resumeRunCase = async (runId: string, testCaseId: string, threadId?: string): Promise<void> => {
-    await agentEvalService.resumeRunCase(runId, testCaseId, threadId);
-    await this.refreshRunDetail(runId);
-  };
-
-  retryRunErrors = async (id: string): Promise<void> => {
-    await agentEvalService.retryRunErrors(id);
-    await this.refreshRunDetail(id);
-  };
-
-  startRun = async (id: string, force?: boolean): Promise<void> => {
-    await agentEvalService.startRun(id, force);
-    await this.refreshRunDetail(id);
-  };
-
-  updateRun = async (params: {
-    config?: EvalRunInputConfig;
-    datasetId?: string;
-    id: string;
-    name?: string;
-    targetAgentId?: string | null;
-  }): Promise<any> => {
-    const result = await agentEvalService.updateRun(params);
-    await this.refreshRunDetail(params.id);
-    await this.refreshRuns();
-    return result;
-  };
-
-  useFetchRunDetail = (id: string, config?: FetchConfig): ReplicaSyncResult =>
-    this.#runDetail.useSync(id || null, config);
-
-  useFetchRunResults = (id: string, config?: FetchConfig): ReplicaSyncResult =>
-    this.#runResults.useSync(id || null, config);
-
-  useFetchDatasetRuns = (datasetId?: string): ReplicaSyncResult =>
-    this.#datasetRunList.useSync(datasetId ? { datasetId } : null);
-
-  useFetchRuns = (benchmarkId?: string): ReplicaSyncResult =>
-    this.#benchmarkRunList.useSync(benchmarkId ? { benchmarkId } : null);
 }
 
 export type RunAction = Pick<RunActionImpl, keyof RunActionImpl>;

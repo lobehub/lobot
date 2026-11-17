@@ -3,14 +3,7 @@ import type { AddFavoriteParams, FavoriteItem, FavoriteType } from '@lobot/types
 import { lambdaClient } from '@/libs/trpc/client';
 
 class FavoriteService {
-  add = (params: AddFavoriteParams): Promise<FavoriteItem> =>
-    lambdaClient.favorite.add.mutate(params);
-
   list = (): Promise<FavoriteItem[]> => lambdaClient.favorite.list.query();
-
-  remove = async (id: string): Promise<void> => {
-    await lambdaClient.favorite.remove.mutate({ id });
-  };
 
   removeByTarget = async (type: FavoriteType, targetId: string): Promise<void> => {
     await lambdaClient.favorite.removeByTarget.mutate({ targetId, type });

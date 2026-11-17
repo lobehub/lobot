@@ -41,22 +41,16 @@ export const createMCPSlice = (set: Setter, get: () => DiscoverStore, _api?: unk
   new MCPActionImpl(set, get, _api);
 
 class MCPActionImpl {
-  readonly #categories;
-  readonly #detail;
-  readonly #get: () => DiscoverStore;
-  readonly #list;
-
   constructor(set: Setter, get: () => DiscoverStore, _api?: unknown) {
     void _api;
-    this.#get = get;
-    this.#list = createReplicaSlice(mcpListResource, {
+    createReplicaSlice(mcpListResource, {
       actionPrefix: n('list'),
       get,
       set,
       stateKey: 'mcpListReplica',
       view: recordLens<DiscoverStore, McpListResponse>('mcpListMap'),
     });
-    this.#detail = createReplicaSlice(mcpDetailResource, {
+    createReplicaSlice(mcpDetailResource, {
       actionPrefix: n('detail'),
       get,
       // The market no longer has this server: drop the entry and its persisted
@@ -66,7 +60,7 @@ class MCPActionImpl {
       stateKey: 'mcpDetailReplica',
       view: recordLens<DiscoverStore, DiscoverMcpDetail>('mcpDetailMap'),
     });
-    this.#categories = createReplicaSlice(mcpCategoriesResource, {
+    createReplicaSlice(mcpCategoriesResource, {
       actionPrefix: n('categories'),
       get,
       set,
@@ -74,88 +68,6 @@ class MCPActionImpl {
       view: recordLens<DiscoverStore, CategoryItem[]>('mcpCategoriesMap'),
     });
   }
-
-  #toSyncResult = (
-    sync: ReplicaSyncResult,
-    queryKey: string | undefined,
-    hasValue: boolean,
-    active: boolean,
-  ): MCPSyncResult => ({
-    ...sync,
-    // A disabled hook never loads; a settled entry with a value never flashes.
-    isLoading: active && !hasValue && (!sync.isHydrated || sync.isValidating),
-    mutate: sync.revalidate,
-    queryKey: active ? queryKey : undefined,
-  });
-
-  /**
-   * The MCP market list of one query. Each (filters · page) pair is its own
-   * entry, so the URL-driven pager walks entries instead of appending pages.
-   * Read the rows with `mcpSelectors.mcpList(queryKey)`.
-   */
-  useFetchMcpList = (
-    params: McpQueryParams = {},
-    options: { enabled?: boolean } = {},
-  ): MCPSyncResult => {
-    const { enabled = true } = options;
-    const normalized: McpListParams = {
-      ...params,
-      locale: globalHelpers.getCurrentLanguage(),
-      page: params.page ? Number(params.page) : 1,
-      pageSize: params.pageSize ? Number(params.pageSize) : 21,
-    };
-    const queryKey = mcpListQueryKey(normalized);
-    const sync = this.#list.useSync(normalized, { enabled });
-    return this.#toSyncResult(sync, queryKey, !!this.#get().mcpListMap[queryKey], enabled);
-  };
-
-  /**
-   * One MCP detail by identifier (with an optional pinned `version`). Read it
-   * with `mcpSelectors.mcpDetail(queryKey)`; `undefined` after the sync settles
-   * means the market has no such identifier — or no identifier was given, in
-   * which case the read is disabled and the hook reports no loading.
-   */
-  useFetchMcpDetail = (
-    { identifier, version }: { identifier?: string; version?: string } = {},
-    options: { enabled?: boolean } = {},
-  ): MCPSyncResult => {
-    const { enabled = true } = options;
-    // Without an identifier there is nothing to fetch — never load a blank key.
-    const active = enabled && !!identifier;
-    const normalized: McpDetailParams = {
-      identifier: identifier ?? '',
-      locale: globalHelpers.getCurrentLanguage(),
-      version,
-    };
-    const queryKey = mcpDetailQueryKey(normalized);
-    const sync = this.#detail.useSync(normalized, { enabled: active });
-    return this.#toSyncResult(
-      sync,
-      queryKey,
-      this.#get().mcpDetailMap[queryKey] !== undefined,
-      active,
-    );
-  };
-
-  /**
-   * Category counts of one query (the search term). The community sidebar reads
-   * `mcpSelectors.mcpCategories(queryKey)`.
-   */
-  useMcpCategories = (
-    params: CategoryListQuery = {},
-    options: { enabled?: boolean } = {},
-  ): MCPSyncResult => {
-    const { enabled = true } = options;
-    const normalized: McpCategoriesParams = {
-      ...params,
-      locale: globalHelpers.getCurrentLanguage(),
-    };
-    const queryKey = mcpCategoriesQueryKey(normalized);
-    // Static, persisted counts: like the SWR hook it replaces, a window focus
-    // does not refetch them.
-    const sync = this.#categories.useSync(normalized, { enabled, revalidateOnFocus: false });
-    return this.#toSyncResult(sync, queryKey, !!this.#get().mcpCategoriesMap[queryKey], enabled);
-  };
 }
 
 export type MCPAction = Pick<MCPActionImpl, keyof MCPActionImpl>;

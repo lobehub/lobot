@@ -13,11 +13,6 @@ class KnowledgeBaseContentActionImpl {
     void get;
   }
 
-  addFilesToKnowledgeBase = async (knowledgeBaseId: string, ids: string[]): Promise<void> => {
-    const fileStore = useFileStore.getState();
-    await fileStore.addResourcesToKnowledgeBase(knowledgeBaseId, ids);
-  };
-
   removeFilesFromKnowledgeBase = async (knowledgeBaseId: string, ids: string[]): Promise<void> => {
     const fileStore = useFileStore.getState();
     await fileStore.removeResourcesFromKnowledgeBase(knowledgeBaseId, ids);

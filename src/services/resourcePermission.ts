@@ -33,49 +33,11 @@ class ResourcePermissionService {
     return lambdaClient.resourcePermission.listCollaborators.query({ resourceId, resourceType });
   };
 
-  addCollaborators = async (
-    resourceType: PermissionResourceType,
-    resourceId: string,
-    userIds: string[],
-    accessLevel: ResourceAccessLevel,
-  ): Promise<void> => {
-    await lambdaClient.resourcePermission.addCollaborators.mutate({
-      accessLevel,
-      resourceId,
-      resourceType,
-      userIds,
-    });
-  };
-
-  removeCollaborator = async (
-    resourceType: PermissionResourceType,
-    resourceId: string,
-    userId: string,
-  ): Promise<void> => {
-    await lambdaClient.resourcePermission.removeCollaborator.mutate({
-      resourceId,
-      resourceType,
-      userId,
-    });
-  };
-
   getGeneralAccess = async (
     resourceType: PermissionResourceType,
     resourceId: string,
   ): Promise<ResourceGeneralAccess> => {
     return lambdaClient.resourcePermission.getGeneralAccess.query({ resourceId, resourceType });
-  };
-
-  setAccessLevel = async (
-    resourceType: PermissionResourceType,
-    resourceId: string,
-    accessLevel: ResourceAccessLevel,
-  ): Promise<ResourceGeneralAccess> => {
-    return lambdaClient.resourcePermission.setGeneralAccess.mutate({
-      accessLevel,
-      resourceId,
-      resourceType,
-    });
   };
 }
 

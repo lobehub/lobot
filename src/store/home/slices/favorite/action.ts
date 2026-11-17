@@ -38,15 +38,6 @@ const findRow = (items: FavoriteItem[], id: string): FavoriteItem | undefined =>
 const isTarget = (item: FavoriteItem, type: FavoriteType, targetId: string) =>
   item.type === type && item.targetId === targetId;
 
-/** Insert or refresh `item` in place, the way the server upserts by target. */
-const upsert = (items: FavoriteItem[], item: FavoriteItem): FavoriteItem[] => {
-  const index = items.findIndex((row) => isTarget(row, item.type, item.targetId));
-  if (index === -1) return [...items, item];
-  const next = [...items];
-  next[index] = { ...item, id: items[index].id };
-  return next;
-};
-
 const RETRY_DELAYS_MS = [1000, 3000];
 
 /** Run a background write, retrying after each delay before giving up. */
@@ -113,48 +104,6 @@ class FavoriteActionImpl {
     }
   };
 
-  addFavorite = async (input: AddFavoriteParams): Promise<void> => {
-    // The server stores the cut title; keep the optimistic row and later
-    // snapshot comparisons on the same value.
-    const params = { ...input, title: toFavoriteTitle(input.title) };
-    const optimisticItem: FavoriteItem = {
-      icon: params.icon ?? null,
-      id: `optimistic:${params.type}:${params.targetId}`,
-      path: params.path,
-      targetId: params.targetId,
-      title: params.title,
-      type: params.type,
-    };
-
-    const operation = this.#list.optimistic(
-      FAVORITE_LIST_KEY,
-      (items = []) => upsert(items, optimisticItem),
-      () => this.#enqueue(params.type, params.targetId, () => favoriteService.add(params)),
-      {
-        confirm:
-          (saved) =>
-          (items = []) => {
-            const index = items.findIndex((row) => isTarget(row, saved.type, saved.targetId));
-            if (index === -1) return [...items, saved];
-            const next = [...items];
-            next[index] = saved;
-            return next;
-          },
-      },
-    );
-    // Settles once the confirmed row (with its real id) is in the list.
-    this.#pendingAdds.add(operation);
-    try {
-      await operation;
-    } finally {
-      this.#pendingAdds.delete(operation);
-    }
-  };
-
-  refreshFavorites = async (): Promise<void> => {
-    await this.#list.revalidate();
-  };
-
   removeFavorite = async (type: FavoriteType, targetId: string): Promise<void> => {
     await this.#list.optimistic(
       FAVORITE_LIST_KEY,
@@ -188,12 +137,6 @@ class FavoriteActionImpl {
         return operation;
       },
     );
-  };
-
-  toggleFavorite = async (params: AddFavoriteParams): Promise<void> => {
-    const isFavorite = favoriteSelectors.isFavorite(params.type, params.targetId)(this.#get());
-    if (isFavorite) await this.removeFavorite(params.type, params.targetId);
-    else await this.addFavorite(params);
   };
 
   /**

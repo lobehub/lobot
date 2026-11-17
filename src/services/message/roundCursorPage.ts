@@ -78,10 +78,6 @@ export const readMessagesByRoundCursor = async (
 
 const partialHeadWindows = new Set<string>();
 
-// A head page smaller than the client runtime's history window: a client-side run must reload it first.
-export const isPartialHeadWindow = (context: MessageListQueryContext): boolean =>
-  partialHeadWindows.has(primeKey(context));
-
 /** The `getMessagesByCursor` input for one forward page, starting after `cursor`. */
 const toForwardRoundCursorQueryInput = (
   params: MessageListQueryContext,
@@ -155,24 +151,6 @@ const primedPages = new Map<string, Promise<MessageListPage>>();
 
 const primeKey = (context: MessageListQueryContext) =>
   JSON.stringify(normalizeMessageListQueryContext(context));
-
-/**
- * Hand over a conversation's newest page already in flight; its first head read
- * takes it instead of asking again. The page must be read without tool-payload
- * projection: whole payloads are the answer that cannot lose data for any reader.
- */
-export const primeMessageListPage = (
-  context: MessageListQueryContext,
-  page: Promise<MessageListPage>,
-): void => {
-  const key = primeKey(context);
-  if (primedPages.has(key)) return;
-
-  // The taker owns failure (it falls back to its own read); an unclaimed page
-  // must not surface as an unhandled rejection.
-  page.catch(() => {});
-  primedPages.set(key, page);
-};
 
 /** Hand over a primed page once: every later read of the conversation goes to the server. */
 export const takePrimedMessageListPage = (

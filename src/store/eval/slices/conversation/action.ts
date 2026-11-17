@@ -48,11 +48,9 @@ export const createConversationSlice = (set: Setter, get: () => EvalStore, api?:
   new ConversationActionImpl(set, get, api);
 
 class ConversationActionImpl {
-  readonly #topics;
-
   constructor(set: Setter, get: () => EvalStore, _api?: unknown) {
     void _api;
-    this.#topics = createReplicaSlice(conversationPickerResource, {
+    createReplicaSlice(conversationPickerResource, {
       actionPrefix: n('topics'),
       fetcher: fetchConversationTopics,
       get,
@@ -61,14 +59,6 @@ class ConversationActionImpl {
       view: recordLens<EvalStore, EvalConversationTopic[]>('conversationTopicMap'),
     });
   }
-
-  /** Topics the case picker offers for a submitted query. */
-  useFetchConversationTopics = (query: string): ReplicaQueryResult<EvalConversationTopic[]> => {
-    const params = { query };
-    const data = useEvalStore((s) => s.conversationTopicMap[conversationPickerKey(params)]);
-    const sync = this.#topics.useSync(params);
-    return toReplicaQueryResult(sync, data, true);
-  };
 }
 
 export type ConversationAction = Pick<ConversationActionImpl, keyof ConversationActionImpl>;

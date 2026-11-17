@@ -13,14 +13,7 @@ const getDocumentsByTopicId = (topicId: string | undefined) => (s: NotebookStore
   return s.notebookMap[topicId] || [];
 };
 
-const hasDocuments = (topicId: string | undefined) => (s: NotebookStore) => {
-  if (!topicId) return false;
-  const docs = s.notebookMap[topicId];
-  return docs && docs.length > 0;
-};
-
 export const notebookSelectors = {
   getDocumentById,
   getDocumentsByTopicId,
-  hasDocuments,
 };

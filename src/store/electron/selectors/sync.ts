@@ -17,18 +17,11 @@ const remoteServerUrl = (s: ElectronState) =>
     ? OFFICIAL_CLOUD_URL
     : s.dataSyncConfig.remoteServerUrl || '';
 
-/**
- * Returns the raw remoteServerUrl from config without transformation.
- * Use this when you need the original configured value (e.g., for editing forms).
- */
-const rawRemoteServerUrl = (s: ElectronState) => s.dataSyncConfig.remoteServerUrl || '';
-
 const isOfficialServer = (s: ElectronState) => isOfficialCloudServer(remoteServerUrl(s));
 
 export const electronSyncSelectors = {
   isOfficialServer,
   isSyncActive,
-  rawRemoteServerUrl,
   remoteServerUrl,
   storageMode,
 };

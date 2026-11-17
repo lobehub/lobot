@@ -20,10 +20,6 @@ export class StreamingStatesActionImpl {
     this.#get = get;
   }
 
-  internal_toggleSearchWorkflow = (loading: boolean, id?: string): void => {
-    this.#get().internal_toggleLoadingArrays('searchWorkflowLoadingIds', loading, id);
-  };
-
   internal_toggleToolCallingStreaming = (id: string, streaming: boolean[] | undefined): void => {
     const previous = this.#get().toolCallingStreamIds;
     const next = produce(previous, (draft) => {

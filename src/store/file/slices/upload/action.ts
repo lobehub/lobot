@@ -115,35 +115,6 @@ class FileUploadActionImpl {
     void get;
   }
 
-  uploadBase64FileWithProgress = async (
-    base64: string,
-  ): Promise<UploadWithProgressResult | undefined> => {
-    let uploadedPathname: string | undefined;
-    try {
-      // Extract image dimensions from base64 data
-      const dimensions = await getImageDimensions(base64);
-
-      const { metadata, fileType, size, hash } = await uploadService.uploadBase64ToS3(base64);
-      uploadedPathname = metadata.path;
-
-      const res = await fileService.createFile({
-        fileType,
-        hash,
-        metadata: { ...metadata, ...dimensions },
-        name: metadata.filename,
-        size,
-        url: metadata.path,
-      });
-      uploadedPathname = undefined;
-      return { ...res, dimensions, filename: metadata.filename };
-    } catch (error) {
-      if (uploadedPathname) await uploadService.releaseUpload(uploadedPathname);
-      if (handleFileUploadError(error)) return;
-
-      throw error;
-    }
-  };
-
   uploadWithProgress = async ({
     file,
     onStatusUpdate,

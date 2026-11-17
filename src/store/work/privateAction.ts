@@ -101,12 +101,4 @@ export class WorkPrivateAction {
     });
     return { items, nextCursor };
   };
-
-  /** Seed a gallery filter from storage before its route paints. */
-  preHydrateWorkspaceWorks = (params: WorkspaceWorksParams): Promise<boolean> => {
-    const scope = cacheScope.get();
-    // The slot may still hold the previous identity's rows; drop them before seeding.
-    this.workspaceWorks.ensureScope(scope);
-    return this.workspaceWorks.hydrate(params, scope);
-  };
 }

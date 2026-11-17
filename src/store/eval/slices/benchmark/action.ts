@@ -66,13 +66,10 @@ export const createBenchmarkSlice = (set: Setter, get: () => EvalStore, _api?: u
 
 class BenchmarkActionImpl {
   readonly #detail;
-  readonly #entity;
-  readonly #get: () => EvalStore;
   readonly #list;
 
   constructor(set: Setter, get: () => EvalStore, _api?: unknown) {
     void _api;
-    this.#get = get;
     this.#list = createReplicaSlice(benchmarkListResource, {
       actionPrefix: 'benchmarkList',
       entity: arrayEntity<BenchmarkListItem>((benchmark) => benchmark.id),
@@ -95,106 +92,8 @@ class BenchmarkActionImpl {
     });
     // The same benchmark lives in the list and in its detail page: an edit or a
     // delete patches both copies at once.
-    this.#entity = linkReplicaEntity<BenchmarkListItem>([this.#list, this.#detail]);
+    linkReplicaEntity<BenchmarkListItem>([this.#list, this.#detail]);
   }
-
-  createBenchmark = async (params: {
-    description?: string;
-    identifier: string;
-    metadata?: Record<string, unknown>;
-    name: string;
-    rubrics?: any[];
-  }): Promise<any> => {
-    const result = await agentEvalService.createBenchmark({
-      description: params.description,
-      identifier: params.identifier,
-      metadata: params.metadata,
-      name: params.name,
-      rubrics: params.rubrics ?? [],
-    });
-    await this.refreshBenchmarks();
-    return result;
-  };
-
-  deleteBenchmark = async (id: string): Promise<void> => {
-    const result = await agentEvalService.deleteBenchmark(id);
-    // Built-in benchmarks are refused with `{ success: false }`; surface it instead of
-    // dropping the row and letting the refresh bring it back.
-    if (result?.success === false) throw new Error(result.error);
-    // Drop the row from the list and the detail cache at once, then converge.
-    this.#entity.remove(id);
-    await this.refreshBenchmarks();
-  };
-
-  updateBenchmark = async (params: {
-    description?: string;
-    id: string;
-    metadata?: Record<string, unknown>;
-    name: string;
-  }): Promise<void> => {
-    // Optimistic on every copy; the refetch below reconciles server-owned fields.
-    await this.#entity.optimistic(
-      params.id,
-      (benchmark) => ({ ...benchmark, ...params }),
-      () =>
-        agentEvalService.updateBenchmark({
-          description: params.description,
-          id: params.id,
-          metadata: params.metadata,
-          name: params.name,
-        }),
-    );
-    await Promise.all([this.refreshBenchmarks(), this.refreshBenchmarkDetail(params.id)]);
-  };
-
-  refreshBenchmarkDetail = async (id: string): Promise<void> => {
-    await this.#detail.revalidate(id);
-  };
-
-  refreshBenchmarks = async (): Promise<void> => {
-    await this.#list.revalidate();
-  };
-
-  /**
-   * Fetch orchestration only (the value is read from the store). Keeps the
-   * pre-migration `{ data, error, isLoading, mutate }` shape so the overview's
-   * `AsyncBoundary` and its retry keep working unchanged.
-   */
-  useFetchBenchmarks = (): BenchmarkListSyncResult => {
-    // Subscribe so a replica commit (hydrate or server replace) re-renders the
-    // consumer; the value itself is read through the store below.
-    useEvalStore((s) => s.benchmarkListInit);
-    const sync = this.#list.useSync(LIST_PARAMS);
-    const { benchmarkList, benchmarkListInit } = this.#get();
-    return {
-      ...sync,
-      data: benchmarkListInit ? benchmarkList : undefined,
-      isLoading: !sync.isHydrated || (sync.isValidating && !benchmarkListInit),
-      mutate: sync.revalidate,
-    };
-  };
-
-  /**
-   * Fetch orchestration only (the page is read from `benchmarkDetailMap`).
-   * Keeps the pre-migration `{ error, isLoading, mutate }` shape.
-   */
-  useFetchBenchmarkDetail = (id?: string): BenchmarkDetailSyncResult => {
-    const sync = this.#detail.useSync(id ?? null, {
-      // A benchmark deleted elsewhere answers NOT_FOUND, yet a hydrated copy
-      // would keep the page painting it (the route only shows the error when
-      // the map entry is absent), even across reloads. NOT_FOUND is
-      // definitive: drop the cached detail and its persisted row. Transient
-      // failures keep the cached page on screen.
-      onError: (error) => {
-        if (id && isTrpcErrorCode(error, 'NOT_FOUND')) this.#detail.remove(id);
-      },
-    });
-    return {
-      error: sync.error,
-      isLoading: !sync.isHydrated || sync.isValidating,
-      mutate: sync.revalidate,
-    };
-  };
 }
 
 export type BenchmarkAction = Pick<BenchmarkActionImpl, keyof BenchmarkActionImpl>;

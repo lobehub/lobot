@@ -19,18 +19,6 @@ import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
 /** Gateway stream features every run started from this client handles. */
 const STREAM_FEATURES: AgentStreamClientFeature[] = ['file_works', 'member_runtime_end'];
 
-/** An older server's strict input schema rejected the `streamFeatures` key. */
-const isUnknownStreamFeaturesError = (error: unknown): boolean => {
-  const { data, message } = (error ?? {}) as { data?: { code?: string }; message?: unknown };
-
-  return (
-    data?.code === 'BAD_REQUEST' &&
-    typeof message === 'string' &&
-    message.includes('unrecognized_keys') &&
-    message.includes('streamFeatures')
-  );
-};
-
 /**
  * Resume instruction for an operation that hit `human_approve_required`. When
  * present, the new op acts as the "continue" step: server reads the target tool
@@ -301,26 +289,6 @@ class AiAgentService {
     return await lambdaClient.aiAgent.getServerDefaultHeterogeneousCapability.query();
   }
 
-  /** Holds the run fee of an external agent this desktop spawns itself. */
-  async beginLocalHeteroRunFee(
-    params: { topicId?: string },
-    options: { signal?: AbortSignal; workspaceId: string | null },
-  ) {
-    return await createWorkspaceLambdaClient(
-      options.workspaceId,
-    ).aiAgent.beginLocalHeteroRunFee.mutate(params, { signal: options.signal });
-  }
-
-  /** Charges or gives back that fee once the run ends, in the scope it was held in. */
-  async finishLocalHeteroRunFee(
-    params: { durationMs?: number; feeId: string; reason: 'done' | 'error' | 'interrupted' },
-    options: { signal?: AbortSignal; workspaceId: string | null },
-  ) {
-    return await createWorkspaceLambdaClient(
-      options.workspaceId,
-    ).aiAgent.finishLocalHeteroRunFee.mutate(params, { signal: options.signal });
-  }
-
   /**
    * Execute a single Agent task.
    * Returns the operationId needed to connect to the Agent Gateway.
@@ -416,11 +384,6 @@ class AiAgentService {
     return await lambdaClient.aiAgent.execSubAgentTask.mutate(params);
   }
 
-  /** This tab stopped standing by on the relay channel it named in `execSubAgentTask`. */
-  async releaseSubAgentLlmRelay(params: { channel: string }) {
-    return await lambdaClient.aiAgent.releaseSubAgentLlmRelay.mutate(params);
-  }
-
   /**
    * Get SubAgent task status by threadId
    * Works for both Group and Single Agent mode tasks
@@ -458,88 +421,6 @@ class AiAgentService {
    */
   async setQueuedMessages(params: { operationId: string; pending: boolean }) {
     return await lambdaClient.aiAgent.setQueuedMessages.mutate(params);
-  }
-
-  /**
-   * Stop a run parked on tool approval: settle the pending tool rows and end
-   * the operation without running anything or continuing the model.
-   *
-   * Not `interruptTask` — that one assumes a live loop will persist the
-   * outcome, which a parked run does not have.
-   */
-  async stopPendingApproval(params: {
-    batchId: string;
-    operationId: string;
-    toolMessageIds: string[];
-    topicId: string;
-  }) {
-    return await lambdaClient.aiAgent.stopPendingApproval.mutate(params);
-  }
-
-  /**
-   * Try the Cloud durable first-winner path for an active Web card. A false
-   * result means this deployment has no generic intervention store and the
-   * caller should use the legacy OSS Gateway resume path.
-   */
-  async resolveAgentInterventionBySource(
-    params: ResolveAgentInterventionBySourceParams,
-  ): Promise<ResolveAgentInterventionBySourceResult> {
-    const mutate = lambdaClient.aiAgent.resolveAgentInterventionBySource.mutate;
-    let result: Awaited<ReturnType<typeof mutate>>;
-    try {
-      // This client subscribes to the continuation it starts.
-      result = await mutate({ ...params, streamFeatures: STREAM_FEATURES });
-    } catch (error) {
-      // A server from before `streamFeatures` validates this input strictly and
-      // rejects the unknown key before claiming anything, so resending the same
-      // resolution without it is safe. That server never renames a mirrored
-      // member terminal, so dropping the declaration loses nothing.
-      if (!isUnknownStreamFeaturesError(error)) throw error;
-      result = await mutate(params);
-    }
-
-    if (!result.success) return { handled: false };
-
-    return {
-      execution: 'execution' in result ? result.execution : undefined,
-      handled: true,
-      state: result.state,
-    };
-  }
-
-  /** Fetch the authoritative v2 snapshot and view/resolve authorization for an active card. */
-  async getAgentInterventionReviewBySource(params: GetAgentInterventionReviewBySourceParams) {
-    return await lambdaClient.aiAgent.getAgentInterventionReviewBySource.mutate(params);
-  }
-
-  /**
-   * Create Thread for client-side task execution (desktop only, single agent mode)
-   *
-   * This method is called when runInClient=true on desktop client.
-   * It creates the Thread but does NOT execute the task - execution happens locally.
-   */
-  async createClientTaskThread(params: CreateClientTaskThreadParams) {
-    return await lambdaClient.aiAgent.createClientTaskThread.mutate(params);
-  }
-
-  /**
-   * Create Thread for client-side task execution in Group mode
-   *
-   * This method is specifically for Group Chat scenarios where:
-   * - Messages may have different agentIds (supervisor, workers)
-   * - Thread messages query should not filter by agentId
-   */
-  async createClientGroupAgentTaskThread(params: CreateClientGroupAgentTaskThreadParams) {
-    return await lambdaClient.aiAgent.createClientGroupAgentTaskThread.mutate(params);
-  }
-
-  /**
-   * Update Thread status after client-side task execution completes
-   *
-   * This method is called by desktop client after task execution finishes.
-   */
-  async updateClientTaskThreadStatus(params: UpdateClientTaskThreadStatusParams) {
-    return await lambdaClient.aiAgent.updateClientTaskThreadStatus.mutate(params);
   }
 }
 

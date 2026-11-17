@@ -1,4 +1,4 @@
-import { AsyncTaskStatus } from '@/types/asyncTask';
+import type { AsyncTaskStatus } from '@/types/asyncTask';
 
 const BASE_INTERVAL_MS = 1000;
 /**
@@ -20,20 +20,3 @@ interface GenerationStatusPollingState {
   /** Latest known task status. */
   status?: AsyncTaskStatus;
 }
-
-/**
- * SWR `refreshInterval` for image/video generation status polling: stop once the
- * task is terminal, otherwise double from 1s every 5 requests up to the cap.
- */
-export const getGenerationStatusPollingInterval = ({
-  hasError,
-  requestCount,
-  status,
-}: GenerationStatusPollingState): number => {
-  if (status === AsyncTaskStatus.Success || status === AsyncTaskStatus.Error) return 0;
-
-  const backoffStep = Math.floor(requestCount / REQUESTS_PER_BACKOFF_STEP);
-  const interval = Math.min(BASE_INTERVAL_MS * 2 ** backoffStep, MAX_INTERVAL_MS);
-
-  return hasError ? Math.min(interval * 2, MAX_ERROR_INTERVAL_MS) : interval;
-};

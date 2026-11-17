@@ -28,52 +28,8 @@ class KnowledgeBaseService {
     return lambdaClient.knowledgeBase.removeKnowledgeBase.mutate({ id });
   };
 
-  transferKnowledgeBase = async (
-    id: string,
-    targetWorkspaceId: string | null,
-    targetVisibility?: 'private' | 'public',
-  ) => {
-    return lambdaClient.knowledgeBase.transferKnowledgeBase.mutate({
-      id,
-      targetVisibility,
-      targetWorkspaceId,
-    });
-  };
-
-  copyKnowledgeBaseToWorkspace = async (
-    id: string,
-    targetWorkspaceId: string | null,
-    targetVisibility?: 'private' | 'public',
-  ) => {
-    return lambdaClient.knowledgeBase.copyKnowledgeBaseToWorkspace.mutate({
-      id,
-      targetVisibility,
-      targetWorkspaceId,
-    });
-  };
-
-  publishKnowledgeBaseToWorkspace = async (id: string) => {
-    return lambdaClient.knowledgeBase.publishKnowledgeBaseToWorkspace.mutate({ id });
-  };
-
-  setKnowledgeBaseVisibility = async (id: string, visibility: 'private' | 'public') => {
-    return lambdaClient.knowledgeBase.setKnowledgeBaseVisibility.mutate({ id, visibility });
-  };
-
   addFilesToKnowledgeBase = async (knowledgeBaseId: string, ids: string[]) => {
     return lambdaClient.knowledgeBase.addFilesToKnowledgeBase.mutate({ ids, knowledgeBaseId });
-  };
-
-  reorderKnowledgeItems = async (params: {
-    knowledgeBaseId: string;
-    dragIds: string[];
-    targetId: string;
-    position: 'before' | 'after';
-    parentId: string | null;
-    sorter?: 'custom' | 'name' | 'createdAt' | 'size' | 'updatedAt';
-    sortType?: 'asc' | 'desc';
-  }) => {
-    return lambdaClient.knowledgeBase.reorderKnowledgeItems.mutate(params);
   };
 
   removeFilesFromKnowledgeBase = async (knowledgeBaseId: string, ids: string[]) => {

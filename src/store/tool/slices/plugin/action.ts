@@ -80,29 +80,6 @@ class PluginActionImpl {
   }
 
   /**
-   * Whether the list holds the server's full records. A list hydrated from the
-   * persisted display projection has no settings and no connection parameters,
-   * and an un-loaded list has nothing at all: a write merged over either would
-   * replace the plugin's real settings / connection with a partial object.
-   */
-  #hasServerRecords = (): boolean =>
-    this.#get().installedPluginsReplica.entries[INSTALLED_PLUGINS_KEY]?.source === 'server';
-
-  /**
-   * Load the server's full records before a write merges onto them. Rejects
-   * when they cannot be loaded, so a write never falls back to the projection.
-   */
-  #loadServerRecords = async (): Promise<void> => {
-    await this.#get().refreshPlugins();
-    if (!this.#hasServerRecords())
-      throw new Error('The installed plugins have not been loaded from the server');
-  };
-
-  checkPluginsIsInstalled = async (_plugins: string[]): Promise<void> => {
-    // Old plugin system has been deprecated, skip auto-installation
-  };
-
-  /**
    * Fetch the installed plugins and confirm the replica with them. The painted
    * list stays on screen while the network answers.
    *
@@ -120,20 +97,6 @@ class PluginActionImpl {
     await this.#installedPlugins.fetch(INSTALLED_PLUGINS_PARAMS, { fresh: true });
   };
 
-  /**
-   * Uninstall a plugin. The row stays until the server confirms (a detail pane
-   * bound to it would otherwise blank and blink back on a rejected delete),
-   * then leaves the loaded list *and* the persisted rows: `removeEntity` also
-   * guards hydrates already in flight, so a reload never paints the uninstalled
-   * plugin again.
-   */
-  uninstallPlugin = async (identifier: string): Promise<void> => {
-    await pluginService.uninstallPlugin(identifier);
-    this.#installedPlugins.removeEntity(identifier);
-
-    await this.#get().refreshPlugins();
-  };
-
   updateInstallLoadingState = (id: string, loading: boolean | undefined): void => {
     this.#set(
       { pluginInstallLoading: { ...this.#get().pluginInstallLoading, [id]: loading } },
@@ -148,119 +111,6 @@ class PluginActionImpl {
       false,
       'updateInstallError',
     );
-  };
-
-  updateInstallMcpPlugin = async (id: string, value: any): Promise<void> => {
-    // The server replaces `customParams` as a whole: merge onto the full record,
-    // never the display projection (which has no connection parameters).
-    if (!this.#hasServerRecords()) await this.#loadServerRecords();
-
-    const installedPlugin = pluginSelectors.getInstalledPluginById(id)(this.#get());
-
-    if (!installedPlugin) return;
-
-    const customParams = {
-      ...installedPlugin.customParams,
-      mcp: merge(installedPlugin.customParams?.mcp, value),
-    };
-
-    await this.#installedPlugins.optimistic(
-      INSTALLED_PLUGINS_KEY,
-      (plugins) => plugins.map((p) => (p.identifier === id ? { ...p, customParams } : p)),
-      () => pluginService.updatePlugin(id, { customParams: { mcp: customParams.mcp } }),
-    );
-
-    await this.#get().refreshPlugins();
-  };
-
-  updatePluginSettings = async <T>(
-    id: string,
-    settings: Partial<T>,
-    options: { override?: boolean } = {},
-  ): Promise<void> => {
-    const { override } = options;
-
-    // Publish this write's controller before anything is awaited, so a newer
-    // call always sees — and aborts — the one still in flight.
-    this.#get().updatePluginSettingsSignal?.abort(MESSAGE_CANCEL_FLAT);
-    const controller = new AbortController();
-    this.#set({ updatePluginSettingsSignal: controller }, false, n('updatePluginSettings/signal'));
-
-    // The server replaces the whole settings object: merge onto the server's
-    // settings, never the display projection (which has none), or saving one
-    // field would erase the others. Synchronous once confirmed, so the row
-    // updates in the same tick as the edit.
-    if (!this.#hasServerRecords()) {
-      await this.#loadServerRecords();
-      // A newer write took over while the records were loading.
-      if (controller.signal.aborted) return;
-    }
-
-    const previousSettings = pluginSelectors.getPluginSettingsById(id)(this.#get());
-    const nextSettings = override ? settings : merge(previousSettings, settings);
-
-    // The row shows the new settings immediately; a failed or aborted write
-    // rolls it back to the confirmed value plus any newer write in flight.
-    await this.#installedPlugins.optimistic(
-      INSTALLED_PLUGINS_KEY,
-      (plugins) => plugins.map((p) => (p.identifier === id ? { ...p, settings: nextSettings } : p)),
-      () => pluginService.updatePluginSettings(id, nextSettings, controller.signal),
-    );
-
-    await this.#get().refreshPlugins();
-  };
-
-  /**
-   * Fetch orchestration for the installed plugins: hydrate the persisted display
-   * projection, then confirm the full records from the server on the same SWR
-   * schedule as before. Read the list through `pluginSelectors`; this only
-   * reports fetch flags.
-   */
-  useFetchInstalledPlugins = (enable: boolean): ReplicaSyncResult =>
-    this.#installedPlugins.useSync(INSTALLED_PLUGINS_PARAMS, { enabled: enable });
-
-  /**
-   * The `ui://` resource (HTML view) an MCP App tool result renders with, read
-   * from `server`, the one the tool ran on, as `agentId`'s runs resolve it, and
-   * where it ran (`onThisDevice`). The HTML is only the view's: it stays in this
-   * request's cache, not in the store.
-   */
-  useFetchMcpAppResource = (
-    identifier: string,
-    resourceUri: string,
-    {
-      agentId,
-      onThisDevice = false,
-      server,
-    }: { agentId?: string; onThisDevice?: boolean; server?: string },
-  ): SWRResponse<ReadResourceResult | undefined> =>
-    useClientDataSWR(
-      mcpAppKeys.resource(identifier, resourceUri, { agentId, onThisDevice, server }),
-      () =>
-        mcpService.readMcpAppResource(identifier, resourceUri, { agentId, onThisDevice, server }),
-      { revalidateOnFocus: false, revalidateOnReconnect: false },
-    );
-
-  useCheckPluginsIsInstalled = (enable: boolean, plugins: string[]): SWRResponse => {
-    return useClientDataSWR(enable ? plugins : null, this.#get().checkPluginsIsInstalled);
-  };
-
-  validatePluginSettings = async (identifier: string): Promise<ValidationResult | undefined> => {
-    // Validate the full record: the display projection has no settings, so it
-    // would report every required field as missing.
-    const plugin = pluginSelectors.getInstalledPluginById(identifier)(this.#get());
-    const manifest = plugin?.manifest;
-    if (!manifest || !manifest.settings) return;
-    const settings = pluginSelectors.getPluginSettingsById(identifier)(this.#get());
-
-    // validate the settings
-    const { Validator } = await import('@cfworker/json-schema');
-    const validator = new Validator(manifest.settings as Schema);
-    const result = validator.validate(settings);
-
-    if (!result.valid) return { errors: result.errors, valid: false };
-
-    return { errors: [], valid: true };
   };
 }
 

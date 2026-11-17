@@ -39,25 +39,6 @@ export class FileService {
     return lambdaClient.file.createFile.mutate({ ...params, knowledgeBaseId } as CreateFileParams);
   };
 
-  getFile = async (id: string): Promise<FileItem> => {
-    const item = await lambdaClient.file.findById.query({ id });
-
-    if (!item) {
-      throw new Error('file not found');
-    }
-
-    return {
-      createdAt: item.createdAt,
-      id: item.id,
-      name: item.name,
-      size: item.size,
-      source: item.source,
-      type: item.fileType,
-      updatedAt: item.updatedAt,
-      url: item.url,
-    };
-  };
-
   /** Storage URL a canvas can read (no `/f/:id` redirect); see the router for why. */
   getReadableUrl = async (id: string): Promise<string> => {
     const { url } = await lambdaClient.file.getReadableUrl.query({ id });
@@ -79,10 +60,6 @@ export class FileService {
   // V2.0 Migrate from getFiles to getKnowledgeItems
   getKnowledgeItems = async (params: QueryFileListParams) => {
     return lambdaClient.file.getKnowledgeItems.query(params as QueryFileListSchemaType);
-  };
-
-  getKnowledgeItemStatusesByIds = async (ids: string[]): Promise<KnowledgeItemStatus[]> => {
-    return lambdaClient.file.getKnowledgeItemStatusesByIds.query({ ids });
   };
 
   resolveKnowledgeItemIds = async (params: QueryFileListParams) => {
@@ -147,68 +124,9 @@ export class FileService {
     return lambdaClient.file.checkFileHash.mutate({ hash });
   };
 
-  removeFileAsyncTask = async (id: string, type: 'embedding' | 'chunk') => {
-    return lambdaClient.file.removeFileAsyncTask.mutate({ id, type });
-  };
-
-  updateFile = async (
-    id: string,
-    data: {
-      metadata?: Record<string, any>;
-      name?: string;
-      parentId?: string | null;
-    },
-  ) => {
-    return lambdaClient.file.updateFile.mutate({ id, ...data });
-  };
-
   /** The Docs home list: pages and files mixed, newest update first. */
   getDocsHomeItems = async (tab: 'mine' | 'recent' | 'shared', limit?: number) => {
     return lambdaClient.file.homeItems.query({ limit, tab });
-  };
-
-  getRecentFiles = async (limit?: number, visibility?: QueryFileListParams['visibility']) => {
-    return lambdaClient.file.recentFiles.query({ limit, visibility });
-  };
-
-  getRecentPages = async (limit?: number, visibility?: QueryFileListParams['visibility']) => {
-    return lambdaClient.file.recentPages.query({ limit, visibility });
-  };
-
-  transferEntity = async (
-    id: string,
-    entityType: 'document' | 'file' | 'folder',
-    targetWorkspaceId: string | null,
-    targetVisibility?: 'private' | 'public',
-  ) => {
-    return lambdaClient.file.transferEntity.mutate({
-      entityType,
-      id,
-      targetVisibility,
-      targetWorkspaceId,
-    });
-  };
-
-  copyEntityToWorkspace = async (
-    id: string,
-    entityType: 'document' | 'file' | 'folder',
-    targetWorkspaceId: string | null,
-    targetVisibility?: 'private' | 'public',
-  ) => {
-    return lambdaClient.file.copyEntityToWorkspace.mutate({
-      entityType,
-      id,
-      targetVisibility,
-      targetWorkspaceId,
-    });
-  };
-
-  publishFileToWorkspace = async (id: string): Promise<void> => {
-    await lambdaClient.file.publishFileToWorkspace.mutate({ id });
-  };
-
-  setFileVisibility = async (id: string, visibility: 'private' | 'public'): Promise<void> => {
-    await lambdaClient.file.setFileVisibility.mutate({ id, visibility });
   };
 }
 

@@ -88,56 +88,6 @@ class UploadService {
     return { data, success: true };
   };
 
-  uploadBase64ToS3 = async (
-    base64Data: string,
-    options: UploadFileToS3Options = {},
-  ): Promise<UploadBase64ToS3Result> => {
-    // Parse base64 data
-    const { base64, mimeType, type } = parseDataUri(base64Data);
-
-    if (!base64 || !mimeType || type !== 'base64') {
-      throw new Error('Invalid base64 data for image');
-    }
-
-    // Convert base64 to Blob
-    const byteCharacters = atob(base64);
-    const byteArrays = [];
-
-    // Process in chunks to avoid memory issues
-    for (let offset = 0; offset < byteCharacters.length; offset += 1024) {
-      const slice = byteCharacters.slice(offset, offset + 1024);
-
-      const byteNumbers: number[] = Array.from({ length: slice.length });
-      for (let i = 0; i < slice.length; i++) {
-        byteNumbers[i] = slice.charCodeAt(i);
-      }
-
-      const byteArray = new Uint8Array(byteNumbers);
-      byteArrays.push(byteArray);
-    }
-
-    const blob = new Blob(byteArrays, { type: mimeType });
-
-    // Determine file extension
-    const fileExtension = mimeType.split('/')[1] || 'png';
-    const fileName = `${options.filename || `image_${dayjs().format('YYYY-MM-DD-hh-mm-ss')}`}.${fileExtension}`;
-
-    // Create file object
-    const file = new File([blob], fileName, { type: mimeType });
-
-    const hash = await hashFile(file, options.abortController?.signal);
-
-    // Use unified upload method
-    const { data: metadata } = await this.uploadFileToS3(file, options);
-
-    return {
-      fileType: mimeType,
-      hash,
-      metadata,
-      size: file.size,
-    };
-  };
-
   uploadDataToS3 = async (data: object, options: UploadFileToS3Options = {}) => {
     const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
     const file = new File([blob], options.filename || 'data.json', { type: 'application/json' });

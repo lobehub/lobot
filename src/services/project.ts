@@ -17,9 +17,6 @@ export interface ProjectKnowledgeBaseBindingPatch {
 }
 
 class ProjectService {
-  acceptCompletion = async (id: string, comment?: string) =>
-    lambdaClient.project.acceptCompletion.mutate({ comment, id });
-
   addAgent = async (id: string, agentId: string, patch: ProjectAgentBindingPatch = {}) =>
     lambdaClient.project.addAgent.mutate({ agentId, id, ...patch });
 
@@ -76,9 +73,6 @@ class ProjectService {
       params,
     );
 
-  rejectCompletion = async (id: string, comment: string) =>
-    lambdaClient.project.rejectCompletion.mutate({ comment, id });
-
   removeAgent = async (id: string, agentId: string) =>
     lambdaClient.project.removeAgent.mutate({ agentId, id });
 
@@ -87,10 +81,6 @@ class ProjectService {
 
   replaceCoordinator = async (id: string, agentId: string) =>
     lambdaClient.project.replaceCoordinator.mutate({ agentId, id });
-
-  reopen = async (id: string) => lambdaClient.project.reopen.mutate({ id });
-
-  requestCompletion = async (id: string) => lambdaClient.project.requestCompletion.mutate({ id });
 
   update = async (
     id: string,
@@ -110,9 +100,6 @@ class ProjectService {
     knowledgeBaseId: string,
     patch: ProjectKnowledgeBaseBindingPatch,
   ) => lambdaClient.project.updateKnowledgeBase.mutate({ id, knowledgeBaseId, ...patch });
-
-  updateStatus = async (id: string, status: 'active' | 'archived' | 'backlog' | 'paused') =>
-    lambdaClient.project.updateStatus.mutate({ id, status });
 }
 
 export const projectService = new ProjectService();

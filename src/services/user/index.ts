@@ -22,23 +22,6 @@ import {
 import { type UserSettings } from '@/types/user/settings';
 
 export class UserService {
-  confirmOnboardingUnderstanding = async (input: ConfirmOnboardingUnderstandingInput) => {
-    return lambdaClient.user.confirmOnboardingUnderstanding.mutate(input);
-  };
-
-  getOnboardingUnderstanding = async (
-    topicId: string,
-  ): Promise<OnboardingUnderstandingPollingResult> => {
-    return lambdaClient.user.getOnboardingUnderstanding.query({ topicId });
-  };
-
-  getUserActivitySummary = async (): Promise<{
-    lastUserMessageAt: Date | null;
-    userCreatedAt: Date | null;
-  }> => {
-    return lambdaClient.user.getUserActivitySummary.query();
-  };
-
   getUserRegistrationDuration = async (): Promise<{
     createdAt: string;
     duration: number;
@@ -49,59 +32,6 @@ export class UserService {
 
   getUserState = async (): Promise<UserInitializationState> => {
     return lambdaClient.user.getUserState.query();
-  };
-
-  getUserSSOProviders = async (): Promise<SSOProvider[]> => {
-    return lambdaClient.user.getUserSSOProviders.query();
-  };
-
-  getOnboardingAgentContext = async (): Promise<{
-    personaContent: string | null;
-    phaseGuidance: string;
-    soulContent: string | null;
-    userInfo?: OnboardingUserInfo;
-  }> => {
-    return lambdaClient.user.getOnboardingAgentContext.query();
-  };
-
-  saveUserQuestion = async (params: SaveUserQuestionInput) => {
-    return lambdaClient.user.saveUserQuestion.mutate(
-      params as Parameters<typeof lambdaClient.user.saveUserQuestion.mutate>[0],
-    );
-  };
-
-  finishOnboarding = async () => {
-    return lambdaClient.user.finishOnboarding.mutate({});
-  };
-
-  readOnboardingDocument = async (type: 'soul' | 'persona') => {
-    return lambdaClient.user.readOnboardingDocument.query({ type });
-  };
-
-  updateOnboardingDocument = async (type: 'soul' | 'persona', content: string) => {
-    return lambdaClient.user.updateOnboardingDocument.mutate({ content, type });
-  };
-
-  patchOnboardingDocument = async (type: 'soul' | 'persona', hunks: MarkdownPatchHunk[]) => {
-    return lambdaClient.user.patchOnboardingDocument.mutate({ hunks, type });
-  };
-
-  retryOnboardingUnderstandingSource = async (
-    input: RetryOnboardingUnderstandingProviderInput,
-  ): Promise<OnboardingUnderstandingPollingResult> => {
-    return lambdaClient.user.retryOnboardingUnderstandingSource.mutate(input);
-  };
-
-  reviseOnboardingUnderstanding = async (
-    input: ReviseOnboardingUnderstandingInput,
-  ): Promise<OnboardingUnderstandingPollingResult> => {
-    return lambdaClient.user.reviseOnboardingUnderstanding.mutate(input);
-  };
-
-  startOnboardingUnderstanding = async (
-    input: StartOnboardingUnderstandingInput,
-  ): Promise<OnboardingUnderstandingPollingResult> => {
-    return lambdaClient.user.startOnboardingUnderstanding.mutate(input);
   };
 
   updateOnboarding = async (onboarding: UserOnboarding) => {
@@ -124,17 +54,8 @@ export class UserService {
     return lambdaClient.user.updateUsername.mutate(username);
   };
 
-  /** Wave goal asks off the approval island for every client of this account. */
-  addIslandDismissals = async (keys: string[]): Promise<string[]> => {
-    return lambdaClient.user.addIslandDismissals.mutate({ keys });
-  };
-
   updatePreference = async (preference: Partial<UserPreference>) => {
     return lambdaClient.user.updatePreference.mutate(preference);
-  };
-
-  updateGuide = async (guide: Partial<UserGuide>) => {
-    return lambdaClient.user.updateGuide.mutate(guide);
   };
 
   updateToolIntervention = async (value: {
@@ -144,33 +65,8 @@ export class UserService {
     return lambdaClient.user.updateToolIntervention.mutate(value);
   };
 
-  updatePersonalSystemAgent = async (
-    key: PersonalSystemAgentKey,
-    value: { enabled?: boolean; model?: string; provider?: string },
-  ) => {
-    return lambdaClient.user.updatePersonalSystemAgent.mutate({ key, value });
-  };
-
-  updateToolChannels = async (value: { crawlerImpls?: string[]; searchProviders?: string[] }) => {
-    return lambdaClient.user.updateToolChannels.mutate(value);
-  };
-
-  updateUninstalledBuiltinTools = async (
-    uninstalledBuiltinTools: string[],
-    workspaceId: string | null,
-  ) => {
-    return lambdaClient.user.updateUninstalledBuiltinTools.mutate({
-      uninstalledBuiltinTools,
-      workspaceId,
-    });
-  };
-
   updateUserSettings = async (value: PartialDeep<UserSettings>, signal?: AbortSignal) => {
     return lambdaClient.user.updateSettings.mutate(value, { signal });
-  };
-
-  resetUserSettings = async () => {
-    return lambdaClient.user.resetSettings.mutate();
   };
 }
 

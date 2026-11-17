@@ -64,13 +64,10 @@ export const createExperimentSlice = (set: Setter, get: () => EvalStore, _api?: 
 
 class ExperimentActionImpl {
   readonly #detail;
-  readonly #entity;
-  readonly #get: () => EvalStore;
   readonly #list;
 
   constructor(set: Setter, get: () => EvalStore, _api?: unknown) {
     void _api;
-    this.#get = get;
 
     this.#list = createReplicaSlice(experimentListResource, {
       actionPrefix: 'experimentList',
@@ -99,86 +96,8 @@ class ExperimentActionImpl {
     });
     // The same experiment lives in the list and in its workspace page: an edit
     // or a delete patches both copies at once.
-    this.#entity = linkReplicaEntity<AgentEvalExperimentListItem>([this.#list, this.#detail]);
+    linkReplicaEntity<AgentEvalExperimentListItem>([this.#list, this.#detail]);
   }
-
-  createExperiment = async (params: {
-    benchmarkIds: string[];
-    description?: string;
-    metadata?: Record<string, unknown>;
-    name: string;
-  }): Promise<any> => {
-    const result = await agentEvalService.createExperiment(params);
-    await this.refreshExperiments();
-    return result.data;
-  };
-
-  deleteExperiment = async (id: string): Promise<void> => {
-    // Optimistic: drop the row from the list (and the detail cache) right away,
-    // rolling back if the server rejects it, then converge on the server list.
-    await this.#entity.optimistic(id, 'remove', async () => {
-      const result = await agentEvalService.deleteExperiment(id);
-      // The procedure reports a refusal as `{ success: false }` instead of throwing; without
-      // this the row would vanish, then come back on the next refresh.
-      if (result?.success === false) throw new Error(result.error);
-      return result;
-    });
-    await this.refreshExperiments();
-  };
-
-  updateExperiment = async (params: {
-    benchmarkIds?: string[];
-    description?: string;
-    id: string;
-    metadata?: Record<string, unknown>;
-    name?: string;
-  }): Promise<void> => {
-    await agentEvalService.updateExperiment(params);
-    await Promise.all([this.refreshExperiments(), this.refreshExperimentDetail(params.id)]);
-  };
-
-  refreshExperimentDetail = async (id: string): Promise<void> => {
-    await this.#detail.revalidate(id);
-  };
-
-  refreshExperiments = async (): Promise<void> => {
-    await this.#list.revalidate();
-  };
-
-  /**
-   * Fetch orchestration only (the page is read from `experimentDetailMap`).
-   * Keeps the pre-migration `{ error, isLoading, mutate }` shape.
-   */
-  useFetchExperimentDetail = (id?: string): ExperimentDetailSyncResult => {
-    const sync = this.#detail.useSync(id || null);
-    return {
-      error: sync.error,
-      // A failed first load is neither loading nor settled: gate on the error
-      // so the page can fall through to its error state instead of a skeleton.
-      isLoading: !sync.error && (!sync.isHydrated || sync.isValidating),
-      mutate: sync.revalidate,
-    };
-  };
-
-  /**
-   * Fetch orchestration only (the list is read from the store). Keeps the
-   * pre-migration `{ data, isLoading, error, mutate }` shape so the overview's
-   * `AsyncBoundary` and the sidebar's skeleton/error gates keep working
-   * unchanged.
-   */
-  useFetchExperiments = (): ExperimentListSyncResult => {
-    // Subscribe so a replica commit (hydrate or server replace) re-renders the
-    // consumer; the value itself is read through the store below.
-    useEvalStore((s) => s.experimentListInit);
-    const sync = this.#list.useSync(LIST_PARAMS);
-    const { experimentList, experimentListInit } = this.#get();
-    return {
-      ...sync,
-      data: experimentListInit ? experimentList : undefined,
-      isLoading: !sync.error && !experimentListInit,
-      mutate: sync.revalidate,
-    };
-  };
 }
 
 export type ExperimentAction = Pick<ExperimentActionImpl, keyof ExperimentActionImpl>;

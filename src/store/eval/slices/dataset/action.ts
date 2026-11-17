@@ -52,14 +52,10 @@ export const createDatasetSlice = (set: Setter, get: () => EvalStore, _api?: unk
 
 class DatasetActionImpl {
   readonly #detail;
-  /** One dataset across both resources: a delete drops it from lists and detail alike. */
-  readonly #entity;
-  readonly #get: () => EvalStore;
   readonly #list;
 
   constructor(set: Setter, get: () => EvalStore, _api?: unknown) {
     void _api;
-    this.#get = get;
 
     // Two local-first resources over the dataset entity, each owning ONE store
     // location (the selectors keep reading those maps):
@@ -89,85 +85,8 @@ class DatasetActionImpl {
       stateKey: 'datasetDetailReplica',
       view: recordLens<EvalStore, AgentEvalDataset>('datasetDetailMap'),
     });
-    this.#entity = linkReplicaEntity<AgentEvalDataset>([this.#list, this.#detail]);
+    linkReplicaEntity<AgentEvalDataset>([this.#list, this.#detail]);
   }
-
-  /**
-   * Delete a dataset on the server, then drop it from every list and its
-   * persisted detail. Clearing only the server row would leave the IndexedDB
-   * detail to repaint the deleted dataset on the next visit.
-   */
-  deleteDataset = async (id: string): Promise<void> => {
-    await agentEvalService.deleteDataset(id);
-    this.#entity.remove(id);
-  };
-
-  refreshDatasetDetail = async (id: string): Promise<void> => {
-    await this.#detail.revalidate(id);
-  };
-
-  refreshDatasets = async (benchmarkId: string): Promise<void> => {
-    await this.#list.revalidate(benchmarkId);
-  };
-
-  /**
-   * Fetch orchestration only (the dataset is read from `datasetDetailMap`).
-   * Keeps the pre-migration `{ data, error, isLoading, mutate }` shape.
-   */
-  useFetchDatasetDetail = (id?: string): DatasetDetailSyncResult => {
-    const sync = this.#detail.useSync(id ?? null, {
-      // A dataset deleted by another client keeps answering NOT_FOUND, and the
-      // persisted detail would otherwise keep painting it — `AsyncBoundary` sees
-      // `data` defined and swallows the fetch error. NOT_FOUND is definitive, so
-      // drop the cached row and let the page settle on its error state; any
-      // transient failure keeps the persisted copy on screen. The removal uses
-      // the request's captured key + scope: a late 404 from a workspace the user
-      // has left purges that workspace's row, never the entry now on screen. The
-      // replica's removal guard keeps a hydrate already in flight from
-      // repainting the dropped row.
-      onError: (error, { key, scope }) => {
-        if (!key || !isTrpcErrorCode(error, 'NOT_FOUND')) return;
-        this.#detail.remove(key, scope);
-      },
-    });
-    // Subscribe so a replica commit (hydrate or server replace) re-renders the
-    // consumer; the value itself is read through the store below.
-    useEvalStore((s) => (id ? s.datasetDetailMap[id] : undefined));
-    const data = id ? this.#get().datasetDetailMap[id] : undefined;
-    return {
-      data,
-      error: sync.error,
-      // A failed first load is neither loading nor settled: gate on the error
-      // so the page falls through to its error state instead of a skeleton.
-      isLoading: data === undefined && !sync.error,
-      mutate: sync.revalidate,
-    };
-  };
-
-  /**
-   * Fetch orchestration only; read the rows with `datasetSelectors.datasetList`.
-   */
-  useFetchDatasets = (benchmarkId?: string): ReplicaSyncResult =>
-    this.#list.useSync(benchmarkId ? { benchmarkId } : null);
-
-  /**
-   * Every dataset. Without this a dataset is only reachable through its
-   * benchmark, so one belonging to none could be created but never found.
-   * Keeps the pre-migration `{ data, isLoading }` shape.
-   */
-  useFetchAllDatasets = (): DatasetListSyncResult => {
-    // Subscribe so a replica commit re-renders the consumer (sidebar / overview);
-    // the value itself is read through the store below.
-    useEvalStore((s) => s.datasetListMap[ALL_DATASETS_KEY]);
-    const sync = this.#list.useSync(ALL_DATASETS_PARAMS);
-    const data = this.#get().datasetListMap[ALL_DATASETS_KEY];
-    return {
-      ...sync,
-      data,
-      isLoading: data === undefined && !sync.error,
-      mutate: sync.revalidate,
-    };
-  };
 }
 
 export type DatasetAction = Pick<DatasetActionImpl, keyof DatasetActionImpl>;

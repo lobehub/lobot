@@ -49,10 +49,7 @@ export const createAssistantSlice = (set: Setter, get: () => DiscoverStore, _api
   new AssistantActionImpl(set, get, _api);
 
 class AssistantActionImpl {
-  readonly #categories;
-  readonly #detail;
   readonly #get: () => DiscoverStore;
-  readonly #identifiers;
   readonly #list;
 
   constructor(set: Setter, get: () => DiscoverStore, _api?: unknown) {
@@ -65,7 +62,7 @@ class AssistantActionImpl {
       stateKey: 'assistantListReplica',
       view: recordLens<DiscoverStore, AssistantListResponse>('assistantListMap'),
     });
-    this.#detail = createReplicaSlice(assistantDetailResource, {
+    createReplicaSlice(assistantDetailResource, {
       actionPrefix: n('detail'),
       get,
       // The market no longer has this assistant: drop the entry and its
@@ -75,14 +72,14 @@ class AssistantActionImpl {
       stateKey: 'assistantDetailReplica',
       view: recordLens<DiscoverStore, DiscoverAssistantDetail>('assistantDetailMap'),
     });
-    this.#categories = createReplicaSlice(assistantCategoriesResource, {
+    createReplicaSlice(assistantCategoriesResource, {
       actionPrefix: n('categories'),
       get,
       set,
       stateKey: 'assistantCategoriesReplica',
       view: recordLens<DiscoverStore, CategoryItem[]>('assistantCategoriesMap'),
     });
-    this.#identifiers = createReplicaSlice(assistantIdentifiersResource, {
+    createReplicaSlice(assistantIdentifiersResource, {
       actionPrefix: n('identifiers'),
       get,
       set,
@@ -123,72 +120,6 @@ class AssistantActionImpl {
     const queryKey = assistantListQueryKey(normalized);
     const sync = this.#list.useSync(normalized, { enabled, revalidateOnFocus: false });
     return this.#toSyncResult(sync, queryKey, !!this.#get().assistantListMap[queryKey], enabled);
-  };
-
-  /**
-   * One assistant detail (identifier · source · version). Read it with
-   * `assistantSelectors.assistantDetail(queryKey)`; `undefined` after the sync
-   * settles means the market has no such identifier.
-   */
-  useFetchAssistantDetail = (
-    params: AssistantDetailParams,
-    options: { enabled?: boolean } = {},
-  ): AssistantSyncResult => {
-    const { enabled = true } = options;
-    const normalized: AssistantDetailParams = {
-      identifier: params.identifier,
-      locale: globalHelpers.getCurrentLanguage(),
-      source: params.source,
-      version: params.version,
-    };
-    const queryKey = assistantDetailQueryKey(normalized);
-    const sync = this.#detail.useSync(normalized, { enabled, revalidateOnFocus: false });
-    return this.#toSyncResult(
-      sync,
-      queryKey,
-      this.#get().assistantDetailMap[queryKey] !== undefined,
-      enabled,
-    );
-  };
-
-  /**
-   * Category counts of one query (the search term + source). The community
-   * sidebar reads `assistantSelectors.assistantCategories(queryKey)`; it is the
-   * fallback when a list response carries no `categoryCounts`.
-   */
-  useFetchAssistantCategories = (
-    params: AssistantCategoriesParams = {},
-    options: { enabled?: boolean } = {},
-  ): AssistantSyncResult => {
-    const { enabled = true } = options;
-    const normalized: AssistantCategoriesParams = {
-      ...params,
-      locale: globalHelpers.getCurrentLanguage(),
-    };
-    const queryKey = assistantCategoriesQueryKey(normalized);
-    const sync = this.#categories.useSync(normalized, { enabled, revalidateOnFocus: false });
-    return this.#toSyncResult(
-      sync,
-      queryKey,
-      !!this.#get().assistantCategoriesMap[queryKey],
-      enabled,
-    );
-  };
-
-  /** The identifier index of one market source. */
-  useFetchAssistantIdentifiers = (
-    params: AssistantIdentifiersParams = {},
-    options: { enabled?: boolean } = {},
-  ): AssistantSyncResult => {
-    const { enabled = true } = options;
-    const queryKey = assistantIdentifiersQueryKey(params);
-    const sync = this.#identifiers.useSync(params, { enabled, revalidateOnFocus: false });
-    return this.#toSyncResult(
-      sync,
-      queryKey,
-      !!this.#get().assistantIdentifiersMap[queryKey],
-      enabled,
-    );
   };
 }
 

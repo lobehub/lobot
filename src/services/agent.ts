@@ -111,21 +111,6 @@ interface AgentGroupMembershipImpactRef {
 
 class AgentService {
   /**
-   * Check if an agent with the given marketIdentifier already exists
-   */
-  checkByMarketIdentifier = async (marketIdentifier: string): Promise<boolean> => {
-    return lambdaClient.agent.checkByMarketIdentifier.query({ marketIdentifier });
-  };
-
-  /**
-   * Get an agent by marketIdentifier
-   * @returns agent id if exists, null otherwise
-   */
-  getAgentByMarketIdentifier = async (marketIdentifier: string): Promise<string | null> => {
-    return lambdaClient.agent.getAgentByMarketIdentifier.query({ marketIdentifier });
-  };
-
-  /**
    * Get an agent by forkedFromIdentifier stored in params
    * @returns agent id if exists, null otherwise
    */
@@ -181,57 +166,8 @@ class AgentService {
   getPrivateDemotionImpact = async (id: string): Promise<{ sharedChannelCount: number }> =>
     lambdaClient.agent.getPrivateDemotionImpact.query({ id });
 
-  /**
-   * Create a virtual agent without session.
-   * Used for Group Agent Builder to create virtual agents for groups.
-   */
-  createAgentOnly = async (params: CreateAgentOnlyParams): Promise<CreateAgentOnlyResult> => {
-    const normalizedConfig = normalizeMarketAgentModel(params.config);
-
-    return lambdaClient.agent.createAgentOnly.mutate({
-      config: normalizedConfig as any,
-      groupId: params.groupId,
-    });
-  };
-
-  createAgentKnowledgeBase = async (
-    agentId: string,
-    knowledgeBaseId: string,
-    enabled?: boolean,
-  ) => {
-    return lambdaClient.agent.createAgentKnowledgeBase.mutate({
-      agentId,
-      enabled,
-      knowledgeBaseId,
-    });
-  };
-
-  deleteAgentKnowledgeBase = async (agentId: string, knowledgeBaseId: string) => {
-    return lambdaClient.agent.deleteAgentKnowledgeBase.mutate({ agentId, knowledgeBaseId });
-  };
-
-  toggleKnowledgeBase = async (agentId: string, knowledgeBaseId: string, enabled?: boolean) => {
-    return lambdaClient.agent.toggleKnowledgeBase.mutate({
-      agentId,
-      enabled,
-      knowledgeBaseId,
-    });
-  };
-
   createAgentFiles = async (agentId: string, fileIds: string[], enabled?: boolean) => {
     return lambdaClient.agent.createAgentFiles.mutate({ agentId, enabled, fileIds });
-  };
-
-  deleteAgentFile = async (agentId: string, fileId: string) => {
-    return lambdaClient.agent.deleteAgentFile.mutate({ agentId, fileId });
-  };
-
-  toggleFile = async (agentId: string, fileId: string, enabled?: boolean) => {
-    return lambdaClient.agent.toggleFile.mutate({
-      agentId,
-      enabled,
-      fileId,
-    });
   };
 
   getFilesAndKnowledgeBases = async (agentId: string, visibility?: 'private' | 'public') => {
@@ -242,13 +178,6 @@ class AgentService {
 
   getAgentConfigById = async (agentId: string) => {
     return lambdaClient.agent.getAgentConfigById.query({ agentId });
-  };
-
-  /**
-   * @deprecated use getAgentConfigById instead
-   */
-  getSessionConfig = async (sessionId: string) => {
-    return lambdaClient.agent.getAgentConfig.query({ sessionId });
   };
 
   /**
@@ -381,65 +310,6 @@ class AgentService {
    */
   prioritizeTransferTopic = async (topicId: string): Promise<{ pending: boolean }> => {
     return lambdaClient.agent.prioritizeTransferTopic.mutate({ topicId });
-  };
-
-  /**
-   * Chat groups a move would affect: `blocked` refuses the move outright,
-   * `leaving` is the silent side effect worth confirming first.
-   */
-  getGroupMembershipImpact = async (
-    agentIds: string[],
-  ): Promise<{
-    blocked: AgentGroupMembershipImpactRef[];
-    leaving: AgentGroupMembershipImpactRef[];
-  }> => {
-    return lambdaClient.agent.getGroupMembershipImpact.query({ agentIds });
-  };
-
-  transferAgent = async (
-    agentId: string,
-    targetWorkspaceId: string | null,
-    targetVisibility?: 'private' | 'public',
-  ): Promise<{ agentId: string; slug: string | null; transferJobId: string | null }> => {
-    const result = await lambdaClient.agent.transferAgent.mutate({
-      agentId,
-      targetVisibility,
-      targetWorkspaceId,
-    });
-    // Without `targetMemberId` the endpoint always takes the scope-move path.
-    return result as { agentId: string; slug: string | null; transferJobId: string | null };
-  };
-
-  /**
-   * Hand ownership to another member of the current workspace. Creates a
-   * pending transfer request the recipient must accept — nothing moves yet.
-   */
-  requestAgentTransferToMember = async (params: {
-    agentId: string;
-    targetMemberId: string;
-  }): Promise<{ requestId: string; status: 'pending' }> => {
-    const result = await lambdaClient.agent.transferAgent.mutate({
-      agentId: params.agentId,
-      targetMemberId: params.targetMemberId,
-      targetWorkspaceId: null,
-    });
-    return result as { requestId: string; status: 'pending' };
-  };
-
-  /**
-   * Batch transfer: moves all agents in one request / one DB transaction
-   * instead of a serial per-agent call chain.
-   */
-  transferAgents = async (
-    agentIds: string[],
-    targetWorkspaceId: string | null,
-    targetVisibility?: 'private' | 'public',
-  ): Promise<{ agentId: string; slug: string | null; transferJobId: string | null }[]> => {
-    return lambdaClient.agent.transferAgents.mutate({
-      agentIds,
-      targetVisibility,
-      targetWorkspaceId,
-    });
   };
 }
 

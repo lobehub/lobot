@@ -49,23 +49,16 @@ export const createPluginSlice = (set: Setter, get: () => DiscoverStore, _api?: 
   new PluginActionImpl(set, get, _api);
 
 class PluginActionImpl {
-  readonly #categories;
-  readonly #detail;
-  readonly #get: () => DiscoverStore;
-  readonly #identifiers;
-  readonly #list;
-
   constructor(set: Setter, get: () => DiscoverStore, _api?: unknown) {
     void _api;
-    this.#get = get;
-    this.#list = createReplicaSlice(pluginListResource, {
+    createReplicaSlice(pluginListResource, {
       actionPrefix: n('list'),
       get,
       set,
       stateKey: 'pluginListReplica',
       view: recordLens<DiscoverStore, PluginListResponse>('pluginListMap'),
     });
-    this.#detail = createReplicaSlice(pluginDetailResource, {
+    createReplicaSlice(pluginDetailResource, {
       actionPrefix: n('detail'),
       get,
       // The market no longer has this plugin: drop the entry and its persisted
@@ -75,14 +68,14 @@ class PluginActionImpl {
       stateKey: 'pluginDetailReplica',
       view: recordLens<DiscoverStore, DiscoverPluginDetail>('pluginDetailMap'),
     });
-    this.#categories = createReplicaSlice(pluginCategoriesResource, {
+    createReplicaSlice(pluginCategoriesResource, {
       actionPrefix: n('categories'),
       get,
       set,
       stateKey: 'pluginCategoriesReplica',
       view: recordLens<DiscoverStore, CategoryItem[]>('pluginCategoriesMap'),
     });
-    this.#identifiers = createReplicaSlice(pluginIdentifiersResource, {
+    createReplicaSlice(pluginIdentifiersResource, {
       actionPrefix: n('identifiers'),
       get,
       set,
@@ -90,99 +83,6 @@ class PluginActionImpl {
       view: recordLens<DiscoverStore, IdentifiersResponse>('pluginIdentifiersMap'),
     });
   }
-
-  #toSyncResult = (
-    sync: ReplicaSyncResult,
-    queryKey: string | undefined,
-    hasValue: boolean,
-    active: boolean,
-  ): PluginSyncResult => ({
-    ...sync,
-    // A disabled hook never loads; a settled entry with a value never flashes.
-    isLoading: active && !hasValue && (!sync.isHydrated || sync.isValidating),
-    mutate: sync.revalidate,
-    queryKey: active ? queryKey : undefined,
-  });
-
-  /**
-   * The plugin market list of one query. Each (filters · page) pair is its own
-   * entry, so the URL-driven pager walks entries instead of appending pages.
-   * Read the rows with `pluginSelectors.pluginList(queryKey)`.
-   */
-  useFetchPluginList = (
-    params: PluginQueryParams = {},
-    options: { enabled?: boolean } = {},
-  ): PluginSyncResult => {
-    const { enabled = true } = options;
-    const normalized: PluginListParams = {
-      ...params,
-      locale: globalHelpers.getCurrentLanguage(),
-      page: params.page ? Number(params.page) : 1,
-      pageSize: params.pageSize ? Number(params.pageSize) : 21,
-    };
-    const queryKey = pluginListQueryKey(normalized);
-    const sync = this.#list.useSync(normalized, { enabled, revalidateOnFocus: false });
-    return this.#toSyncResult(sync, queryKey, !!this.#get().pluginListMap[queryKey], enabled);
-  };
-
-  /**
-   * One plugin detail by identifier. Read it with
-   * `pluginSelectors.pluginDetail(queryKey)`; `undefined` while disabled or
-   * after the sync settles means the market has no such identifier (the caller
-   * then falls back to its builtin / composio metadata).
-   */
-  useFetchPluginDetail = (
-    params: { identifier?: string; withManifest?: boolean },
-    options: { enabled?: boolean } = {},
-  ): PluginSyncResult => {
-    const { enabled = true } = options;
-    const active = enabled && !!params.identifier;
-    const normalized: PluginDetailParams = {
-      identifier: params.identifier ?? '',
-      locale: globalHelpers.getCurrentLanguage(),
-      withManifest: params.withManifest,
-    };
-    const queryKey = pluginDetailQueryKey(normalized);
-    const sync = this.#detail.useSync(normalized, { enabled: active, revalidateOnFocus: false });
-    return this.#toSyncResult(
-      sync,
-      queryKey,
-      this.#get().pluginDetailMap[queryKey] !== undefined,
-      active,
-    );
-  };
-
-  /**
-   * Category counts of one query (the search term). The community sidebar reads
-   * `pluginSelectors.pluginCategories(queryKey)`.
-   */
-  useFetchPluginCategories = (
-    params: PluginCategoriesParams = {},
-    options: { enabled?: boolean } = {},
-  ): PluginSyncResult => {
-    const { enabled = true } = options;
-    const normalized: PluginCategoriesParams = {
-      ...params,
-      locale: globalHelpers.getCurrentLanguage(),
-    };
-    const queryKey = pluginCategoriesQueryKey(normalized);
-    const sync = this.#categories.useSync(normalized, { enabled, revalidateOnFocus: false });
-    return this.#toSyncResult(sync, queryKey, !!this.#get().pluginCategoriesMap[queryKey], enabled);
-  };
-
-  /** The plugin identifier index. */
-  useFetchPluginIdentifiers = (options: { enabled?: boolean } = {}): PluginSyncResult => {
-    const { enabled = true } = options;
-    const params: PluginIdentifiersParams = {};
-    const queryKey = pluginIdentifiersQueryKey(params);
-    const sync = this.#identifiers.useSync(params, { enabled, revalidateOnFocus: false });
-    return this.#toSyncResult(
-      sync,
-      queryKey,
-      !!this.#get().pluginIdentifiersMap[queryKey],
-      enabled,
-    );
-  };
 }
 
 export type PluginAction = Pick<PluginActionImpl, keyof PluginActionImpl>;

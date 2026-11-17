@@ -55,51 +55,6 @@ class NotebookActionImpl {
     });
   }
 
-  createDocument = async (params: CreateDocumentParams): Promise<DocumentItem> => {
-    const document = await notebookService.createDocument(params);
-
-    await invalidateDocumentMutation({
-      cause: 'notebook',
-      documentId: document.id,
-      topicId: params.topicId,
-    });
-
-    return document;
-  };
-
-  deleteDocument = async (id: string, topicId: string): Promise<void> => {
-    // If the deleted document is currently open, close it
-    const portalDocumentId = useChatStore.getState().portalDocumentId;
-    if (portalDocumentId === id) {
-      useChatStore.getState().closeDocument();
-    }
-
-    // Call API to delete
-    await notebookService.deleteDocument(id);
-
-    await invalidateDocumentMutation({ cause: 'notebook', documentId: id, topicId });
-  };
-
-  /**
-   * Force a fresh sync of one topic's documents (or every loaded topic). The
-   * list is read through `notebookSelectors`; this only schedules the network
-   * round-trip, so the caller never touches the replica directly.
-   */
-  refreshDocuments = async (topicId: string): Promise<void> => {
-    await this.#documents.revalidate(topicId);
-  };
-
-  updateDocument = async (
-    params: UpdateDocumentParams,
-    topicId: string,
-  ): Promise<DocumentItem | undefined> => {
-    const document = await notebookService.updateDocument(params);
-
-    await invalidateDocumentMutation({ cause: 'notebook', documentId: params.id, topicId });
-
-    return document;
-  };
-
   /**
    * Fetch orchestration for one topic: the persisted copy paints the first
    * frame and the network only confirms. Read the documents with

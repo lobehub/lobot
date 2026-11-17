@@ -23,22 +23,6 @@ class PreferenceActionImpl {
     this.#get = get;
   }
 
-  updateGuideState = async (guide: Partial<UserGuide>, action?: any): Promise<void> => {
-    const { updatePreference } = this.#get();
-    const nextGuide = merge(this.#get().preference.guide, guide);
-    await updatePreference({ guide: nextGuide }, action);
-  };
-
-  updateLab = async (lab: Partial<UserLab>, action?: any): Promise<void> => {
-    const { updatePreference } = this.#get();
-    // Older clients still read the pre-rename `enableTopicAcceptance` key, so keep
-    // it in step with `enableGoals` until they age out.
-    const patch =
-      lab.enableGoals === undefined ? lab : { ...lab, enableTopicAcceptance: lab.enableGoals };
-    const nextLab = merge(this.#get().preference.lab, patch);
-    await updatePreference({ lab: nextLab }, action || n('updateLab'));
-  };
-
   updatePreference = async (preference: Partial<UserPreference>, action?: any): Promise<void> => {
     const nextPreference = merge(this.#get().preference, preference);
     const userId = this.#get().user?.id;

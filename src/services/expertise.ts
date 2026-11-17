@@ -38,82 +38,11 @@ class ExpertiseService {
   ruleRevisions = async (lessonId: string) =>
     lambdaClient.expertise.ruleRevisions.query({ lessonId });
 
-  draftRule = async (input: {
-    brief: string;
-    groups: { gate: string; id: string; title: string }[];
-  }) => lambdaClient.expertise.draftRule.mutate(input);
-
-  draftRuleGroup = async (brief: string) => lambdaClient.expertise.draftRuleGroup.mutate({ brief });
-
-  distillRules = async (input: DistillInput) => lambdaClient.expertise.distillRules.mutate(input);
-
-  commitDistilledRules = async (input: CommitDistilledInput) =>
-    lambdaClient.expertise.commitDistilledRules.mutate(input);
-
-  createRule = async (input: CreateRuleInput) => lambdaClient.expertise.createRule.mutate(input);
-
-  updateRule = async (lessonId: string, patch: UpdateRuleInput) =>
-    lambdaClient.expertise.updateRule.mutate({ lessonId, ...patch });
-
-  judgeRuleDirections = async (lessonIds: string[]) =>
-    lambdaClient.expertise.judgeRuleDirections.mutate({ lessonIds });
-
-  reorderRule = async (domainId: string, lessonId: string, beforeId: string | null) =>
-    lambdaClient.expertise.reorderRule.mutate({ beforeId, domainId, lessonId });
-
-  moveRule = async (lessonId: string, domainId: string) =>
-    lambdaClient.expertise.moveRule.mutate({ domainId, lessonId });
-
-  mergeRules = async (fromId: string, intoId: string) =>
-    lambdaClient.expertise.mergeRules.mutate({ fromId, intoId });
-
-  archiveRule = async (lessonId: string) =>
-    lambdaClient.expertise.retireLesson.mutate({ lessonId });
-
-  restoreRule = async (lessonId: string) =>
-    lambdaClient.expertise.restoreLesson.mutate({ lessonId });
-
-  createRuleGroup = async (input: { gate: string; outOfScope?: string; title: string }) =>
-    lambdaClient.expertise.createRuleGroup.mutate(input);
-
-  updateRuleGroup = async (
-    domainId: string,
-    patch: { gate?: string; outOfScope?: string | null; title?: string },
-  ) => lambdaClient.expertise.updateRuleGroup.mutate({ domainId, ...patch });
-
   getDomain = async (domainId: string) => lambdaClient.expertise.getDomain.query({ domainId });
 
   getLesson = async (lessonId: string) => lambdaClient.expertise.getLesson.query({ lessonId });
 
-  draftDomain = async (params: {
-    adjustment?: string;
-    agentId: string;
-    brief: string;
-    currentDraft?: ExpertiseDomainDraft;
-  }) => lambdaClient.expertise.draftDomain.mutate(params);
-
-  createDomain = async (params: ExpertiseDomainDraft & { agentId: string; brief: string }) =>
-    lambdaClient.expertise.createDomain.mutate(params);
-
-  deleteDomain = async (domainId: string) =>
-    lambdaClient.expertise.deleteDomain.mutate({ domainId });
-
   countHistory = async (agentId: string) => lambdaClient.expertise.countHistory.query({ agentId });
-
-  ingestHistory = async (agentId: string) =>
-    lambdaClient.expertise.ingestHistory.mutate({ agentId });
-
-  teachLesson = async (params: { domainId: string; text: string }) =>
-    lambdaClient.expertise.teachLesson.mutate(params);
-
-  reviseLesson = async (params: { lessonId: string; text: string }) =>
-    lambdaClient.expertise.reviseLesson.mutate(params);
-
-  retireLesson = async (lessonId: string) =>
-    lambdaClient.expertise.retireLesson.mutate({ lessonId });
-
-  dismissInsight = async (insightId: string, reason?: string) =>
-    lambdaClient.expertise.dismissInsight.mutate({ insightId, reason });
 }
 
 export const expertiseService = new ExpertiseService();

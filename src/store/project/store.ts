@@ -377,6 +377,3 @@ export const projectListItemSelector =
   (id: string | null | undefined) =>
   (state: ProjectStoreState): ProjectListItem | undefined =>
     id ? state.projectListMap[PROJECT_LIST_KEY]?.find((project) => project.id === id) : undefined;
-
-export const useCurrentProjectDetail = (idOrSlug?: string) =>
-  useProjectStore((state) => (idOrSlug ? state.projectDetailMap[idOrSlug] : undefined));

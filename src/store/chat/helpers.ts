@@ -2,9 +2,6 @@ import { type OpenAIChatMessage, type UIChatMessage } from '@lobot/types';
 
 import { encodeAsync } from '@/utils/tokenizer';
 
-const getMessagesTokenCount = async (messages: OpenAIChatMessage[]) =>
-  encodeAsync(messages.map((m) => m.content).join(''));
-
 const getMessageById = (messages: UIChatMessage[], id: string): UIChatMessage | undefined => {
   // First try to find in top-level messages
   const directMatch = messages.find((m) => m.id === id);
@@ -46,6 +43,5 @@ const getSlicedMessages = (
 
 export const chatHelpers = {
   getMessageById,
-  getMessagesTokenCount,
   getSlicedMessages,
 };

@@ -9,12 +9,6 @@ const getAgentDocumentSkills =
   (s: ToolStoreState): AgentDocumentSkillItem[] =>
     (agentId ? s.agentDocumentSkillsMap[agentId] : undefined) ?? EMPTY_AGENT_DOCUMENT_SKILLS;
 
-const getAgentDocumentSkillByIdentifier =
-  (agentId: string | undefined, identifier: string) =>
-  (s: ToolStoreState): AgentDocumentSkillItem | undefined =>
-    getAgentDocumentSkills(agentId)(s).find((skill) => skill.identifier === identifier);
-
 export const agentDocumentSkillsSelectors = {
-  getAgentDocumentSkillByIdentifier,
   getAgentDocumentSkills,
 };

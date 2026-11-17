@@ -28,14 +28,6 @@ export interface RollbackAgentSignalReceiptParams {
 }
 
 class AgentSignalService {
-  listReceipts = async (params: ListAgentSignalReceiptsParams) => {
-    return lambdaClient.agentSignal.listReceipts.query(params);
-  };
-
-  rollbackReceipt = async (params: RollbackAgentSignalReceiptParams) => {
-    return lambdaClient.agentSignal.rollbackReceipt.mutate(params);
-  };
-
   emitSourceEvent = async (payload: ClientGatewaySourceEventInput<ClientGatewaySourceType>) => {
     return lambdaClient.agentSignal.emitSourceEvent.mutate(payload);
   };

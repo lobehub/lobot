@@ -28,33 +28,6 @@ const canGoBack = (s: ChatStoreState): boolean => {
   return s.portalStack.length > 1;
 };
 
-const stackDepth = (s: ChatStoreState): number => {
-  return s.portalStack.length;
-};
-
-const showPortal = (s: ChatStoreState) => s.showPortal;
-const showTopicComments = (s: ChatStoreState) => {
-  const viewType = currentViewType(s);
-  return (
-    viewType === PortalViewType.TopicComments || viewType === PortalViewType.TopicCommentThread
-  );
-};
-const showStandalonePortal = (s: ChatStoreState) => showPortal(s) && !showTopicComments(s);
-
-// ============== View Type Guards ==============
-
-const showArtifactUI = (s: ChatStoreState) => currentViewType(s) === PortalViewType.Artifact;
-const showAgentDetail = (s: ChatStoreState) => currentViewType(s) === PortalViewType.AgentDetail;
-const showDocument = (s: ChatStoreState) => currentViewType(s) === PortalViewType.Document;
-const showNotebook = (s: ChatStoreState) => currentViewType(s) === PortalViewType.Notebook;
-const showFilePreview = (s: ChatStoreState) => currentViewType(s) === PortalViewType.FilePreview;
-const showLocalFile = (s: ChatStoreState) => currentViewType(s) === PortalViewType.LocalFile;
-const showMessageDetail = (s: ChatStoreState) =>
-  currentViewType(s) === PortalViewType.MessageDetail;
-const showPluginUI = (s: ChatStoreState) => currentViewType(s) === PortalViewType.ToolUI;
-const showTaskDetail = (s: ChatStoreState) => currentViewType(s) === PortalViewType.TaskDetail;
-const showTopicChat = (s: ChatStoreState) => currentViewType(s) === PortalViewType.Topic;
-
 // ============== Data Extractors ==============
 
 // Helper to extract data from current view
@@ -69,20 +42,10 @@ const getViewData = <T extends PortalViewType>(
   return null;
 };
 
-const getStackViewData = <T extends PortalViewType>(
-  s: ChatStoreState,
-  type: T,
-): Extract<PortalViewData, { type: T }> | null => {
-  const view = s.portalStack.findLast((item) => item.type === type);
-  return (view as Extract<PortalViewData, { type: T }> | undefined) ?? null;
-};
-
 const agentDetailId = (s: ChatStoreState): string | undefined => {
   const view = getViewData(s, PortalViewType.AgentDetail);
   return view?.agentId;
 };
-
-const memoryDetailView = (s: ChatStoreState) => getViewData(s, PortalViewType.MemoryDetail);
 
 // Artifact selectors
 const currentArtifact = (s: ChatStoreState): PortalArtifact | undefined => {
@@ -234,20 +197,12 @@ const currentLocalFile = (s: ChatStoreState): OpenLocalFileEntry | undefined => 
 const isCurrentLocalFileRemote = (s: ChatStoreState): boolean =>
   isRemoteLocalFile(currentLocalFile(s));
 
-const localFilePath = (s: ChatStoreState) => currentLocalFile(s)?.filePath;
-const localFileWorkingDirectory = (s: ChatStoreState) => currentLocalFile(s)?.workingDirectory;
-
 // Edit buffers are keyed by tab identity (device + working directory + path),
 // so callers pass the tab id rather than a bare file path.
 const localFileBuffer =
   (tabId: string | undefined) =>
   (s: ChatStoreState): string | undefined =>
     tabId ? s.dirtyLocalFileContents[tabId] : undefined;
-
-const isLocalFileDirty =
-  (tabId: string | undefined) =>
-  (s: ChatStoreState): boolean =>
-    !!tabId && tabId in s.dirtyLocalFileContents;
 
 const dirtyLocalFileContents = (s: ChatStoreState): Record<string, string> =>
   s.dirtyLocalFileContents;
@@ -258,32 +213,6 @@ const messageDetailId = (s: ChatStoreState): string | undefined => {
   return view?.messageId;
 };
 
-// Task Detail selectors
-const taskDetailId = (s: ChatStoreState): string | undefined => {
-  const view = getStackViewData(s, PortalViewType.TaskDetail);
-  return view?.taskId;
-};
-
-const taskDetailWorkspace = (s: ChatStoreState) =>
-  getStackViewData(s, PortalViewType.TaskDetail)?.workspace;
-
-const taskResultId = (s: ChatStoreState): string | undefined => {
-  const view = getStackViewData(s, PortalViewType.TaskResult);
-  return view?.taskId;
-};
-
-const dashboardWidgetView = (s: ChatStoreState) => getViewData(s, PortalViewType.DashboardWidget);
-
-// Goal detail drill-down selectors
-const goalPortalId = (s: ChatStoreState): string | undefined =>
-  getViewData(s, PortalViewType.Goal)?.goalId;
-const goalNodeView = (s: ChatStoreState) => getViewData(s, PortalViewType.GoalNode);
-const goalMetricView = (s: ChatStoreState) => getViewData(s, PortalViewType.GoalMetric);
-const goalNorthStarView = (s: ChatStoreState) => getViewData(s, PortalViewType.GoalNorthStar);
-const goalReportView = (s: ChatStoreState) => getViewData(s, PortalViewType.GoalReport);
-const goalReportChapterView = (s: ChatStoreState) =>
-  getViewData(s, PortalViewType.GoalReportChapter);
-
 // Topic chat selectors — the second, side-by-side topic opened in the portal
 const portalTopicId = (s: ChatStoreState): string | undefined => {
   const view = getViewData(s, PortalViewType.Topic);
@@ -293,54 +222,13 @@ const portalTopicId = (s: ChatStoreState): string | undefined => {
 const topicCommentsView = (s: ChatStoreState) => getViewData(s, PortalViewType.TopicComments);
 const topicCommentThreadView = (s: ChatStoreState) =>
   getViewData(s, PortalViewType.TopicCommentThread);
-
-// Tool UI / Plugin selectors
-const currentToolUI = (
-  s: ChatStoreState,
-): { identifier: string; messageId: string; params?: Record<string, any> } | undefined => {
-  const view = getViewData(s, PortalViewType.ToolUI);
-  if (view) {
-    return { identifier: view.identifier, messageId: view.messageId, params: view.params };
-  }
-  return undefined;
-};
-
-const toolMessageId = (s: ChatStoreState) => currentToolUI(s)?.messageId;
-const toolUIIdentifier = (s: ChatStoreState) => currentToolUI(s)?.identifier;
-const toolUIParams = (s: ChatStoreState) => currentToolUI(s)?.params;
-
-const currentVerifyResult = (s: ChatStoreState) => getViewData(s, PortalViewType.VerifyResult);
-const verifyResultOperationId = (s: ChatStoreState) => currentVerifyResult(s)?.operationId;
-const verifyResultCheckItemId = (s: ChatStoreState) => currentVerifyResult(s)?.checkItemId;
-const verifyReportRunId = (s: ChatStoreState) => getViewData(s, PortalViewType.VerifyReport)?.runId;
-const acceptancePortalId = (s: ChatStoreState) =>
-  getViewData(s, PortalViewType.Acceptance)?.acceptanceId;
-const acceptanceCheckPortal = (s: ChatStoreState) => getViewData(s, PortalViewType.AcceptanceCheck);
 const browserPortal = (s: ChatStoreState) => getViewData(s, PortalViewType.Browser);
-const isPluginUIOpen = (id: string) => (s: ChatStoreState) =>
-  toolMessageId(s) === id && showPortal(s);
 
 export const chatPortalSelectors = {
   // Core stack selectors
   currentView,
   currentViewType,
   canGoBack,
-  stackDepth,
-  showPortal,
-  showStandalonePortal,
-  showTopicComments,
-
-  // View type guards
-  showArtifactUI,
-  showAgentDetail,
-  showDocument,
-  showNotebook,
-  showFilePreview,
-  showLocalFile,
-  showMessageDetail,
-  showPluginUI,
-  showTaskDetail,
-  showTopicChat,
 
   // Agent detail data
   agentDetailId,
@@ -366,37 +254,17 @@ export const chatPortalSelectors = {
   previewFileSource,
   chunkText,
 
-  // Goal drill-down data
-  goalMetricView,
-  goalNorthStarView,
-  dashboardWidgetView,
-  goalNodeView,
-  goalPortalId,
-  goalReportChapterView,
-  goalReportView,
-
   // Local file data
   activeLocalFileId,
   activeLocalFilePath,
   currentLocalFile,
   isCurrentLocalFileRemote,
   dirtyLocalFileContents,
-  isLocalFileDirty,
   localFileBuffer,
-  localFilePath,
-  localFileWorkingDirectory,
   openLocalFiles,
-
-  // Memory detail data
-  memoryDetailView,
 
   // Message detail data
   messageDetailId,
-
-  // Task detail data
-  taskDetailId,
-  taskDetailWorkspace,
-  taskResultId,
 
   // Topic chat data
   portalTopicId,
@@ -404,22 +272,6 @@ export const chatPortalSelectors = {
   // Topic comment data
   topicCommentsView,
   topicCommentThreadView,
-
-  // Tool UI data
-  currentToolUI,
-  toolMessageId,
-  toolUIIdentifier,
-  toolUIParams,
-  isPluginUIOpen,
-
-  // Verify result detail data
-  verifyResultOperationId,
-  verifyResultCheckItemId,
-  verifyReportRunId,
-
-  // Acceptance data
-  acceptanceCheckPortal,
-  acceptancePortalId,
 
   // Browser data
   browserPortal,

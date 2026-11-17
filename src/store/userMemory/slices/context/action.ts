@@ -62,11 +62,9 @@ export const createContextSlice = (set: Setter, get: () => UserMemoryStore, _api
  * offset-paged memory lists) behind the slice's long-standing action names.
  */
 class ContextActionImpl {
-  readonly #list: MemoryQueryList<ContextListParams, DisplayContextMemory, ContextListData>;
-
   constructor(set: Setter, get: () => UserMemoryStore, _api?: unknown) {
     void _api;
-    this.#list = new MemoryQueryList({
+    new MemoryQueryList({
       actionPrefix: n('contextList'),
       activeKeyField: 'contextListKey',
       entriesField: 'contextListEntries',
@@ -90,47 +88,6 @@ class ContextActionImpl {
       useStore: (selector) => useUserMemoryStore(selector),
     });
   }
-
-  /** Delete one context: optimistic, then the offset repair (see `OffsetListPager`). */
-  deleteContext = (id: string): Promise<void> =>
-    this.#list.delete(id, () => memoryCRUDService.deleteContext(id));
-
-  /** Purge for "delete all memories" (every query, memory + IndexedDB). */
-  internal_clearContextList = (user?: string): Promise<boolean> => this.#list.clear(user);
-
-  /** Confirmed edit of one context in every loaded and persisted query. */
-  internal_updateContextEntity = (
-    id: string,
-    fn: (item: DisplayContextMemory) => DisplayContextMemory,
-  ): void => {
-    this.#list.updateEntity(id, fn);
-  };
-
-  /** Append the next page of the query on screen. */
-  loadMoreContexts = (): void => {
-    void this.#list.loadMore();
-  };
-
-  /** Seed the persisted head page of a query before its route paints. */
-  preHydrateContexts = (query?: Omit<ContextQueryParams, 'page' | 'pageSize'>): Promise<boolean> =>
-    this.#list.preHydrate({ ...query, pageSize: CONTEXT_LIST_PAGE_SIZE, q: query?.q || undefined });
-
-  /** Point the list at another search / sort (no page set is dropped). */
-  resetContextsList = (params?: Omit<ContextQueryParams, 'page' | 'pageSize'>): void => {
-    this.#list.select({ ...params, q: params?.q || undefined });
-  };
-
-  /** Fetch orchestration for the context list page (see `MemoryQueryList.useFetch`). */
-  useFetchContexts = (
-    params: ContextQueryParams,
-  ): SWRResponse<MemoryListPageResult<DisplayContextMemory>> => {
-    const { page: _page, ...query } = params;
-    return this.#list.useFetch({
-      ...query,
-      pageSize: params.pageSize ?? CONTEXT_LIST_PAGE_SIZE,
-      q: params.q || undefined,
-    });
-  };
 }
 
 export type ContextAction = Pick<ContextActionImpl, keyof ContextActionImpl>;

@@ -391,39 +391,6 @@ class ActionImpl {
     await this.#refresh(this.#accounts, QUOTA_ACCOUNTS_KEY);
   };
 
-  /**
-   * Take an account in or out of the workspace's rotation. A disabled account
-   * stays listed (and keeps its history) but the load balancer skips it.
-   */
-  setQuotaAccountEnabled = async (accountId: string, enabled: boolean): Promise<void> => {
-    await this.#accounts.optimistic(
-      QUOTA_ACCOUNTS_KEY,
-      (accounts) =>
-        accounts.map((account) => (account.id === accountId ? { ...account, enabled } : account)),
-      () => agentQuotaService.updateAccount(accountId, { enabled }),
-    );
-    await this.#refresh(this.#accounts, QUOTA_ACCOUNTS_KEY);
-  };
-
-  /**
-   * Publish a workspace account to the team or keep it to the members signed in
-   * to it. Only its creator may; the server rejects anyone else.
-   */
-  setQuotaAccountVisibility = async (
-    accountId: string,
-    visibility: 'private' | 'public',
-  ): Promise<void> => {
-    await this.#accounts.optimistic(
-      QUOTA_ACCOUNTS_KEY,
-      (accounts) =>
-        accounts.map((account) =>
-          account.id === accountId ? { ...account, visibility } : account,
-        ),
-      () => agentQuotaService.updateAccount(accountId, { visibility }),
-    );
-    await this.#refresh(this.#accounts, QUOTA_ACCOUNTS_KEY);
-  };
-
   // ---- local Claude Code logins (desktop) ----
 
   /**

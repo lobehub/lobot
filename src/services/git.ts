@@ -299,23 +299,6 @@ class GitService {
       : electronGitService.getPullRequestMergeContext(params);
   }
 
-  /** Run a `gh pr` mutation (merge, auto-merge, ready, comment, close, ...) on a pull request. */
-  async runPullRequestAction({
-    action,
-    deviceId,
-    number,
-    path,
-  }: {
-    action: DeviceGitPullRequestAction;
-    deviceId?: string;
-    number: number;
-    path: string;
-  }): Promise<DeviceGitPullRequestActionResult> {
-    return deviceId
-      ? lambdaClient.device.runGitPullRequestAction.mutate({ action, deviceId, number, path })
-      : electronGitService.runPullRequestAction({ action, number, path });
-  }
-
   /** Working-tree dirty-file counts for a working directory. */
   async getGitWorkingTreeStatus({
     deviceId,
@@ -412,21 +395,6 @@ class GitService {
     return deviceId
       ? lambdaClient.device.listGitWorktrees.query({ deviceId, path })
       : electronGitService.listGitWorktrees(path);
-  }
-
-  /** Revert (discard working-tree changes to) a single file in a working directory. */
-  revertGitFile({
-    deviceId,
-    filePath,
-    path,
-  }: {
-    deviceId?: string;
-    filePath: string;
-    path: string;
-  }): Promise<GitFileRevertResult> {
-    return deviceId
-      ? lambdaClient.device.revertGitFile.mutate({ deviceId, filePath, path })
-      : electronGitService.revertGitFile({ filePath, path });
   }
 }
 

@@ -52,12 +52,8 @@ export { displayMessageSelectors } from './displayMessage';
 export const chatSelectors = {
   // Display message selectors (from messagesMap)
   activeBaseChats: displayMessageSelectors.activeDisplayMessages,
-  // DB message selectors (from dbMessagesMap)
-  countMessagesByThreadId: dbMessageSelectors.countDbMessagesByThreadId,
 
   currentChatKey: displayMessageSelectors.currentDisplayChatKey,
-
-  currentChatLoadingState: displayMessageSelectors.currentChatLoadingState,
 
   currentToolMessages: dbMessageSelectors.dbToolMessages,
 
@@ -68,25 +64,6 @@ export const chatSelectors = {
 
   getMessageById: displayMessageSelectors.getDisplayMessageById,
 
-  getThreadMessageIDs: displayMessageSelectors.getThreadMessageIDs,
-
-  getThreadMessages: displayMessageSelectors.getThreadMessages,
-
-  getTraceIdByMessageId: dbMessageSelectors.getTraceIdByDbMessageId,
-
-  inboxActiveTopicMessages: displayMessageSelectors.inboxActiveTopicDisplayMessages,
-
   isCurrentChatLoaded: displayMessageSelectors.isCurrentDisplayChatLoaded,
-
-  latestMessage: dbMessageSelectors.latestDbMessage,
-
-  mainAIChats: displayMessageSelectors.mainAIChats,
-
-  mainAIChatsMessageString: displayMessageSelectors.mainAIChatsMessageString,
-
-  mainAIChatsWithHistoryConfig: displayMessageSelectors.mainAIChatsWithHistoryConfig,
-  mainAILatestMessageReasoningContent: displayMessageSelectors.mainAILatestMessageReasoningContent,
-  mainDisplayChatIDs: displayMessageSelectors.mainDisplayChatIDs,
   mainDisplayChats: displayMessageSelectors.mainDisplayChats,
-  showInboxWelcome: displayMessageSelectors.showInboxWelcome,
 };

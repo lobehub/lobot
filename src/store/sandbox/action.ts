@@ -39,44 +39,6 @@ class SandboxActionImpl {
   ): ReplicaSyncResult =>
     this.#private.entitlement.useSync(enabled ? SANDBOX_SCOPE_ENTRY : null, { revalidateOnFocus });
 
-  /** The picker's environments; read them with `sandboxSelectors.pickerEnvironments`. */
-  useFetchPickerEnvironments = (enabled: boolean): ReplicaSyncResult =>
-    this.#private.environments.useSync(enabled ? SANDBOX_SCOPE_ENTRY : null);
-
-  /**
-   * The picker's copies with `topicId`'s occupancy; read them with
-   * `sandboxSelectors.pickerInstances(topicId)`.
-   *
-   * Not refetched on focus: occupancy is re-read each time the menu opens
-   * instead. While a copy is building, the list is polled so "Building" turns
-   * into a usable row on its own.
-   */
-  useFetchPickerInstances = (enabled: boolean, topicId?: string): ReplicaSyncResult =>
-    this.#private.instances.useSync(enabled ? { topicId } : null, {
-      refreshInterval: (latest?: SandboxPickerInstanceList) =>
-        (latest?.instances ?? []).some((instance) => instance.status === 'pending')
-          ? BUILD_REFRESH_MS
-          : 0,
-      revalidateOnFocus: false,
-    });
-
-  /**
-   * Edit the copies on the client (a just-created copy listed as building) and,
-   * unless `revalidate: false`, re-sync them. With no edit it only re-syncs. The
-   * edit stays in memory: only a server answer is persisted.
-   */
-  mutatePickerInstances = async (
-    edit?: InstanceListEdit,
-    { revalidate = true }: { revalidate?: boolean } = {},
-  ): Promise<void> => {
-    if (edit) this.#private.editInstances(edit);
-    if (!edit || revalidate) await this.#private.instances.revalidate(SANDBOX_SCOPE_ENTRY);
-  };
-
-  /** Where a bound instance's files live; read it with `sandboxSelectors.instanceDirectory`. */
-  useFetchInstanceDirectory = (instanceId?: string | null): ReplicaSyncResult =>
-    this.#private.instanceDirectory.useSync(instanceId || null);
-
   reset = (): void => {
     this.#set(initialState, false, n('reset'));
   };

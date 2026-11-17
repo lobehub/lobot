@@ -78,20 +78,6 @@ class EditorActionImpl {
     return composeSkillMarkdown(doc.skillFrontmatter, markdown);
   };
 
-  getEditorContent = (): { editorData: any; markdown: string } | null => {
-    const { activeDocumentId, editor } = this.#get();
-    if (!editor) return null;
-
-    try {
-      const markdown = (editor.getDocument('markdown') as unknown as string) || '';
-      const editorData = editor.getDocument('json');
-      return { editorData, markdown: this.getPersistedMarkdown(activeDocumentId, markdown) };
-    } catch (error) {
-      console.error('[DocumentStore] Failed to get editor content:', error);
-      return null;
-    }
-  };
-
   private syncEditorContent = (
     documentId?: string,
     options: { triggerAutoSave?: boolean } = {},
@@ -168,17 +154,6 @@ class EditorActionImpl {
     }
   };
 
-  commitEditorMutation = async (
-    documentId?: string,
-    options?: SaveExecutionOptions,
-  ): Promise<void> => {
-    const id = documentId || this.#get().activeDocumentId;
-    if (!id) return;
-
-    this.syncEditorContent(id, { triggerAutoSave: false });
-    await this.performSave(id, undefined, options);
-  };
-
   handleContentChange = (): void => {
     this.syncEditorContent(undefined, { triggerAutoSave: true });
   };
@@ -231,51 +206,6 @@ class EditorActionImpl {
       { documents: nextDocuments },
       false,
       action ?? n(`dispatchDocument/${payload.type}`, { id: payload.id }),
-    );
-  };
-
-  setDocumentCollab = (documentId: string, collab: boolean): void => {
-    const { documents, internal_dispatchDocument } = this.#get();
-    if (!documents[documentId] || documents[documentId].collab === collab) return;
-
-    if (collab) this.#get().cancelDebouncedSave(documentId);
-    internal_dispatchDocument(
-      { id: documentId, type: 'updateDocument', value: { collab, isDirty: false } },
-      n('setDocumentCollab'),
-    );
-  };
-
-  /**
-   * An agent command starts editing the stored page: save what the user typed
-   * so the agent reads it, and hold the page read-only until the command ends.
-   */
-  beginAgentEdit = (documentId: string): void => {
-    const doc = this.#get().documents[documentId];
-    if (!doc) return;
-
-    this.#get().internal_dispatchDocument(
-      {
-        id: documentId,
-        type: 'updateDocument',
-        value: { agentEditing: (doc.agentEditing ?? 0) + 1 },
-      },
-      n('beginAgentEdit'),
-    );
-    if (doc.isDirty) void this.#get().performSave(documentId);
-  };
-
-  /** One agent command ended; `all` releases the page when the whole run is over. */
-  endAgentEdit = (documentId: string, options?: { all?: boolean }): void => {
-    const doc = this.#get().documents[documentId];
-    if (!doc?.agentEditing) return;
-
-    this.#get().internal_dispatchDocument(
-      {
-        id: documentId,
-        type: 'updateDocument',
-        value: { agentEditing: options?.all ? 0 : doc.agentEditing - 1 },
-      },
-      n('endAgentEdit'),
     );
   };
 
@@ -338,42 +268,6 @@ class EditorActionImpl {
       },
       n('setCharLimitRefusal'),
     );
-  };
-
-  /**
-   * Restores a history version into the page. A room page restores on the
-   * server, which merges it into the room for everyone; applying it here as
-   * well would insert it into the room a second time.
-   */
-  restoreVersion = async (
-    documentId: string,
-    version: { editorData: unknown; historyId: string },
-  ): Promise<void> => {
-    const { documents, editor, markDirty, performSave } = this.#get();
-
-    if (documents[documentId]?.collab) {
-      await documentService.updateDocument({
-        editorData: JSON.stringify(version.editorData),
-        id: documentId,
-        restoreFromHistoryId: version.historyId,
-        saveSource: 'restore',
-      });
-      return;
-    }
-
-    editor?.setDocument('json', JSON.stringify(version.editorData));
-    markDirty(documentId);
-    await performSave(documentId, undefined, {
-      restoreFromHistoryId: version.historyId,
-      saveSource: 'restore',
-    });
-  };
-
-  markDirty = (documentId: string): void => {
-    const { documents, internal_dispatchDocument } = this.#get();
-    if (!documents[documentId]) return;
-
-    internal_dispatchDocument({ id: documentId, type: 'updateDocument', value: { isDirty: true } });
   };
 
   reconcileRemote = (documentId: string, row: RemoteDocumentRow): ReconcileResult => {
@@ -849,26 +743,6 @@ class EditorActionImpl {
       if (lockOwnerId) void documentService.releaseDocumentLock(id, lockOwnerId).catch(() => {});
       throw retryError;
     }
-  };
-
-  setEditorState = (editorState: LobehubEditorState | undefined): void => {
-    this.#set({ editorState }, false, n('setEditorState'));
-  };
-
-  /**
-   * Clear the "save rejected by another member's lock" flag.
-   *
-   * `saveBlockedByLock` is set on a CONFLICT save and otherwise only cleared by a
-   * *successful* save — but a blocked editor is read-only, so it can never reach
-   * that success path on its own. Once the lock is no longer held by someone else
-   * (we hold it, or it's free), the block is stale and must be dropped, or the
-   * user stays stuck read-only behind a banner naming the current holder (which
-   * may now be themselves). Called by the lock driver on that transition.
-   */
-  clearSaveBlockedByLock = (id: string): void => {
-    const { documents, internal_dispatchDocument } = this.#get();
-    if (!documents[id]?.saveBlockedByLock) return;
-    internal_dispatchDocument({ id, type: 'updateDocument', value: { saveBlockedByLock: false } });
   };
 }
 

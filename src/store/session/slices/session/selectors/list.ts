@@ -10,25 +10,13 @@ import {
 
 import { type SessionStore } from '../../../store';
 
-const defaultSessions = (s: SessionStore): LobeSessions => s.defaultSessions;
-
-const pinnedSessions = (s: SessionStore): LobeSessions => s.pinnedSessions;
-const customSessionGroups = (s: SessionStore): CustomSessionGroup[] => s.customSessionGroups;
-
 const allSessions = (s: SessionStore): LobeSessions => s.sessions;
-
-const getSessionById =
-  (id: string) =>
-  (s: SessionStore): LobeSession =>
-    sessionHelpers.getSessionById(id, allSessions(s));
 
 const currentSession = (s: SessionStore): LobeSession | undefined => {
   if (!s.activeId) return;
 
   return allSessions(s).find((i) => i.id === s.activeId);
 };
-
-const isInboxSession = (s: SessionStore) => s.activeId === INBOX_SESSION_ID;
 
 const isCurrentSessionGroupSession = (s: SessionStore): boolean => {
   const session = currentSession(s);
@@ -46,10 +34,5 @@ const currentGroupAgents = (s: SessionStore): GroupMemberWithAgent[] => {
 export const sessionSelectors = {
   currentGroupAgents,
   currentSession,
-  customSessionGroups,
-  defaultSessions,
-  getSessionById,
   isCurrentSessionGroupSession,
-  isInboxSession,
-  pinnedSessions,
 };

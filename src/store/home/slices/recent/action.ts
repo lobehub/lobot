@@ -117,7 +117,6 @@ class RecentActionImpl {
   /** Server writes per entity run in order; the newest optimistic title stays on top. */
   readonly #renameQueues = new Map<RecentEntityRef, Promise<unknown>>();
   readonly #conversationRecents;
-  readonly #docsHome;
   readonly #recentList;
   readonly #recents;
 
@@ -146,7 +145,7 @@ class RecentActionImpl {
       view: recordLens<HomeStore, RecentItem[]>('conversationRecentMap'),
     });
     this.#recents = linkReplicaEntity<RecentItem>([this.#recentList, this.#conversationRecents]);
-    this.#docsHome = createReplicaSlice(docsHomeListResource, {
+    createReplicaSlice(docsHomeListResource, {
       actionPrefix: n('docsHome'),
       fetcher: async ({ tab }) =>
         (await fileService.getDocsHomeItems(tab, DOCS_HOME_LIMIT)).map(toDocsHomeRow),
@@ -219,32 +218,12 @@ class RecentActionImpl {
   useFetchConversationRecents = (limit: number = ALL_RECENTS_LIMIT): ReplicaSyncResult =>
     this.#conversationRecents.useSync({ limit }, { enabled: true });
 
-  /**
-   * Home chat-mode recent topics (the viewer's own, server-narrowed). Read them
-   * with `homeRecentSelectors.query(createRecentQueryKey(...HOME_TOPIC_RECENTS_PARAMS))`.
-   */
-  useFetchHomeTopicRecents = (enabled: boolean): ReplicaSyncResult =>
-    this.#recentList.useSync(HOME_TOPIC_RECENTS_PARAMS, {
-      dedupingInterval: RECENT_SYNC_DEDUPE_MS,
-      enabled,
-      revalidateOnFocus: false,
-    });
-
   /** Desktop tray recents; `revalidate` refetches them when active topics change. */
   useFetchTrayRecents = (enabled: boolean): ReplicaSyncResult =>
     this.#recentList.useSync(TRAY_RECENTS_PARAMS, {
       dedupingInterval: RECENT_SYNC_DEDUPE_MS,
       enabled,
     });
-
-  /** Refetch every loaded Docs home tab, e.g. after a page or file was added. */
-  refreshDocsHome = async (): Promise<void> => {
-    await this.#docsHome.revalidate();
-  };
-
-  /** The Docs home list for one tab. Read it with `homeRecentSelectors.docsHome`. */
-  useFetchDocsHome = (tab: DocsHomeTab, enabled: boolean = true): ReplicaSyncResult =>
-    this.#docsHome.useSync({ tab }, { enabled });
 
   /**
    * Sidebar recents. Asks for `limit + 1` rows to know whether "view all" is

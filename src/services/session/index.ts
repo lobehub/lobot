@@ -12,33 +12,6 @@ import {
  * Retains session-shell compatibility and independent session-group operations.
  */
 export class SessionService {
-  /** @deprecated Use agentService.createAgent instead */
-  createSession = async (
-    type: LobeSessionType,
-    data: Partial<LobeAgentSession>,
-  ): Promise<string> => {
-    const { config, group, meta, ...session } = data;
-    return lambdaClient.session.createSession.mutate({
-      config: { ...config, ...meta } as any,
-      session: { ...session, groupId: group },
-      type,
-    });
-  };
-
-  updateSession = (id: string, data: Partial<UpdateSessionParams>) => {
-    const { group, pinned, meta, updatedAt } = data;
-    return lambdaClient.session.updateSession.mutate({
-      id,
-      value: { groupId: group === 'default' ? null : group, pinned, ...meta, updatedAt },
-    });
-  };
-
-  // TODO: Need to be fixed
-  getSessionConfig = async (id: string): Promise<LobeAgentConfig> => {
-    // @ts-ignore
-    return lambdaClient.agent.getAgentConfig.query({ sessionId: id });
-  };
-
   // ************************************** //
   // ***********  SessionGroup  *********** //
   // ************************************** //

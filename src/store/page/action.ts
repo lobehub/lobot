@@ -25,33 +25,12 @@ import { usePageStore } from './store';
 
 const n = setNamespace('page');
 
-/**
- * The Docs home tabs live in the home store, on their own replica — a page
- * mutation refreshes the sidebar sections through the shared entity, but not
- * those tabs. The dashboard stays mounted underneath the editor overlay, so
- * without this a rename or delete leaves the old row on it until an unrelated
- * refetch.
- */
-const syncDocsHome = (): void => {
-  // Loaded on demand: the page store is on the first screen, and a static
-  // import would pull the home store — and through it the chat store and the
-  // whole model bank — into the entry chunk.
-  void import('@/store/home').then(({ useHomeStore }) => useHomeStore.getState().refreshDocsHome());
-};
-
 export interface PageUpdateParams {
   emoji?: string;
   title?: string;
 }
 
 type Setter = StoreSetter<PageState>;
-
-const withEmoji = (metadata: LobeDocument['metadata'], emoji: string | undefined) =>
-  Object.fromEntries(
-    Object.entries({ ...metadata, ...(emoji !== undefined ? { emoji } : {}) }).filter(
-      ([, v]) => v !== undefined,
-    ),
-  );
 
 class PageActionImpl {
   readonly #get: () => PageState;
@@ -64,103 +43,12 @@ class PageActionImpl {
     this.#private = privateAction;
   }
 
-  useFetchDocuments = (): ReplicaSyncResult => {
-    // Subscribed, so changing the page size re-keys the list query.
-    const pageSize = useGlobalStore(systemStatusSelectors.pagePageSize);
-    return this.#private.list.useSync({ pageSize });
-  };
-
-  /** The Docs sidebar's My docs / Shared sections; rows via `pageSelectors.pageSection`. */
-  useFetchPageSection = (params: PageSectionParams): ReplicaSyncResult =>
-    this.#private.section.useSync(params);
-
-  /** A section's full list, paged; rows via `pageSelectors.pageSectionList`. */
-  useFetchPageSectionList = (params: PageSectionListParams | null): ReplicaSyncResult =>
-    this.#private.sectionList.useSync(params);
-
-  loadMorePageSectionList = async (params: PageSectionListParams): Promise<void> => {
-    await this.#private.sectionList.loadMore(params.scope, params);
-  };
-
-  useFetchPageDetail = (pageId?: string | null): ReplicaSyncResult =>
-    this.#private.detail.useSync(pageId || null);
-
-  preHydrate = (): Promise<boolean> => this.#private.preHydrateList();
-
-  loadMoreDocuments = async (): Promise<void> => {
-    await this.#private.list.loadMore(PAGE_LIST_KEY, { pageSize: currentPageSize() });
-  };
-
-  refreshDocuments = async (): Promise<void> => {
-    await this.#private.revalidateList();
-    syncDocsHome();
-  };
-
-  publishPageToWorkspace = async (pageId: string): Promise<{ documentIds: string[] }> => {
-    const result = await documentService.publishDocumentToWorkspace(pageId);
-    await this.refreshDocuments();
-    return result;
-  };
-
-  setPageVisibility = async (
-    pageId: string,
-    visibility: 'private' | 'public',
-  ): Promise<{ documentIds: string[] }> => {
-    const result = await documentService.setDocumentVisibility(pageId, visibility);
-    await this.refreshDocuments();
-    return result;
-  };
-
   upsertDocument = (document: DocumentItem): void => {
     const lobeDoc = documentItemToLobeDocument(document);
     this.#private.detail.update(lobeDoc.id, () => lobeDoc);
     if (this.#get().pageListMap[PAGE_LIST_KEY]?.items.some((doc) => doc.id === lobeDoc.id)) {
       this.#private.list.updateEntity(lobeDoc.id, () => lobeDoc);
     }
-  };
-
-  setSearchKeywords = (keywords: string): void => {
-    this.#set({ searchKeywords: keywords }, false, n('setSearchKeywords'));
-  };
-
-  setShowOnlyPagesNotInLibrary = (show: boolean): void => {
-    this.#set({ showOnlyPagesNotInLibrary: show }, false, n('setShowOnlyPagesNotInLibrary'));
-  };
-
-  closeAllPagesDrawer = (): void => {
-    this.#set({ allPagesDrawerOpen: false }, false, n('closeAllPagesDrawer'));
-  };
-
-  openSectionFullList = (scope: PageSectionScope): void => {
-    this.#set(
-      { sectionFullListOpen: true, sectionFullListScope: scope },
-      false,
-      n('openSectionFullList'),
-    );
-  };
-
-  closeSectionFullList = (): void => {
-    this.#set({ sectionFullListOpen: false }, false, n('closeSectionFullList'));
-  };
-
-  openAllPagesDrawer = (): void => {
-    this.#set({ allPagesDrawerOpen: true }, false, n('openAllPagesDrawer'));
-  };
-
-  selectPage = (pageId: string): void => {
-    if (this.#get().selectedPageId === pageId) return;
-
-    this.#set({ isCreatingNew: false, selectedPageId: pageId }, false, n('selectPage'));
-    this.navigateToPage(pageId);
-  };
-
-  setRenamingPageId = (pageId: string | null): void => {
-    this.#set({ renamingPageId: pageId }, false, n('setRenamingPageId'));
-  };
-
-  setSelectedPageId = (pageId: string | null, shouldNavigate: boolean = true): void => {
-    this.#set({ selectedPageId: pageId }, false, n('setSelectedPageId'));
-    if (shouldNavigate) this.navigateToPage(pageId);
   };
 
   navigateToPage = (pageId: string | null): void => {
@@ -248,117 +136,8 @@ class PageActionImpl {
       visibility,
     });
 
-  deletePage = async (pageId: string): Promise<void> => {
-    if (this.#get().selectedPageId !== pageId) return;
-
-    this.#set({ isCreatingNew: false, selectedPageId: null }, false, n('deletePage'));
-    this.navigateToPage(null);
-  };
-
-  duplicatePage = async (pageId: string): Promise<DocumentItem> => {
-    const sourcePage = await documentService.getDocumentById(pageId);
-
-    if (!sourcePage) {
-      throw new Error(`Page with ID ${pageId} not found`);
-    }
-
-    const newPage = await documentService.createDocument({
-      content: sourcePage.content || '',
-      editorData: sourcePage.editorData
-        ? typeof sourcePage.editorData === 'string'
-          ? sourcePage.editorData
-          : JSON.stringify(sourcePage.editorData)
-        : '{}',
-      fileType: sourcePage.fileType,
-      metadata: {
-        ...sourcePage.metadata,
-        createdAt: Date.now(),
-        duplicatedFrom: pageId,
-      },
-      title: `${sourcePage.title} (Copy)`,
-    });
-
-    this.#private.insertListRow(documentItemToLobeDocument(newPage));
-    syncDocsHome();
-
-    return newPage;
-  };
-
-  removePage = async (pageId: string): Promise<void> => {
-    const { selectedPageId } = this.#get();
-
-    // Clear the selection before the row disappears so the editor navigates
-    // away from the page it is about to lose.
-    if (selectedPageId === pageId) {
-      this.#set({ selectedPageId: null }, false, n('removePage/clearSelection'));
-      this.navigateToPage(null);
-    }
-
-    try {
-      await this.#private.entity.optimistic(pageId, 'remove', () =>
-        documentService.deleteDocument(pageId),
-      );
-      syncDocsHome();
-    } catch (error) {
-      console.error('Failed to delete page:', error);
-      if (selectedPageId === pageId) {
-        this.#set({ selectedPageId: pageId }, false, n('removePage/restoreSelection'));
-        this.navigateToPage(pageId);
-      }
-      throw error;
-    }
-  };
-
   removeTempPage = (tempId: string): void => {
     this.#private.entity.remove(tempId);
-  };
-
-  replaceTempPageWithReal = (tempId: string, realPage: LobeDocument): void => {
-    this.#private.replaceListRow(tempId, realPage);
-  };
-
-  renamePage = async (pageId: string, title: string, emoji?: string): Promise<void> => {
-    try {
-      await this.updatePageOptimistically(pageId, { emoji, title });
-      syncDocsHome();
-    } catch (error) {
-      console.error('Failed to rename page:', error);
-    } finally {
-      this.#set({ renamingPageId: null }, false, n('renamePage'));
-    }
-  };
-
-  updatePageOptimistically = async (pageId: string, updates: PageUpdateParams): Promise<void> => {
-    const existingPage = listSelectors.getDocumentById(pageId)(this.#get());
-
-    if (!existingPage) {
-      console.warn('[updatePageOptimistically] Page not found:', pageId);
-      return;
-    }
-
-    const apply = (doc: LobeDocument): LobeDocument => ({
-      ...doc,
-      metadata: withEmoji(doc.metadata, updates.emoji),
-      title: updates.title ?? doc.title,
-      updatedAt: new Date(),
-    });
-    const updatedPage = apply(existingPage);
-
-    try {
-      await this.#private.entity.optimistic(pageId, apply, () =>
-        documentService.updateDocument({
-          id: pageId,
-          metadata: updatedPage.metadata || {},
-          parentId: updatedPage.parentId || undefined,
-          title: updatedPage.title || updatedPage.filename,
-        }),
-      );
-
-      // Land the server's ordering and derived fields.
-      await this.#private.revalidateList();
-    } catch (error) {
-      console.error('[updatePageOptimistically] Failed to sync to DB:', error);
-    }
   };
 
   reset = (): void => {

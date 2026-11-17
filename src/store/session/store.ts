@@ -51,5 +51,3 @@ export const useSessionStore = createWithEqualityFn<SessionStore>()(
 );
 
 expose('session', useSessionStore);
-
-export const getSessionStoreState = () => useSessionStore.getState();

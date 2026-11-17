@@ -57,12 +57,6 @@ export class ChatThreadActionImpl {
     });
   }
 
-  updateThreadInputMessage = (message: string): void => {
-    if (isEqual(message, this.#get().threadInputMessage)) return;
-
-    this.#set({ threadInputMessage: message }, false, n(`updateThreadInputMessage`, message));
-  };
-
   openThreadCreator = (messageId: string): void => {
     const { activeAgentId, activeGroupId, activeTopicId, newThreadMode, replaceMessages } =
       this.#get();
@@ -138,56 +132,6 @@ export class ChatThreadActionImpl {
       'closeThreadPortal',
     );
     this.#get().clearPortalStack();
-  };
-
-  createThread = async ({
-    message,
-    sourceMessageId,
-    topicId,
-    type,
-  }: {
-    message: CreateMessageParams;
-    sourceMessageId: string;
-    topicId: string;
-    type: IThreadType;
-  }): Promise<{ threadId: string; messageId: string }> => {
-    this.#set({ isCreatingThread: true }, false, n('creatingThread/start'));
-
-    const data = await threadService.createThreadWithMessage({
-      topicId,
-      sourceMessageId,
-      type,
-      message,
-    });
-    this.#set({ isCreatingThread: false }, false, n('creatingThread/end'));
-
-    return data;
-  };
-
-  /**
-   * Fetch orchestration for a topic's sub-threads. Hydrates the persisted list,
-   * then revalidates; results land in `threadMaps` — read them through
-   * `threadSelectors`, never from this hook.
-   */
-  useFetchThreads = (enable: boolean, topicId?: string): ReplicaSyncResult =>
-    // The conversation's ThreadHydration and the sidebar list both sync the
-    // active topic; collapse their mounts into one request.
-    this.#threadList.useSync(topicId || null, {
-      dedupingInterval: THREAD_LIST_DEDUPING_INTERVAL,
-      enabled: enable,
-    });
-
-  /**
-   * Seed a topic's persisted thread list before its first paint (route loader).
-   * Best-effort: a miss is not an error, and the caller bounds the wait.
-   */
-  preHydrateThreads = async (topicId?: string): Promise<boolean> => {
-    if (!topicId) return false;
-
-    const scope = threadListResource.scope.get();
-    this.#threadList.ensureScope(scope);
-
-    return this.#threadList.hydrate(topicId, scope);
   };
 
   /**

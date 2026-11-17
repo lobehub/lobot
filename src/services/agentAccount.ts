@@ -1,8 +1,4 @@
-import type {
-  AgentAccountKind,
-  AgentInboxMessage,
-  AgentInboxMessageSummary,
-} from '@lobot/types';
+import type { AgentAccountKind, AgentInboxMessage, AgentInboxMessageSummary } from '@lobot/types';
 import type { inferRouterOutputs } from '@trpc/server';
 
 import { lambdaClient } from '@/libs/trpc/client';
@@ -74,22 +70,6 @@ class AgentAccountService {
   list = (params?: ListAgentAccountsParams): Promise<AgentAccountView[]> =>
     lambdaClient.agentAccount.list.query(params);
 
-  provision = async (params: ProvisionAgentAccountParams): Promise<AgentAccountView> => {
-    const account = await lambdaClient.agentAccount.provision.mutate(params);
-    // The router answers either an account or an error; a silent `undefined`
-    // would leave the tab showing success for an address it never received.
-    if (!account) throw new Error('Provisioning returned no account');
-
-    return account;
-  };
-
-  revoke = (id: string, options?: { purgeCredential?: boolean; release?: boolean }) =>
-    lambdaClient.agentAccount.revoke.mutate({
-      id,
-      purgeCredential: options?.purgeCredential,
-      release: options?.release,
-    });
-
   // --------------- Inbox ---------------
 
   /** A page of summaries; the body and attachments come from {@link getInboxMessage}. */
@@ -104,9 +84,6 @@ class AgentAccountService {
     toInboxMessage(await lambdaClient.agentAccount.inbox.get.query({ id }));
 
   markInboxRead = (ids: string[]) => lambdaClient.agentAccount.inbox.markRead.mutate({ ids });
-
-  markAllInboxRead = (agentId: string, accountId?: string) =>
-    lambdaClient.agentAccount.inbox.markAllRead.mutate({ accountId, agentId });
 }
 
 export const agentAccountService = new AgentAccountService();

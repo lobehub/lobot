@@ -70,26 +70,6 @@ class ElectronRemoteServerActionImpl {
     }
   };
 
-  disconnectRemoteServer = async (): Promise<void> => {
-    this.#set({ isConnectingServer: false });
-    this.#get().clearRemoteServerSyncError();
-    try {
-      // Must use clearRemoteServerConfig (not only set active: false): main process
-      // clears encrypted OIDC access/refresh tokens; otherwise sign-out still leaves auth state.
-      await remoteServerService.clearRemoteServerConfig();
-      const { stores } = await import('@/store/utils/userDataStores');
-      stores.reset();
-      await this.#get().refreshServerConfig();
-    } catch (error) {
-      console.error('Disconnect failed:', error);
-      this.#set({
-        remoteServerSyncError: { message: (error as Error).message, type: 'DISCONNECT_ERROR' },
-      });
-    } finally {
-      this.#set({ isConnectingServer: false });
-    }
-  };
-
   refreshServerConfig = async (): Promise<void> => {
     await mutate(electronKeys.remoteServerConfig());
   };

@@ -1,3 +1,4 @@
+import { nanoid } from '@lobechat/utils';
 import {
   type ChatImageItem,
   type ChatMessageError,
@@ -11,7 +12,6 @@ import {
   type UpdateMessageRAGParams,
 } from '@lobot/types';
 import { ChatErrorType } from '@lobot/types';
-import { nanoid } from '@lobechat/utils';
 
 import { messageService } from '@/services/message';
 import { type ChatStore } from '@/store/chat/store';
@@ -102,18 +102,6 @@ export class MessageOptimisticUpdateActionImpl {
     });
 
     return tempId;
-  };
-
-  optimisticDeleteMessage = async (
-    id: string,
-    context?: OptimisticUpdateContext,
-  ): Promise<void> => {
-    this.#get().internal_dispatchMessage({ id, type: 'deleteMessage' }, context);
-    const ctx = this.#get().internal_getConversationContext(context);
-    const result = await messageService.removeMessage(id, ctx);
-    if (result?.success && result.messages) {
-      this.#get().replaceMessages(result.messages, { context: ctx });
-    }
   };
 
   optimisticDeleteMessages = async (
@@ -222,48 +210,6 @@ export class MessageOptimisticUpdateActionImpl {
       replaceMessages(result.messages, { context: ctx });
     } else {
       await refreshMessages();
-    }
-  };
-
-  optimisticUpdateMessagePlugin = async (
-    id: string,
-    value: Partial<MessagePluginItem>,
-    context?: OptimisticUpdateContext,
-  ): Promise<void> => {
-    const { internal_dispatchMessage, replaceMessages } = this.#get();
-    const toolMessage = dbMessageSelectors.getDbMessageById(id)(this.#get());
-
-    internal_dispatchMessage({ id, type: 'updateMessagePlugin', value }, context);
-
-    if (toolMessage?.parentId && toolMessage.tool_call_id) {
-      internal_dispatchMessage(
-        {
-          id: toolMessage.parentId,
-          type: 'updateMessageTools',
-          tool_call_id: toolMessage.tool_call_id,
-          value: value as Partial<ChatToolPayload>,
-        },
-        context,
-      );
-    }
-
-    const ctx = this.#get().internal_getConversationContext(context);
-    const result = await messageService.updateMessagePlugin(id, value, ctx);
-
-    if (result?.success && result.messages) {
-      replaceMessages(result.messages, { context: ctx });
-    }
-  };
-
-  optimisticUpdateMessageRAG = async (
-    id: string,
-    data: UpdateMessageRAGParams,
-    context?: OptimisticUpdateContext,
-  ): Promise<void> => {
-    const ctx = this.#get().internal_getConversationContext(context);
-    const result = await messageService.updateMessageRAG(id, data, ctx);
-    if (result?.success && result.messages) {
-      this.#get().replaceMessages(result.messages, { context: ctx });
     }
   };
 }

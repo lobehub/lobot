@@ -97,18 +97,6 @@ class DeviceActionImpl {
   refreshDevices = (): Promise<unknown> => this.#list.revalidate(DEVICE_LIST_KEY);
 
   /**
-   * Seed the persisted device list before the route commits, so the bound
-   * device's name and cwd paint on the first frame instead of after the
-   * mount-time hydrate. Call from a route loader, bounded by a timeout.
-   */
-  preHydrateDeviceList = async (): Promise<boolean> => {
-    const scope = deviceListResource.scope.get();
-    // The slot may still hold the previous identity's rows; drop them first.
-    this.#list.ensureScope(scope);
-    return this.#list.hydrate(LIST_PARAMS, scope);
-  };
-
-  /**
    * Persist a working-directory choice to a device (`defaultCwd` + `workingDirs`)
    * with an optimistic store update, then revalidate from the server. Pass
    * `setDefault: false` to record the dir in the recent list without repointing

@@ -72,32 +72,6 @@ export const getDbMessageByToolCallId = (id: string) => (s: ChatStoreState) => {
   return messages.find((m) => m.tool_call_id === id);
 };
 
-/**
- * Get traceId from a message by ID
- */
-const getTraceIdByDbMessageId = (id: string) => (s: ChatStoreState) =>
-  getDbMessageById(id)(s)?.traceId;
-
-/**
- * Get latest raw message from database
- */
-const latestDbMessage = (s: ChatStoreState) => activeDbMessages(s).at(-1);
-
-/**
- * Get latest user message from database
- */
-const latestUserMessage = (s: ChatStoreState) => {
-  const messages = activeDbMessages(s);
-
-  for (let index = messages.length - 1; index >= 0; index -= 1) {
-    const message = messages[index];
-
-    if (message.role === 'user') return message;
-  }
-
-  return undefined;
-};
-
 // ============= DB Message Filtering ========== //
 
 /**
@@ -130,82 +104,6 @@ const dbUserFiles = (s: ChatStoreState) => {
     .flatMap((m) => m.fileList)
     .filter((f) => !!f && !f.inaccessible);
 };
-
-// ============= DB Message Counting ========== //
-
-/**
- * Count messages in a specific thread
- */
-const countDbMessagesByThreadId = (id: string) => (s: ChatStoreState) => {
-  const messages = activeDbMessages(s).filter((m) => m.threadId === id);
-  return messages.length;
-};
-
-// ============= DB Message Status ========== //
-
-/**
- * Check if current chat is loaded in dbMessagesMap
- */
-const isCurrentDbChatLoaded = (s: ChatStoreState) => !!s.dbMessagesMap[currentDbChatKey(s)];
-
-/**
- * Get inbox active topic raw messages from database
- */
-const inboxActiveTopicDbMessages = (state: ChatStoreState) => {
-  const activeTopicId = state.activeTopicId;
-  const key = messageMapKey({ agentId: 'inbox', topicId: activeTopicId });
-  return state.dbMessagesMap[key] || [];
-};
-
-// ============= Activated Tools Selectors ========== //
-
-/**
- * Accumulate activated tool identifiers from all lobe-activator messages.
- *
- * Unlike todos (which take the latest snapshot), activated tools are
- * cumulative — once a tool is activated it stays active for the rest
- * of the conversation.
- *
- * @param messages - Array of chat messages to scan
- * @returns Deduplicated array of activated tool identifiers, or undefined if none
- */
-const selectActivatedToolIdsFromMessages = (messages: UIChatMessage[]): string[] | undefined => {
-  const ids = new Set<string>();
-
-  for (const msg of messages) {
-    if (
-      msg.role === 'tool' &&
-      msg.plugin?.identifier === LobeActivatorIdentifier &&
-      msg.pluginState?.activatedTools
-    ) {
-      const activatedTools = msg.pluginState.activatedTools as Array<{ identifier?: string }>;
-      if (Array.isArray(activatedTools)) {
-        for (const tool of activatedTools) {
-          if (tool.identifier) {
-            ids.add(tool.identifier);
-          }
-        }
-      }
-    }
-  }
-
-  return ids.size > 0 ? [...ids] : undefined;
-};
-
-// ============= Activated Skills Selectors ========== //
-
-/**
- * Accumulate activated skills from all activateSkill messages.
- *
- * Skills once activated remain active for the rest of the conversation.
- * Uses skill id as key to deduplicate (later calls update the entry).
- *
- * @param messages - Array of chat messages to scan
- * @returns Array of activated skills, or undefined if none
- */
-const selectActivatedSkillsFromMessages = (
-  messages: UIChatMessage[],
-): StepActivatedSkill[] | undefined => extractActivatedSkillsFromMessages(messages);
 
 // ============= Todos Selectors ========== //
 
@@ -253,32 +151,15 @@ export const selectCurrentTurnTodosFromMessages = (
   return selectTodosFromMessages(scope);
 };
 
-/**
- * Get current active chat's todos state from db messages
- */
-const getActiveTodos = (s: ChatStoreState): StepContextTodos | undefined => {
-  const messages = activeDbMessages(s);
-  return selectTodosFromMessages(messages);
-};
-
 export const dbMessageSelectors = {
   activeDbMessages,
-  countDbMessagesByThreadId,
   currentDbChatKey,
   dbToolMessages,
   dbUserFiles,
   dbUserMessages,
-  getActiveTodos,
   getDbMessageById,
   getDbMessageByToolCallId,
   getDbMessagesByKey,
-  getTraceIdByDbMessageId,
-  inboxActiveTopicDbMessages,
-  isCurrentDbChatLoaded,
-  latestDbMessage,
-  latestUserMessage,
-  selectActivatedSkillsFromMessages,
-  selectActivatedToolIdsFromMessages,
   selectCurrentTurnTodosFromMessages,
   selectTodosFromMessages,
 };

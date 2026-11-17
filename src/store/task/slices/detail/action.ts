@@ -1,10 +1,10 @@
+import { toast } from '@lobehub/ui';
 import type { TaskDetailActivity, TaskDetailActivityAuthor, TaskDetailData } from '@lobot/types';
 import {
   clearTaskReposSelection,
   readTaskExecutionConfig,
   toTaskExecutionConfigPatch,
 } from '@lobot/types';
-import { toast } from '@lobehub/ui';
 import isEqual from 'fast-deep-equal';
 import { t } from 'i18next';
 
@@ -157,101 +157,6 @@ class TaskDetailSliceActionImpl {
     });
   }
 
-  // ── Public Actions ──
-
-  addComment = async (
-    taskId: string,
-    content: string,
-    opts?: {
-      authorAgentId?: string;
-      briefId?: string;
-      editorData?: unknown;
-      topicId?: string;
-    },
-  ): Promise<Awaited<ReturnType<typeof taskService.addComment>>> => {
-    // Same treatment as the assignee chip: the row appears on send, not after
-    // the mutation *and* the detail refetch. A comment posted on an agent's
-    // behalf (client-first runtime) is left to the refetch — the store has no
-    // agent identity to attribute it to.
-    const current = this.#get().taskDetailMap[taskId];
-    const userState = useUserStore.getState();
-    const actorId = userProfileSelectors.userId(userState);
-    const optimistic =
-      current && !opts?.authorAgentId
-        ? buildOptimisticCommentActivity({
-            actor: actorId
-              ? {
-                  avatar: userProfileSelectors.userAvatar(userState) || null,
-                  id: actorId,
-                  name: userProfileSelectors.displayUserName(userState) || null,
-                  type: 'user',
-                }
-              : undefined,
-            content,
-            editorData: opts?.editorData,
-            now: new Date().toISOString(),
-            topicId: opts?.topicId,
-          })
-        : undefined;
-    if (optimistic) {
-      this.internal_dispatchTaskDetail({
-        id: taskId,
-        type: 'updateTaskDetail',
-        value: { activities: [...(current?.activities ?? []), optimistic] },
-      });
-    }
-
-    let result: Awaited<ReturnType<typeof taskService.addComment>>;
-    try {
-      result = await taskService.addComment(taskId, content, opts);
-    } catch (error) {
-      // The send failed, so the row must go even if the network is down and
-      // the server-truth refetch below cannot run — otherwise an unsaved
-      // comment keeps looking posted until something else refreshes.
-      if (optimistic) {
-        const latest = this.#get().taskDetailMap[taskId];
-        this.internal_dispatchTaskDetail({
-          id: taskId,
-          type: 'updateTaskDetail',
-          value: {
-            activities: (latest?.activities ?? []).filter((a) => a.id !== optimistic.id),
-          },
-        });
-        await this.internal_refreshTaskDetail(taskId).catch(() => {});
-      }
-      throw error;
-    }
-    // Post-success refresh failing is not the comment failing: it is saved.
-    await this.internal_refreshTaskDetail(taskId);
-    return result;
-  };
-
-  deleteComment = async (commentId: string, taskId?: string): Promise<void> => {
-    await taskService.deleteComment(commentId);
-    const id = taskId ?? this.#get().activeTaskId;
-    if (id) await this.internal_refreshTaskDetail(id);
-  };
-
-  updateComment = async (
-    commentId: string,
-    content: string,
-    opts?: { editorData?: unknown; taskId?: string },
-  ): Promise<void> => {
-    const { taskId, ...rest } = opts ?? {};
-    await taskService.updateComment(commentId, content, rest);
-    const id = taskId ?? this.#get().activeTaskId;
-    if (id) await this.internal_refreshTaskDetail(id);
-  };
-
-  addDependency = async (
-    taskId: string,
-    dependsOnId: string,
-    type?: 'blocks' | 'relates',
-  ): Promise<void> => {
-    await taskService.addDependency(taskId, dependsOnId, type);
-    await this.internal_refreshTaskDetail(taskId);
-  };
-
   #loadTaskDetail = async (taskId: string): Promise<TaskDetailData> => {
     const result = await taskService.getDetail(taskId).catch((error) => {
       if (isTrpcErrorCode(error, 'NOT_FOUND')) {
@@ -308,16 +213,6 @@ class TaskDetailSliceActionImpl {
     return data.id;
   };
 
-  fetchTaskDetail = async (ref?: string): Promise<TaskDetailData> => {
-    ref ??= this.#get().activeTaskId ?? this.#get().activeTaskRef;
-    if (!ref) throw new Error('No task identifier provided and no current task context.');
-    const id = await this.internal_resolveTaskId(ref);
-    const { data, applied } = await this.#detail.fetch(id);
-    if (!data || !applied) throw new Error('Task detail request was superseded');
-    await this.#reconciliations.get(data);
-    return data;
-  };
-
   createTask = async (params: {
     assigneeAgentId?: string;
     assigneeUserId?: string;
@@ -347,133 +242,6 @@ class TaskDetailSliceActionImpl {
       return result.data ?? null;
     } finally {
       this.#set({ isCreatingTask: false }, false, 'createTask/end');
-    }
-  };
-
-  deleteTask = async (ref: string): Promise<DeletedTask | null> => {
-    const identifier = this.#get().taskRefIndex[ref] ?? ref;
-    const snapshot = this.#get().taskDetailMap[identifier];
-    this.#set({ isDeletingTask: true }, false, 'deleteTask/start');
-    try {
-      this.internal_dispatchTaskDetail({ id: identifier, type: 'deleteTaskDetail' });
-
-      const result = await taskService.delete(identifier);
-      this.#forgetTask(identifier);
-
-      if (this.#get().activeTaskId === identifier) {
-        this.#set({ activeTaskId: undefined }, false, 'deleteTask/clearActive');
-      }
-
-      await this.#get().refreshTaskList();
-      try {
-        // Deleting a task can orphan its Works across topics; the summary chips
-        // ride the message payload, so invalidate message lists too, not just
-        // the work-domain sidebar caches.
-        await workService.refreshAllConversations();
-      } catch (error) {
-        console.error('[task:deleteTask:refreshWork]', error);
-      }
-      return result.data ?? null;
-    } catch (error) {
-      // The optimistic delete also dropped the persisted row; restore the
-      // confirmed snapshot through `replace` so it is persisted again.
-      if (snapshot) this.#detail.replace(identifier, snapshot);
-      throw error;
-    } finally {
-      this.#set({ isDeletingTask: false }, false, 'deleteTask/end');
-    }
-  };
-
-  pinDocument = async (taskId: string, documentId: string): Promise<void> => {
-    await taskService.pinDocument(taskId, documentId);
-    await this.internal_refreshTaskDetail(taskId);
-  };
-
-  removeDependency = async (taskId: string, dependsOnId: string): Promise<void> => {
-    await taskService.removeDependency(taskId, dependsOnId);
-    await this.internal_refreshTaskDetail(taskId);
-  };
-
-  reorderSubtasks = async (taskId: string, order: string[]): Promise<void> => {
-    await taskService.reorderSubtasks(taskId, order);
-    await this.internal_refreshTaskDetail(taskId);
-  };
-
-  setActiveTaskId = (taskId?: string): void => {
-    if (this.#get().activeTaskRef === taskId) return;
-    this.#set(
-      {
-        activeTaskRef: taskId,
-        activeTaskId: cachedTaskId(taskId, this.#get().taskRefIndex),
-        activeTopicDrawerAgentId: undefined,
-        activeTopicDrawerFocusRequest: undefined,
-        activeTopicDrawerRunningOperation: undefined,
-        activeTopicDrawerTitle: undefined,
-        activeTopicDrawerTopicId: undefined,
-      },
-      false,
-      'setActiveTaskId',
-    );
-  };
-
-  /**
-   * `topic` carries the agent and title for a run opened outside a task detail
-   * (the home inbox lists plain topics too) — the drawer falls back to it when
-   * no task detail is loaded to read them from. `autoFocus` marks openings made
-   * with conversational intent (the brief's "Continue chat"); each one bumps
-   * the focus request so the body expands and focuses its reply composer, even
-   * when the drawer already shows this topic.
-   */
-  openTopicDrawer = (
-    topicId: string,
-    topic?: {
-      agentId?: string;
-      autoFocus?: boolean;
-      runningOperation?: TaskDetailActivity['runningOperation'];
-      title?: string;
-    },
-  ): void => {
-    const current = this.#get();
-    if (current.activeTopicDrawerTopicId === topicId && !topic?.autoFocus) return;
-    this.#set(
-      {
-        activeTopicDrawerAgentId: topic?.agentId,
-        activeTopicDrawerFocusRequest: topic?.autoFocus
-          ? (current.activeTopicDrawerFocusRequest ?? 0) + 1
-          : undefined,
-        activeTopicDrawerRunningOperation: topic?.runningOperation,
-        activeTopicDrawerTitle: topic?.title,
-        activeTopicDrawerTopicId: topicId,
-      },
-      false,
-      'openTopicDrawer',
-    );
-  };
-
-  closeTopicDrawer = (): void => {
-    if (!this.#get().activeTopicDrawerTopicId) return;
-    this.#set(
-      {
-        activeTopicDrawerAgentId: undefined,
-        activeTopicDrawerFocusRequest: undefined,
-        activeTopicDrawerRunningOperation: undefined,
-        activeTopicDrawerTitle: undefined,
-        activeTopicDrawerTopicId: undefined,
-      },
-      false,
-      'closeTopicDrawer',
-    );
-  };
-
-  unpinDocument = async (taskId: string, documentId: string): Promise<void> => {
-    await taskService.unpinDocument(taskId, documentId);
-    // taskId here is the source (owning) task — may be a descendant of the
-    // task currently open. The detail page's SWR cache is keyed by activeTaskId,
-    // so revalidate that too; otherwise the artifact stays visible until reload.
-    await this.internal_refreshTaskDetail(taskId);
-    const activeTaskId = this.#get().activeTaskId;
-    if (activeTaskId && activeTaskId !== taskId) {
-      await this.internal_refreshTaskDetail(activeTaskId);
     }
   };
 
@@ -710,43 +478,6 @@ class TaskDetailSliceActionImpl {
         assigneeAgentId !== undefined ? revalidateReplica(goalGraphResource) : undefined,
       ]).catch(() => {});
     }
-  };
-
-  useFetchTaskDetail = (taskRef?: string) => {
-    const scope = cacheScope.use();
-    const knownId = useTaskStore((state) => cachedTaskId(taskRef, state.taskRefIndex));
-    const resolution = useClientDataSWR(
-      taskRef && !knownId ? ['taskRef', scope, taskRef] : null,
-      async () => {
-        try {
-          return await this.internal_resolveTaskId(taskRef!);
-        } catch (error) {
-          if ((error as { data?: { code?: string } })?.data?.code === 'NOT_FOUND') {
-            const missing = new Error('Task not found') as Error & { code: string };
-            missing.code = 'TASK_NOT_FOUND';
-            throw missing;
-          }
-          throw error;
-        }
-      },
-    );
-    const taskId = knownId;
-    const shouldPoll = useTaskStore((state) =>
-      hasInFlightActivity(taskId ? state.taskDetailMap[taskId] : undefined),
-    );
-    const sync = this.#detail.useSync(taskId, {
-      onError: (error) => {
-        if (taskId && (error as { code?: string } | undefined)?.code === 'TASK_NOT_FOUND')
-          this.internal_dispatchTaskDetail({ id: taskId, type: 'deleteTaskDetail' });
-      },
-      refreshInterval: shouldPoll ? TASK_DETAIL_POLL_INTERVAL : 0,
-    });
-    return {
-      ...sync,
-      error: resolution.error ?? sync.error,
-      isValidating: resolution.isLoading || sync.isValidating,
-      mutate: taskId ? sync.revalidate : resolution.mutate,
-    };
   };
 
   #forgetTask = (id: string) => {

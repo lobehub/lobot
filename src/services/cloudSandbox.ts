@@ -27,28 +27,6 @@ class CloudSandboxService {
 
     return toolsClient.market.execInSandbox.mutate(input);
   }
-
-  /**
-   * Export a file from sandbox and upload to S3, then create a persistent file record
-   * This is a single call that combines: getUploadUrl + callTool(exportFile) + createFileRecord
-   * Returns a permanent /f/:id URL instead of a temporary pre-signed URL
-   * @param path - The file path in the sandbox
-   * @param filename - The name of the file to export
-   * @param topicId - The topic ID for organizing files
-   */
-  async exportAndUploadFile(
-    path: string,
-    filename: string,
-    topicId: string,
-  ): Promise<ExportAndUploadFileResult> {
-    const input: ExportAndUploadFileInput = {
-      filename,
-      path,
-      topicId,
-    };
-
-    return toolsClient.market.exportAndUploadFile.mutate(input);
-  }
 }
 
 export const cloudSandboxService = new CloudSandboxService();

@@ -30,40 +30,6 @@ const isDeviceListLoaded = (s: DeviceState): boolean =>
 const isDeviceListConfirmed = (s: DeviceState): boolean =>
   s.deviceListReplica.entries[DEVICE_LIST_KEY]?.source === 'server';
 
-/**
- * Whether a shell opened from the browser can run on this device.
- *
- * The PTY lives in the machine's `lh connect` process or, on a desktop that
- * reports {@link DEVICE_TERMINAL_METADATA_KEY}, in the app's own gateway
- * connection. Terminal RPCs carry a `cli` channel hint the gateway only treats
- * as a *preference*, so a row whose live connections are all from an older
- * desktop answers them with a refusal. Requiring a capable live connection is
- * what keeps the picker from offering a target that cannot open a shell.
- *
- * Two edges: an offline row is a registry entry rather than a reachable host,
- * and a live row that reports no connections at all is a gateway that predates
- * the field — unknown, not unusable.
- */
-export const canHostTerminal = (device: DeviceListItem): boolean => {
-  if (!device.online) return false;
-  const channels = device.channels ?? [];
-  if (channels.length === 0) return true;
-  const desktopServesTerminal = device.metadata?.[DEVICE_TERMINAL_METADATA_KEY] === '1';
-  return channels.some((channel) => {
-    const kind = getChannelKind(channel.channel);
-    return kind === 'cli' || (kind === 'desktop' && desktopServesTerminal);
-  });
-};
-
-/**
- * Whether any device can host a terminal.
- *
- * A boolean, not the filtered list: zustand compares selector results with
- * `Object.is`, and a fresh array on every call would re-render the panel on
- * every unrelated store write.
- */
-const hasTerminalTarget = (s: DeviceState): boolean => deviceList(s).some(canHostTerminal);
-
 const getDeviceById =
   (deviceId: string | undefined) =>
   (s: DeviceState): DeviceListItem | undefined =>
@@ -91,7 +57,6 @@ export const deviceSelectors = {
   getDeviceDefaultCwd,
   getDeviceWorkingDirs,
   getMetricSeries,
-  hasTerminalTarget,
   isDeviceListConfirmed,
   isDeviceListLoaded,
 };

@@ -9,23 +9,4 @@ import {
   type LobeSessions,
 } from '@/types/session';
 
-const getSessionPinned = (session: LobeSession) => session.pinned;
-
-const getTitle = (s: MetaData) => s.title || t('defaultSession', { ns: 'common' });
-
-const getSessionById = (
-  id: string,
-  sessions: LobeSessions,
-): LobeAgentSession | LobeGroupSession => {
-  const session = sessions.find((s) => s.id === id);
-
-  if (!session) return DEFAULT_AGENT_LOBE_SESSION;
-
-  return session;
-};
-
-export const sessionHelpers = {
-  getSessionById,
-  getSessionPinned,
-  getTitle,
-};
+export const sessionHelpers = {};

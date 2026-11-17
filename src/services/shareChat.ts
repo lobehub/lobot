@@ -113,55 +113,8 @@ class ShareChatService {
     return await lambdaClient.shareChat.execAgent.mutate(params, options);
   }
 
-  /**
-   * Answer a pending intervention of the visitor's own share run through the
-   * durable first-winner path — the visitor counterpart of
-   * `aiAgentService.resolveAgentInterventionBySource`. `handled: false` means
-   * the deployment has no durable store; resume through `execAgentTask`.
-   */
-  async resolveInterventionBySource(
-    shareId: string,
-    topicId: string,
-    params: ResolveAgentInterventionBySourceParams,
-  ): Promise<ResolveAgentInterventionBySourceResult> {
-    const result = await lambdaClient.shareChat.resolveInterventionBySource.mutate({
-      ...params,
-      shareId,
-      topicId,
-    });
-
-    if (!result.success) return { handled: false };
-
-    return {
-      execution: 'execution' in result ? result.execution : undefined,
-      handled: true,
-      state: result.state,
-    };
-  }
-
-  /**
-   * Stop the visitor's own run parked on a pending approval — the visitor
-   * counterpart of `aiAgentService.stopPendingApproval`.
-   */
-  async stopPendingApproval(
-    shareId: string,
-    params: { batchId: string; operationId: string; toolMessageIds: string[]; topicId: string },
-  ) {
-    return await lambdaClient.shareChat.stopPendingApproval.mutate({ ...params, shareId });
-  }
-
   async getTopics(shareId: string) {
     return await lambdaClient.shareChat.getTopics.query({ shareId });
-  }
-
-  async getMessages(shareId: string, topicId: string): Promise<UIChatMessage[]> {
-    // Mirrors the owner path's `includeFileWorks` opt-in (see messageService).
-    const data = await lambdaClient.shareChat.getMessages.query({
-      includeFileWorks: true,
-      shareId,
-      topicId,
-    });
-    return data as unknown as UIChatMessage[];
   }
 
   /**

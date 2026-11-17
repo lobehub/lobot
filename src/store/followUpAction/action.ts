@@ -145,15 +145,6 @@ class FollowUpActionImpl {
     });
   };
 
-  abort = (conversationKey: string): void => {
-    this.#ensureActiveScope();
-    const slot = this.#get().slots[conversationKey];
-    if (!slot) return;
-    this.#maybeRecordDismissal(slot);
-    slot.abortController?.abort();
-    this.#writeSlot(conversationKey, { ...IDLE_SLOT });
-  };
-
   clear = (conversationKey: string): void => {
     this.#ensureActiveScope();
     const slot = this.#get().slots[conversationKey];
@@ -161,11 +152,6 @@ class FollowUpActionImpl {
     this.#maybeRecordDismissal(slot);
     slot.abortController?.abort();
     this.#removeSlot(conversationKey);
-  };
-
-  consume = (conversationKey: string, chip: FollowUpChip): void => {
-    void chip;
-    this.clear(conversationKey);
   };
 
   /**

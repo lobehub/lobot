@@ -47,30 +47,6 @@ const getAgentSystemRoleById =
   (s: AgentStoreState): string | undefined =>
     agentSelectors.getAgentConfigById(agentId)(s)?.systemRole;
 
-const getAgentTTSById =
-  (agentId: string) =>
-  (s: AgentStoreState): LobeAgentTTSConfig =>
-    agentSelectors.getAgentConfigById(agentId)(s)?.tts || DEFAUTT_AGENT_TTS_CONFIG;
-
-const getAgentTTSVoiceById =
-  (agentId: string) =>
-  (s: AgentStoreState): string =>
-    getAgentTTSById(agentId)(s).voice?.openai || 'alloy';
-
-const getAgentConfigErrorById =
-  (agentId: string) =>
-  (s: AgentStoreState): string | undefined =>
-    agentId ? s.agentConfigErrorMap[agentId] : undefined;
-
-// A mount whose file / library the caller can no longer see (flipped back to
-// private, another member's private item) comes back from the server with the
-// entity fields nulled out — drop it so menus never render a nameless row.
-const getAgentFilesById = (agentId: string) => (s: AgentStoreState) =>
-  (agentSelectors.getAgentConfigById(agentId)(s)?.files || []).filter((item) => !!item.id);
-
-const getAgentKnowledgeBasesById = (agentId: string) => (s: AgentStoreState) =>
-  (agentSelectors.getAgentConfigById(agentId)(s)?.knowledgeBases || []).filter((item) => !!item.id);
-
 /**
  * The config fetch settled on `null` — the agent doesn't exist or the caller
  * lost access (e.g. a workspace agent switched back to private). Render a
@@ -97,19 +73,6 @@ const hasAgentConfigInScope =
     !!agentId && !!s.agentMap[agentId] && s.agentConfigReplica.scope === scope;
 
 /**
- * Get agent mode by agentId.
- * Agent mode is the default — only an explicit `chatConfig.enableAgentMode === false`
- * collapses the agent to chat mode.
- */
-const getAgentModeById =
-  (agentId: string) =>
-  (s: AgentStoreState): AgentMode | undefined => {
-    const config = agentSelectors.getAgentConfigById(agentId)(s);
-    const chatConfig = config?.chatConfig;
-    return chatConfig?.enableAgentMode === false ? undefined : 'auto';
-  };
-
-/**
  * Check if agent mode is enabled by agentId.
  * Defaults to true; only explicit `chatConfig.enableAgentMode === false` returns false.
  */
@@ -120,15 +83,6 @@ const getAgentEnableModeById =
     const chatConfig = config?.chatConfig;
     return chatConfig?.enableAgentMode !== false;
   };
-
-/**
- * Get runtime env config by agentId
- * Now reads from chatConfig.runtimeEnv
- */
-const getAgentRuntimeEnvConfigById =
-  (agentId: string) =>
-  (s: AgentStoreState): RuntimeEnvConfig | undefined =>
-    agentSelectors.getAgentConfigById(agentId)(s)?.chatConfig?.runtimeEnv;
 
 /**
  * Get the agent-level working directory by agentId.
@@ -160,33 +114,6 @@ const getAgentWorkingDirectoryById =
     return (
       agentChoice ?? s.localAgentWorkingDirectoryMap[agentId] ?? ctx.desktopPath ?? ctx.homePath
     );
-  };
-
-/**
- * Get agent builder context by agentId
- * Used for injecting current agent config/meta into Agent Builder context
- */
-const getAgentBuilderContextById =
-  (agentId: string) =>
-  (s: AgentStoreState): AgentBuilderContext => {
-    const config = agentSelectors.getAgentConfigById(agentId)(s);
-    const meta = agentSelectors.getAgentMetaById(agentId)(s);
-
-    return {
-      config: {
-        chatConfig: config?.chatConfig,
-        model: config?.model,
-        openingMessage: config?.openingMessage,
-        openingQuestions: config?.openingQuestions,
-        params: config?.params,
-        // Pinned identifiers only — AgentBuilderContext.config.plugins is a
-        // display DTO (still string[]); a disabled plugin isn't "enabled".
-        plugins: getActivePluginIds(config?.plugins),
-        provider: config?.provider,
-        systemRole: config?.systemRole,
-      },
-      meta,
-    };
   };
 
 /**
@@ -224,21 +151,13 @@ const isWorkspaceAgentById =
 
 export const agentByIdSelectors = {
   getAgencyConfigById,
-  getAgentBuilderContextById,
   getAgentById,
   getAgentConfigById: agentSelectors.getAgentConfigById,
-  getAgentConfigErrorById,
   getAgentEnableModeById,
-  getAgentFilesById,
-  getAgentKnowledgeBasesById,
-  getAgentRuntimeEnvConfigById,
-  getAgentModeById,
   getAgentModelById,
   getAgentModelProviderById,
   getAgentPluginsById,
   getAgentSystemRoleById,
-  getAgentTTSById,
-  getAgentTTSVoiceById,
   getAgentWorkingDirectoryById,
   hasAgentConfigInScope,
   isAgentConfigLoadingById,

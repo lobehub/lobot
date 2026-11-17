@@ -86,9 +86,6 @@ declare global {
 
 const devtools = createDevtools('serverConfig');
 
-export const initServerConfigStore = (initState: Partial<ServerConfigStore>) =>
-  createWithEqualityFn<ServerConfigStore>()(devtools(createStore(initState || {})), shallow);
-
 export const createServerConfigStore = (initState?: Partial<ServerConfigStore>) => {
   // make sure there is only one store
   if (!store) {

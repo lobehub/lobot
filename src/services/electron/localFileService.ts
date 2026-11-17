@@ -268,29 +268,7 @@ const fetchLocalFilePreview = async (
   return { contentType, type: 'binary' };
 };
 
-const fetchLocalFileBytes = async (
-  url: string,
-): Promise<{ bytes: Uint8Array; contentType: string } | undefined> => {
-  const response = await fetch(url);
-  if (!response.ok) return;
-
-  return {
-    bytes: new Uint8Array(await response.arrayBuffer()),
-    contentType:
-      normalizeContentType(response.headers.get('content-type')) || 'application/octet-stream',
-  };
-};
-
 class LocalFileService {
-  // File Operations
-  async listLocalFiles(params: ListLocalFileParams): Promise<ListLocalFilesResult> {
-    return ensureElectronIpc().localSystem.listLocalFiles(params);
-  }
-
-  async readLocalFile(params: LocalReadFileParams): Promise<LocalReadFileResult> {
-    return ensureElectronIpc().localSystem.readFile(params);
-  }
-
   async hashLocalFile(params: HashLocalFileParams): Promise<string> {
     return ensureElectronIpc().localSystem.hashLocalFile(params);
   }
@@ -299,26 +277,12 @@ class LocalFileService {
     return ensureElectronIpc().localSystem.getLocalFileStats(params);
   }
 
-  async readLocalFiles(params: LocalReadFilesParams): Promise<LocalReadFileResult[]> {
-    return ensureElectronIpc().localSystem.readFiles(params);
-  }
-
-  async searchLocalFiles(params: LocalSearchFilesParams): Promise<LocalFileItem[]> {
-    return ensureElectronIpc().localSystem.handleLocalFilesSearch(params);
-  }
-
   async getProjectFileIndex(params: ProjectFileIndexParams): Promise<ProjectFileIndexResult> {
     return ensureElectronIpc().localSystem.getProjectFileIndex(params);
   }
 
   async searchProjectFiles(params: ProjectFileSearchParams): Promise<ProjectFileSearchResult> {
     return ensureElectronIpc().localSystem.searchProjectFiles(params);
-  }
-
-  async listProjectDirectory(
-    params: ProjectDirectoryListParams,
-  ): Promise<ProjectDirectoryListResult> {
-    return ensureElectronIpc().localSystem.listProjectDirectory(params);
   }
 
   async listProjectSkills(params: ListProjectSkillsParams): Promise<ListProjectSkillsResult> {
@@ -336,40 +300,8 @@ class LocalFileService {
     return ensureElectronIpc().localSystem.handleOpenLocalFolder(params);
   }
 
-  async moveLocalFiles(params: MoveLocalFilesParams): Promise<LocalMoveFilesResultItem[]> {
-    return ensureElectronIpc().localSystem.handleMoveFiles(params);
-  }
-
-  async renameLocalFile(params: RenameLocalFileParams) {
-    return ensureElectronIpc().localSystem.handleRenameFile(params);
-  }
-
   async writeFile(params: WriteLocalFileParams) {
     return ensureElectronIpc().localSystem.handleWriteFile(params);
-  }
-
-  /** Create a new file; fails instead of overwriting an existing one. */
-  async createLocalFile(params: CreateLocalFileParams): Promise<CreateLocalEntryResult> {
-    return ensureElectronIpc().localSystem.handleCreateFile(params);
-  }
-
-  /** Create a new folder; fails when the path is already taken. */
-  async createLocalDirectory(params: CreateLocalDirectoryParams): Promise<CreateLocalEntryResult> {
-    return ensureElectronIpc().localSystem.handleCreateDirectory(params);
-  }
-
-  /** Copy files/folders, or duplicate in place when an item has no `targetPath`. */
-  async copyLocalFiles(params: CopyLocalFilesParams): Promise<LocalCopyFilesResultItem[]> {
-    return ensureElectronIpc().localSystem.handleCopyFiles(params);
-  }
-
-  /** Move files/folders to the OS trash (recoverable), reporting each path. */
-  async trashLocalFiles(params: TrashLocalFilesParams): Promise<TrashLocalFilesResult> {
-    return ensureElectronIpc().localSystem.trashLocalFiles(params);
-  }
-
-  async auditSafePaths(params: AuditSafePathsParams): Promise<AuditSafePathsResult> {
-    return ensureElectronIpc().localSystem.auditSafePaths(params);
   }
 
   async getLocalFilePreview(params: LocalFilePreviewUrlParams): Promise<LocalFilePreview> {
@@ -380,16 +312,6 @@ class LocalFileService {
     }
 
     return fetchLocalFilePreview(result.url, params.accept, params.resourceScope);
-  }
-
-  async readLocalFileBytes(
-    params: LocalFilePreviewUrlParams,
-  ): Promise<{ bytes: Uint8Array; contentType: string } | undefined> {
-    const result = await ensureElectronIpc().localSystem.getLocalFilePreviewUrl(params);
-
-    if (!result.success || !result.url) return;
-
-    return fetchLocalFileBytes(result.url);
   }
 
   /**
@@ -419,45 +341,6 @@ class LocalFileService {
       : { blob, ok: true };
   }
 
-  async readExternalAssetForPublish(params: {
-    path: string;
-    workingDirectory: string;
-  }): Promise<{ bytes: Uint8Array; contentType: string } | undefined> {
-    const result = await ensureElectronIpc().localSystem.getExternalAssetForPublishUrl(params);
-    if (!result.success || !result.url) return;
-
-    return fetchLocalFileBytes(result.url);
-  }
-
-  async copyAssetForPublish(params: {
-    from: string;
-    to: string;
-    workingDirectory: string;
-  }): Promise<{ error?: string; success: boolean }> {
-    return ensureElectronIpc().localSystem.copyAssetForPublish(params);
-  }
-
-  async prepareSkillDirectory(
-    params: PrepareSkillDirectoryParams,
-  ): Promise<PrepareSkillDirectoryResult> {
-    return ensureElectronIpc().localSystem.handlePrepareSkillDirectory(params);
-  }
-
-  async resolveSkillResourcePath(
-    params: ResolveSkillResourcePathParams,
-  ): Promise<ResolveSkillResourcePathResult> {
-    return ensureElectronIpc().localSystem.handleResolveSkillResourcePath(params);
-  }
-
-  async editLocalFile(params: EditLocalFileParams): Promise<EditLocalFileResult> {
-    return ensureElectronIpc().localSystem.handleEditFile(params);
-  }
-
-  // Shell Commands
-  async runCommand(params: RunCommandParams): Promise<RunCommandResult> {
-    return ensureElectronIpc().shellCommand.handleRunCommand(params);
-  }
-
   /**
    * Whether this machine can run sandboxed commands. Asked before offering the
    * "Local Sandbox" execution environment — the host, not the platform string,
@@ -484,23 +367,6 @@ class LocalFileService {
     params: EnsureSandboxWorkspaceParams,
   ): Promise<EnsureSandboxWorkspaceResult> {
     return ensureElectronIpc().shellCommand.ensureSandboxWorkspace(params);
-  }
-
-  async getCommandOutput(params: GetCommandOutputParams): Promise<GetCommandOutputResult> {
-    return ensureElectronIpc().shellCommand.handleGetCommandOutput(params);
-  }
-
-  async killCommand(params: KillCommandParams): Promise<KillCommandResult> {
-    return ensureElectronIpc().shellCommand.handleKillCommand(params);
-  }
-
-  // Search & Find
-  async grepContent(params: GrepContentParams): Promise<GrepContentResult> {
-    return ensureElectronIpc().localSystem.handleGrepContent(params);
-  }
-
-  async globFiles(params: GlobFilesParams): Promise<GlobFilesResult> {
-    return ensureElectronIpc().localSystem.handleGlobFiles(params);
   }
 
   // Dialog

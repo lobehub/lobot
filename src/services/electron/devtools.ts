@@ -10,9 +10,6 @@ class DevtoolsService {
   stopManagedProcess(id: string): Promise<void> {
     return ensureElectronIpc().devtools.stopManagedProcess({ id });
   }
-  openProcessExplorer(): Promise<void> {
-    return ensureElectronIpc().devtools.openProcessExplorer();
-  }
   async openDevtools(): Promise<void> {
     return ensureElectronIpc().devtools.openDevtools();
   }

@@ -43,59 +43,10 @@ const createTopicShareSlice = (set: Setter, get: () => ChatStore) =>
 
 /** The share record behind the topic Share popover → `topicShareMap[topicId]`. */
 export class ChatTopicShareActionImpl {
-  readonly #get: () => ChatStore;
-  readonly #share;
-
   constructor(set: Setter, get: () => ChatStore, _api?: unknown) {
     void _api;
-    this.#get = get;
-    this.#share = createTopicShareSlice(set, get);
+    createTopicShareSlice(set, get);
   }
-
-  /**
-   * The topic's share record for the Share popover; read it with
-   * `topicSelectors.getTopicShare`. An absent id (or no share permission)
-   * disables the read.
-   */
-  useFetchTopicShare = (topicId?: string | null, enabled = true): ReplicaSyncResult =>
-    this.#share.useSync(enabled && topicId ? topicId : null, {
-      dedupingInterval: 10_000,
-      revalidateOnFocus: false,
-    });
-
-  /**
-   * Change a topic's share visibility and land the server's record on the
-   * replica (persisted). Resolves to the share id after the change.
-   */
-  setTopicShareVisibility = async (
-    topicId: string,
-    visibility: TopicShareVisibility,
-  ): Promise<string | undefined> => {
-    // The record belongs to the identity that started the change; never adopt
-    // (and persist) it into another account's or workspace's scope.
-    const scope = this.#share.resource.scope.get();
-    const current = this.#get().topicShareMap[topicId]?.share;
-
-    let record = current
-      ? await topicService.updateShareVisibility(topicId, visibility)
-      : await topicService.enableSharing(topicId, visibility);
-    // A stale copy can miss a record created elsewhere; create then keeps the
-    // existing visibility, so apply the requested one on top.
-    if (record && record.visibility !== visibility)
-      record = await topicService.updateShareVisibility(topicId, visibility);
-
-    const isSameScope = this.#share.resource.scope.get() === scope;
-
-    if (record) {
-      const share = toShareInfo(record);
-      if (isSameScope) this.#share.update(topicId, () => ({ share }));
-      return share.id;
-    }
-    if (!isSameScope) return current?.id;
-
-    await this.#share.fetch(topicId, { fresh: true });
-    return this.#get().topicShareMap[topicId]?.share?.id ?? current?.id;
-  };
 }
 
 export type ChatTopicShareAction = Pick<ChatTopicShareActionImpl, keyof ChatTopicShareActionImpl>;

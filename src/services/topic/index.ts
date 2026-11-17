@@ -54,14 +54,6 @@ export class TopicService {
     });
   };
 
-  batchCreateTopics = (importTopics: ChatTopic[]): Promise<BatchTaskResult> => {
-    return lambdaClient.topic.batchCreateTopics.mutate(importTopics);
-  };
-
-  cloneTopic = (id: string, newTitle?: string): Promise<string> => {
-    return lambdaClient.topic.cloneTopic.mutate({ id, newTitle });
-  };
-
   forkTopic = (params: { id: string; messageId: string; newTitle?: string }): Promise<string> => {
     return lambdaClient.topic.forkTopic.mutate(params);
   };
@@ -75,18 +67,6 @@ export class TopicService {
     topicId: string;
   }): Promise<{ messageId: string; topicId: string }> => {
     return lambdaClient.topic.branchTopicAtMessage.mutate(params);
-  };
-
-  batchMoveTopics = (topicIds: string[], targetAgentId: string) => {
-    return lambdaClient.topic.batchMoveTopics.mutate({ targetAgentId, topicIds });
-  };
-
-  importTopic = (params: {
-    agentId: string;
-    data: string;
-    groupId?: string | null;
-  }): Promise<{ messageCount: number; topicId: string }> => {
-    return lambdaClient.topic.importTopic.mutate(params);
   };
 
   getTopics = async (params: QueryTopicParams): Promise<{ items: ChatTopic[]; total: number }> => {
@@ -207,43 +187,8 @@ export class TopicService {
     return lambdaClient.topic.getShareInfo.query({ topicId });
   };
 
-  enableSharing = (topicId: string, visibility?: 'private' | 'link') => {
-    return lambdaClient.topic.enableSharing.mutate({ topicId, visibility });
-  };
-
-  updateShareVisibility = (topicId: string, visibility: 'private' | 'link') => {
-    return lambdaClient.topic.updateShareVisibility.mutate({ topicId, visibility });
-  };
-
-  disableSharing = (topicId: string) => {
-    return lambdaClient.topic.disableSharing.mutate({ topicId });
-  };
-
   removeTopic = (id: string, removeFiles?: boolean) => {
     return lambdaClient.topic.removeTopic.mutate({ id, removeFiles });
-  };
-
-  removeTopics = (sessionId: string, scope: TopicBatchDeleteScope = 'own') => {
-    return lambdaClient.topic.batchDeleteBySessionId.mutate({
-      id: this.toDbSessionId(sessionId),
-      scope,
-    });
-  };
-
-  removeTopicsByAgentId = (agentId: string, scope: TopicBatchDeleteScope = 'own') => {
-    return lambdaClient.topic.batchDeleteByAgentId.mutate({ agentId, scope });
-  };
-
-  removeTopicsByGroupId = (groupId: string, scope: TopicBatchDeleteScope = 'own') => {
-    return lambdaClient.topic.batchDeleteByGroupId.mutate({ groupId, scope });
-  };
-
-  batchRemoveTopics = (topics: string[]) => {
-    return lambdaClient.topic.batchDelete.mutate({ ids: topics });
-  };
-
-  removeAllTopic = () => {
-    return lambdaClient.topic.removeAllTopics.mutate();
   };
 
   private toDbSessionId = (sessionId?: string | null) =>

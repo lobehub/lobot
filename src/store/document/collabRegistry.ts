@@ -4,13 +4,6 @@ interface PendingSource {
 
 const providers = new Map<string, PendingSource>();
 
-export const registerPageCollab = (documentId: string, provider: PendingSource) => {
-  providers.set(documentId, provider);
-  return () => {
-    if (providers.get(documentId) === provider) providers.delete(documentId);
-  };
-};
-
 /** How long a send or save waits for a room page's pending updates to reach the room. */
 export const PAGE_SYNC_WAIT_MS = 3000;
 

@@ -88,8 +88,6 @@ export const getMessageListWindowOlderCursor = (
 ): MessageRoundCursor | null | undefined =>
   windowOlderCursors.get(getMessageListCacheIdentity(context));
 
-export const messageListKey = (context: MessageListQueryContext) => messageKeys.list(context);
-
 export const getMessageListCacheIdentity = (
   context: MessageListQueryContext,
   cacheScope = getCacheScope(),
@@ -258,9 +256,4 @@ export const invalidateMessageListClientState = (
     state.generation += 1;
     state.verifiedAt = undefined;
   }
-};
-
-export const clearMessageListClientCacheState = () => {
-  messageListClientStates.clear();
-  windowOlderCursors.clear();
 };

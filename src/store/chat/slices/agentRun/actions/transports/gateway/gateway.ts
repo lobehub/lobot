@@ -850,13 +850,6 @@ export class GatewayActionImpl {
     serverSteerQueue.withdrawQueuedMessage(this.#get, contextKey, messageId);
 
   /**
-   * Get the connection status for a specific operation.
-   */
-  getGatewayConnectionStatus = (operationId: string): ConnectionStatus | undefined => {
-    return this.#get().gatewayConnections[operationId]?.status;
-  };
-
-  /**
    * Check if Gateway mode is available and enabled.
    * Returns true when the server supports Gateway mode and the agent config
    * has not disabled it. `disableGatewayMode: undefined` means enabled.
@@ -2292,52 +2285,6 @@ export class GatewayActionImpl {
 
     drainedContextKeys.add(contextKey);
     scheduleQueuedFollowUp(this.#get, context, op.id);
-  };
-
-  /**
-   * {@link settleUnbackedTopicRuns} across every topic this tab still holds a
-   * visibly-running op for.
-   *
-   * Backs the sidebar's stale-run sweep, where the topic ids come from the local
-   * op map instead of a server query: a topic the server already retired is idle,
-   * so it never appears in the `statuses: ['running']` query that drives
-   * `cleanupStaleRunningTopics`. Costs nothing without a candidate, so it is safe
-   * to call opportunistically (e.g. on a sidebar interval).
-   */
-  settleAllUnbackedTopicRuns = async (): Promise<number> => {
-    // Dedupe by the FULL scope, not by topicId alone. A leaked run's row lives in
-    // its own agent/group bucket, and `clearLocalRunningOperation` resolves that
-    // bucket from the params it is handed — so dropping the scope here made the
-    // sweep clear whichever agent happened to be active instead of the one the
-    // run came from, completing the op but leaving the real row spinning.
-    const candidates = new Map<
-      string,
-      { agentId?: string; groupId?: string; scope?: TopicMapScope; topicId: string }
-    >();
-    for (const op of Object.values(this.#get().operations)) {
-      if (!this.#isLiveLocalRuntimeOp(op)) continue;
-
-      const { agentId, groupId, topicId } = op.context;
-      if (!topicId) continue;
-
-      // Group MAIN topics are keyed `group_${groupId}` even though the op also
-      // carries the supervisor's agentId; leaving both would derive
-      // `group_agent_${groupId}_${agentId}` and never find the row. Mirrors the
-      // patch scope `cleanupStaleRunningTopics` uses and the optimistic-topic
-      // scope in conversationLifecycle.
-      const scope: TopicMapScope | undefined =
-        op.context.scope === 'group' && groupId ? 'group' : undefined;
-
-      const key = `${agentId ?? ''}|${groupId ?? ''}|${scope ?? ''}|${topicId}`;
-      if (!candidates.has(key)) candidates.set(key, { agentId, groupId, scope, topicId });
-    }
-    if (candidates.size === 0) return 0;
-
-    const settled = await Promise.all(
-      [...candidates.values()].map((candidate) => this.settleUnbackedTopicRuns(candidate)),
-    );
-
-    return settled.reduce((sum, count) => sum + count, 0);
   };
 
   /**

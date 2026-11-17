@@ -15,10 +15,6 @@ const chatContextSelections = (contextKey?: string) => (s: FilesStoreState) =>
   contextKey
     ? (s.chatContextSelectionsByContext[contextKey] ?? EMPTY_CHAT_CONTEXT_SELECTIONS)
     : EMPTY_CHAT_CONTEXT_SELECTIONS;
-const isImageUploading = (s: FilesStoreState) => s.uploadingIds.length > 0;
-
-const chatRawFileList = (contextKey?: string) => (s: FilesStoreState) =>
-  chatUploadFileList(contextKey)(s).map((item) => item.file);
 const chatUploadFileListHasItem = (contextKey?: string) => (s: FilesStoreState) =>
   chatUploadFileList(contextKey)(s).length > 0;
 const chatContextSelectionHasItem = (contextKey?: string) => (s: FilesStoreState) =>
@@ -33,14 +29,11 @@ const isUploadingFiles = (contextKey?: string) => (s: FilesStoreState) =>
       (file.tasks && !file.tasks?.finishEmbedding),
   );
 
-export const filesSelectors = {
-  isImageUploading,
-};
+export const filesSelectors = {};
 
 export const fileChatSelectors = {
   chatContextSelectionHasItem,
   chatContextSelections,
-  chatRawFileList,
   chatUploadFileList,
   chatUploadFileListHasItem,
   isUploadingFiles,

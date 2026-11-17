@@ -32,11 +32,7 @@ interface AnalyticsLike {
   track: (event: { name: string; properties?: Record<string, unknown> }) => unknown;
 }
 
-let injectedClient: AnalyticsLike | null = null;
-
-export const setOnboardingAnalyticsClient = (client: AnalyticsLike | null): void => {
-  injectedClient = client;
-};
+const injectedClient: AnalyticsLike | null = null;
 
 const emit = (name: string, properties: Record<string, unknown>): void => {
   const client = injectedClient ?? analyticsClient;
@@ -148,13 +144,6 @@ export const trackOnboardingStepViewed = (payload: OnboardingStepPayload): void 
   });
 };
 
-export const trackOnboardingStarted = (payload: OnboardingStartedPayload): void => {
-  emit(ONBOARDING_METRICS_EVENTS.STARTED, {
-    ...payload,
-    spm: ONBOARDING_METRICS_SPM.STARTED,
-  });
-};
-
 export const trackOnboardingStepCompleted = (payload: OnboardingStepPayload): void => {
   emit(ONBOARDING_METRICS_EVENTS.STEP_COMPLETED, {
     ...payload,
@@ -166,47 +155,6 @@ export const trackOnboardingCompleted = (payload: OnboardingCompletedPayload): v
   emit(ONBOARDING_METRICS_EVENTS.COMPLETED, {
     ...payload,
     spm: ONBOARDING_METRICS_SPM.COMPLETED,
-  });
-};
-
-export const trackOnboardingUnderstandingStarted = (
-  payload: OnboardingUnderstandingStartedPayload,
-): void => {
-  emit(ONBOARDING_METRICS_EVENTS.UNDERSTANDING_STARTED, {
-    ...payload,
-    spm: ONBOARDING_METRICS_SPM.UNDERSTANDING_STARTED,
-  });
-};
-
-export const trackOnboardingUnderstandingProgress = (
-  payload: OnboardingUnderstandingProgressPayload,
-): void => {
-  emit(ONBOARDING_METRICS_EVENTS.UNDERSTANDING_PROGRESS, {
-    ...payload,
-    spm: ONBOARDING_METRICS_SPM.UNDERSTANDING_PROGRESS,
-  });
-};
-
-export const trackOnboardingUnderstandingCompleted = (
-  payload: OnboardingUnderstandingCompletedPayload,
-): void => {
-  emit(ONBOARDING_METRICS_EVENTS.UNDERSTANDING_COMPLETED, {
-    ...payload,
-    spm: ONBOARDING_METRICS_SPM.UNDERSTANDING_COMPLETED,
-  });
-};
-
-export const trackOnboardingProfileViewed = (payload: OnboardingProfilePayload): void => {
-  emit(ONBOARDING_METRICS_EVENTS.PROFILE_VIEWED, {
-    ...payload,
-    spm: ONBOARDING_METRICS_SPM.PROFILE_VIEWED,
-  });
-};
-
-export const trackOnboardingProfileConfirmed = (payload: OnboardingProfilePayload): void => {
-  emit(ONBOARDING_METRICS_EVENTS.PROFILE_CONFIRMED, {
-    ...payload,
-    spm: ONBOARDING_METRICS_SPM.PROFILE_CONFIRMED,
   });
 };
 

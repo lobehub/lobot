@@ -41,39 +41,3 @@ export const revalidateResources = async (params?: ResourceQueryParams) => {
 
   await revalidateReplica(resourceListResource);
 };
-
-/**
- * Keep the explorer list in step with a move.
- *
- * The explorer list is a local-first replica now: `moveResource` already patches
- * the in-memory view optimistically and revalidates the mounted query, and a
- * later visit to either folder hydrates from its persisted head page and then
- * confirms it over the network. This entry point stays for the sidebar tree's
- * API-only move path, which does not go through the explorer's own action.
- */
-export const applyResourceMoveToListCaches = async (): Promise<void> => {
-  await revalidateResources();
-};
-
-/**
- * Hook to access resource store state
- */
-export const useResourceStore = () => {
-  return useFileStore(
-    (s) => ({
-      hasMore: s.hasMore,
-      queryParams: s.queryParams,
-      resourceList: s.resourceList,
-      resourceMap: s.resourceMap,
-      total: s.total,
-    }),
-    shallow,
-  );
-};
-
-/**
- * Custom hook for fetching resources: hydrates the persisted head page and
- * revalidates it. Read the rows from the store, not from this hook's return.
- */
-export const useFetchResources = (params: ResourceQueryParams | null, enable: boolean = true) =>
-  useFileStore((s) => s.useFetchResources)(params, enable);

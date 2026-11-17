@@ -31,24 +31,8 @@ interface ListDocumentsParams {
 }
 
 class NotebookService {
-  createDocument = async (params: CreateDocumentParams) => {
-    return lambdaClient.notebook.createDocument.mutate(params);
-  };
-
-  updateDocument = async (params: UpdateDocumentParams) => {
-    return lambdaClient.notebook.updateDocument.mutate(params);
-  };
-
-  getDocument = async (id: string) => {
-    return lambdaClient.notebook.getDocument.query({ id });
-  };
-
   listDocuments = async (params: ListDocumentsParams) => {
     return lambdaClient.notebook.listDocuments.query(params);
-  };
-
-  deleteDocument = async (id: string) => {
-    return lambdaClient.notebook.deleteDocument.mutate({ id });
   };
 }
 

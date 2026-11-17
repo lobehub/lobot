@@ -81,52 +81,11 @@ class WorkService {
   }): Promise<WorkSummaryPage> =>
     lambdaClient.work.listByWorkspace.query({ ...params, includeFileWorks: true });
 
-  listByRootOperation = async (params: {
-    limit?: number;
-    rootOperationId?: string | null;
-  }): Promise<WorkVersionEventItem[]> =>
-    lambdaClient.work.listByRootOperation.query({ ...params, includeFileWorks: true });
-
-  listByRootOperations = async (params: {
-    limit?: number;
-    rootOperationIds?: string[] | null;
-  }): Promise<WorkVersionEventMap> =>
-    lambdaClient.work.listByRootOperations.query({ ...params, includeFileWorks: true });
-
   listVersions = async (workId: string): Promise<WorkVersionItem[]> =>
     lambdaClient.work.listVersions.query({ workId });
 
-  registerTask = async (params: RegisterTaskWorkParams): Promise<WorkItem | null> =>
-    lambdaClient.work.registerTask.mutate(params);
-
-  registerCanvas = async (params: RegisterCanvasWorkParams): Promise<WorkItem> =>
-    lambdaClient.work.registerCanvas.mutate(params);
-
-  registerDocument = async (params: RegisterDocumentWorkParams): Promise<WorkItem | null> =>
-    lambdaClient.work.registerDocument.mutate(params);
-
-  deleteTaskWork = async (params: { taskId: string }): Promise<void> =>
-    lambdaClient.work.deleteTaskWork.mutate(params);
-
   /** Remove one Work card by id (see `useRemoveWork`); server-side restricted to the caller's own rows. */
   deleteWork = async (id: string): Promise<void> => lambdaClient.work.deleteWork.mutate({ id });
-
-  handleSkillToolResult = async (
-    params: RegisterSkillToolResultWorkParams,
-  ): Promise<WorkItem | null> => lambdaClient.work.handleSkillToolResult.mutate(params);
-
-  /**
-   * Report a finished desktop-LOCAL hetero run's tool messages for the
-   * server-side shell Work scan (gh CLI → github Work cards). Local runs have
-   * no `agent_operations` row, so the server's completion scan never fires for
-   * them — the executor calls this at clean completion instead.
-   */
-  registerShellWorksForRun = async (params: {
-    anchorMessageId: string;
-    messageIds: string[];
-    topicId: string;
-  }): Promise<{ failed: number; registered: number; rootOperationId: string | null }> =>
-    lambdaClient.work.registerShellWorksForRun.mutate(params);
 
   /**
    * Invalidate everything a Work mutation can change for a conversation:
@@ -208,11 +167,6 @@ class WorkService {
    */
   refreshAllConversations = async () => {
     await Promise.all([revalidateConversationMessages(), this.refreshAll()]);
-  };
-
-  refreshVersions = async (workId?: string | null) => {
-    if (!workId) return;
-    await mutate(workKeys.versions(workId));
   };
 }
 

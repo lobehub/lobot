@@ -70,86 +70,12 @@ class KnowledgeSliceActionImpl {
     await internal_refreshAgentKnowledge();
   };
 
-  addKnowledgeBaseToAgent = async (knowledgeBaseId: string): Promise<void> => {
-    const { activeAgentId, internal_refreshAgentConfig, internal_refreshAgentKnowledge } =
-      this.#get();
-    if (!activeAgentId) return;
-
-    await agentService.createAgentKnowledgeBase(activeAgentId, knowledgeBaseId, true);
-    await internal_refreshAgentConfig(activeAgentId);
-    await internal_refreshAgentKnowledge();
-  };
-
   internal_refreshAgentKnowledge = async (): Promise<void> => {
     // The picker keys its cache per visibility (unscoped/private/workspace), so
     // a mutation has to invalidate all three surfaces at once, otherwise
     // switching tab after add/remove still shows the stale list. A keyless
     // revalidate covers every loaded surface of the active scope.
     await this.#knowledgeList.revalidate();
-  };
-
-  removeFileFromAgent = async (fileId: string): Promise<void> => {
-    const { activeAgentId, internal_refreshAgentConfig, internal_refreshAgentKnowledge } =
-      this.#get();
-    if (!activeAgentId) return;
-
-    await agentService.deleteAgentFile(activeAgentId, fileId);
-    await internal_refreshAgentConfig(activeAgentId);
-    await internal_refreshAgentKnowledge();
-  };
-
-  removeKnowledgeBaseFromAgent = async (knowledgeBaseId: string): Promise<void> => {
-    const { activeAgentId, internal_refreshAgentConfig, internal_refreshAgentKnowledge } =
-      this.#get();
-    if (!activeAgentId) return;
-
-    await agentService.deleteAgentKnowledgeBase(activeAgentId, knowledgeBaseId);
-    await internal_refreshAgentConfig(activeAgentId);
-    await internal_refreshAgentKnowledge();
-  };
-
-  toggleFile = async (id: string, open?: boolean): Promise<void> => {
-    const { activeAgentId, internal_refreshAgentConfig } = this.#get();
-    if (!activeAgentId) return;
-
-    await agentService.toggleFile(activeAgentId, id, open);
-    await internal_refreshAgentConfig(activeAgentId);
-  };
-
-  toggleKnowledgeBase = async (id: string, open?: boolean): Promise<void> => {
-    const { activeAgentId, internal_refreshAgentConfig } = this.#get();
-    if (!activeAgentId) return;
-
-    await agentService.toggleKnowledgeBase(activeAgentId, id, open);
-    await internal_refreshAgentConfig(activeAgentId);
-  };
-
-  /**
-   * Fetch orchestration for the knowledge picker. The rows land in
-   * `agentKnowledgeMap[queryKey]` — read them through
-   * `agentKnowledgeSelectors.getAgentKnowledgeList`.
-   */
-  useFetchFilesAndKnowledgeBases = (
-    agentId?: string,
-    visibility?: AgentKnowledgeListParams['visibility'],
-  ): AgentKnowledgeSyncResult => {
-    const params: AgentKnowledgeListParams | undefined = agentId
-      ? { agentId, visibility }
-      : undefined;
-    const queryKey = params ? agentKnowledgeListKey(params) : undefined;
-    const sync = this.#knowledgeList.useSync(params, { enabled: !!agentId });
-
-    return {
-      ...sync,
-      // Loading only until the surface has rows to show: a revalidation over an
-      // already-painted surface must not flash a skeleton.
-      isLoading:
-        !!queryKey &&
-        !this.#get().agentKnowledgeMap[queryKey] &&
-        (sync.isValidating || !sync.isHydrated),
-      mutate: sync.revalidate,
-      queryKey,
-    };
   };
 }
 

@@ -80,10 +80,6 @@ class AgentQuotaService {
   listUsageTurns = async (accountId: string, sinceDays?: number) =>
     lambdaClient.agentQuota.listUsageTurns.query({ accountId, sinceDays });
 
-  /** Agent runs in flight on an account, newest turn first. */
-  listActiveRuns = async (accountId: string) =>
-    lambdaClient.agentQuota.listActiveRuns.query({ accountId });
-
   listBindings = async (agentId: string) => lambdaClient.agentQuota.listBindings.query({ agentId });
 
   /** Each account's current headroom, as the account balancer weighs it. */
@@ -124,37 +120,6 @@ class AgentQuotaService {
     provider: 'claude-code' | 'codex' | 'kimi-code',
     externalAccountIds: string[],
   ) => lambdaClient.agentQuota.syncDeviceLogins.mutate({ deviceId, externalAccountIds, provider });
-
-  /** Who the load balancer would pick right now (Auto mode preview + reason). */
-  selectAccountForAgent = async (
-    agentId: string,
-    options?: {
-      /** Gateway id of the device the run spawns on. */
-      deviceId?: string;
-      modelScope?: string;
-      provider?: string;
-      runnableExternalAccountIds?: string[];
-    },
-  ) => lambdaClient.agentQuota.selectAccountForAgent.query({ agentId, ...options });
-
-  /** One assistant turn's consumption → usage ledger (idempotent by message id). */
-  recordUsage = async (params: {
-    agentId?: string;
-    externalAccountId?: string;
-    messageId?: string;
-    model?: string;
-    occurredAt?: number;
-    operationId?: string;
-    provider: 'claude-code' | 'codex' | 'kimi-code';
-    topicId?: string;
-    usage: {
-      cacheRead?: number;
-      cacheWrite5m?: number;
-      input?: number;
-      output?: number;
-      reasoning?: number;
-    };
-  }) => lambdaClient.agentQuota.recordUsage.mutate(params);
 }
 
 export const agentQuotaService = new AgentQuotaService();

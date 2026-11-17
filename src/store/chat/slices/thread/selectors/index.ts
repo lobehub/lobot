@@ -47,34 +47,6 @@ const currentPortalThread = (s: ChatStoreState): ThreadItem | undefined => {
   return threads.find((t) => t.id === s.portalThreadId);
 };
 
-const currentActiveThread = (s: ChatStoreState): ThreadItem | undefined => {
-  if (!s.activeThreadId) return undefined;
-
-  const threads = currentTopicThreads(s);
-
-  return threads.find((t) => t.id === s.activeThreadId);
-};
-
-const isActiveThreadSubagent = (s: ChatStoreState): boolean => {
-  const thread = currentActiveThread(s);
-  // Only tool-spawned subagent threads are externally owned and read-only.
-  // Direct @Agent isolation threads are ordinary target-Agent conversations
-  // after the delegated run completes, so users can continue chatting there.
-  return !!thread?.metadata?.sourceToolCallId;
-};
-
-const getThreadsByTopic = (topicId?: string) => (s: ChatStoreState) => {
-  if (!topicId) return;
-
-  return s.threadMaps[topicId];
-};
-
-const getThreadsBySourceMsgId = (id: string) => (s: ChatStoreState) => {
-  const threads = currentTopicThreads(s);
-
-  return threads.filter((t) => t.sourceMessageId === id);
-};
-
 const getIsolationThreadBySourceMsgId = (id: string) => (s: ChatStoreState) => {
   const threads = currentTopicThreads(s);
 
@@ -153,31 +125,6 @@ const getThreadChildMessages =
   };
 
 /**
- * Raw DB-level child messages for a thread, keyed by `messageMapKey` thread scope.
- *
- * Use this for *counting* / *aggregating* over individual messages (e.g. the
- * subagent inspector chip's tool count + token total). Do NOT use it for
- * rendering — the display layer reads from `messagesMap` (which groups tools
- * into a virtual `assistantGroup`), so the shapes intentionally differ.
- *
- * Why `dbMessagesMap` not `messagesMap`: `messagesMap[thread_*]` only holds
- * the rendered shape ([user, assistantGroup]); individual `role==='tool'` /
- * `role==='assistant'` rows live in `dbMessagesMap[thread_*]`.
- */
-const getThreadDbMessages =
-  (id?: string) =>
-  (s: ChatStoreState): UIChatMessage[] => {
-    if (!id || !s.activeAgentId) return [];
-    const key = messageMapKey({
-      agentId: s.activeAgentId,
-      groupId: s.activeGroupId,
-      threadId: id,
-      topicId: s.activeTopicId,
-    });
-    return (s.dbMessagesMap?.[key] || []) as UIChatMessage[];
-  };
-
-/**
  * Portal AI chats - used for AI title summarization
  */
 const portalAIChats = (s: ChatStoreState) => {
@@ -188,45 +135,15 @@ const portalAIChats = (s: ChatStoreState) => {
   return [...parentMessages, ...childMessages].filter(Boolean) as UIChatMessage[];
 };
 
-/**
- * Portal AI chats with history config - used for workflow
- */
-const portalAIChatsWithHistoryConfig = (s: ChatStoreState) => {
-  const messages = portalAIChats(s);
-
-  const enableHistoryCount = agentChatConfigSelectors.enableHistoryCount(useAgentStore.getState());
-  const historyCount = agentChatConfigSelectors.historyCount(useAgentStore.getState());
-
-  return chatHelpers.getSlicedMessages(messages, {
-    enableHistoryCount,
-    historyCount,
-  });
-};
-
-/**
- * Portal display chats string - used for Token calculation
- */
-const portalDisplayChatsString = (s: ChatStoreState) => {
-  const messages = portalAIChats(s);
-  return messages.map((m) => m.content).join('');
-};
-
 export const threadSelectors = {
-  currentActiveThread,
   currentPortalThread,
   currentTopicThreads,
   getThreadChildMessages,
-  getThreadDbMessages,
   getIsolationThreadBySourceMsgId,
-  getThreadsBySourceMsgId,
-  getThreadsByTopic,
   hasThreadBySourceMsgId,
-  isActiveThreadSubagent,
   isCurrentTopicThreadsLoaded,
   isPortalThreadPending,
   portalAIChats,
-  portalAIChatsWithHistoryConfig,
-  portalDisplayChatsString,
 };
 
 // Re-export utility function for use in action.ts

@@ -31,12 +31,9 @@ export const createHomeInboxSlice = (set: Setter, get: () => HomeStore, _api?: u
   new HomeInboxActionImpl(set, get, _api);
 
 class HomeInboxActionImpl {
-  readonly #dailyBrief;
-  readonly #inboxTopics;
-
   constructor(set: Setter, get: () => HomeStore, _api?: unknown) {
     void _api;
-    this.#inboxTopics = createReplicaSlice(homeInboxTopicsResource, {
+    createReplicaSlice(homeInboxTopicsResource, {
       actionPrefix: n('inboxTopics'),
       // `withLastMessage` is what makes an unread row readable: the card shows what
       // the agent actually said, not just the topic title it was filed under.
@@ -46,7 +43,7 @@ class HomeInboxActionImpl {
       stateKey: 'homeInboxTopicsReplica',
       view: recordLens<HomeStore, TopicListItem[]>('homeInboxTopicsMap'),
     });
-    this.#dailyBrief = createReplicaSlice(homeDailyBriefResource, {
+    createReplicaSlice(homeDailyBriefResource, {
       actionPrefix: n('dailyBrief'),
       fetcher: () => homeService.getDailyBrief(),
       get,
@@ -55,40 +52,6 @@ class HomeInboxActionImpl {
       view: recordLens<HomeStore, HomeDailyBriefResponse>('homeDailyBriefMap'),
     });
   }
-
-  /**
-   * Flip a just-replied topic to `running` on the same tick as the send, so it
-   * moves out of "unread" into the running card. The server's own status write
-   * lands a beat later, so reconcile after a short delay rather than now (an
-   * immediate refetch would read the row still `unread` and snap it back).
-   */
-  promoteInboxTopicToRunning = (topicId: string): void => {
-    this.#inboxTopics.update(
-      HOME_INBOX_KEY,
-      (rows) =>
-        rows?.map((row) =>
-          row.id === topicId ? { ...row, status: 'running' as ChatTopicStatus } : row,
-        ),
-      { persist: false },
-    );
-    setTimeout(() => void this.#inboxTopics.revalidate(HOME_INBOX_KEY), PROMOTE_RECONCILE_DELAY);
-  };
-
-  /** Read the pairs with `homeInboxSelectors.dailyBrief`. */
-  useFetchHomeDailyBrief = (isLogin: boolean | undefined): ReplicaSyncResult =>
-    this.#dailyBrief.useSync(FEED_PARAMS, { enabled: isLogin === true });
-
-  /**
-   * Account-wide topic feed for the home inbox. A live overview: it refetches on
-   * focus almost immediately (the default throttle is 5 min), so a run that just
-   * finished shows up the instant the user looks. Read the rows with
-   * `homeInboxSelectors.inboxTopics`.
-   */
-  useFetchHomeInboxTopics = (isLogin: boolean | undefined): ReplicaSyncResult =>
-    this.#inboxTopics.useSync(FEED_PARAMS, {
-      enabled: isLogin === true,
-      focusThrottleInterval: 1000,
-    });
 }
 
 export type HomeInboxAction = Pick<HomeInboxActionImpl, keyof HomeInboxActionImpl>;

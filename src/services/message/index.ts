@@ -104,60 +104,10 @@ class MessageBatchMutationError extends Error {
   }
 }
 
-const getBatchMutationAbortKey = (operations: MessageBatchOperation[]) => {
-  if (operations.length !== 1) return;
-
-  const [operation] = operations;
-  if (operation.type === 'updateToolMessage') return `tool-message-${operation.id}`;
-};
-
 /** Matches the `getToolResultPayloads` input cap in the lambda router. */
 const TOOL_PAYLOAD_BATCH_SIZE = 500;
 
 export class MessageService {
-  batchMutate = async (operations: MessageBatchOperation[], signal?: AbortSignal) => {
-    const input = {
-      operations: operations.map((operation) => {
-        if (operation.type === 'createMessage') {
-          return {
-            message: operation.message,
-            type: operation.type,
-          };
-        }
-
-        return {
-          id: operation.id,
-          type: operation.type,
-          value: operation.value,
-        };
-      }),
-    } as any;
-
-    return signal
-      ? lambdaClient.message.batchMutate.mutate(input, { signal })
-      : lambdaClient.message.batchMutate.mutate(input);
-  };
-
-  batchMutateOrThrow = async (operations: MessageBatchOperation[]) => {
-    const execute = async (signal?: AbortSignal) => {
-      const result = (await (signal
-        ? this.batchMutate(operations, signal)
-        : this.batchMutate(operations))) as MessageBatchMutationResult;
-      const hasFailedOperation = result.results?.some((item) => !item.success) ?? false;
-      const hasCompleteResults = result.results?.length === operations.length;
-
-      if (result.success !== true || !hasCompleteResults || hasFailedOperation) {
-        throw new MessageBatchMutationError(result);
-      }
-
-      return result;
-    };
-
-    const abortKey = getBatchMutationAbortKey(operations);
-
-    return abortKey ? abortableRequest.execute(abortKey, execute) : execute();
-  };
-
   createMessage = async (params: CreateMessageParams): Promise<CreateMessageResult> => {
     return lambdaClient.message.createMessage.mutate(params as any);
   };
@@ -190,15 +140,6 @@ export class MessageService {
     });
 
     return data as unknown as UIChatMessage[];
-  };
-
-  /**
-   * Stored tool payload for a message whose projected copy dropped it
-   * (`UIChatMessage.payloadOmitted`). Called by detail surfaces on open, never
-   * as part of loading a conversation.
-   */
-  getToolResultPayload = async (messageId: string) => {
-    return lambdaClient.message.getToolResultPayload.query({ messageId });
   };
 
   /**
@@ -272,21 +213,6 @@ export class MessageService {
     return { messages: data as unknown as UIChatMessage[] };
   };
 
-  searchInTopic = async (params: {
-    keyword: string;
-    topicId: string;
-  }): Promise<TopicMessageSearchMatch[]> => {
-    return lambdaClient.message.searchInTopic.query(params);
-  };
-
-  diagnoseTopic = async (params: { agentId?: string | null; topicId: string }) => {
-    return lambdaClient.message.diagnoseTopic.query(params);
-  };
-
-  repairTopic = async (params: { agentId?: string | null; topicId: string }) => {
-    return lambdaClient.message.repairTopic.mutate(params);
-  };
-
   countMessages = async (params?: {
     approximate?: boolean;
     endDate?: string;
@@ -294,14 +220,6 @@ export class MessageService {
     startDate?: string;
   }): Promise<number> => {
     return lambdaClient.message.count.query(params);
-  };
-
-  countWords = async (params?: {
-    endDate?: string;
-    range?: [string, string];
-    startDate?: string;
-  }): Promise<number> => {
-    return lambdaClient.message.countWords.query(params);
   };
 
   rankModels = async (): Promise<ModelRankItem[]> => {
@@ -324,11 +242,6 @@ export class MessageService {
       id,
       value: { error },
     });
-  };
-
-  updateMessagePluginArguments = async (id: string, value: string | Record<string, any>) => {
-    const args = typeof value === 'string' ? value : JSON.stringify(value);
-    return lambdaClient.message.updateMessagePlugin.mutate({ id, value: { arguments: args } });
   };
 
   /**
@@ -359,10 +272,6 @@ export class MessageService {
     });
   };
 
-  updateMessageTranslate = async (id: string, translate: Partial<ChatTranslate> | false) => {
-    return lambdaClient.message.updateTranslate.mutate({ id, value: translate as ChatTranslate });
-  };
-
   updateMessageMetadata = async (
     id: string,
     value: Partial<MessageMetadata>,
@@ -371,14 +280,6 @@ export class MessageService {
     return abortableRequest.execute(`message-metadata-${id}`, (signal) =>
       lambdaClient.message.updateMetadata.mutate({ ...ctx, id, value }, { signal }),
     );
-  };
-
-  updateMessagePluginState = async (
-    id: string,
-    value: Record<string, any>,
-    ctx?: MessageQueryContext,
-  ): Promise<UpdateMessageResult> => {
-    return lambdaClient.message.updatePluginState.mutate({ ...ctx, id, value });
   };
 
   updateMessagePluginError = async (
@@ -405,27 +306,6 @@ export class MessageService {
     return lambdaClient.message.updateMessageRAG.mutate({ ...ctx, id, value: data });
   };
 
-  /**
-   * Update tool message with content, metadata, pluginState, and pluginError in a single request
-   * This prevents race conditions when updating multiple fields
-   * Uses abortableRequest to cancel previous requests for the same message
-   */
-  updateToolMessage = async (
-    id: string,
-    value: {
-      content?: string;
-      heterogeneousToolState?: HeterogeneousToolStateSnapshot;
-      metadata?: Record<string, any>;
-      pluginError?: any;
-      pluginState?: Record<string, any>;
-    },
-    ctx?: MessageQueryContext,
-  ): Promise<UpdateMessageResult> => {
-    return abortableRequest.execute(`tool-message-${id}`, (signal) =>
-      lambdaClient.message.updateToolMessage.mutate({ ...ctx, id, value }, { signal }),
-    );
-  };
-
   removeMessage = async (id: string, ctx?: MessageQueryContext): Promise<UpdateMessageResult> => {
     return lambdaClient.message.removeMessage.mutate({ ...ctx, id });
   };
@@ -448,84 +328,6 @@ export class MessageService {
 
   removeMessagesByAssistant = async (sessionId: string, topicId?: string) => {
     return lambdaClient.message.removeMessagesByAssistant.mutate({ sessionId, topicId });
-  };
-
-  removeMessagesByGroup = async (groupId: string, topicId?: string) => {
-    return lambdaClient.message.removeMessagesByGroup.mutate({ groupId, topicId });
-  };
-
-  /**
-   * Add files to a message
-   * Used to associate exported files from code interpreter with the tool message
-   */
-  addFilesToMessage = async (
-    id: string,
-    fileIds: string[],
-    ctx?: MessageQueryContext,
-  ): Promise<UpdateMessageResult> => {
-    return lambdaClient.message.addFilesToMessage.mutate({ ...ctx, fileIds, id });
-  };
-
-  // =============== Compression ===============
-
-  /**
-   * Create a compression group for old messages
-   * Returns placeholder group and messages to summarize
-   */
-  createCompressionGroup = async (params: {
-    agentId: string;
-    groupId?: string | null;
-    messageIds: string[];
-    threadId?: string | null;
-    topicId: string;
-  }): Promise<{
-    messageGroupId: string;
-    messages: UIChatMessage[];
-    messagesToSummarize: UIChatMessage[];
-  }> => {
-    const result = await lambdaClient.message.createCompressionGroup.mutate(params);
-    return {
-      messageGroupId: result.messageGroupId,
-      messages: (result.messages || []) as unknown as UIChatMessage[],
-      messagesToSummarize: (result.messagesToSummarize || []) as unknown as UIChatMessage[],
-    };
-  };
-
-  /**
-   * Finalize compression by updating group with generated summary
-   */
-  finalizeCompression = async (params: {
-    agentId: string;
-    content: string;
-    groupId?: string | null;
-    messageGroupId: string;
-    sourceGroupIds?: string[];
-    threadId?: string | null;
-    topicId: string;
-  }): Promise<{ messages?: UIChatMessage[] }> => {
-    const result = await lambdaClient.message.finalizeCompression.mutate(params);
-    return {
-      messages: (result.messages || []) as unknown as UIChatMessage[],
-    };
-  };
-
-  /**
-   * Update message group metadata (e.g., expanded state)
-   */
-  updateMessageGroupMetadata = async (params: {
-    context: {
-      agentId: string;
-      groupId?: string | null;
-      threadId?: string | null;
-      topicId: string;
-    };
-    expanded?: boolean;
-    messageGroupId: string;
-  }): Promise<{ messages: UIChatMessage[] }> => {
-    const result = await lambdaClient.message.updateMessageGroupMetadata.mutate(params);
-    return {
-      messages: (result.messages || []) as unknown as UIChatMessage[],
-    };
   };
 
   /**

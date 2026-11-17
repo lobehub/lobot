@@ -23,14 +23,6 @@ export class DesktopNotificationService {
   }
 
   /**
-   * Check if main window is hidden
-   * @returns Whether it is hidden
-   */
-  async isMainWindowHidden(): Promise<boolean> {
-    return ensureElectronIpc().notification.isMainWindowHidden();
-  }
-
-  /**
    * Set the app-level badge count (dock red dot on macOS, Unity counter on Linux,
    * overlay icon on Windows). Pass 0 to clear.
    */

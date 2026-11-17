@@ -17,14 +17,6 @@ class TaskService {
 
   getDetail = async (id: string) => lambdaClient.task.detail.query({ id });
 
-  /**
-   * Read a task from a workspace other than the active one. Task identifiers
-   * are only unique within a workspace, so the read is pinned to the owning
-   * workspace instead of resolving against the active scope.
-   */
-  getDetailInWorkspace = async (id: string, workspaceId: string) =>
-    createWorkspaceLambdaClient(workspaceId).task.detail.query({ id });
-
   list = async (params: {
     /** Keyset cursor: rows strictly after this `(orderBy timestamp, seq)` position. */
     after?: { at: Date | string; seq: number };
@@ -77,46 +69,6 @@ class TaskService {
       // This UI's Agent board deliberately opts into the agent-only contract.
       groupBy: params.groupBy === 'assignee' ? 'agent' : params.groupBy,
     });
-
-  getSubtasks = async (id: string) => lambdaClient.task.getSubtasks.query({ id });
-
-  getTaskTree = async (id: string) => lambdaClient.task.getTaskTree.query({ id });
-
-  getTopics = async (id: string) => lambdaClient.task.getTopics.query({ id });
-
-  getDependencies = async (id: string) => lambdaClient.task.getDependencies.query({ id });
-
-  getPinnedDocuments = async (id: string) => lambdaClient.task.getPinnedDocuments.query({ id });
-
-  getCheckpoint = async (id: string) => lambdaClient.task.getCheckpoint.query({ id });
-
-  getReview = async (id: string) => lambdaClient.task.getReview.query({ id });
-
-  getVerifyConfig = async (id: string) => lambdaClient.task.getVerifyConfig.query({ id });
-
-  // ── Mutations ──
-
-  /**
-   * Read a composer draft and report what it means. A mutation on the wire
-   * (it spends a model call), but it creates nothing — the caller decides
-   * whether to act on the reading. A `goal` model only this device reaches is
-   * relayed back to this tab (one-shot relay).
-   */
-  analyzeIntent = async (params: {
-    context?: string;
-    instruction: string;
-  }): Promise<TaskIntentAnalysis> => lambdaClient.task.analyzeIntent.mutate(params);
-
-  /**
-   * Rewrite the confirmed draft into the brief that gets executed, with the
-   * user's answers folded in. Also a mutation on the wire, and also creates
-   * nothing. Relayed like `analyzeIntent`.
-   */
-  synthesizeInstruction = async (params: {
-    answers: { answer: string; question: string }[];
-    context?: string;
-    instruction: string;
-  }): Promise<TaskInstructionSynthesis> => lambdaClient.task.synthesizeInstruction.mutate(params);
 
   create = async (params: {
     assigneeAgentId?: string;
@@ -180,144 +132,7 @@ class TaskService {
     },
   ) => lambdaClient.task.update.mutate({ id, ...data });
 
-  // ── Batch (list multi-select) ──
-  // One request per action for the whole selection; the server answers with a
-  // per-task outcome (`updated` / `skipped` / `failed`).
-
-  batchUpdate = async (params: {
-    assigneeAgentId?: string | null;
-    assigneeUserId?: string | null;
-    ids: string[];
-    priority?: number;
-  }) => lambdaClient.task.batchUpdate.mutate(params);
-
-  batchUpdateStatus = async (
-    ids: string[],
-    status: 'backlog' | 'canceled' | 'completed' | 'paused',
-  ) => lambdaClient.task.batchUpdateStatus.mutate({ ids, status });
-
-  batchArchive = async (ids: string[], archived: boolean) =>
-    lambdaClient.task.batchArchive.mutate({ archived, ids });
-
-  batchDelete = async (ids: string[]) => lambdaClient.task.batchDelete.mutate({ ids });
-
-  /** Undo of a batch status / field / archive change (the `reverts` it returned). */
-  batchRevert = async (
-    reverts: Parameters<typeof lambdaClient.task.batchRevert.mutate>[0]['reverts'],
-  ) => lambdaClient.task.batchRevert.mutate({ reverts });
-
-  /** Undo of a batch delete: restore the tasks from the recycle bin. */
-  batchRestoreDeleted = async (ids: string[]) =>
-    lambdaClient.task.batchRestoreDeleted.mutate({ ids });
-
   delete = async (id: string) => lambdaClient.task.delete.mutate({ id });
-
-  archive = async (id: string, archived: boolean) =>
-    lambdaClient.task.archive.mutate({ archived, id });
-
-  clearAll = async () => lambdaClient.task.clearAll.mutate();
-
-  updateStatus = async (
-    id: string,
-    status: TaskStatus,
-    error?: string,
-    options?: { actorAgentId?: string },
-  ) =>
-    lambdaClient.task.updateStatus.mutate({
-      actorAgentId: options?.actorAgentId,
-      error,
-      id,
-      status,
-    });
-
-  updateStatusCascade = async (id: string, status: 'canceled' | 'completed') =>
-    lambdaClient.task.updateStatusCascade.mutate({ id, status });
-
-  run = async (
-    id: string,
-    params?: { continueTopicId?: string; model?: string; prompt?: string; provider?: string },
-  ) => lambdaClient.task.run.mutate({ id, ...params });
-
-  previewSubtaskLayers = async (id: string) => lambdaClient.task.previewSubtaskLayers.query({ id });
-
-  runReadySubtasks = async (id: string) => lambdaClient.task.runReadySubtasks.mutate({ id });
-
-  addComment = async (
-    id: string,
-    content: string,
-    opts?: {
-      authorAgentId?: string;
-      briefId?: string;
-      editorData?: unknown;
-      topicId?: string;
-    },
-  ) => lambdaClient.task.addComment.mutate({ content, id, ...opts });
-
-  deleteComment = async (commentId: string) =>
-    lambdaClient.task.deleteComment.mutate({ commentId });
-
-  updateComment = async (commentId: string, content: string, opts?: { editorData?: unknown }) =>
-    lambdaClient.task.updateComment.mutate({ commentId, content, ...opts });
-
-  addDependency = async (
-    taskId: string,
-    dependsOnId: string,
-    type: 'blocks' | 'relates' = 'blocks',
-  ) => lambdaClient.task.addDependency.mutate({ dependsOnId, taskId, type });
-
-  removeDependency = async (taskId: string, dependsOnId: string) =>
-    lambdaClient.task.removeDependency.mutate({ dependsOnId, taskId });
-
-  reorderSubtasks = async (id: string, order: string[]) =>
-    lambdaClient.task.reorderSubtasks.mutate({ id, order });
-
-  cancelTopic = async (topicId: string) => lambdaClient.task.cancelTopic.mutate({ topicId });
-
-  deleteTopic = async (topicId: string) => lambdaClient.task.deleteTopic.mutate({ topicId });
-
-  // Safely merges config without overwriting other config fields such as checkpoint/review
-  updateConfig = async (id: string, config: Record<string, unknown>) =>
-    lambdaClient.task.updateConfig.mutate({ config, id });
-
-  updateCheckpoint = async (id: string, checkpoint: CheckpointConfig) =>
-    lambdaClient.task.updateCheckpoint.mutate({ checkpoint, id });
-
-  updateReview = async (...args: Parameters<typeof lambdaClient.task.updateReview.mutate>) =>
-    lambdaClient.task.updateReview.mutate(...args);
-
-  updateVerifyConfig = async (
-    ...args: Parameters<typeof lambdaClient.task.updateVerifyConfig.mutate>
-  ) => lambdaClient.task.updateVerifyConfig.mutate(...args);
-
-  /**
-   * Judge the task's output against its rubrics. The server picks the judge
-   * model (the task's own judge, else the topic model), so any device provider
-   * this tab runs is reason to stand by as its executor.
-   */
-  runReview = async (id: string, params?: { content?: string; topicId?: string }) =>
-    lambdaClient.task.runReview.mutate({ id, ...params });
-
-  pinDocument = async (taskId: string, documentId: string, pinnedBy?: string) =>
-    lambdaClient.task.pinDocument.mutate({ documentId, pinnedBy, taskId });
-
-  unpinDocument = async (taskId: string, documentId: string) =>
-    lambdaClient.task.unpinDocument.mutate({ documentId, taskId });
-
-  // ── Brief operations ──
-
-  resolveBrief = async (id: string, opts?: { action?: string; comment?: string }) =>
-    lambdaClient.brief.resolve.mutate({ id, ...opts });
-
-  markBriefRead = async (id: string) => lambdaClient.brief.markRead.mutate({ id });
-
-  // ── Copy ──
-
-  copyTaskToWorkspace = async (
-    taskId: string,
-    targetWorkspaceId: string | null,
-    targetVisibility?: 'private' | 'public',
-  ) =>
-    lambdaClient.task.copyTaskToWorkspace.mutate({ targetVisibility, targetWorkspaceId, taskId });
 }
 
 export const taskService = new TaskService();

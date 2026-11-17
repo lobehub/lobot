@@ -13,11 +13,7 @@ const currentStep = (s: UserStore) => {
   return Math.max(1, Math.min(step, MAX_ONBOARDING_STEPS));
 };
 
-const version = (s: UserStore) => s.onboarding?.version ?? CURRENT_ONBOARDING_VERSION;
-
 const finishedAt = (s: UserStore) => s.onboarding?.finishedAt;
-
-const isFinished = (s: UserStore) => !!s.onboarding?.finishedAt;
 
 /**
  * Check if user needs to go through onboarding.
@@ -40,7 +36,5 @@ export const onboardingSelectors = {
   commonStepsCompleted,
   currentStep,
   finishedAt,
-  isFinished,
   needsOnboarding,
-  version,
 };

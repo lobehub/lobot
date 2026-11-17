@@ -15,10 +15,6 @@ class AutoUpdateService {
     return ensureElectronIpc().autoUpdate.installLater();
   };
 
-  downloadUpdate() {
-    return ensureElectronIpc().autoUpdate.downloadUpdate();
-  }
-
   getUpdateChannel = async (): Promise<UpdateChannel> => {
     return ensureElectronIpc().autoUpdate.getUpdateChannel();
   };

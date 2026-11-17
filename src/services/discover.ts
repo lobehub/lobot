@@ -183,108 +183,8 @@ class DiscoverService {
     });
   };
 
-  getMcpManifest = async (params: { identifier: string; locale?: string; version?: string }) => {
-    const locale = globalHelpers.getCurrentLanguage();
-    return lambdaClient.market.getMcpManifest.query({
-      ...params,
-      locale,
-    });
-  };
-
-  getMCPPluginManifest = async (
-    identifier: string,
-    options: { install?: boolean } = {},
-  ): Promise<PluginManifest> => {
-    const locale = globalHelpers.getCurrentLanguage();
-
-    return lambdaClient.market.getMcpManifest.query({
-      identifier,
-      install: options.install,
-      locale,
-    });
-  };
-
   registerClient = () => {
     return lambdaClient.market.registerClientInMarketplace.mutate({});
-  };
-
-  /**
-   * Report MCP plugin installation result
-   */
-  reportMcpInstallResult = async ({
-    success,
-    manifest,
-    errorMessage,
-    errorCode,
-    ...params
-  }: InstallReportRequest) => {
-    // if user don't allow tracing, just not report installation
-    const allow = userGeneralSettingsSelectors.telemetry(useUserStore.getState());
-
-    if (!allow) return;
-    await this.safeInjectMPToken();
-
-    const reportData = {
-      errorCode: success ? undefined : errorCode,
-      errorMessage: success ? undefined : errorMessage,
-      manifest: success ? manifest : undefined,
-      success,
-      ...params,
-    };
-
-    lambdaClient.market.reportMcpInstallResult
-      .mutate(cleanObject(reportData))
-      .catch((reportError) => {
-        console.warn('Failed to report MCP installation result:', reportError);
-      });
-  };
-
-  /**
-   * Report plugin call result
-   */
-  reportPluginCall = async (reportData: CallReportRequest) => {
-    // if user don't allow tracing , just not report calling
-    const allow = userGeneralSettingsSelectors.telemetry(useUserStore.getState());
-
-    if (!allow) return;
-
-    await this.safeInjectMPToken();
-
-    lambdaClient.market.reportCall.mutate(cleanObject(reportData)).catch((reportError) => {
-      console.warn('Failed to report call:', reportError);
-    });
-  };
-
-  reportMcpEvent = async (eventData: PluginEventRequest) => {
-    const allow = userGeneralSettingsSelectors.telemetry(useUserStore.getState());
-    if (!allow) return;
-
-    await this.safeInjectMPToken();
-
-    const payload = cleanObject({
-      ...eventData,
-      source: eventData.source ?? 'community/mcp',
-    });
-
-    lambdaClient.market.reportMcpEvent.mutate(payload).catch((error) => {
-      console.warn('Failed to report MCP event:', error);
-    });
-  };
-
-  /**
-   * Report agent installation to increase install count
-   */
-  reportAgentInstall = async (identifier: string) => {
-    // if user don't allow tracing, just not report installation
-    const allow = userGeneralSettingsSelectors.telemetry(useUserStore.getState());
-
-    if (!allow) return;
-
-    await this.safeInjectMPToken();
-
-    lambdaClient.market.reportAgentInstall.mutate({ identifier }).catch((reportError) => {
-      console.warn('Failed to report agent installation:', reportError);
-    });
   };
 
   reportAgentEvent = async (eventData: AgentEventRequest) => {
@@ -573,20 +473,6 @@ class DiscoverService {
   getSkillRatingDistribution = async (identifier: string): Promise<SkillRatingDistribution> =>
     lambdaClient.market.skill.getSkillRatingDistribution.query({ identifier });
 
-  reportSkillEvent = async (eventData: { event: string; identifier: string; source?: string }) => {
-    const allow = userGeneralSettingsSelectors.telemetry(useUserStore.getState());
-    if (!allow) return;
-
-    const payload = cleanObject({
-      ...eventData,
-      source: eventData.source ?? 'community/skill',
-    });
-
-    // Note: skill event reporting can be added when the backend supports it
-    // Payload prepared for future backend integration
-    void payload;
-  };
-
   // ============================== Group Agent Market ==============================
 
   getGroupAgentCategories = async (params: CategoryListQuery = {}): Promise<CategoryItem[]> => {
@@ -625,18 +511,6 @@ class DiscoverService {
       },
       { context: { showNotification: false } },
     );
-  };
-
-  reportGroupAgentEvent = async (params: {
-    event: 'add' | 'chat' | 'click';
-    identifier: string;
-    source?: string;
-  }): Promise<void> => {
-    await lambdaClient.market.reportGroupAgentEvent.mutate(params);
-  };
-
-  reportGroupAgentInstall = async (identifier: string): Promise<void> => {
-    await lambdaClient.market.reportGroupAgentInstall.mutate({ identifier });
   };
 }
 

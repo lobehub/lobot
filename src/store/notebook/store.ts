@@ -35,5 +35,3 @@ export const useNotebookStore = createWithEqualityFn<NotebookStore>()(
 );
 
 expose('notebook', useNotebookStore);
-
-export const getNotebookStoreState = () => useNotebookStore.getState();

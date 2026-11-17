@@ -36,15 +36,6 @@ export type AgentTemplateFetcher = (
 export const getAgentTemplatesSWRKey = (locale?: string) =>
   `builtin-tool-web-onboarding/agent-marketplace/onboarding-templates/${locale ?? 'default'}`;
 
-export const getTemplatesByCategories = (
-  templates: AgentTemplate[],
-  categories: string[],
-): AgentTemplate[] => {
-  if (categories.length === 0) return templates;
-  const set = new Set(categories);
-  return templates.filter((t) => set.has(t.category));
-};
-
 export const getTemplatesByCategoryPriority = (
   templates: AgentTemplate[],
   categories: string[],

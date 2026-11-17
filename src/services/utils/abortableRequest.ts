@@ -40,28 +40,6 @@ class AbortableRequestManager {
       }
     }
   }
-
-  /**
-   * Manually cancel a request by key
-   * @param key - Request key to cancel
-   */
-  cancel(key: string): void {
-    const controller = this.controllers.get(key);
-    if (controller) {
-      controller.abort('Manually cancelled');
-      this.controllers.delete(key);
-    }
-  }
-
-  /**
-   * Cancel all pending requests
-   */
-  cancelAll(): void {
-    for (const controller of this.controllers.values()) {
-      controller.abort('All requests cancelled');
-    }
-    this.controllers.clear();
-  }
 }
 
 export const abortableRequest = new AbortableRequestManager();

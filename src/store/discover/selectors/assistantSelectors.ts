@@ -20,24 +20,6 @@ const assistantList =
   (s: DiscoverStore): AssistantListResponse | undefined =>
     queryKey ? s.assistantListMap[queryKey] : undefined;
 
-const assistantDetail =
-  (queryKey?: string) =>
-  (s: DiscoverStore): DiscoverAssistantDetail | undefined =>
-    queryKey ? s.assistantDetailMap[queryKey] : undefined;
-
-const assistantCategories =
-  (queryKey?: string) =>
-  (s: DiscoverStore): CategoryItem[] =>
-    (queryKey && s.assistantCategoriesMap[queryKey]) || EMPTY_CATEGORIES;
-
-const assistantIdentifiers =
-  (queryKey?: string) =>
-  (s: DiscoverStore): IdentifiersResponse | undefined =>
-    queryKey ? s.assistantIdentifiersMap[queryKey] : undefined;
-
 export const assistantSelectors = {
-  assistantCategories,
-  assistantDetail,
-  assistantIdentifiers,
   assistantList,
 };

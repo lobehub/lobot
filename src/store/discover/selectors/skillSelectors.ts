@@ -22,36 +22,6 @@ const skillList =
   (s: DiscoverStore): SkillListResponse | undefined =>
     queryKey ? s.skillListMap[queryKey] : undefined;
 
-const skillDetail =
-  (queryKey?: string) =>
-  (s: DiscoverStore): DiscoverSkillDetail | undefined =>
-    queryKey ? s.skillDetailMap[queryKey] : undefined;
-
-const skillCategories =
-  (queryKey?: string) =>
-  (s: DiscoverStore): SkillCategoryItem[] =>
-    (queryKey && s.skillCategoriesMap[queryKey]) || EMPTY_CATEGORIES;
-
-const skillComments =
-  (queryKey?: string) =>
-  (s: DiscoverStore): SkillCommentListResponse | undefined =>
-    queryKey ? s.skillCommentsMap[queryKey] : undefined;
-
-const skillRatingDistribution =
-  (queryKey?: string) =>
-  (s: DiscoverStore): SkillRatingDistribution | undefined =>
-    queryKey ? s.skillRatingDistributionMap[queryKey] : undefined;
-
-const skillRelated =
-  (queryKey?: string) =>
-  (s: DiscoverStore): DiscoverSkillItem[] =>
-    (queryKey && s.skillRelatedMap[queryKey]) || EMPTY_RELATED;
-
 export const skillSelectors = {
-  skillCategories,
-  skillComments,
-  skillDetail,
   skillList,
-  skillRatingDistribution,
-  skillRelated,
 };

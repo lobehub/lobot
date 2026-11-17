@@ -38,11 +38,6 @@ class WorkActionImpl {
     this.#private = privateAction;
   }
 
-  /** Back to a filter's head page, e.g. when the gallery switches to it again. */
-  collapseWorkspaceWorks = (params: WorkspaceWorksParams): void => {
-    this.#private.workspaceWorks.collapse(workspaceWorksKey(params));
-  };
-
   /**
    * Before a Work change refreshes the `work:` sync keys: drop every gallery
    * filter's loaded tail pages. Only the head page is re-requested, and a tail
@@ -54,14 +49,6 @@ class WorkActionImpl {
       if (data.currentPage > 0) this.#private.workspaceWorks.collapse(key);
     }
   };
-
-  loadMoreWorkspaceWorks = async (params: WorkspaceWorksParams): Promise<void> => {
-    await this.#private.workspaceWorks.loadMore(workspaceWorksKey(params), params);
-  };
-
-  /** Seed a gallery filter from storage before its route paints (route loaders). */
-  preHydrateWorkspaceWorks = (params: WorkspaceWorksParams): Promise<boolean> =>
-    this.#private.preHydrateWorkspaceWorks(params);
 
   /**
    * A deleted Work card leaves every list that showed it — including the
@@ -75,22 +62,6 @@ class WorkActionImpl {
   reset = (): void => {
     this.#set(initialWorkState, false, n('reset'));
   };
-
-  useFetchAgentWorks = (params: AgentWorksParams | null): ReplicaSyncResult =>
-    this.#private.agentWorks.useSync(params);
-
-  useFetchConversationWorks = (
-    params: ConversationWorksParams | null,
-    options?: ReplicaSyncOptions<WorkListItem[], WorkListItem[]>,
-  ): ReplicaSyncResult => this.#private.conversationWorks.useSync(params, options);
-
-  useFetchWorkVersions = (
-    params: WorkVersionsParams | null,
-    options?: ReplicaSyncOptions<WorkVersionItem[], WorkVersionItem[]>,
-  ): ReplicaSyncResult => this.#private.versions.useSync(params, options);
-
-  useFetchWorkspaceWorks = (params: WorkspaceWorksParams | null): ReplicaSyncResult =>
-    this.#private.workspaceWorks.useSync(params);
 }
 
 const { getState, setState } = useWorkStore;

@@ -5,8 +5,6 @@ import { lambdaClient } from '@/libs/trpc/client';
 class DocumentCommentService {
   create = (input: CreateDocumentCommentInput) => lambdaClient.documentComment.create.mutate(input);
 
-  delete = (id: string) => lambdaClient.documentComment.delete.mutate({ id });
-
   get = (id: string) => lambdaClient.documentComment.get.query({ id });
 
   listAnchors = (documentId: string) =>
@@ -23,8 +21,6 @@ class DocumentCommentService {
   }) => lambdaClient.documentComment.listThreads.query(params);
 
   summary = (documentId: string) => lambdaClient.documentComment.summary.query({ documentId });
-
-  update = (input: UpdateDocumentCommentInput) => lambdaClient.documentComment.update.mutate(input);
 }
 
 export const documentCommentService = new DocumentCommentService();

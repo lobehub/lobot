@@ -2,23 +2,6 @@ import type { AgentDeviceOverride, AgentModelOverride } from '@lobot/types';
 
 import { type UserStore } from '@/store/user';
 
-/**
- * The caller's override for a specific agent in the currently-active
- * workspace, or `undefined` when nothing is pinned yet. Merged over
- * `agents.agencyConfig` by `resolveAgencyConfig` at read time so pickers and
- * dispatch always agree.
- */
-const agentDeviceOverrideById =
-  (agentId: string) =>
-  (s: UserStore): AgentDeviceOverride | undefined =>
-    s.workspaceUserPreference.agentDeviceOverrides?.[agentId];
-
-/** The caller's personal model choice for one agent in the active workspace. */
-const agentModelOverrideById =
-  (agentId: string) =>
-  (s: UserStore): AgentModelOverride | undefined =>
-    s.workspaceUserPreference.agentModelOverrides?.[agentId];
-
 const EMPTY_HIDDEN: string[] = [];
 const EMPTY_VISIBILITY_OVERRIDES: Record<string, boolean> = {};
 
@@ -41,12 +24,6 @@ const sidebarHiddenAgentIds = (s: UserStore): string[] =>
 const sidebarHiddenGroupIds = (s: UserStore): string[] =>
   s.workspaceUserPreference.sidebarHiddenGroupIds ?? EMPTY_HIDDEN;
 
-/** Whether the caller removed this item from their sidebar (default is listed). */
-const isAgentHiddenFromSidebar =
-  (agentId: string) =>
-  (s: UserStore): boolean =>
-    !!s.workspaceUserPreference.sidebarHiddenAgentIds?.includes(agentId);
-
 /** Per-member sidebar sections layout for the active workspace. */
 const sidebarLayout = (s: UserStore) => s.workspaceUserPreference.sidebar;
 
@@ -54,9 +31,6 @@ const sidebarLayout = (s: UserStore) => s.workspaceUserPreference.sidebar;
 const preferenceWorkspaceId = (s: UserStore) => s.workspaceUserPreferenceWorkspaceId;
 
 export const workspaceUserSettingsSelectors = {
-  agentDeviceOverrideById,
-  agentModelOverrideById,
-  isAgentHiddenFromSidebar,
   preferenceWorkspaceId,
   sidebarAgentVisibilityOverrides,
   sidebarHiddenAgentIds,

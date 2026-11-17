@@ -232,41 +232,6 @@ class DocumentActionImpl {
   };
 
   /**
-   * Close a document and remove it from state
-   */
-  closeDocument = (documentId: string): void => {
-    // Flush any pending saves before closing
-    const save = this.#debouncedSaves.get(documentId);
-    if (save) {
-      save.flush();
-      this.#cleanupDebouncedSave(documentId);
-    }
-
-    const { activeDocumentId, internal_dispatchDocument, getPendingSave } = this.#get();
-
-    // Update activeDocumentId if needed
-    if (activeDocumentId === documentId) {
-      this.#set({ activeDocumentId: undefined }, false, n('closeDocument:clearActive'));
-    }
-
-    const remove = () => internal_dispatchDocument({ id: documentId, type: 'deleteDocument' });
-    const pending = getPendingSave(documentId);
-    if (pending) void pending.then(remove, remove);
-    else remove();
-  };
-
-  /**
-   * Flush any pending debounced save for a document
-   */
-  flushSave = (documentId?: string): void => {
-    const id = documentId || this.#get().activeDocumentId;
-    if (id) {
-      const save = this.#debouncedSaves.get(id);
-      save?.flush();
-    }
-  };
-
-  /**
    * Initialize a document with editor - stores state only.
    * Content is loaded into editor via onEditorInit when Editor component is ready.
    */

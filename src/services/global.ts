@@ -1,12 +1,12 @@
 import { isDesktop } from '@lobechat/const';
 import { type PartialDeep } from 'type-fest';
 
-import { type VersionResponseData } from '@/types/apiResponse';
 import { BusinessGlobalService } from '@/business/client/services/BusinessGlobalService';
 import { lambdaClient } from '@/libs/trpc/client';
 import { getElectronStoreState } from '@/store/electron';
 import { electronSyncSelectors } from '@/store/electron/selectors';
 import { type LobeAgentConfig } from '@/types/agent';
+import { type VersionResponseData } from '@/types/apiResponse';
 import { type GlobalRuntimeConfig } from '@/types/serverConfig';
 
 const VERSION_URL = 'https://registry.npmmirror.com/@lobehub/chat/latest';
@@ -67,10 +67,6 @@ class GlobalService extends BusinessGlobalService {
 
   getGlobalConfig = async (): Promise<GlobalRuntimeConfig> => {
     return lambdaClient.config.getGlobalConfig.query();
-  };
-
-  getDefaultAgentConfig = async (): Promise<PartialDeep<LobeAgentConfig>> => {
-    return lambdaClient.config.getDefaultAgentConfig.query();
   };
 }
 

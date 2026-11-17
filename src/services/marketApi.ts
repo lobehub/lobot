@@ -31,20 +31,6 @@ interface GetOwnAgentsParams {
 }
 
 class MarketApiService {
-  // Create new agent
-  async createAgent(agentData: {
-    actAs?: number;
-    homepage?: string;
-    identifier: string;
-    isFeatured?: boolean;
-    name: string;
-    status?: 'published' | 'unpublished' | 'archived' | 'deprecated';
-    tokenUsage?: number;
-    visibility?: 'public' | 'private' | 'internal';
-  }): Promise<AgentCreateResponse> {
-    return lambdaClient.market.agent.createAgent.mutate(agentData);
-  }
-
   // Get agent detail by identifier
   async getAgentDetail(
     identifier: string,
@@ -52,58 +38,6 @@ class MarketApiService {
     return lambdaClient.market.agent.getAgentDetail.query({
       identifier,
     }) as Promise<AgentItemDetail>;
-  }
-
-  // Check if agent exists (returns true if exists, false if not)
-  async checkAgentExists(identifier: string): Promise<boolean> {
-    try {
-      await this.getAgentDetail(identifier);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
-  // Create agent version
-  async createAgentVersion(versionData: {
-    actAs?: number;
-    a2aProtocolVersion?: string;
-    avatar?: string;
-    category?: string;
-    changelog?: string;
-    config?: Record<string, any>;
-    defaultInputModes?: string[];
-    defaultOutputModes?: string[];
-    description?: string;
-    documentationUrl?: string;
-    extensions?: Record<string, any>[];
-    hasPushNotifications?: boolean;
-    hasStateTransitionHistory?: boolean;
-    hasStreaming?: boolean;
-    identifier: string;
-    interfaces?: Record<string, any>[];
-    name?: string;
-    preferredTransport?: string;
-    providerId?: number;
-    securityRequirements?: Record<string, any>[];
-    securitySchemes?: Record<string, any>;
-    setAsCurrent?: boolean;
-    summary?: string;
-    supportsAuthenticatedExtendedCard?: boolean;
-    tokenUsage?: number;
-    url?: string;
-  }) {
-    return lambdaClient.market.agent.createAgentVersion.mutate(versionData);
-  }
-
-  // Deprecate agent (permanently hide, cannot be republished)
-  async deprecateAgent(identifier: string): Promise<void> {
-    await lambdaClient.market.agent.deprecateAgent.mutate({ identifier });
-  }
-
-  // Get own agents (requires authentication)
-  async getOwnAgents(params?: GetOwnAgentsParams): Promise<AgentListResponse> {
-    return lambdaClient.market.agent.getOwnAgents.query(params) as Promise<AgentListResponse>;
   }
 
   // ==================== Fork Agent API ====================
@@ -118,14 +52,6 @@ class MarketApiService {
     return lambdaClient.market.agent.forkAgent.mutate({
       items,
     });
-  }
-
-  /**
-   * Get all forks of an agent
-   * @param identifier - Agent identifier
-   */
-  async getAgentForks(identifier: string): Promise<AgentForksResponse> {
-    return lambdaClient.market.agent.getAgentForks.query({ identifier });
   }
 
   /**
@@ -144,35 +70,6 @@ class MarketApiService {
     return lambdaClient.market.agentGroup.getAgentGroupDetail.query({
       identifier,
     }) as Promise<any>;
-  }
-
-  async deprecateAgentGroup(identifier: string): Promise<void> {
-    await lambdaClient.market.agentGroup.deprecateAgentGroup.mutate({ identifier });
-  }
-
-  // ==================== Fork Agent Group API ====================
-
-  /**
-   * Fork an agent group
-   * @param sourceIdentifier - Source agent group identifier
-   * @param forkData - Fork request parameters
-   */
-  async forkAgentGroup(
-    sourceIdentifier: string,
-    forkData: AgentGroupForkRequest,
-  ): Promise<AgentGroupForkResponse> {
-    return lambdaClient.market.agentGroup.forkAgentGroup.mutate({
-      sourceIdentifier,
-      ...forkData,
-    });
-  }
-
-  /**
-   * Get all forks of an agent group
-   * @param identifier - Agent group identifier
-   */
-  async getAgentGroupForks(identifier: string): Promise<AgentGroupForksResponse> {
-    return lambdaClient.market.agentGroup.getAgentGroupForks.query({ identifier });
   }
 
   /**

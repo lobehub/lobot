@@ -92,7 +92,6 @@ export const createHomeSlice = (
  */
 class HomeActionImpl {
   readonly #api: StoreApi<UserMemoryStore>;
-  readonly #identityRoles;
   readonly #persona;
 
   constructor(set: Setter, get: () => UserMemoryStore, api: StoreApi<UserMemoryStore>) {
@@ -106,7 +105,7 @@ class HomeActionImpl {
       stateKey: 'personaReplica',
       view: personaLens,
     });
-    this.#identityRoles = createReplicaSlice(identityRolesResource, {
+    createReplicaSlice(identityRolesResource, {
       actionPrefix: n('identityRoles'),
       fetcher: () => this.#fetchIdentityRoles(),
       get,
@@ -126,50 +125,6 @@ class HomeActionImpl {
   });
 
   /**
-   * Wipe both home replicas after "delete all memories": memory, every
-   * persisted row and reads already in flight (`clear()`), then seed the
-   * server-confirmed empty values (no persona, no roles/tags) so the home shows
-   * its empty state right away — mounted or not — and a reload paints the same
-   * instead of the purged data.
-   */
-  internal_clearHomeReplicas = async (user?: string): Promise<boolean> => {
-    const active = user === undefined || user === personaResource.scope.get();
-    const cleared = await clearUserReplicas(user, this.#persona, this.#identityRoles);
-    if (active) {
-      this.#persona.update(PERSONA_KEY, () => ({ persona: null }));
-      this.#identityRoles.update(IDENTITY_ROLES_KEY, () => ({ roles: [], tags: [] }));
-    }
-    return cleared;
-  };
-
-  /**
-   * Drop the persona locally (persisted), then re-read server truth (now
-   * `null`). The persona delete flow calls this after the DELETE succeeded, so
-   * the section disappears immediately instead of waiting for a network round
-   * trip. `user` is the account that asked (captured before the DELETE); when
-   * another account is active by now, only that account's persisted persona is
-   * purged. The re-read is best-effort: the deletion already happened, so a
-   * failed GET must not surface as a failed delete — the next sync confirms it.
-   */
-  refreshPersona = async (user?: string): Promise<void> => {
-    // The account that deleted its persona switched away while the request ran:
-    // purge that account's persisted persona (and keep it from hydrating back),
-    // never the persona of the account now on screen.
-    if (user !== undefined && user !== personaResource.scope.get()) {
-      this.#persona.remove(PERSONA_KEY, user);
-      return;
-    }
-    this.#persona.update(PERSONA_KEY, () => ({ persona: null }), { persist: true });
-    // The replica adopts `userMemory:persona` as its sync key, so revalidating
-    // that key is what drives the network sync.
-    try {
-      await mutate(userMemoryKeys.persona());
-    } catch (error) {
-      console.error('[userMemory] failed to re-read the persona after deleting it', error);
-    }
-  };
-
-  /**
    * Fetch orchestration for the memory persona. Returns an `SWRResponse`-shaped
    * result — `data` reads the replica view — so the existing consumers are
    * untouched; the value lands in the store mirror, never in this return value.
@@ -186,25 +141,6 @@ class HomeActionImpl {
       isValidating: sync.isValidating,
       mutate: sync.revalidate,
     } as unknown as SWRResponse<PersonaData | null>;
-  };
-
-  /**
-   * Fetch orchestration for the identity roles + tags aggregate. Returns an
-   * `SWRResponse`-shaped result so the existing consumers are untouched; the
-   * value lands in the store mirrors, never in this return value.
-   */
-  useFetchTags = (): SWRResponse<QueryIdentityRolesResult> => {
-    const sync = this.#identityRoles.useSync(HOME_PARAMS);
-    const view = useStore(this.#api, (state) => state.identityRolesData);
-    const data = useMemo<IdentityRolesData | undefined>(() => view, [view]);
-
-    return {
-      data,
-      error: sync.error,
-      isLoading: !view && (sync.isValidating || !sync.isHydrated),
-      isValidating: sync.isValidating,
-      mutate: sync.revalidate,
-    } as unknown as SWRResponse<QueryIdentityRolesResult>;
   };
 }
 

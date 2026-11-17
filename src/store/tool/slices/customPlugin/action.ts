@@ -18,20 +18,11 @@ export const createCustomPluginSlice = (set: Setter, get: () => ToolStore, _api?
 
 class CustomPluginActionImpl {
   readonly #get: () => ToolStore;
-  readonly #set: Setter;
 
   constructor(set: Setter, get: () => ToolStore, _api?: unknown) {
     void _api;
-    this.#set = set;
     this.#get = get;
   }
-
-  installCustomPlugin = async (value: LobeToolCustomPlugin): Promise<void> => {
-    await pluginService.createCustomPlugin(value);
-
-    await this.#get().refreshPlugins();
-    this.#set({ newCustomPlugin: defaultCustomPlugin }, false, n('saveToCustomPluginList'));
-  };
 
   reinstallCustomPlugin = async (id: string): Promise<void> => {
     const plugin = pluginSelectors.getCustomPluginById(id)(this.#get());
@@ -64,27 +55,6 @@ class CustomPluginActionImpl {
     } finally {
       updateInstallLoadingState(id, false);
     }
-  };
-
-  uninstallCustomPlugin = async (id: string): Promise<void> => {
-    await this.#get().uninstallPlugin(id);
-  };
-
-  updateCustomPlugin = async (id: string, value: LobeToolCustomPlugin): Promise<void> => {
-    const { reinstallCustomPlugin } = this.#get();
-    // 1. Update list item information
-    await pluginService.updatePlugin(id, value);
-
-    // 2. Reinstall plugin
-    await reinstallCustomPlugin(id);
-  };
-
-  updateNewCustomPlugin = (newCustomPlugin: Partial<LobeToolCustomPlugin>): void => {
-    this.#set(
-      { newCustomPlugin: merge({}, this.#get().newCustomPlugin, newCustomPlugin) },
-      false,
-      n('updateNewDevPlugin'),
-    );
   };
 }
 

@@ -27,18 +27,6 @@ class AgentLabelService {
     return lambdaClient.agentLabel.updateLabel.mutate({ id, value }) as any;
   };
 
-  removeLabel = (id: string): Promise<void> => {
-    return lambdaClient.agentLabel.removeLabel.mutate({ id }) as any;
-  };
-
-  /**
-   * Replace the full label set of an agent. Returns the effective label ids
-   * after scope/archive filtering on the server.
-   */
-  setAgentLabels = (agentId: string, labelIds: string[]): Promise<string[]> => {
-    return lambdaClient.agentLabel.setAgentLabels.mutate({ agentId, labelIds });
-  };
-
   /**
    * Apply or remove one label. Use this for toggles — a full replacement built
    * from a cached assignment set drops whatever another editor added since.

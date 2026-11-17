@@ -197,30 +197,9 @@ class CommonActionImpl {
     await this.#get().refreshUserState();
   };
 
-  updateKeyVaultConfig = async (provider: string, config: any): Promise<void> => {
-    await this.#get().setSettings({ keyVaults: { [provider]: config } });
-  };
-
   updateUsername = async (username: string): Promise<void> => {
     await userService.updateUsername(username);
     await this.#get().refreshUserState();
-  };
-
-  useCheckTrace = (shouldFetch: boolean): SWRResponse<any> => {
-    return useSWR<boolean>(
-      shouldFetch ? userKeys.checkTrace() : null,
-      () => {
-        const telemetry = userGeneralSettingsSelectors.telemetry(this.#get());
-
-        // if user have set the telemetry, return false
-        if (typeof telemetry === 'boolean') return Promise.resolve(false);
-
-        return Promise.resolve(this.#get().isUserCanEnableTrace);
-      },
-      {
-        revalidateOnFocus: false,
-      },
-    );
   };
 
   /**

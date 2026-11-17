@@ -8,31 +8,10 @@ export const createFileChunkSlice = (set: Setter, get: () => FileStore, _api?: u
   new FileChunkActionImpl(set, get, _api);
 
 class FileChunkActionImpl {
-  readonly #set: Setter;
-
   constructor(set: Setter, get: () => FileStore, _api?: unknown) {
     void _api;
-    this.#set = set;
     void get;
   }
-
-  closeChunkDrawer = (): void => {
-    this.#set({ chunkDetailId: null, isSimilaritySearch: false, similaritySearchChunks: [] });
-  };
-
-  highlightChunks = (ids: string[]): void => {
-    this.#set({ highlightChunkIds: ids });
-  };
-
-  openChunkDrawer = (id: string): void => {
-    this.#set({ chunkDetailId: id });
-  };
-
-  semanticSearch = async (text: string, fileId: string): Promise<void> => {
-    this.#set({ isSimilaritySearching: true });
-    const data = await ragService.semanticSearch(text, [fileId]);
-    this.#set({ isSimilaritySearching: false, similaritySearchChunks: data });
-  };
 }
 
 export type FileChunkAction = Pick<FileChunkActionImpl, keyof FileChunkActionImpl>;

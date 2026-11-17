@@ -74,25 +74,6 @@ export interface FavoritePluginItem {
 }
 
 class SocialService {
-  /**
-   * @deprecated This method is no longer needed as authentication is now handled
-   * automatically through tRPC middleware. Keeping for backward compatibility.
-   */
-
-  setAccessToken(_token: string | undefined) {
-    // No-op: Authentication is now handled through tRPC authedProcedure middleware
-  }
-
-  // ==================== Follow ====================
-
-  async follow(followingId: number): Promise<void> {
-    await lambdaClient.market.social.follow.mutate({ followingId });
-  }
-
-  async unfollow(followingId: number): Promise<void> {
-    await lambdaClient.market.social.unfollow.mutate({ followingId });
-  }
-
   async checkFollowStatus(userId: number): Promise<FollowStatus> {
     return lambdaClient.market.social.checkFollowStatus.query({
       targetUserId: userId,
@@ -127,32 +108,6 @@ class SocialService {
     }) as unknown as Promise<PaginatedResponse<FollowUserItem>>;
   }
 
-  // ==================== Favorite ====================
-
-  async addFavorite(
-    targetType: SocialTargetType,
-    targetIdOrIdentifier: number | string,
-  ): Promise<void> {
-    const input =
-      typeof targetIdOrIdentifier === 'string'
-        ? { identifier: targetIdOrIdentifier, targetType }
-        : { targetId: targetIdOrIdentifier, targetType };
-
-    await lambdaClient.market.social.addFavorite.mutate(input);
-  }
-
-  async removeFavorite(
-    targetType: SocialTargetType,
-    targetIdOrIdentifier: number | string,
-  ): Promise<void> {
-    const input =
-      typeof targetIdOrIdentifier === 'string'
-        ? { identifier: targetIdOrIdentifier, targetType }
-        : { targetId: targetIdOrIdentifier, targetType };
-
-    await lambdaClient.market.social.removeFavorite.mutate(input);
-  }
-
   async checkFavoriteStatus(
     targetType: SocialTargetType,
     targetIdOrIdentifier: number | string,
@@ -161,13 +116,6 @@ class SocialService {
       targetIdOrIdentifier,
       targetType,
     }) as Promise<FavoriteStatus>;
-  }
-
-  async getMyFavorites(params?: PaginationParams): Promise<PaginatedResponse<FavoriteItem>> {
-    return lambdaClient.market.social.getMyFavorites.query({
-      limit: params?.pageSize,
-      offset: params?.page ? (params.page - 1) * (params.pageSize || 10) : undefined,
-    }) as unknown as Promise<PaginatedResponse<FavoriteItem>>;
   }
 
   async getUserFavoriteAgents(
@@ -186,70 +134,6 @@ class SocialService {
     params?: PaginationParams,
   ): Promise<PaginatedResponse<FavoritePluginItem>> {
     return lambdaClient.market.social.getUserFavoritePlugins.query({
-      limit: params?.pageSize,
-      offset: params?.page ? (params.page - 1) * (params.pageSize || 10) : undefined,
-      userId,
-    }) as unknown as Promise<PaginatedResponse<FavoritePluginItem>>;
-  }
-
-  // ==================== Like ====================
-
-  async like(targetType: SocialTargetType, targetIdOrIdentifier: number | string): Promise<void> {
-    const input =
-      typeof targetIdOrIdentifier === 'string'
-        ? { identifier: targetIdOrIdentifier, targetType }
-        : { targetId: targetIdOrIdentifier, targetType };
-
-    await lambdaClient.market.social.like.mutate(input);
-  }
-
-  async unlike(targetType: SocialTargetType, targetIdOrIdentifier: number | string): Promise<void> {
-    const input =
-      typeof targetIdOrIdentifier === 'string'
-        ? { identifier: targetIdOrIdentifier, targetType }
-        : { targetId: targetIdOrIdentifier, targetType };
-
-    await lambdaClient.market.social.unlike.mutate(input);
-  }
-
-  async checkLikeStatus(
-    targetType: SocialTargetType,
-    targetIdOrIdentifier: number | string,
-  ): Promise<LikeStatus> {
-    return lambdaClient.market.social.checkLike.query({
-      targetIdOrIdentifier,
-      targetType,
-    }) as Promise<LikeStatus>;
-  }
-
-  async toggleLike(
-    targetType: SocialTargetType,
-    targetIdOrIdentifier: number | string,
-  ): Promise<ToggleLikeResult> {
-    const input =
-      typeof targetIdOrIdentifier === 'string'
-        ? { identifier: targetIdOrIdentifier, targetType }
-        : { targetId: targetIdOrIdentifier, targetType };
-
-    return lambdaClient.market.social.toggleLike.mutate(input) as Promise<ToggleLikeResult>;
-  }
-
-  async getUserLikedAgents(
-    userId: number,
-    params?: PaginationParams,
-  ): Promise<PaginatedResponse<FavoriteAgentItem>> {
-    return lambdaClient.market.social.getUserLikedAgents.query({
-      limit: params?.pageSize,
-      offset: params?.page ? (params.page - 1) * (params.pageSize || 10) : undefined,
-      userId,
-    }) as unknown as Promise<PaginatedResponse<FavoriteAgentItem>>;
-  }
-
-  async getUserLikedPlugins(
-    userId: number,
-    params?: PaginationParams,
-  ): Promise<PaginatedResponse<FavoritePluginItem>> {
-    return lambdaClient.market.social.getUserLikedPlugins.query({
       limit: params?.pageSize,
       offset: params?.page ? (params.page - 1) * (params.pageSize || 10) : undefined,
       userId,

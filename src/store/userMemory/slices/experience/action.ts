@@ -50,11 +50,9 @@ export const createExperienceSlice = (set: Setter, get: () => UserMemoryStore, _
  * offset-paged memory lists) behind the slice's long-standing action names.
  */
 class ExperienceActionImpl {
-  readonly #list: MemoryQueryList<ExperienceListParams, ExperienceListItem, ExperienceListData>;
-
   constructor(set: Setter, get: () => UserMemoryStore, _api?: unknown) {
     void _api;
-    this.#list = new MemoryQueryList({
+    new MemoryQueryList({
       actionPrefix: n('experienceList'),
       activeKeyField: 'experienceListKey',
       entriesField: 'experienceListEntries',
@@ -77,53 +75,6 @@ class ExperienceActionImpl {
       useStore: (selector) => useUserMemoryStore(selector),
     });
   }
-
-  /** Delete one experience: optimistic, then the offset repair (see `OffsetListPager`). */
-  deleteExperience = (id: string): Promise<void> =>
-    this.#list.delete(id, () => memoryCRUDService.deleteExperience(id));
-
-  /** Purge for "delete all memories" (every query, memory + IndexedDB). */
-  internal_clearExperienceList = (user?: string): Promise<boolean> => this.#list.clear(user);
-
-  /** Confirmed edit of one experience in every loaded and persisted query. */
-  internal_updateExperienceEntity = (
-    id: string,
-    fn: (item: ExperienceListItem) => ExperienceListItem,
-  ): void => {
-    this.#list.updateEntity(id, fn);
-  };
-
-  /** Append the next page of the query on screen. */
-  loadMoreExperiences = (): void => {
-    void this.#list.loadMore();
-  };
-
-  /** Seed the persisted head page of a query before its route paints. */
-  preHydrateExperiences = (
-    query?: Omit<ExperienceQueryParams, 'page' | 'pageSize'>,
-  ): Promise<boolean> =>
-    this.#list.preHydrate({
-      ...query,
-      pageSize: EXPERIENCE_LIST_PAGE_SIZE,
-      q: query?.q || undefined,
-    });
-
-  /** Point the list at another search / sort (no page set is dropped). */
-  resetExperiencesList = (params?: Omit<ExperienceQueryParams, 'page' | 'pageSize'>): void => {
-    this.#list.select({ ...params, q: params?.q || undefined });
-  };
-
-  /** Fetch orchestration for the experience list page (see `MemoryQueryList.useFetch`). */
-  useFetchExperiences = (
-    params: ExperienceQueryParams,
-  ): SWRResponse<MemoryListPageResult<ExperienceListItem>> => {
-    const { page: _page, ...query } = params;
-    return this.#list.useFetch({
-      ...query,
-      pageSize: params.pageSize ?? EXPERIENCE_LIST_PAGE_SIZE,
-      q: params.q || undefined,
-    });
-  };
 }
 
 export type ExperienceAction = Pick<ExperienceActionImpl, keyof ExperienceActionImpl>;

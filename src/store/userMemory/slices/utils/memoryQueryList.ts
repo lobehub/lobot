@@ -88,10 +88,8 @@ export class MemoryQueryList<
   TItem extends { id: string },
   TData extends MemoryListData<TItem>,
 > {
-  readonly #entity;
   readonly #list;
   readonly #options: MemoryQueryListOptions<TParams, TItem, TData>;
-  readonly #pager: OffsetListPager;
 
   constructor(options: MemoryQueryListOptions<TParams, TItem, TData>) {
     this.#options = options;
@@ -124,8 +122,8 @@ export class MemoryQueryList<
       // Keep each painted page set self-describing (which query it answers).
       viewFields: ({ q, sort }) => ({ q: q || undefined, sort }) as Partial<TData>,
     });
-    this.#entity = linkReplicaEntity<TItem>([this.#list]);
-    this.#pager = new OffsetListPager({
+    linkReplicaEntity<TItem>([this.#list]);
+    new OffsetListPager({
       keys: () => Object.keys(get()[entriesField] as Record<string, TData>),
       read: (key) => (get()[entriesField] as Record<string, TData>)[key],
       refreshHead: this.#revalidate,
@@ -133,8 +131,6 @@ export class MemoryQueryList<
       slice: this.#list,
     });
   }
-
-  #activeKey = (): string => this.#options.get()[this.#options.activeKeyField] as string;
 
   /**
    * Revalidate the mounted query. The resource syncs under its legacy SWR key
@@ -144,112 +140,4 @@ export class MemoryQueryList<
    */
   #revalidate = (): Promise<unknown> =>
     mutate((key) => Array.isArray(key) && key[0] === this.#options.rootKey);
-
-  /**
-   * Purge for "delete all memories": every query page set, in memory and in
-   * IndexedDB, after any page or delete in flight. Retried once; `false` when a
-   * persisted row survived.
-   */
-  clear = (user?: string): Promise<boolean> =>
-    user === undefined || user === this.#options.resource.scope.get()
-      ? this.#pager.clear(() => clearReplicas(this.#list.clear))
-      : clearUserReplicas(user, this.#list);
-
-  /** Optimistic delete with the offset repair (see `OffsetListPager`). */
-  delete = (id: string, serverCall: () => Promise<unknown>): Promise<void> =>
-    this.#pager.delete(id, serverCall);
-
-  /** Next page of the active query, once its head is trustworthy. */
-  loadMore = (): Promise<void> => this.#pager.loadMore(this.#activeKey());
-
-  /**
-   * Fill one query's slot from IndexedDB before the route commits, so a cold
-   * visit paints the cached rows instead of the loading skeleton. A later
-   * `useSync` hydrate is a no-op once filled.
-   */
-  preHydrate = (params: TParams): Promise<boolean> => {
-    const scope = this.#options.resource.scope.get();
-    // The slot may still hold the previous user's rows; drop them before seeding.
-    this.#list.ensureScope(scope);
-    return this.#list.hydrate(params, scope);
-  };
-
-  /**
-   * Point the flat mirrors at another query. Each query keeps its own entry,
-   * so this never drops a page set: a query loaded before repaints from
-   * memory, one persisted before hydrates from storage, and a new one shows the
-   * loading state until its head lands. A no-op when the query is unchanged.
-   */
-  select = (query: Omit<TParams, 'pageSize'>): void => {
-    const { activeKeyField, actionPrefix, entriesField, get, mirror, queryFields, set } =
-      this.#options;
-    const key = memoryListKey(query);
-    const state = get();
-    if (state[activeKeyField] === key) return;
-
-    const entry = (state[entriesField] as Record<string, TData>)[key];
-    set(
-      {
-        [activeKeyField]: key,
-        ...queryFields(query),
-        ...mirror(entry),
-      } as Partial<UserMemoryStore>,
-      false,
-      `${actionPrefix}/select`,
-    );
-  };
-
-  /** Confirmed patch of one row in every loaded query and every persisted one. */
-  updateEntity = (id: string, fn: (item: TItem) => TItem): void => {
-    this.#entity.update(id, fn);
-  };
-
-  /**
-   * Fetch orchestration for the list page. Returns an `SWRResponse`-shaped
-   * result whose `data` reads the active query's page set, so the list pages
-   * (which pass it to `MemoryListBoundary`) keep their shape.
-   *
-   * - `error` is the head failure of the query on screen, only while it has
-   *   nothing painted: a failed background revalidation keeps its rows.
-   * - `isLoading` covers a head load with no rows yet and a "load more" in
-   *   flight (rows stay mounted under the footer). A failed page is the page
-   *   set's `loadMoreError`, rendered by the list footer with a retry.
-   */
-  useFetch = (params: TParams): SWRResponse<MemoryListPageResult<TItem>> => {
-    const { pageSize: _pageSize, ...query } = params;
-    const key = memoryListKey(params);
-
-    // Select the query before paint, so a frame never shows another query's rows.
-    useLayoutEffect(() => {
-      this.select(query as Omit<TParams, 'pageSize'>);
-    }, [key]);
-
-    const sync = this.#list.useSync(params, {
-      ...this.#pager.syncCallbacks(key),
-    });
-
-    const view = this.#options.useStore(
-      (state) => (state[this.#options.entriesField] as Record<string, TData>)[key],
-    );
-    const data = useMemo<MemoryListPageResult<TItem> | undefined>(
-      () =>
-        view
-          ? {
-              items: view.items,
-              page: view.currentPage + 1,
-              pageSize: view.pageSize,
-              total: view.total ?? view.items.length,
-            }
-          : undefined,
-      [view],
-    );
-
-    return {
-      data,
-      error: data ? undefined : sync.error,
-      isLoading: data ? Boolean(view?.isLoadingMore) : sync.isValidating || !sync.isHydrated,
-      isValidating: sync.isValidating,
-      mutate: sync.revalidate,
-    } as unknown as SWRResponse<MemoryListPageResult<TItem>>;
-  };
 }

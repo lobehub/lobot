@@ -5,16 +5,8 @@ export { agentGroupByIdSelectors } from './byId';
 
 export const agentGroupSelectors = {
   ...currentSelectors,
-  getAgentByIdFromGroup: agentGroupByIdSelectors.agentByIdFromGroup,
-  getGroupAgentCount: agentGroupByIdSelectors.groupAgentCount,
-  getGroupAgents: agentGroupByIdSelectors.groupAgents,
   getGroupById: agentGroupByIdSelectors.groupById,
-  getGroupBySupervisorAgentId: agentGroupByIdSelectors.groupBySupervisorAgentId,
-  getGroupConfig: agentGroupByIdSelectors.groupConfig,
   getGroupMemberAvatars: agentGroupByIdSelectors.groupMemberAvatars,
-  getGroupMemberCount: agentGroupByIdSelectors.groupMemberCount,
   getGroupMembers: agentGroupByIdSelectors.groupMembers,
   getGroupMeta: agentGroupByIdSelectors.groupMeta,
-  getGroupOpeningMessage: agentGroupByIdSelectors.groupOpeningMessage,
-  getGroupOpeningQuestions: agentGroupByIdSelectors.groupOpeningQuestions,
 };

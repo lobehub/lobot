@@ -44,7 +44,6 @@ export const createCrudSlice = (set: Setter, get: () => KnowledgeBaseStore, _api
  * `useFetch*` hooks only orchestrate fetching and return flags.
  */
 class KnowledgeBaseCrudActionImpl {
-  readonly #agentSpaceList;
   readonly #get: () => KnowledgeBaseStore;
   readonly #kbEntity;
   readonly #kbItem;
@@ -83,7 +82,7 @@ class KnowledgeBaseCrudActionImpl {
       stateKey: 'knowledgeBaseDetailReplica',
       view: recordLens<KnowledgeBaseStore, KnowledgeBaseItem>('knowledgeBaseDetailMap'),
     });
-    this.#agentSpaceList = createReplicaSlice(agentSpaceListResource, {
+    createReplicaSlice(agentSpaceListResource, {
       actionPrefix: 'agentSpaceList',
       get,
       set,
@@ -93,42 +92,6 @@ class KnowledgeBaseCrudActionImpl {
     // The same KB lives in the list surfaces and in the by-id projection.
     this.#kbEntity = linkReplicaEntity<KnowledgeBaseItem>([this.#kbList, this.#kbItem]);
   }
-
-  // ---- reads -------------------------------------------------------------
-
-  /**
-   * Fetch orchestration for one KB by id. Hydrates the persisted projection,
-   * then revalidates; the row lands in `knowledgeBaseDetailMap[id]` and is read
-   * through `knowledgeBaseSelectors.getKnowledgeBaseById`.
-   */
-  useFetchKnowledgeBaseItem = (id: string): ReplicaSyncResult =>
-    this.#kbItem.useSync(id || null, {
-      onSuccess: (item) => {
-        if (!item) {
-          // An authoritative miss: the fetch succeeded but the server no longer
-          // has this KB. Drop the persisted detail so `useKnowledgeBaseItem`
-          // stops returning the stale row and the route resolves to
-          // `<NotFound />` instead of a resolved-but-gone KB.
-          if (id) this.#kbItem.remove(id);
-
-          return;
-        }
-
-        this.#set({ activeKnowledgeBaseId: id }, false, 'knowledgeBase/itemActive');
-      },
-    });
-
-  /**
-   * Fetch orchestration for one KB list surface. The rows land in
-   * `knowledgeBaseListMap[visibility ?? 'all']` — read them through
-   * `knowledgeBaseSelectors.getKnowledgeBaseList`.
-   */
-  useFetchKnowledgeBaseList = (visibility?: KnowledgeBaseVisibility): ReplicaSyncResult =>
-    this.#kbList.useSync({ visibility });
-
-  /** Syncs agents' dedicated libraries; pass `false` until that surface is shown. */
-  useFetchAgentSpaceList = (enabled: boolean): ReplicaSyncResult =>
-    this.#agentSpaceList.useSync(enabled ? AGENT_SPACE_LIST_KEY : null);
 
   // ---- writes ------------------------------------------------------------
 
@@ -177,22 +140,6 @@ class KnowledgeBaseCrudActionImpl {
     // URL must not repaint the deleted library's rows.
     const { useTreeStore } = await import('@/store/tree');
     useTreeStore.getState().forgetLibrary(id);
-
-    await this.#get().refreshKnowledgeBaseList();
-  };
-
-  publishKnowledgeBaseToWorkspace = async (id: string): Promise<void> => {
-    await knowledgeBaseService.publishKnowledgeBaseToWorkspace(id);
-
-    // The row hops from the private surface into the workspace one.
-    await this.#get().refreshKnowledgeBaseList();
-  };
-
-  setKnowledgeBaseVisibility = async (
-    id: string,
-    visibility: 'private' | 'public',
-  ): Promise<void> => {
-    await knowledgeBaseService.setKnowledgeBaseVisibility(id, visibility);
 
     await this.#get().refreshKnowledgeBaseList();
   };

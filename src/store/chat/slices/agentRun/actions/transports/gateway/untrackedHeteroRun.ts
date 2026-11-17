@@ -17,9 +17,6 @@ type Get = () => ChatStore;
  */
 const releasedMarkers = new Set<string>();
 
-/** Test-only: forget the released markers. */
-export const resetReleasedMarkers = () => releasedMarkers.clear();
-
 /**
  * Stop holding sends behind this marker. Takes the operation id the follow-up
  * was handed off behind, not the topic's current marker: another client may

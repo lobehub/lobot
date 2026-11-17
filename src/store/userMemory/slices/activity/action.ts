@@ -50,11 +50,9 @@ export const createActivitySlice = (set: Setter, get: () => UserMemoryStore, _ap
  * offset-paged memory lists) behind the slice's long-standing action names.
  */
 class ActivityActionImpl {
-  readonly #list: MemoryQueryList<ActivityListParams, ActivityListItem, ActivityListData>;
-
   constructor(set: Setter, get: () => UserMemoryStore, _api?: unknown) {
     void _api;
-    this.#list = new MemoryQueryList({
+    new MemoryQueryList({
       actionPrefix: n('activityList'),
       activeKeyField: 'activityListKey',
       entriesField: 'activityListEntries',
@@ -79,53 +77,6 @@ class ActivityActionImpl {
       useStore: (selector) => useUserMemoryStore(selector),
     });
   }
-
-  /** Delete one activity: optimistic, then the offset repair (see `OffsetListPager`). */
-  deleteActivity = (id: string): Promise<void> =>
-    this.#list.delete(id, () => memoryCRUDService.deleteActivity(id));
-
-  /** Purge for "delete all memories" (every query, memory + IndexedDB). */
-  internal_clearActivityList = (user?: string): Promise<boolean> => this.#list.clear(user);
-
-  /** Confirmed edit of one activity in every loaded and persisted query. */
-  internal_updateActivityEntity = (
-    id: string,
-    fn: (item: ActivityListItem) => ActivityListItem,
-  ): void => {
-    this.#list.updateEntity(id, fn);
-  };
-
-  /** Append the next page of the query on screen. */
-  loadMoreActivities = (): void => {
-    void this.#list.loadMore();
-  };
-
-  /** Seed the persisted head page of a query before its route paints. */
-  preHydrateActivities = (
-    query?: Omit<ActivityQueryParams, 'page' | 'pageSize'>,
-  ): Promise<boolean> =>
-    this.#list.preHydrate({
-      ...query,
-      pageSize: ACTIVITY_LIST_PAGE_SIZE,
-      q: query?.q || undefined,
-    });
-
-  /** Point the list at another search / sort (no page set is dropped). */
-  resetActivitiesList = (params?: Omit<ActivityQueryParams, 'page' | 'pageSize'>): void => {
-    this.#list.select({ ...params, q: params?.q || undefined });
-  };
-
-  /** Fetch orchestration for the activity list page (see `MemoryQueryList.useFetch`). */
-  useFetchActivities = (
-    params: ActivityQueryParams,
-  ): SWRResponse<MemoryListPageResult<ActivityListItem>> => {
-    const { page: _page, ...query } = params;
-    return this.#list.useFetch({
-      ...query,
-      pageSize: params.pageSize ?? ACTIVITY_LIST_PAGE_SIZE,
-      q: params.q || undefined,
-    });
-  };
 }
 
 export type ActivityAction = Pick<ActivityActionImpl, keyof ActivityActionImpl>;

@@ -17,41 +17,9 @@ export const createContextStorySlice = (set: Setter, get: () => UserMemoryStore,
 
 /** Consolidated contexts (context → dossiers → evidence), read-only for now. */
 class ContextStoryActionImpl {
-  readonly #get: () => UserMemoryStore;
-  readonly #set: Setter;
-
   constructor(set: Setter, get: () => UserMemoryStore, _api?: unknown) {
     void _api;
-    this.#set = set;
-    this.#get = get;
   }
-
-  refreshContextStories = async (): Promise<void> => {
-    await mutate(userMemoryKeys.contextStories());
-  };
-
-  useFetchContextStories = (): SWRResponse<MemoryContextStoryList> =>
-    useClientDataSWR(userMemoryKeys.contextStories(), () => memoryCRUDService.getContextStories(), {
-      onSuccess: (data: MemoryContextStoryList) => {
-        this.#set({ contextStoryList: data }, false, n('useFetchContextStories/onSuccess'));
-      },
-    });
-
-  useFetchContextStory = (id?: string): SWRResponse<MemoryContextStory | null> =>
-    useClientDataSWR(
-      id ? userMemoryKeys.contextStory(id) : null,
-      () => memoryCRUDService.getContextStory(id!),
-      {
-        onSuccess: (data: MemoryContextStory | null) => {
-          if (!id) return;
-          this.#set(
-            { contextStoryMap: { ...this.#get().contextStoryMap, [id]: data } },
-            false,
-            n('useFetchContextStory/onSuccess'),
-          );
-        },
-      },
-    );
 }
 
 export type ContextStoryAction = Pick<ContextStoryActionImpl, keyof ContextStoryActionImpl>;

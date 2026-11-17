@@ -18,8 +18,6 @@ const generalConfig = (s: UserStore) => currentSettings(s).general || {};
 const neutralColor = (_s: UserStore): UserGeneralConfig['neutralColor'] => undefined;
 const primaryColor = (s: UserStore) => generalConfig(s).primaryColor;
 const fontSize = (s: UserStore) => generalConfig(s).fontSize;
-const highlighterTheme = (s: UserStore) => generalConfig(s).highlighterTheme;
-const mermaidTheme = (s: UserStore) => generalConfig(s).mermaidTheme;
 const transitionMode = (s: UserStore) => generalConfig(s).transitionMode;
 const animationMode = (s: UserStore) => generalConfig(s).animationMode;
 const contextMenuMode = (_s: UserStore): ContextMenuMode => (isDesktop ? 'default' : 'disabled');
@@ -33,11 +31,6 @@ const currentResponseLanguage = (s: UserStore): Locales => {
   return normalizeLocale(getSystemLanguage());
 };
 const telemetry = (s: UserStore) => generalConfig(s).telemetry;
-const timezone = (s: UserStore) => generalConfig(s).timezone;
-/** The user's timezone setting, falling back to the browser's. */
-const currentTimezone = (s: UserStore): string | undefined =>
-  timezone(s) ||
-  (typeof Intl === 'undefined' ? undefined : Intl.DateTimeFormat().resolvedOptions().timeZone);
 const enableAutoScrollOnStreaming = (s: UserStore) =>
   generalConfig(s).enableAutoScrollOnStreaming ?? true;
 const enableMessageLinkIcon = (s: UserStore) => generalConfig(s).enableMessageLinkIcon ?? true;
@@ -60,15 +53,11 @@ export const userGeneralSettingsSelectors = {
   enablePasteAutoConvert,
   fontAntialiasing,
   fontSize,
-  highlighterTheme,
-  mermaidTheme,
   neutralColor,
   primaryColor,
   currentResponseLanguage,
-  currentTimezone,
   responseLanguage,
   telemetry,
-  timezone,
   transitionMode,
   workflowStreamingExpandLevel,
 };

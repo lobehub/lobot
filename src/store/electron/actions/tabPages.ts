@@ -90,12 +90,6 @@ class TabPagesActionImpl {
     return tab.id;
   };
 
-  getActiveTab = (): TabItem | null => {
-    const { activeTabId, tabs } = this.#get();
-    if (!activeTabId) return null;
-    return tabs.find((t) => t.id === activeTabId) ?? null;
-  };
-
   loadTabs = (url = '/'): void => {
     this.#loadScope(resolveTabScope(url), true);
   };

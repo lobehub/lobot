@@ -55,18 +55,6 @@ const serializeHistoryList = <
     : undefined,
 });
 
-const serializeHistoryItem = <
-  T extends {
-    editorData: GetHistoryItemOutput['editorData'];
-    id: string;
-    isCurrent: boolean;
-    saveSource: GetHistoryItemOutput['saveSource'];
-    savedAt: Date | string;
-  },
->(
-  result: T,
-): GetHistoryItemOutput => serializeHistoryTimestamp(result);
-
 const serializeHistoryComparison = <
   T extends {
     from: {
@@ -160,10 +148,6 @@ export class DocumentService {
     return lambdaClient.document.createDocument.mutate(params);
   }
 
-  async createDocuments(documents: CreateDocumentParams[]): Promise<DocumentItem[]> {
-    return lambdaClient.document.createDocuments.mutate({ documents });
-  }
-
   async queryDocuments(params?: {
     creator?: 'others' | 'self';
     current?: number;
@@ -180,25 +164,6 @@ export class DocumentService {
     const result = await lambdaClient.document.listDocumentHistory.query(params);
 
     return serializeHistoryList(result);
-  }
-
-  async getDocumentHistoryItem(
-    params: GetDocumentHistoryItemParams,
-    uniqueKey?: string,
-  ): Promise<GetHistoryItemOutput> {
-    if (uniqueKey) {
-      return abortableRequest.execute(uniqueKey, async (signal) => {
-        const result = await lambdaClient.document.getDocumentHistoryItem.query(params, {
-          signal,
-        });
-
-        return serializeHistoryItem(result);
-      });
-    }
-
-    const result = await lambdaClient.document.getDocumentHistoryItem.query(params);
-
-    return serializeHistoryItem(result);
   }
 
   async compareDocumentHistoryItems(
@@ -257,21 +222,8 @@ export class DocumentService {
     return lambdaClient.document.acquireDocumentLock.mutate({ id, ownerId });
   }
 
-  /** Read-only peek of the current edit lock (does not acquire). */
-  async getDocumentLock(id: string, ownerId?: string) {
-    return lambdaClient.document.getDocumentLock.query({ id, ownerId });
-  }
-
   async releaseDocumentLock(id: string, ownerId?: string): Promise<void> {
     await lambdaClient.document.releaseDocumentLock.mutate({ id, ownerId });
-  }
-
-  async saveDocumentHistory(params: SaveDocumentHistoryInput): Promise<SaveDocumentHistoryOutput> {
-    const result = await lambdaClient.document.saveDocumentHistory.mutate(params);
-
-    return {
-      savedAt: result.savedAt instanceof Date ? result.savedAt.toISOString() : result.savedAt,
-    };
   }
 
   /** Store a page's live collaboration room as a version; false when it has no live room. */
@@ -281,51 +233,6 @@ export class DocumentService {
       saveSource,
     });
     return recorded;
-  }
-
-  async transferDocument(
-    documentId: string,
-    targetWorkspaceId: string | null,
-    targetVisibility?: 'private' | 'public',
-  ): Promise<void> {
-    await lambdaClient.document.transferDocument.mutate({
-      documentId,
-      targetVisibility,
-      targetWorkspaceId,
-    });
-  }
-
-  async copyDocumentToWorkspace(
-    documentId: string,
-    targetWorkspaceId: string | null,
-    targetVisibility?: 'private' | 'public',
-  ): Promise<{ rootId: string }> {
-    return lambdaClient.document.copyDocumentToWorkspace.mutate({
-      documentId,
-      targetVisibility,
-      targetWorkspaceId,
-    });
-  }
-
-  /**
-   * Publish a private document (and its whole subtree) into the workspace.
-   * Thin wrapper around `setDocumentVisibility(id, 'public')`; kept for
-   * existing callers.
-   */
-  async publishDocumentToWorkspace(id: string): Promise<{ documentIds: string[] }> {
-    return lambdaClient.document.publishDocumentToWorkspace.mutate({ id });
-  }
-
-  /**
-   * Flip a document subtree's workspace visibility. Bidirectional companion
-   * to `publishDocumentToWorkspace`. Server cascades over the whole subtree
-   * for P1 tree consistency.
-   */
-  async setDocumentVisibility(
-    id: string,
-    visibility: 'private' | 'public',
-  ): Promise<{ documentIds: string[] }> {
-    return lambdaClient.document.setDocumentVisibility.mutate({ id, visibility });
   }
 }
 

@@ -17,12 +17,8 @@ const getFavorite =
   (s: HomeStoreState): FavoriteItem | undefined =>
     favorites(s).find((item) => item.type === type && item.targetId === targetId);
 
-const isFavorite = (type: FavoriteType, targetId: string) => (s: HomeStoreState) =>
-  !!getFavorite(type, targetId)(s);
-
 export const favoriteSelectors = {
   favoriteList,
   favorites,
   getFavorite,
-  isFavorite,
 };

@@ -39,51 +39,12 @@ class UserSettingsActionImpl {
    * payload or the aborted change would silently never persist.
    */
   readonly #pendingSettingKeys = new Set<string>();
-  /**
-   * Tail of the in-flight `updateToolChannels` writes. Each write waits for the
-   * previous one so rapid toggles/reorders land in call order — parallel
-   * requests could commit out of order and leave an older list in the DB.
-   */
-  #toolChannelsWrite: Promise<unknown> = Promise.resolve();
-  /** Tail of the in-flight `replaceServiceModelSettings` writes, kept in call order. */
-  #serviceModelWrite: Promise<unknown> = Promise.resolve();
-
-  /** Latest queued write per personal system-agent entry; see updatePersonalSystemAgent. */
-  readonly #personalSystemAgentWrites = new Map<PersonalSystemAgentKey, Promise<unknown>>();
 
   constructor(set: Setter, get: () => UserStore, _api?: unknown) {
     void _api;
     this.#set = set;
     this.#get = get;
   }
-
-  addToolToAllowList = async (toolKey: string): Promise<void> => {
-    const currentAllowList = this.#get().settings.tool?.humanIntervention?.allowList || [];
-
-    if (currentAllowList.includes(toolKey)) return;
-
-    // Optimistic local update, then a server-side merge write. The server
-    // unions against the DB row, so this tab's possibly-stale snapshot cannot
-    // clobber sibling `tool` keys changed from other tabs (see setSettings).
-    this.#set(
-      {
-        settings: merge(this.#get().settings, {
-          tool: { humanIntervention: { allowList: [...currentAllowList, toolKey] } },
-        }),
-      },
-      false,
-      'optimistic_addToolToAllowList',
-    );
-
-    await userService.updateToolIntervention({ appendAllowList: [toolKey] });
-    await this.#get().refreshUserState();
-  };
-
-  importAppSettings = async (importAppSettings: UserSettings): Promise<void> => {
-    const { setSettings } = this.#get();
-
-    await setSettings(importAppSettings);
-  };
 
   importUrlShareSettings = async (settingsParams: string | null): Promise<void> => {
     if (settingsParams) {
@@ -107,48 +68,6 @@ class UserSettingsActionImpl {
     this.#set({ updateSettingsSignal: newSignal }, false, 'signalForUpdateSettings');
 
     return newSignal;
-  };
-
-  /**
-   * Replace the Service Model columns with exactly the given stored values.
-   * Unlike `setSettings`, which can only merge, this can drop keys: removing a
-   * slot's model is how a slot goes back to following its tier or the system
-   * recommendation. The server replaces these jsonb columns wholesale.
-   */
-  replaceServiceModelSettings = async (
-    columns: Pick<PartialDeep<UserSettings>, 'defaultAgent' | 'systemAgent'>,
-  ): Promise<void> => {
-    this.#set(
-      { settings: { ...this.#get().settings, ...columns } },
-      false,
-      'optimistic_replaceServiceModelSettings',
-    );
-
-    // A failed earlier write must not block later ones; its caller still
-    // receives the rejection through its own `write` promise.
-    const write = this.#serviceModelWrite
-      .catch(() => {})
-      .then(() => userService.updateUserSettings(columns));
-    this.#serviceModelWrite = write;
-
-    try {
-      await write;
-    } catch (error) {
-      // Drop the unsaved optimistic value; the caller keeps the rejection for retry.
-      await this.#get()
-        .refreshUserState()
-        .catch(() => {});
-      throw error;
-    }
-    for (const key of Object.keys(columns)) this.#pendingSettingKeys.delete(key);
-    // Only the latest write refreshes: an intermediate refresh would pull a
-    // value that a queued write is about to replace.
-    if (this.#serviceModelWrite === write) await this.#get().refreshUserState();
-  };
-
-  resetSettings = async (): Promise<void> => {
-    await userService.resetUserSettings();
-    await this.#get().refreshUserState();
   };
 
   setSettings = async (settings: PartialDeep<UserSettings>): Promise<void> => {
@@ -281,30 +200,6 @@ class UserSettingsActionImpl {
     await this.#get().refreshUserState();
   };
 
-  updateDefaultAgent = async (defaultAgent: PartialDeep<LobeAgentSettings>): Promise<void> => {
-    const config = defaultAgent.config;
-    const shouldNormalizeModelProvider =
-      config && (config.model !== undefined || config.provider !== undefined);
-
-    if (!shouldNormalizeModelProvider) {
-      await this.#get().setSettings({ defaultAgent });
-      return;
-    }
-
-    const currentConfig = settingsSelectors.defaultAgentConfig(this.#get());
-
-    await this.#get().setSettings({
-      defaultAgent: {
-        ...defaultAgent,
-        config: {
-          ...config,
-          model: config.model ?? currentConfig.model,
-          provider: config.provider ?? currentConfig.provider,
-        },
-      },
-    });
-  };
-
   updateGeneralConfig = async (general: Partial<UserGeneralConfig>): Promise<void> => {
     await this.#get().setSettings({ general });
   };
@@ -326,86 +221,6 @@ class UserSettingsActionImpl {
 
     await userService.updateToolIntervention(config);
     await this.#get().refreshUserState();
-  };
-
-  /**
-   * Personal chat-assist entries (follow-up chips, input completion) go through
-   * a dedicated per-entry merge: inside a workspace the generic settings write
-   * would be rejected for members, since it carries the whole `systemAgent`
-   * column, and it would rewrite sibling entries from this tab's snapshot.
-   */
-  updatePersonalSystemAgent = async (
-    key: PersonalSystemAgentKey,
-    value: { enabled?: boolean; model?: string; provider?: string },
-  ): Promise<void> => {
-    this.#set(
-      { settings: merge(this.#get().settings, { systemAgent: { [key]: value } }) },
-      false,
-      'optimistic_updatePersonalSystemAgent',
-    );
-
-    // Writes to one entry run in call order, so a slower earlier save (model A)
-    // cannot land after a later one (model B). A failed earlier write must not
-    // block later ones; its caller still receives its own rejection.
-    const write = (this.#personalSystemAgentWrites.get(key) ?? Promise.resolve())
-      .catch(() => {})
-      .then(() => userService.updatePersonalSystemAgent(key, value));
-    this.#personalSystemAgentWrites.set(key, write);
-
-    try {
-      await write;
-    } catch (error) {
-      // Chat reads these settings directly, so drop the unsaved optimistic
-      // value. The rejection still reaches the caller for its retry state.
-      await this.#get()
-        .refreshUserState()
-        .catch(() => {});
-      throw error;
-    }
-    // Only the latest write refreshes: an intermediate refresh would pull a
-    // value that a queued write is about to replace.
-    if (this.#personalSystemAgentWrites.get(key) === write) await this.#get().refreshUserState();
-  };
-
-  updateToolChannels = async (channels: {
-    crawlerImpls?: string[];
-    searchProviders?: string[];
-  }): Promise<void> => {
-    // Optimistic local update, then a server-side patch of only these keys —
-    // setSettings would replace the whole `tool` column with this tab's
-    // snapshot and revert sibling keys changed elsewhere (see
-    // updateHumanIntervention). `merge` replaces arrays wholesale, so the new
-    // ordered lists are stored as-is.
-    this.#set(
-      { settings: merge(this.#get().settings, { tool: channels }) },
-      false,
-      'optimistic_updateToolChannels',
-    );
-
-    // A failed earlier write must not block later ones; its caller still
-    // receives the rejection through its own `write` promise.
-    const write = this.#toolChannelsWrite
-      .catch(() => {})
-      .then(() => userService.updateToolChannels(channels));
-    this.#toolChannelsWrite = write;
-
-    await write;
-    // Only the latest write refreshes: an intermediate refresh would pull a
-    // list that a queued write is about to replace.
-    if (this.#toolChannelsWrite === write) await this.#get().refreshUserState();
-  };
-
-  updateKeyVaults = async (keyVaults: Partial<UserKeyVaults>): Promise<void> => {
-    await this.#get().setSettings({ keyVaults });
-  };
-
-  updateSystemAgent = async (
-    key: UserServiceModelConfigKey,
-    value: Partial<SystemAgentItem>,
-  ): Promise<void> => {
-    await this.#get().setSettings({
-      systemAgent: { [key]: { ...value } },
-    });
   };
 }
 

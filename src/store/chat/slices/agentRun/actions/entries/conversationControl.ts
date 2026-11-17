@@ -19,23 +19,6 @@ export class ConversationControlActionImpl {
     this.#get = get;
   }
 
-  stopGenerateMessage = (): void => {
-    const { activeAgentId, activeTopicId, cancelOperations } = this.#get();
-
-    // Cancel running agent-runtime operations in the current context —
-    // client-side (execAgentRuntime), heterogeneous agent (execHeterogeneousAgent),
-    // and Gateway-mode (execServerAgentRuntime).
-    cancelOperations(
-      {
-        type: AI_RUNTIME_OPERATION_TYPES,
-        status: 'running',
-        agentId: activeAgentId,
-        topicId: activeTopicId,
-      },
-      MESSAGE_CANCEL_FLAT,
-    );
-  };
-
   cancelSendMessageInServer = (
     target?: string | ConversationContext,
     editor?: ChatInputEditor | null,

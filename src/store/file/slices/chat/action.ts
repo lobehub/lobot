@@ -1,7 +1,7 @@
 import { SHARE_VISITOR_MAX_FILE_SIZE } from '@lobechat/const';
-import { type ChatContextContent } from '@lobot/types';
 import { COMPRESSIBLE_IMAGE_TYPES, compressImageFile } from '@lobechat/utils/compressImage';
 import { toast } from '@lobehub/ui';
+import { type ChatContextContent } from '@lobot/types';
 import { Buffer } from 'buffer.js';
 import { t } from 'i18next';
 
@@ -310,44 +310,6 @@ class FileActionImpl {
 
     this.#get().dispatchChatUploadFileList(contextKey, { id, type: 'removeFile' });
     await this.uploadChatFiles(contextKey, [item.file], item.agentId, { shareId: item.shareId });
-  };
-
-  startAsyncTask = async (
-    id: string,
-    runner: (id: string) => Promise<string>,
-    onFileItemUpdate: (fileItem: FileListItem) => void,
-  ): Promise<void> => {
-    await runner(id);
-
-    let isFinished = false;
-
-    while (!isFinished) {
-      // Poll task status every 2 seconds
-      await sleep(2000);
-
-      let fileItem: FileListItem | undefined;
-
-      try {
-        const result = await fileService.getKnowledgeItem(id);
-        fileItem = result ?? undefined;
-      } catch (e) {
-        console.error('getFileItem Error:', e);
-        continue;
-      }
-
-      if (!fileItem) return;
-
-      onFileItemUpdate(fileItem);
-
-      if (fileItem.finishEmbedding) {
-        isFinished = true;
-      }
-
-      // if error, also break
-      else if (fileItem.chunkingStatus === 'error' || fileItem.embeddingStatus === 'error') {
-        isFinished = true;
-      }
-    }
   };
 
   uploadChatFiles = async (

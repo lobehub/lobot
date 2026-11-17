@@ -11,13 +11,6 @@ const deviceAccount = (agentId?: string | null, deviceId?: string | null) => (s:
     ? s.quotaDeviceAccountMap[quotaDeviceAccountKey(agentId, deviceId)]
     : undefined;
 
-const readings = (accountId?: string | null) => (s: Store) =>
-  accountId ? s.quotaReadingsMap[accountId] : undefined;
-
-/** The account's last readings request failed (and nothing has answered since). */
-const readingsFailed = (accountId?: string | null) => (s: Store) =>
-  !!accountId && !!s.quotaReadingsFailed[accountId];
-
 const history = (accountId?: string | null) => (s: Store) =>
   accountId ? s.quotaHistoryMap[accountId] : undefined;
 
@@ -54,6 +47,4 @@ export const agentQuotaSelectors = {
   isDeviceAccountConfirmed,
   isHistoryConfirmed,
   panel,
-  readings,
-  readingsFailed,
 };

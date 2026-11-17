@@ -11,55 +11,17 @@ interface AuthProvidersData {
   providers: SSOProvider[];
 }
 
-const fetchAuthProvidersData = async (): Promise<AuthProvidersData> => {
-  const { accountInfo, listAccounts } = await import('@/libs/better-auth/auth-client');
-  const result = await listAccounts();
-  const accounts: { accountId: string; providerId: string }[] = result.data || [];
-  const hasPasswordAccount = accounts.some((account) => account.providerId === 'credential');
-  const providers = await Promise.all(
-    accounts
-      .filter((account) => account.providerId !== 'credential')
-      .map(async (account) => {
-        // In theory, the id_token could be decrypted from the accounts table, but I found that better-auth on GitHub does not save the id_token
-        const info = await accountInfo({
-          query: { accountId: account.accountId },
-        });
-        return {
-          email: info.data?.user?.email ?? undefined,
-          provider: account.providerId,
-          providerAccountId: account.accountId,
-        };
-      }),
-  );
-  return { hasPasswordAccount, providers };
-};
-
 type Setter = StoreSetter<UserStore>;
 export const createAuthSlice = (set: Setter, get: () => UserStore, _api?: unknown) =>
   new UserAuthActionImpl(set, get, _api);
 
 class UserAuthActionImpl {
   readonly #get: () => UserStore;
-  readonly #set: Setter;
 
   constructor(set: Setter, get: () => UserStore, _api?: unknown) {
     void _api;
-    this.#set = set;
     this.#get = get;
   }
-
-  fetchAuthProviders = async (): Promise<void> => {
-    // Skip if already loaded
-    if (this.#get().isLoadedAuthProviders) return;
-
-    try {
-      const { hasPasswordAccount, providers } = await fetchAuthProvidersData();
-      this.#set({ authProviders: providers, hasPasswordAccount, isLoadedAuthProviders: true });
-    } catch (error) {
-      console.error('Failed to fetch auth providers:', error);
-      this.#set({ isLoadedAuthProviders: true });
-    }
-  };
 
   logout = async (options?: { redirectTo?: string }): Promise<void> => {
     // Capture the owner before any async work. The store may be updated by a
@@ -103,15 +65,6 @@ class UserAuthActionImpl {
     const params = new URLSearchParams({ callbackUrl: currentUrl });
     if (reason) params.set('reason', reason);
     window.location.href = `/signin?${params.toString()}`;
-  };
-
-  refreshAuthProviders = async (): Promise<void> => {
-    try {
-      const { hasPasswordAccount, providers } = await fetchAuthProvidersData();
-      this.#set({ authProviders: providers, hasPasswordAccount });
-    } catch (error) {
-      console.error('Failed to refresh auth providers:', error);
-    }
   };
 }
 

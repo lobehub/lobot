@@ -147,10 +147,6 @@ class SidebarUIActionImpl {
     await this.#get().refreshAgentList();
   };
 
-  setAgentUpdatingId = (id: string | null): void => {
-    this.#set({ agentUpdatingId: id }, false, n('setAgentUpdatingId'));
-  };
-
   setGroupUpdatingId = (id: string | null): void => {
     this.#set({ groupUpdatingId: id }, false, n('setGroupUpdatingId'));
   };

@@ -34,7 +34,6 @@ interface LocalCopy {
 }
 
 export class SandboxPrivateAction {
-  readonly #get: () => SandboxState;
   /** Copies created here that a listing in flight may not know about yet. */
   readonly #localCopies = new Map<string, LocalCopy>();
   /** Sequence of `listInstances` calls, so an answer knows when it was asked. */
@@ -45,7 +44,6 @@ export class SandboxPrivateAction {
   readonly instances;
 
   constructor(set: Setter, get: () => SandboxState) {
-    this.#get = get;
     this.entitlement = createReplicaSlice(sandboxEntitlementResource, {
       actionPrefix: 'sandboxEntitlement',
       fetcher: async () => toSandboxEntitlement(await sandboxStorageService.getEntitlement()),
@@ -116,22 +114,6 @@ export class SandboxPrivateAction {
       view: recordLens<SandboxState, SandboxInstanceDirectory>('sandboxInstanceDirectoryMap'),
     });
   }
-
-  /**
-   * Apply a client edit to the copies in memory, remembering any copy it adds.
-   * The copy already exists on the server, so only a listing that started
-   * before the edit can answer without it.
-   */
-  editInstances = (edit: InstanceListEdit) => {
-    const before = new Set(
-      this.#get().sandboxInstancesMap[SANDBOX_SCOPE_ENTRY]?.instances.map(({ id }) => id),
-    );
-    this.instances.update(SANDBOX_SCOPE_ENTRY, edit, { persist: false });
-    const after = this.#get().sandboxInstancesMap[SANDBOX_SCOPE_ENTRY]?.instances ?? [];
-    for (const instance of after)
-      if (!before.has(instance.id))
-        this.#localCopies.set(instance.id, { instance, since: this.#listSeq });
-  };
 
   /**
    * Keep a client-created copy in an answer from a listing that started before

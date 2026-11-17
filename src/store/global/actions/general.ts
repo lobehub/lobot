@@ -77,73 +77,6 @@ class GlobalGeneralActionImpl {
     }
   };
 
-  openTopicInNewWindow = async (agentId: string, topicId: string): Promise<void> => {
-    const popupPath = `/popup/agent/${agentId}/${topicId}`;
-
-    if (isDesktop) {
-      try {
-        const { ensureElectronIpc } = await import('@/utils/electron/ipc');
-
-        const result = await ensureElectronIpc().windows.createMultiInstanceWindow({
-          path: popupPath,
-          templateId: 'topicPopup',
-          uniqueId: `topicPopup_agent_${agentId}_${topicId}`,
-        });
-
-        if (!result.success) {
-          console.error('Failed to open topic in new window:', result.error);
-        }
-      } catch (error) {
-        console.error('Error opening topic in new window:', error);
-      }
-    } else {
-      // Open in popup window for browser
-      const browserUrl = buildWorkspaceAwarePath(
-        AGENT_CHAT_TOPIC_URL(agentId, topicId),
-        getActiveWorkspaceSlug(),
-      );
-      const width = 1200;
-      const height = 800;
-      const left = (window.screen.width - width) / 2;
-      const top = (window.screen.height - height) / 2;
-      const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`;
-      window.open(browserUrl, `agent_${agentId}_topic_${topicId}`, features);
-    }
-  };
-
-  openGroupTopicInNewWindow = async (groupId: string, topicId: string): Promise<void> => {
-    const popupPath = `/popup/group/${groupId}/${topicId}`;
-
-    if (isDesktop) {
-      try {
-        const { ensureElectronIpc } = await import('@/utils/electron/ipc');
-
-        const result = await ensureElectronIpc().windows.createMultiInstanceWindow({
-          path: popupPath,
-          templateId: 'topicPopup',
-          uniqueId: `topicPopup_group_${groupId}_${topicId}`,
-        });
-
-        if (!result.success) {
-          console.error('Failed to open group topic in new window:', result.error);
-        }
-      } catch (error) {
-        console.error('Error opening group topic in new window:', error);
-      }
-    } else {
-      const browserUrl = buildWorkspaceAwarePath(
-        GROUP_CHAT_TOPIC_URL(groupId, topicId),
-        getActiveWorkspaceSlug(),
-      );
-      const width = 1200;
-      const height = 800;
-      const left = (window.screen.width - width) / 2;
-      const top = (window.screen.height - height) / 2;
-      const features = `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`;
-      window.open(browserUrl, `group_${groupId}_topic_${topicId}`, features);
-    }
-  };
-
   switchLocale = (
     locale: LocaleMode,
     { skipBroadcast }: { skipBroadcast?: boolean } = {},
@@ -163,23 +96,6 @@ class GlobalGeneralActionImpl {
         }
       })();
     }
-  };
-
-  updateResourceManagerColumnWidth = (
-    column: 'name' | 'date' | 'size' | 'uploader',
-    width: number,
-  ): void => {
-    const currentWidths = {
-      ...DEFAULT_RESOURCE_MANAGER_COLUMN_WIDTHS,
-      ...this.#get().status.resourceManagerColumnWidths,
-    };
-
-    this.#get().updateSystemStatus({
-      resourceManagerColumnWidths: {
-        ...currentWidths,
-        [column]: width,
-      },
-    });
   };
 
   /**
@@ -210,17 +126,6 @@ class GlobalGeneralActionImpl {
     const nextStatus = { ...status, workspace };
     this.#set({ status: nextStatus }, false, n('setWorkspaceSidebarOverlay'));
     this.#get().statusStorage.saveToLocalStorage(nextStatus);
-  };
-
-  resetSidebarCustomization = (): void => {
-    this.#get().updateSystemStatus(
-      {
-        hiddenSidebarSections: DEFAULT_HIDDEN_SECTIONS,
-        sidebarExpandedKeys: DEFAULT_HOME_SIDEBAR_EXPANDED_KEYS,
-        sidebarItems: DEFAULT_SIDEBAR_ITEMS,
-      },
-      n('resetSidebarCustomization'),
-    );
   };
 
   setNavPanelResizing = (resizing: boolean): void => {

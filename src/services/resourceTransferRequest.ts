@@ -66,17 +66,6 @@ class ResourceTransferRequestService {
     return result.data as TransferManifest;
   };
 
-  getPendingByResource = async (
-    resourceType: TransferRequestResourceType,
-    resourceId: string,
-  ): Promise<PendingTransferRequest | null> => {
-    const result = await lambdaClient.resourceTransferRequest.getPendingByResource.query({
-      resourceId,
-      resourceType,
-    });
-    return (result.data as PendingTransferRequest | null) ?? null;
-  };
-
   /** Live requests where the caller is recipient (to answer) or initiator (to withdraw). */
   listMine = async (): Promise<PendingTransferRequest[]> => {
     const result = await lambdaClient.resourceTransferRequest.listMine.query();

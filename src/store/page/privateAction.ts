@@ -118,20 +118,4 @@ export class PagePrivateAction {
       data ? { ...data, items: data.items.map((item) => (item.id === tempId ? doc : item)) } : data,
     );
   };
-
-  revalidateList = (): Promise<unknown> =>
-    Promise.all([
-      this.list.revalidate(PAGE_LIST_KEY),
-      ...(['mine', 'shared'] satisfies PageSectionScope[]).flatMap((scope) => [
-        this.section.revalidate(scope),
-        this.sectionList.revalidate(scope),
-      ]),
-    ]);
-
-  preHydrateList = (): Promise<boolean> => {
-    const scope = getCacheScope();
-    // The slot may still hold the previous identity's rows; drop them before seeding.
-    this.list.ensureScope(scope);
-    return this.list.hydrate({ pageSize: currentPageSize() }, scope);
-  };
 }

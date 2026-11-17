@@ -100,10 +100,6 @@ export class HomeInputActionImpl {
     this.#get = get;
   }
 
-  clearInputMode = (): void => {
-    this.#set({ inputActiveMode: null }, false, n('clearInputMode'));
-  };
-
   sendAsAgent = async ({
     contextSelections,
     editorData,
@@ -279,83 +275,6 @@ export class HomeInputActionImpl {
     } finally {
       this.#set({ homeInputLoading: false }, false, n('sendAsGroup/end'));
     }
-  };
-
-  sendAsResearch = async (message: string): Promise<void> => {
-    // TODO: Implement DeepResearch mode
-    console.info('sendAsResearch:', message);
-
-    // Clear mode
-    this.#set({ inputActiveMode: null }, false, n('sendAsResearch'));
-  };
-
-  sendAsWrite = async ({
-    contextSelections,
-    editorData,
-    message,
-    pageSelections,
-    workspaceSlug,
-  }: SendMessageWithEditorParams): Promise<string> => {
-    this.#set({ homeInputLoading: true }, false, n('sendAsWrite/start'));
-
-    try {
-      const agentState = getAgentStoreState();
-
-      // 1. Get model/provider config from inbox agent
-      const inboxAgentId = builtinAgentSelectors.inboxAgentId(agentState);
-      const inboxConfig = inboxAgentId
-        ? agentSelectors.getAgentConfigById(inboxAgentId)(agentState)
-        : null;
-      const model = inboxConfig?.model;
-      const provider = inboxConfig?.provider;
-
-      // 2. Create new Document
-      const newDoc = await documentService.createDocument({
-        editorData: '{}',
-        fileType: CUSTOM_DOCUMENT_FILE_TYPE,
-        title: markdownToTxt(message ?? '').slice(0, 50) || 'Untitled',
-      });
-
-      // 3. Navigate to Page
-      stableWorkspaceAwareNavigate(docsPagePath(newDoc.id));
-
-      // 4. Send the initial page-agent message. Hydrate first to avoid the same
-      // race the agent/group flows hit.
-      const pageAgentId = await ensureBuiltinAgentHydrated(BUILTIN_AGENT_SLUGS.pageAgent);
-
-      if (pageAgentId) {
-        await syncBuiltinAgentModel(pageAgentId, model, provider);
-
-        const { sendMessage } = useChatStore.getState();
-        await sendMessage({
-          // Pass the freshly created document id explicitly. The new PageEditor
-          // has not mounted yet, so the page editor runtime singleton may still
-          // be bound to the previously open document — relying on its fallback
-          // here would scope server-side PageAgent tools to the wrong document.
-          context: {
-            agentId: pageAgentId,
-            documentId: newDoc.id,
-            scope: 'page',
-            ...(workspaceSlug ? { workspaceSlug } : {}),
-          },
-          contextSelections,
-          editorData,
-          message,
-          pageSelections,
-        });
-      }
-
-      // 5. Clear mode
-      this.#set({ inputActiveMode: null }, false, n('sendAsWrite/clearMode'));
-
-      return newDoc.id;
-    } finally {
-      this.#set({ homeInputLoading: false }, false, n('sendAsWrite/end'));
-    }
-  };
-
-  setInputActiveMode = (mode: StarterMode): void => {
-    this.#set({ inputActiveMode: mode }, false, n('setInputActiveMode', mode));
   };
 }
 

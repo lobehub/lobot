@@ -45,30 +45,6 @@ const getHistoryCountById =
     return chatConfig.historyCount ?? (DEFAULT_AGENT_CHAT_CONFIG.historyCount as number);
   };
 
-const getSearchModeById = (agentId: string) => (s: AgentStoreState) =>
-  getChatConfigById(agentId)(s).searchMode || 'auto';
-
-const isEnableSearchById = (agentId: string) => (s: AgentStoreState) =>
-  getSearchModeById(agentId)(s) !== 'off';
-
-const getUseModelBuiltinSearchById = (agentId: string) => (s: AgentStoreState) =>
-  getChatConfigById(agentId)(s).useModelBuiltinSearch;
-
-const getSearchFCModelById = (agentId: string) => (s: AgentStoreState) =>
-  getChatConfigById(agentId)(s).searchFCModel || DEFAULT_AGENT_SEARCH_FC_MODEL;
-
-const getMemoryToolConfigById = (agentId: string) => (s: AgentStoreState) =>
-  getChatConfigById(agentId)(s).memory;
-
-const isMemoryToolEnabledById = (agentId: string) => (s: AgentStoreState) =>
-  getChatConfigById(agentId)(s).memory?.enabled ?? false;
-
-const getMemoryToolEffortById = (agentId: string) => (s: AgentStoreState) =>
-  getChatConfigById(agentId)(s).memory?.effort ?? 'medium';
-
-const getRuntimeEnvConfigById = (agentId: string) => (s: AgentStoreState) =>
-  getChatConfigById(agentId)(s).runtimeEnv;
-
 const isLocalSystemEnabledById = (agentId: string) => (s: AgentStoreState) =>
   getRuntimeModeById(agentId)(s) === 'local';
 
@@ -99,11 +75,6 @@ const getRuntimeModeById =
   (s: AgentStoreState): RuntimeEnvMode =>
     executionTargetToRuntimeMode(getExecutionTargetById(agentId)(s));
 
-const getSkillActivateModeById =
-  (agentId: string) =>
-  (s: AgentStoreState): 'auto' | 'manual' =>
-    getChatConfigById(agentId)(s).skillActivateMode ?? 'auto';
-
 /**
  * Resolve the agent's tool mode via the shared `resolveToolMode` helper, so
  * client and server agree on what counts as chat mode.
@@ -120,18 +91,9 @@ export const chatConfigByIdSelectors = {
   getChatConfigById,
   getEnableHistoryCountById,
   getHistoryCountById,
-  getRuntimeEnvConfigById,
-  getMemoryToolConfigById,
-  getMemoryToolEffortById,
   getRuntimeModeById,
-  getSearchFCModelById,
-  getSearchModeById,
-  getSkillActivateModeById,
   getToolModeById,
-  getUseModelBuiltinSearchById,
   isChatModeById,
-  isEnableSearchById,
   getExecutionTargetById,
   isLocalSystemEnabledById,
-  isMemoryToolEnabledById,
 };

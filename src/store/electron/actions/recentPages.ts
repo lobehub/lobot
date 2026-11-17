@@ -94,14 +94,6 @@ class RecentPagesActionImpl {
     this.#set(this.#withActiveRecent(newRecent), false, 'addRecentPage');
   };
 
-  clearRecentPages = (): void => {
-    this.#set(this.#withActiveRecent([]), false, 'clearRecentPages');
-  };
-
-  isPagePinned = (id: string): boolean => {
-    return this.#get().pinnedPages.some((p) => p.id === id);
-  };
-
   loadPinnedPages = (url?: string): void => {
     this.#loadScope(url ? resolveTabScope(url) : this.#get().activeTabScope, true);
   };
@@ -137,15 +129,6 @@ class RecentPagesActionImpl {
       'pinPage',
     );
     this.#savePinned(newPinned);
-  };
-
-  removeRecentPage = (id: string): void => {
-    const { recentPages } = this.#get();
-    this.#set(
-      this.#withActiveRecent(recentPages.filter((p) => p.id !== id)),
-      false,
-      'removeRecentPage',
-    );
   };
 
   unpinPage = (id: string): void => {

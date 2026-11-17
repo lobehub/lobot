@@ -69,21 +69,6 @@ const deserializeLocalFilePreview = (preview: DeviceLocalFilePreview): LocalFile
 };
 
 /**
- * Refuse to trash / rename / move / duplicate the workspace root itself: it
- * would pull the whole tree out from under the UI (and a duplicate would land
- * outside the workspace). Checked here for both transports so the local IPC
- * path gets the same guard the device gateway enforces server-side.
- */
-const assertNotWorkspaceRoot = (workingDirectory: string, paths: string[]): void => {
-  if (!workingDirectory) return;
-  for (const target of paths) {
-    if (isAbsolute(target) && relative(resolve(workingDirectory), resolve(target)) === '') {
-      throw new Error(`This operation is not allowed on the workspace root: ${target}`);
-    }
-  }
-};
-
-/**
  * Revalidate everything the Files tree reads for a working directory — the
  * file index and the git dirty-file overlay — after a file operation changed
  * it. There is no file watcher, so without this a mutation only shows up on
@@ -237,25 +222,6 @@ class ProjectFileService {
       : localFileService.searchProjectFiles({ changedOnly, excludeIgnored, limit, query, scope });
   }
 
-  /**
-   * Children of one directory the index collapsed (a fully git-ignored folder),
-   * read on demand when the user expands that row in the tree.
-   */
-  async listProjectDirectory({
-    deviceId,
-    relativePath,
-    root,
-  }: {
-    deviceId?: string;
-    relativePath: string;
-    root: string;
-  }): Promise<ProjectDirectoryListResult | undefined> {
-    return deviceId
-      ? ((await lambdaClient.device.listProjectDirectory.query({ deviceId, relativePath, root })) ??
-          undefined)
-      : localFileService.listProjectDirectory({ relativePath, root });
-  }
-
   /** File preview payload for a file in a project working directory. */
   async getLocalFilePreview({
     deviceId,
@@ -284,108 +250,6 @@ class ProjectFileService {
   }
 
   /**
-   * Raw bytes for a file in a project working directory. Only the local desktop
-   * transport can serve bytes today — remote devices have no byte-read RPC yet,
-   * so device-backed calls resolve to `undefined`.
-   */
-  async readProjectFileBytes({
-    deviceId,
-    path,
-    workingDirectory,
-  }: {
-    deviceId?: string;
-    path: string;
-    workingDirectory: string;
-  }): Promise<{ bytes: Uint8Array; contentType: string } | undefined> {
-    if (deviceId || !isDesktop) return undefined;
-    return localFileService.readLocalFileBytes({ path, workingDirectory });
-  }
-
-  async readExternalAssetForPublish({
-    deviceId,
-    path,
-    workingDirectory,
-  }: {
-    deviceId?: string;
-    path: string;
-    workingDirectory: string;
-  }): Promise<{ bytes: Uint8Array; contentType: string } | undefined> {
-    if (!deviceId) {
-      return localFileService.readExternalAssetForPublish({ path, workingDirectory });
-    }
-
-    const result = await lambdaClient.device.readExternalAssetForPublish.query({
-      deviceId,
-      path,
-      workingDirectory,
-    });
-    if (!result.success || result.base64 === undefined || !result.contentType) return;
-
-    return {
-      bytes: Uint8Array.from(globalThis.atob(result.base64), (char) => char.charCodeAt(0)),
-      contentType: result.contentType,
-    };
-  }
-
-  async copyAssetForPublish({
-    deviceId,
-    from,
-    to,
-    workingDirectory,
-  }: {
-    deviceId?: string;
-    from: string;
-    to: string;
-    workingDirectory: string;
-  }): Promise<{ error?: string; success: boolean }> {
-    return deviceId
-      ? lambdaClient.device.copyAssetForPublish.mutate({ deviceId, from, to, workingDirectory })
-      : localFileService.copyAssetForPublish({ from, to, workingDirectory });
-  }
-
-  /**
-   * Move one or more files/folders within a project working directory. Batched:
-   * each item succeeds or fails independently.
-   */
-  async moveProjectFiles({
-    deviceId,
-    items,
-    workingDirectory,
-  }: {
-    deviceId?: string;
-    items: MoveLocalFileParams[];
-    workingDirectory: string;
-  }): Promise<LocalMoveFilesResultItem[]> {
-    assertNotWorkspaceRoot(
-      workingDirectory,
-      items.map((item) => item.oldPath),
-    );
-
-    return deviceId
-      ? lambdaClient.device.moveProjectFiles.mutate({ deviceId, items, workingDirectory })
-      : localFileService.moveLocalFiles({ items });
-  }
-
-  /** Rename a single file/folder in a project working directory. */
-  async renameProjectFile({
-    deviceId,
-    newName,
-    path,
-    workingDirectory,
-  }: {
-    deviceId?: string;
-    newName: string;
-    path: string;
-    workingDirectory: string;
-  }): Promise<RenameLocalFileResult> {
-    assertNotWorkspaceRoot(workingDirectory, [path]);
-
-    return deviceId
-      ? lambdaClient.device.renameProjectFile.mutate({ deviceId, newName, path, workingDirectory })
-      : localFileService.renameLocalFile({ newName, path });
-  }
-
-  /**
    * Save edited content back to a file in a project working directory. The
    * remote RPC and local IPC both report fs failures (permission denied, etc.)
    * as `{ success: false, error }` — callers must inspect `success` before
@@ -405,86 +269,6 @@ class ProjectFileService {
     return deviceId
       ? lambdaClient.device.writeProjectFile.mutate({ content, deviceId, path, workingDirectory })
       : localFileService.writeFile({ content, path });
-  }
-
-  /**
-   * Create a new file in a project working directory (empty unless `content`
-   * is given). Never overwrites: an existing entry resolves `{ success: false }`.
-   */
-  async createProjectFile({
-    content,
-    deviceId,
-    path,
-    workingDirectory,
-  }: {
-    content?: string;
-    deviceId?: string;
-    path: string;
-    workingDirectory: string;
-  }): Promise<CreateLocalEntryResult> {
-    return deviceId
-      ? lambdaClient.device.createProjectFile.mutate({ content, deviceId, path, workingDirectory })
-      : localFileService.createLocalFile({ content, path });
-  }
-
-  /** Create a new folder in a project working directory. Fails when the path is taken. */
-  async createProjectDirectory({
-    deviceId,
-    path,
-    workingDirectory,
-  }: {
-    deviceId?: string;
-    path: string;
-    workingDirectory: string;
-  }): Promise<CreateLocalEntryResult> {
-    return deviceId
-      ? lambdaClient.device.createProjectDirectory.mutate({ deviceId, path, workingDirectory })
-      : localFileService.createLocalDirectory({ path });
-  }
-
-  /**
-   * Copy files/folders within a project working directory. An item without
-   * `targetPath` is duplicated next to its source (`name copy.ext`). Never
-   * overwrites; each item succeeds or fails independently.
-   */
-  async copyProjectFiles({
-    deviceId,
-    items,
-    workingDirectory,
-  }: {
-    deviceId?: string;
-    items: CopyLocalFileItem[];
-    workingDirectory: string;
-  }): Promise<LocalCopyFilesResultItem[]> {
-    assertNotWorkspaceRoot(
-      workingDirectory,
-      items.map((item) => item.sourcePath),
-    );
-
-    return deviceId
-      ? lambdaClient.device.copyProjectFiles.mutate({ deviceId, items, workingDirectory })
-      : localFileService.copyLocalFiles({ items });
-  }
-
-  /**
-   * Move files/folders in a project working directory to the trash. Reports
-   * each path. A remote device without a trash (the CLI daemon) rejects the
-   * whole call rather than deleting permanently.
-   */
-  async trashProjectFiles({
-    deviceId,
-    paths,
-    workingDirectory,
-  }: {
-    deviceId?: string;
-    paths: string[];
-    workingDirectory: string;
-  }): Promise<TrashLocalFilesResult> {
-    assertNotWorkspaceRoot(workingDirectory, paths);
-
-    return deviceId
-      ? lambdaClient.device.trashProjectFiles.mutate({ deviceId, paths, workingDirectory })
-      : localFileService.trashLocalFiles({ paths });
   }
 }
 

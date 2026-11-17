@@ -205,72 +205,8 @@ class StatsActionImpl {
     });
   }
 
-  useFetchTotal = (kind: StatsTotalKind): ReplicaSyncResult =>
-    this.#total.useSync(kind, SYNC_OPTIONS);
-
   useFetchCount = (kind: StatsCountKind): ReplicaSyncResult =>
     this.#count.useSync(kind, SYNC_OPTIONS);
-
-  useFetchHeatmap = (kind: StatsHeatmapKind): ReplicaSyncResult =>
-    this.#heatmap.useSync(kind, SYNC_OPTIONS);
-
-  useFetchRank = (kind: StatsRankKind): ReplicaSyncResult => this.#rank.useSync(kind, SYNC_OPTIONS);
-
-  useFetchRegistration = (): ReplicaSyncResult =>
-    this.#registration.useSync(SINGLE_KEY, SYNC_OPTIONS);
-
-  useFetchMaxTaskDuration = (): ReplicaSyncResult =>
-    this.#maxTaskDuration.useSync(SINGLE_KEY, SYNC_OPTIONS);
-
-  /** `month` is `YYYY-MM`; omitted reads the current month. */
-  useFetchUsageByDay = (month?: string): ReplicaSyncResult =>
-    this.#usageByDay.useSync(usageMonthKey(month), SYNC_OPTIONS);
-
-  useFetchUsageLogs = (month?: string): ReplicaSyncResult =>
-    this.#usageLogs.useSync(usageMonthKey(month), SYNC_OPTIONS);
-
-  useFetchAgentUsage = (params: AgentUsageParams | null): ReplicaSyncResult =>
-    this.#agentUsage.useSync(params, SYNC_OPTIONS);
-
-  /**
-   * Seed the persisted Settings → Stats entries before the route commits (see
-   * `statsPageLoader`): `useSync` only hydrates after mount, which would leave
-   * the cards on their loading state for the IndexedDB read.
-   */
-  preHydrateStatsPage = (): Promise<unknown> => {
-    const scope = cacheScope.get();
-    // The slots may still hold the previous identity's rows; drop them before seeding.
-    for (const slice of [
-      this.#total,
-      this.#heatmap,
-      this.#rank,
-      this.#registration,
-      this.#maxTaskDuration,
-      this.#usageByDay,
-      this.#usageLogs,
-    ]) {
-      slice.ensureScope(scope);
-    }
-
-    return Promise.all([
-      ...STATS_TOTAL_KINDS.map((kind) => this.#total.hydrate(kind, scope)),
-      // The heatmap opens on its token tab.
-      this.#heatmap.hydrate('tokens', scope),
-      ...STATS_RANK_KINDS.map((kind) => this.#rank.hydrate(kind, scope)),
-      this.#registration.hydrate(SINGLE_KEY, scope),
-      this.#maxTaskDuration.hydrate(SINGLE_KEY, scope),
-      // The usage section opens on the current month.
-      this.#usageByDay.hydrate(usageMonthKey(), scope),
-      this.#usageLogs.hydrate(usageMonthKey(), scope),
-    ]);
-  };
-
-  /** Same as `preHydrateStatsPage`, for an agent's usage tab (`agentUsageLoader`). */
-  preHydrateAgentUsage = (params: AgentUsageParams): Promise<boolean> => {
-    const scope = cacheScope.get();
-    this.#agentUsage.ensureScope(scope);
-    return this.#agentUsage.hydrate(params, scope);
-  };
 
   reset = (): void => {
     // `clear()` drops in-flight reads of the previous data context and this

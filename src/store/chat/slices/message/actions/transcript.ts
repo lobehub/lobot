@@ -148,20 +148,6 @@ export class MessageTranscriptActionImpl {
   };
 
   /**
-   * Seed a conversation's persisted transcript before its route commits, so a
-   * topic opened before paints from local data instead of a skeleton. Rows
-   * already in memory (this session's, or streamed) are newer and stay.
-   */
-  preHydrateMessages = async (context: ConversationContext): Promise<boolean> => {
-    const { slice } = this.#transcript;
-    const scope = conversationMessagesResource.scope.get();
-    // The slot may still hold the previous identity's rows (a session that
-    // ended before the identity round-trip landed); drop them before seeding.
-    slice.ensureScope(scope);
-    return slice.hydrate(context, scope);
-  };
-
-  /**
    * Keep a conversation's transcript in sync while a view shows it.
    *
    * Main topics also watch parked intervention runs: an answer given on

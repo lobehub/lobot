@@ -34,23 +34,9 @@ class ProjectFileActionImpl {
     this.#private = privateAction;
   }
 
-  /** Remember where a conversation's Files tab settled, for the next cold start. */
-  rememberFilesLocation = (contextKey: string, location: FilesLocation): void => {
-    this.#private.filesLocation.update(contextKey, () => location);
-  };
-
   reset = (): void => {
     this.#set(initialProjectFileState, false, n('reset'));
   };
-
-  /** Reads the remembered location; there is nothing to fetch. */
-  useFetchFilesLocation = (params: FilesLocationParams | null): ReplicaSyncResult =>
-    this.#private.filesLocation.useSync(params);
-
-  useFetchGitWorkingTreeFiles = (
-    params: GitWorkingTreeFilesParams | null,
-    options?: SyncOptions<GitWorkingTreeFiles | null | undefined, GitWorkingTreeFiles>,
-  ): ReplicaSyncResult => this.#private.gitWorkingTreeFiles.useSync(params, options);
 
   useFetchProjectIndex = (
     params: ProjectIndexParams | null,

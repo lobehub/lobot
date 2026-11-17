@@ -84,18 +84,6 @@ type ResourceStatusItem = Pick<
   | 'id'
 >;
 
-const mapStatusToResourceItem = (item: KnowledgeItemStatus): ResourceStatusItem => {
-  return {
-    chunkCount: item.chunkCount,
-    chunkingError: item.chunkingError,
-    chunkingStatus: item.chunkingStatus,
-    embeddingError: item.embeddingError,
-    embeddingStatus: item.embeddingStatus,
-    finishEmbedding: item.finishEmbedding,
-    id: item.id,
-  };
-};
-
 /**
  * ResourceService - Unified service for both files and documents
  * Provides a thin wrapper over FileService and DocumentService
@@ -162,121 +150,6 @@ export class ResourceService {
     return item ? mapToResourceItem(item) : undefined;
   }
 
-  async getKnowledgeItemStatusesByIds(ids: string[]): Promise<ResourceStatusItem[]> {
-    const items = await fileService.getKnowledgeItemStatusesByIds(ids);
-    return items.map(mapStatusToResourceItem);
-  }
-
-  async getResourceStatusesByIds(ids: string[]): Promise<ResourceStatusItem[]> {
-    return this.getKnowledgeItemStatusesByIds(ids);
-  }
-
-  /**
-   * Create a new resource (file or document)
-   */
-  async createResource(params: CreateResourceParams): Promise<ResourceItem> {
-    if (params.sourceType === 'file') {
-      // Create file
-      const result = await fileService.createFile(
-        {
-          fileType: params.fileType,
-          name: params.name,
-          parentId: params.parentId,
-          size: params.size,
-          url: params.url,
-        },
-        params.knowledgeBaseId,
-      );
-
-      // Fetch the created file to get full details
-      const created = await fileService.getKnowledgeItem(result.id);
-      if (!created) throw new Error('Failed to fetch created file');
-
-      return mapToResourceItem(created);
-    } else {
-      // Create document
-      const documentParams: CreateDocumentParams = {
-        content: params.content || '',
-        editorData: JSON.stringify(params.editorData || {}),
-        fileType: params.fileType,
-        knowledgeBaseId: params.knowledgeBaseId,
-        metadata: params.metadata,
-        parentId: params.parentId,
-        slug: params.slug,
-        title: params.title,
-      };
-
-      const created = await documentService.createDocument(documentParams);
-
-      // Map to ResourceItem
-      return {
-        content: created.content,
-        createdAt: created.createdAt ? new Date(created.createdAt) : new Date(),
-        editorData:
-          typeof created.editorData === 'string'
-            ? JSON.parse(created.editorData)
-            : created.editorData,
-        fileType: created.fileType || CUSTOM_DOCUMENT_FILE_TYPE,
-        id: created.id,
-        metadata: created.metadata || undefined,
-        name: created.title || 'Untitled',
-        parentId: created.parentId,
-        size: created.totalCharCount || 0,
-        slug: created.slug || undefined,
-        sourceType: DERIVED_DOCUMENT_SOURCE_TYPE,
-        title: created.title || undefined,
-        updatedAt: created.updatedAt ? new Date(created.updatedAt) : new Date(),
-        url: created.source || '',
-      };
-    }
-  }
-
-  /**
-   * Update a resource
-   */
-  async updateResource(id: string, updates: UpdateResourceParams): Promise<ResourceItem> {
-    // Check if this is a file or document by fetching it first
-    const existing = await this.getResource(id);
-    if (!existing) throw new Error('Resource not found');
-
-    if (existing.sourceType === 'file') {
-      await fileService.updateFile(id, {
-        metadata: updates.metadata,
-        name: updates.name ?? updates.title,
-        parentId: updates.parentId !== undefined ? updates.parentId : undefined,
-      });
-    } else {
-      await documentService.updateDocument({
-        content: updates.content,
-        editorData: updates.editorData ? JSON.stringify(updates.editorData) : undefined,
-        id,
-        metadata: updates.metadata,
-        parentId: updates.parentId !== undefined ? updates.parentId : undefined,
-        title: updates.title || updates.name,
-      });
-    }
-
-    const updated = await fileService.getKnowledgeItem(id);
-    if (!updated) throw new Error('Failed to fetch updated resource');
-
-    return mapToResourceItem(updated);
-  }
-
-  /**
-   * Delete a resource
-   */
-  async deleteResource(id: string): Promise<void> {
-    // Check if this is a file or document
-    const existing = await this.getResource(id);
-    if (!existing) return; // Already deleted
-
-    if (existing.sourceType === 'file') {
-      await fileService.removeFile(id);
-    } else {
-      await documentService.deleteDocument(id);
-    }
-  }
-
   /**
    * Batch delete resources
    */
@@ -303,37 +176,6 @@ export class ResourceService {
       fileIds.length > 0 ? fileService.removeFiles(fileIds) : Promise.resolve(),
       documentIds.length > 0 ? documentService.deleteDocuments(documentIds) : Promise.resolve(),
     ]);
-  }
-
-  /**
-   * Move a resource to a different parent folder.
-   *
-   * With the caller's copy of the row (`known`), the move is a single request:
-   * the row already tells us whether it is a file or a document, and a move
-   * changes nothing else, so the result is composed locally instead of being
-   * fetched back. `updateResource`'s look-up → update → re-fetch chain is three
-   * round-trips, and the explorer's "moved" toast waits on this promise.
-   */
-  async moveResource(
-    id: string,
-    parentId: string | null,
-    known?: ResourceItem,
-  ): Promise<ResourceItem> {
-    if (!known) return this.updateResource(id, { parentId });
-
-    // Route by id, not by `sourceType`: a file that backs a derived page is
-    // listed with `sourceType: 'file'` but addressed by the page's `docs_` id
-    // (see the knowledge repository's `COALESCE(d.id, f.id)`), and only the
-    // document endpoint knows that id — the same rule `getKnowledgeItem` uses.
-    if (id.startsWith('docs_')) {
-      await documentService.updateDocument({ id, parentId });
-    } else {
-      await fileService.updateFile(id, { parentId });
-    }
-
-    const { _optimistic, ...rest } = known;
-    void _optimistic;
-    return { ...rest, parentId, updatedAt: new Date() };
   }
 }
 

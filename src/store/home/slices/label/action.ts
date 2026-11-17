@@ -82,12 +82,6 @@ class LabelActionImpl {
     await this.#labels.revalidate();
   };
 
-  removeAgentLabel = async (id: string): Promise<void> => {
-    await agentLabelService.removeLabel(id);
-    // deleting a label also drops its assignments, so the agent list changes too
-    await Promise.all([this.refreshAgentLabels(), this.#get().refreshAgentList()]);
-  };
-
   /**
    * Toggle one label on an agent. Optimistically patches the same way
    * `setAgentLabels` does, but the server call carries only the delta so a
@@ -149,20 +143,6 @@ class LabelActionImpl {
       false,
       n('patchAgentLabels/optimistic'),
     );
-  };
-
-  setAgentLabels = async (agentId: string, labelIds: string[]): Promise<void> => {
-    this.#patchAgentLabels(agentId, labelIds);
-
-    try {
-      await agentLabelService.setAgentLabels(agentId, labelIds);
-    } catch (error) {
-      // Roll back to server truth on failure.
-      await this.#get().refreshAgentList();
-      throw error;
-    }
-
-    await Promise.all([this.refreshAgentLabels(), this.#get().refreshAgentList()]);
   };
 
   updateAgentLabel = async (

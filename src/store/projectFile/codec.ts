@@ -155,9 +155,6 @@ const keepShallowest = (entries: ProjectFileIndexEntry[], max: number) => {
  */
 type PersistedProjectIndex = ProjectFileIndexResult & { persistedPartial?: true };
 
-export const isPersistedPartialIndex = (data: ProjectFileIndexResult | undefined): boolean =>
-  !!(data as PersistedProjectIndex | undefined)?.persistedPartial;
-
 export const encodeProjectIndex = (
   data: PersistedProjectIndex,
   maxEntries = PROJECT_INDEX_PERSIST_MAX_ENTRIES,

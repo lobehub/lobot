@@ -11,11 +11,7 @@ const access = (ref: ResourceRef | null) => (s: ResourcePermissionState) =>
 const sessionCheck = (ref: ResourceRef | null, scope: string) => (s: ResourcePermissionState) =>
   ref ? s.accessSessionMap[accessSessionKey(scope, resourceKey(ref))] : undefined;
 
-const collaborators = (ref: ResourceRef | null) => (s: ResourcePermissionState) =>
-  ref ? s.collaboratorsMap[resourceKey(ref)] : undefined;
-
 export const resourcePermissionSelectors = {
   access,
-  collaborators,
   sessionCheck,
 };

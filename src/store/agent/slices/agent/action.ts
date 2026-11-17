@@ -1,11 +1,11 @@
 import { isDesktop, randomAgentName } from '@lobechat/const';
 import { getHeterogeneousTypeLabel } from '@lobechat/heterogeneous-agents';
+import { toast } from '@lobehub/ui';
 import {
   applyWorkingDirByDevicePatch,
   isChatGroupSessionId,
   type LobeAgentAgencyConfig,
 } from '@lobot/types';
-import { toast } from '@lobehub/ui';
 import isEqual from 'fast-deep-equal';
 import { t } from 'i18next';
 import { produce } from 'immer';
@@ -130,9 +130,6 @@ interface AgentConfigSyncResult extends ReplicaSyncResult {
 
 const EMPTY_PARAMS = {} as Record<string, never>;
 
-const isSlugConfirmed = (state: AgentStore, slug: string) =>
-  !!state.agentSlugIdMap[slug] && state.agentSlugIdReplica.entries[slug]?.source === 'server';
-
 /**
  * Several surfaces read the same one-entry replica (every open conversation, the
  * profile editor and the model bar): one request answers all of them, while a
@@ -163,15 +160,11 @@ export const createAgentSlice = (set: Setter, get: () => AgentStore, _api?: unkn
 class AgentSliceActionImpl {
   readonly #get: () => AgentStore;
   readonly #set: Setter;
-  readonly #pendingAgentDocuments = new Map<string, Promise<AgentContextDocument[] | undefined>>();
   readonly #updateAgentConfigControllers = new Map<string, AbortController>();
   readonly #updateAgentMetaControllers = new Map<string, AbortController>();
   readonly #config;
   readonly #slugId;
   readonly #available;
-  readonly #heteroCapability;
-  /** The refresh the chat context is waiting on, shared by concurrent sends of one scope. */
-  #availableAgentsRefresh?: { promise: Promise<AvailableAgentItem[]>; scope: string };
   /** Bumped by every invalidation, so a read started before it cannot confirm the list. */
   #availableAgentsGeneration = 0;
   /**
@@ -234,7 +227,7 @@ class AgentSliceActionImpl {
       stateKey: 'availableAgentsReplica',
       view: singleValueLens<AvailableAgentItem[]>('availableAgents', AVAILABLE_AGENTS_KEY),
     });
-    this.#heteroCapability = createReplicaSlice(heteroServerDefaultCapabilityResource, {
+    createReplicaSlice(heteroServerDefaultCapabilityResource, {
       actionPrefix: 'heteroServerDefaultCapability',
       fetcher: () => aiAgentService.getServerDefaultHeterogeneousCapability(),
       get,
@@ -272,37 +265,6 @@ class AgentSliceActionImpl {
     const controller = new AbortController();
     controllers.set(agentId, controller);
     return controller;
-  };
-
-  #syncAgentDocuments = (agentId: string, documents: AgentContextDocument[]) => {
-    this.#set(
-      (state) => ({
-        agentDocumentsMap: {
-          ...state.agentDocumentsMap,
-          [agentId]: documents,
-        },
-      }),
-      false,
-      'syncAgentDocuments',
-    );
-  };
-
-  appendStreamingSystemRole = (agentId: string, generation: number, chunk: string): void => {
-    const {
-      streamingSystemRole,
-      streamingSystemRoleAgentId,
-      streamingSystemRoleGeneration,
-      streamingSystemRoleInProgress,
-    } = this.#get();
-    if (
-      !streamingSystemRoleInProgress ||
-      streamingSystemRoleAgentId !== agentId ||
-      streamingSystemRoleGeneration !== generation
-    )
-      return;
-
-    const currentContent = streamingSystemRole || '';
-    this.#set({ streamingSystemRole: currentContent + chunk }, false, 'appendStreamingSystemRole');
   };
 
   createAgent = async (params: CreateAgentParams): Promise<CreateAgentResult> => {
@@ -349,25 +311,6 @@ class AgentSliceActionImpl {
     return result;
   };
 
-  finishStreamingSystemRole = async (agentId: string, generation: number): Promise<void> => {
-    const { streamingSystemRoleAgentId, streamingSystemRoleGeneration } = this.#get();
-    if (streamingSystemRoleAgentId !== agentId || streamingSystemRoleGeneration !== generation)
-      return;
-
-    // Persistence is handled by the invocation-scoped AgentManagerRuntime.
-    // This singleton state only owns the visible typewriter animation, so a
-    // superseded invocation must never clear the newer owner's buffer.
-    this.#set(
-      {
-        streamingSystemRole: undefined,
-        streamingSystemRoleAgentId: undefined,
-        streamingSystemRoleInProgress: false,
-      },
-      false,
-      'finishStreamingSystemRole',
-    );
-  };
-
   setActiveAgentId = (agentId?: string): void => {
     this.#set(
       (state) => (state.activeAgentId === agentId ? state : { activeAgentId: agentId }),
@@ -386,65 +329,8 @@ class AgentSliceActionImpl {
     );
   };
 
-  startStreamingSystemRole = (agentId: string): number => {
-    const generation = (this.#get().streamingSystemRoleGeneration ?? 0) + 1;
-    this.#set(
-      {
-        streamingSystemRole: '',
-        streamingSystemRoleAgentId: agentId,
-        streamingSystemRoleGeneration: generation,
-        streamingSystemRoleInProgress: true,
-      },
-      false,
-      'startStreamingSystemRole',
-    );
-    return generation;
-  };
-
   toggleAgentPinned = (): void => {
     this.#set((state) => ({ isAgentPinned: !state.isAgentPinned }), false, 'toggleAgentPinned');
-  };
-
-  transferAgent = async (
-    agentId: string,
-    targetWorkspaceId: string | null,
-    targetVisibility?: 'private' | 'public',
-  ): Promise<{ agentId: string; slug: string | null; transferJobId: string | null }> => {
-    return agentService.transferAgent(agentId, targetWorkspaceId, targetVisibility);
-  };
-
-  toggleAgentPlugin = async (pluginId: string, state?: boolean): Promise<void> => {
-    const { activeAgentId, agentMap, updateAgentConfig } = this.#get();
-    if (!activeAgentId) return;
-
-    const currentPlugins = (agentMap[activeAgentId]?.plugins as string[]) || [];
-    const hasPlugin = currentPlugins.includes(pluginId);
-
-    // Determine new state
-    const shouldEnable = state !== undefined ? state : !hasPlugin;
-
-    let newPlugins: string[];
-    if (shouldEnable && !hasPlugin) {
-      newPlugins = [...currentPlugins, pluginId];
-    } else if (!shouldEnable && hasPlugin) {
-      newPlugins = currentPlugins.filter((id) => id !== pluginId);
-    } else {
-      // No change needed
-      return;
-    }
-
-    await updateAgentConfig({ plugins: newPlugins });
-  };
-
-  updateAgentChatConfig = async (
-    config: Partial<LobeAgentChatConfig>,
-    options?: AgentConfigUpdateOptions,
-  ): Promise<void> => {
-    const { activeAgentId } = this.#get();
-
-    if (!activeAgentId) return;
-
-    await this.#get().updateAgentConfig({ chatConfig: config }, options);
   };
 
   updateAgentChatConfigById = async (
@@ -516,14 +402,6 @@ class AgentSliceActionImpl {
     }
   };
 
-  updateAgentMeta = async (meta: AgentMetaUpdate): Promise<void> => {
-    const { activeAgentId } = this.#get();
-
-    if (!activeAgentId) return;
-
-    await this.#get().updateAgentMetaById(activeAgentId, meta);
-  };
-
   updateAgentMetaById = async (
     agentId: string,
     meta: AgentMetaUpdate,
@@ -543,14 +421,6 @@ class AgentSliceActionImpl {
         this.#updateAgentMetaControllers.delete(agentId);
       }
     }
-  };
-
-  updateLoadingState = (key: keyof LoadingState, value: boolean): void => {
-    this.#set(
-      { loadingState: { ...this.#get().loadingState, [key]: value } },
-      false,
-      'updateLoadingState',
-    );
   };
 
   updateSaveStatus = (status: SaveStatus): void => {
@@ -602,15 +472,6 @@ class AgentSliceActionImpl {
   };
 
   /**
-   * Fetch orchestration only; read the value through
-   * `agentSelectors.heteroServerDefaultCapability`.
-   */
-  useFetchServerDefaultHeterogeneousCapability = (enabled: boolean): ReplicaSyncResult =>
-    this.#heteroCapability.useSync(enabled ? EMPTY_PARAMS : null, {
-      dedupingInterval: SHARED_READ_DEDUPING_INTERVAL,
-    });
-
-  /**
    * Resolve a user-chosen `/agent/<slug>` to its agent id. Fetch orchestration
    * only: read the id through `agentSelectors.getAgentIdBySlug` (the persisted
    * copy paints first) and wait for `agentSelectors.isAgentSlugConfirmed`
@@ -618,18 +479,6 @@ class AgentSliceActionImpl {
    */
   useResolveAgentSlug = (slug: string | null | undefined): ReplicaSyncResult =>
     this.#slugId.useSync(slug ? { slug } : null, { revalidateOnFocus: false });
-
-  /**
-   * Seed a slug's persisted `slug → id` from the route loader, before the
-   * route commits, so the first frame already knows which agent it shows.
-   */
-  preHydrateAgentSlug = async (slug: string): Promise<string | undefined> => {
-    const scope = cacheScope.get();
-    this.#slugId.ensureScope(scope);
-    await this.#slugId.hydrate({ slug }, scope);
-
-    return this.#get().agentSlugIdMap[slug];
-  };
 
   /**
    * An agent's slug was renamed: the old slug no longer names it and the new
@@ -659,30 +508,6 @@ class AgentSliceActionImpl {
     for (const staleSlug of staleSlugs) void this.#slugId.remove(staleSlug, scope);
     // Dropped by the engine when `scope` is no longer the active one.
     this.#slugId.replace({ slug }, agentId, scope);
-  };
-
-  /**
-   * The server's answer for a slug, joining the route's lookup when it is in
-   * flight. Resolves `undefined` when no visible agent owns the slug.
-   */
-  confirmAgentSlugTarget = async (slug: string): Promise<string | undefined> => {
-    if (isSlugConfirmed(this.#get(), slug)) return this.#get().agentSlugIdMap[slug];
-    const { data } = await this.#slugId.fetch({ slug });
-    return data ?? undefined;
-  };
-
-  /**
-   * Re-trigger the agent config fetch after a failure. Clears the recorded
-   * error first so consumers fall back to the loading skeleton, then
-   * revalidates this agent's sync in the active scope.
-   */
-  retryAgentConfigFetch = async (agentId?: string): Promise<void> => {
-    const id = agentId ?? this.#get().activeAgentId;
-    if (!id) return;
-
-    this.#clearAgentConfigError(id);
-
-    await this.#config.revalidate(id);
   };
 
   /**
@@ -767,85 +592,8 @@ class AgentSliceActionImpl {
   invalidateAvailableAgents = (): void => {
     this.#availableAgentsGeneration += 1;
     this.#staleAvailableAgentScopes.set(cacheScope.get(), this.#availableAgentsGeneration);
-    // A read already in flight may hold the pre-change list: later callers start anew.
-    this.#availableAgentsRefresh = undefined;
     this.#set({ availableAgentsStale: true }, false, 'invalidateAvailableAgents');
     void this.#available.revalidate(AVAILABLE_AGENTS_KEY);
-  };
-
-  /**
-   * The list the chat context delegates to. The local copy answers at once;
-   * after an invalidation (or with nothing local) it is fetched fresh, joining
-   * a request already in flight when there is no invalidation to honour.
-   */
-  getAvailableAgents = async (): Promise<AvailableAgentItem[]> => {
-    const scope = cacheScope.get();
-    const current = this.#get().availableAgents;
-    const stale = this.#staleAvailableAgentScopes.has(scope);
-    if (current && !stale) return current;
-
-    // Concurrent sends of one identity share one refresh; the list stays stale
-    // until it lands. A send of another identity never joins it: its raw answer
-    // would hand that identity's agents to this one.
-    let refresh = this.#availableAgentsRefresh;
-    if (refresh?.scope !== scope) {
-      const generation = this.#availableAgentsGeneration;
-      const promise = this.#available
-        .fetch(EMPTY_PARAMS, { fresh: stale, scope })
-        .then(({ data }) => {
-          // Only a read started after this identity's latest change confirms
-          // its list; the store flag mirrors the identity still active.
-          const changedAt = this.#staleAvailableAgentScopes.get(scope);
-          if (changedAt !== undefined && changedAt <= generation)
-            this.#staleAvailableAgentScopes.delete(scope);
-          const activeStale = this.#staleAvailableAgentScopes.has(cacheScope.get());
-          if (scope === cacheScope.get() && this.#get().availableAgentsStale !== activeStale)
-            this.#set({ availableAgentsStale: activeStale }, false, 'getAvailableAgents');
-          return data;
-        })
-        .finally(() => {
-          if (this.#availableAgentsRefresh?.promise === promise)
-            this.#availableAgentsRefresh = undefined;
-        });
-      refresh = { promise, scope };
-      this.#availableAgentsRefresh = refresh;
-    }
-
-    try {
-      return await refresh.promise;
-    } catch (error) {
-      // A failed refresh keeps the last confirmed list usable (and still stale).
-      if (current) return current;
-      throw error;
-    }
-  };
-
-  ensureAgentDocuments = async (
-    agentId?: string | null,
-  ): Promise<AgentContextDocument[] | undefined> => {
-    if (!agentId) return undefined;
-
-    const cachedDocuments = this.#get().agentDocumentsMap[agentId];
-    if (cachedDocuments !== undefined) return cachedDocuments;
-
-    const pendingRequest = this.#pendingAgentDocuments.get(agentId);
-    if (pendingRequest) return pendingRequest;
-
-    const request = resolveAgentDocumentsContext({ agentId })
-      .then((documents) => {
-        if (documents) {
-          this.#syncAgentDocuments(agentId, documents);
-        }
-
-        return documents;
-      })
-      .finally(() => {
-        this.#pendingAgentDocuments.delete(agentId);
-      });
-
-    this.#pendingAgentDocuments.set(agentId, request);
-
-    return request;
   };
 
   /**
@@ -1027,15 +775,6 @@ class AgentSliceActionImpl {
       this.#config.revalidate(id),
       ...slugs.map((slug) => this.#get().refreshBuiltinAgent(slug)),
     ]);
-  };
-
-  internal_createAbortController = (key: keyof AgentSliceState): AbortController => {
-    const abortController = this.#get()[key] as AbortController;
-    if (abortController) abortController.abort(MESSAGE_CANCEL_FLAT);
-    const controller = new AbortController();
-    this.#set({ [key]: controller }, false, 'internal_createAbortController');
-
-    return controller;
   };
 }
 

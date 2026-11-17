@@ -45,39 +45,9 @@ const hasPrivateAgents = (s: HomeStore): boolean =>
   s.privateUngroupedAgents.length > 0;
 
 /**
- * Limit ungrouped agents for sidebar display based on page size
- */
-const ungroupedAgentsLimited =
-  (pageSize: number) =>
-  (s: HomeStore): SidebarAgentItem[] =>
-    s.ungroupedAgents.slice(0, pageSize);
-
-/**
- * Limit private ungrouped agents for the Private sidebar bucket
- */
-const privateUngroupedAgentsLimited =
-  (pageSize: number) =>
-  (s: HomeStore): SidebarAgentItem[] =>
-    s.privateUngroupedAgents.slice(0, pageSize);
-
-/**
- * Get ungrouped agents count
- */
-const ungroupedAgentsCount = (s: HomeStore): number => s.ungroupedAgents.length;
-
-/**
- * Get private ungrouped agents count
- */
-const privateUngroupedAgentsCount = (s: HomeStore): number => s.privateUngroupedAgents.length;
-
-/**
  * Check if agent list is initialized
  */
 const isAgentListInit = (s: HomeStore): boolean => s.isAgentListInit;
-
-/** The server confirmed the list in this session (not only the persisted copy). */
-const isAgentListConfirmed = (s: HomeStore): boolean =>
-  s.isAgentListInit && s.agentListReplica.entries[AGENT_LIST_KEY]?.source === 'server';
 
 /**
  * Get all agents (pinned + grouped + ungrouped + private)
@@ -94,16 +64,6 @@ const allAgents = (s: HomeStore): SidebarAgentItem[] => {
     ...s.privateUngroupedAgents,
   ];
 };
-
-/**
- * Agents every workspace member can see: the sidebar list without the
- * current user's private bucket.
- */
-const sharedAgents = (s: HomeStore): SidebarAgentItem[] => [
-  ...s.pinnedAgents,
-  ...s.agentGroups.flatMap((g) => g.items),
-  ...s.ungroupedAgents,
-];
 
 /**
  * The current user's own private agents. Empty in personal mode.
@@ -123,38 +83,16 @@ const getAgentById =
     return allAgents(s).find((a) => a.id === id);
   };
 
-/**
- * Check if there are any custom agents (non-empty list)
- */
-const hasCustomAgents = (s: HomeStore): boolean => {
-  return allAgents(s).length > 0;
-};
-
-/**
- * Get total agent count
- */
-const agentCount = (s: HomeStore): number => {
-  return allAgents(s).length;
-};
-
 export const homeAgentListSelectors = {
-  agentCount,
   agentGroups,
   allAgents,
   getAgentById,
-  hasCustomAgents,
   hasPrivateAgents,
-  isAgentListConfirmed,
   isAgentListInit,
   pinnedAgents,
   privateAgents,
   privateAgentGroups,
   privatePinnedAgents,
   privateUngroupedAgents,
-  privateUngroupedAgentsCount,
-  privateUngroupedAgentsLimited,
-  sharedAgents,
   ungroupedAgents,
-  ungroupedAgentsCount,
-  ungroupedAgentsLimited,
 };

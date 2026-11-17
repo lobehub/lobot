@@ -10,48 +10,6 @@ import { type UserSettings } from '@/types/user/settings';
 import { uuid } from '@/utils/uuid';
 
 class ImportService {
-  importSettings = async (settings: UserSettings): Promise<void> => {
-    await useUserStore.getState().importAppSettings(settings);
-  };
-
-  importData = async (data: ImporterEntryData, callbacks?: OnImportCallbacks): Promise<void> => {
-    const handleError = (e: unknown) => {
-      callbacks?.onStageChange?.(ImportStage.Error);
-      const error = e as DefaultErrorShape;
-
-      callbacks?.onError?.({
-        code: error.data.code,
-        httpStatus: error.data.httpStatus,
-        message: error.message,
-        path: error.data.path,
-      });
-    };
-
-    const totalLength =
-      (data.messages?.length || 0) +
-      (data.sessionGroups?.length || 0) +
-      (data.sessions?.length || 0) +
-      (data.topics?.length || 0);
-
-    if (totalLength < 500) {
-      callbacks?.onStageChange?.(ImportStage.Importing);
-      const time = Date.now();
-      try {
-        const result = await lambdaClient.importer.importByPost.mutate({ data });
-        const duration = Date.now() - time;
-
-        callbacks?.onStageChange?.(ImportStage.Success);
-        callbacks?.onSuccess?.(result.results, duration);
-      } catch (e) {
-        handleError(e);
-      }
-
-      return;
-    }
-
-    await this.uploadData(data, { callbacks, handleError });
-  };
-
   importPgData = async (
     data: ImportPgDataStructure,
     options?: {

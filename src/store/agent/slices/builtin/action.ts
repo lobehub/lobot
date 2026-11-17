@@ -192,21 +192,6 @@ class BuiltinAgentSliceActionImpl {
       mutate: sync.revalidate,
     };
   };
-
-  /**
-   * Seed the persisted builtin agent — the slug → id mapping and its config —
-   * before a route loader resolves a slug (see `agentChatTopicListLoader`).
-   * A route loader is the one place the async (IndexedDB) read can land before
-   * the route commits, so the id is known without waiting for the network.
-   */
-  preHydrateBuiltinAgent = async (slug: string): Promise<boolean> => {
-    const scope = cacheScope.get();
-    this.#builtin.ensureScope(scope);
-    const hydrated = await this.#builtin.hydrate({ slug }, scope);
-    this.#seedAgentMap(this.#get().builtinAgentMap[slug]);
-
-    return hydrated;
-  };
 }
 
 export type BuiltinAgentSliceAction = Pick<

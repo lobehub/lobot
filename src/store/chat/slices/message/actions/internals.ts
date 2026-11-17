@@ -92,38 +92,6 @@ export class MessageInternalsActionImpl {
     else if (payload.type === 'deleteMessages') transcript.forgetClientRows(payload.ids);
     transcript.settle(ctx);
   };
-
-  /** Insert a row this client created, so a stale read cannot drop it before it persists. */
-  internal_createClientMessage = (
-    id: string,
-    value: Extract<MessageDispatch, { type: 'createMessage' }>['value'],
-    context?: MessageDispatchContext,
-  ): void => {
-    this.#get().internal_dispatchMessage({ id, type: 'createMessage', value }, context, {
-      creationOrigin: 'client',
-    });
-  };
-
-  /** The server persisted these client-created rows (a quiet write, no snapshot back). */
-  internal_confirmClientMessages = (ids: string[]): void => {
-    if (ids.length === 0) return;
-    getMessageTranscript(this.#set, this.#get).confirmPersistedRows(ids);
-  };
-
-  internal_traceMessage = async (id: string, payload: TraceEventPayloads): Promise<void> => {
-    // tracing the diff of update
-    const message = displayMessageSelectors.getDisplayMessageById(id)(this.#get());
-    if (!message) return;
-
-    const traceId = message?.traceId;
-    const observationId = message?.observationId;
-
-    if (traceId && message?.role === 'assistant') {
-      traceService
-        .traceEvent({ content: message.content, observationId, traceId, ...payload })
-        .catch();
-    }
-  };
 }
 
 export type MessageInternalsAction = Pick<

@@ -53,63 +53,6 @@ class AgentDocumentActionImpl {
     this.#private.list.useSync(agentId || null, { enabled, revalidateOnFocus: false });
 
   /**
-   * Seed one agent's persisted list before anything mounts — the docs route
-   * loader's pre-paint read, so the sidebar's first frame is the list rather
-   * than its loading spinner. Resolves `true` when a persisted list landed.
-   */
-  preHydrateDocumentList = (agentId?: string | null): Promise<boolean> => {
-    if (!agentId) return Promise.resolve(false);
-
-    const scope = cacheScope.get();
-    // The slot may still hold the previous identity's rows; drop them before seeding.
-    this.#private.list.ensureScope(scope);
-    return this.#private.list.hydrate(agentId, scope);
-  };
-
-  /**
-   * Seed the reader's persisted body before the reader mounts — its route
-   * loader's pre-paint read, so the first frame is the body rather than the
-   * content spinner. Resolves `true` when a persisted body landed.
-   */
-  preHydrateReaderDocument = (params?: AgentDocumentReaderParams | null): Promise<boolean> => {
-    if (!params?.agentId || !params.documentId) return Promise.resolve(false);
-
-    const scope = cacheScope.get();
-    this.#private.reader.ensureScope(scope);
-    return this.#private.reader.hydrate(params, scope);
-  };
-
-  /**
-   * Seed the document's persisted chat topic id before the page mounts, so the
-   * floating chat panel opens on its conversation without waiting for the
-   * get-or-create round-trip. Resolves `true` when a persisted id landed.
-   */
-  preHydrateDocumentChatTopic = (params?: AgentDocumentReaderParams | null): Promise<boolean> => {
-    if (!params?.agentId || !params.documentId) return Promise.resolve(false);
-
-    const scope = cacheScope.get();
-    this.#private.chatTopic.ensureScope(scope);
-    return this.#private.chatTopic.hydrate(params, scope);
-  };
-
-  /**
-   * Fetch orchestration for the document's chat topic (get-or-create, so it
-   * runs only once the caller has proven the agent owns the document). Read the
-   * id with `agentDocumentSelectors.getDocumentChatTopicId`.
-   */
-  useFetchDocumentChatTopic = (params?: AgentDocumentReaderParams | null): ReplicaSyncResult =>
-    this.#private.chatTopic.useSync(params?.agentId && params.documentId ? params : null, {
-      dedupingInterval: 10_000,
-      revalidateOnFocus: false,
-    });
-
-  /** Fetch orchestration for the read-only reader; read it with `getReaderDocument`. */
-  useFetchReaderDocument = (params?: AgentDocumentReaderParams | null): ReplicaSyncResult =>
-    this.#private.reader.useSync(params?.agentId && params.documentId ? params : null, {
-      revalidateOnFocus: false,
-    });
-
-  /**
    * The agent's list, loading it when no view has it yet (an entity link
    * clicked before the documents panel ever mounted). Joins a sync in flight.
    */
@@ -118,36 +61,6 @@ class AgentDocumentActionImpl {
     if (loaded) return loaded;
     await this.#private.list.fetch(agentId);
     return this.#get().agentDocumentListMap[agentId];
-  };
-
-  /**
-   * Re-sync one agent's list (or every loaded agent's). Writes go through the
-   * agent-document service, which already refreshes this via the document
-   * invalidation; this is for an explicit retry / refresh.
-   */
-  refreshDocumentList = async (agentId?: string): Promise<void> => {
-    await this.#private.list.revalidate(agentId);
-  };
-
-  /**
-   * Edit one agent's list on the client — an optimistic insert / rename / move /
-   * delete or its rollback — then (unless `revalidate: false`) re-sync it. With
-   * no edit it only re-syncs. The edit stays in memory: only a server answer is
-   * persisted, so a reload never paints a write the server did not confirm.
-   */
-  mutateDocumentList = async (
-    agentId: string,
-    edit?: DocumentListEdit,
-    { revalidate = true }: MutateDocumentListOptions = {},
-  ): Promise<void> => {
-    if (edit !== undefined) {
-      this.#private.list.update(
-        agentId,
-        (prev) => (typeof edit === 'function' ? edit(prev) : edit),
-        { persist: false },
-      );
-    }
-    if (edit === undefined || revalidate) await this.#private.list.revalidate(agentId);
   };
 
   reset = (): void => {

@@ -67,11 +67,6 @@ class ElectronBrowserControlService {
     browserWebviewRegistry.touch(params.sessionId);
     return this.ipc.browserControl.snapshot(params);
   }
-
-  waitFor(params: BrowserControlWaitForParams): Promise<BrowserControlResult> {
-    browserWebviewRegistry.touch(params.sessionId);
-    return this.ipc.browserControl.waitFor(params);
-  }
 }
 
 export const electronBrowserControlService = new ElectronBrowserControlService();

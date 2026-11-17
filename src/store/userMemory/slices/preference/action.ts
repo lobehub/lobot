@@ -62,15 +62,9 @@ export const createPreferenceSlice = (set: Setter, get: () => UserMemoryStore, _
  * offset-paged memory lists) behind the slice's long-standing action names.
  */
 class PreferenceActionImpl {
-  readonly #list: MemoryQueryList<
-    PreferenceListParams,
-    DisplayPreferenceMemory,
-    PreferenceListData
-  >;
-
   constructor(set: Setter, get: () => UserMemoryStore, _api?: unknown) {
     void _api;
-    this.#list = new MemoryQueryList({
+    new MemoryQueryList({
       actionPrefix: n('preferenceList'),
       activeKeyField: 'preferenceListKey',
       entriesField: 'preferenceListEntries',
@@ -94,53 +88,6 @@ class PreferenceActionImpl {
       useStore: (selector) => useUserMemoryStore(selector),
     });
   }
-
-  /** Delete one preference: optimistic, then the offset repair (see `OffsetListPager`). */
-  deletePreference = (id: string): Promise<void> =>
-    this.#list.delete(id, () => memoryCRUDService.deletePreference(id));
-
-  /** Purge for "delete all memories" (every query, memory + IndexedDB). */
-  internal_clearPreferenceList = (user?: string): Promise<boolean> => this.#list.clear(user);
-
-  /** Confirmed edit of one preference in every loaded and persisted query. */
-  internal_updatePreferenceEntity = (
-    id: string,
-    fn: (item: DisplayPreferenceMemory) => DisplayPreferenceMemory,
-  ): void => {
-    this.#list.updateEntity(id, fn);
-  };
-
-  /** Append the next page of the query on screen. */
-  loadMorePreferences = (): void => {
-    void this.#list.loadMore();
-  };
-
-  /** Seed the persisted head page of a query before its route paints. */
-  preHydratePreferences = (
-    query?: Omit<PreferenceQueryParams, 'page' | 'pageSize'>,
-  ): Promise<boolean> =>
-    this.#list.preHydrate({
-      ...query,
-      pageSize: PREFERENCE_LIST_PAGE_SIZE,
-      q: query?.q || undefined,
-    });
-
-  /** Point the list at another search / sort (no page set is dropped). */
-  resetPreferencesList = (params?: Omit<PreferenceQueryParams, 'page' | 'pageSize'>): void => {
-    this.#list.select({ ...params, q: params?.q || undefined });
-  };
-
-  /** Fetch orchestration for the preference list page (see `MemoryQueryList.useFetch`). */
-  useFetchPreferences = (
-    params: PreferenceQueryParams,
-  ): SWRResponse<MemoryListPageResult<DisplayPreferenceMemory>> => {
-    const { page: _page, ...query } = params;
-    return this.#list.useFetch({
-      ...query,
-      pageSize: params.pageSize ?? PREFERENCE_LIST_PAGE_SIZE,
-      q: params.q || undefined,
-    });
-  };
 }
 
 export type PreferenceAction = Pick<PreferenceActionImpl, keyof PreferenceActionImpl>;

@@ -78,14 +78,6 @@ class ElectronGitService {
     return this.ipc.git.getPullRequestMergeContext(params);
   }
 
-  async runPullRequestAction(params: {
-    action: GitPullRequestAction;
-    number: number;
-    path: string;
-  }): Promise<GitPullRequestActionResult> {
-    return this.ipc.git.runPullRequestAction(params);
-  }
-
   async listGitBranches(dirPath: string): Promise<GitBranchListItem[]> {
     return this.ipc.git.listGitBranches(dirPath);
   }
@@ -132,10 +124,6 @@ class ElectronGitService {
 
   async pushGitBranch(params: { path: string }): Promise<GitPushResult> {
     return this.ipc.git.pushGitBranch(params);
-  }
-
-  async revertGitFile(params: { filePath: string; path: string }): Promise<GitFileRevertResult> {
-    return this.ipc.git.revertGitFile(params);
   }
 
   async renameGitBranch(params: {

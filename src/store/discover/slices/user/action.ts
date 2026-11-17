@@ -29,12 +29,10 @@ export const createUserSlice = (set: Setter, get: () => DiscoverStore, _api?: un
   new UserActionImpl(set, get, _api);
 
 class UserActionImpl {
-  readonly #get: () => DiscoverStore;
   readonly #profile;
 
   constructor(set: Setter, get: () => DiscoverStore, _api?: unknown) {
     void _api;
-    this.#get = get;
     this.#profile = createReplicaSlice(userProfileResource, {
       actionPrefix: n('profile'),
       get,
@@ -46,34 +44,6 @@ class UserActionImpl {
       view: recordLens<DiscoverStore, DiscoverUserProfile>('userProfileMap'),
     });
   }
-
-  /**
-   * A community user / organization profile by username. Read it with
-   * `userSelectors.userProfile(queryKey)`; `undefined` while unloaded or for a
-   * handle the server does not know. A blank username disables the read.
-   */
-  useUserProfile = (params: { username: string }): UserProfileSyncResult => {
-    const active = params.username.length > 0;
-    const normalized: UserProfileParams = {
-      locale: globalHelpers.getCurrentLanguage(),
-      username: params.username,
-    };
-    const queryKey = userProfileQueryKey(normalized);
-    const sync = this.#profile.useSync(active ? normalized : null, {
-      enabled: active,
-      revalidateOnFocus: false,
-    });
-
-    return {
-      ...sync,
-      isLoading:
-        active &&
-        this.#get().userProfileMap[queryKey] === undefined &&
-        (!sync.isHydrated || sync.isValidating),
-      mutate: sync.revalidate,
-      queryKey: active ? queryKey : undefined,
-    };
-  };
 
   /**
    * Refetch every community profile on screen after the viewer edited their

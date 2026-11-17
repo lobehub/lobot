@@ -22,12 +22,6 @@ const chipsFor =
     return EMPTY_CHIPS;
   };
 
-const slotStatus =
-  (conversationKey: string | undefined) =>
-  (s: FollowUpActionState): FollowUpActionStatus =>
-    (conversationKey ? s.slots[conversationKey]?.status : undefined) ?? 'idle';
-
 export const followUpActionSelectors = {
   chipsFor,
-  slotStatus,
 };
