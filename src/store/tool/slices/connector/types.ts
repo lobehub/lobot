@@ -1,4 +1,4 @@
-import type { ConnectorToolPermission } from '@/database/schemas';
+import type { ConnectorToolPermission } from '@/types/serverData';
 
 export interface ConnectorTool {
   crudType: string;

@@ -1,6 +1,6 @@
-import { type DisplayContextMemory } from '@/database/repositories/userMemory';
 import { type ReplicaPagedData } from '@/libs/replica';
 import { userMemoryKeys } from '@/libs/swr/keys';
+import { type DisplayContextMemory } from '@/types/serverData';
 
 import {
   defineUserMemoryPagedReplica,

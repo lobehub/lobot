@@ -1,6 +1,6 @@
 import { agentDisplayName } from '@lobot/types';
 
-import { type SidebarAgentItem, type SidebarGroup } from '@/database/repositories/home';
+import { type SidebarAgentItem, type SidebarGroup } from '@/types/serverData';
 
 /** How many recently assigned agents the picker offers above the full list. */
 export const MAX_RECENT_ASSIGNEES = 5;

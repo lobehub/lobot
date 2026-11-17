@@ -1,5 +1,5 @@
-import { type DisplayContextMemory } from '@/database/repositories/userMemory';
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
+import { type DisplayContextMemory } from '@/types/serverData';
 
 import { memoryListKey } from '../../utils/replica';
 import { type ContextListData, type ContextListSort } from './projection';

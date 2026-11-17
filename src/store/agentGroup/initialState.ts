@@ -1,8 +1,8 @@
 import { type AgentGroupDetail } from '@lobot/types';
 import { type ParsedQuery } from 'query-string';
 
-import { type ChatGroupItem } from '@/database/schemas/chatGroup';
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
+import { type ChatGroupItem } from '@/types/serverData';
 
 export interface QueryRouter {
   push: (url: string, options?: { query?: ParsedQuery; replace?: boolean }) => void;

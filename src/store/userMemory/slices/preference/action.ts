@@ -1,10 +1,10 @@
 import { type PreferenceMemorySimple, type UserMemoryItemSimple } from '@lobot/types';
 import { type SWRResponse } from 'swr';
 
-import { type DisplayPreferenceMemory } from '@/database/repositories/userMemory';
 import { userMemoryKeys } from '@/libs/swr/keys';
 import { memoryCRUDService, userMemoryService } from '@/services/userMemory';
 import { type StoreSetter } from '@/store/types';
+import { type DisplayPreferenceMemory } from '@/types/serverData';
 import { LayersEnum } from '@/types/userMemory';
 import { setNamespace } from '@/utils/storeDebug';
 

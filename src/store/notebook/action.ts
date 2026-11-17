@@ -1,6 +1,5 @@
 import type { AGENT_PLAN_FILE_TYPE } from '@lobechat/const';
 import { type NotebookDocumentType as DocumentType } from '@lobechat/const/builtinTools';
-import { type DocumentItem } from '@lobechat/database/schemas';
 import { type NotebookDocument } from '@lobot/types';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
@@ -8,6 +7,7 @@ import { invalidateDocumentMutation } from '@/services/document/invalidation';
 import { notebookService } from '@/services/notebook';
 import { useChatStore } from '@/store/chat';
 import { type StoreSetter } from '@/store/types';
+import { type DocumentItem } from '@/types/serverData';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { notebookDocumentsResource } from './projection';

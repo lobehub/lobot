@@ -4,12 +4,12 @@ import {
   PAGE_DOCUMENT_FILE_TYPES,
   PAGE_DOCUMENT_SOURCE_TYPES,
 } from '@lobechat/const';
-import type { DocumentItem } from '@lobechat/database/schemas';
 
 import { definePagedReplica, defineReplica, type ReplicaPagedData } from '@/libs/replica';
 import { documentService } from '@/services/document';
 import type { DocsPageSectionKey, DocsPageSectionView } from '@/store/global/initialState';
 import { DocumentSourceType, type LobeDocument } from '@/types/document';
+import type { DocumentItem } from '@/types/serverData';
 
 /**
  * The Pages sidebar renders one global list, so its paged replica keeps a single

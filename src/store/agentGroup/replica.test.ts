@@ -12,9 +12,9 @@ import { randomUUID } from 'node:crypto';
 import { cleanup, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { ChatGroupItem } from '@/database/schemas/chatGroup';
 import { cacheScope, createReplicaState } from '@/libs/replica';
 import { chatGroupService } from '@/services/chatGroup';
+import type { ChatGroupItem } from '@/types/serverData';
 
 import { initialChatGroupState } from './initialState';
 import { agentGroupDetailResource, agentGroupListResource } from './projection';

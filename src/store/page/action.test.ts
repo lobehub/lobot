@@ -1,7 +1,7 @@
-import type { DocumentItem } from '@lobechat/database/schemas';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { DocumentSourceType, type LobeDocument } from '@/types/document';
+import type { DocumentItem } from '@/types/serverData';
 
 import { pageActions } from './action';
 import { PAGE_LIST_KEY, TEMP_PAGE_ID_PREFIX } from './projection';

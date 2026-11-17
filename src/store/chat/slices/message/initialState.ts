@@ -1,8 +1,8 @@
 import { type UIChatMessage } from '@lobot/types';
 
-import { type ChatGroupAgentItem } from '@/database/schemas/chatGroup';
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 import { type ConversationMessagePage } from '@/services/message/replica';
+import { type ChatGroupAgentItem } from '@/types/serverData';
 
 import { type TranscriptPaging } from './transcript/lens';
 

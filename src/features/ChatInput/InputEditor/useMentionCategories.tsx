@@ -1,12 +1,11 @@
-import { agentDisplayName } from '@lobot/types';
 import { Avatar, Icon } from '@lobehub/ui';
 import { SkillsIcon } from '@lobehub/ui/icons';
+import { agentDisplayName } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { Bot, Lock, MessageSquareText, Users, Wrench } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { SidebarAgentItem } from '@/database/repositories/home';
 import { usePermission } from '@/hooks/usePermission';
 import { useChatStore } from '@/store/chat';
 import { topicSelectors } from '@/store/chat/selectors';
@@ -18,6 +17,7 @@ import { useHomeStore } from '@/store/home';
 import { homeAgentListSelectors } from '@/store/home/selectors';
 import { useToolStore } from '@/store/tool';
 import { AssistantSorts, SkillSorts } from '@/types/discover';
+import type { SidebarAgentItem } from '@/types/serverData';
 
 import { useAgentId } from '../hooks/useAgentId';
 import { useChatInputStore } from '../store';

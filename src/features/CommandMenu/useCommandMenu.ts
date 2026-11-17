@@ -3,7 +3,6 @@ import { useTheme as useNextThemesTheme } from 'next-themes';
 import { useCallback, useEffect } from 'react';
 import useSWR from 'swr';
 
-import type { FtsSearchResult } from '@/database/repositories/ftsSearch';
 import { useOpenCreateAgentModal } from '@/features/AgentIdentityModal/useOpenCreateAgentModal';
 import { createTaskModal } from '@/features/AgentTasks/CreateTaskModal';
 import { taskDetailPath } from '@/features/AgentTasks/shared/taskDetailPath';
@@ -19,6 +18,7 @@ import { useChatStore } from '@/store/chat';
 import { topicSelectors } from '@/store/chat/selectors';
 import { useGlobalStore } from '@/store/global';
 import { globalHelpers } from '@/store/global/helpers';
+import type { FtsSearchResult } from '@/types/serverData';
 import { openTrustedExternalUrl } from '@/utils/openTrustedExternalUrl';
 
 import { useCommandMenuContext } from './CommandMenuContext';

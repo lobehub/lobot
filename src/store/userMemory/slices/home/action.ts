@@ -3,12 +3,12 @@ import { useMemo } from 'react';
 import { type SWRResponse } from 'swr';
 import { type StoreApi, useStore } from 'zustand';
 
-import { type QueryIdentityRolesResult } from '@/database/models/userMemory';
 import { createReplicaSlice, type ReplicaLens } from '@/libs/replica';
 import { mutate } from '@/libs/swr';
 import { userMemoryKeys } from '@/libs/swr/keys';
 import { userMemoryService } from '@/services/userMemory';
 import { type StoreSetter } from '@/store/types';
+import { type QueryIdentityRolesResult } from '@/types/serverData';
 import { setNamespace } from '@/utils/storeDebug';
 
 // Type-only: the runtime store is reached through the `StoreApi` the store

@@ -3,7 +3,6 @@ import {
   CUSTOM_FOLDER_FILE_TYPE,
   DERIVED_DOCUMENT_SOURCE_TYPE,
 } from '@lobechat/const';
-import { type DocumentItem } from '@lobechat/database/schemas';
 import { createNanoId } from '@lobechat/utils';
 import isEqual from 'fast-deep-equal';
 
@@ -13,6 +12,7 @@ import { type StoreSetter } from '@/store/types';
 import { type LobeDocument } from '@/types/document';
 import { DocumentSourceType } from '@/types/document';
 import { type ResourceItem } from '@/types/resource';
+import { type DocumentItem } from '@/types/serverData';
 import { setNamespace } from '@/utils/storeDebug';
 import { isTrpcErrorCode } from '@/utils/trpcError';
 

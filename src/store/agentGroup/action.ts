@@ -2,7 +2,6 @@ import { type AgentGroupDetail } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { type StateCreator } from 'zustand/vanilla';
 
-import { type ChatGroupItem } from '@/database/schemas/chatGroup';
 import {
   cacheScope,
   createReplicaSlice,
@@ -19,6 +18,7 @@ import { useChatStore } from '@/store/chat';
 import { type StoreSetter } from '@/store/types';
 import { flattenActions } from '@/store/utils/flattenActions';
 import { type ResetableStore } from '@/store/utils/resetableStore';
+import { type ChatGroupItem } from '@/types/serverData';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { initialChatGroupState } from './initialState';

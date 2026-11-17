@@ -1,11 +1,11 @@
 import { CUSTOM_FOLDER_FILE_TYPE, WEB_DOCUMENT_SOURCE_TYPE } from '@lobechat/const';
 
-import type { AgentDocumentContextPayload } from '@/database/models/agentDocuments';
 import {
   AGENT_DOCUMENT_INJECTION_POSITIONS,
   type AgentContextDocument,
   type AgentDocumentInjectionPosition,
 } from '@/types/agentContext';
+import type { AgentDocumentContextPayload } from '@/types/serverData';
 
 const VALID_DOCUMENT_POSITIONS = new Set<AgentDocumentInjectionPosition>(
   AGENT_DOCUMENT_INJECTION_POSITIONS,

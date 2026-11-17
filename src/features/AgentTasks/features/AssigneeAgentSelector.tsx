@@ -1,4 +1,3 @@
-import { agentDisplayName } from '@lobot/types';
 import {
   confirmModal,
   createStaticStyles,
@@ -9,13 +8,13 @@ import {
   Text,
   Tooltip,
 } from '@lobehub/ui';
+import { agentDisplayName } from '@lobot/types';
 import { ChevronDown, ChevronRight, UserRoundX } from 'lucide-react';
 import type { CSSProperties, KeyboardEvent, ReactNode } from 'react';
 import { memo, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
-import { type SidebarAgentItem } from '@/database/repositories/home';
 import NavItem from '@/features/NavPanel/components/NavItem';
 import SkeletonList from '@/features/NavPanel/components/SkeletonList';
 import AgentItem from '@/features/PageEditor/Copilot/AgentSelector/AgentItem';
@@ -25,6 +24,7 @@ import { useGlobalStore } from '@/store/global';
 import { useTaskStore } from '@/store/task';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
+import { type SidebarAgentItem } from '@/types/serverData';
 
 import {
   filterAssigneeSections,

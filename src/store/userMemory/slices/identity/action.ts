@@ -6,7 +6,6 @@ import {
 import isEqual from 'fast-deep-equal';
 import { useLayoutEffect } from 'react';
 
-import { type AddIdentityEntryResult } from '@/database/models/userMemory';
 import {
   createReplicaSlice,
   recordLens,
@@ -15,6 +14,7 @@ import {
 } from '@/libs/replica';
 import { memoryCRUDService } from '@/services/userMemory';
 import { type StoreSetter } from '@/store/types';
+import { type AddIdentityEntryResult } from '@/types/serverData';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { type UserMemoryStore } from '../../store';

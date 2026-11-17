@@ -22,12 +22,12 @@ import { memo, type ReactNode, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
-import type { FtsSearchResult } from '@/database/repositories/ftsSearch';
 import { taskDetailPath } from '@/features/AgentTasks/shared/taskDetailPath';
 import { useCommandMenuContext } from '@/features/CommandMenu/CommandMenuContext';
 import { docsFilePath, docsPagePath } from '@/features/ResourceHome/paths';
 import { libraryFolderPath, libraryItemPath } from '@/features/ResourceManager/utils/resourcePath';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
+import type { FtsSearchResult } from '@/types/serverData';
 import { markdownToTxt } from '@/utils/markdownToTxt';
 
 import type { CommandMenuResultClick } from './analytics';

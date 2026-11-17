@@ -2,9 +2,9 @@ import { AGENT_CHAT_TOPIC_URL, GROUP_CHAT_TOPIC_URL } from '@lobechat/const';
 import type { TrayNavigationSnapshot } from '@lobechat/electron-client-ipc';
 import { agentDisplayName, type RecentItem } from '@lobot/types';
 
-import type { SidebarAgentItem } from '@/database/repositories/home';
 import { taskDetailPath } from '@/features/AgentTasks/shared/taskDetailPath';
 import { buildWorkspaceAwarePath } from '@/features/Workspace/workspaceAwarePath';
+import type { SidebarAgentItem } from '@/types/serverData';
 
 import type { ResolvedTab } from '../TabBar/hooks/useResolvedTabs';
 import type { TabScope } from '../TabBar/scope';

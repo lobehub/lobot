@@ -11,9 +11,8 @@
   },
   "dependencies": {
     "@lobechat/business-const": "workspace:*",
-    "@lobechat/database": "workspace:*",
-    "@lobot/types": "workspace:*",
     "@lobechat/utils": "workspace:*",
+    "@lobot/types": "workspace:*",
     "@t3-oss/env-nextjs": "^0.13.11",
     "debug": "^4.4.3",
     "lucide-react": "^1.22.0",

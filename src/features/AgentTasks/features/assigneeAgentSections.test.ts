@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { type SidebarAgentItem, type SidebarGroup } from '@/database/repositories/home';
+import { type SidebarAgentItem, type SidebarGroup } from '@/types/serverData';
 
 import {
   buildAssigneeAgentSections,

@@ -1,5 +1,4 @@
 import { CUSTOM_DOCUMENT_FILE_TYPE } from '@lobechat/const';
-import type { DocumentItem } from '@lobechat/database/schemas';
 
 import { docsPagePath, RESOURCE_HOME_PATH } from '@/features/ResourceHome/paths';
 import { type ReplicaSyncResult } from '@/libs/replica';
@@ -8,6 +7,7 @@ import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 import type { StoreSetter } from '@/store/types';
 import { DocumentSourceType, type LobeDocument } from '@/types/document';
+import type { DocumentItem } from '@/types/serverData';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { initialState, type PageState } from './initialState';

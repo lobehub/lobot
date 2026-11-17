@@ -1,5 +1,3 @@
-import { type DocumentItem } from '@lobechat/database/schemas';
-
 import { lambdaClient } from '@/libs/trpc/client';
 import type {
   CompareHistoryItemsInput,
@@ -14,6 +12,7 @@ import type {
   UpdateDocumentOutput,
 } from '@/server/routers/lambda/_schema/documentHistory';
 import { workService } from '@/services/work';
+import { type DocumentItem } from '@/types/serverData';
 
 import { abortableRequest } from '../utils/abortableRequest';
 

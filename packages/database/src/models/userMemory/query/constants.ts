@@ -1,1 +1,0 @@
-export const DEFAULT_HYBRID_SEARCH_LIMIT = 5;

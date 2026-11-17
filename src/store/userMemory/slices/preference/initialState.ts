@@ -1,5 +1,5 @@
-import { type DisplayPreferenceMemory } from '@/database/repositories/userMemory';
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
+import { type DisplayPreferenceMemory } from '@/types/serverData';
 
 import { memoryListKey } from '../../utils/replica';
 import { type PreferenceListData, type PreferenceListSort } from './projection';

@@ -1,5 +1,5 @@
-import { type SidebarAgentItem, type SidebarAgentListResponse } from '@/database/repositories/home';
 import { lambdaClient } from '@/libs/trpc/client';
+import { type SidebarAgentItem, type SidebarAgentListResponse } from '@/types/serverData';
 
 interface HomeDailyBriefPair {
   hint: string;

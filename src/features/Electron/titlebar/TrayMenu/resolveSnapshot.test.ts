@@ -1,7 +1,7 @@
 import type { RecentItem } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
-import type { SidebarAgentItem } from '@/database/repositories/home';
+import type { SidebarAgentItem } from '@/types/serverData';
 
 import type { ResolvedTab } from '../TabBar/hooks/useResolvedTabs';
 import { resolveTrayNavigationSnapshot } from './resolveSnapshot';

@@ -3,11 +3,11 @@ import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { DEFAULT_CHAT_GROUP_CHAT_CONFIG } from '@/const/settings';
-import type { ChatGroupItem } from '@/database/schemas/chatGroup';
 import { replicaKeys } from '@/libs/replica';
 import type * as SwrModule from '@/libs/swr';
 import { mutate } from '@/libs/swr';
 import { chatGroupService } from '@/services/chatGroup';
+import type { ChatGroupItem } from '@/types/serverData';
 
 import { initialChatGroupState } from '../initialState';
 import { agentGroupDetailResource } from '../projection';

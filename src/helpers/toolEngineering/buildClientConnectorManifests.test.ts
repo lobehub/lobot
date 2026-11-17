@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { ConnectorToolPermission } from '@/database/schemas';
 import type { ConnectorWithTools } from '@/store/tool/slices/connector/types';
+import { ConnectorToolPermission } from '@/types/serverData';
 
 import { buildClientConnectorManifests } from './buildClientConnectorManifests';
 

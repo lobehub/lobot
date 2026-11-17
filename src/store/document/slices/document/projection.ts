@@ -1,6 +1,5 @@
-import type { DocumentItem } from '@lobechat/database/schemas';
-
 import { defineReplica } from '@/libs/replica';
+import type { DocumentItem } from '@/types/serverData';
 
 /**
  * The value of one document-detail entry.

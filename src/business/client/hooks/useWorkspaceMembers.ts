@@ -1,4 +1,4 @@
-import type { WorkspaceMemberItem } from '@lobechat/database/schemas';
+import type { WorkspaceMemberItem } from '@/types/serverData';
 
 import { useWorkspaceStore } from '../workspace/store';
 import { useFetchWorkspaceMembers } from './useFetchWorkspaceMembers';

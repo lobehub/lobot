@@ -1,7 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { DisplayPreferenceMemory } from '@/database/repositories/userMemory';
 import { cacheScope } from '@/libs/replica';
 import type * as SwrLib from '@/libs/swr';
 import { mutate } from '@/libs/swr';
@@ -9,6 +8,7 @@ import { userMemoryKeys } from '@/libs/swr/keys';
 import { memoryCRUDService } from '@/services/userMemory';
 import { useUserMemoryStore } from '@/store/userMemory';
 import { initialState } from '@/store/userMemory/initialState';
+import type { DisplayPreferenceMemory } from '@/types/serverData';
 import { LayersEnum } from '@/types/userMemory';
 
 vi.mock('@/libs/swr', async (importOriginal) => {

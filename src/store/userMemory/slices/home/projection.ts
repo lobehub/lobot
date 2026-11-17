@@ -1,5 +1,5 @@
-import { type QueryIdentityRolesResult } from '@/database/models/userMemory';
 import { userMemoryKeys } from '@/libs/swr/keys';
+import { type QueryIdentityRolesResult } from '@/types/serverData';
 
 import { defineUserMemoryReplica } from '../../utils/replica';
 

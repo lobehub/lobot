@@ -1,7 +1,6 @@
 'use client';
 
 import { EDITOR_DEBOUNCE_TIME, EDITOR_MAX_WAIT } from '@lobechat/const';
-import type { DocumentItem } from '@lobechat/database/schemas';
 import type { IEditor } from '@lobehub/editor';
 import { debounce } from 'es-toolkit/compat';
 import { useLayoutEffect } from 'react';
@@ -10,6 +9,7 @@ import { createReplicaSlice, recordLens } from '@/libs/replica';
 import { documentService } from '@/services/document';
 import { pageActions } from '@/store/page';
 import type { StoreSetter } from '@/store/types';
+import type { DocumentItem } from '@/types/serverData';
 import { parseSkillMarkdownFrontmatter } from '@/utils/skillMarkdown';
 import { setNamespace } from '@/utils/storeDebug';
 import { isTrpcErrorCode } from '@/utils/trpcError';

@@ -7,7 +7,7 @@ import {
 } from '@lobechat/const';
 import { describe, expect, it } from 'vitest';
 
-import type { AgentDocumentWithRules } from '@/database/models/agentDocuments';
+import type { AgentDocumentContextPayload as AgentDocumentWithRules } from '@/types/serverData';
 import {
   normalizeAgentDocumentPosition,
   toAgentContextDocument,

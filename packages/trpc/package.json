@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@lobechat/const": "workspace:*",
-    "@lobechat/database": "workspace:*",
     "@lobechat/desktop-bridge": "workspace:*",
     "@lobechat/utils": "workspace:*",
     "@lobot/types": "workspace:*",

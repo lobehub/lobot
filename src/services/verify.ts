@@ -17,15 +17,15 @@ import type {
   VerifyUserDecision,
 } from '@lobot/types';
 
-import type { VerifyStatus } from '@/database/models/agentOperation';
-import type { VerifyAutoRepairOutcome } from '@/database/models/verifyRun';
+import { lambdaClient } from '@/libs/trpc/client';
 import type {
+  VerifyAutoRepairOutcome,
   VerifyCheckResultItem,
   VerifyCriterionItem,
   VerifyRubricItem,
   VerifyRunItem,
-} from '@/database/schemas/verify';
-import { lambdaClient } from '@/libs/trpc/client';
+  VerifyStatus,
+} from '@/types/serverData';
 
 /** Criterion row plus the judge instruction resolved from its linked document. */
 type GoalCriterionWithInstruction = VerifyCriterionItem & { instruction?: string };

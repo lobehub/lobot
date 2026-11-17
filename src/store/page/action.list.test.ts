@@ -1,9 +1,9 @@
 import { PAGE_DOCUMENT_FILE_TYPES, PAGE_DOCUMENT_SOURCE_TYPES } from '@lobechat/const';
-import type { DocumentItem } from '@lobechat/database/schemas';
 import { renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { DocumentSourceType, type LobeDocument } from '@/types/document';
+import type { DocumentItem } from '@/types/serverData';
 
 import { pageActions } from './action';
 import { PAGE_LIST_KEY } from './projection';

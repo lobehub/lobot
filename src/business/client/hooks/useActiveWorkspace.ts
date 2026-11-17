@@ -1,4 +1,4 @@
-import type { WorkspaceItem } from '@lobechat/database/schemas';
+import type { WorkspaceItem } from '@/types/serverData';
 
 import { useWorkspaceStore } from '../workspace/store';
 

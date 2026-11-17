@@ -1,12 +1,12 @@
 import type { AgentGroupDetail } from '@lobot/types';
 
-import type { ChatGroupItem } from '@/database/schemas/chatGroup';
 import {
   arrayEntity,
   defineReplica,
   type ReplicaEntityAdapter,
   singleEntity,
 } from '@/libs/replica';
+import type { ChatGroupItem } from '@/types/serverData';
 
 /** The group list is one entry per scope, so every sync shares these params. */
 export const AGENT_GROUP_LIST_KEY = 'all';
