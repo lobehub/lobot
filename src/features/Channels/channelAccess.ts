@@ -15,10 +15,16 @@ export const visibleChannelDetail = (cached: ChannelDetail | undefined, error: u
 
 /**
  * Inviting needs an admin of an open Channel; archived Channels take no new members until
- * reopened. Inviting from a direct conversation starts a new group instead of joining it.
+ * reopened. Inviting from a direct conversation, or from one between two people, starts a new
+ * group instead of joining it; people share a group only in a workspace, so a conversation
+ * between two people outside one offers no invite.
  */
-export const canInviteMembers = (channel: Pick<ChannelListItem, 'canDelete' | 'status'>) =>
-  channel.canDelete && channel.status !== 'archived';
+export const canInviteMembers = (
+  channel: Pick<ChannelListItem, 'canDelete' | 'peerUserId' | 'status' | 'workspaceId'>,
+) =>
+  channel.canDelete &&
+  channel.status !== 'archived' &&
+  (!channel.peerUserId || !!channel.workspaceId);
 
 /** Changing where an Agent runs follows the same rule as inviting: an admin of an open Channel. */
 export const canManageAgents = canInviteMembers;

@@ -57,7 +57,19 @@ vi.mock('../privateAgentJoin', () => ({
   ownPrivateAgentIds: () => [],
 }));
 vi.mock('./MemberSelection', () => ({
-  MemberSelection: () => <div data-testid={'members'} />,
+  MemberSelection: ({
+    people,
+  }: {
+    people?: { onChange: (people: { userId: string }[]) => void };
+  }) => (
+    <div data-testid={'members'}>
+      {people && (
+        <button type={'button'} onClick={() => people.onChange([{ userId: 'usr_3' }])}>
+          pick person
+        </button>
+      )}
+    </div>
+  ),
 }));
 vi.mock('./PeopleOptions', () => ({ usePersonName: () => () => '' }));
 vi.mock('./useChannelAgentOptions', () => ({
@@ -182,5 +194,27 @@ describe('CreateChannel', () => {
     );
     expect(screen.queryByTestId('scope')).not.toBeInTheDocument();
     expect(screen.getByTestId('members')).toBeInTheDocument();
+  });
+
+  it('starts a new group with both people when inviting from a conversation between two', async () => {
+    const onCreated = vi.fn();
+    renderDialog(() =>
+      openInviteMembers(
+        {
+          agentIds: [],
+          id: 'chn_peer',
+          peer: { name: 'yaocai', userId: 'usr_2' },
+          peopleCount: 2,
+          workspaceId: 'ws_1',
+        },
+        onCreated,
+      ),
+    );
+    expect(screen.getByText('invite.directHint')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'pick person' }));
+    expect(await submit()).toMatchObject({ agents: [], userIds: ['usr_2', 'usr_3'] });
+    await waitFor(() => expect(onCreated).toHaveBeenCalledWith('chn_new'));
+    // The conversation between the two stays as it is.
+    expect(mocks.create.mock.calls[0][0]).not.toHaveProperty('channelId');
   });
 });

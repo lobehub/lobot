@@ -93,14 +93,14 @@ const AgentDrafts = ({
  * An @mention can reach people and Agents outside the Channel: typing a name lists the
  * matching workspace members and Agents, and choosing one adds them to the Channel, exactly
  * as the invite dialog would. Only someone who may invite sees them, and never in a direct
- * conversation, which stays one person and one Agent.
+ * conversation, which stays one person and one Agent, nor in one between two people.
  */
 export const useMentionInvites = (
   channel: ChannelListItem | undefined,
   members: ChannelPublicMember[],
 ) => {
   const { t } = useTranslation('channel');
-  const enabled = !!channel && !channel.agentId && canInviteMembers(channel);
+  const enabled = !!channel && !channel.agentId && !channel.peerUserId && canInviteMembers(channel);
   const agentOptions = useChannelAgentOptions(
     enabled ? (channel.projectId ?? undefined) : undefined,
   );

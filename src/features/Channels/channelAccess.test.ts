@@ -18,13 +18,17 @@ describe('Channel access after revalidation', () => {
 });
 
 describe('inviting members', () => {
-  const open = { canDelete: true, status: 'active' } as const;
+  const open = { canDelete: true, status: 'active', workspaceId: null } as const;
   it('lets an admin invite from an open Channel', () => {
     expect(canInviteMembers(open)).toBe(true);
+  });
+  it('lets either person invite from a workspace conversation between two people', () => {
+    expect(canInviteMembers({ ...open, peerUserId: 'peer', workspaceId: 'ws' })).toBe(true);
   });
   it.each([
     ['a plain member', { canDelete: false }],
     ['an archived Channel', { status: 'archived' as const }],
+    ['a personal conversation between two people', { peerUserId: 'peer' }],
   ])('offers no invite to %s', (_, override) => {
     expect(canInviteMembers({ ...open, ...override })).toBe(false);
   });

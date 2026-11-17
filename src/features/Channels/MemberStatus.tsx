@@ -23,6 +23,7 @@ import { canInviteMembers } from './channelAccess';
 import { openInviteMembers } from './CreateChannel';
 import { FailureIndicator } from './FailureIndicator';
 import { MemberList, StatusAvatar, useMemberEntries } from './MemberList';
+import { peerName } from './peerName';
 import { statusStyles, styles } from './styles';
 import { useChannelMenu } from './useChannelMenu';
 import { useOpenDirectAgent } from './useOpenDirectAgent';
@@ -195,12 +196,15 @@ export function MemberStatus({
                 ),
                 directAgentName: channel.agentId ? (directAgent?.name ?? '') : undefined,
                 id: channel.id,
+                peer: channel.peerUserId
+                  ? { name: peerName(channel), userId: channel.peerUserId }
+                  : undefined,
                 peopleCount: allMembers.filter(
                   (member) => member.status === 'active' && member.actorType === 'user',
                 ).length,
                 workspaceId: channel.workspaceId,
               },
-              // Inviting from a direct conversation opens the group it starts.
+              // Inviting from a one-to-one conversation opens the group it starts.
               (id) => navigate(CHANNEL_URL(id)),
             )
           }

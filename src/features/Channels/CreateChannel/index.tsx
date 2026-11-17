@@ -39,6 +39,11 @@ interface ExistingChannel {
    */
   directAgentName?: string;
   id: string;
+  /**
+   * Set for a conversation between two people, which takes no third member: inviting starts a new
+   * group with the other person instead.
+   */
+  peer?: { name: string; userId: string };
   /** Active people in the Channel, the inviter included. */
   peopleCount: number;
   /** People can be invited only into workspace Channels. */
@@ -112,6 +117,10 @@ function CreateChannel({ existing, onCreated, onStepChange, projectId }: CreateC
     existing || !projectChannel ? undefined : (scopeProjectId ?? undefined),
   );
   const direct = existing?.directAgentName !== undefined;
+  const peer = existing?.peer;
+  // A one-to-one conversation stays as it is: inviting from it starts a new group.
+  const startsGroup = direct || !!peer;
+  const counterpartName = direct ? existing?.directAgentName || t('unnamedAgent') : peer?.name;
   const nameOf = usePersonName();
   const activeWorkspaceId = useActiveWorkspaceId();
   // People join only workspace Channels: a new one is created in the active workspace.
@@ -132,8 +141,8 @@ function CreateChannel({ existing, onCreated, onStepChange, projectId }: CreateC
   // A Channel with no one else in it yet still needs a name the sidebar can show.
   const autoTitle =
     defaultChannelTitle(
-      direct
-        ? [existing?.directAgentName || t('unnamedAgent'), ...agentNames, ...people.map(nameOf)]
+      counterpartName
+        ? [counterpartName, ...agentNames, ...people.map(nameOf)]
         : [...agentNames, ...people.map(nameOf)],
       {
         more: (names, count, total) => t('autoTitle.more', { count, names, total }),
@@ -175,6 +184,15 @@ function CreateChannel({ existing, onCreated, onStepChange, projectId }: CreateC
           channelId: existing.id,
           title: title.trim() || autoTitle,
           userIds: people.map((person) => person.userId),
+        });
+        close();
+        onCreated?.(id);
+      } else if (existing && peer) {
+        // The new group starts private with both people of the conversation in it.
+        const id = await channelActions.create({
+          agents: selections,
+          title: title.trim() || autoTitle,
+          userIds: [peer.userId, ...people.map((person) => person.userId)],
         });
         close();
         onCreated?.(id);
@@ -270,9 +288,9 @@ function CreateChannel({ existing, onCreated, onStepChange, projectId }: CreateC
 
   return (
     <Flexbox gap={16}>
-      {direct && (
+      {startsGroup && (
         <Text fontSize={12} type="secondary">
-          {t('invite.directHint', { name: existing?.directAgentName || t('unnamedAgent') })}
+          {t('invite.directHint', { name: counterpartName })}
         </Text>
       )}
       <Flexbox gap={8} inert={busy}>
@@ -289,7 +307,7 @@ function CreateChannel({ existing, onCreated, onStepChange, projectId }: CreateC
           onChange={setAgents}
         />
       </Flexbox>
-      {direct && (
+      {startsGroup && (
         <Flexbox gap={6} inert={busy}>
           <label htmlFor="channel-title" style={{ fontWeight: 500 }}>
             {t('nameOptional')}
@@ -324,7 +342,7 @@ function CreateChannel({ existing, onCreated, onStepChange, projectId }: CreateC
           </Button>
         )}
         <Button disabled={!canSubmit} loading={busy} type="primary" onClick={() => void submit()}>
-          {t(existing && !direct ? 'invite.submit' : 'submit')}
+          {t(existing && !startsGroup ? 'invite.submit' : 'submit')}
         </Button>
       </Flexbox>
     </Flexbox>
