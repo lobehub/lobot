@@ -3,8 +3,8 @@ import type {
   UserMemoryContextWithoutVectors,
   UserMemoryDetail,
   UserMemoryWithoutVectors,
-} from '@lobechat/types';
-import { LayersEnum } from '@lobechat/types';
+} from '@lobot/types';
+import { LayersEnum } from '@lobot/types';
 import { and, eq } from 'drizzle-orm';
 
 import {

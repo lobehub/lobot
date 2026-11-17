@@ -16,7 +16,7 @@
   "dependencies": {
     "@lobechat/model-runtime": "workspace:*",
     "@lobechat/prompts": "workspace:*",
-    "@lobechat/types": "workspace:*",
+    "@lobot/types": "workspace:*",
     "dayjs": "^1.11.21",
     "dotenv": "^17.4.2",
     "ora": "^9.4.1",

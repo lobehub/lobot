@@ -1,4 +1,4 @@
-import type { ChannelPublicMember } from '@lobechat/types';
+import type { ChannelPublicMember } from '@lobot/types';
 import { Button, Flexbox, Text, usePopoverContext } from '@lobehub/ui';
 import dayjs from 'dayjs';
 import type { ReactNode } from 'react';

@@ -1,4 +1,4 @@
-import type { RegisterDocumentWorkParams } from '@lobechat/types';
+import type { RegisterDocumentWorkParams } from '@lobot/types';
 import type { SQL } from 'drizzle-orm';
 import { and, eq, isNull } from 'drizzle-orm';
 

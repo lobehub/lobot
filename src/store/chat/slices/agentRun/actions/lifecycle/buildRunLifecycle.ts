@@ -1,5 +1,5 @@
 import { isDesktop } from '@lobechat/const';
-import type { ConversationContext, UIChatMessage } from '@lobechat/types';
+import type { ConversationContext, UIChatMessage } from '@lobot/types';
 import debug from 'debug';
 import { t } from 'i18next';
 

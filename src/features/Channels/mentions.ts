@@ -1,4 +1,4 @@
-import type { ChannelMemberActorType } from '@lobechat/types';
+import type { ChannelMemberActorType } from '@lobot/types';
 import type { UnknownRecord } from '@lobechat/utils/object';
 import { isRecord } from '@lobechat/utils/object';
 import { $getSelection, $isRangeSelection, $isTextNode } from 'lexical';

@@ -1,4 +1,4 @@
-import type { EnvironmentConfiguration } from '@lobechat/types';
+import type { EnvironmentConfiguration } from '@lobot/types';
 import { isNotNull, isNull, sql } from 'drizzle-orm';
 import {
   boolean,

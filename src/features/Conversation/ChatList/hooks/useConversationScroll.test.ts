@@ -1,7 +1,7 @@
 /**
  * @vitest-environment happy-dom
  */
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 import { act, renderHook } from '@testing-library/react';
 import { createRef, type RefObject } from 'react';
 import { type VListHandle } from 'virtua';

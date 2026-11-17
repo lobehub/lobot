@@ -4,7 +4,7 @@ import {
   type ChatMessageError,
   type ConversationContext,
   ThreadStatus,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import type { ChatStore } from '@/store/chat/store';
 

@@ -1,4 +1,4 @@
-import type { DeviceGitWorktreeListItem } from '@lobechat/types';
+import type { DeviceGitWorktreeListItem } from '@lobot/types';
 import {
   confirmModal,
   copyToClipboard,

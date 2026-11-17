@@ -1,4 +1,4 @@
-import type { ModelUsage } from '@lobechat/types';
+import type { ModelUsage } from '@lobot/types';
 import type { RuntimeImageGenParams } from 'model-bank';
 
 import type { ModelPricingContext } from './pricing';

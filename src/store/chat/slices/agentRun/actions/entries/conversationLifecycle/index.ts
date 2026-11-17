@@ -11,13 +11,13 @@ import type {
   MessageMetadata,
   SendMessageParams,
   SendMessageServerResponse,
-} from '@lobechat/types';
+} from '@lobot/types';
 import {
   getWorkingDirEffectivePath,
   getWorkingDirSourcePath,
   resolveAgentAgencyConfig,
   toComposerUserMessage,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { generateEntityId, nanoid } from '@lobechat/utils';
 import { t } from 'i18next';
 

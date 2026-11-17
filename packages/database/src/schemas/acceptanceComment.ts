@@ -6,7 +6,7 @@ import type {
   AcceptanceCommentSource,
   AcceptanceReviewAnnotation,
   DocumentCommentJson,
-} from '@lobechat/types';
+} from '@lobot/types';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 import { index, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 

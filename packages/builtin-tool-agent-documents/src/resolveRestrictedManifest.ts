@@ -1,4 +1,4 @@
-import type { BuiltinRestrictedManifestResolver, LobeChatPluginApi } from '@lobechat/types';
+import type { BuiltinRestrictedManifestResolver, LobeChatPluginApi } from '@lobot/types';
 
 import { agentShareSystemPrompt } from './agentShareSystemRole';
 import { AgentDocumentsManifest } from './manifest';

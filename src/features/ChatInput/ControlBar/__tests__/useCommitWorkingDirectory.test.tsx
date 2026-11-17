@@ -1,4 +1,4 @@
-import type { ChatTopic } from '@lobechat/types';
+import type { ChatTopic } from '@lobot/types';
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

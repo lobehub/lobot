@@ -7,7 +7,7 @@ import {
   type DeviceExecutionTarget,
   type LobeAgentChatConfig,
   type RuntimeEnvMode,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import {
   executionTargetToRuntimeMode,

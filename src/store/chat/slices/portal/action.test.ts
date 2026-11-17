@@ -1,4 +1,4 @@
-import { LayersEnum } from '@lobechat/types';
+import { LayersEnum } from '@lobot/types';
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 

@@ -1,4 +1,4 @@
-import { Plans } from '@lobechat/types';
+import { Plans } from '@lobot/types';
 
 export type PlanLimitPricingBasis = 'approximate' | 'estimated' | 'exact' | 'unknown';
 

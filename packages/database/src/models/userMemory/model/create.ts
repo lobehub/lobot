@@ -8,8 +8,8 @@ import type {
   UserMemoryExperienceInsert,
   UserMemoryPreference,
   UserMemoryPreferenceInsert,
-} from '@lobechat/types';
-import { ActivityTypeEnum } from '@lobechat/types';
+} from '@lobot/types';
+import { ActivityTypeEnum } from '@lobot/types';
 
 import {
   userMemories,

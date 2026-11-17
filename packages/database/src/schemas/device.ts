@@ -1,4 +1,4 @@
-import type { WorkingDirEntry } from '@lobechat/types';
+import type { WorkingDirEntry } from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import { index, jsonb, pgTable, text, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core';
 
@@ -66,7 +66,7 @@ export const devices = pgTable(
     /**
      * 'machine-id' | 'fallback' — reported by the connecting client, validated
      * by zod at the router boundary — or `MANAGED_CLOUD_DEVICE_IDENTITY_SOURCE`
-     * from `@lobechat/types`, which the server writes when it creates a managed
+     * from `@lobot/types`, which the server writes when it creates a managed
      * cloud device. The client registration routers do not accept that value.
      */
     identitySource: varchar('identity_source', { length: 20 }).notNull(),

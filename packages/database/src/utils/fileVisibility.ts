@@ -1,5 +1,5 @@
-import type { FileAccessScope } from '@lobechat/types';
-import { FileSource, LIBRARY_HIDDEN_FILE_SOURCES, ordinaryFileAccessScope } from '@lobechat/types';
+import type { FileAccessScope } from '@lobot/types';
+import { FileSource, LIBRARY_HIDDEN_FILE_SOURCES, ordinaryFileAccessScope } from '@lobot/types';
 import { and, eq, exists, isNull, notExists, notInArray, or, sql } from 'drizzle-orm';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 

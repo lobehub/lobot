@@ -1,7 +1,7 @@
 /**
  * @vitest-environment happy-dom
  */
-import type { ChannelReplyJob } from '@lobechat/types';
+import type { ChannelReplyJob } from '@lobot/types';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -20,7 +20,7 @@ vi.mock('@/store/agent', () => ({
 vi.mock('@/store/agent/selectors', () => ({
   agentSelectors: { getAgentMetaById: () => () => ({ description: 'Coordinator', title: 'Nasa' }) },
 }));
-vi.mock('@lobechat/types', async (importOriginal) => ({
+vi.mock('@lobot/types', async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
   agentSecondaryDisplayName: () => 'Coordinator',
 }));

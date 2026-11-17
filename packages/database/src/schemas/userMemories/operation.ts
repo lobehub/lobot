@@ -3,7 +3,7 @@ import type {
   UserMemoryOperationGate,
   UserMemoryOperationState,
   UserMemoryOperationType,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { index, jsonb, pgTable, real, text } from 'drizzle-orm/pg-core';
 
 import { idGenerator } from '../../utils/idGenerator';

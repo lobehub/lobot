@@ -1,4 +1,4 @@
-import { type ChatTopic, type ConversationContext, type UIChatMessage } from '@lobechat/types';
+import { type ChatTopic, type ConversationContext, type UIChatMessage } from '@lobot/types';
 import debug from 'debug';
 
 import {

@@ -1,4 +1,4 @@
-import type { AgentItem } from '@lobechat/types';
+import type { AgentItem } from '@lobot/types';
 
 import { useAgentManagementAccess } from '@/features/ResourcePermission/useAgentManagementAccess';
 import { getAgentStoreState, useAgentStore } from '@/store/agent';

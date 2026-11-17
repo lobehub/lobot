@@ -1,5 +1,5 @@
-import type { ChannelMemberConfig } from '@lobechat/types';
-import { agentDisplayName } from '@lobechat/types';
+import type { ChannelMemberConfig } from '@lobot/types';
+import { agentDisplayName } from '@lobot/types';
 import { cleanObject } from '@lobechat/utils';
 import { and, eq } from 'drizzle-orm';
 

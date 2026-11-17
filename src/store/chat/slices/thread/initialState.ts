@@ -1,5 +1,5 @@
-import { type IThreadType, type ThreadItem } from '@lobechat/types';
-import { ThreadType } from '@lobechat/types';
+import { type IThreadType, type ThreadItem } from '@lobot/types';
+import { ThreadType } from '@lobot/types';
 
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 

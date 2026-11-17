@@ -1,4 +1,4 @@
-import { type ContextMemorySimple, type UserMemoryItemSimple } from '@lobechat/types';
+import { type ContextMemorySimple, type UserMemoryItemSimple } from '@lobot/types';
 import { type SWRResponse } from 'swr';
 
 import { type DisplayContextMemory } from '@/database/repositories/userMemory';

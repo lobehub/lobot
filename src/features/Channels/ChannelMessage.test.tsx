@@ -1,7 +1,7 @@
 /**
  * @vitest-environment happy-dom
  */
-import type { ChannelDetail, ChannelPublicMessage, ExternalWorkSummaryItem } from '@lobechat/types';
+import type { ChannelDetail, ChannelPublicMessage, ExternalWorkSummaryItem } from '@lobot/types';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { act, createElement, type ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';

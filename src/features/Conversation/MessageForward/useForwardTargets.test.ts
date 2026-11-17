@@ -1,4 +1,4 @@
-import type { SidebarAgentItem } from '@lobechat/types';
+import type { SidebarAgentItem } from '@lobot/types';
 import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 

@@ -1,4 +1,4 @@
-import type { AgentItem } from '@lobechat/types';
+import type { AgentItem } from '@lobot/types';
 
 import { useAgentStore } from '@/store/agent';
 import { useUserStore } from '@/store/user';

@@ -1,4 +1,4 @@
-import type { ChannelMemberRole } from '@lobechat/types';
+import type { ChannelMemberRole } from '@lobot/types';
 
 import type { ChannelItem, ChannelMemberItem } from '../../schemas';
 

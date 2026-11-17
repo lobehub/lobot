@@ -1,4 +1,4 @@
-import type { ChannelListItem, ChannelMemberRole, ChannelPublicMember } from '@lobechat/types';
+import type { ChannelListItem, ChannelMemberRole, ChannelPublicMember } from '@lobot/types';
 
 import { isCurrentUserMember } from './memberName';
 

@@ -1,4 +1,4 @@
-import { LayersEnum } from '@lobechat/types';
+import { LayersEnum } from '@lobot/types';
 import { and, eq, ne, sql } from 'drizzle-orm';
 
 import { userMemories } from '../../../schemas';

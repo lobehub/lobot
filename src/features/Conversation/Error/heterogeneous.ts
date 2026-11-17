@@ -2,7 +2,7 @@ import {
   type HeterogeneousAgentSessionError,
   HeterogeneousAgentSessionErrorCode,
 } from '@lobechat/electron-client-ipc';
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 
 /**
  * Heterogeneous CLI-agent session errors that render the

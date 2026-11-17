@@ -1,9 +1,9 @@
-import type { NewTask, TaskAutomationMode, TaskAutomationSnapshot } from '@lobechat/types';
+import type { NewTask, TaskAutomationMode, TaskAutomationSnapshot } from '@lobot/types';
 import {
   clearTaskReposSelection,
   readTaskExecutionConfig,
   toTaskExecutionConfigPatch,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 export const DEFAULT_TASK_IDENTIFIER_PREFIX = 'T';
 

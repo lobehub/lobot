@@ -1,4 +1,4 @@
-import type { ChannelJobWake } from '@lobechat/types';
+import type { ChannelJobWake } from '@lobot/types';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 
 import type {

@@ -1,4 +1,4 @@
-import type { ChannelLastMessage } from '@lobechat/types';
+import type { ChannelLastMessage } from '@lobot/types';
 import { and, desc, eq, inArray, isNull, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 

@@ -6,8 +6,8 @@ import type {
   SearchMemoryParams,
   UserMemoryDetail,
   UserMemoryInsert,
-} from '@lobechat/types';
-import { MemorySourceType } from '@lobechat/types';
+} from '@lobot/types';
+import { MemorySourceType } from '@lobot/types';
 
 import type { FtsSearchCandidateSource } from '../../../repositories/ftsSearch';
 import type { LobeChatDatabase } from '../../../type';

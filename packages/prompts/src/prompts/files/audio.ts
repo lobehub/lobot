@@ -1,5 +1,5 @@
 import { createMediaFileRef } from '@lobechat/const/mediaRef';
-import type { ChatAudioItem } from '@lobechat/types';
+import type { ChatAudioItem } from '@lobot/types';
 
 const audioPrompt = (
   item: ChatAudioItem,

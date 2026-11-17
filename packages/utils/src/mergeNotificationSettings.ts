@@ -3,7 +3,7 @@ import type {
   IMPlatformNotificationSettings,
   NotificationChannelSettings,
   NotificationSettings,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 /**
  * Merge one channel-settings patch over the stored value, keeping sibling

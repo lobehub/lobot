@@ -1,7 +1,7 @@
 'use client';
 
 import { DEFAULT_USER_AVATAR_URL } from '@lobechat/const';
-import type { NotificationMetadata } from '@lobechat/types';
+import type { NotificationMetadata } from '@lobot/types';
 import {
   Avatar,
   Block,

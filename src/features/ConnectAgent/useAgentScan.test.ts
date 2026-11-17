@@ -1,4 +1,4 @@
-import type { DeviceListItem } from '@lobechat/types';
+import type { DeviceListItem } from '@lobot/types';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { createElement } from 'react';

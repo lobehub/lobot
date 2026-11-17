@@ -7,7 +7,7 @@ import type {
   HeterogeneousAgentModelCatalog,
   HeterogeneousAgentModelCatalogErrorCode,
   ListHeterogeneousAgentModelsParams,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { isRecord } from '@lobechat/utils/object';
 
 import { getHeterogeneousTypeLabel } from '../labels';

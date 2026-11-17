@@ -11,7 +11,7 @@ import type {
   GoalReportState,
   GoalSpend,
   WorkType,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { experimentMembers } from '@lobechat/utils/goalGraph';
 import { isClosedByRetirement } from '@lobechat/utils/verify/acceptanceStatus';
 

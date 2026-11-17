@@ -1,4 +1,4 @@
-import { type IdentityListItem } from '@lobechat/types';
+import { type IdentityListItem } from '@lobot/types';
 
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 

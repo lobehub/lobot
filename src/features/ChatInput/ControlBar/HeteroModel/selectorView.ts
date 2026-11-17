@@ -7,11 +7,11 @@ import type {
   HeterogeneousTopicPin,
   HeteroSelection,
   HeteroSelectorCapability,
-} from '@lobechat/types';
+} from '@lobot/types';
 import {
   getHeteroSelectorCapability,
   HETEROGENEOUS_AGENT_DEFAULT_SELECTION,
-} from '@lobechat/types';
+} from '@lobot/types';
 import type { TFunction } from 'i18next';
 
 import type { TriggerLabel } from './labels';

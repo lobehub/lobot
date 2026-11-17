@@ -1,4 +1,4 @@
-import type { ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelPublicMessage } from '@lobot/types';
 import { useRef, useState } from 'react';
 import { z } from 'zod';
 

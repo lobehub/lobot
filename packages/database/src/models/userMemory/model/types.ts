@@ -15,7 +15,7 @@ import type {
   UserMemoryItemSimple,
   UserMemoryPreference,
   UserMemoryPreferenceWithoutVectors,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 export interface BaseCreateUserMemoryParams {
   capturedAt?: Date;

@@ -1,4 +1,4 @@
-import type { HeterogeneousProviderConfig } from '@lobechat/types';
+import type { HeterogeneousProviderConfig } from '@lobot/types';
 
 import { escapeXmlAttr, escapeXmlContent } from '../search/xmlEscape';
 

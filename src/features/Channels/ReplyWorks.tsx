@@ -1,4 +1,4 @@
-import type { WorkSummaryItem } from '@lobechat/types';
+import type { WorkSummaryItem } from '@lobot/types';
 
 import { MessageWorkList } from '@/features/Conversation/Messages/MessageWorks';
 import { isSafeExternalUrl } from '@/features/Work/descriptors';

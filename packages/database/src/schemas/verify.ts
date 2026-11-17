@@ -33,7 +33,7 @@ import type {
   VerifyRunDecisionDetail,
   VerifyRunMetadata,
   VerifyRunScenario,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import {
   boolean,
@@ -59,7 +59,7 @@ import { users } from './user';
 import { workspaces } from './workspace';
 
 // The verify domain vocabulary, frozen-item shape, Toulmin narrative and rubric
-// run-policy config live in `@lobechat/types` (the single source of truth across
+// run-policy config live in `@lobot/types` (the single source of truth across
 // schema / services / store / UI). This file owns only the tables and their
 // inferred row types.
 

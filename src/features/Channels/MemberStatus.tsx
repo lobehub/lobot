@@ -1,5 +1,5 @@
 import { CHANNEL_URL } from '@lobechat/const';
-import type { ChannelDetail } from '@lobechat/types';
+import type { ChannelDetail } from '@lobot/types';
 import { ActionIcon, Button, DropdownMenu, Flexbox, Popover, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import {

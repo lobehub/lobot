@@ -4,7 +4,7 @@ import type {
   ChatErrorHeterogeneousContext,
   ExecutionPlan,
   ToolExecutor,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import type { ToolRunResult } from '../transport/tool';
 

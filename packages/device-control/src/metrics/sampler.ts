@@ -2,13 +2,13 @@ import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import type { DeviceMetricSample } from '@lobechat/types';
+import type { DeviceMetricSample } from '@lobot/types';
 import {
   DEVICE_METRIC_MAX_BATCH,
   DEVICE_METRIC_RETENTION_MS,
   DEVICE_METRIC_SAMPLE_INTERVAL_MS,
   deviceMetricSampleSchema,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import type { CpuTimes, DiskUsage, MemoryUsage } from './systemSnapshot';
 import {

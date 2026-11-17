@@ -1,4 +1,4 @@
-import type { ConversationContext, UIChatMessage } from '@lobechat/types';
+import type { ConversationContext, UIChatMessage } from '@lobot/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { lambdaClient } from '@/libs/trpc/client';

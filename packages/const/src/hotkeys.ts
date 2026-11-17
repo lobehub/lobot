@@ -1,4 +1,4 @@
-import type { HotkeyGroupId, HotkeyId, HotkeyRegistration, HotkeyScopeId } from '@lobechat/types';
+import type { HotkeyGroupId, HotkeyId, HotkeyRegistration, HotkeyScopeId } from '@lobot/types';
 
 import { isDesktop } from './version';
 

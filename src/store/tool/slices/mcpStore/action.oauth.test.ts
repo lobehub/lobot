@@ -1,4 +1,4 @@
-import type { ToolManifest } from '@lobechat/types';
+import type { ToolManifest } from '@lobot/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type * as ReplicaModule from '@/libs/replica';

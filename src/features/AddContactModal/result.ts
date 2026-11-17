@@ -1,4 +1,4 @@
-import type { ContactSearchResult, ContactUserProfile } from '@lobechat/types';
+import type { ContactSearchResult, ContactUserProfile } from '@lobot/types';
 
 /** How a person is named across the contact surfaces: full name, then handle. */
 export const personName = (

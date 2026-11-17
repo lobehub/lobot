@@ -3,7 +3,7 @@ import {
   type SidebarAgentItem,
   type SidebarAgentLabel,
   type SidebarGroup,
-} from '@lobechat/types';
+} from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 
 import { createReplicaSlice, type ReplicaLens, type ReplicaSyncResult } from '@/libs/replica';

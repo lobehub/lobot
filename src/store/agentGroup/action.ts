@@ -1,4 +1,4 @@
-import { type AgentGroupDetail } from '@lobechat/types';
+import { type AgentGroupDetail } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { type StateCreator } from 'zustand/vanilla';
 

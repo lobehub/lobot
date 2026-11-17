@@ -2,7 +2,7 @@ import { mkdtemp, readFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import type { DeviceMetricSample } from '@lobechat/types';
+import type { DeviceMetricSample } from '@lobot/types';
 import { describe, expect, it, vi } from 'vitest';
 
 import { DeviceMetricsSampler } from './sampler';

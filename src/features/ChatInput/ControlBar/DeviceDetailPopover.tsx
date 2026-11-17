@@ -1,6 +1,6 @@
 'use client';
 
-import type { DeviceListItem } from '@lobechat/types';
+import type { DeviceListItem } from '@lobot/types';
 import { Popover } from '@lobehub/ui';
 import type { ReactElement } from 'react';
 

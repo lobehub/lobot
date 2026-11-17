@@ -1,4 +1,4 @@
-import type { ConversationContext, UIChatMessage } from '@lobechat/types';
+import type { ConversationContext, UIChatMessage } from '@lobot/types';
 import { toast } from '@lobehub/ui';
 import { t } from 'i18next';
 

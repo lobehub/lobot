@@ -1,4 +1,4 @@
-import type { LayersEnum, TopicCommentItem } from '@lobechat/types';
+import type { LayersEnum, TopicCommentItem } from '@lobot/types';
 
 import { type PortalArtifact } from '@/types/artifact';
 

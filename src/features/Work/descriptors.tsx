@@ -7,7 +7,7 @@ import {
   type WorkSummaryItem,
   type WorkType,
   type WorkVersionMetadata,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { Github } from '@lobehub/icons';
 import { cssVar, FileTypeIcon as FileTypeBadge } from '@lobehub/ui';
 import type { LucideIcon } from 'lucide-react';

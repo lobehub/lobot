@@ -6,16 +6,16 @@ import type {
   LobeAgentAgencyConfig,
   LobeAgentChatConfig,
   RuntimeEnvMode,
-} from '@lobechat/types';
+} from '@lobot/types';
 import {
   executionTargetToRuntimeMode,
   isDeviceCapablePlan,
   isDeviceLockedPlan,
   RequestTrigger,
   resolveToolMode,
-} from '@lobechat/types';
+} from '@lobot/types';
 
-// The pure mode / plan predicates live in `@lobechat/types` so the shared
+// The pure mode / plan predicates live in `@lobot/types` so the shared
 // tool rules in `@lobechat/mecha` can use them; re-exported here for the
 // existing host consumers.
 export { executionTargetToRuntimeMode, isDeviceCapablePlan, isDeviceLockedPlan, resolveToolMode };
@@ -387,7 +387,7 @@ export const resolveRuntimeMode = (
     }),
   );
 
-export type { ExecutionPlan } from '@lobechat/types';
+export type { ExecutionPlan } from '@lobot/types';
 
 type ExecutionManifestEnvironment = Exclude<ExecutionPlan['kind'], 'device-wakeable'> | 'local';
 

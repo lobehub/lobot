@@ -1,8 +1,8 @@
 'use client';
 
 import { isDesktop } from '@lobechat/const';
-import type { WorkingDirEntry } from '@lobechat/types';
-import { getWorkingDirSourcePath } from '@lobechat/types';
+import type { WorkingDirEntry } from '@lobot/types';
+import { getWorkingDirSourcePath } from '@lobot/types';
 import { ActionIcon, Flexbox, Icon, Input, Popover, toast, Tooltip } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

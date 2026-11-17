@@ -1,6 +1,6 @@
 'use client';
 
-import { CLASSIC_ONBOARDING_MAX_STEP } from '@lobechat/types';
+import { CLASSIC_ONBOARDING_MAX_STEP } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
 import { memo, useCallback, useEffect, useRef } from 'react';
 import { Navigate, useNavigate } from 'react-router';

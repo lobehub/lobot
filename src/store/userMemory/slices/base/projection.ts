@@ -1,4 +1,4 @@
-import { type RetrieveMemoryParams, type RetrieveMemoryResult } from '@lobechat/types';
+import { type RetrieveMemoryParams, type RetrieveMemoryResult } from '@lobot/types';
 
 import { userMemoryKeys } from '@/libs/swr/keys';
 import { type LayersEnum } from '@/types/userMemory';

@@ -1,4 +1,4 @@
-import type { TaskLabelRef, TaskLabelWithUsage } from '@lobechat/types';
+import type { TaskLabelRef, TaskLabelWithUsage } from '@lobot/types';
 
 import { mutate, useClientDataSWR } from '@/libs/swr';
 import { taskLabelKeys } from '@/libs/swr/keys';

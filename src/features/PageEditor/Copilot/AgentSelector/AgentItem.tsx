@@ -2,7 +2,7 @@ import {
   type AgentNameFields,
   agentSecondaryDisplayName,
   type GroupMemberAvatar,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 

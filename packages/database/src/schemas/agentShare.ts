@@ -1,4 +1,4 @@
-import type { AgentShareDemoCase, AgentShareToolGrant } from '@lobechat/types';
+import type { AgentShareDemoCase, AgentShareToolGrant } from '@lobot/types';
 import { index, integer, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
 import { timestamps } from './_helpers';

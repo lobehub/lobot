@@ -28,7 +28,7 @@
     "@lobechat/heterogeneous-agents": "workspace:*",
     "@lobechat/html-artifact": "workspace:*",
     "@lobechat/local-file-shell": "workspace:*",
-    "@lobechat/types": "workspace:*",
+    "@lobot/types": "workspace:*",
     "@lobechat/utils": "workspace:*",
     "fast-glob": "^3.3.3",
     "fflate": "^0.8.3",

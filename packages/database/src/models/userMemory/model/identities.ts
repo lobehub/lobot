@@ -2,8 +2,8 @@ import type {
   UserMemoryIdentityInsert,
   UserMemoryIdentityWithoutVectors,
   UserMemoryInsert,
-} from '@lobechat/types';
-import { IdentityTypeEnum, RelationshipEnum } from '@lobechat/types';
+} from '@lobot/types';
+import { IdentityTypeEnum, RelationshipEnum } from '@lobot/types';
 import type { AnyColumn } from 'drizzle-orm';
 import { and, desc, eq, sql } from 'drizzle-orm';
 

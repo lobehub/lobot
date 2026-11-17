@@ -1,4 +1,4 @@
-import type { HeterogeneousProviderConfig } from '@lobechat/types';
+import type { HeterogeneousProviderConfig } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { resolveHeterogeneousRuntimeConfig } from './heterogeneousRuntimeConfig';

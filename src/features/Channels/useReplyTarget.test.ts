@@ -1,4 +1,4 @@
-import type { ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelPublicMessage } from '@lobot/types';
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

@@ -1,4 +1,4 @@
-import { RequestTrigger } from '@lobechat/types';
+import { RequestTrigger } from '@lobot/types';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

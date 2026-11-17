@@ -6,7 +6,7 @@ import type {
   TaskItem,
   TaskVerifyConfig,
   WorkspaceData,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { and, eq, sql } from 'drizzle-orm';
 
 import { merge } from '@/utils/merge';

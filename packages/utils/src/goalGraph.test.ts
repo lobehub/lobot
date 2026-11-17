@@ -1,4 +1,4 @@
-import type { GoalGraphNode, GoalGraphSnapshot, GoalNodeKind } from '@lobechat/types';
+import type { GoalGraphNode, GoalGraphSnapshot, GoalNodeKind } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import {

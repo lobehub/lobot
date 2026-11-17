@@ -1,4 +1,4 @@
-import type { TaskDetailData, TaskDetailWorkspaceNode, TaskStatus } from '@lobechat/types';
+import type { TaskDetailData, TaskDetailWorkspaceNode, TaskStatus } from '@lobot/types';
 
 // ── Formatting helpers for Task tool responses ──
 
@@ -129,13 +129,13 @@ export const taskRef = (
 export const taskIdentity = (task: { id?: string | null; identifier: string }) =>
   `${task.identifier}${task.id ? ` (id: ${task.id})` : ''}`;
 
-// Re-export shared types from @lobechat/types for backward compatibility
+// Re-export shared types from @lobot/types for backward compatibility
 export type {
   TaskDetailActivity,
   TaskDetailData,
   TaskDetailSubtask,
   TaskDetailWorkspaceNode,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 /**
  * Format a single task as a one-line summary

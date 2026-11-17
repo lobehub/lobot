@@ -1,4 +1,4 @@
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 
 import { type SidebarAgentItem, type SidebarGroup } from '@/database/repositories/home';
 

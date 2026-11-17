@@ -1,4 +1,4 @@
-import type { BotWakeDecisionPage, BotWakeSummary, BotWakeUserMark } from '@lobechat/types';
+import type { BotWakeDecisionPage, BotWakeSummary, BotWakeUserMark } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 

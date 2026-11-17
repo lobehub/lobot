@@ -1,4 +1,4 @@
-import type { DeviceListItem, DeviceMetricSeries, DeviceScope } from '@lobechat/types';
+import type { DeviceListItem, DeviceMetricSeries, DeviceScope } from '@lobot/types';
 
 import {
   AppLocalStorage,

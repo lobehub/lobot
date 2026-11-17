@@ -1,4 +1,4 @@
-import type { ChatContextContent } from '@lobechat/types';
+import type { ChatContextContent } from '@lobot/types';
 import { toast } from '@lobehub/ui';
 import { act, renderHook } from '@testing-library/react';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';

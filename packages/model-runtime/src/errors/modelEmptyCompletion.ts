@@ -1,4 +1,4 @@
-import { AgentRuntimeErrorType } from '@lobechat/types';
+import { AgentRuntimeErrorType } from '@lobot/types';
 
 export interface ModelEmptyCompletionDiagnostics {
   attempt?: number;

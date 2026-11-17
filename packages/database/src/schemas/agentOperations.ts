@@ -3,7 +3,7 @@ import type {
   AgentOperationCompletionReason,
   AgentOperationStatus,
   VerifyCheckItem,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { boolean, index, integer, jsonb, pgTable, text } from 'drizzle-orm/pg-core';
 
 import { amountNumeric, timestamps, timestamptz } from './_helpers';

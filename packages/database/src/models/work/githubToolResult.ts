@@ -4,7 +4,7 @@ import type {
   SkillToolResultWorkInput,
   WorkDisplayField,
   WorkVersionMetadata,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { WORK_DESCRIPTION_PREVIEW_LENGTH } from './internal';
 import { parseShellCommandSegments } from './shellCommandParsing';

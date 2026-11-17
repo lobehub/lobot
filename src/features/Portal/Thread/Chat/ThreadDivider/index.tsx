@@ -1,4 +1,4 @@
-import { type IThreadType, ThreadType } from '@lobechat/types';
+import { type IThreadType, ThreadType } from '@lobot/types';
 import { cssVar, Divider, Flexbox, Icon } from '@lobehub/ui';
 import { GitBranch } from 'lucide-react';
 import { memo } from 'react';

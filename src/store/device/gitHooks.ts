@@ -8,7 +8,7 @@ import type {
   DeviceGitPullRequestMergeContext,
   DeviceGitWorkingTreeStatus,
   DeviceGitWorktreeListItem,
-} from '@lobechat/types';
+} from '@lobot/types';
 import type { ReplicaOptimisticToken } from 'local-replica';
 import type { ReplicaSlice, ReplicaSyncSchedule } from 'local-replica/zustand';
 import { useCallback, useMemo, useRef } from 'react';

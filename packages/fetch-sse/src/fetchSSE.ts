@@ -11,8 +11,8 @@ import type {
   ModelUsage,
   ResponseAnimation,
   ResponseAnimationStyle,
-} from '@lobechat/types';
-import { ChatErrorType } from '@lobechat/types';
+} from '@lobot/types';
+import { ChatErrorType } from '@lobot/types';
 import { fetchEventSource } from '@lobechat/utils/client/fetchEventSource/index';
 import { nanoid } from '@lobechat/utils/uuid';
 

@@ -35,7 +35,7 @@ interface BuiltinInspectorProps<Arguments = any, State = any> {
 ```tsx
 'use client';
 
-import type { BuiltinInspectorProps, SearchQuery, UniformSearchResponse } from '@lobechat/types';
+import type { BuiltinInspectorProps, SearchQuery, UniformSearchResponse } from '@lobot/types';
 import { cssVar, cx, Text } from '@lobehub/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -98,7 +98,7 @@ export default SearchInspector;
 ## Inspector registry — `client/Inspector/index.ts`
 
 ```ts
-import type { BuiltinInspector } from '@lobechat/types';
+import type { BuiltinInspector } from '@lobot/types';
 
 import { TaskApiName } from '../../types';
 import { CreateTaskInspector } from './CreateTask';

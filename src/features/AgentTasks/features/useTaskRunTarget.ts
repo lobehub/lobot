@@ -1,7 +1,7 @@
 'use client';
 
 import { isDesktop } from '@lobechat/const';
-import type { DeviceExecutionTarget, DeviceListItem, WorkingDirConfig } from '@lobechat/types';
+import type { DeviceExecutionTarget, DeviceListItem, WorkingDirConfig } from '@lobot/types';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 

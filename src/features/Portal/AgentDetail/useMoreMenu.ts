@@ -1,5 +1,5 @@
 import { AGENT_CHAT_URL } from '@lobechat/const';
-import { agentDisplayName, agentRenameField } from '@lobechat/types';
+import { agentDisplayName, agentRenameField } from '@lobot/types';
 
 import { openRenameModal } from '@/components/RenameModal';
 import { type PortalMoreMenuConfig } from '@/features/Portal/components/PortalMoreMenu/types';

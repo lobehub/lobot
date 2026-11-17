@@ -4,7 +4,7 @@ import type {
   DeviceGitRemoteBranchListItem,
   DeviceGitWorkingTreeStatus,
   DeviceGitWorktreeListItem,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 import type { GitBranchSummary } from '@/services/git';

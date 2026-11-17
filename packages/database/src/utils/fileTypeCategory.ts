@@ -1,4 +1,4 @@
-import { FilesTabs } from '@lobechat/types';
+import { FilesTabs } from '@lobot/types';
 import type { SQL, SQLWrapper } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 

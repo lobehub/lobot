@@ -23,7 +23,7 @@ import type {
   ExecAgentResult,
   MessageMetadata,
   RuntimeMentionedAgent,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { canUseGatewayProtocolV2 } from '@/helpers/gatewayProtocol';
 import { trackProductUsageEvent } from '@/libs/analytics/productUsageEvent';

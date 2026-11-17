@@ -1,4 +1,4 @@
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import { Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import { memo } from 'react';

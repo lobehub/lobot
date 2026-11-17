@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     alias: {
       '@/const': resolve(__dirname, '../const/src'),
-      '@lobechat/types': resolve(__dirname, '../types/src'),
+      '@lobot/types': resolve(__dirname, '../types/src'),
       '@': resolve(__dirname, '../../src'),
     },
     coverage: {

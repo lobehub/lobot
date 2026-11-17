@@ -4,12 +4,12 @@ import type {
   ChatTopicStatus,
   GroupedTopic,
   TimeGroupId,
-} from '@lobechat/types';
+} from '@lobot/types';
 import {
   agentDisplayName,
   getWorkingDirEffectivePath,
   getWorkingDirSourcePath,
-} from '@lobechat/types';
+} from '@lobot/types';
 import dayjs from 'dayjs';
 import isToday from 'dayjs/plugin/isToday';
 import isYesterday from 'dayjs/plugin/isYesterday';

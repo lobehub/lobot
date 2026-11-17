@@ -1,4 +1,4 @@
-import type { WorkingDirGitState } from '@lobechat/types';
+import type { WorkingDirGitState } from '@lobot/types';
 import {
   DropdownMenuItem,
   DropdownMenuPopup,

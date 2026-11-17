@@ -1,4 +1,4 @@
-import type { ChannelPublicMember } from '@lobechat/types';
+import type { ChannelPublicMember } from '@lobot/types';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';

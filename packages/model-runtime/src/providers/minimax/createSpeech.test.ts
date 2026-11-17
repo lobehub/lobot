@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { AgentRuntimeErrorType } from '@lobechat/types';
+import { AgentRuntimeErrorType } from '@lobot/types';
 import type { Pricing } from 'model-bank';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

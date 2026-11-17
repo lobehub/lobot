@@ -1,4 +1,4 @@
-import type { SidebarAgentItem, SidebarAgentListResponse, SidebarGroup } from '@lobechat/types';
+import type { SidebarAgentItem, SidebarAgentListResponse, SidebarGroup } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { type SWRResponse } from 'swr';
 

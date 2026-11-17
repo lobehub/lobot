@@ -1,4 +1,4 @@
-import type { TopicCommentJson } from '@lobechat/types';
+import type { TopicCommentJson } from '@lobot/types';
 import type { IEditor, ISlashMenuOption } from '@lobehub/editor';
 import { INSERT_MENTION_COMMAND } from '@lobehub/editor';
 import { $getSelection, $isRangeSelection } from 'lexical';

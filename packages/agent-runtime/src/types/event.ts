@@ -1,4 +1,4 @@
-import type { ChatToolPayload } from '@lobechat/types';
+import type { ChatToolPayload } from '@lobot/types';
 
 import type { AgentState, ToolsCalling } from './state';
 

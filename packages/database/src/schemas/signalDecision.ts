@@ -4,7 +4,7 @@ import type {
   SignalDecisionMetadata,
   SignalDecisionOutcome,
   SignalDecisionVerdict,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { index, jsonb, pgTable, real, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';
 

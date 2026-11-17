@@ -1,5 +1,5 @@
 import { isGoalIdentifier } from '@lobechat/const/builtinTools';
-import type { AssistantContentBlock, ChatToolPayloadWithResult } from '@lobechat/types';
+import type { AssistantContentBlock, ChatToolPayloadWithResult } from '@lobot/types';
 
 export interface OperationGoal {
   criteriaCount: number;

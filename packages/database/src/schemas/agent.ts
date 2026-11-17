@@ -3,8 +3,8 @@ import type {
   LobeAgentAgencyConfig,
   LobeAgentChatConfig,
   LobeAgentTTSConfig,
-} from '@lobechat/types';
-import { AgentChatConfigSchema } from '@lobechat/types';
+} from '@lobot/types';
+import { AgentChatConfigSchema } from '@lobot/types';
 import { isNotNull, isNull } from 'drizzle-orm';
 import {
   boolean,
@@ -128,7 +128,7 @@ export const agents = pgTable(
   ],
 );
 
-/** @deprecated Use CreateAgentSchema from @lobechat/types instead */
+/** @deprecated Use CreateAgentSchema from @lobot/types instead */
 export const insertAgentSchema = createInsertSchema(agents, {
   agencyConfig: z.custom<LobeAgentAgencyConfig>().nullish(),
   // Override chatConfig type to use the proper schema

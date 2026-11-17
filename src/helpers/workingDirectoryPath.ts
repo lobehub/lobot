@@ -1,4 +1,4 @@
-import type { WorkingDirConfig, WorkingDirGitState, WorkingDirRepoType } from '@lobechat/types';
+import type { WorkingDirConfig, WorkingDirGitState, WorkingDirRepoType } from '@lobot/types';
 
 import { isDesktop } from '@/const/version';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { type StoreApiWithSelector } from '@lobechat/types';
+import { type StoreApiWithSelector } from '@lobot/types';
 import { createContext, useContext } from 'react';
 
 import { type Store } from './action';

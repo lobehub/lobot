@@ -1,4 +1,4 @@
-import { type ConversationContext, RequestTrigger } from '@lobechat/types';
+import { type ConversationContext, RequestTrigger } from '@lobot/types';
 import { act, renderHook } from '@testing-library/react';
 import { t } from 'i18next';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

@@ -1,4 +1,4 @@
-import type { ErrorResponse } from '@lobechat/types';
+import type { ErrorResponse } from '@lobot/types';
 import { t } from 'i18next';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

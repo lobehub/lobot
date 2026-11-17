@@ -1,4 +1,4 @@
-import type { TaskItem, TaskSubtaskProgress } from '@lobechat/types';
+import type { TaskItem, TaskSubtaskProgress } from '@lobot/types';
 import {
   and,
   desc,

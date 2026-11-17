@@ -1,5 +1,5 @@
-import type { LobeAgentAgencyConfig } from '@lobechat/types';
-import { resolveAgentAgencyConfig } from '@lobechat/types';
+import type { LobeAgentAgencyConfig } from '@lobot/types';
+import { resolveAgentAgencyConfig } from '@lobot/types';
 
 import { useAgentManagementAccess } from '@/features/ResourcePermission/useAgentManagementAccess';
 import {

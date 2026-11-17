@@ -1,4 +1,4 @@
-import { type ConversationContext } from '@lobechat/types';
+import { type ConversationContext } from '@lobot/types';
 
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';
 

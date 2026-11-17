@@ -1,6 +1,6 @@
 'use client';
 
-import { type VoiceMessageRecording } from '@lobechat/types';
+import { type VoiceMessageRecording } from '@lobot/types';
 import { type SlashOptions } from '@lobehub/editor';
 import {
   type ChatInputActionsProps,

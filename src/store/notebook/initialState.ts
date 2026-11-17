@@ -1,4 +1,4 @@
-import { type NotebookDocument } from '@lobechat/types';
+import { type NotebookDocument } from '@lobot/types';
 
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 

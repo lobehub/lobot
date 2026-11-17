@@ -1,4 +1,4 @@
-import type { ChatTopicMetadata } from '@lobechat/types';
+import type { ChatTopicMetadata } from '@lobot/types';
 import { and, asc, eq, type SQL, sql } from 'drizzle-orm';
 
 import { messages, topics } from '../schemas';

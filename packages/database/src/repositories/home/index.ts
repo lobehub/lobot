@@ -3,7 +3,7 @@ import {
   type SidebarAgentLabel,
   type SidebarAgentListResponse,
   type SidebarGroup,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { cleanObject } from '@lobechat/utils';
 import { and, asc, count, desc, eq, inArray, isNull, not, or, sql } from 'drizzle-orm';
 
@@ -38,7 +38,7 @@ const HOME_UNREAD_EXCLUDE_TRIGGERS = [
 ];
 
 // Re-export types for backward compatibility
-export type { SidebarAgentItem, SidebarAgentListResponse, SidebarGroup } from '@lobechat/types';
+export type { SidebarAgentItem, SidebarAgentListResponse, SidebarGroup } from '@lobot/types';
 
 /**
  * Home Repository - provides sidebar agent list data

@@ -1,4 +1,4 @@
-import { type LobeAgentChatConfig } from '@lobechat/types';
+import { type LobeAgentChatConfig } from '@lobot/types';
 
 import { type AgentStoreState } from '@/store/agent/initialState';
 

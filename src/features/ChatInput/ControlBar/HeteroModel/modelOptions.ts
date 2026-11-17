@@ -14,7 +14,7 @@ const CLAUDE_CODE_MODEL_OPTIONS: StaticModelOption[] = [
 /**
  * Display names for the aliases `static` providers accept. These track CLI
  * releases rather than the provider contract, so they stay out of
- * `@lobechat/types` alongside the capability table.
+ * `@lobot/types` alongside the capability table.
  */
 const STATIC_MODEL_OPTIONS: Record<string, StaticModelOption[]> = {
   'claude-code': CLAUDE_CODE_MODEL_OPTIONS,

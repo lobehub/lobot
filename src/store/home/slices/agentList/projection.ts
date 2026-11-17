@@ -1,4 +1,4 @@
-import type { SidebarAgentListResponse } from '@lobechat/types';
+import type { SidebarAgentListResponse } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 

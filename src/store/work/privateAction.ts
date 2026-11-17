@@ -1,4 +1,4 @@
-import type { WorkListItem, WorkSummaryItem, WorkVersionItem } from '@lobechat/types';
+import type { WorkListItem, WorkSummaryItem, WorkVersionItem } from '@lobot/types';
 
 import {
   arrayEntity,

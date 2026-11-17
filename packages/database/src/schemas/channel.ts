@@ -22,7 +22,7 @@ import type {
   ChannelThreadMetadata,
   ChannelThreadStatus,
   ChannelVisibility,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import type { AnyPgColumn, PgTableExtraConfigValue } from 'drizzle-orm/pg-core';
 import {

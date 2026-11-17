@@ -1,5 +1,5 @@
 import type { Cost, Usage } from '@lobechat/agent-runtime';
-import type { WorkVersionCumulativeUsage } from '@lobechat/types';
+import type { WorkVersionCumulativeUsage } from '@lobot/types';
 
 const finiteNumberOrNull = (value: unknown): number | null =>
   typeof value === 'number' && Number.isFinite(value) ? value : null;

@@ -1,11 +1,11 @@
-import type { FileAccessScope, QueryFileListParams } from '@lobechat/types';
+import type { FileAccessScope, QueryFileListParams } from '@lobot/types';
 import {
   FileSource,
   FilesTabs,
   getAgentShareFileProvenance,
   ordinaryFileAccessScope,
   SortType,
-} from '@lobechat/types';
+} from '@lobot/types';
 import {
   and,
   asc,

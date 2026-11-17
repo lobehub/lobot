@@ -1,6 +1,6 @@
 'use client';
 
-import type { VerifyCodingScope } from '@lobechat/types';
+import type { VerifyCodingScope } from '@lobot/types';
 import {
   ActionIcon,
   Avatar,

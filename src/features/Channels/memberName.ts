@@ -1,5 +1,5 @@
 import { DEFAULT_USER_AVATAR } from '@lobechat/const';
-import type { ChannelPublicMember, ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelPublicMember, ChannelPublicMessage } from '@lobot/types';
 
 export const memberName = (member: ChannelPublicMember | undefined, fallback: string) =>
   member?.name || member?.userName || member?.username || fallback;

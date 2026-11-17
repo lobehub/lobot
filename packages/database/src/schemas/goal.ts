@@ -1,5 +1,5 @@
 import { goalStatuses, goalSubjectTypes } from '@lobechat/const/goal';
-import type { GoalConfig, GoalVisibility } from '@lobechat/types';
+import type { GoalConfig, GoalVisibility } from '@lobot/types';
 import { index, integer, jsonb, pgTable, text } from 'drizzle-orm/pg-core';
 
 import { idGenerator } from '../utils/idGenerator';

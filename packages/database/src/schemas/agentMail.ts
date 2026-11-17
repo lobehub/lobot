@@ -1,4 +1,4 @@
-import type { AgentMailAddress, AgentMailAttachment, AgentMailDirection } from '@lobechat/types';
+import type { AgentMailAddress, AgentMailAttachment, AgentMailDirection } from '@lobot/types';
 import { index, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';
 

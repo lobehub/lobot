@@ -5,7 +5,7 @@ import type {
   ContactRequestItem,
   ContactSearchResult,
   ContactUserProfile,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 

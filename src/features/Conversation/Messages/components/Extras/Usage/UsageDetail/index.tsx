@@ -1,4 +1,4 @@
-import { type ModelPerformance, type ModelUsage } from '@lobechat/types';
+import { type ModelPerformance, type ModelUsage } from '@lobot/types';
 import { formatUsageValue, formatUsd } from '@lobechat/utils';
 import { Center, cssVar, Divider, Flexbox, Icon, Popover } from '@lobehub/ui';
 import { BadgeCent, CoinsIcon } from 'lucide-react';

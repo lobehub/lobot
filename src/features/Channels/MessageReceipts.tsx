@@ -4,7 +4,7 @@ import type {
   ChannelPublicJob,
   ChannelPublicMember,
   ChannelPublicMessage,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { ActionIcon, Button, Flexbox, Popover, Text, usePopoverContext } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { ExternalLink, Square } from 'lucide-react';

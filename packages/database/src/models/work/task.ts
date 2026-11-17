@@ -3,7 +3,7 @@ import type {
   TaskItem,
   TaskWorkListItem,
   TaskWorkSummaryItem,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { and, desc, eq } from 'drizzle-orm';
 
 import { tasks } from '../../schemas/task';

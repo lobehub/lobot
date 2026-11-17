@@ -1,4 +1,4 @@
-import type { AgentDeviceOverride, AgentModelOverride } from '@lobechat/types';
+import type { AgentDeviceOverride, AgentModelOverride } from '@lobot/types';
 
 import { type UserStore } from '@/store/user';
 

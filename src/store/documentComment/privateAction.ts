@@ -3,7 +3,7 @@ import type {
   DocumentCommentDetail,
   DocumentCommentSummary,
   DocumentLikeSummary,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { createReplicaSlice, recordLens } from '@/libs/replica';
 import { documentCommentService } from '@/services/documentComment';

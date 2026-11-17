@@ -4,13 +4,13 @@ import type {
   LocalRuntimeHeterogeneousAgentType,
   RemoteHeterogeneousAgentDescriptor,
   RemoteHeterogeneousAgentType,
-} from '@lobechat/types';
+} from '@lobot/types';
 import {
   HETEROGENEOUS_AGENT_CONFIGS,
   LOCAL_HETEROGENEOUS_AGENT_TYPES,
   LOCAL_RUNTIME_HETEROGENEOUS_AGENT_CONFIGS,
   REMOTE_HETEROGENEOUS_AGENT_CONFIGS,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 export type {
   HeterogeneousAgentType,

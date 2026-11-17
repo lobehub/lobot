@@ -20,7 +20,7 @@ import {
   type LobeAgentTTSConfig,
   type MetaData,
   type RuntimeEnvConfig,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { DEFAULT_OPENING_QUESTIONS } from '@/features/AgentSetting/store/selectors';
 import { resolveTargetDeviceId } from '@/helpers/agentWorkingDirectory';

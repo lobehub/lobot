@@ -1,5 +1,5 @@
-import type { EnvironmentConfiguration, EnvironmentVisibility } from '@lobechat/types';
-import { DEFAULT_REGENERABLE_PATHS } from '@lobechat/types';
+import type { EnvironmentConfiguration, EnvironmentVisibility } from '@lobot/types';
+import { DEFAULT_REGENERABLE_PATHS } from '@lobot/types';
 import { and, asc, eq, isNull, sql } from 'drizzle-orm';
 
 import type { EnvironmentItem, NewEnvironment } from '../schemas';

@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { FileSource } from '@lobechat/types';
+import { FileSource } from '@lobot/types';
 import { eq } from 'drizzle-orm';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 

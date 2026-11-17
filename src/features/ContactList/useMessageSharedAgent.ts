@@ -1,5 +1,5 @@
 import { CHANNEL_URL } from '@lobechat/const';
-import type { ContactAgentProfile } from '@lobechat/types';
+import type { ContactAgentProfile } from '@lobot/types';
 import { toast } from '@lobehub/ui';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';

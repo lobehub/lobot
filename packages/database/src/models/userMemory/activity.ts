@@ -3,7 +3,7 @@ import type {
   ActivityListResult,
   UserMemoryActivity,
   UserMemoryActivityInsert,
-} from '@lobechat/types';
+} from '@lobot/types';
 import type { SQL } from 'drizzle-orm';
 import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm';
 

@@ -2,7 +2,7 @@ import {
   applyTaskReposSelection,
   readTaskExecutionConfig,
   toTaskExecutionConfigPatch,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { toast } from '@lobehub/ui';
 import { cleanup, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

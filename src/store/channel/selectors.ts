@@ -1,4 +1,4 @@
-import type { ChannelJobBlockCode, ChannelReplyJob } from '@lobechat/types';
+import type { ChannelJobBlockCode, ChannelReplyJob } from '@lobot/types';
 
 import type { ChannelViewParams } from '@/services/channel';
 

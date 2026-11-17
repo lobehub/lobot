@@ -1,5 +1,5 @@
-import type { SearchMemoryParams } from '@lobechat/types';
-import { LayersEnum } from '@lobechat/types';
+import type { SearchMemoryParams } from '@lobot/types';
+import { LayersEnum } from '@lobot/types';
 
 import { DEFAULT_HYBRID_SEARCH_LIMIT } from './constants';
 import type { UserMemoryQueryContext } from './context';

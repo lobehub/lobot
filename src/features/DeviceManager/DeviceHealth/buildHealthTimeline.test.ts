@@ -1,4 +1,4 @@
-import type { DeviceMetricPoint } from '@lobechat/types';
+import type { DeviceMetricPoint } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { buildHealthTimeline, groupStripBlocks, type HealthSlot } from './buildHealthTimeline';

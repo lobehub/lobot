@@ -1,4 +1,4 @@
-import type { ChannelMemberConfig, ChannelMemberRole, ChannelRuntime } from '@lobechat/types';
+import type { ChannelMemberConfig, ChannelMemberRole, ChannelRuntime } from '@lobot/types';
 import { eq, inArray, or } from 'drizzle-orm';
 
 import {

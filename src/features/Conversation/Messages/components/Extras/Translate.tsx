@@ -1,4 +1,4 @@
-import { type ChatTranslate } from '@lobechat/types';
+import { type ChatTranslate } from '@lobot/types';
 import {
   ActionIcon,
   copyToClipboard,

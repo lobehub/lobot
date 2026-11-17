@@ -7,8 +7,8 @@ import type {
   ExecAgentAppContext,
   PageSelection,
   RuntimeMentionedAgent,
-} from '@lobechat/types';
-import { resolveAgentAgencyConfig } from '@lobechat/types';
+} from '@lobot/types';
+import { resolveAgentAgencyConfig } from '@lobot/types';
 
 import { isDesktop } from '@/const/version';
 import {

@@ -1,5 +1,5 @@
 import { createFalClient, fal, type FalClient } from '@fal-ai/client';
-import type { ChatModelCard } from '@lobechat/types';
+import type { ChatModelCard } from '@lobot/types';
 import debug from 'debug';
 import { pick } from 'es-toolkit/compat';
 import type { RuntimeImageGenParamsValue } from 'model-bank';

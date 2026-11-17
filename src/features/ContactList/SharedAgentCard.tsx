@@ -1,7 +1,7 @@
 'use client';
 
 import { AGENT_CHAT_URL } from '@lobechat/const';
-import type { ContactAgentItem } from '@lobechat/types';
+import type { ContactAgentItem } from '@lobot/types';
 import { confirmModal, Flexbox, Text, toast } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { MessageCircleIcon, UserRoundIcon, UserRoundMinusIcon } from 'lucide-react';

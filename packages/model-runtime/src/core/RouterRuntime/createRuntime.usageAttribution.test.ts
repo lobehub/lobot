@@ -1,4 +1,4 @@
-import type { ModelUsage } from '@lobechat/types';
+import type { ModelUsage } from '@lobot/types';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type {

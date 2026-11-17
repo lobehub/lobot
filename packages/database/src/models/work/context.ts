@@ -1,4 +1,4 @@
-import { ordinaryWorkAccessScope, type WorkAccessScope } from '@lobechat/types';
+import { ordinaryWorkAccessScope, type WorkAccessScope } from '@lobot/types';
 import type { SQL } from 'drizzle-orm';
 import { and, eq, ne, or, sql } from 'drizzle-orm';
 

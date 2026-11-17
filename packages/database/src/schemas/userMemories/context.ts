@@ -3,7 +3,7 @@ import type {
   UserMemoryDossierDecision,
   UserMemoryDossierStatus,
   UserMemoryVisibility,
-} from '@lobechat/types';
+} from '@lobot/types';
 import {
   boolean,
   index,

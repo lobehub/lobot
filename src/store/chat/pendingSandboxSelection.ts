@@ -1,4 +1,4 @@
-import type { ChatTopicMetadata } from '@lobechat/types';
+import type { ChatTopicMetadata } from '@lobot/types';
 import debug from 'debug';
 
 import type { SandboxSelection } from '@/features/ChatInput/ControlBar/useSandboxPlacement';

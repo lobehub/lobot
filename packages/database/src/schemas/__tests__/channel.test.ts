@@ -1,5 +1,5 @@
 // @vitest-environment node
-import type { ChannelInputManifest, ChannelMemberConfig } from '@lobechat/types';
+import type { ChannelInputManifest, ChannelMemberConfig } from '@lobot/types';
 import { eq, inArray, or } from 'drizzle-orm';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 

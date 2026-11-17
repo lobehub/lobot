@@ -1,4 +1,4 @@
-import type { UserMemoryEvidenceSource } from '@lobechat/types';
+import type { UserMemoryEvidenceSource } from '@lobot/types';
 import { index, integer, jsonb, numeric, pgTable, text, vector } from 'drizzle-orm/pg-core';
 
 import { idGenerator } from '../../utils/idGenerator';

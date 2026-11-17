@@ -27,9 +27,11 @@ import WorkspaceLink from '@/features/Workspace/WorkspaceLink';
 import { useCopyAgentIdMenuItem } from '@/hooks/useCopyAgentIdMenuItem';
 import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
 
+import { AgentPresenceDot, AgentPresenceLabel } from './AgentPresenceBadge';
 import { AVATAR_SIZE, COVER_HEIGHT, MenuTile, styles, TileContent } from './cardParts';
 import { ContactInfo } from './ContactInfo';
 import SharedAgentCard from './SharedAgentCard';
+import { useAgentPresence } from './useAgentPresence';
 import { type ContactCardState, useContactCard } from './useContactCard';
 
 const ContactCard = memo<Extract<ContactCardState, { status: 'ready' }>>(
@@ -45,6 +47,7 @@ const ContactCard = memo<Extract<ContactCardState, { status: 'ready' }>>(
     const channelsEnabled = useChannelsEnabled();
     const message = useAgentConversationLink(agentId, chatUrl);
     const copyIdItem = useCopyAgentIdMenuItem(agentId);
+    const presence = useAgentPresence(agentId);
     const moreItems = [
       {
         icon: canEdit ? PencilLineIcon : UserRoundIcon,
@@ -74,15 +77,17 @@ const ContactCard = memo<Extract<ContactCardState, { status: 'ready' }>>(
           />
         </div>
         <Flexbox align={'center'} gap={8} {...stylex.props(styles.body)}>
-          <span
-            className={cx(
-              stylex.props(styles.avatar).className,
-              cardStyles.avatarRing,
-              !badge.cover && cardStyles.avatarPlain,
-              isGroup && cardStyles.avatarRingGroup,
-            )}
-          >
-            <SidebarItemAvatar item={item} shape={'circle'} size={AVATAR_SIZE - 6} />
+          <span {...stylex.props(styles.avatar, styles.avatarAnchor)}>
+            <span
+              className={cx(
+                cardStyles.avatarRing,
+                !badge.cover && cardStyles.avatarPlain,
+                isGroup && cardStyles.avatarRingGroup,
+              )}
+            >
+              <SidebarItemAvatar item={item} shape={'circle'} size={AVATAR_SIZE - 6} />
+            </span>
+            {presence && <AgentPresenceDot presence={presence} />}
           </span>
           <Text
             ellipsis
@@ -93,10 +98,15 @@ const ContactCard = memo<Extract<ContactCardState, { status: 'ready' }>>(
           >
             {title}
           </Text>
-          {role && (
-            <span className={cardStyles.role} title={role}>
-              {role}
-            </span>
+          {(role || presence) && (
+            <Flexbox horizontal align={'center'} gap={6} justify={'center'} wrap={'wrap'}>
+              {role && (
+                <span className={cardStyles.role} title={role}>
+                  {role}
+                </span>
+              )}
+              {presence && <AgentPresenceLabel presence={presence} />}
+            </Flexbox>
           )}
           <div {...stylex.props(styles.actions)}>
             <WorkspaceLink

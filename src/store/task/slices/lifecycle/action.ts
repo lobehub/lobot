@@ -1,4 +1,4 @@
-import type { TaskDetailData, TaskStatus } from '@lobechat/types';
+import type { TaskDetailData, TaskStatus } from '@lobot/types';
 import debug from 'debug';
 
 import { taskService } from '@/services/task';

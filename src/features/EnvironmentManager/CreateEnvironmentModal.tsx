@@ -1,6 +1,6 @@
 'use client';
 
-import type { EnvironmentVisibility } from '@lobechat/types';
+import type { EnvironmentVisibility } from '@lobot/types';
 import {
   Button,
   confirmModal,

@@ -1,4 +1,4 @@
-import type { ChannelListItem } from '@lobechat/types';
+import type { ChannelListItem } from '@lobot/types';
 
 /**
  * The Channels one sidebar lists: a project's own, or (without a project) those outside every

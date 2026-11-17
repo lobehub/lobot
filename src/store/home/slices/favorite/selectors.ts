@@ -1,4 +1,4 @@
-import type { FavoriteItem, FavoriteType } from '@lobechat/types';
+import type { FavoriteItem, FavoriteType } from '@lobot/types';
 
 import type { HomeStoreState } from '@/store/home/initialState';
 

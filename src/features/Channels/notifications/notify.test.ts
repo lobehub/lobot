@@ -1,4 +1,4 @@
-import type { ChannelListItem, ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelListItem, ChannelPublicMessage } from '@lobot/types';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('i18next', () => ({

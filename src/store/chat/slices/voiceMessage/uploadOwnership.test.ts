@@ -1,4 +1,4 @@
-import { type UploadFileItem } from '@lobechat/types';
+import { type UploadFileItem } from '@lobot/types';
 import { describe, expect, it, vi } from 'vitest';
 
 import { VoiceMessageUploadOwnership } from './uploadOwnership';

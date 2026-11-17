@@ -1,4 +1,4 @@
-import type { ChannelListItem } from '@lobechat/types';
+import type { ChannelListItem } from '@lobot/types';
 
 /**
  * The other person in a conversation between two people, as the viewer knows them. The stored

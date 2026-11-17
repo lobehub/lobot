@@ -1,7 +1,7 @@
 /**
  * The AI-provider settings / CRUD types are owned by `model-bank` (its
  * provider catalog data is typed by them) — re-exported here so existing
- * `@lobechat/types` / `@/types/aiProvider` imports keep working.
+ * `@lobot/types` / `@/types/aiProvider` imports keep working.
  *
  * Explicit named re-exports on purpose: a blanket `export * from 'model-bank'`
  * through this barrel would collide with sibling files' exports and TypeScript

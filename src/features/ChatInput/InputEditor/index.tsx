@@ -6,7 +6,7 @@ import {
   INPUT_COMPLETION_PROMPT_VERSION,
   INPUT_COMPLETION_SCHEMA_NAME,
 } from '@lobechat/prompts';
-import { RequestTrigger } from '@lobechat/types';
+import { RequestTrigger } from '@lobot/types';
 import { isCommandPressed } from '@lobechat/utils';
 import type { IEditor, ISlashMenuOption, ISlashSectionOption } from '@lobehub/editor';
 import { INSERT_MENTION_COMMAND, ReactAutoCompletePlugin } from '@lobehub/editor';

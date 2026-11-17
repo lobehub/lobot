@@ -4,7 +4,7 @@ import type {
   WorkListItem,
   WorkSummaryItem,
   WorkVersionEventItem,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { and, desc, eq } from 'drizzle-orm';
 
 import { documents } from '../../schemas/file';

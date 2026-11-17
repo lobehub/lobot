@@ -1,4 +1,4 @@
-import type { ChatTopicStatus, TopicQuerySortBy } from '@lobechat/types';
+import type { ChatTopicStatus, TopicQuerySortBy } from '@lobot/types';
 import {
   getDurationMs,
   logTimingSink as logTiming,

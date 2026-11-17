@@ -1,4 +1,4 @@
-import type { ChannelListItem, RecentItem, SidebarAgentItem } from '@lobechat/types';
+import type { ChannelListItem, RecentItem, SidebarAgentItem } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import {

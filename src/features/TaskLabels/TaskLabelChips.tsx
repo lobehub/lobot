@@ -1,4 +1,4 @@
-import type { TaskLabelRef } from '@lobechat/types';
+import type { TaskLabelRef } from '@lobot/types';
 import { Flexbox, Text, Tooltip } from '@lobehub/ui';
 import { cssVar as sxVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

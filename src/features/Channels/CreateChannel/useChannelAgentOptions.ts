@@ -1,5 +1,5 @@
 import { INBOX_SESSION_ID, isHeterogeneousAgentModelId } from '@lobechat/const';
-import type { SidebarAgentItem } from '@lobechat/types';
+import type { SidebarAgentItem } from '@lobot/types';
 
 import { useHomeStore } from '@/store/home';
 import { homeAgentListSelectors } from '@/store/home/selectors';

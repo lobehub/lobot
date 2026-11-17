@@ -1,4 +1,4 @@
-import { getGroupMemberAnchorIndex } from '@lobechat/types';
+import { getGroupMemberAnchorIndex } from '@lobot/types';
 
 import { buildHelperMaps } from './indexing';
 import { buildIdTree } from './structuring';

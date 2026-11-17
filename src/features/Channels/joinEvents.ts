@@ -1,4 +1,4 @@
-import type { ChannelDetail, ChannelPublicMember, ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelDetail, ChannelPublicMember, ChannelPublicMessage } from '@lobot/types';
 
 /** Members added by one action land within this window and read as one line. */
 const BATCH_MS = 5000;

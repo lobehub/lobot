@@ -1,4 +1,4 @@
-import type { WorkListItem, WorkVersionItem } from '@lobechat/types';
+import type { WorkListItem, WorkVersionItem } from '@lobot/types';
 import type { ReplicaSyncOptions } from 'local-replica/zustand';
 
 import type { ReplicaSyncResult } from '@/libs/replica';

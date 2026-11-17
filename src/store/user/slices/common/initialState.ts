@@ -6,7 +6,7 @@ import {
   type Plans,
   type ReferralStatusString,
   type UserInitializationState,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { createReplicaState, type ReplicaState } from 'local-replica';
 
 export interface CommonState {

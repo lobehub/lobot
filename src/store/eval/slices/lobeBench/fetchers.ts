@@ -1,4 +1,4 @@
-import type { AgentEvalDatasetListItem, AgentEvalRunTopicResult } from '@lobechat/types';
+import type { AgentEvalDatasetListItem, AgentEvalRunTopicResult } from '@lobot/types';
 
 import { agentEvalService } from '@/services/agentEval';
 import { isLobeBenchKind } from '@/store/eval/kinds';

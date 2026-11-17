@@ -2,7 +2,7 @@ import {
   type SidebarAgentItem,
   type SidebarAgentListResponse,
   type SidebarGroup,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 import type { AgentMetaUpdate } from '@/store/agent/slices/agent/action';

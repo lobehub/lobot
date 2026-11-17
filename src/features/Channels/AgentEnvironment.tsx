@@ -1,4 +1,4 @@
-import type { ChannelPublicMember } from '@lobechat/types';
+import type { ChannelPublicMember } from '@lobot/types';
 import { Button, createModal, Flexbox, Text, toast, useModalContext } from '@lobehub/ui';
 import { t } from 'i18next';
 import { useState } from 'react';

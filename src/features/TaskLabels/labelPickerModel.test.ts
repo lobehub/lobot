@@ -1,4 +1,4 @@
-import type { TaskLabel } from '@lobechat/types';
+import type { TaskLabel } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import {

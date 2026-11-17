@@ -1,4 +1,4 @@
-import { type ExpertiseEnforcement } from '@lobechat/types';
+import { type ExpertiseEnforcement } from '@lobot/types';
 import { and, asc, eq, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
 
 import {

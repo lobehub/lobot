@@ -7,7 +7,7 @@ import {
   type LobeAgentAgencyConfig,
   type LobeAgentTTSConfig,
   type RuntimeEnvConfig,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { resolveTargetDeviceId } from '@/helpers/agentWorkingDirectory';
 import { globalAgentContextManager } from '@/helpers/GlobalAgentContextManager';

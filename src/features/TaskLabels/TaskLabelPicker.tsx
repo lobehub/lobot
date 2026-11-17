@@ -1,4 +1,4 @@
-import { DEFAULT_TASK_LABEL_COLOR, type TaskLabel, type TaskLabelRef } from '@lobechat/types';
+import { DEFAULT_TASK_LABEL_COLOR, type TaskLabel, type TaskLabelRef } from '@lobot/types';
 import { Button, cssVar, Flexbox, Icon, Popover, Text, Tooltip } from '@lobehub/ui';
 import { cssVar as sxVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

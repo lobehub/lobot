@@ -5,7 +5,7 @@ import type {
   UserMemoryExperienceWithoutVectors,
   UserMemoryIdentityWithoutVectors,
   UserMemoryPreferenceWithoutVectors,
-} from '@lobechat/types';
+} from '@lobot/types';
 import type { SQL } from 'drizzle-orm';
 import { and, desc, eq, inArray, or, sql } from 'drizzle-orm';
 

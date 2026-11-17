@@ -1,6 +1,6 @@
 import { isHeterogeneousAgentModelId } from '@lobechat/const';
-import type { DeviceListItem, LobeAgentAgencyConfig } from '@lobechat/types';
-import { defaultChannelAgentDirectory, isChannelRuntime } from '@lobechat/types';
+import type { DeviceListItem, LobeAgentAgencyConfig } from '@lobot/types';
+import { defaultChannelAgentDirectory, isChannelRuntime } from '@lobot/types';
 
 import type { ChannelAgentSelection } from '@/services/channel';
 

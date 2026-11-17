@@ -17,7 +17,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import type { FavoriteItem as FavoriteItemType } from '@lobechat/types';
+import type { FavoriteItem as FavoriteItemType } from '@lobot/types';
 import { toast } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

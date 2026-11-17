@@ -1,4 +1,4 @@
-import type { ModelUsage } from '@lobechat/types';
+import type { ModelUsage } from '@lobot/types';
 
 /**
  * Stable identity of the router attempt that served a request, so billing can attribute the

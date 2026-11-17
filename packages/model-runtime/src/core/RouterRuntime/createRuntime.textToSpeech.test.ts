@@ -1,4 +1,4 @@
-import { RequestTrigger } from '@lobechat/types';
+import { RequestTrigger } from '@lobot/types';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { TextToSpeechOptions, TextToSpeechPayload, TextToSpeechResponse } from '../../types';

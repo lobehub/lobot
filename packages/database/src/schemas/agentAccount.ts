@@ -4,7 +4,7 @@ import type {
   AgentAccountKind,
   AgentAccountSettings,
   AgentAccountStatus,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import { index, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';
@@ -31,7 +31,7 @@ import { workspaces } from './workspace';
  * never selected by list queries, never returned by the API, and never reaches
  * the model; `credential_hint` carries the non-secret display facts instead.
  *
- * `kind` / `status` are plain text columns typed via `@lobechat/types` unions —
+ * `kind` / `status` are plain text columns typed via `@lobot/types` unions —
  * no DB-level enum, so onboarding a new kind never needs a migration.
  */
 export const agentAccounts = pgTable(

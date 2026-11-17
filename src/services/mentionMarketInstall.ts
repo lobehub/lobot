@@ -1,4 +1,4 @@
-import type { DiscoverAssistantDetail } from '@lobechat/types';
+import type { DiscoverAssistantDetail } from '@lobot/types';
 
 import { getActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import type {

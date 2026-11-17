@@ -1,6 +1,6 @@
 'use client';
 
-import { type VoiceMessageRecording } from '@lobechat/types';
+import { type VoiceMessageRecording } from '@lobot/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {

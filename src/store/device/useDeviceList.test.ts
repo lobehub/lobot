@@ -7,7 +7,7 @@
  */
 import { randomUUID } from 'node:crypto';
 
-import type { DeviceListItem } from '@lobechat/types';
+import type { DeviceListItem } from '@lobot/types';
 import { act, render, renderHook, waitFor } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { createElement, useEffect } from 'react';

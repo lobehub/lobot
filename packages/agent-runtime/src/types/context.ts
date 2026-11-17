@@ -11,7 +11,7 @@ import type {
   GroupContextMemberInfo,
   SkillSource,
 } from '@lobechat/prompts';
-import type { ExtendedHumanInterventionConfig } from '@lobechat/types';
+import type { ExtendedHumanInterventionConfig } from '@lobot/types';
 
 interface LobeChatPluginApi {
   /**
@@ -131,7 +131,7 @@ export interface ResolvedToolSet {
 
 /**
  * Lightweight skill metadata for context injection
- * Compatible with the SkillMeta that will be added in @lobechat/types (Phase 3.2)
+ * Compatible with the SkillMeta that will be added in @lobot/types (Phase 3.2)
  */
 export interface SkillMeta {
   /**
@@ -228,7 +228,7 @@ interface UserMemoryPersonaItem {
 
 /**
  * User memory data structure
- * Compatible with SearchMemoryResult from @lobechat/types
+ * Compatible with SearchMemoryResult from @lobot/types
  */
 interface UserMemoryData {
   activities?: UserMemoryActivityItem[];

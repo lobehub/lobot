@@ -1,4 +1,4 @@
-import type { FollowUpChip } from '@lobechat/types';
+import type { FollowUpChip } from '@lobot/types';
 
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 

@@ -1,5 +1,5 @@
-import type { ModelUsage } from '@lobechat/types';
-import { AgentRuntimeErrorType } from '@lobechat/types';
+import type { ModelUsage } from '@lobot/types';
+import { AgentRuntimeErrorType } from '@lobot/types';
 import { z } from 'zod';
 
 import type {

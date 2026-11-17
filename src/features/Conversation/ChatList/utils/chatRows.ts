@@ -1,4 +1,4 @@
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 
 import type { SteerContinuation } from '../../store/slices/data/steerChains';
 import { collectSteerChains } from '../../store/slices/data/steerChains';

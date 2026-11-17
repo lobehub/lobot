@@ -1,6 +1,6 @@
 import type Anthropic from '@anthropic-ai/sdk';
 import type { Stream } from '@anthropic-ai/sdk/streaming';
-import type { ChatCitationItem, ChatMessageError } from '@lobechat/types';
+import type { ChatCitationItem, ChatMessageError } from '@lobot/types';
 
 import type { ChatStreamCallbacks } from '../../../types';
 import { AgentRuntimeErrorType } from '../../../types/error';

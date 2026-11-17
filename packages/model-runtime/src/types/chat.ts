@@ -3,7 +3,7 @@ import type {
   ModelReasoning,
   ModelTokensUsage,
   ModelUsage,
-} from '@lobechat/types';
+} from '@lobot/types';
 import type OpenAI from 'openai';
 
 import type { ComputeChatCostOptions } from '../core/usageConverters/utils/computeChatCost';

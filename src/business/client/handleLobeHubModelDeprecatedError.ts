@@ -1,4 +1,4 @@
-import { ChatErrorType } from '@lobechat/types';
+import { ChatErrorType } from '@lobot/types';
 import { toast } from '@lobehub/ui';
 import { TRPCClientError } from '@trpc/client';
 import { t } from 'i18next';

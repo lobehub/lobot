@@ -1,4 +1,4 @@
-import { type SSOProvider } from '@lobechat/types';
+import { type SSOProvider } from '@lobot/types';
 
 import { type LobeUser } from '@/types/user';
 

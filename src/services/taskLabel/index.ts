@@ -1,4 +1,4 @@
-import type { TaskLabelRef, TaskLabelWithUsage } from '@lobechat/types';
+import type { TaskLabelRef, TaskLabelWithUsage } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 

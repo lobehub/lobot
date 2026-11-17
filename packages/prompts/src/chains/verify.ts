@@ -1,4 +1,4 @@
-import type { VerifyCheckItem, VerifyEvidenceType } from '@lobechat/types';
+import type { VerifyCheckItem, VerifyEvidenceType } from '@lobot/types';
 
 /** Bump when the plan-gen prompt meaningfully changes (tracing partition key). */
 export const VERIFY_PLAN_PROMPT_VERSION = 'v4';

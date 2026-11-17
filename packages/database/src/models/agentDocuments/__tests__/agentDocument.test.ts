@@ -4,7 +4,7 @@ import {
   AGENT_DOCUMENT_SOURCE_TYPE,
   AGENT_SIGNAL_SOURCE_TYPE,
 } from '@lobechat/const';
-import { agentShareDocumentAccessScope } from '@lobechat/types';
+import { agentShareDocumentAccessScope } from '@lobot/types';
 import { and, eq } from 'drizzle-orm';
 import { beforeEach, describe, expect, it } from 'vitest';
 

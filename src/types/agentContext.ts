@@ -2,7 +2,7 @@
  * Agent context shapes the app builds: agent documents, the Agent Builder snapshot and the
  * onboarding user. Moved here from the removed `@lobechat/context-engine` package.
  */
-import type { AgentDocumentPolicyLoad } from '@lobechat/types';
+import type { AgentDocumentPolicyLoad } from '@lobot/types';
 
 export type AgentDocumentLoadRule = 'always' | 'by-keywords' | 'by-regexp' | 'by-time-range';
 

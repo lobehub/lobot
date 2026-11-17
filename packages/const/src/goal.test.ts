@@ -2,7 +2,7 @@ import type {
   GoalRolloutTrigger as GoalRolloutTriggerType,
   GoalStatus as GoalStatusType,
   GoalSubjectType as GoalSubjectTypeType,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import {
@@ -15,7 +15,7 @@ import {
 } from './goal';
 
 describe('goal consts', () => {
-  it('stays in sync with the @lobechat/types unions', () => {
+  it('stays in sync with the @lobot/types unions', () => {
     expectTypeOf<(typeof goalStatuses)[number]>().toEqualTypeOf<GoalStatusType>();
     expectTypeOf<(typeof goalSubjectTypes)[number]>().toEqualTypeOf<GoalSubjectTypeType>();
     expectTypeOf<(typeof goalRolloutTriggers)[number]>().toEqualTypeOf<GoalRolloutTriggerType>();

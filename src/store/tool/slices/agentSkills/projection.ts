@@ -1,4 +1,4 @@
-import type { SkillResourceTreeNode } from '@lobechat/types';
+import type { SkillResourceTreeNode } from '@lobot/types';
 
 import { arrayEntity, defineReplica, type ReplicaEntityAdapter } from '@/libs/replica';
 import type { agentSkillService } from '@/services/skill';

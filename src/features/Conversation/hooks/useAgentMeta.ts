@@ -1,5 +1,5 @@
 import { DEFAULT_INBOX_TITLE } from '@lobechat/const';
-import { type MetaData } from '@lobechat/types';
+import { type MetaData } from '@lobot/types';
 import { useMemo } from 'react';
 
 import { useAgentStore } from '@/store/agent';

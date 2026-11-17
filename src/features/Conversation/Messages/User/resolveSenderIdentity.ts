@@ -4,7 +4,7 @@ import {
   type BotSenderMetadata,
   type MessageSender,
   RequestTrigger,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { parseSpeakerTag } from '@/store/chat/utils/parseSpeakerTag';
 

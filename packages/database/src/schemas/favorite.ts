@@ -1,4 +1,4 @@
-import type { FavoriteType } from '@lobechat/types';
+import type { FavoriteType } from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import { index, integer, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 

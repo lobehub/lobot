@@ -1,4 +1,4 @@
-import type { ChannelListItem } from '@lobechat/types';
+import type { ChannelListItem } from '@lobot/types';
 
 import type { ChannelListSort } from '@/store/global/initialState';
 

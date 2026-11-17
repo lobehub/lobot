@@ -1,4 +1,4 @@
-import type { ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelPublicMessage } from '@lobot/types';
 import { Button, Flexbox } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';

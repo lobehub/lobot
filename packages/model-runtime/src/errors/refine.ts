@@ -2,7 +2,7 @@ import {
   AgentRuntimeErrorType,
   ChatErrorType,
   type ILobeAgentRuntimeErrorType,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { matchErrorPattern } from './match';
 

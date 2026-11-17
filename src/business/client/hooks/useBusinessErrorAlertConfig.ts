@@ -1,4 +1,4 @@
-import { type ErrorType } from '@lobechat/types';
+import { type ErrorType } from '@lobot/types';
 import { type AlertProps } from '@lobehub/ui';
 
 export default function useBusinessErrorAlertConfig(

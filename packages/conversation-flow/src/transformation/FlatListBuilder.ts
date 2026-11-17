@@ -1,4 +1,4 @@
-import type { AssistantContentBlock, ChatToolPayloadWithResult } from '@lobechat/types';
+import type { AssistantContentBlock, ChatToolPayloadWithResult } from '@lobot/types';
 
 import { isInThreadScope } from '../indexing';
 import type { Message, MessageGroupMetadata, ThreadScope } from '../types';

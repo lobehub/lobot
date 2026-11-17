@@ -1,8 +1,8 @@
 'use client';
 
 import { isDesktop } from '@lobechat/const';
-import type { WorkingDirEntry } from '@lobechat/types';
-import { getWorkingDirEffectivePath } from '@lobechat/types';
+import type { WorkingDirEntry } from '@lobot/types';
+import { getWorkingDirEffectivePath } from '@lobot/types';
 import { memo } from 'react';
 
 import SafeBoundary from '@/components/ErrorBoundary';

@@ -1,4 +1,4 @@
-import type { DeviceListItem, WorkingDirEntry } from '@lobechat/types';
+import type { DeviceListItem, WorkingDirEntry } from '@lobot/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { cacheScope } from '@/libs/replica';

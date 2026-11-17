@@ -1,4 +1,4 @@
-import type { ModelTokensUsage } from '@lobechat/types';
+import type { ModelTokensUsage } from '@lobot/types';
 import {
   type AudioTokenEstimateSource,
   estimateAudioInputTokens,

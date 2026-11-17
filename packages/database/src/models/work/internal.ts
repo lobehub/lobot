@@ -10,7 +10,7 @@ import type {
   WorkSummaryVersionPreview,
   WorkVersionEventItem,
   WorkVersionPreview,
-} from '@lobechat/types';
+} from '@lobot/types';
 import type { SQL } from 'drizzle-orm';
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';

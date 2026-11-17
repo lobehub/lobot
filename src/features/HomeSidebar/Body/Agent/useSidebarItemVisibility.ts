@@ -1,6 +1,6 @@
 'use client';
 
-import type { SidebarAgentItem } from '@lobechat/types';
+import type { SidebarAgentItem } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { useCallback, useMemo } from 'react';
 

@@ -5,7 +5,7 @@ import type {
   UserMemoryExperienceWithoutVectors,
   UserMemoryIdentityWithoutVectors,
   UserMemoryPreferenceWithoutVectors,
-} from '@lobechat/types';
+} from '@lobot/types';
 import type { AnyColumn } from 'drizzle-orm';
 
 export interface Bm25MatchFieldGroup {

@@ -5,7 +5,7 @@ import {
   readHeterogeneousInterventionDeadline,
   type ToolIntervention,
   type UIChatMessage,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 interface PendingIntervention {
   apiName: string;

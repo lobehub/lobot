@@ -1,4 +1,4 @@
-import type { GoalGraphSnapshot } from '@lobechat/types';
+import type { GoalGraphSnapshot } from '@lobot/types';
 
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 import type { MetricSeriesWithPoints } from '@/services/metric';

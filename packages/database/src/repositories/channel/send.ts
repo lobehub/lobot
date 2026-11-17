@@ -1,5 +1,5 @@
-import type { ChannelRoutingMode } from '@lobechat/types';
-import { CHANNEL_LIMITS } from '@lobechat/types';
+import type { ChannelRoutingMode } from '@lobot/types';
+import { CHANNEL_LIMITS } from '@lobot/types';
 import { and, asc, eq, inArray } from 'drizzle-orm';
 
 import type { ChannelMessageItem } from '../../schemas';

@@ -1,4 +1,4 @@
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 import { useEffect, useRef } from 'react';
 
 import { findBranchSwitchesToMessage } from '../utils/deepLinkBranch';

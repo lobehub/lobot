@@ -1,5 +1,5 @@
-import type { ModelPricingContext, RouterRuntimeRequestContext } from '@lobechat/types';
-import { AgentRuntimeErrorType } from '@lobechat/types';
+import type { ModelPricingContext, RouterRuntimeRequestContext } from '@lobot/types';
+import { AgentRuntimeErrorType } from '@lobot/types';
 import debug from 'debug';
 
 import type { VideoPollingRoute } from '../../types';

@@ -1,4 +1,4 @@
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 
 const isCompressedGroup = (message: UIChatMessage) => message.role === 'compressedGroup';
 

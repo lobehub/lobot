@@ -14,7 +14,7 @@ import type {
   SystemAgentItem,
   UserServiceModelConfig,
   UserServiceModelConfigKey,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { DEFAULT_EMBEDDING_MODEL, DEFAULT_MINI_MODEL, DEFAULT_MODEL } from './llm';
 

@@ -1,4 +1,4 @@
-import { type ConversationContext as BaseConversationContext } from '@lobechat/types';
+import { type ConversationContext as BaseConversationContext } from '@lobot/types';
 
 /**
  * Extended Conversation Context

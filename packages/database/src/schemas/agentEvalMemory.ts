@@ -1,4 +1,4 @@
-import type { EvalMemoryLayer, EvalMemorySource } from '@lobechat/types';
+import type { EvalMemoryLayer, EvalMemorySource } from '@lobot/types';
 import { index, jsonb, pgTable, text, uuid, vector } from 'drizzle-orm/pg-core';
 
 import { timestamps, timestamptz } from './_helpers';

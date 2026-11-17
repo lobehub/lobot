@@ -1,4 +1,4 @@
-import { type SidebarAgentItem } from '@lobechat/types';
+import { type SidebarAgentItem } from '@lobot/types';
 
 /** Flatten sidebar buckets into one list, first occurrence of an id wins. */
 const dedupeById = (items: SidebarAgentItem[]): SidebarAgentItem[] => {

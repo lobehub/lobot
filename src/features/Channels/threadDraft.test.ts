@@ -1,4 +1,4 @@
-import type { ChannelPublicMember, ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelPublicMember, ChannelPublicMessage } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { draftThreadFollowerIds } from './threadDraft';

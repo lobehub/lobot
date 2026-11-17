@@ -1,4 +1,4 @@
-import type { GoalGraphSnapshot } from '@lobechat/types';
+import type { GoalGraphSnapshot } from '@lobot/types';
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

@@ -18,7 +18,7 @@
  * Each factory also exposes `.root` (the namespace string) for `mutate`
  * matchers that compare `key[0]`.
  */
-import { type ConversationContext } from '@lobechat/types';
+import { type ConversationContext } from '@lobot/types';
 
 type KeyFactory<A extends unknown[]> = ((...args: A) => readonly unknown[]) & { root: string };
 

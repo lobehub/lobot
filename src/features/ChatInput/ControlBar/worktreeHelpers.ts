@@ -1,4 +1,4 @@
-import type { DeviceGitWorktreeListItem } from '@lobechat/types';
+import type { DeviceGitWorktreeListItem } from '@lobot/types';
 
 export const getPathName = (path: string): string =>
   path.replaceAll('\\', '/').split('/').findLast(Boolean) || path;

@@ -1,4 +1,4 @@
-import type { AgentEvalRunListItem } from '@lobechat/types';
+import type { AgentEvalRunListItem } from '@lobot/types';
 
 import type { EvalStore } from '@/store/eval/store';
 

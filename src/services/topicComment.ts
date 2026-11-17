@@ -2,7 +2,7 @@ import type {
   CreateTopicCommentInput,
   TopicCommentJson,
   UpdateTopicCommentInput,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 

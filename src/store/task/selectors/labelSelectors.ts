@@ -1,4 +1,4 @@
-import type { TaskLabelWithUsage } from '@lobechat/types';
+import type { TaskLabelWithUsage } from '@lobot/types';
 
 import type { TaskStoreState } from '../initialState';
 

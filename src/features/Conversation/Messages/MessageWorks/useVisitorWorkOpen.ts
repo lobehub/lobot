@@ -1,4 +1,4 @@
-import type { WorkSummaryItem } from '@lobechat/types';
+import type { WorkSummaryItem } from '@lobot/types';
 import { useCallback } from 'react';
 
 import { getWorkTypeDescriptor, isSafeExternalUrl } from '@/features/Work/descriptors';

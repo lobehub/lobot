@@ -1,4 +1,4 @@
-import type { RemoteServerNetworkErrorType } from '@lobechat/types';
+import type { RemoteServerNetworkErrorType } from '@lobot/types';
 import { toast } from '@lobehub/ui';
 import { t } from 'i18next';
 

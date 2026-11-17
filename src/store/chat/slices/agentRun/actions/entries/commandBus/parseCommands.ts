@@ -2,7 +2,7 @@ import type {
   RuntimeMentionedAgent,
   RuntimeSelectedSkill,
   RuntimeSelectedTool,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import type {
   ActionTagCategory,

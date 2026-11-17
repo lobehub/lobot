@@ -1,5 +1,5 @@
-import type { ILobeAgentRuntimeErrorType } from '@lobechat/types';
-import { AgentRuntimeErrorType } from '@lobechat/types';
+import type { ILobeAgentRuntimeErrorType } from '@lobot/types';
+import { AgentRuntimeErrorType } from '@lobot/types';
 
 export const AGENT_RUNTIME_ERROR_SET = new Set<string>(Object.values(AgentRuntimeErrorType));
 
@@ -30,5 +30,5 @@ export interface ChatMessageError {
   type: ErrorType | ILobeAgentRuntimeErrorType;
 }
 
-export type { ILobeAgentRuntimeErrorType } from '@lobechat/types';
-export { AgentRuntimeErrorType } from '@lobechat/types';
+export type { ILobeAgentRuntimeErrorType } from '@lobot/types';
+export { AgentRuntimeErrorType } from '@lobot/types';

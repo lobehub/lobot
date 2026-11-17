@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 
-import type { VerifyCheckItem } from '@lobechat/types';
-import { verifyCheckDefinitionSchema } from '@lobechat/types';
+import type { VerifyCheckItem } from '@lobot/types';
+import { verifyCheckDefinitionSchema } from '@lobot/types';
 import { and, arrayContains, desc, eq, ilike, inArray, isNull } from 'drizzle-orm';
 
 import { documents, files } from '../schemas/file';

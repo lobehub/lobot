@@ -2,7 +2,7 @@ import {
   type HeterogeneousProviderBindingError,
   isHeterogeneousProviderBindingSupported,
 } from '@lobechat/heterogeneous-agents';
-import type { HeterogeneousProviderApiConfig } from '@lobechat/types';
+import type { HeterogeneousProviderApiConfig } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { useMemo } from 'react';
 

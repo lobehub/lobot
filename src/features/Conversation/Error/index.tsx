@@ -9,7 +9,7 @@ import {
   type ErrorType,
   type ILobeAgentRuntimeErrorType,
   type IToolErrorType,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { isRecord } from '@lobechat/utils/object';
 import { type AlertProps, Block, Highlighter, Skeleton, toast } from '@lobehub/ui';
 import { memo, useCallback, useMemo } from 'react';

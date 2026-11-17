@@ -2,7 +2,7 @@ import {
   type ConversationContext,
   type SendMessageParams,
   type UploadFileItem,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 type SendMessage = (
   params: SendMessageParams & { conversationContext?: ConversationContext },

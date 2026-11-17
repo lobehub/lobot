@@ -1,4 +1,4 @@
-import type { AgentEvalDataset, AgentEvalDatasetListItem } from '@lobechat/types';
+import type { AgentEvalDataset, AgentEvalDatasetListItem } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 
 import {

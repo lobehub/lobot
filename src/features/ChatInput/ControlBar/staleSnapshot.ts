@@ -1,4 +1,4 @@
-import type { DeviceGitLinkedPullRequest, WorkingDirGitState } from '@lobechat/types';
+import type { DeviceGitLinkedPullRequest, WorkingDirGitState } from '@lobot/types';
 
 import { getWorkingDirectoryName, isWorktreeCheckout } from '@/helpers/workingDirectoryPath';
 

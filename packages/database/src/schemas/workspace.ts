@@ -1,4 +1,4 @@
-import type { WorkspaceMemberConfig, WorkspaceUserPreference } from '@lobechat/types';
+import type { WorkspaceMemberConfig, WorkspaceUserPreference } from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import {
   boolean,

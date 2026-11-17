@@ -2,7 +2,7 @@ import type {
   LinearConnectionMetadata,
   LinearIssueStateType,
   LinearSyncResult,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { isNotNull, isNull } from 'drizzle-orm';
 import { index, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 

@@ -1,4 +1,4 @@
-import type { ChannelPublicJob } from '@lobechat/types';
+import type { ChannelPublicJob } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import {

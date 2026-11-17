@@ -3,7 +3,7 @@
  */
 import { randomUUID } from 'node:crypto';
 
-import { MANAGED_CLOUD_DEVICE_IDENTITY_SOURCE } from '@lobechat/types';
+import { MANAGED_CLOUD_DEVICE_IDENTITY_SOURCE } from '@lobot/types';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { createElement, useEffect } from 'react';

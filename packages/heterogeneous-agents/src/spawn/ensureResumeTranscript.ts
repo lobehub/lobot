@@ -2,7 +2,7 @@ import { mkdir, readdir, realpath, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import path from 'node:path';
 
-import type { HeteroSessionImportMessage } from '@lobechat/types';
+import type { HeteroSessionImportMessage } from '@lobot/types';
 
 import {
   buildClaudeCodeTranscript,

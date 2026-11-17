@@ -802,8 +802,8 @@ export interface InitWorkspaceParams {
  * Project-root agent instructions (`AGENTS.md` / `CLAUDE.md`) read in one shot
  * during workspace init. Full body is carried (capped) so the server can inject
  * it into the system role and the web UI can render it without a second call.
- * Mirrors `WorkspaceInstructions` in `@lobechat/types` (kept local — this is a
- * leaf package with no `@lobechat/types` dependency).
+ * Mirrors `WorkspaceInstructions` in `@lobot/types` (kept local — this is a
+ * leaf package with no `@lobot/types` dependency).
  */
 export interface WorkspaceInstructionsItem {
   content: string;
@@ -813,7 +813,7 @@ export interface WorkspaceInstructionsItem {
 /**
  * One-call workspace scan: project-root instructions + project skills (both
  * `.agents/skills` and `.claude/skills`, merged). Mirrors `WorkspaceInitResult`
- * in `@lobechat/types`; the server narrows `skills` to `ProjectSkillMeta` when
+ * in `@lobot/types`; the server narrows `skills` to `ProjectSkillMeta` when
  * caching onto `devices.workingDirs[].workspace`.
  */
 export interface InitWorkspaceResult {

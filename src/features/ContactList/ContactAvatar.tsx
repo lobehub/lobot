@@ -1,4 +1,4 @@
-import type { SidebarAgentItem } from '@lobechat/types';
+import type { SidebarAgentItem } from '@lobot/types';
 import { memo } from 'react';
 
 import AgentAvatar from '@/components/AgentAvatar';

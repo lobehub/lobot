@@ -1,4 +1,4 @@
-import { type ChatToolPayload, type UIChatMessage } from '@lobechat/types';
+import { type ChatToolPayload, type UIChatMessage } from '@lobot/types';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { type MessageDispatch } from './reducer';

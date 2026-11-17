@@ -1,5 +1,5 @@
-import type { ChatTopic } from '@lobechat/types';
-import { resolveAgentAgencyConfig } from '@lobechat/types';
+import type { ChatTopic } from '@lobot/types';
+import { resolveAgentAgencyConfig } from '@lobot/types';
 
 import {
   ensureAgentManagementAccess,

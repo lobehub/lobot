@@ -6,7 +6,7 @@ import {
   type ComfyUIKeyVault,
   type OpenAICompatibleKeyVault,
   type VertexAIKeyVault,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { clientApiKeyManager } from '@lobechat/utils/client/apiKeyManager';
 import { ModelProvider } from 'model-bank/modelProvider';
 

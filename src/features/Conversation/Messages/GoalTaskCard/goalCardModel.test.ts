@@ -1,5 +1,5 @@
 import { GOAL_ACCEPTANCE_TASK_TITLE } from '@lobechat/const/goal';
-import type { GoalGraphNode, GoalGraphSnapshot, GoalItem } from '@lobechat/types';
+import type { GoalGraphNode, GoalGraphSnapshot, GoalItem } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { buildGoalCardModel, windowPlanSteps } from './goalCardModel';

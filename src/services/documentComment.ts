@@ -1,4 +1,4 @@
-import type { CreateDocumentCommentInput, UpdateDocumentCommentInput } from '@lobechat/types';
+import type { CreateDocumentCommentInput, UpdateDocumentCommentInput } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 

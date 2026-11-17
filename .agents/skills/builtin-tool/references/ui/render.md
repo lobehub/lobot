@@ -25,7 +25,7 @@ interface BuiltinRenderProps<Arguments = any, State = any, Content = any> {
 
 ```tsx
 // client/Render/CrawlSinglePage.tsx
-import type { BuiltinRenderProps, CrawlPluginState, CrawlSinglePageQuery } from '@lobechat/types';
+import type { BuiltinRenderProps, CrawlPluginState, CrawlSinglePageQuery } from '@lobot/types';
 import { memo } from 'react';
 
 import PageContent from './PageContent';
@@ -80,7 +80,7 @@ if (pluginError) {
 ## Render registry — `client/Render/index.ts`
 
 ```ts
-import type { BuiltinRender } from '@lobechat/types';
+import type { BuiltinRender } from '@lobot/types';
 
 import { TaskApiName } from '../../types';
 import CreateTaskRender from './CreateTask';

@@ -1,5 +1,5 @@
 import { isDesktop } from '@lobechat/const';
-import { getWorkingDirEffectivePath } from '@lobechat/types';
+import { getWorkingDirEffectivePath } from '@lobot/types';
 import { useEffect, useMemo } from 'react';
 import useSWR from 'swr';
 

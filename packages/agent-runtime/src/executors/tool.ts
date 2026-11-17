@@ -1,4 +1,4 @@
-import type { ChatToolPayload, WorkRegistrationIntent } from '@lobechat/types';
+import type { ChatToolPayload, WorkRegistrationIntent } from '@lobot/types';
 
 import { UsageCounter } from '../core';
 import type {

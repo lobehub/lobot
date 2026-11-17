@@ -1,4 +1,4 @@
-import type { EnvironmentKind, EnvironmentSource, EnvironmentVisibility } from '@lobechat/types';
+import type { EnvironmentKind, EnvironmentSource, EnvironmentVisibility } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 

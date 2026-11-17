@@ -1,4 +1,4 @@
-import type { SearchMemoryParams } from '@lobechat/types';
+import type { SearchMemoryParams } from '@lobot/types';
 
 import type {
   LayerBaseMemorySignals,

@@ -1,5 +1,5 @@
 import { ENABLE_BUSINESS_FEATURES } from '@lobechat/business-const';
-import type { IFeatureFlagsState } from '@lobechat/types';
+import type { IFeatureFlagsState } from '@lobot/types';
 import { z } from 'zod';
 
 // Define a union type for feature flag values: either boolean or array of user IDs

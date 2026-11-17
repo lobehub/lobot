@@ -1,4 +1,4 @@
-import { type ConversationContext } from '@lobechat/types';
+import { type ConversationContext } from '@lobot/types';
 
 /**
  * Evict the persisted transcripts of conversations matching `predicate` (every

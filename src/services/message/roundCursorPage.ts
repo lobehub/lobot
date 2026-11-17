@@ -1,4 +1,4 @@
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 
 import { type MessageListQueryContext, normalizeMessageListQueryContext } from '@/libs/swr/keys';
 import { lambdaClient } from '@/libs/trpc/client';

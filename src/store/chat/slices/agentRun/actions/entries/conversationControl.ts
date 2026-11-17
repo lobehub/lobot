@@ -1,5 +1,5 @@
 import { MESSAGE_CANCEL_FLAT } from '@lobechat/const';
-import { type ConversationContext } from '@lobechat/types';
+import { type ConversationContext } from '@lobot/types';
 
 import { type ChatInputEditor } from '@/features/ChatInput';
 import { type OptimisticUpdateContext } from '@/store/chat/slices/message/actions/optimisticUpdate';

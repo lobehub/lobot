@@ -1,4 +1,4 @@
-import type { ChannelThreadMention } from '@lobechat/types';
+import type { ChannelThreadMention } from '@lobot/types';
 import { and, desc, eq, gt, inArray, sql } from 'drizzle-orm';
 
 import { channelMembers, channelMessages, channelThreads } from '../../schemas';

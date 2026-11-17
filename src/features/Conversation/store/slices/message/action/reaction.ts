@@ -1,4 +1,4 @@
-import type { EmojiReaction } from '@lobechat/types';
+import type { EmojiReaction } from '@lobot/types';
 import type { StateCreator } from 'zustand';
 
 import { useUserStore } from '@/store/user';

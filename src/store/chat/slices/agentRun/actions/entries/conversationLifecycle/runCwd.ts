@@ -1,5 +1,5 @@
 import { isDesktop } from '@lobechat/const';
-import type { ChatTopic, ConversationContext, WorkingDirConfig } from '@lobechat/types';
+import type { ChatTopic, ConversationContext, WorkingDirConfig } from '@lobot/types';
 
 import { deviceService } from '@/services/device';
 import type { PendingNewTopicDirectory } from '@/store/chat/slices/topic/initialState';

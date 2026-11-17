@@ -1,4 +1,4 @@
-import type { OpenAIChatMessage, UIChatMessage } from '@lobechat/types';
+import type { OpenAIChatMessage, UIChatMessage } from '@lobot/types';
 
 export const TOPIC_TITLE_PROMPT_VERSION = 'v1';
 

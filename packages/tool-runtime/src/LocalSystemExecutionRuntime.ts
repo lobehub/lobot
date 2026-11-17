@@ -1,4 +1,4 @@
-import type { BuiltinServerRuntimeOutput } from '@lobechat/types';
+import type { BuiltinServerRuntimeOutput } from '@lobot/types';
 
 import { ComputerRuntime } from './ComputerRuntime';
 import { resolveArgsWithScope, resolvePathWithScope } from './pathScope';

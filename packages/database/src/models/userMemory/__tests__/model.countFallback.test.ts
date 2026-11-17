@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { PGlite } from '@electric-sql/pglite';
-import { LayersEnum } from '@lobechat/types';
+import { LayersEnum } from '@lobot/types';
 import { eq } from 'drizzle-orm';
 import { drizzle as proxyDrizzle } from 'drizzle-orm/pg-proxy';
 import type { Pool } from 'pg';

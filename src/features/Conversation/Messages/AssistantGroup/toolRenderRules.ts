@@ -4,7 +4,7 @@ import {
   WebOnboardingApiName,
   WebOnboardingIdentifier,
 } from '@lobechat/const/builtinTools';
-import type { ChatToolPayloadWithResult } from '@lobechat/types';
+import type { ChatToolPayloadWithResult } from '@lobot/types';
 
 import { getMcpAppFromState } from '@/libs/mcp/mcpApp';
 

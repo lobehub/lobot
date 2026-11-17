@@ -1,4 +1,4 @@
-import { AgentRuntimeErrorType } from '@lobechat/types';
+import { AgentRuntimeErrorType } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { convertIterableToStream, createFirstErrorHandleTransformer } from './protocol';

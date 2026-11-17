@@ -1,4 +1,4 @@
-import type { WorkSummaryItem } from '@lobechat/types';
+import type { WorkSummaryItem } from '@lobot/types';
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

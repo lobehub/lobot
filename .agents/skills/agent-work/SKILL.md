@@ -15,7 +15,7 @@ Two tables (`packages/database/src/schemas/work.ts`):
 
 ## Type registry
 
-`packages/database/src/models/work/registry.ts` is the single registry of Work types (`document` / `external` / `file` / `task`): `WORK_TYPE_ADAPTERS` is `satisfies Record<WorkType, WorkTypeAdapter>`, so a type added to `@lobechat/types` without an adapter is a compile error.
+`packages/database/src/models/work/registry.ts` is the single registry of Work types (`document` / `external` / `file` / `task`): `WORK_TYPE_ADAPTERS` is `satisfies Record<WorkType, WorkTypeAdapter>`, so a type added to `@lobot/types` without an adapter is a compile error.
 
 **Read-path compatibility gate**: `OPT_IN_WORK_TYPES` (currently `{'file'}`) hides newer types from clients that did not opt in (`includeFileWorks`). Released Electron clients lag by weeks and crash on unknown type descriptors (`descriptor.getIcon` on `undefined`), so a request without the opt-in receives exactly the pre-`file` set. Any NEW Work type must ship behind the same kind of opt-in.
 
@@ -127,7 +127,7 @@ The whole scan returns `{attempted, failed}` and the completion backstop (`Compl
 
 **New Work type (new card kind):**
 
-1. `@lobechat/types` — extend `WorkType` and related unions.
+1. `@lobot/types` — extend `WorkType` and related unions.
 2. `packages/database/src/models/work/` — new adapter module + `WORK_TYPE_ADAPTERS` entry (compile-enforced).
 3. Client — add the type descriptor for the card UI.
 4. **Add the type to the read-path opt-in gate** (`OPT_IN_WORK_TYPES` pattern) — released clients throw on unknown types; never ship a new type into the legacy result set.

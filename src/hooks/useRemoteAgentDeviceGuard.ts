@@ -1,5 +1,5 @@
 import { isRemoteHeterogeneousType } from '@lobechat/heterogeneous-agents';
-import { isWakeableManagedDevice } from '@lobechat/types';
+import { isWakeableManagedDevice } from '@lobot/types';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useEffectiveAgencyConfig } from '@/hooks/useEffectiveAgencyConfig';

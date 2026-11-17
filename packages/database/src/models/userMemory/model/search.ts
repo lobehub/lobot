@@ -3,7 +3,7 @@ import type {
   UserMemoryContextWithoutVectors,
   UserMemoryExperienceWithoutVectors,
   UserMemoryPreferenceWithoutVectors,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { and, cosineDistance, desc, eq, sql } from 'drizzle-orm';
 
 import {

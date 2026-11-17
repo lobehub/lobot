@@ -1,5 +1,5 @@
 import { CURRENT_VERSION } from '@lobechat/const';
-import type { ChatModelCard } from '@lobechat/types';
+import type { ChatModelCard } from '@lobot/types';
 import { loadModels, MODEL_REASONING_EXTEND_PARAMS, ModelProvider } from 'model-bank';
 import OpenAI from 'openai';
 

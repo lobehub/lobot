@@ -1,4 +1,4 @@
-import type { OpenAIChatMessage } from '@lobechat/types';
+import type { OpenAIChatMessage } from '@lobot/types';
 
 interface ExpertiseGenerateObjectSchema {
   name: string;

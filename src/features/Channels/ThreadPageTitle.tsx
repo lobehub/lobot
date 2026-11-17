@@ -1,4 +1,4 @@
-import type { ChannelDetail } from '@lobechat/types';
+import type { ChannelDetail } from '@lobot/types';
 import { ActionIcon, cssVar, DropdownMenu, Flexbox, Icon, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { ChevronDown, ChevronRight, Hash, MessagesCircle, MoreHorizontal } from 'lucide-react';

@@ -7,7 +7,7 @@ import {
   type StepActivatedSkill,
   type StepContextTodos,
   type UIChatMessage,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { chatHelpers } from '../../../helpers';
 import { type ChatStoreState } from '../../../initialState';

@@ -1,4 +1,4 @@
-import type { ChatFileItem } from '@lobechat/types';
+import type { ChatFileItem } from '@lobot/types';
 
 import {
   formatTextWindowAttributes,

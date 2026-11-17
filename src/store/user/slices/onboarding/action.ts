@@ -1,5 +1,5 @@
 import { CURRENT_ONBOARDING_VERSION, INBOX_SESSION_ID } from '@lobechat/const';
-import { CLASSIC_ONBOARDING_MAX_STEP, getPluginMode, upsertPluginMode } from '@lobechat/types';
+import { CLASSIC_ONBOARDING_MAX_STEP, getPluginMode, upsertPluginMode } from '@lobot/types';
 
 import { userService } from '@/services/user';
 import { type StoreSetter } from '@/store/types';

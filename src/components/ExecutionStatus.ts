@@ -1,5 +1,5 @@
-import type { ProjectStatus, TaskStatus } from '@lobechat/types';
-import { PROJECT_STATUSES } from '@lobechat/types';
+import type { ProjectStatus, TaskStatus } from '@lobot/types';
+import { PROJECT_STATUSES } from '@lobot/types';
 import { cssVar } from '@lobehub/ui';
 import type { LucideIcon } from 'lucide-react';
 import {

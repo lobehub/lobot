@@ -1,6 +1,6 @@
 'use client';
 
-import type { ContactAgentProfile, ContactSearchResult } from '@lobechat/types';
+import type { ContactAgentProfile, ContactSearchResult } from '@lobot/types';
 import { Empty, Flexbox, Skeleton, Text, toast } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

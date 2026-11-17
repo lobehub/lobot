@@ -1,5 +1,5 @@
 import { parse } from '@lobechat/conversation-flow';
-import { type ChatToolPayload, type UIChatMessage } from '@lobechat/types';
+import { type ChatToolPayload, type UIChatMessage } from '@lobot/types';
 import i18n from 'i18next';
 
 import { messagesReducer as conversationMessagesReducer } from '@/features/Conversation/store/slices/data/reducer';

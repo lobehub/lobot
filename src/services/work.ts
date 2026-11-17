@@ -13,7 +13,7 @@ import type {
   WorkVersionEventMap,
   WorkVersionItem,
   WorkVisibility,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { mutate } from '@/libs/swr';
 import { matchDomain, workKeys } from '@/libs/swr/keys';

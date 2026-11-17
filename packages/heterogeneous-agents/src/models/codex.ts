@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import type { CodexSpeedMode, HeterogeneousAgentModel } from '@lobechat/types';
+import type { CodexSpeedMode, HeterogeneousAgentModel } from '@lobot/types';
 import { isRecord } from '@lobechat/utils/object';
 
 import { CodexAppServerClient, CodexAppServerRpcError } from '../codex/CodexAppServerClient';

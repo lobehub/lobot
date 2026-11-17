@@ -1,4 +1,4 @@
-import type { LobeAgentAgencyConfig } from '@lobechat/types';
+import type { LobeAgentAgencyConfig } from '@lobot/types';
 import { and, eq, inArray } from 'drizzle-orm';
 import type { PartialDeep } from 'type-fest';
 

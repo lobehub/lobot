@@ -1,4 +1,4 @@
-import type { ConversationContext, UploadFileItem } from '@lobechat/types';
+import type { ConversationContext, UploadFileItem } from '@lobot/types';
 
 import { operationSelectors } from '@/store/chat/slices/operation/selectors';
 import {

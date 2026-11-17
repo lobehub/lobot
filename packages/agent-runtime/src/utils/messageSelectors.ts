@@ -1,4 +1,4 @@
-import type { StepActivatedSkill, StepContextTodos, UIChatMessage } from '@lobechat/types';
+import type { StepActivatedSkill, StepContextTodos, UIChatMessage } from '@lobot/types';
 
 import { isNonEmptyString, isPlainRecord } from './object';
 

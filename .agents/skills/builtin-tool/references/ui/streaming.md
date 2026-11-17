@@ -25,7 +25,7 @@ Note there's **no `state` or `result` prop** — the Streaming component is for 
 ```tsx
 'use client';
 
-import type { BuiltinStreamingProps } from '@lobechat/types';
+import type { BuiltinStreamingProps } from '@lobot/types';
 import { Highlighter } from '@lobehub/ui';
 import { memo } from 'react';
 

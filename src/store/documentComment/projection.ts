@@ -6,7 +6,7 @@ import type {
   DocumentCommentThread,
   DocumentCommentThreadPage,
   DocumentLikeSummary,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { definePagedReplica, defineReplica, type ReplicaPagedData } from '@/libs/replica';
 

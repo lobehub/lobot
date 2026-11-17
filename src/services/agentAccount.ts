@@ -2,7 +2,7 @@ import type {
   AgentAccountKind,
   AgentInboxMessage,
   AgentInboxMessageSummary,
-} from '@lobechat/types';
+} from '@lobot/types';
 import type { inferRouterOutputs } from '@trpc/server';
 
 import { lambdaClient } from '@/libs/trpc/client';

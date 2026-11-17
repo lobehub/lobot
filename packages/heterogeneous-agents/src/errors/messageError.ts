@@ -1,4 +1,4 @@
-import type { ChatErrorHeterogeneousContext, ChatMessageError } from '@lobechat/types';
+import type { ChatErrorHeterogeneousContext, ChatMessageError } from '@lobot/types';
 import { isRecord } from '@lobechat/utils/object';
 
 import { isLocalHeterogeneousType } from '../config';

@@ -1,5 +1,5 @@
 import { BRANDING_URL } from '@lobechat/business-const';
-import { ChatErrorType, Plans } from '@lobechat/types';
+import { ChatErrorType, Plans } from '@lobot/types';
 import { Avatar, Button, Center, createStaticStyles, Flexbox, Text } from '@lobehub/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';

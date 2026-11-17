@@ -9,7 +9,7 @@
 import { randomUUID } from 'node:crypto';
 
 import type { GitWorkingTreePatch } from '@lobechat/electron-client-ipc';
-import type { DeviceGitPullRequestDetailResult } from '@lobechat/types';
+import type { DeviceGitPullRequestDetailResult } from '@lobot/types';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { createElement, useEffect } from 'react';

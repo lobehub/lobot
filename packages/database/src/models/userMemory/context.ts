@@ -1,4 +1,4 @@
-import type { UserMemoryContext, UserMemoryContextInsert } from '@lobechat/types';
+import type { UserMemoryContext, UserMemoryContextInsert } from '@lobot/types';
 import { and, desc, eq } from 'drizzle-orm';
 
 import { userMemories, userMemoriesContexts } from '../../schemas';

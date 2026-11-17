@@ -1,4 +1,4 @@
-import type { UserGeneralConfig } from '@lobechat/types';
+import type { UserGeneralConfig } from '@lobot/types';
 
 export const DEFAULT_COST_ESTIMATE_WARNING_THRESHOLD = 0.5;
 

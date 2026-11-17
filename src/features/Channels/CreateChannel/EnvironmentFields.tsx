@@ -1,4 +1,4 @@
-import type { DeviceListItem } from '@lobechat/types';
+import type { DeviceListItem } from '@lobot/types';
 import { Button, Select, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { FolderOpen } from 'lucide-react';

@@ -1,4 +1,4 @@
-import type { ChatTopic, RecentTopic } from '@lobechat/types';
+import type { ChatTopic, RecentTopic } from '@lobot/types';
 
 import { createReplicaSlice, recordLens } from '@/libs/replica';
 import { topicService } from '@/services/topic';

@@ -2,7 +2,7 @@ import type {
   AgentEvalRunDetail,
   AgentEvalRunListItem,
   AgentEvalRunResults,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 

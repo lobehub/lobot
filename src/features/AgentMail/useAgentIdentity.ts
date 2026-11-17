@@ -1,4 +1,4 @@
-import type { AgentInboxMessageSummary } from '@lobechat/types';
+import type { AgentInboxMessageSummary } from '@lobot/types';
 import { useState } from 'react';
 import useSWR from 'swr';
 import useSWRImmutable from 'swr/immutable';

@@ -1,4 +1,4 @@
-import type { AiProviderConfig, AiProviderSettings } from '@lobechat/types';
+import type { AiProviderConfig, AiProviderSettings } from '@lobot/types';
 import { isNotNull, isNull } from 'drizzle-orm';
 import {
   boolean,

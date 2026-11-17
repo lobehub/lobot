@@ -1,4 +1,4 @@
-import { MANAGED_CLOUD_DEVICE_IDENTITY_SOURCE } from '@lobechat/types';
+import { MANAGED_CLOUD_DEVICE_IDENTITY_SOURCE } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { resolveExecutionPlan } from '@/helpers/executionTarget';

@@ -9,8 +9,8 @@ import {
   type ModelReasoning,
   type UIChatMessage,
   type UpdateMessageRAGParams,
-} from '@lobechat/types';
-import { ChatErrorType } from '@lobechat/types';
+} from '@lobot/types';
+import { ChatErrorType } from '@lobot/types';
 import { nanoid } from '@lobechat/utils';
 
 import { messageService } from '@/services/message';

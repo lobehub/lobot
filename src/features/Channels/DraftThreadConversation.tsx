@@ -1,4 +1,4 @@
-import type { ChannelDetail } from '@lobechat/types';
+import type { ChannelDetail } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { useTranslation } from 'react-i18next';

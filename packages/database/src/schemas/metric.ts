@@ -4,7 +4,7 @@ import type {
   MetricKind,
   MetricPointSourceType,
   MetricSubjectType,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { index, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
 import { idGenerator } from '../utils/idGenerator';

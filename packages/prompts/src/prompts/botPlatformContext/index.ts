@@ -1,5 +1,5 @@
-import type { BotWakeKind } from '@lobechat/types';
-import { BOT_NO_REPLY_TOKEN, BOT_STAND_DOWN_MINUTES, BOT_STAND_DOWN_TOKEN } from '@lobechat/types';
+import type { BotWakeKind } from '@lobot/types';
+import { BOT_NO_REPLY_TOKEN, BOT_STAND_DOWN_MINUTES, BOT_STAND_DOWN_TOKEN } from '@lobot/types';
 
 import { formatOptionalReply } from '../optionalReply';
 

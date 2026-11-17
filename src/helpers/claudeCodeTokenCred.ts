@@ -1,4 +1,4 @@
-import { type UserCredSummary } from '@lobechat/types';
+import { type UserCredSummary } from '@lobot/types';
 
 /**
  * Fixed vault key of the Claude Code OAuth token. The cloud sandbox injects the

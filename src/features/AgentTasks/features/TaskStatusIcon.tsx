@@ -1,4 +1,4 @@
-import type { TaskStatus } from '@lobechat/types';
+import type { TaskStatus } from '@lobot/types';
 import { ActionIcon } from '@lobehub/ui';
 import { memo } from 'react';
 

@@ -4,7 +4,7 @@ How to shape list and detail data in Zustand stores. Request lifecycle, loading 
 
 ## Rules
 
-1. **Types come from `@lobechat/types`**, one entity per file. Never use `@lobechat/database` row types in store state; convert at the boundary.
+1. **Types come from `@lobot/types`**, one entity per file. Never use `@lobechat/database` row types in store state; convert at the boundary.
 2. **List item and detail are separate types.** The list item is a subset that drops heavy fields (`content`, `editorData`, `rubrics`, large arrays) and may add computed UI fields (`testCaseCount`). It never `extends` the detail type — that pulls the heavy fields back in. Worked examples: [types](data-structures/types.md).
 3. **Details are cached by id** in `xxxDetailMap: Record<string, Detail>`, so switching between detail pages does not refetch and per-row updates stay local. Never hold a single `xxxDetail` object.
 4. **Read through selectors** (`xxxSelectors.getXxxDetail(id)`) so components do not repeat map lookups.

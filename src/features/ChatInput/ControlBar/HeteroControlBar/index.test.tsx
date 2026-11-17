@@ -2,7 +2,7 @@
  * @vitest-environment happy-dom
  */
 import type * as LobechatConstModule from '@lobechat/const';
-import type { HeterogeneousProviderConfig } from '@lobechat/types';
+import type { HeterogeneousProviderConfig } from '@lobot/types';
 import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';

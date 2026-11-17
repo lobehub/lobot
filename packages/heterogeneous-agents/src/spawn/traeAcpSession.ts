@@ -1,4 +1,4 @@
-import type { HeterogeneousAgentModel } from '@lobechat/types';
+import type { HeterogeneousAgentModel } from '@lobot/types';
 
 import type { AcpAgentSessionOptions } from './acpAgentSession';
 import {

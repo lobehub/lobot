@@ -1,4 +1,4 @@
-import type { MCPErrorType } from '@lobechat/types';
+import type { MCPErrorType } from '@lobot/types';
 
 interface InputSchema {
   [k: string]: unknown;

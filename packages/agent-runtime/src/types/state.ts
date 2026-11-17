@@ -15,7 +15,7 @@ import type {
   SecurityBlacklistConfig,
   SerializedAgentHook,
   UserInterventionConfig,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import type {
   ActivatedStepSkill,

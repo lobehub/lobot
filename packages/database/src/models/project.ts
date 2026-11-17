@@ -1,6 +1,6 @@
 import { BUILTIN_AGENT_SLUGS } from '@lobechat/builtin-agents';
 import { INBOX_SESSION_ID } from '@lobechat/const';
-import type { ProjectStatus, ProjectVisibility } from '@lobechat/types';
+import type { ProjectStatus, ProjectVisibility } from '@lobot/types';
 import { and, asc, desc, eq, inArray, isNull, max, ne, or, sql } from 'drizzle-orm';
 
 import { agents } from '../schemas/agent';

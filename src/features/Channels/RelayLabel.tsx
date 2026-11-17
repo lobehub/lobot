@@ -1,4 +1,4 @@
-import type { ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelPublicMessage } from '@lobot/types';
 import { Flexbox, Text } from '@lobehub/ui';
 import { useTranslation } from 'react-i18next';
 

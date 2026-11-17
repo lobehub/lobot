@@ -1,4 +1,4 @@
-import type { FileShareConfig, ShareVisibility } from '@lobechat/types';
+import type { FileShareConfig, ShareVisibility } from '@lobot/types';
 import { index, integer, jsonb, pgTable, text, uniqueIndex } from 'drizzle-orm/pg-core';
 
 import { createNanoId } from '../utils/idGenerator';

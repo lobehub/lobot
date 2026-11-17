@@ -1,4 +1,4 @@
-import type { SidebarLayoutPreference } from '@lobechat/types';
+import type { SidebarLayoutPreference } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { useEffect } from 'react';
 

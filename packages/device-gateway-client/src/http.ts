@@ -1,4 +1,4 @@
-import type { DeviceClient, DeviceMetricSample } from '@lobechat/types';
+import type { DeviceClient, DeviceMetricSample } from '@lobot/types';
 
 import {
   describeGatewayRequestFailure,

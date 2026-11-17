@@ -1,4 +1,4 @@
-import { type ChatMessageError } from '@lobechat/types';
+import { type ChatMessageError } from '@lobot/types';
 
 // Ollama has quoted the model name both ways: `model "x" not found` and `model 'x' not found`.
 const UNRESOLVED_MODEL_REGEXP = /model ["']([^"']+)["'] not found/;

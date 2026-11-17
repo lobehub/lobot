@@ -1,4 +1,4 @@
-import type { OpenAIChatMessage } from '@lobechat/types';
+import type { OpenAIChatMessage } from '@lobot/types';
 
 /** Bump when the create-task intent recognition prompt meaningfully changes. */
 export const TASK_INTENT_PROMPT_VERSION = 'v1';

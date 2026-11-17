@@ -10,7 +10,7 @@
  */
 import { randomUUID } from 'node:crypto';
 
-import type { TopicCommentItem, TopicCommentThread } from '@lobechat/types';
+import type { TopicCommentItem, TopicCommentThread } from '@lobot/types';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { createElement, useEffect } from 'react';

@@ -1,7 +1,7 @@
 'use client';
 
 import { CHANNEL_URL } from '@lobechat/const';
-import type { ChannelListItem } from '@lobechat/types';
+import type { ChannelListItem } from '@lobot/types';
 import { Avatar, Icon } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

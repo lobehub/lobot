@@ -1,4 +1,4 @@
-import type { DeviceBoundAgentItem, LobeAgentAgencyConfig } from '@lobechat/types';
+import type { DeviceBoundAgentItem, LobeAgentAgencyConfig } from '@lobot/types';
 
 /** One chat group an agent belongs to, as surfaced by the transfer guards. */
 /**

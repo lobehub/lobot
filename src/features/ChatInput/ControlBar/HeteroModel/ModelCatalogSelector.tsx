@@ -1,8 +1,8 @@
 'use client';
 
 import { getHeterogeneousTypeLabel } from '@lobechat/heterogeneous-agents';
-import type { ListHeterogeneousAgentModelsParams } from '@lobechat/types';
-import { HETEROGENEOUS_AGENT_DEFAULT_SELECTION } from '@lobechat/types';
+import type { ListHeterogeneousAgentModelsParams } from '@lobot/types';
+import { HETEROGENEOUS_AGENT_DEFAULT_SELECTION } from '@lobot/types';
 import {
   ActionIcon,
   Button,

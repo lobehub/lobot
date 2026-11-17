@@ -1,4 +1,4 @@
-import { ArtifactType } from '@lobechat/types';
+import { ArtifactType } from '@lobot/types';
 import { cx, Flexbox, Icon, Tabs, Text } from '@lobehub/ui';
 import { CodeIcon, EyeIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';

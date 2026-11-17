@@ -1,6 +1,6 @@
 'use client';
 
-import { agentDisplayName, type ChannelMemberEnvironmentPreview } from '@lobechat/types';
+import { agentDisplayName, type ChannelMemberEnvironmentPreview } from '@lobot/types';
 import {
   ActionIcon,
   createStaticStyles,

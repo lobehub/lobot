@@ -1,5 +1,5 @@
 import type * as LobechatConstModule from '@lobechat/const';
-import { type ToolManifest } from '@lobechat/types';
+import { type ToolManifest } from '@lobot/types';
 import { type PluginItem } from '@lobehub/market-sdk';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

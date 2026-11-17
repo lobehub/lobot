@@ -1,4 +1,4 @@
-import type { ChannelAuditDetails } from '@lobechat/types';
+import type { ChannelAuditDetails } from '@lobot/types';
 import { eq } from 'drizzle-orm';
 
 import type { ChannelItem } from '../../schemas';

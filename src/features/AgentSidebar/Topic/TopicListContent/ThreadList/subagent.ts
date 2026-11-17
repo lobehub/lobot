@@ -1,4 +1,4 @@
-import type { ThreadMetadata } from '@lobechat/types';
+import type { ThreadMetadata } from '@lobot/types';
 
 /**
  * Whether a thread was spawned by a tool call — the product's own subagent

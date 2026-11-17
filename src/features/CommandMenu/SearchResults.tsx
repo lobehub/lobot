@@ -1,5 +1,5 @@
 import { AGENT_CHAT_TOPIC_URL, GROUP_CHAT_TOPIC_URL, GROUP_CHAT_URL } from '@lobechat/const';
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
 import { Command } from 'cmdk';
 import dayjs from 'dayjs';

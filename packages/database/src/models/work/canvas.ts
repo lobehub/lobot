@@ -4,7 +4,7 @@ import type {
   WorkItem,
   WorkMetadata,
   WorkVersionItem,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 
 import { agents } from '../../schemas/agent';

@@ -1,4 +1,4 @@
-import type { CreateMessageParams, UIChatMessage, UpdateMessageParams } from '@lobechat/types';
+import type { CreateMessageParams, UIChatMessage, UpdateMessageParams } from '@lobot/types';
 
 /** Minimal reference an executor needs back after creating a message. */
 export interface RuntimeMessageRef {

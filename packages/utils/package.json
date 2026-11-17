@@ -15,7 +15,7 @@
   "dependencies": {
     "@lobechat/const": "workspace:*",
     "@lobechat/ssrf-safe-fetch": "workspace:*",
-    "@lobechat/types": "workspace:*",
+    "@lobot/types": "workspace:*",
     "chroma-js": "^3.3.0",
     "dayjs": "^1.11.21",
     "debug": "^4.4.3",

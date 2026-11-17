@@ -1,4 +1,4 @@
-import type { ListedWorkType, WorkSkillProvider } from '@lobechat/types';
+import type { ListedWorkType, WorkSkillProvider } from '@lobot/types';
 
 /**
  * `?works=` values: the per-type keys (task / document / canvas) plus the per-PROVIDER

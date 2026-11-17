@@ -21,7 +21,7 @@ No `pluginState` — Placeholder lives entirely in the "executing" gap.
 `packages/builtin-tool-web-browsing/src/client/Placeholder/Search.tsx`:
 
 ```tsx
-import type { BuiltinPlaceholderProps, SearchQuery } from '@lobechat/types';
+import type { BuiltinPlaceholderProps, SearchQuery } from '@lobot/types';
 import { createStaticStyles, cx, Flexbox, Icon, Skeleton } from '@lobehub/ui';
 import { SearchIcon } from 'lucide-react';
 import { memo } from 'react';

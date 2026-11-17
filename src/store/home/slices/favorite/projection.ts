@@ -1,4 +1,4 @@
-import type { FavoriteItem } from '@lobechat/types';
+import type { FavoriteItem } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 

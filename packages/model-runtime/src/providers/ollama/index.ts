@@ -1,4 +1,4 @@
-import type { ChatModelCard } from '@lobechat/types';
+import type { ChatModelCard } from '@lobot/types';
 import { ModelProvider } from 'model-bank';
 import type { ChatResponse, Tool } from 'ollama/browser';
 import { Ollama } from 'ollama/browser';

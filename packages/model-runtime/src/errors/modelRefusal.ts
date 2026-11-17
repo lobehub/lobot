@@ -1,4 +1,4 @@
-import { AgentRuntimeErrorType } from '@lobechat/types';
+import { AgentRuntimeErrorType } from '@lobot/types';
 
 import type { ModelEmptyCompletionDiagnostics } from './modelEmptyCompletion';
 

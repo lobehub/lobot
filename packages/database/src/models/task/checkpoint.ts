@@ -1,4 +1,4 @@
-import type { CheckpointConfig, CheckpointTaskRef, TaskItem } from '@lobechat/types';
+import type { CheckpointConfig, CheckpointTaskRef, TaskItem } from '@lobot/types';
 import { isRecord } from '@lobechat/utils/object';
 
 /** Old writers can leave stale pairs behind when replacing only the label list. */

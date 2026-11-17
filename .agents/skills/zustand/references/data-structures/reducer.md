@@ -14,7 +14,7 @@ Legacy stores only. Replica-backed data gets optimistic writes and rollback from
 ```typescript
 // src/store/eval/slices/benchmark/reducer.ts
 import { produce } from 'immer';
-import type { AgentEvalBenchmark } from '@lobechat/types';
+import type { AgentEvalBenchmark } from '@lobot/types';
 
 // Action types — discriminated union
 type SetBenchmarkDetailAction = {

@@ -1,4 +1,4 @@
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import { Flexbox, Tag } from '@lobehub/ui';
 import isEqual from 'fast-deep-equal';
 import { type MouseEventHandler } from 'react';

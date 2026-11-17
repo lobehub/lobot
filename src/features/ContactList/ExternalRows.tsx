@@ -1,6 +1,6 @@
 'use client';
 
-import type { ContactAgentItem, ContactRequestItem, ContactUserItem } from '@lobechat/types';
+import type { ContactAgentItem, ContactRequestItem, ContactUserItem } from '@lobot/types';
 import { ActionIcon, Flexbox, toast } from '@lobehub/ui';
 import { CheckIcon, XIcon } from 'lucide-react';
 import { memo, useState } from 'react';

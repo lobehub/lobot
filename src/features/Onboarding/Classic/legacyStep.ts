@@ -1,4 +1,4 @@
-import { CLASSIC_ONBOARDING_MAX_STEP } from '@lobechat/types';
+import { CLASSIC_ONBOARDING_MAX_STEP } from '@lobot/types';
 
 export const remapLegacyClassicStep = (raw: number): number => {
   if (raw <= 2) return 1;

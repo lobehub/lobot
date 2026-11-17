@@ -1,4 +1,4 @@
-import type { ContactItem, ContactRequestItem, ContactSearchResult } from '@lobechat/types';
+import type { ContactItem, ContactRequestItem, ContactSearchResult } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 import { contactService, type ContactUserProfileData } from '@/services/contact';

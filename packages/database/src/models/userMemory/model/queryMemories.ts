@@ -1,4 +1,4 @@
-import { LayersEnum } from '@lobechat/types';
+import { LayersEnum } from '@lobot/types';
 import type { AnyColumn, SQL } from 'drizzle-orm';
 import { and, asc, desc, eq, inArray, or, sql } from 'drizzle-orm';
 

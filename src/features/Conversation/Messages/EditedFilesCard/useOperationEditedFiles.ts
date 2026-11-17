@@ -1,4 +1,4 @@
-import type { AssistantContentBlock } from '@lobechat/types';
+import type { AssistantContentBlock } from '@lobot/types';
 import { useMemo } from 'react';
 
 import {

@@ -9,7 +9,7 @@
  * `operationId` is recorded here rather than its content copied — so
  * `agent-tracing inspect <opId>` continues from where the goal trace stops.
  *
- * Graph entities are typed structurally instead of importing `@lobechat/types`,
+ * Graph entities are typed structurally instead of importing `@lobot/types`,
  * matching how `StepSnapshot.messages` stays loose: a trace format has to keep
  * reading objects written by older code.
  */

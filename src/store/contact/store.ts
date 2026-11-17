@@ -1,4 +1,4 @@
-import type { ContactItem, ContactRequestItem, ContactSearchResult } from '@lobechat/types';
+import type { ContactItem, ContactRequestItem, ContactSearchResult } from '@lobot/types';
 import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
 

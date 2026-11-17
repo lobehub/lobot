@@ -1,4 +1,4 @@
-import { type UIChatMessage } from '@lobechat/types';
+import { type UIChatMessage } from '@lobot/types';
 import { useCallback, useEffect } from 'react';
 
 import { flattenExportMessages } from '../flattenExportMessages';

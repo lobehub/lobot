@@ -1,4 +1,4 @@
-import type { ModelPerformance, ModelUsage } from '@lobechat/types';
+import type { ModelPerformance, ModelUsage } from '@lobot/types';
 import type { ClientOptions } from 'openai';
 
 import type { LobeBedrockAIParams } from '../providers/bedrock';

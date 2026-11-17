@@ -1,5 +1,5 @@
 import { DEFAULT_INBOX_AVATAR, DEFAULT_INBOX_TITLE } from '@lobechat/const';
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import { preventDefault } from '@lobehub/ui';
 import { Command } from 'cmdk';
 import { memo, useMemo } from 'react';

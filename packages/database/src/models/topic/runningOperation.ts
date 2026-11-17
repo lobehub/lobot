@@ -1,4 +1,4 @@
-import type { AgentOperationStatus, ChatTopicMetadata } from '@lobechat/types';
+import type { AgentOperationStatus, ChatTopicMetadata } from '@lobot/types';
 import { and, eq } from 'drizzle-orm';
 
 import { agentOperations, type TopicItem, topics } from '../../schemas';

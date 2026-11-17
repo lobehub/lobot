@@ -1,4 +1,4 @@
-import { agentSecondaryDisplayName, type ChannelReplyJob } from '@lobechat/types';
+import { agentSecondaryDisplayName, type ChannelReplyJob } from '@lobot/types';
 import { Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { useTranslation } from 'react-i18next';

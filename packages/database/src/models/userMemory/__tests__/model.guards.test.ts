@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { ActivityTypeEnum, LayersEnum, MemorySourceType } from '@lobechat/types';
+import { ActivityTypeEnum, LayersEnum, MemorySourceType } from '@lobot/types';
 import { describe, expect, it, vi } from 'vitest';
 
 import { userMemoriesActivities, userMemoriesContexts } from '../../../schemas';

@@ -1,4 +1,4 @@
-import type { ChannelMessageMetadata } from '@lobechat/types';
+import type { ChannelMessageMetadata } from '@lobot/types';
 import { and, eq } from 'drizzle-orm';
 
 import type { ChannelMessageItem } from '../../schemas';

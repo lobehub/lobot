@@ -3,7 +3,7 @@ import type {
   ChannelPublicThread,
   ChannelStatus,
   ChannelThreadStatus,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { cacheScope } from '@/libs/replica';
 import { mutate, useClientDataSWR } from '@/libs/swr';

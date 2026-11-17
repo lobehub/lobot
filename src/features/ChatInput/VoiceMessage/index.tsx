@@ -1,6 +1,6 @@
 'use client';
 
-import { type VoiceMessageRecording } from '@lobechat/types';
+import { type VoiceMessageRecording } from '@lobot/types';
 import { Icon, Tooltip } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { ArrowUp, type LucideProps, RotateCcw, X } from 'lucide-react';

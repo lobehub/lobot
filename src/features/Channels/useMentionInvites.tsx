@@ -1,6 +1,6 @@
 import { DEFAULT_USER_AVATAR } from '@lobechat/const';
-import type { ChannelListItem, ChannelPublicMember } from '@lobechat/types';
-import { agentDisplayName } from '@lobechat/types';
+import type { ChannelListItem, ChannelPublicMember } from '@lobot/types';
+import { agentDisplayName } from '@lobot/types';
 import type { ISlashMenuOption } from '@lobehub/editor';
 import { useLatest } from 'ahooks';
 import type { Dispatch, SetStateAction } from 'react';

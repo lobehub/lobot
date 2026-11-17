@@ -1,4 +1,4 @@
-import { isManagedCloudDevice, isWakeableManagedDevice } from '@lobechat/types';
+import { isManagedCloudDevice, isWakeableManagedDevice } from '@lobot/types';
 
 interface DeviceOptionState {
   /** Locale key (namespace `chat`) for an offline row's status. */

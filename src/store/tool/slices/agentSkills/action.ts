@@ -5,7 +5,7 @@ import type {
   ImportZipInput,
   SkillImportResult,
   UpdateSkillInput,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import {
   createReplicaSlice,

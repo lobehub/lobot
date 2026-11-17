@@ -1,5 +1,5 @@
 import { LOADING_FLAT } from '@lobechat/const';
-import { type UIChatMessage } from '@lobechat/types';
+import { type UIChatMessage } from '@lobot/types';
 import { memo, useMemo } from 'react';
 
 import { ReactionPicker } from '../../../components/Reaction';

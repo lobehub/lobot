@@ -4,7 +4,7 @@ import {
   SessionDefaultGroup,
   type SidebarAgentLabel,
   type SidebarVisibility,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { type DropdownItem } from '@lobehub/ui';
 import { confirmModal, Icon, toast } from '@lobehub/ui';
 import isEqual from 'fast-deep-equal';

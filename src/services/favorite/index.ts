@@ -1,4 +1,4 @@
-import type { AddFavoriteParams, FavoriteItem, FavoriteType } from '@lobechat/types';
+import type { AddFavoriteParams, FavoriteItem, FavoriteType } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 

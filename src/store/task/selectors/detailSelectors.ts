@@ -3,8 +3,8 @@ import type {
   HeterogeneousProviderConfig,
   TaskDetailData,
   TaskVerifyConfig,
-} from '@lobechat/types';
-import { isTaskArchiveBlocked, resolveHeterogeneousRuntimeConfig } from '@lobechat/types';
+} from '@lobot/types';
+import { isTaskArchiveBlocked, resolveHeterogeneousRuntimeConfig } from '@lobot/types';
 
 import type { SaveStatus } from '@/types/saveState';
 

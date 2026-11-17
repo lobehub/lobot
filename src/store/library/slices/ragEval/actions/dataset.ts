@@ -2,7 +2,7 @@ import {
   type CreateNewEvalDatasets,
   type EvalDatasetRecord,
   type RAGEvalDataSetItem,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { type SWRResponse } from 'swr';
 
 import { mutate, useClientDataSWR } from '@/libs/swr';

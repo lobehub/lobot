@@ -1,4 +1,4 @@
-import type { TaskDetailData } from '@lobechat/types';
+import type { TaskDetailData } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 

@@ -1,4 +1,4 @@
-import { AgentRuntimeErrorType, RequestTrigger } from '@lobechat/types';
+import { AgentRuntimeErrorType, RequestTrigger } from '@lobot/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { LobeVertexAI } from '../../providers/vertexai';

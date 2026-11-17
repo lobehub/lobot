@@ -1,4 +1,4 @@
-import type { RouterRuntimeRequestContext } from '@lobechat/types';
+import type { RouterRuntimeRequestContext } from '@lobot/types';
 
 interface RouterInstance {
   apiType: string;

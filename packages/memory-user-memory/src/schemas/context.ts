@@ -2,7 +2,7 @@ import {
   ContextStatusEnum,
   UserMemoryContextObjectType,
   UserMemoryContextSubjectType,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { z } from 'zod';
 
 import { MemoryTypeSchema } from './common';

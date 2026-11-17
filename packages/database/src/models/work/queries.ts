@@ -10,7 +10,7 @@ import {
   type WorkVersionEventMap,
   type WorkVersionItem,
   type WorkVisibility,
-} from '@lobechat/types';
+} from '@lobot/types';
 import type { SQL } from 'drizzle-orm';
 import { and, desc, eq, inArray, isNull, lt, or } from 'drizzle-orm';
 

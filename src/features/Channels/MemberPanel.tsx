@@ -1,4 +1,4 @@
-import type { ChannelDetail } from '@lobechat/types';
+import type { ChannelDetail } from '@lobot/types';
 import { ActionIcon, Flexbox, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { StyleXStyles } from '@stylexjs/stylex';

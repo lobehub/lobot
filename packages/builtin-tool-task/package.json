@@ -12,7 +12,7 @@
     "@lobechat/utils": "workspace:*"
   },
   "devDependencies": {
-    "@lobechat/types": "workspace:*"
+    "@lobot/types": "workspace:*"
   },
   "peerDependencies": {
     "@lobehub/ui": "^6.0.4",

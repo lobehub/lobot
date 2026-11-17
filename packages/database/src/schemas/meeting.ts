@@ -10,7 +10,7 @@ import type {
   MeetingSegmentSource,
   MeetingStatus,
   MeetingVisibility,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { index, integer, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
 import { timestamps, timestamptz } from './_helpers';

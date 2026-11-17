@@ -162,7 +162,7 @@ cd apps/cli && bun run type-check 2>&1 | grep -iE "connect\.ts|device\.register"
 # empty (re: your change) = the stacked base supplies device.register ✓
 ```
 
-Filter to your touched files — this repo's standalone type-check emits pre-existing env noise (`__ELECTRON__`, `@/types/llm`, unbuilt `@lobechat/types`) that isn't yours.
+Filter to your touched files — this repo's standalone type-check emits pre-existing env noise (`__ELECTRON__`, `@/types/llm`, unbuilt `@lobot/types`) that isn't yours.
 
 ## PR + task bookkeeping
 

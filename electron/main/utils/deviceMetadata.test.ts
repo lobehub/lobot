@@ -1,4 +1,4 @@
-import { DEVICE_TERMINAL_METADATA_KEY } from '@lobechat/types';
+import { DEVICE_TERMINAL_METADATA_KEY } from '@lobot/types';
 import { describe, expect, it, vi } from 'vitest';
 
 import { getDesktopDeviceMetadata } from './deviceMetadata';

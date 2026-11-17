@@ -3,7 +3,7 @@ import type {
   ExpertiseLessonSection,
   ExpertiseReasonKind,
   ExpertiseRuleDirection,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { ExpertiseModel } from '../../models/expertise';
 import type { LobeChatDatabase } from '../../type';

@@ -1,6 +1,6 @@
 'use client';
 
-import type { WorkSummaryItem } from '@lobechat/types';
+import type { WorkSummaryItem } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import isEqual from 'fast-deep-equal';

@@ -27,7 +27,7 @@
     "url-join": "^5.0.0"
   },
   "devDependencies": {
-    "@lobechat/types": "workspace:*"
+    "@lobot/types": "workspace:*"
   },
   "peerDependencies": {
     "@icons-pack/react-simple-icons": "^13.15.1",

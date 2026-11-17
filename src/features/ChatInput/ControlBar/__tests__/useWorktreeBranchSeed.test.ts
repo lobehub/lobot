@@ -1,4 +1,4 @@
-import type { DeviceGitBranchListItem } from '@lobechat/types';
+import type { DeviceGitBranchListItem } from '@lobot/types';
 import { renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

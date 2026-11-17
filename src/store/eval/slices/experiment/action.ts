@@ -1,4 +1,4 @@
-import { type AgentEvalExperimentDetail, type AgentEvalExperimentListItem } from '@lobechat/types';
+import { type AgentEvalExperimentDetail, type AgentEvalExperimentListItem } from '@lobot/types';
 
 import {
   arrayEntity,

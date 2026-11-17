@@ -1,4 +1,4 @@
-import type { TrashItemMeta, TrashResourceType } from '@lobechat/types';
+import type { TrashItemMeta, TrashResourceType } from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import { index, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 

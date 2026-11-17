@@ -11,7 +11,7 @@ import type {
   ExpertiseReasonSource,
   ExpertiseRevisionEvidence,
   ExpertiseRuleDirection,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { isNotNull, isNull, sql } from 'drizzle-orm';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 import {

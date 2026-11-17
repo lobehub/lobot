@@ -1,4 +1,4 @@
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 import { describe, expect, it, vi } from 'vitest';
 
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';

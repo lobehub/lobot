@@ -1,7 +1,7 @@
 'use client';
 
 import { DEFAULT_INBOX_TITLE } from '@lobechat/const';
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import isEqual from 'fast-deep-equal';

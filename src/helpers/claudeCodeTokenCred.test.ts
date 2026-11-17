@@ -1,4 +1,4 @@
-import { type UserCredSummary } from '@lobechat/types';
+import { type UserCredSummary } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import {

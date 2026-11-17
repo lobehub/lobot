@@ -1,4 +1,4 @@
-import type { ConversationContext } from '@lobechat/types';
+import type { ConversationContext } from '@lobot/types';
 import debug from 'debug';
 
 import { aiAgentService, type QueuedFollowUpRequest } from '@/services/aiAgent';

@@ -1,5 +1,5 @@
-import type { AsyncTaskError, Generation } from '@lobechat/types';
-import { AsyncTaskStatus } from '@lobechat/types';
+import type { AsyncTaskError, Generation } from '@lobot/types';
+import { AsyncTaskStatus } from '@lobot/types';
 
 import {
   buildDerivedFileMetadata,

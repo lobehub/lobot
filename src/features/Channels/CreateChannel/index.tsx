@@ -1,4 +1,4 @@
-import { agentDisplayName, CHANNEL_LIMITS } from '@lobechat/types';
+import { agentDisplayName, CHANNEL_LIMITS } from '@lobot/types';
 import {
   Button,
   createModal,

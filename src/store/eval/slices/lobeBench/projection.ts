@@ -3,7 +3,7 @@ import type {
   AgentEvalRunListItem,
   AgentEvalRunTopicResult,
   EvalCaseEnvironment,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 

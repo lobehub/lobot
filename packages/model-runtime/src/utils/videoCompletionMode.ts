@@ -1,4 +1,4 @@
-import type { VideoGenerationCompletionMode } from '@lobechat/types';
+import type { VideoGenerationCompletionMode } from '@lobot/types';
 
 import type { LobeRuntimeAI } from '../core/BaseAI';
 import type {

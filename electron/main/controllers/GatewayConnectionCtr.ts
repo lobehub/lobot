@@ -64,7 +64,7 @@ type AvailableRemotePlatformRuntime = Extract<RemotePlatformCommandRuntime, { av
 
 // Mirror of `BrowserManifest.identifier` from `@lobechat/builtin-tool-browser`.
 // Hardcoded (not imported) so the desktop main process keeps zero builtin-tool
-// package deps — importing one risks the @lobechat/types stub runtime leak.
+// package deps — importing one risks the @lobot/types stub runtime leak.
 const BrowserIdentifier = 'lobe-browser';
 
 function parseHermesSessionId(stderr: string): string | undefined {
@@ -109,8 +109,8 @@ function buildNotifyProtocol(lhPath: string, topicId: string): string {
 }
 
 /**
- * Local mirror of `@lobechat/types`' `BuiltinServerRuntimeOutput`. Inlined
- * because the desktop tsconfig doesn't expose `@lobechat/types`, and the shape
+ * Local mirror of `@lobot/types`' `BuiltinServerRuntimeOutput`. Inlined
+ * because the desktop tsconfig doesn't expose `@lobot/types`, and the shape
  * is tiny + stable.
  */
 interface BuiltinServerRuntimeOutput {

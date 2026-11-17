@@ -1,4 +1,4 @@
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import { type CSSProperties, type MouseEventHandler } from 'react';
 import { memo } from 'react';
 

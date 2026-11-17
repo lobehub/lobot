@@ -1,4 +1,4 @@
-import type { GoalReportMetadata, WorkItem } from '@lobechat/types';
+import type { GoalReportMetadata, WorkItem } from '@lobot/types';
 import { and, desc, eq } from 'drizzle-orm';
 
 import { works, workVersions } from '../../schemas/work';

@@ -1,6 +1,6 @@
 import { AGENT_CHAT_TOPIC_URL, GROUP_CHAT_TOPIC_URL } from '@lobechat/const';
 import type { TrayNavigationSnapshot } from '@lobechat/electron-client-ipc';
-import { agentDisplayName, type RecentItem } from '@lobechat/types';
+import { agentDisplayName, type RecentItem } from '@lobot/types';
 
 import type { SidebarAgentItem } from '@/database/repositories/home';
 import { taskDetailPath } from '@/features/AgentTasks/shared/taskDetailPath';

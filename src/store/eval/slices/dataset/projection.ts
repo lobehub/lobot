@@ -1,4 +1,4 @@
-import type { AgentEvalDataset, AgentEvalDatasetListItem } from '@lobechat/types';
+import type { AgentEvalDataset, AgentEvalDatasetListItem } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 import type { agentEvalService } from '@/services/agentEval';

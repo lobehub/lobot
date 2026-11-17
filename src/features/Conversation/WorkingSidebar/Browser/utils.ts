@@ -1,4 +1,4 @@
-import type { ChatContextContent } from '@lobechat/types';
+import type { ChatContextContent } from '@lobot/types';
 
 import { DEFAULT_BROWSER_URL } from './const';
 

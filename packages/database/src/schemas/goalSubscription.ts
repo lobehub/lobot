@@ -3,7 +3,7 @@ import type {
   GoalSubscriptionFreshnessPolicy,
   GoalSubscriptionSemanticBinding,
   GoalSubscriptionWakeCondition,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import {
   boolean,

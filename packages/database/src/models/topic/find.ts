@@ -1,4 +1,4 @@
-import type { TopicRankItem } from '@lobechat/types';
+import type { TopicRankItem } from '@lobot/types';
 import {
   and,
   count,

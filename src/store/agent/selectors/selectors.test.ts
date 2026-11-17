@@ -6,7 +6,7 @@ import {
   DEFAUTT_AGENT_TTS_CONFIG,
   INBOX_SESSION_ID,
 } from '@lobechat/const';
-import { KnowledgeType } from '@lobechat/types';
+import { KnowledgeType } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { type AgentStoreState } from '@/store/agent/initialState';

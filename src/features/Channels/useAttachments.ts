@@ -1,4 +1,4 @@
-import { CHANNEL_LIMITS, type UploadFileItem } from '@lobechat/types';
+import { CHANNEL_LIMITS, type UploadFileItem } from '@lobot/types';
 import { COMPRESSIBLE_IMAGE_TYPES, compressImageFile } from '@lobechat/utils/compressImage';
 import { toast } from '@lobehub/ui';
 import { useCallback, useEffect, useSyncExternalStore } from 'react';

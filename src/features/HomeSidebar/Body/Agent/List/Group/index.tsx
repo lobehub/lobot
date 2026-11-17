@@ -1,4 +1,4 @@
-import { type SidebarGroup } from '@lobechat/types';
+import { type SidebarGroup } from '@lobot/types';
 import { AccordionRoot } from '@lobehub/ui';
 import React, { memo } from 'react';
 

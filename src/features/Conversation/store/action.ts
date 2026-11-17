@@ -1,5 +1,5 @@
 import { parse } from '@lobechat/conversation-flow';
-import { type UIChatMessage } from '@lobechat/types';
+import { type UIChatMessage } from '@lobot/types';
 import { type StateCreator } from 'zustand/vanilla';
 
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';

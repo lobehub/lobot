@@ -3,7 +3,7 @@ import {
   type FavoriteItem,
   type FavoriteType,
   toFavoriteTitle,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import { favoriteService } from '@/services/favorite';

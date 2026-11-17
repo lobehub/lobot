@@ -1,5 +1,5 @@
-import type { DocumentAccessScope } from '@lobechat/types';
-import { ordinaryDocumentAccessScope } from '@lobechat/types';
+import type { DocumentAccessScope } from '@lobot/types';
+import { ordinaryDocumentAccessScope } from '@lobot/types';
 
 import { AgentDocumentRepository } from '../../../repositories/agentDocument';
 import type { LobeChatDatabase, Transaction } from '../../../type';

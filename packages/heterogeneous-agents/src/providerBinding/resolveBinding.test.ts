@@ -1,4 +1,4 @@
-import type { AiProviderRuntimeConfig } from '@lobechat/types';
+import type { AiProviderRuntimeConfig } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import {

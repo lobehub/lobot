@@ -1,4 +1,4 @@
-import type { ChannelListItem, ChannelPublicMember, ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelListItem, ChannelPublicMember, ChannelPublicMessage } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { channelJoinEvents, channelTimeline, conversationJoinEvents } from './joinEvents';

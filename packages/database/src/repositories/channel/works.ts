@@ -1,4 +1,4 @@
-import type { ExternalWorkSummaryItem, WorkSummaryItem } from '@lobechat/types';
+import type { ExternalWorkSummaryItem, WorkSummaryItem } from '@lobot/types';
 import { and, eq, inArray, isNotNull } from 'drizzle-orm';
 import pMap from 'p-map';
 

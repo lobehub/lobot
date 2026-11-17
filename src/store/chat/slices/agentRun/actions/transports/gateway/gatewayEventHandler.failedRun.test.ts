@@ -1,5 +1,5 @@
 import type { AgentStreamEvent } from '@lobechat/agent-gateway-client';
-import type { ConversationContext, UIChatMessage } from '@lobechat/types';
+import type { ConversationContext, UIChatMessage } from '@lobot/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { messageService } from '@/services/message';

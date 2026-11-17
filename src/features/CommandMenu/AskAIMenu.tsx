@@ -1,5 +1,5 @@
 import { DEFAULT_INBOX_AVATAR, DEFAULT_INBOX_TITLE } from '@lobechat/const';
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import { GroupBotSquareIcon } from '@lobehub/ui/icons';
 import { Command } from 'cmdk';
 import { Bot, Image } from 'lucide-react';

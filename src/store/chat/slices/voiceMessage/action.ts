@@ -3,7 +3,7 @@ import type {
   CreateMessageParams,
   UploadFileItem,
   VoiceMessageRecording,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { generateEntityId } from '@lobechat/utils';
 import { produce } from 'immer';
 import type { StoreApi } from 'zustand';

@@ -2,8 +2,8 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
-import type { ListHeterogeneousAgentModelsParams } from '@lobechat/types';
-import { getHeteroSelectorCapability, HETEROGENEOUS_AGENT_CONFIGS } from '@lobechat/types';
+import type { ListHeterogeneousAgentModelsParams } from '@lobot/types';
+import { getHeteroSelectorCapability, HETEROGENEOUS_AGENT_CONFIGS } from '@lobot/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as cliSpawn from '../spawn/cliSpawn';

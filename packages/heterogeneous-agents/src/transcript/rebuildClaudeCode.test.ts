@@ -1,4 +1,4 @@
-import type { HeteroSessionImportMessage } from '@lobechat/types';
+import type { HeteroSessionImportMessage } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { parseClaudeCodeSession } from './claudeCode';

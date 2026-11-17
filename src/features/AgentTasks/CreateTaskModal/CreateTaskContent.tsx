@@ -1,7 +1,7 @@
 'use client';
 
-import type { TaskExecutionConfig, TaskLabelRef } from '@lobechat/types';
-import { toTaskExecutionConfigPatch } from '@lobechat/types';
+import type { TaskExecutionConfig, TaskLabelRef } from '@lobot/types';
+import { toTaskExecutionConfigPatch } from '@lobot/types';
 import { useEditor } from '@lobehub/editor/react';
 import {
   ActionIcon,

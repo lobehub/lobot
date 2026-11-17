@@ -1,5 +1,5 @@
-// Local mirror of `@lobechat/types`' ChatErrorType RemoteServer* members —
-// the desktop tsconfig doesn't expose `@lobechat/types` (runtime stub leak risk).
+// Local mirror of `@lobot/types`' ChatErrorType RemoteServer* members —
+// the desktop tsconfig doesn't expose `@lobot/types` (runtime stub leak risk).
 type ProxyNetworkErrorType =
   | 'RemoteServerOffline'
   | 'RemoteServerTimeout'

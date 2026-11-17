@@ -2,7 +2,7 @@ import {
   type ExpertiseEnforcement,
   type ExpertiseLessonSection,
   type ExpertiseRuleDirection,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { and, asc, eq, sql } from 'drizzle-orm';
 
 import { expertiseDomains, expertiseHits, expertiseLessons, expertiseRuns } from '../../schemas';

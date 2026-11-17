@@ -1,7 +1,7 @@
 'use client';
 
 import { LOADING_FLAT } from '@lobechat/const';
-import type { EmojiReaction } from '@lobechat/types';
+import type { EmojiReaction } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import type { MouseEventHandler, ReactNode } from 'react';
 import { memo, useCallback, useMemo } from 'react';

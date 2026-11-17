@@ -1,5 +1,5 @@
 import { isGoalPrompt } from '@lobechat/const/builtinTools';
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 
 import { deriveOperationGoals } from '@/features/Conversation/operationArtifacts';
 import type { GoalListItem } from '@/services/goal';

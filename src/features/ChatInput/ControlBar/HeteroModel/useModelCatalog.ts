@@ -2,7 +2,7 @@ import type {
   HeterogeneousAgentModelCatalogSuccess,
   HeterogeneousProviderConfig,
   ListHeterogeneousAgentModelsParams,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { useEffect, useMemo, useRef } from 'react';
 
 import {

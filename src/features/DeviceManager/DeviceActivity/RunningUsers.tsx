@@ -1,6 +1,6 @@
 'use client';
 
-import type { DeviceEnroller } from '@lobechat/types';
+import type { DeviceEnroller } from '@lobot/types';
 import { createStaticStyles, cssVar, Flexbox, Icon, Text, Tooltip } from '@lobehub/ui';
 import { TriangleAlertIcon } from 'lucide-react';
 import { memo } from 'react';

@@ -1,4 +1,4 @@
-import type { EnvironmentVisibility } from '@lobechat/types';
+import type { EnvironmentVisibility } from '@lobot/types';
 import { useSWRConfig } from 'swr';
 
 import {

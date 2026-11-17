@@ -1,5 +1,5 @@
-import type { ChannelListItem } from '@lobechat/types';
-import { CHANNEL_LIMITS } from '@lobechat/types';
+import type { ChannelListItem } from '@lobot/types';
+import { CHANNEL_LIMITS } from '@lobot/types';
 import { copyToClipboard, toast } from '@lobehub/ui';
 import {
   Archive,

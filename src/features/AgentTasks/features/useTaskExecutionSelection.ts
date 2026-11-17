@@ -1,12 +1,12 @@
 'use client';
 
-import type { TaskExecutionConfig, WorkingDirConfig } from '@lobechat/types';
+import type { TaskExecutionConfig, WorkingDirConfig } from '@lobot/types';
 import {
   applyTaskDirectorySelection,
   applyTaskReposSelection,
   applyTaskTargetSelection,
   hasTaskExecutionSelection,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { useCallback, useState } from 'react';
 
 import { type TaskRunTarget, useTaskRunTarget } from './useTaskRunTarget';

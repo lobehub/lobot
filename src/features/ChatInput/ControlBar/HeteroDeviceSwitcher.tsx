@@ -2,8 +2,8 @@
 
 import { isDesktop } from '@lobechat/const';
 import { HETEROGENEOUS_TYPE_LABELS } from '@lobechat/heterogeneous-agents';
-import type { DeviceExecutionTarget, DeviceListItem } from '@lobechat/types';
-import { isManagedCloudDevice } from '@lobechat/types';
+import type { DeviceExecutionTarget, DeviceListItem } from '@lobot/types';
+import { isManagedCloudDevice } from '@lobot/types';
 import { Button, Flexbox, Icon, Popover, toast, Tooltip } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

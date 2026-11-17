@@ -1,4 +1,4 @@
-import type { HeteroSessionImportMessage } from '@lobechat/types';
+import type { HeteroSessionImportMessage } from '@lobot/types';
 
 /**
  * Rebuild a Claude Code transcript JSONL from normalized messages — the inverse

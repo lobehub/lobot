@@ -1,4 +1,4 @@
-import type { AcceptanceStatus } from '@lobechat/types';
+import type { AcceptanceStatus } from '@lobot/types';
 
 // ============================================
 // Status rollup — the aggregate's user-facing lifecycle state, derived from the

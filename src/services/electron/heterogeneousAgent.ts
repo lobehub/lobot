@@ -9,7 +9,7 @@ import type {
 import type {
   HeterogeneousAgentModelCatalog,
   ListHeterogeneousAgentModelsParams,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { ensureElectronIpc } from '@/utils/electron/ipc';
 

@@ -1,4 +1,4 @@
-import type { ChatTopicMetadata } from '@lobechat/types';
+import type { ChatTopicMetadata } from '@lobot/types';
 
 import {
   getPendingSandboxSelection,

@@ -1,4 +1,4 @@
-import type { GoalGraphSnapshot, GoalNodeKind } from '@lobechat/types';
+import type { GoalGraphSnapshot, GoalNodeKind } from '@lobot/types';
 
 /** Enough of the graph to say what the goal is about without flooding the title prompt. */
 const MAX_TITLE_CONTEXT_ITEMS = 20;

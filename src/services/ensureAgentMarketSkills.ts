@@ -1,5 +1,5 @@
 import { getConnectorCatalog } from '@lobechat/const';
-import { type AgentPluginEntry, parsePluginEntry } from '@lobechat/types';
+import { type AgentPluginEntry, parsePluginEntry } from '@lobot/types';
 import { toast } from '@lobehub/ui';
 import { t } from 'i18next';
 

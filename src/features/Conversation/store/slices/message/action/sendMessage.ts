@@ -1,4 +1,4 @@
-import { type ConversationContext, type SendMessageParams } from '@lobechat/types';
+import { type ConversationContext, type SendMessageParams } from '@lobot/types';
 
 import { useChatStore } from '@/store/chat';
 import { isLocalOnlyMessage } from '@/store/chat/utils/localMessages';

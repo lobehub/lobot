@@ -1,4 +1,4 @@
-import type { ChannelPublicMember } from '@lobechat/types';
+import type { ChannelPublicMember } from '@lobot/types';
 import Fuse from 'fuse.js';
 
 import { splitByPriority } from './CreateChannel/projectAgentOrder';

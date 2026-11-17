@@ -1,4 +1,4 @@
-import { type SendMessageParams, type UploadFileItem } from '@lobechat/types';
+import { type SendMessageParams, type UploadFileItem } from '@lobot/types';
 import { describe, expect, it, vi } from 'vitest';
 
 import { sendVoiceMessage } from './sendVoiceMessage';

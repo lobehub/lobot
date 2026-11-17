@@ -1,5 +1,5 @@
-import type { AgentOperationStatus, TaskItem, TaskRunTrigger } from '@lobechat/types';
-import { IN_FLIGHT_OPERATION_STATUS_LIST } from '@lobechat/types';
+import type { AgentOperationStatus, TaskItem, TaskRunTrigger } from '@lobot/types';
+import { IN_FLIGHT_OPERATION_STATUS_LIST } from '@lobot/types';
 import { and, eq, inArray, isNotNull, isNull, notInArray, sql } from 'drizzle-orm';
 
 import type { AgentOperationError } from '../../schemas/agentOperations';

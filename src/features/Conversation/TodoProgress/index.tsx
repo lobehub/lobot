@@ -1,6 +1,6 @@
 'use client';
 
-import { type StepContextTodos } from '@lobechat/types';
+import { type StepContextTodos } from '@lobot/types';
 import { Checkbox, createStaticStyles, cssVar, cx, Flexbox, Icon, Tag } from '@lobehub/ui';
 import { ChevronDown, ChevronUp, CircleArrowRight } from 'lucide-react';
 import { memo, useMemo, useState } from 'react';

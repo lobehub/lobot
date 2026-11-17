@@ -1,5 +1,5 @@
 import { getRuntimeErrorI18nKey, normalizeChatMessageError } from '@lobechat/model-runtime/errors';
-import type { ChatMessageError, ErrorResponse, ErrorType } from '@lobechat/types';
+import type { ChatMessageError, ErrorResponse, ErrorType } from '@lobot/types';
 import { isRecord, pickTrimmedString } from '@lobechat/utils';
 import i18next, { t } from 'i18next';
 import { getProviderDisplayName } from 'model-bank/modelProviders';

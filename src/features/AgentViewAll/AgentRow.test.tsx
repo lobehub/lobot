@@ -1,7 +1,7 @@
 /**
  * @vitest-environment happy-dom
  */
-import type { SidebarAgentItem } from '@lobechat/types';
+import type { SidebarAgentItem } from '@lobot/types';
 import { render, screen } from '@testing-library/react';
 import { type ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';

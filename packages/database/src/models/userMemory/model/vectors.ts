@@ -5,7 +5,7 @@ import type {
   UserMemoryIdentityInsert,
   UserMemoryInsert,
   UserMemoryPreferenceInsert,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { and, eq } from 'drizzle-orm';
 
 import {

@@ -1,4 +1,4 @@
-import { type UIChatMessage } from '@lobechat/types';
+import { type UIChatMessage } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { type ChatStore } from '@/store/chat';

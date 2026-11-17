@@ -1,4 +1,4 @@
-import { type LLMRoleType, type UIChatMessage } from '@lobechat/types';
+import { type LLMRoleType, type UIChatMessage } from '@lobot/types';
 import { type ActionIconGroupItemType } from '@lobehub/ui';
 import { type ChatItemProps } from '@lobehub/ui/chat';
 import { type FC } from 'react';

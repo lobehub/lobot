@@ -1,4 +1,4 @@
-import { getWorkingDirEffectivePath } from '@lobechat/types';
+import { getWorkingDirEffectivePath } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 
 import { electronGitService } from '@/services/electron/git';

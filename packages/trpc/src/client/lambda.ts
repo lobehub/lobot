@@ -1,4 +1,4 @@
-import { isRemoteServerNetworkError } from '@lobechat/types';
+import { isRemoteServerNetworkError } from '@lobot/types';
 import { type TRPCClientError, type TRPCLink } from '@trpc/client';
 import {
   createTRPCClient,

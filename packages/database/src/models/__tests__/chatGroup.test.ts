@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { DEFAULT_INBOX_AVATAR, INBOX_SESSION_ID } from '@lobechat/const';
-import { CHAT_GROUP_SESSION_ID_PREFIX } from '@lobechat/types';
+import { CHAT_GROUP_SESSION_ID_PREFIX } from '@lobot/types';
 import { eq } from 'drizzle-orm';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 

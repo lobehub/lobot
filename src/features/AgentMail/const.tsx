@@ -1,4 +1,4 @@
-import type { AgentAccountKind } from '@lobechat/types';
+import type { AgentAccountKind } from '@lobot/types';
 import type { LucideIcon } from 'lucide-react';
 import { Mail } from 'lucide-react';
 

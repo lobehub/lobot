@@ -1,4 +1,4 @@
-import type { ChannelDetail, ChannelListItem } from '@lobechat/types';
+import type { ChannelDetail, ChannelListItem } from '@lobot/types';
 
 import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
 

@@ -1,4 +1,4 @@
-import type { DeviceExecutionTarget } from '@lobechat/types';
+import type { DeviceExecutionTarget } from '@lobot/types';
 import { confirmModal, toast } from '@lobehub/ui';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';

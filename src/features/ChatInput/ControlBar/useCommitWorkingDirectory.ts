@@ -1,5 +1,5 @@
-import type { WorkingDirConfig, WorkingDirEntry } from '@lobechat/types';
-import { getWorkingDirEffectivePath, getWorkingDirSourcePath } from '@lobechat/types';
+import type { WorkingDirConfig, WorkingDirEntry } from '@lobot/types';
+import { getWorkingDirEffectivePath, getWorkingDirSourcePath } from '@lobot/types';
 import { confirmModal } from '@lobehub/ui';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';

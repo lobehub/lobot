@@ -1,5 +1,5 @@
 import type { GoalStatus } from '@lobechat/const/goal';
-import type { GoalConfig, GoalSpend, TaskStatus } from '@lobechat/types';
+import type { GoalConfig, GoalSpend, TaskStatus } from '@lobot/types';
 import { formatDuration } from '@lobechat/utils';
 
 /** Goal lifecycle state → i18n status key (goal list vocabulary). */

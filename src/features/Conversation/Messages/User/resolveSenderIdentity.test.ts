@@ -1,4 +1,4 @@
-import { RequestTrigger } from '@lobechat/types';
+import { RequestTrigger } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { getAgentSender, getBotSender, resolveSenderIdentity } from './resolveSenderIdentity';

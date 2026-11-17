@@ -547,11 +547,11 @@ executionTarget: 'local'` in `agencyConfig`) + one message per case asking CC to
   `cd apps/desktop && pnpm install`). Everything runs — Electron boots, the renderer serves live
   code — but a full `bun run type-check` that passed BEFORE the desktop install now fails with
   dozens of errors that have nothing to do with the change under test:
-  `Module '"@lobechat/types"' has no exported member 'MetaData' | 'HotkeyId' | …` plus
+  `Module '"@lobot/types"' has no exported member 'MetaData' | 'HotkeyId' | …` plus
   `Type 'UserHotkeyConfig' is missing the following properties from type 'UserHotkeyConfig'` —
-  the same name on both sides, i.e. **two copies of `@lobechat/types` in one program**.
+  the same name on both sides, i.e. **two copies of `@lobot/types` in one program**.
 - **Doesn't work**: chasing it as a code defect, or checking the symlink
-  (`node_modules/@lobechat/types → ../../packages/types` looks correct) and `packages/types/node_modules`
+  (`node_modules/@lobot/types → ../../packages/types` looks correct) and `packages/types/node_modules`
   (its deps are all present). Both look fine while the program still sees two instances.
 - **Cause**: `apps/desktop` is NOT in the root pnpm workspace (see E8). Its standalone install
   re-resolves the `packages/*` links from its own lockfile and rewrites shared package deps under

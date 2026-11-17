@@ -1,4 +1,4 @@
-import type { NotificationSettings } from '@lobechat/types';
+import type { NotificationSettings } from '@lobot/types';
 
 export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
   email: {

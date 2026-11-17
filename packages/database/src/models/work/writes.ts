@@ -9,7 +9,7 @@ import type {
   WorkType,
   WorkVersionMetadata,
   WorkVisibility,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 
 import { documents } from '../../schemas/file';

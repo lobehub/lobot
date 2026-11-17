@@ -2,7 +2,7 @@ import {
   DEVICE_TERMINAL_METADATA_KEY,
   type DeviceListItem,
   type DeviceMetricSeries,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { getChannelKind } from '@/features/DeviceManager/channelKind';
 

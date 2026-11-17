@@ -27,7 +27,7 @@ import {
   type SearchMemoryResult,
   type TypesEnum,
   type UpdateIdentityMemoryResult,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { type z } from 'zod';
 
 import { lambdaClient } from '@/libs/trpc/client';

@@ -1,7 +1,7 @@
 'use client';
 
-import { type ErrorShape, type ImportFileUploadState } from '@lobechat/types';
-import { ImportStage } from '@lobechat/types';
+import { type ErrorShape, type ImportFileUploadState } from '@lobot/types';
+import { ImportStage } from '@lobot/types';
 import { Button, Center, createStaticStyles, cx, toast, Upload } from '@lobehub/ui';
 import { ImportIcon } from 'lucide-react';
 import React, { memo, useCallback, useMemo, useState } from 'react';

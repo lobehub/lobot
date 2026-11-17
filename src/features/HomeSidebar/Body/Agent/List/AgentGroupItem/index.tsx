@@ -1,5 +1,5 @@
 import { GROUP_CHAT_URL } from '@lobechat/const';
-import { type SidebarAgentItem } from '@lobechat/types';
+import { type SidebarAgentItem } from '@lobot/types';
 import { ActionIcon, cssVar, Flexbox, Spin, Tag } from '@lobehub/ui';
 import { PinIcon } from 'lucide-react';
 import { type CSSProperties, type DragEvent } from 'react';

@@ -1,4 +1,4 @@
-import { deriveWorktreePath, type DeviceGitWorktreeListItem } from '@lobechat/types';
+import { deriveWorktreePath, type DeviceGitWorktreeListItem } from '@lobot/types';
 import {
   confirmModal,
   DropdownMenuItem,

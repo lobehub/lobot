@@ -1,4 +1,4 @@
-import type { DeviceListItem } from '@lobechat/types';
+import type { DeviceListItem } from '@lobot/types';
 
 /**
  * Where a reply blocked on its device stands, as far as this viewer's device list can tell:

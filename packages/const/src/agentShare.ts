@@ -1,4 +1,4 @@
-import type { AgentShareToolGrant } from '@lobechat/types';
+import type { AgentShareToolGrant } from '@lobot/types';
 
 /**
  * Default `AgentShareConfig.maxTopicsPerVisitor` applied when a share is

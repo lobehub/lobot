@@ -1,5 +1,5 @@
-import type { HeterogeneousAgentMode, HeterogeneousReasoningEffort } from '@lobechat/types';
-import { HETEROGENEOUS_AGENT_DEFAULT_SELECTION } from '@lobechat/types';
+import type { HeterogeneousAgentMode, HeterogeneousReasoningEffort } from '@lobot/types';
+import { HETEROGENEOUS_AGENT_DEFAULT_SELECTION } from '@lobot/types';
 
 import { MODEL_LABELS } from './modelOptions';
 

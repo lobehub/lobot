@@ -1,4 +1,4 @@
-import { type LobeAgentChatConfig } from '@lobechat/types';
+import { type LobeAgentChatConfig } from '@lobot/types';
 import { renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

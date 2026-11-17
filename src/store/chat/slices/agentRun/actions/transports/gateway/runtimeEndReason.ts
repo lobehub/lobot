@@ -1,4 +1,4 @@
-import type { ChatMessageError, UIChatMessage } from '@lobechat/types';
+import type { ChatMessageError, UIChatMessage } from '@lobot/types';
 
 // `agent_runtime_end` reasons that are NOT a clean completion: a mid-stream
 // cancel, a deferred-tool park, and a failed run (the server runtime ends an

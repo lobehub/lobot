@@ -1,5 +1,5 @@
 import { SHARE_VISITOR_MAX_FILE_SIZE } from '@lobechat/const';
-import { type ChatContextContent } from '@lobechat/types';
+import { type ChatContextContent } from '@lobot/types';
 import { COMPRESSIBLE_IMAGE_TYPES, compressImageFile } from '@lobechat/utils/compressImage';
 import { toast } from '@lobehub/ui';
 import { Buffer } from 'buffer.js';

@@ -1,5 +1,5 @@
 import { buildFileCacheUrl, isDesktop } from '@lobechat/const';
-import type { ChannelDetail } from '@lobechat/types';
+import type { ChannelDetail } from '@lobot/types';
 import { createModal, Flexbox } from '@lobehub/ui';
 
 import FileListViewer from '@/features/Conversation/Messages/User/components/FileListViewer';

@@ -3,7 +3,7 @@ import type {
   ChannelListItem,
   RecentItem,
   SidebarAgentItem,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { markdownToTxt } from '@/utils/markdownToTxt';
 

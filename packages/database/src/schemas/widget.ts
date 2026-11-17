@@ -10,7 +10,7 @@ import type {
   WidgetVersionStatus,
   WidgetView,
   WidgetVisibility,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 import { index, integer, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';

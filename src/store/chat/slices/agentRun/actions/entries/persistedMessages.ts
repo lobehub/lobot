@@ -1,4 +1,4 @@
-import type { MessageMetadata, UIChatMessage } from '@lobechat/types';
+import type { MessageMetadata, UIChatMessage } from '@lobot/types';
 
 /**
  * Re-attach the metadata the client resolved at send time to the persisted user

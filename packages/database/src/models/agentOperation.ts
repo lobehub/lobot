@@ -4,7 +4,7 @@ import {
   isServerDefaultHeterogeneousRelayInvocation,
   type ServerDefaultHeterogeneousRelayInvocation,
   type VerifyRunStatus,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { and, desc, eq, gte, inArray, isNotNull, or, sql } from 'drizzle-orm';
 
 import { today } from '@/utils/time';
@@ -23,7 +23,7 @@ import { findLiveTopicOperations, findScopedOperation } from './agentOperationQu
 
 /**
  * Verify rollup states. Aliases the single `VerifyRunStatus` source of truth in
- * `@lobechat/types` (which also backs the `verify_status` column enum and
+ * `@lobot/types` (which also backs the `verify_status` column enum and
  * `verify_runs.status`) so the three never drift.
  */
 export type VerifyStatus = VerifyRunStatus;

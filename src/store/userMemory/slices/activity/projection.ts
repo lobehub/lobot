@@ -1,4 +1,4 @@
-import { type ActivityListItem } from '@lobechat/types';
+import { type ActivityListItem } from '@lobot/types';
 
 import { type ReplicaPagedData } from '@/libs/replica';
 import { userMemoryKeys } from '@/libs/swr/keys';

@@ -13,7 +13,7 @@ import {
   type ProviderConfig,
   type UserModelProviderConfig,
   type UserSettings,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { type UserStore } from '@/store/user';
 import { merge } from '@/utils/merge';

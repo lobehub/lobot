@@ -1,4 +1,4 @@
-import { ThreadStatus, ThreadType } from '@lobechat/types';
+import { ThreadStatus, ThreadType } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import type { ChatStoreState } from '@/store/chat';

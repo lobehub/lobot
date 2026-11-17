@@ -1,6 +1,6 @@
 'use client';
 
-import type { DeviceGitWorktreeListItem } from '@lobechat/types';
+import type { DeviceGitWorktreeListItem } from '@lobot/types';
 import { Icon, Tooltip } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

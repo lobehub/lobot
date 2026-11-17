@@ -1,5 +1,5 @@
-import type { AgentTopicShareSubject, LobeAgentAgencyConfig } from '@lobechat/types';
-import { getHeterogeneousTaskModelProvider } from '@lobechat/types';
+import type { AgentTopicShareSubject, LobeAgentAgencyConfig } from '@lobot/types';
+import { getHeterogeneousTaskModelProvider } from '@lobot/types';
 import { and, eq, or, sql } from 'drizzle-orm';
 
 import { agents } from '../../schemas';

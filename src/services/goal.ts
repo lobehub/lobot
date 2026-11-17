@@ -7,7 +7,7 @@ import type {
   GoalSubscriptionFreshnessPolicy,
   GoalSubscriptionWakeCondition,
   GoalTickResult,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 

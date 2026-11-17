@@ -1,4 +1,4 @@
-import type { RegisterFileWorkParams, WorkItem } from '@lobechat/types';
+import type { RegisterFileWorkParams, WorkItem } from '@lobot/types';
 import { and, eq } from 'drizzle-orm';
 
 import { works, workVersions } from '../../schemas/work';

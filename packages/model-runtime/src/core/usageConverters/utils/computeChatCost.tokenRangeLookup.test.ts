@@ -1,4 +1,4 @@
-import type { ModelTokensUsage } from '@lobechat/types';
+import type { ModelTokensUsage } from '@lobot/types';
 import type { AIChatModelCard, LookupPricingUnit } from 'model-bank';
 import { LOBE_DEFAULT_MODEL_LIST } from 'model-bank';
 import qwenChatModels from 'model-bank/qwen';

@@ -1,6 +1,6 @@
 'use client';
 
-import type { DeviceListItem } from '@lobechat/types';
+import type { DeviceListItem } from '@lobot/types';
 import { createStaticStyles, cssVar, Flexbox, Icon, Text } from '@lobehub/ui';
 import dayjs from 'dayjs';
 import {

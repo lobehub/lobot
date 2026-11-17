@@ -1,4 +1,4 @@
-import type { ChannelListItem, ChannelPublicMember } from '@lobechat/types';
+import type { ChannelListItem, ChannelPublicMember } from '@lobot/types';
 import { act, cleanup, render, renderHook, waitFor } from '@testing-library/react';
 import { createElement, Fragment } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

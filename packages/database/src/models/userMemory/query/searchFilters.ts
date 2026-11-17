@@ -1,4 +1,4 @@
-import type { SearchMemoryParams } from '@lobechat/types';
+import type { SearchMemoryParams } from '@lobot/types';
 import type { AnyColumn, SQL } from 'drizzle-orm';
 import { and, gte, inArray, lte, sql } from 'drizzle-orm';
 

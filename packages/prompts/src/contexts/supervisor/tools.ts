@@ -1,4 +1,4 @@
-import type { LobeUniformTool } from '@lobechat/types';
+import type { LobeUniformTool } from '@lobot/types';
 
 export const SupervisorToolName = {
   create_todo: 'create_todo',

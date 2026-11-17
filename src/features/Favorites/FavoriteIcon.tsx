@@ -1,6 +1,6 @@
 'use client';
 
-import type { FavoriteType } from '@lobechat/types';
+import type { FavoriteType } from '@lobot/types';
 import { Avatar, cssVar, Icon } from '@lobehub/ui';
 import {
   BotIcon,

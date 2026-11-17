@@ -1,6 +1,6 @@
 import type { GenerateVideosConfig, GoogleGenAI, Image } from '@google/genai';
 import { GenerateVideosOperation } from '@google/genai';
-import type { ModelTokensUsage } from '@lobechat/types';
+import type { ModelTokensUsage } from '@lobot/types';
 import debug from 'debug';
 import { GEMINI_OMNI_VIDEO_MODEL_ID } from 'model-bank/standardParameters';
 

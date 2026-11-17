@@ -1,4 +1,4 @@
-import type { RegisterExternalWorkParams } from '@lobechat/types';
+import type { RegisterExternalWorkParams } from '@lobot/types';
 import { toRecord } from '@lobechat/utils';
 
 /**

@@ -1,8 +1,8 @@
-import type { FtsSearchDocumentEntity } from '@lobechat/types';
+import type { FtsSearchDocumentEntity } from '@lobot/types';
 import { z } from 'zod';
 
-export type { FtsSearchDocumentEntity } from '@lobechat/types';
-export { FTS_SEARCH_DOCUMENT_ENTITIES } from '@lobechat/types';
+export type { FtsSearchDocumentEntity } from '@lobot/types';
+export { FTS_SEARCH_DOCUMENT_ENTITIES } from '@lobot/types';
 
 const dateTime = z.string().datetime();
 const nullableDateTime = dateTime.nullable();

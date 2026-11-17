@@ -1,4 +1,4 @@
-import type { CreateTopicCommentInput } from '@lobechat/types';
+import type { CreateTopicCommentInput } from '@lobot/types';
 import { nanoid } from 'nanoid';
 import type { RefObject } from 'react';
 import { useCallback, useRef, useState } from 'react';

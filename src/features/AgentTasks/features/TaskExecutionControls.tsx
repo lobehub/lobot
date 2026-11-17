@@ -1,7 +1,7 @@
 'use client';
 
-import type { TaskExecutionConfig } from '@lobechat/types';
-import { getWorkingDirEffectivePath } from '@lobechat/types';
+import type { TaskExecutionConfig } from '@lobot/types';
+import { getWorkingDirEffectivePath } from '@lobot/types';
 import { memo } from 'react';
 
 import { getWorkingDirectoryName } from '@/helpers/workingDirectoryPath';

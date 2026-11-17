@@ -1,4 +1,4 @@
-import type { ProjectMemberRole } from '@lobechat/types';
+import type { ProjectMemberRole } from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import { check, index, pgTable, text, uniqueIndex, uuid, varchar } from 'drizzle-orm/pg-core';
 

@@ -1,4 +1,4 @@
-import type { LobeAgentAgencyConfig } from '@lobechat/types';
+import type { LobeAgentAgencyConfig } from '@lobot/types';
 import { and, asc, count, eq, inArray, isNull, like, notInArray, or } from 'drizzle-orm';
 
 import { type AgentModelContext, createAgentModelContext } from '../../models/agent/context';

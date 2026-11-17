@@ -1,6 +1,6 @@
 'use client';
 
-import type { DeviceListItem } from '@lobechat/types';
+import type { DeviceListItem } from '@lobot/types';
 import { Button, Icon } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { RefreshCwIcon } from 'lucide-react';

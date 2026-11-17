@@ -1,4 +1,4 @@
-import type { ChatTopic, UIChatMessage } from '@lobechat/types';
+import type { ChatTopic, UIChatMessage } from '@lobot/types';
 
 import { agentService } from '@/services/agent';
 import { messageService } from '@/services/message';

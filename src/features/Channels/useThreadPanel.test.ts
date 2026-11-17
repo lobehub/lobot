@@ -1,4 +1,4 @@
-import type { ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelPublicMessage } from '@lobot/types';
 import { act, cleanup, renderHook } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';
 import { MemoryRouter } from 'react-router';

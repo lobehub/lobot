@@ -1,4 +1,4 @@
-import type { LinearIssueLinkMetadata, TaskExternalProvider } from '@lobechat/types';
+import type { LinearIssueLinkMetadata, TaskExternalProvider } from '@lobot/types';
 import { isNotNull, isNull } from 'drizzle-orm';
 import { index, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 

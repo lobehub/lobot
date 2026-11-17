@@ -1,4 +1,4 @@
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import {
   confirmModal,
   createStaticStyles,

@@ -1,4 +1,4 @@
-import type { TaskDetailData } from '@lobechat/types';
+import type { TaskDetailData } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import type { TaskDetailDispatch } from './reducer';

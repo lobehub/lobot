@@ -7,7 +7,7 @@ import type {
   VerifyRunGroupFeedbackEntry,
   VerifyRunSource,
   VerifyRunStatus,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { and, asc, desc, eq, gt, ilike, inArray, isNotNull, lt, or, sql } from 'drizzle-orm';
 
 import { agentOperations } from '../schemas/agentOperations';

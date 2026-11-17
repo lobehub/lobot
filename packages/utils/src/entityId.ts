@@ -1,4 +1,4 @@
-import { CLIENT_ALLOCATABLE_PREFIXES, type ClientAllocatableEntity } from '@lobechat/types';
+import { CLIENT_ALLOCATABLE_PREFIXES, type ClientAllocatableEntity } from '@lobot/types';
 
 import { createNanoId } from './uuid';
 

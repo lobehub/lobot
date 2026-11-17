@@ -1,4 +1,4 @@
-import { type ChatImageItem } from '@lobechat/types';
+import { type ChatImageItem } from '@lobot/types';
 import { PreviewGroup } from '@lobehub/ui';
 import { memo } from 'react';
 

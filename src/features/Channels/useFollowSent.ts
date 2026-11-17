@@ -1,4 +1,4 @@
-import type { ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelPublicMessage } from '@lobot/types';
 import { useLatest } from 'ahooks';
 import { useEffect, useRef } from 'react';
 

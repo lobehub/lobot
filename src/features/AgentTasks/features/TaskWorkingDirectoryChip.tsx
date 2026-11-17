@@ -1,7 +1,7 @@
 'use client';
 
-import type { WorkingDirConfig, WorkingDirEntry } from '@lobechat/types';
-import { getWorkingDirEffectivePath, getWorkingDirSourcePath } from '@lobechat/types';
+import type { WorkingDirConfig, WorkingDirEntry } from '@lobot/types';
+import { getWorkingDirEffectivePath, getWorkingDirSourcePath } from '@lobot/types';
 import { cx, Flexbox, Icon, Popover, Text, Tooltip } from '@lobehub/ui';
 import { CheckIcon, ChevronDownIcon, FolderPlusIcon } from 'lucide-react';
 import { memo, useCallback, useMemo, useState } from 'react';

@@ -11,7 +11,7 @@ import type {
   ScheduleAgentRunParams,
   ScheduleAgentRunResult,
   UserInterventionConfig,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { canUseGatewayProtocolV2 } from '@/helpers/gatewayProtocol';
 import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';

@@ -1,4 +1,4 @@
-import type { NotificationMetadata } from '@lobechat/types';
+import type { NotificationMetadata } from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import { boolean, index, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 

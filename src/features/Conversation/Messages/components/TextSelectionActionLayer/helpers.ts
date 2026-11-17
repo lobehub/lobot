@@ -1,4 +1,4 @@
-import type { ChatContextContent } from '@lobechat/types';
+import type { ChatContextContent } from '@lobot/types';
 
 interface SelectionToolbarPosition {
   left: number;

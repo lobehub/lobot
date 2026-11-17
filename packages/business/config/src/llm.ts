@@ -1,4 +1,4 @@
-import type { UserModelProviderConfig } from '@lobechat/types';
+import type { UserModelProviderConfig } from '@lobot/types';
 import { ModelProvider } from 'model-bank/modelProvider';
 import opencodezenModels from 'model-bank/opencodeZen';
 

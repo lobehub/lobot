@@ -1,4 +1,4 @@
-import type { ModelTokensUsage } from '@lobechat/types';
+import type { ModelTokensUsage } from '@lobot/types';
 import type { Pricing } from 'model-bank';
 import aihubmixChatModels from 'model-bank/aihubmix';
 import anthropicChatModels from 'model-bank/anthropic';

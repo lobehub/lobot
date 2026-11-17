@@ -1,5 +1,5 @@
 import type { MessagePatchData } from '@lobechat/agent-gateway-client';
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { applyMessagePatch } from './messagePatch';

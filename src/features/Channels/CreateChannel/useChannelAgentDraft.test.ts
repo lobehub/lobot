@@ -1,4 +1,4 @@
-import type { LobeAgentAgencyConfig } from '@lobechat/types';
+import type { LobeAgentAgencyConfig } from '@lobot/types';
 import { act, cleanup, renderHook } from '@testing-library/react';
 import { useState } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

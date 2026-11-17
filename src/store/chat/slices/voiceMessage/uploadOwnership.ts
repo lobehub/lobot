@@ -1,4 +1,4 @@
-import type { UploadFileItem } from '@lobechat/types';
+import type { UploadFileItem } from '@lobot/types';
 
 type RemoveFile = (id: string) => Promise<void>;
 

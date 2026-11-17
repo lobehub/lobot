@@ -1,4 +1,4 @@
-import type { ChatTopic } from '@lobechat/types';
+import type { ChatTopic } from '@lobot/types';
 import { t } from 'i18next';
 
 import { projectWorkingDirectoryService } from '@/services/projectWorkingDirectory';

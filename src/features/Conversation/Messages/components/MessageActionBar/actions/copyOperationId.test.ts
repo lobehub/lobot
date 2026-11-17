@@ -1,7 +1,7 @@
 /**
  * @vitest-environment happy-dom
  */
-import type { AssistantContentBlock, UIChatMessage } from '@lobechat/types';
+import type { AssistantContentBlock, UIChatMessage } from '@lobot/types';
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

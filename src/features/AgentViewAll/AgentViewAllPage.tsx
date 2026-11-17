@@ -1,7 +1,7 @@
 'use client';
 
 import { DEFAULT_USER_AVATAR_URL } from '@lobechat/const';
-import { agentDisplayName, type SidebarAgentItem } from '@lobechat/types';
+import { agentDisplayName, type SidebarAgentItem } from '@lobot/types';
 import {
   Avatar,
   Button,

@@ -1,4 +1,4 @@
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import { ActionIcon, Flexbox, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { X } from 'lucide-react';

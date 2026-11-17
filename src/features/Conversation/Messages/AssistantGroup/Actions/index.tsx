@@ -1,4 +1,4 @@
-import { type AssistantContentBlock, type UIChatMessage } from '@lobechat/types';
+import { type AssistantContentBlock, type UIChatMessage } from '@lobot/types';
 import { memo, useMemo } from 'react';
 
 import { ReactionPicker } from '../../../components/Reaction';

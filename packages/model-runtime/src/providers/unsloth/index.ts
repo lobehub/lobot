@@ -1,4 +1,4 @@
-import type { ChatModelCard } from '@lobechat/types';
+import type { ChatModelCard } from '@lobot/types';
 import debug from 'debug';
 import { ModelProvider } from 'model-bank';
 import { APIConnectionTimeoutError, APIError } from 'openai';

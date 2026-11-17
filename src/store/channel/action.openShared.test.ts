@@ -1,4 +1,4 @@
-import type { ChannelListItem } from '@lobechat/types';
+import type { ChannelListItem } from '@lobot/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { channelActions } from './action';

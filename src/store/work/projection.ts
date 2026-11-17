@@ -5,7 +5,7 @@ import type {
   WorkSummaryItem,
   WorkVersionItem,
   WorkVisibility,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { definePagedReplica, defineReplica } from '@/libs/replica';
 import { workKeys } from '@/libs/swr/keys';

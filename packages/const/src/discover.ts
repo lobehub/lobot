@@ -3,7 +3,7 @@ import type {
   DiscoverModelDetail,
   DiscoverPluginDetail,
   DiscoverProviderDetail,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { DEFAULT_AGENT_CONFIG } from './settings';
 

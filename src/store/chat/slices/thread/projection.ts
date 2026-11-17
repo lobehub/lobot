@@ -1,4 +1,4 @@
-import type { ThreadItem } from '@lobechat/types';
+import type { ThreadItem } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 

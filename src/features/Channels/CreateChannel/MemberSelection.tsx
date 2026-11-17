@@ -1,5 +1,5 @@
 import { getHeterogeneousTypeLabel } from '@lobechat/heterogeneous-agents';
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import { Checkbox, Flexbox, SearchBar, Tag, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import type { Dispatch, SetStateAction } from 'react';

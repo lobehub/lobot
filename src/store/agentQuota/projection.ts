@@ -1,5 +1,5 @@
 import type { QuotaLimitReading } from '@lobechat/heterogeneous-agents/quota';
-import type { QuotaDeviceAccount } from '@lobechat/types';
+import type { QuotaDeviceAccount } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 import type { agentQuotaService } from '@/services/agentQuota';
@@ -63,7 +63,7 @@ export const quotaBindingsResource = defineReplica<string, QuotaBinding[]>({
   version: 1,
 });
 
-export type { QuotaDeviceAccount } from '@lobechat/types';
+export type { QuotaDeviceAccount } from '@lobot/types';
 
 /** Replica key of one agent's account choice on one device (gateway id). */
 export const quotaDeviceAccountKey = (agentId: string, deviceId: string) =>

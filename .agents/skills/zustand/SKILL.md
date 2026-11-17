@@ -8,7 +8,7 @@ user-invocable: false
 
 ## State Shapes and Types
 
-- Import shared store types from `@lobechat/types`, not `@lobechat/database`.
+- Import shared store types from `@lobot/types`, not `@lobechat/database`.
 - Keep lightweight list-item types separate from full detail types; list types must not extend heavy detail types.
 - Key cached details by id (`xxxDetailMap: Record<string, Detail>`); never hold a single `currentDetail` object.
 - Read through `xxxSelectors` aggregates (`selectors.ts`), not ad-hoc lambdas repeated across components.

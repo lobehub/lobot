@@ -1,4 +1,4 @@
-import type { OpenAIChatMessage } from '@lobechat/types';
+import type { OpenAIChatMessage } from '@lobot/types';
 
 export const BOT_WAKE_CLASSIFIER_PROMPT_VERSION = 'v4';
 

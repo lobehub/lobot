@@ -1,4 +1,4 @@
-import type { ChatTopic } from '@lobechat/types';
+import type { ChatTopic } from '@lobot/types';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { deviceService } from '@/services/device';

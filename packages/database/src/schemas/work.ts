@@ -6,7 +6,7 @@ import type {
   WorkVersionCumulativeUsage,
   WorkVersionMetadata,
   WorkVisibility,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { isNotNull, isNull, sql } from 'drizzle-orm';
 import { index, integer, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 

@@ -13,7 +13,7 @@ import spend from './spend';
  * here green.
  *
  * Read from the enum source rather than importing it: this package does not
- * depend on `@lobechat/types`, and the guard is about the text of the enum,
+ * depend on `@lobot/types`, and the guard is about the text of the enum,
  * not its runtime value.
  */
 const TRIGGER_ENUM = path.join(

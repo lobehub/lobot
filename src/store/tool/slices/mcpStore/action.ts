@@ -1,5 +1,5 @@
 import { CURRENT_VERSION, isDesktop } from '@lobechat/const';
-import { type ToolManifest } from '@lobechat/types';
+import { type ToolManifest } from '@lobot/types';
 import { type PluginItem } from '@lobehub/market-sdk';
 import { type TRPCClientError } from '@trpc/client';
 import debug from 'debug';

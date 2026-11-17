@@ -1,4 +1,4 @@
-import type { DocumentCommentThread, DocumentCommentThreadPage } from '@lobechat/types';
+import type { DocumentCommentThread, DocumentCommentThreadPage } from '@lobot/types';
 import { describe, expect, it, vi } from 'vitest';
 
 import { fetchThreadPage, MAX_EMPTY_THREAD_PAGE_HOPS } from './projection';

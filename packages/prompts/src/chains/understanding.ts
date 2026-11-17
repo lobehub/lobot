@@ -6,7 +6,7 @@ import {
   type OpenAIChatMessage,
   type UnderstandingAnalysis,
   type UnderstandingFeedbackTurn,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 type SafeCollectionDiagnostics = Pick<
   CollectionDiagnostics,

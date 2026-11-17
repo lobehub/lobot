@@ -1,4 +1,4 @@
-import type { ChannelListItem } from '@lobechat/types';
+import type { ChannelListItem } from '@lobot/types';
 import { Button, Flexbox, Icon } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { Archive } from 'lucide-react';

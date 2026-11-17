@@ -3,7 +3,7 @@ import type {
   ExecAgentResult,
   UIChatMessage,
   UserInterventionConfig,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 import type {

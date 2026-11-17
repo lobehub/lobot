@@ -3,7 +3,7 @@ import type {
   AssistantContentBlock,
   ChatToolPayloadWithResult,
   UIChatMessage,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 const ASSISTANT_GROUP_STATUS_TEXT_MAX_LENGTH = 100;
 const MARKDOWN_HEADING_MAX_LEVEL = 6;

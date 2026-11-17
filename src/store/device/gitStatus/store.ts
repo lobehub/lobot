@@ -4,7 +4,7 @@ import type {
   DeviceGitRemoteBranchListItem,
   DeviceGitWorkingTreeStatus,
   DeviceGitWorktreeListItem,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
 

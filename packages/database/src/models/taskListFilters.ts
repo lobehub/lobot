@@ -5,7 +5,7 @@ import {
   type TaskListFilter,
   type TaskListFilterDate,
   type TaskListFilterSet,
-} from '@lobechat/types';
+} from '@lobot/types';
 import {
   and,
   eq,
@@ -42,7 +42,7 @@ import { taskLabelLinks, taskLabels } from '../schemas/taskLabel';
  *
  * Kept as one expression so the `automated` filter's two sides stay exact
  * complements and no row falls into neither bucket. `isTaskArchiveBlocked`
- * in `@lobechat/types` mirrors it in JS; keep the two in step.
+ * in `@lobot/types` mirrors it in JS; keep the two in step.
  */
 const RUNNABLE_AUTOMATION = and(
   notInArray(tasks.status, ['canceled', 'completed', 'failed']),
@@ -208,7 +208,7 @@ const buildCreatorCondition = (set: TaskListFilterSet<string> | undefined): SQL 
  * A label value matches a task carrying that label, or — for a group id — any
  * label of that group; "none" matches a task with no labels. Links are joined
  * back to `tasks.id`, so the outer ownership predicate still decides which
- * tasks are reachable. Mirrors `matchesLabels` in `@lobechat/types`.
+ * tasks are reachable. Mirrors `matchesLabels` in `@lobot/types`.
  */
 const buildLabelCondition = (set: TaskListFilterSet<string> | undefined): SQL | undefined => {
   if (!set || set.values.length === 0) return undefined;

@@ -1,4 +1,4 @@
-import type { UpdateTopicMetadataInput } from '@lobechat/types';
+import type { UpdateTopicMetadataInput } from '@lobot/types';
 
 import { INBOX_SESSION_ID } from '@/const/session';
 import { TopicTrigger } from '@/const/topic';

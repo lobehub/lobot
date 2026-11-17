@@ -1,4 +1,4 @@
-import type { RecentItem } from '@lobechat/types';
+import type { RecentItem } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 import type { fileService } from '@/services/file';

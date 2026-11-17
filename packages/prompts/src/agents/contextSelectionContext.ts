@@ -1,4 +1,4 @@
-import type { ContextSelection } from '@lobechat/types';
+import type { ContextSelection } from '@lobot/types';
 
 import { escapeXmlAttr, escapeXmlContent } from '../prompts/search/xmlEscape';
 

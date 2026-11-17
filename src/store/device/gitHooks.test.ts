@@ -1,4 +1,4 @@
-import type { DeviceGitPullRequestDetailResult } from '@lobechat/types';
+import type { DeviceGitPullRequestDetailResult } from '@lobot/types';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';
 import { SWRConfig } from 'swr';

@@ -1,8 +1,8 @@
 'use client';
 
 import { DEFAULT_INBOX_AVATAR, DEFAULT_INBOX_TITLE } from '@lobechat/const';
-import type { ChannelListItem, RecentItem } from '@lobechat/types';
-import { agentDisplayName } from '@lobechat/types';
+import type { ChannelListItem, RecentItem } from '@lobot/types';
+import { agentDisplayName } from '@lobot/types';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -1,4 +1,4 @@
-import type { ChatTopic, ChatTopicStatus } from '@lobechat/types';
+import type { ChatTopic, ChatTopicStatus } from '@lobot/types';
 
 import { isInterventionRunActive } from '@/store/chat/utils/interventionSync';
 

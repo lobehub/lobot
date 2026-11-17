@@ -1,12 +1,12 @@
 /**
  * Types for the device-control RPC surface. These mirror the shapes in
- * `@lobechat/electron-client-ipc` (desktop) and `@lobechat/types` (server), but
+ * `@lobechat/electron-client-ipc` (desktop) and `@lobot/types` (server), but
  * are re-declared here so this package stays a leaf with no UI / server
  * dependency. They are structurally compatible with their counterparts, so the
  * desktop wiring can pass its own IPC-typed implementations directly.
  */
 
-import type { DeviceClient, DeviceCliRestartParams, DeviceCliUpdateState } from '@lobechat/types';
+import type { DeviceClient, DeviceCliRestartParams, DeviceCliUpdateState } from '@lobot/types';
 
 // ─── Workspace scan ───
 
@@ -425,7 +425,7 @@ export interface DeviceControlDeps extends SkillDirectoryDeps, WorkspaceScanDeps
 // ─── Heterogeneous agent model discovery ───
 
 /**
- * Structural mirrors of the canonical `@lobechat/types` catalog contracts.
+ * Structural mirrors of the canonical `@lobot/types` catalog contracts.
  * Kept local so device-control remains a leaf package with no app/type-layer dependency.
  */
 export interface ListHeterogeneousAgentModelsParams {

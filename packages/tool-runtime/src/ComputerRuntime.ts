@@ -13,7 +13,7 @@ import {
   formatSandboxRecreation,
   formatWriteResult,
 } from '@lobechat/prompts/fileSystem';
-import type { BuiltinServerRuntimeOutput } from '@lobechat/types';
+import type { BuiltinServerRuntimeOutput } from '@lobot/types';
 
 import type {
   EditFileParams,

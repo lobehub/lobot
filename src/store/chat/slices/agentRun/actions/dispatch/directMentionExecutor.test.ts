@@ -1,4 +1,4 @@
-import { AgentRuntimeErrorType, ChatErrorType, ThreadStatus } from '@lobechat/types';
+import { AgentRuntimeErrorType, ChatErrorType, ThreadStatus } from '@lobot/types';
 import { describe, expect, it, vi } from 'vitest';
 
 import {

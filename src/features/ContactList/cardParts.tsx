@@ -36,6 +36,11 @@ export const styles = stylex.create({
   avatar: {
     marginBlockStart: `-${AVATAR_SIZE / 2}px`,
   },
+  // Holds a status dot on the avatar's edge; the ring itself clips its content.
+  avatarAnchor: {
+    position: 'relative',
+    display: 'inline-flex',
+  },
   // Tiles keep a button's width rather than stretching, so a lone "Message" is not a bar.
   actions: {
     display: 'grid',

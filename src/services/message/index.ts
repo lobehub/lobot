@@ -15,7 +15,7 @@ import {
   type UpdateMessageParams,
   type UpdateMessageRAGParams,
   type UpdateMessageResult,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { type HeatmapsProps } from '@lobehub/charts';
 import pMap from 'p-map';
 

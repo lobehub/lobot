@@ -9,7 +9,7 @@ import type {
   GoalNodeKind,
   GoalNodeStatus,
   GoalNodeWorkVersionRelation,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { isNotNull, sql } from 'drizzle-orm';
 import {
   check,

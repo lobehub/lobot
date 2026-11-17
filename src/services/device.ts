@@ -3,7 +3,7 @@ import type {
   DeviceEnroller,
   DeviceRunningSummary,
   DeviceScope,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
 import { type TopicListItem } from '@/services/topic';

@@ -6,7 +6,7 @@
  */
 import { randomUUID } from 'node:crypto';
 
-import type { RecentItem } from '@lobechat/types';
+import type { RecentItem } from '@lobot/types';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { replicaKeys } from 'local-replica';
 import type { PropsWithChildren } from 'react';

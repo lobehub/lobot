@@ -31,6 +31,6 @@
     "model-bank": "workspace:*"
   },
   "devDependencies": {
-    "@lobechat/types": "workspace:*"
+    "@lobot/types": "workspace:*"
   }
 }

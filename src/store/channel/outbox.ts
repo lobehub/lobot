@@ -1,4 +1,4 @@
-import type { ChannelDetail, ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelDetail, ChannelPublicMessage } from '@lobot/types';
 
 import type { ChannelViewParams } from '@/services/channel';
 

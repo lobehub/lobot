@@ -1,5 +1,5 @@
 import type { TaskCompletedWindow } from '@lobechat/const/builtinTools';
-import type { TaskListFilter, TaskStatus } from '@lobechat/types';
+import type { TaskListFilter, TaskStatus } from '@lobot/types';
 
 import { defineReplica, type ReplicaEntityAdapter, stableQueryKey } from '@/libs/replica';
 import type { taskService } from '@/services/task';

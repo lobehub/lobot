@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import os from 'node:os';
 
-import type { DeviceMetricSample } from '@lobechat/types';
+import type { DeviceMetricSample } from '@lobot/types';
 import WebSocket from 'ws';
 
 import { toDeviceGatewayWebSocketUrl } from './endpoint';

@@ -13,7 +13,7 @@ import type {
   DocumentCommentItem,
   DocumentCommentThread,
   DocumentLikeSummary,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { createElement, useEffect } from 'react';

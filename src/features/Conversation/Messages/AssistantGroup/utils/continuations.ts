@@ -1,4 +1,4 @@
-import type { UIChatMessage, UISignalCallbacksBlock } from '@lobechat/types';
+import type { UIChatMessage, UISignalCallbacksBlock } from '@lobot/types';
 
 import type { AssistantContentBlock } from '@/types/index';
 

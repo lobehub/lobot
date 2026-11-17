@@ -1,4 +1,4 @@
-import type { ChannelDetail, ChannelListItem, ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelDetail, ChannelListItem, ChannelPublicMessage } from '@lobot/types';
 
 import { defineReplica, type ReplicaEntityAdapter } from '@/libs/replica';
 import { channelService, type ChannelViewParams } from '@/services/channel';

@@ -1,5 +1,5 @@
 import type { HeterogeneousAgentScanMap } from '@lobechat/heterogeneous-agents';
-import type { DeviceListItem } from '@lobechat/types';
+import type { DeviceListItem } from '@lobot/types';
 import { useCallback, useMemo } from 'react';
 
 import { useClientDataSWR } from '@/libs/swr';

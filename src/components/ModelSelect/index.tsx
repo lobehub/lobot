@@ -1,5 +1,5 @@
 import { BRANDING_PROVIDER } from '@lobechat/business-const';
-import { type ChatModelCard } from '@lobechat/types';
+import { type ChatModelCard } from '@lobot/types';
 import { LobeHub } from '@lobehub/icons';
 import { type FlexboxProps } from '@lobehub/ui';
 import { Avatar, Flexbox, Icon, Tag, Text, Tooltip, useResponsive } from '@lobehub/ui';

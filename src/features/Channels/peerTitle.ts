@@ -1,4 +1,4 @@
-import type { ChannelDetail } from '@lobechat/types';
+import type { ChannelDetail } from '@lobot/types';
 
 /**
  * A conversation between two people is titled with whoever the viewer talks to: the stored

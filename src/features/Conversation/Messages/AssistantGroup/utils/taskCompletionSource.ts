@@ -1,4 +1,4 @@
-import type { AssistantContentBlock, ChatToolPayload, MessageSignal } from '@lobechat/types';
+import type { AssistantContentBlock, ChatToolPayload, MessageSignal } from '@lobot/types';
 
 export interface TaskCompletionSource {
   /** The source call's `description` argument, e.g. a subagent's task title. */

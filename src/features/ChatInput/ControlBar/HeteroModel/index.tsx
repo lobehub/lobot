@@ -1,7 +1,7 @@
 'use client';
 
-import type { ListHeterogeneousAgentModelsParams } from '@lobechat/types';
-import { applyTopicModelToHeterogeneousProvider } from '@lobechat/types';
+import type { ListHeterogeneousAgentModelsParams } from '@lobot/types';
+import { applyTopicModelToHeterogeneousProvider } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { memo } from 'react';
 

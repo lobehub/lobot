@@ -1,4 +1,4 @@
-import type { GoalGraphNode, GoalGraphSnapshot, GoalNodeStatus } from '@lobechat/types';
+import type { GoalGraphNode, GoalGraphSnapshot, GoalNodeStatus } from '@lobot/types';
 
 type Graph = Pick<GoalGraphSnapshot, 'nodes' | 'edges'>;
 

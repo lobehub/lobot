@@ -2,7 +2,7 @@ import type {
   ExpertiseCanonEntry,
   ExpertiseLessonPolarity,
   ExpertiseLessonSection,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { escapeXmlAttr, escapeXmlContent } from '../prompts/search/xmlEscape';
 

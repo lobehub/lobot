@@ -1,6 +1,6 @@
 import { CHANNEL_URL } from '@lobechat/const';
 import type { DesktopNotificationSender } from '@lobechat/electron-client-ipc';
-import type { ChannelListItem, ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelListItem, ChannelPublicMessage } from '@lobot/types';
 import { t } from 'i18next';
 
 import { channelService } from '@/services/channel';

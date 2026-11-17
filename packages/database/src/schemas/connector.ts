@@ -1,4 +1,4 @@
-import type { CustomPluginParams, ToolManifest } from '@lobechat/types';
+import type { CustomPluginParams, ToolManifest } from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import {
   boolean,

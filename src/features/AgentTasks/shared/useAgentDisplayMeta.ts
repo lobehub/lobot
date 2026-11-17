@@ -1,4 +1,4 @@
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import { cssVar } from '@lobehub/ui';
 import { useTranslation } from 'react-i18next';
 

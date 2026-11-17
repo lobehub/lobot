@@ -1,4 +1,4 @@
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 import { act, renderHook } from '@testing-library/react';
 import { createElement, type PropsWithChildren } from 'react';
 import { SWRConfig } from 'swr';

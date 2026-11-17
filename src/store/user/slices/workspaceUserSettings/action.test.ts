@@ -1,4 +1,4 @@
-import type { WorkspaceUserPreference } from '@lobechat/types';
+import type { WorkspaceUserPreference } from '@lobot/types';
 import { act } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

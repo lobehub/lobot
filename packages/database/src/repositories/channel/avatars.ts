@@ -1,4 +1,4 @@
-import type { ChannelAvatarMember } from '@lobechat/types';
+import type { ChannelAvatarMember } from '@lobot/types';
 import { and, asc, eq, inArray, isNull, lte, ne, or, sql } from 'drizzle-orm';
 
 import { agents, channelMembers, users } from '../../schemas';

@@ -1,4 +1,4 @@
-import type { ModelPerformance, ModelUsage } from '@lobechat/types';
+import type { ModelPerformance, ModelUsage } from '@lobot/types';
 
 import type { ModelRuntimeDiagnostics } from '../../types/providerDiagnostics';
 

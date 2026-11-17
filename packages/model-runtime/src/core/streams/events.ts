@@ -1,4 +1,4 @@
-import type { ModelPerformance, ModelReasoningResponseItem, ModelUsage } from '@lobechat/types';
+import type { ModelPerformance, ModelReasoningResponseItem, ModelUsage } from '@lobot/types';
 
 import { parseToolCalls } from '../../helpers';
 import type { ChatStreamCallbacks, OnFinishData } from '../../types';

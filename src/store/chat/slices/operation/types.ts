@@ -3,8 +3,8 @@ import type {
   MessageMapScope,
   MessageMetadata,
   UploadFileItem,
-} from '@lobechat/types';
-import { mergeMcpAppSource } from '@lobechat/types';
+} from '@lobot/types';
+import { mergeMcpAppSource } from '@lobot/types';
 
 import type { QueuedFollowUpRequest } from '@/services/aiAgent';
 

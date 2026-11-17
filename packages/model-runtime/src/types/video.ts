@@ -2,7 +2,7 @@ import type {
   ModelTokensUsage,
   VideoGenerationCompletionMode,
   VideoGenerationRoute,
-} from '@lobechat/types';
+} from '@lobot/types';
 import type { RuntimeVideoGenParams } from 'model-bank';
 
 import type { ModelPricingContext } from './pricing';

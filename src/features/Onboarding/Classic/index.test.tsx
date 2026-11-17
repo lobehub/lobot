@@ -1,4 +1,4 @@
-import { CLASSIC_ONBOARDING_MAX_STEP } from '@lobechat/types';
+import { CLASSIC_ONBOARDING_MAX_STEP } from '@lobot/types';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router';

@@ -1,5 +1,5 @@
 import { CHANNEL_URL } from '@lobechat/const';
-import type { ChannelListItem } from '@lobechat/types';
+import type { ChannelListItem } from '@lobot/types';
 import {
   AccordionHeader,
   AccordionItem,

@@ -1,5 +1,5 @@
-import type { HeterogeneousProviderConfig, HeteroSelectorCapability } from '@lobechat/types';
-import { applyHeteroSelection, getHeteroSelectorCapability } from '@lobechat/types';
+import type { HeterogeneousProviderConfig, HeteroSelectorCapability } from '@lobot/types';
+import { applyHeteroSelection, getHeteroSelectorCapability } from '@lobot/types';
 import type { TFunction } from 'i18next';
 import { describe, expect, it } from 'vitest';
 

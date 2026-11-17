@@ -1,4 +1,4 @@
-import type { DeviceListItem, DeviceMetricSeries, WorkingDirEntry } from '@lobechat/types';
+import type { DeviceListItem, DeviceMetricSeries, WorkingDirEntry } from '@lobot/types';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import { deviceService } from '@/services/device';

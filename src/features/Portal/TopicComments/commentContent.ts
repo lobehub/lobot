@@ -1,4 +1,4 @@
-import type { TopicCommentJson, UpdateTopicCommentInput } from '@lobechat/types';
+import type { TopicCommentJson, UpdateTopicCommentInput } from '@lobot/types';
 
 export const hasTopicCommentEditorData = (editorData: TopicCommentJson | null) =>
   Boolean(

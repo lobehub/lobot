@@ -1,4 +1,4 @@
-import type { ToolManifest } from '@lobechat/types';
+import type { ToolManifest } from '@lobot/types';
 
 import { buildClientConnectorManifests } from '@/helpers/toolEngineering/buildClientConnectorManifests';
 import type { HttpMCPClientParams } from '@/libs/mcp/types';

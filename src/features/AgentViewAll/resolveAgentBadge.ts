@@ -1,5 +1,5 @@
 import { BUILTIN_AGENT_SLUGS } from '@lobechat/const/builtinAgents';
-import type { SidebarAgentItem } from '@lobechat/types';
+import type { SidebarAgentItem } from '@lobot/types';
 
 import { usableBackground } from '@/components/Avatar/fallback';
 import { resolveAgentBackground } from '@/features/AgentProfileArtwork/utils';

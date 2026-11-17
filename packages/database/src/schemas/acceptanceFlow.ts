@@ -1,4 +1,4 @@
-import type { AcceptanceFlowNodeOverrides } from '@lobechat/types';
+import type { AcceptanceFlowNodeOverrides } from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import {
   boolean,

@@ -1,4 +1,4 @@
-import type { ChannelDetail, ChannelListItem, ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelDetail, ChannelListItem, ChannelPublicMessage } from '@lobot/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { cacheScope } from '@/libs/replica';

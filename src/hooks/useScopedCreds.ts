@@ -1,4 +1,4 @@
-import { type UserCredSummary } from '@lobechat/types';
+import { type UserCredSummary } from '@lobot/types';
 
 import { type ContextCredSummary } from '@/helpers/claudeCodeTokenCred';
 import { useClientDataSWR } from '@/libs/swr';

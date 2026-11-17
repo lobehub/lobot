@@ -3,7 +3,7 @@ import type {
   StreamChunkData,
   StreamStartData,
 } from '@lobechat/agent-gateway-client';
-import type { ConversationContext, UIChatMessage } from '@lobechat/types';
+import type { ConversationContext, UIChatMessage } from '@lobot/types';
 
 import type { ChatStore } from '@/store/chat/store';
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';

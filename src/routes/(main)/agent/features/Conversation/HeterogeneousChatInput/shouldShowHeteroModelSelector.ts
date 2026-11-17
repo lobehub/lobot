@@ -1,5 +1,5 @@
-import type { DeviceExecutionTarget, HeterogeneousProviderConfig } from '@lobechat/types';
-import { getHeteroSelectorCapability } from '@lobechat/types';
+import type { DeviceExecutionTarget, HeterogeneousProviderConfig } from '@lobot/types';
+import { getHeteroSelectorCapability } from '@lobot/types';
 
 interface ShouldShowHeteroModelSelectorParams {
   boundDeviceId?: string;

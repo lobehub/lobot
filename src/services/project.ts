@@ -1,4 +1,4 @@
-import type { ProjectStatus, ProjectVisibility } from '@lobechat/types';
+import type { ProjectStatus, ProjectVisibility } from '@lobot/types';
 
 import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
 

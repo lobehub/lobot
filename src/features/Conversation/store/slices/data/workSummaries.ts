@@ -1,5 +1,5 @@
 import { getOperationFinalRootId } from '@lobechat/conversation-flow';
-import type { UIChatMessage, WorkSummaryItem } from '@lobechat/types';
+import type { UIChatMessage, WorkSummaryItem } from '@lobot/types';
 
 const toTime = (value: unknown): number => {
   if (!value) return 0;

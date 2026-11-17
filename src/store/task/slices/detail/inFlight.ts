@@ -1,4 +1,4 @@
-import type { TaskDetailData, TaskDetailSubtask } from '@lobechat/types';
+import type { TaskDetailData, TaskDetailSubtask } from '@lobot/types';
 
 export const TASK_DETAIL_POLL_INTERVAL = 10_000;
 

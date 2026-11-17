@@ -1,4 +1,4 @@
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import { Avatar, Icon } from '@lobehub/ui';
 import { SkillsIcon } from '@lobehub/ui/icons';
 import isEqual from 'fast-deep-equal';

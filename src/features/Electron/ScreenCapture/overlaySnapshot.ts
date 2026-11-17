@@ -1,6 +1,6 @@
 import { DEFAULT_INBOX_AVATAR, DEFAULT_INBOX_TITLE } from '@lobechat/const';
 import type { ScreenCaptureAgentOption } from '@lobechat/electron-client-ipc';
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 
 import { isDefaultAgentAvatar } from '@/components/AgentAvatar/resolve';
 

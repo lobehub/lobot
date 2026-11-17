@@ -1,4 +1,4 @@
-import type { TopicCommentItem, TopicCommentSummary } from '@lobechat/types';
+import type { TopicCommentItem, TopicCommentSummary } from '@lobot/types';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import { topicCommentService } from '@/services/topicComment';

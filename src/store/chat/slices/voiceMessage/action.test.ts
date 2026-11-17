@@ -1,4 +1,4 @@
-import type { ConversationContext, UploadFileItem, VoiceMessageRecording } from '@lobechat/types';
+import type { ConversationContext, UploadFileItem, VoiceMessageRecording } from '@lobot/types';
 import { act, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

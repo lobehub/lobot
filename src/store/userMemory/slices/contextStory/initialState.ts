@@ -1,4 +1,4 @@
-import { type MemoryContextStory, type MemoryContextStoryList } from '@lobechat/types';
+import { type MemoryContextStory, type MemoryContextStoryList } from '@lobot/types';
 
 export interface ContextStorySliceState {
   /** Story cards of the contexts page; `undefined` until the first response. */

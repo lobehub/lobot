@@ -8,7 +8,7 @@
  * can never be restored stale. Scope isolation is the other guarantee: a switch
  * drops the previous identity's bootstrap before the new response lands.
  */
-import type { UserInitializationState } from '@lobechat/types';
+import type { UserInitializationState } from '@lobot/types';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { createElement, useEffect } from 'react';

@@ -1,4 +1,4 @@
-import type { ChannelDetail, ChannelPublicMember, ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelDetail, ChannelPublicMember, ChannelPublicMessage } from '@lobot/types';
 import {
   ActionIcon,
   Button,

@@ -4,7 +4,7 @@ import {
   type CreateMessageParams,
   type MessagePluginItem,
   type UIChatMessage,
-} from '@lobechat/types';
+} from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { produce } from 'immer';
 

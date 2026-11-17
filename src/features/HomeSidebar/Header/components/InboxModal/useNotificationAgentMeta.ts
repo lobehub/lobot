@@ -1,4 +1,4 @@
-import type { NotificationMetadata } from '@lobechat/types';
+import type { NotificationMetadata } from '@lobot/types';
 
 import { useAgentDisplayMeta } from '@/features/AgentTasks/shared/useAgentDisplayMeta';
 

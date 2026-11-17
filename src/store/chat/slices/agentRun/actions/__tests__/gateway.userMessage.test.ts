@@ -1,4 +1,4 @@
-import type { ComposerUserMessage } from '@lobechat/types';
+import type { ComposerUserMessage } from '@lobot/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { aiAgentService } from '@/services/aiAgent';

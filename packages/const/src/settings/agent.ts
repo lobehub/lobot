@@ -4,7 +4,7 @@ import {
   type LobeAgentConfig,
   type LobeAgentTTSConfig,
   type UserDefaultAgent,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { DEFAULT_AGENT_META } from '../meta';
 import { DEFAULT_MODEL } from './llm';

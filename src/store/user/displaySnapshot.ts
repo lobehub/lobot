@@ -1,4 +1,4 @@
-import { UserPreferenceSchema } from '@lobechat/types';
+import { UserPreferenceSchema } from '@lobot/types';
 import { isRecord } from '@lobechat/utils/object';
 import type { PartialDeep } from 'type-fest';
 

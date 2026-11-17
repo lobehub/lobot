@@ -1,5 +1,5 @@
 import { DEFAULT_INBOX_TITLE, INBOX_SESSION_ID } from '@lobechat/const';
-import type { AgentRankItem } from '@lobechat/types';
+import type { AgentRankItem } from '@lobot/types';
 import { and, count, desc, eq, gt, ilike, inArray, isNull, ne, or, sql } from 'drizzle-orm';
 
 import { agents, topics } from '../../schemas';

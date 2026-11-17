@@ -1,4 +1,4 @@
-import type { ChannelDetail, ChannelPublicJob, ChannelReplyJob } from '@lobechat/types';
+import type { ChannelDetail, ChannelPublicJob, ChannelReplyJob } from '@lobot/types';
 import type { AgentAvatarState } from '@lobehub/ui';
 
 export const channelJobStatus = (job: ChannelReplyJob) =>

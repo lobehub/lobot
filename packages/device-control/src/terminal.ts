@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 
 import { detectWindowsShell } from '@lobechat/local-file-shell/shell';
-import type { DeviceClient } from '@lobechat/types';
+import type { DeviceClient } from '@lobot/types';
 
 import type {
   CloseTerminalParams,

@@ -1,4 +1,4 @@
-import type { WorkspaceUserPreference } from '@lobechat/types';
+import type { WorkspaceUserPreference } from '@lobot/types';
 
 import type { ReplicaState } from '@/libs/replica';
 

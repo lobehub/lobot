@@ -1,4 +1,4 @@
-import type { OpenAIChatMessage } from '@lobechat/types';
+import type { OpenAIChatMessage } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import {

@@ -1,4 +1,4 @@
-import type { EvalRuleVerdict } from '@lobechat/types';
+import type { EvalRuleVerdict } from '@lobot/types';
 
 export interface GenerateObjectPayload {
   messages: { content: string; role: 'system' | 'user' }[];

@@ -1,4 +1,4 @@
-import { type PreferenceMemorySimple, type UserMemoryItemSimple } from '@lobechat/types';
+import { type PreferenceMemorySimple, type UserMemoryItemSimple } from '@lobot/types';
 import { type SWRResponse } from 'swr';
 
 import { type DisplayPreferenceMemory } from '@/database/repositories/userMemory';

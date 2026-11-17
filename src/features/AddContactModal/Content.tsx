@@ -1,6 +1,6 @@
 'use client';
 
-import type { ContactSearchResult } from '@lobechat/types';
+import type { ContactSearchResult } from '@lobot/types';
 import { Button, Center, Flexbox, SearchBar, Text, toast } from '@lobehub/ui';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

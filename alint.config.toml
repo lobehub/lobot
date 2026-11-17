@@ -61,7 +61,7 @@ lobehub = "./packages/alint/rules"
 "lobehub/no-mode-flags" = "warn"
 "lobehub/no-unguarded-response-field" = "error"
 
-# Web client data types: payload shapes are declared in @lobechat/types, not
+# Web client data types: payload shapes are declared in @lobot/types, not
 # inferred with Awaited<ReturnType<typeof someService.method>>.
 [[config.group]]
 files = [ "src/**/*.ts", "src/**/*.tsx" ]
@@ -80,7 +80,7 @@ lobehub = "./packages/alint/rules"
 [config.group.rules]
 "lobehub/no-inferred-service-types" = "warn"
 
-# Row types: declared in @lobechat/types, not inferred from a Drizzle table
+# Row types: declared in @lobot/types, not inferred from a Drizzle table
 # (typeof table.$inferSelect / $inferInsert) or imported from a schema module.
 # Schema files are excluded: they own the tables and the compile-time checks.
 [[config.group]]

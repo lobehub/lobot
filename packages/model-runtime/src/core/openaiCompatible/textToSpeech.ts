@@ -1,4 +1,4 @@
-import type { ModelTokensUsage } from '@lobechat/types';
+import type { ModelTokensUsage } from '@lobot/types';
 import debug from 'debug';
 import { DEFAULT_TTS_AUDIO_FORMAT } from 'model-bank';
 import type OpenAI from 'openai';

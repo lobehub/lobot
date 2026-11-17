@@ -6,7 +6,7 @@ import type {
   RetryOnboardingUnderstandingProviderInput,
   ReviseOnboardingUnderstandingInput,
   StartOnboardingUnderstandingInput,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { type PartialDeep } from 'type-fest';
 
 import { lambdaClient } from '@/libs/trpc/client';

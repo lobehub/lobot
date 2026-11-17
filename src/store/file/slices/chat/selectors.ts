@@ -1,4 +1,4 @@
-import { type ChatContextContent } from '@lobechat/types';
+import { type ChatContextContent } from '@lobot/types';
 
 import { UPLOAD_STATUS_SET, type UploadFileItem } from '@/types/files/upload';
 

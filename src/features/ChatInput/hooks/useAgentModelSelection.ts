@@ -1,8 +1,8 @@
 'use client';
 
 import { isCollaborativeBuiltinAgentRow } from '@lobechat/const/builtinAgents';
-import type { AgentModelSelectionPolicy } from '@lobechat/types';
-import { resolveAgentModelConfig, resolveAgentModelSelectionPolicy } from '@lobechat/types';
+import type { AgentModelSelectionPolicy } from '@lobot/types';
+import { resolveAgentModelConfig, resolveAgentModelSelectionPolicy } from '@lobot/types';
 import { useCallback } from 'react';
 
 import { useBusinessModelModeConfig } from '@/business/client/hooks/useBusinessAgentMode';

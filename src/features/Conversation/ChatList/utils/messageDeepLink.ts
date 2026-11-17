@@ -1,4 +1,4 @@
-import type { AssistantContentBlock, ChatToolPayload, UIChatMessage } from '@lobechat/types';
+import type { AssistantContentBlock, ChatToolPayload, UIChatMessage } from '@lobot/types';
 
 import { collectSteerChains } from '../../store/slices/data/steerChains';
 

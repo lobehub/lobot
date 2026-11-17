@@ -1,5 +1,5 @@
 import { HETEROGENEOUS_PROVIDER_BINDING_PERSONAL_ONLY_ERROR } from '@lobechat/heterogeneous-agents';
-import { type DeviceExecutionTarget, type HeterogeneousProviderConfig } from '@lobechat/types';
+import { type DeviceExecutionTarget, type HeterogeneousProviderConfig } from '@lobot/types';
 
 /**
  * Which agent runtime should handle an operation.

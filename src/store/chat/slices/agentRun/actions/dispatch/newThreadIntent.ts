@@ -2,7 +2,7 @@ import type {
   ChatThreadType,
   ConversationContext,
   CreateThreadWithMessageParams,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 /**
  * Read a "start a new subtopic" intent off a conversation context.

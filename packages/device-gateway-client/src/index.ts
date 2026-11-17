@@ -24,4 +24,4 @@ export type { DeviceTunnelHostOptions } from './tunnel';
 export { DeviceTunnelHost } from './tunnel';
 export * from './types';
 export type { TunnelUpstreamFactory, TunnelUpstreamSocket } from './wsTunnel';
-export type { DeviceMetricSample } from '@lobechat/types';
+export type { DeviceMetricSample } from '@lobot/types';

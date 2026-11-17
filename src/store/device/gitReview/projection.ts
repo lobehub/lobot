@@ -6,7 +6,7 @@ import type {
   DeviceGitPullRequestActivity,
   DeviceGitPullRequestDetailResult,
   DeviceGitPullRequestMergeContext,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 import { deviceKeys } from '@/libs/swr/keys';

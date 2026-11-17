@@ -1,5 +1,5 @@
 import { DEFAULT_AGENT_CONFIG } from '@lobechat/const';
-import { CHAT_GROUP_SESSION_ID_PREFIX } from '@lobechat/types';
+import { CHAT_GROUP_SESSION_ID_PREFIX } from '@lobot/types';
 import { toast } from '@lobehub/ui';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

@@ -1,4 +1,4 @@
-import type { ChatStreamPayload } from '@lobechat/types';
+import type { ChatStreamPayload } from '@lobot/types';
 
 interface RewriteGenerationPromptParams {
   mode: 'image' | 'video' | 'text';

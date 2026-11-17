@@ -1,4 +1,4 @@
-import type { RecentItem } from '@lobechat/types';
+import type { RecentItem } from '@lobot/types';
 import { type DropdownItem } from '@lobehub/ui';
 import { confirmModal, Icon } from '@lobehub/ui';
 import { PencilLineIcon, Trash } from 'lucide-react';

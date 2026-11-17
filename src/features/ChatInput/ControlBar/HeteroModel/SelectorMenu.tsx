@@ -7,7 +7,7 @@ import type {
   HeteroSelection,
   HeteroSelectorCapability,
   ListHeterogeneousAgentModelsParams,
-} from '@lobechat/types';
+} from '@lobot/types';
 import {
   DropdownMenuPopup,
   DropdownMenuPortal,

@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { AgentRuntimeErrorType } from '@lobechat/types';
+import { AgentRuntimeErrorType } from '@lobot/types';
 import OpenAI from 'openai';
 import type { Mock } from 'vitest';
 import { afterEach, describe, expect, it, vi } from 'vitest';

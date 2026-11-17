@@ -2,7 +2,7 @@ import type {
   LobeChatGroupChatConfig,
   LobeChatGroupFullConfig,
   LobeChatGroupMetaConfig,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 export const DEFAULT_CHAT_GROUP_CHAT_CONFIG: LobeChatGroupChatConfig = {
   allowDM: true,

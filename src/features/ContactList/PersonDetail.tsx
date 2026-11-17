@@ -1,7 +1,7 @@
 'use client';
 
 import { CHANNEL_URL } from '@lobechat/const';
-import type { ContactAgentProfile, ContactRequestItem } from '@lobechat/types';
+import type { ContactAgentProfile, ContactRequestItem } from '@lobot/types';
 import { Button, confirmModal, Empty, Flexbox, Skeleton, Text, toast } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import {

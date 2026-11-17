@@ -1,8 +1,8 @@
 import type {
   HeterogeneousAgentModel,
   HeterogeneousAgentModelCatalogSuccess,
-} from '@lobechat/types';
-import { HETEROGENEOUS_AGENT_DEFAULT_SELECTION } from '@lobechat/types';
+} from '@lobot/types';
+import { HETEROGENEOUS_AGENT_DEFAULT_SELECTION } from '@lobot/types';
 import { useMemo } from 'react';
 
 interface ModelCatalogViewParams {

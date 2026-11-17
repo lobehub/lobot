@@ -4,7 +4,7 @@ import type {
   RuntimeAdditionalContextFragment,
   RuntimeInitialContext,
   RuntimeStepContext,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import type { FinishReason } from './event';
 import type { AgentState } from './state';

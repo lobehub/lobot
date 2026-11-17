@@ -19,7 +19,7 @@
     "@lobechat/const": "workspace:*"
   },
   "devDependencies": {
-    "@lobechat/types": "workspace:*",
+    "@lobot/types": "workspace:*",
     "tsx": "^4.22.4"
   }
 }

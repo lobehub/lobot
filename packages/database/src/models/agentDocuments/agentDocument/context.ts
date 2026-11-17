@@ -1,4 +1,4 @@
-import { type DocumentAccessScope, stripAgentShareDocumentProvenance } from '@lobechat/types';
+import { type DocumentAccessScope, stripAgentShareDocumentProvenance } from '@lobot/types';
 import { and, eq, exists } from 'drizzle-orm';
 
 import { agentDocuments, documents } from '../../../schemas';

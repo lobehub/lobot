@@ -1,4 +1,4 @@
-import type { WorkListBaseItem } from '@lobechat/types';
+import type { WorkListBaseItem } from '@lobot/types';
 import { confirmModal, toast } from '@lobehub/ui';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';

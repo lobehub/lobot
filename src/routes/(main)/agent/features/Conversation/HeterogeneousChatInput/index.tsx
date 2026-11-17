@@ -1,7 +1,7 @@
 'use client';
 
 import { HETEROGENEOUS_TYPE_LABELS } from '@lobechat/heterogeneous-agents';
-import { isHeteroSelectorAvailable } from '@lobechat/types';
+import { isHeteroSelectorAvailable } from '@lobot/types';
 import { type ChatInputActionsProps } from '@lobehub/editor/react';
 import { Alert, Button, Flexbox } from '@lobehub/ui';
 import { memo, type ReactNode, useMemo } from 'react';

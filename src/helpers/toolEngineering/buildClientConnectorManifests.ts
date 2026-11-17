@@ -1,5 +1,5 @@
 import { isSyncedMcpToolVisibleTo } from '@lobechat/const/mcpApp';
-import { type ToolManifest } from '@lobechat/types';
+import { type ToolManifest } from '@lobot/types';
 
 import type { ConnectorWithTools } from '@/store/tool/slices/connector/types';
 

@@ -1,4 +1,4 @@
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import { Tag } from '@lobehub/ui';
 import { Command } from 'cmdk';
 import { ArrowLeft, X } from 'lucide-react';

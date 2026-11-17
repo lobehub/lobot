@@ -1,4 +1,4 @@
-import type { ChatModelCard, RouterRuntimeRequestContext } from '@lobechat/types';
+import type { ChatModelCard, RouterRuntimeRequestContext } from '@lobot/types';
 import type OpenAI from 'openai';
 import type { ClientOptions } from 'openai';
 import type { Stream } from 'openai/streaming';

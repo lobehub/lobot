@@ -1,4 +1,4 @@
-import type { DeviceListItem, DeviceMetricSeries } from '@lobechat/types';
+import type { DeviceListItem, DeviceMetricSeries } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { buildDeviceHoverSummary } from './deviceHoverSummary';

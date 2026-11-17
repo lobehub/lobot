@@ -1,4 +1,4 @@
-import { type MemoryContextStory, type MemoryContextStoryList } from '@lobechat/types';
+import { type MemoryContextStory, type MemoryContextStoryList } from '@lobot/types';
 import { type SWRResponse } from 'swr';
 
 import { mutate, useClientDataSWR } from '@/libs/swr';

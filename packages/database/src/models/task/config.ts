@@ -1,4 +1,4 @@
-import type { CheckpointConfig, TaskItem, TaskVerifyConfig } from '@lobechat/types';
+import type { CheckpointConfig, TaskItem, TaskVerifyConfig } from '@lobot/types';
 import { and, eq } from 'drizzle-orm';
 
 import { tasks } from '../../schemas/task';

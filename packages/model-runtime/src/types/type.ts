@@ -1,4 +1,4 @@
-import type { ErrorType } from '@lobechat/types';
+import type { ErrorType } from '@lobot/types';
 import type OpenAI from 'openai';
 
 import type { ChatStreamPayload } from './chat';

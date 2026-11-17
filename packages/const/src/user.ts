@@ -1,4 +1,4 @@
-import type { UserPreference } from '@lobechat/types';
+import type { UserPreference } from '@lobot/types';
 
 export const CURRENT_ONBOARDING_VERSION = 2;
 

@@ -1,4 +1,4 @@
-import type { ChannelPublicMember } from '@lobechat/types';
+import type { ChannelPublicMember } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { getVisibleStatusMembers, groupMembersByActor } from './visibleMembers';

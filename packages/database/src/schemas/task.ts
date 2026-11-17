@@ -3,7 +3,7 @@ import type {
   BriefMetadata,
   TaskActivityLogPayload,
   TaskActivityLogType,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { isNotNull, isNull } from 'drizzle-orm';
 import {
   foreignKey,

@@ -1,5 +1,5 @@
 import { createMediaFileRef } from '@lobechat/const/mediaRef';
-import type { ChatVideoItem } from '@lobechat/types';
+import type { ChatVideoItem } from '@lobot/types';
 
 const videoPrompt = (
   item: ChatVideoItem,

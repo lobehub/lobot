@@ -1,4 +1,4 @@
-import { type ExperienceListItem } from '@lobechat/types';
+import { type ExperienceListItem } from '@lobot/types';
 import { type SWRResponse } from 'swr';
 
 import { userMemoryKeys } from '@/libs/swr/keys';

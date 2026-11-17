@@ -1,4 +1,4 @@
-import type { TaskLabelWithUsage } from '@lobechat/types';
+import type { TaskLabelWithUsage } from '@lobot/types';
 
 export interface TaskLabelSliceState {
   /** The label registry of the active scope (groups included), registry order. */

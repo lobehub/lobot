@@ -1,5 +1,5 @@
 import { DEFAULT_INBOX_AVATAR } from '@lobechat/const';
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -1,6 +1,6 @@
 'use client';
 
-import type { FavoriteItem as FavoriteItemType } from '@lobechat/types';
+import type { FavoriteItem as FavoriteItemType } from '@lobot/types';
 import { ActionIcon, type DropdownItem, DropdownMenu, Icon, toast } from '@lobehub/ui';
 import { MoreHorizontalIcon, StarOffIcon } from 'lucide-react';
 import { memo } from 'react';

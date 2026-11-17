@@ -1,4 +1,4 @@
-import { AgentRuntimeErrorType, RequestTrigger } from '@lobechat/types';
+import { AgentRuntimeErrorType, RequestTrigger } from '@lobot/types';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { ChatMethodOptions } from '../../types';

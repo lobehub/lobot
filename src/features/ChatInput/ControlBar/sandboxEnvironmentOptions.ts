@@ -1,5 +1,5 @@
 import { projectCheckoutDirectory } from '@lobechat/const/builtinTools';
-import type { EnvironmentConfiguration } from '@lobechat/types';
+import type { EnvironmentConfiguration } from '@lobot/types';
 
 import type { SandboxSelection } from './useSandboxPlacement';
 

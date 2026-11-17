@@ -2,7 +2,7 @@ import {
   describeUnresolvedTaskLabels,
   resolveTaskLabelRefs,
   type TaskLabelRegistryEntry,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 /** `error` is set when any name is unknown; `ids` is then empty. */
 interface ToolLabelResolution {

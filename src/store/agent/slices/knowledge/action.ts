@@ -1,4 +1,4 @@
-import { type KnowledgeItem } from '@lobechat/types';
+import { type KnowledgeItem } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 
 import {

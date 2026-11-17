@@ -2,7 +2,7 @@ import {
   type ExpertiseAnchorCandidate,
   type ExpertiseCanonEntry,
   type ExpertiseLayerDefinition,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { and, asc, eq, isNotNull, or, type SQL, sql } from 'drizzle-orm';
 
 import { expertiseBindings, expertiseDomains } from '../../schemas';

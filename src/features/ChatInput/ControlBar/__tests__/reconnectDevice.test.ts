@@ -1,4 +1,4 @@
-import { MANAGED_CLOUD_DEVICE_IDENTITY_SOURCE } from '@lobechat/types';
+import { MANAGED_CLOUD_DEVICE_IDENTITY_SOURCE } from '@lobot/types';
 import { describe, expect, it, vi } from 'vitest';
 
 import { MANAGED_DEVICE_WAKE_POLL, reconnectDevice } from '../reconnectDevice';

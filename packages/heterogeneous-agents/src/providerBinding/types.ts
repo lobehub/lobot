@@ -1,4 +1,4 @@
-import type { AiProviderRuntimeConfig, HeterogeneousProviderApiConfig } from '@lobechat/types';
+import type { AiProviderRuntimeConfig, HeterogeneousProviderApiConfig } from '@lobot/types';
 
 import type { LocalHeterogeneousAgentType } from '../config';
 

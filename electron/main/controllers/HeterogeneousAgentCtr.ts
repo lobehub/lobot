@@ -28,7 +28,7 @@ import {
 import type {
   HeterogeneousAgentModelCatalog,
   ListHeterogeneousAgentModelsParams,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { managedProcessEnvironment, spawnManaged } from '@lobechat/utils/managedProcess';
 import { sleep } from '@lobechat/utils/sleep';
 import { app as electronApp } from 'electron';

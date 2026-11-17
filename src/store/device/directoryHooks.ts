@@ -1,4 +1,4 @@
-import type { DeviceDirectoryBrowseResult } from '@lobechat/types';
+import type { DeviceDirectoryBrowseResult } from '@lobot/types';
 import { useState } from 'react';
 import useSWRInfinite from 'swr/infinite';
 

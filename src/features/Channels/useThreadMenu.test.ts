@@ -1,4 +1,4 @@
-import type { ChannelListItem, ChannelPublicThread } from '@lobechat/types';
+import type { ChannelListItem, ChannelPublicThread } from '@lobot/types';
 import { cleanup, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 

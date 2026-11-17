@@ -1,4 +1,4 @@
-import type { ContactAgentItem, ContactSearchResult, ContactUserItem } from '@lobechat/types';
+import type { ContactAgentItem, ContactSearchResult, ContactUserItem } from '@lobot/types';
 
 import type { ContactState } from './store';
 

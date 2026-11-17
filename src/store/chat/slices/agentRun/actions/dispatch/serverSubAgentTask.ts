@@ -1,4 +1,4 @@
-import type { ExecSubAgentParams, ExecSubAgentResult } from '@lobechat/types';
+import type { ExecSubAgentParams, ExecSubAgentResult } from '@lobot/types';
 
 import { aiAgentService } from '@/services/aiAgent';
 import type { ChatStore } from '@/store/chat/store';

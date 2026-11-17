@@ -1,4 +1,4 @@
-import type { ChatToolPayloadWithResult, UIChatMessage } from '@lobechat/types';
+import type { ChatToolPayloadWithResult, UIChatMessage } from '@lobot/types';
 
 const GROUP_ROLES = new Set<UIChatMessage['role']>(['assistantGroup', 'supervisor']);
 

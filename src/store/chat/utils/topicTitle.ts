@@ -1,5 +1,5 @@
 import { resolveAssistantGroupFinalContent } from '@lobechat/conversation-flow';
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 
 export const isAudioOnlyFirstUserMessage = (messages: UIChatMessage[]) => {
   const firstUserMessage = messages.find((message) => message.role === 'user');

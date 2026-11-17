@@ -6,7 +6,7 @@ import type {
   TaskIntentAnalysis,
   TaskListFilter,
   TaskStatus,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
 

@@ -349,7 +349,7 @@
     "@lobechat/local-file-shell": "workspace:*",
     "@lobechat/napi-loader": "workspace:*",
     "@lobechat/tool-runtime": "workspace:*",
-    "@lobechat/types": "workspace:*",
+    "@lobot/types": "workspace:*",
     "@lobechat/utils": "workspace:*",
     "@lobehub/cli": "0.0.97",
     "@lobehub/commitlint-config": "^3.0.0",

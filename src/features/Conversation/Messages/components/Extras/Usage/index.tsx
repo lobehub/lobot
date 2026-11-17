@@ -2,8 +2,8 @@ import {
   HETEROGENEOUS_TYPE_LABELS,
   isRemoteHeterogeneousType,
 } from '@lobechat/heterogeneous-agents';
-import type { ModelPerformance, ModelUsage } from '@lobechat/types';
-import { unwrapServerDefaultHeterogeneousModel } from '@lobechat/types';
+import type { ModelPerformance, ModelUsage } from '@lobot/types';
+import { unwrapServerDefaultHeterogeneousModel } from '@lobot/types';
 import { formatUsd } from '@lobechat/utils';
 import { Center, Flexbox, Icon, Tooltip } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';

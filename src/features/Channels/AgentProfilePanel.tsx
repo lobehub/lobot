@@ -1,5 +1,5 @@
-import type { ChannelPublicMember } from '@lobechat/types';
-import { agentSecondaryDisplayName } from '@lobechat/types';
+import type { ChannelPublicMember } from '@lobot/types';
+import { agentSecondaryDisplayName } from '@lobot/types';
 import { ActionIcon, Flexbox, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

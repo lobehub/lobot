@@ -9,7 +9,7 @@ import type {
   QuotaAccountIdentity,
   QuotaLimitReading,
 } from '@lobechat/heterogeneous-agents/quota';
-import type { QuotaDeviceAccount } from '@lobechat/types';
+import type { QuotaDeviceAccount } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 
@@ -85,6 +85,10 @@ class AgentQuotaService {
     lambdaClient.agentQuota.listActiveRuns.query({ accountId });
 
   listBindings = async (agentId: string) => lambdaClient.agentQuota.listBindings.query({ agentId });
+
+  /** Each account's current headroom, as the account balancer weighs it. */
+  resolveAccountLoads = async (accountIds: string[]) =>
+    lambdaClient.agentQuota.resolveAccountLoads.query({ accountIds });
 
   /** UI "switch account": pin one account for an agent (Manual mode). */
   switchAccount = async (agentId: string, accountId: string) =>

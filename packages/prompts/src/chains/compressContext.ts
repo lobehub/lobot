@@ -1,4 +1,4 @@
-import type { ChatStreamPayload, UIChatMessage } from '@lobechat/types';
+import type { ChatStreamPayload, UIChatMessage } from '@lobot/types';
 
 import {
   chatHistoryPrompts,

@@ -1,4 +1,4 @@
-import type { DeviceGitBranchListItem } from '@lobechat/types';
+import type { DeviceGitBranchListItem } from '@lobot/types';
 import { useCallback, useMemo } from 'react';
 
 import { useFetchGitBranches } from '@/store/device';

@@ -1,6 +1,6 @@
 'use client';
 
-import type { DeviceListItem } from '@lobechat/types';
+import type { DeviceListItem } from '@lobot/types';
 import { Block, cx, Flexbox, Icon, Popover, Switch, Text, Tooltip } from '@lobehub/ui';
 import { CheckIcon, ChevronDownIcon, FolderIcon } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';

@@ -1,4 +1,4 @@
-import { type MessageMetadata, TraceEventType } from '@lobechat/types';
+import { type MessageMetadata, TraceEventType } from '@lobot/types';
 import { copyToClipboard } from '@lobehub/ui';
 import isEqual from 'fast-deep-equal';
 

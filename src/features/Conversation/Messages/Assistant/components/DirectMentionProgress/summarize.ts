@@ -1,5 +1,5 @@
 import { LOADING_FLAT } from '@lobechat/const';
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 
 const MAX_LINE = 80;
 

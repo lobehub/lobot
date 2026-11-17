@@ -1,4 +1,4 @@
-import type { ConversationContext } from '@lobechat/types';
+import type { ConversationContext } from '@lobot/types';
 import { produce } from 'immer';
 
 import { operationSelectors } from '@/store/chat/slices/operation/selectors';

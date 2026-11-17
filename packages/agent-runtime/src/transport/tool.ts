@@ -3,7 +3,7 @@ import type {
   RuntimeStepContext,
   StepContextTodoItem,
   WorkRegistrationIntent,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import type { AgentState } from '../types';
 import type { RuntimeRetryKind } from '../utils';

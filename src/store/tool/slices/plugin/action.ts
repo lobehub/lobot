@@ -1,5 +1,5 @@
 import { type Schema, type ValidationResult } from '@cfworker/json-schema';
-import { type LobeTool } from '@lobechat/types';
+import { type LobeTool } from '@lobot/types';
 import { type ReadResourceResult } from '@modelcontextprotocol/client';
 import { type SWRResponse } from 'swr';
 

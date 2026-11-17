@@ -1,7 +1,7 @@
 import type {
   HeterogeneousAgentModelCatalog,
   ListHeterogeneousAgentModelsParams,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 import { heterogeneousAgentService as electronHeterogeneousAgentService } from '@/services/electron/heterogeneousAgent';

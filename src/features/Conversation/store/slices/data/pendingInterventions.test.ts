@@ -1,4 +1,4 @@
-import { classifyToolInterventionPresentation, type UIChatMessage } from '@lobechat/types';
+import { classifyToolInterventionPresentation, type UIChatMessage } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import {

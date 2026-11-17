@@ -2,7 +2,7 @@ import type {
   CreateTopicCommentInput,
   TopicCommentItem,
   UpdateTopicCommentInput,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';

@@ -6,7 +6,7 @@ import type {
   ChannelReplyJob,
   ChannelThreadMention,
   ChannelVisibility,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { and, desc, eq, inArray, isNull, or, sql } from 'drizzle-orm';
 
 import { TrashModel } from '../../models/trash';

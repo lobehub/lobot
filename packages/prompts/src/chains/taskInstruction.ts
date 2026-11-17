@@ -1,4 +1,4 @@
-import type { OpenAIChatMessage } from '@lobechat/types';
+import type { OpenAIChatMessage } from '@lobot/types';
 
 /** Bump when the confirmed-instruction synthesis prompt meaningfully changes. */
 export const TASK_INSTRUCTION_PROMPT_VERSION = 'v1';

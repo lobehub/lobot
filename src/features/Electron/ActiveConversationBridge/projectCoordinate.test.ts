@@ -1,5 +1,5 @@
 import { INBOX_SESSION_ID } from '@lobechat/const';
-import { type AgentGroupDetail } from '@lobechat/types';
+import { type AgentGroupDetail } from '@lobot/types';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { useAgentStore } from '@/store/agent/store';

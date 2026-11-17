@@ -7,7 +7,7 @@ The [data-shape guide](../data-structures.md#rules) covers the rules; this file 
 Types should be organized by entity in separate files (not mixed):
 
 ```text
-@lobechat/types/src/eval/
+@lobot/types/src/eval/
 ├── benchmark.ts        # Benchmark types
 ├── agentEvalDataset.ts # Dataset types
 ├── agentEvalRun.ts     # Run types

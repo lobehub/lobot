@@ -12,7 +12,7 @@ import type {
   RenameLocalFileResult,
   TrashLocalFilesResult,
 } from '@lobechat/electron-client-ipc';
-import type { DeviceLocalFilePreview } from '@lobechat/types';
+import type { DeviceLocalFilePreview } from '@lobot/types';
 import { isAbsolute, relative, resolve } from 'pathe';
 
 import { mutate } from '@/libs/swr';

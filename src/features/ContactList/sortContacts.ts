@@ -1,4 +1,4 @@
-import { agentDisplayName, type SidebarAgentItem } from '@lobechat/types';
+import { agentDisplayName, type SidebarAgentItem } from '@lobot/types';
 
 import type { ContactListSortBy } from '@/store/global/initialState';
 

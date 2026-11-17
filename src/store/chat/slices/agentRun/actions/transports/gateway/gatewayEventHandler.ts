@@ -14,8 +14,8 @@ import type {
 import { isSessionTerminalEvent } from '@lobechat/agent-gateway-client';
 import { normalizeHeterogeneousMessageError } from '@lobechat/heterogeneous-agents/errors';
 import { normalizeChatMessageError } from '@lobechat/model-runtime/errors';
-import type { ConversationContext, UIChatMessage } from '@lobechat/types';
-import { isClientLlmWaitableError } from '@lobechat/types';
+import type { ConversationContext, UIChatMessage } from '@lobot/types';
+import { isClientLlmWaitableError } from '@lobot/types';
 import { isRecord, pickNonEmptyString, toRecord } from '@lobechat/utils/object';
 
 import { readConversationMessages } from '@/helpers/conversationMessageRead';

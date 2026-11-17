@@ -5,7 +5,7 @@ import type {
   DocumentCommentJson,
   DocumentCommentThread,
   DocumentLikeSummary,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { type ReplicaPagedData, type ReplicaSyncResult } from '@/libs/replica';
 import { documentCommentService } from '@/services/documentComment';

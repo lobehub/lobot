@@ -1,4 +1,4 @@
-import { type ExperienceListItem } from '@lobechat/types';
+import { type ExperienceListItem } from '@lobot/types';
 
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 

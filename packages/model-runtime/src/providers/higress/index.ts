@@ -1,4 +1,4 @@
-import type { ChatModelCard } from '@lobechat/types';
+import type { ChatModelCard } from '@lobot/types';
 import { uniqueId } from 'es-toolkit/compat';
 import { ModelProvider } from 'model-bank';
 

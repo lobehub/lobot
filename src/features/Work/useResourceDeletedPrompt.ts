@@ -1,4 +1,4 @@
-import type { WorkListBaseItem } from '@lobechat/types';
+import type { WorkListBaseItem } from '@lobot/types';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 

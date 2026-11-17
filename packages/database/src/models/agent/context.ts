@@ -1,5 +1,5 @@
-import type { LobeAgentAgencyConfig } from '@lobechat/types';
-import { DEFAULT_WORKSPACE_AGENT_SELECTION_POLICIES } from '@lobechat/types';
+import type { LobeAgentAgencyConfig } from '@lobot/types';
+import { DEFAULT_WORKSPACE_AGENT_SELECTION_POLICIES } from '@lobot/types';
 import { TRPCError } from '@trpc/server';
 import type { SQL } from 'drizzle-orm';
 import { and, eq, inArray } from 'drizzle-orm';

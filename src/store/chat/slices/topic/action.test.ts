@@ -1,7 +1,7 @@
 import { DEFAULT_MODEL, DEFAULT_PROVIDER } from '@lobechat/business-const';
 import { TOPIC_TITLE_JSON_SCHEMA } from '@lobechat/prompts';
-import type { LobeUser, UIChatMessage } from '@lobechat/types';
-import { RequestTrigger } from '@lobechat/types';
+import type { LobeUser, UIChatMessage } from '@lobot/types';
+import { RequestTrigger } from '@lobot/types';
 import { toast } from '@lobehub/ui';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { type Mock } from 'vitest';

@@ -1,5 +1,5 @@
 import { getGoalCommand, isGoalCommandFailed } from '@lobechat/shared-tool-ui/goal-command';
-import type { ChatToolPayloadWithResult } from '@lobechat/types';
+import type { ChatToolPayloadWithResult } from '@lobot/types';
 import { formatDuration } from '@lobechat/utils';
 import { t } from 'i18next';
 

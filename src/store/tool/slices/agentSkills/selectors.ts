@@ -1,4 +1,4 @@
-import type { LobeToolMeta } from '@lobechat/types';
+import type { LobeToolMeta } from '@lobot/types';
 
 import type { ToolStoreState } from '../../initialState';
 import {

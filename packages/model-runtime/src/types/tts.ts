@@ -1,4 +1,4 @@
-import type { ModelUsage } from '@lobechat/types';
+import type { ModelUsage } from '@lobot/types';
 import type { RuntimeTTSParams, TTSAudioFormat } from 'model-bank';
 
 import type { ModelPricingContext } from './pricing';

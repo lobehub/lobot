@@ -1,4 +1,4 @@
-import type { ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelPublicMessage } from '@lobot/types';
 
 /**
  * Only a person's reply quotes: an Agent reply's `replyToId` is the request it answers. A view

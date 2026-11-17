@@ -1,4 +1,4 @@
-import type { ChannelListItem, ChannelPublicMember } from '@lobechat/types';
+import type { ChannelListItem, ChannelPublicMember } from '@lobot/types';
 
 /** The personal channel owner is implicit; only workspace channels list people. */
 export const getVisibleStatusMembers = (

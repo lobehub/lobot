@@ -24,7 +24,7 @@ import type {
   DeviceGitUpstreamRef,
   DeviceGitWorkingTreeStatus,
   DeviceGitWorktreeListItem,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 import { electronGitService } from '@/services/electron/git';

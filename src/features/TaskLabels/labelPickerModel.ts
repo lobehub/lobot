@@ -1,4 +1,4 @@
-import type { TaskLabel, TaskLabelRef } from '@lobechat/types';
+import type { TaskLabel, TaskLabelRef } from '@lobot/types';
 
 interface TaskLabelPickerSection {
   /** The group, or undefined for the top-level labels. */

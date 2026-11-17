@@ -1,6 +1,6 @@
 'use client';
 
-import { agentDisplayName, type SidebarAgentItem } from '@lobechat/types';
+import { agentDisplayName, type SidebarAgentItem } from '@lobot/types';
 import { memo } from 'react';
 
 import AgentAvatar from '@/components/AgentAvatar';

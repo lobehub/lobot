@@ -10,8 +10,8 @@ import {
   type MessagePluginItem,
   type ModelReasoning,
   type UpdateMessageRAGParams,
-} from '@lobechat/types';
-import { ChatErrorType } from '@lobechat/types';
+} from '@lobot/types';
+import { ChatErrorType } from '@lobot/types';
 import { merge, nanoid, safeParseJSON } from '@lobechat/utils';
 import isEqual from 'fast-deep-equal';
 import { type StateCreator } from 'zustand';

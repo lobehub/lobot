@@ -1,5 +1,5 @@
-import type { SidebarAgentItem } from '@lobechat/types';
-import { agentDisplayName, agentSecondaryDisplayName } from '@lobechat/types';
+import type { SidebarAgentItem } from '@lobot/types';
+import { agentDisplayName, agentSecondaryDisplayName } from '@lobot/types';
 import { ActionIcon, Spin } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

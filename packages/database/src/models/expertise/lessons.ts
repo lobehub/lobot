@@ -2,7 +2,7 @@ import {
   EXPERTISE_RULE_DIRECTIONS,
   type ExpertiseLessonSection,
   type ExpertiseRuleDirection,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { and, desc, eq, inArray, isNull } from 'drizzle-orm';
 
 import { expertiseDomains, expertiseLessonRevisions, expertiseLessons } from '../../schemas';

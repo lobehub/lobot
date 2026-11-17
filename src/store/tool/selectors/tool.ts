@@ -1,4 +1,4 @@
-import { type ToolManifest } from '@lobechat/types';
+import { type ToolManifest } from '@lobot/types';
 
 import { type MetaData } from '@/types/meta';
 import { type LobeToolMeta } from '@/types/tool/tool';

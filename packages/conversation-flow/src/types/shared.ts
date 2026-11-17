@@ -1,4 +1,4 @@
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 
 import type { ContextNode } from './contextTree';
 import type { FlatMessage } from './flatMessageList';

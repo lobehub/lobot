@@ -1,5 +1,5 @@
 import type { GoalStatus } from '@lobechat/const/goal';
-import type { GoalGraphSnapshot } from '@lobechat/types';
+import type { GoalGraphSnapshot } from '@lobot/types';
 
 import { coordinatorNodeTitleKey } from '@/features/AgentGoals/ProcessControl/coordinatorCopy';
 import {

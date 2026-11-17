@@ -1,4 +1,4 @@
-import type { ChannelListItem } from '@lobechat/types';
+import type { ChannelListItem } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { diffChannelActivity, MAX_CHANNEL_BANNERS_PER_UPDATE, snapshotChannels } from './activity';

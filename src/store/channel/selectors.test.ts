@@ -1,4 +1,4 @@
-import type { ChannelDetail } from '@lobechat/types';
+import type { ChannelDetail } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { channelViewKey } from './projection';

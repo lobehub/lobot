@@ -9,7 +9,7 @@
  */
 import { randomUUID } from 'node:crypto';
 
-import type { AgentLabelListItem } from '@lobechat/types';
+import type { AgentLabelListItem } from '@lobot/types';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { createElement, useEffect } from 'react';

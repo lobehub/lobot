@@ -1,4 +1,4 @@
-import type { ChannelContextMessage, ChannelInputManifest, ChannelJobWake } from '@lobechat/types';
+import type { ChannelContextMessage, ChannelInputManifest, ChannelJobWake } from '@lobot/types';
 
 import { formatOptionalReplyBody } from '../prompts/optionalReply';
 

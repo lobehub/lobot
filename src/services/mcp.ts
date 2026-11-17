@@ -8,7 +8,7 @@ import {
   type ChatToolPayload,
   type CheckMcpInstallResult,
   type CustomPluginMetadata,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { isLocalOrPrivateUrl, safeParseJSON } from '@lobechat/utils';
 import { deserializeMcpIpcPayload, serializeMcpIpcPayload } from '@lobechat/utils/mcpIpcPayload';
 import { toRecord } from '@lobechat/utils/object';

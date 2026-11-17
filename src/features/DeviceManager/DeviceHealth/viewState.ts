@@ -1,4 +1,4 @@
-import type { DeviceMetricSeries } from '@lobechat/types';
+import type { DeviceMetricSeries } from '@lobot/types';
 
 import {
   buildHealthTimeline,

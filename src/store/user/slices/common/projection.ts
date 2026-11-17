@@ -1,4 +1,4 @@
-import type { UserInitializationState } from '@lobechat/types';
+import type { UserInitializationState } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 

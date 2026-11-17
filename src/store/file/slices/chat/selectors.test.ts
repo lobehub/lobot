@@ -1,4 +1,4 @@
-import type { ChatContextContent } from '@lobechat/types';
+import type { ChatContextContent } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { type FilesStoreState } from '@/store/file/initialState';

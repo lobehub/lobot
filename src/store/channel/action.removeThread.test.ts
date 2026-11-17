@@ -3,7 +3,7 @@ import type {
   ChannelListItem,
   ChannelPublicMessage,
   ChannelPublicThread,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 

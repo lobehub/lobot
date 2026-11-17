@@ -1,4 +1,4 @@
-import type { DocumentCommentItem, DocumentCommentThread } from '@lobechat/types';
+import type { DocumentCommentItem, DocumentCommentThread } from '@lobot/types';
 
 /**
  * Pure item-level patches of the comment feeds. They run inside replica

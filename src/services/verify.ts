@@ -15,7 +15,7 @@ import type {
   VerifyReport,
   VerifyRubricConfig,
   VerifyUserDecision,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import type { VerifyStatus } from '@/database/models/agentOperation';
 import type { VerifyAutoRepairOutcome } from '@/database/models/verifyRun';

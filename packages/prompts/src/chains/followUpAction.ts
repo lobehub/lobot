@@ -1,4 +1,4 @@
-import type { FollowUpHint, OnboardingPhase, OpenAIChatMessage } from '@lobechat/types';
+import type { FollowUpHint, OnboardingPhase, OpenAIChatMessage } from '@lobot/types';
 
 export const FOLLOW_UP_PROMPT_VERSION = 'v1.0';
 

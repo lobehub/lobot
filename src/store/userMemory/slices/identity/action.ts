@@ -2,7 +2,7 @@ import {
   type IdentityListItem,
   type NewUserMemoryIdentity,
   type UpdateUserMemoryIdentity,
-} from '@lobechat/types';
+} from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { useLayoutEffect } from 'react';
 

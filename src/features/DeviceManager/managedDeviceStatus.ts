@@ -1,5 +1,5 @@
-import type { DeviceListItem } from '@lobechat/types';
-import { isManagedCloudDevice } from '@lobechat/types';
+import type { DeviceListItem } from '@lobot/types';
+import { isManagedCloudDevice } from '@lobot/types';
 import { cssVar } from '@lobehub/ui';
 
 /**

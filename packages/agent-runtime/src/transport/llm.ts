@@ -7,7 +7,7 @@ import type {
   ModelReasoning,
   ModelUsage,
   OpenAIChatMessage,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import type { AgentEvent, AgentState, CallLLMPayload } from '../types';
 import type { ClassifiedLLMError } from '../utils';

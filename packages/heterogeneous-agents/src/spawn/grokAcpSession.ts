@@ -1,6 +1,6 @@
 import { pathToFileURL } from 'node:url';
 
-import { getAnyCliFlagValue, GROK_BUILD_REASONING_EFFORT_FLAGS } from '@lobechat/types';
+import { getAnyCliFlagValue, GROK_BUILD_REASONING_EFFORT_FLAGS } from '@lobot/types';
 
 import { isAcpReplayMessage } from '../adapters/acpCommon';
 import type { AgentPromptInput } from '../protocol';

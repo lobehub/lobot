@@ -1,4 +1,4 @@
-import type { HeterogeneousAgentModel } from '@lobechat/types';
+import type { HeterogeneousAgentModel } from '@lobot/types';
 import { isRecord } from '@lobechat/utils/object';
 
 import type { AskUserBridge, InterventionAnswer } from '../askUser/AskUserBridge';

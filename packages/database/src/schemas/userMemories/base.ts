@@ -1,4 +1,4 @@
-import type { UserMemoryState } from '@lobechat/types';
+import type { UserMemoryState } from '@lobot/types';
 import { bigint, boolean, index, jsonb, pgTable, text, vector } from 'drizzle-orm/pg-core';
 
 import { idGenerator } from '../../utils/idGenerator';

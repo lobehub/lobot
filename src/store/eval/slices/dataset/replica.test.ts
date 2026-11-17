@@ -12,7 +12,7 @@
  */
 import { randomUUID } from 'node:crypto';
 
-import type { AgentEvalDatasetListItem } from '@lobechat/types';
+import type { AgentEvalDatasetListItem } from '@lobot/types';
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { createElement, useEffect } from 'react';

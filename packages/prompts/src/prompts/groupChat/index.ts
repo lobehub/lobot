@@ -1,5 +1,5 @@
-import type { UIChatMessage } from '@lobechat/types';
-import { agentDisplayName } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
+import { agentDisplayName } from '@lobot/types';
 
 export interface GroupMemberInfo {
   id: string;

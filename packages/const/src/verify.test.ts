@@ -21,7 +21,7 @@ import type {
   VerifySurface,
   VerifyUserDecision,
   VerifyVerdict,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import type {
@@ -58,14 +58,14 @@ import {
 } from './verify';
 
 /**
- * `@lobechat/types` declares these unions independently — it cannot import them
+ * `@lobot/types` declares these unions independently — it cannot import them
  * from here, because it must stay free of a dependency on `@lobechat/const`
  * (which already type-imports from it). These assertions are what stops the two
  * hand-maintained sides from drifting: adding a member on one side only is a
  * type error, caught by `bun run check --type`, not a silent divergence.
  */
 describe('verify vocabulary', () => {
-  it('matches the unions declared in @lobechat/types', () => {
+  it('matches the unions declared in @lobot/types', () => {
     expectTypeOf<(typeof verifierTypes)[number]>().toEqualTypeOf<VerifierType>();
     expectTypeOf<(typeof verifyOnFailStrategies)[number]>().toEqualTypeOf<VerifyOnFailStrategy>();
     expectTypeOf<

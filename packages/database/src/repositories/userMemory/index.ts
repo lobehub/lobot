@@ -1,7 +1,7 @@
 import type {
   UserMemoryContextWithoutVectors,
   UserMemoryPreferenceWithoutVectors,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 export interface DisplayPreferenceMemory extends UserMemoryPreferenceWithoutVectors {
   title: string | null;

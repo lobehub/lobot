@@ -1,4 +1,4 @@
-import { type AgentPluginMode, getPluginMode, upsertPluginMode } from '@lobechat/types';
+import { type AgentPluginMode, getPluginMode, upsertPluginMode } from '@lobot/types';
 import { produce } from 'immer';
 
 import { type StoreSetter } from '@/store/types';

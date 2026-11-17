@@ -1,4 +1,4 @@
-import type { UIChatMessage, WorkSummaryItem } from '@lobechat/types';
+import type { UIChatMessage, WorkSummaryItem } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { getAllWorkSummaries, getWorkSummariesByRootOperationId } from './workSummaries';

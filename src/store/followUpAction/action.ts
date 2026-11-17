@@ -1,4 +1,4 @@
-import type { FollowUpChip, FollowUpHint, FollowUpModelConfig } from '@lobechat/types';
+import type { FollowUpChip, FollowUpHint, FollowUpModelConfig } from '@lobot/types';
 
 import { cacheScope, createReplicaSlice, recordLens } from '@/libs/replica';
 import { aiChatService } from '@/services/aiChat';

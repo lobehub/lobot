@@ -1,4 +1,4 @@
-import type { HeterogeneousApiConfig, LobeAgentAgencyConfig } from '@lobechat/types';
+import type { HeterogeneousApiConfig, LobeAgentAgencyConfig } from '@lobot/types';
 import { isRecord } from '@lobechat/utils/object';
 
 /** Keep provider credentials and arbitrary client fields out of persisted Agent API bindings. */

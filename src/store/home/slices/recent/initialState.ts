@@ -1,4 +1,4 @@
-import type { RecentItem } from '@lobechat/types';
+import type { RecentItem } from '@lobot/types';
 
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 

@@ -1,4 +1,4 @@
-import type { WorkType } from '@lobechat/types';
+import type { WorkType } from '@lobot/types';
 
 import { canvasWorkAdapter } from './canvas';
 import { documentWorkAdapter } from './document';
@@ -12,7 +12,7 @@ import { taskWorkAdapter } from './task';
  * The single registry for Work-type query and display strategies. Adding a
  * Work type = adding one entry here (the `Record<WorkType, …>` constraint
  * turns a missing entry into a compile error, not a silently missing result
- * set) plus its type unions in `@lobechat/types`.
+ * set) plus its type unions in `@lobot/types`.
  */
 export const WORK_TYPE_ADAPTERS = {
   canvas: canvasWorkAdapter,

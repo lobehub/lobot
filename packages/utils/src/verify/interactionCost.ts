@@ -7,7 +7,7 @@ import type {
   VerifyInteractionCost,
   VerifyInteractionCostOperators,
   VerifyInteractionCostPhase,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 /**
  * The standard GOMS-KLM counting logic for acceptance rounds.

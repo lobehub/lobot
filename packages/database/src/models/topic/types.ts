@@ -1,4 +1,4 @@
-import type { ChatTopicMetadata, ChatTopicStatus, TopicQuerySortBy } from '@lobechat/types';
+import type { ChatTopicMetadata, ChatTopicStatus, TopicQuerySortBy } from '@lobot/types';
 import type { TimingSink } from '@lobechat/utils';
 
 import { type TopicItem } from '../../schemas';

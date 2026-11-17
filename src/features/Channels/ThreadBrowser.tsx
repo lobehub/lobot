@@ -1,4 +1,4 @@
-import type { ChannelDetail, ChannelPublicThread } from '@lobechat/types';
+import type { ChannelDetail, ChannelPublicThread } from '@lobot/types';
 import { ActionIcon, Avatar, Icon, Popover, SearchBar } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

@@ -2,7 +2,7 @@ import type {
   AgentStreamEvent,
   AgentStreamSessionCompletion,
 } from '@lobechat/agent-gateway-client';
-import { type ExecAgentResult, RequestTrigger } from '@lobechat/types';
+import { type ExecAgentResult, RequestTrigger } from '@lobot/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type * as ConstVersion from '@/const/version';

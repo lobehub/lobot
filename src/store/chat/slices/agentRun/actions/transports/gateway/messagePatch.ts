@@ -1,5 +1,5 @@
 import type { MessagePatchData } from '@lobechat/agent-gateway-client';
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 
 /**
  * Apply one canonical protocol-v2 patch to the raw conversation list.

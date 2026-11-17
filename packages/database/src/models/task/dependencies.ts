@@ -1,4 +1,4 @@
-import type { TaskItem } from '@lobechat/types';
+import type { TaskItem } from '@lobot/types';
 import { and, eq, inArray, isNotNull, ne, or, sql } from 'drizzle-orm';
 
 import { taskDependencies, tasks } from '../../schemas/task';

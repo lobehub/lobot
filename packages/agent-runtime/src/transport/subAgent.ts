@@ -2,7 +2,7 @@ import type {
   ExecSubAgentParams,
   ExecSubAgentResult,
   ExecVirtualSubAgentParams,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 type SubAgentExecutionStatus = 'cancelled' | 'completed' | 'failed' | 'timed_out';
 

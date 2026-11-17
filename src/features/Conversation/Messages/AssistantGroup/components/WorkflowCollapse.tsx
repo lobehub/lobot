@@ -1,4 +1,4 @@
-import { type ChatToolPayloadWithResult } from '@lobechat/types';
+import { type ChatToolPayloadWithResult } from '@lobot/types';
 import { Accordion, ActionIcon, Block, cssVar, Flexbox, Icon, Spin, Text } from '@lobehub/ui';
 import { Check, HandIcon, Maximize2, Minimize2, X } from 'lucide-react';
 import { AnimatePresence } from 'motion/react';

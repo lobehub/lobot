@@ -84,7 +84,7 @@ export const GOAL_CLARIFICATION_OPTION = {
 
 /**
  * Rollout trigger vocabulary. Kept in sync with the `GoalRolloutTrigger` union
- * in `@lobechat/types` (type-tested here), mirroring the `goalStatuses`
+ * in `@lobot/types` (type-tested here), mirroring the `goalStatuses`
  * convention. `off` is explicit opt-out; an absent policy means the same thing.
  */
 export const goalRolloutTriggers = ['canary', 'full', 'off'] as const;

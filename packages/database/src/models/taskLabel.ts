@@ -1,4 +1,4 @@
-import type { TaskLabelRef, TaskLabelWithUsage } from '@lobechat/types';
+import type { TaskLabelRef, TaskLabelWithUsage } from '@lobot/types';
 import { and, asc, count, eq, inArray, isNull, ne, notInArray, sql } from 'drizzle-orm';
 
 import type { TaskLabelItem } from '../schemas';

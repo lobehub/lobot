@@ -7,7 +7,7 @@ import type {
   TrashListResult,
   TrashResourceType,
   TrashRootFilter,
-} from '@lobechat/types';
+} from '@lobot/types';
 import type { SQL } from 'drizzle-orm';
 import { and, asc, count, desc, eq, inArray, isNull, lt, lte, not, or, sql } from 'drizzle-orm';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';

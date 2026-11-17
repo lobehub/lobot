@@ -1,4 +1,4 @@
-import { type AgentItem, type LobeAgentConfig } from '@lobechat/types';
+import { type AgentItem, type LobeAgentConfig } from '@lobot/types';
 import { useLayoutEffect } from 'react';
 import { type PartialDeep } from 'type-fest';
 

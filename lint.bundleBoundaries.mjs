@@ -63,7 +63,7 @@ export const browserBundleRestrictedImportPaths = [
   {
     allowTypeImports: true,
     message:
-      'The @lobechat/model-runtime root re-exports every provider with its SDK (~420 KB gzipped on the share page). Import a subpath such as "@lobechat/model-runtime/errors", and enums like AgentRuntimeErrorType from "@lobechat/types".',
+      'The @lobechat/model-runtime root re-exports every provider with its SDK (~420 KB gzipped on the share page). Import a subpath such as "@lobechat/model-runtime/errors", and enums like AgentRuntimeErrorType from "@lobot/types".',
     name: '@lobechat/model-runtime',
   },
 ];

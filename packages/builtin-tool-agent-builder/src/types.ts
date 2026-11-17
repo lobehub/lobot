@@ -1,4 +1,4 @@
-import type { LobeAgentConfig, MetaData } from '@lobechat/types';
+import type { LobeAgentConfig, MetaData } from '@lobot/types';
 import type { PartialDeep } from 'type-fest';
 
 /**

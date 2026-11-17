@@ -1,4 +1,4 @@
-import { CLASSIC_ONBOARDING_MAX_STEP } from '@lobechat/types';
+import { CLASSIC_ONBOARDING_MAX_STEP } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { isLegacyClassicStep, remapLegacyClassicStep } from './legacyStep';

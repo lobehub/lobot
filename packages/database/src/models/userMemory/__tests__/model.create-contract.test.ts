@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { ActivityTypeEnum, LayersEnum, TypesEnum } from '@lobechat/types';
+import { ActivityTypeEnum, LayersEnum, TypesEnum } from '@lobot/types';
 import { eq } from 'drizzle-orm';
 import { beforeEach, describe, expect, it } from 'vitest';
 

@@ -1,4 +1,4 @@
-import type { WorkingDirConfig, WorkingDirEntry } from '@lobechat/types';
+import type { WorkingDirConfig, WorkingDirEntry } from '@lobot/types';
 
 import {
   getWorkingDirectoryName,

@@ -36,7 +36,7 @@ import type {
   CreateDirectoryParams,
   CreateFileParams,
 } from '@lobechat/local-file-shell/types';
-import type { DeviceCliRestartParams } from '@lobechat/types';
+import type { DeviceCliRestartParams } from '@lobot/types';
 
 import { listClaudeCodeMemory } from './claudeCodeMemory';
 import { getClaudeCodeQuota, type GetClaudeCodeQuotaParams } from './claudeCodeQuota';

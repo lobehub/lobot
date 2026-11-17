@@ -1,4 +1,4 @@
-import type { DeviceDirectoryBrowseResult } from '@lobechat/types';
+import type { DeviceDirectoryBrowseResult } from '@lobot/types';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import type { PropsWithChildren } from 'react';
 import { createElement } from 'react';

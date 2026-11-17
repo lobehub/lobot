@@ -1,4 +1,4 @@
-import type { ContactUserProfile } from '@lobechat/types';
+import type { ContactUserProfile } from '@lobot/types';
 import { Popover, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

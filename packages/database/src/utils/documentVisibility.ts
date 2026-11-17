@@ -1,4 +1,4 @@
-import type { DocumentAccessScope } from '@lobechat/types';
+import type { DocumentAccessScope } from '@lobot/types';
 import { and, sql } from 'drizzle-orm';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 

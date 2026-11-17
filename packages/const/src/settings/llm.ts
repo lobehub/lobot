@@ -1,5 +1,5 @@
 import { DEFAULT_MODEL, DEFAULT_PROVIDER } from '@lobechat/business-const';
-import type { LobeAgentAgencyConfig, LobeAgentChatConfig } from '@lobechat/types';
+import type { LobeAgentAgencyConfig, LobeAgentChatConfig } from '@lobot/types';
 
 export { DEFAULT_MINI_MODEL, DEFAULT_MODEL } from '@lobechat/business-const';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 import { Flexbox, ScrollArea } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import type { RefObject } from 'react';

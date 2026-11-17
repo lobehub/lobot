@@ -1,6 +1,6 @@
 'use client';
 
-import { type StoreApiWithSelector } from '@lobechat/types';
+import { type StoreApiWithSelector } from '@lobot/types';
 import { createElement, type ReactNode, useRef } from 'react';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { shallow } from 'zustand/shallow';

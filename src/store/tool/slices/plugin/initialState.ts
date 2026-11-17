@@ -1,4 +1,4 @@
-import { type LobeTool } from '@lobechat/types';
+import { type LobeTool } from '@lobot/types';
 
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 import { type PluginInstallError } from '@/types/tool/plugin';

@@ -1,4 +1,4 @@
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName } from '@lobot/types';
 import { cssVar, Flexbox, Icon, Tag, Text } from '@lobehub/ui';
 import isEqual from 'fast-deep-equal';
 import { memo } from 'react';

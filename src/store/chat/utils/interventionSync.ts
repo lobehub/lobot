@@ -1,4 +1,4 @@
-import type { ChatTopic, UIChatMessage } from '@lobechat/types';
+import type { ChatTopic, UIChatMessage } from '@lobot/types';
 
 export const INTERVENTION_REFRESH_INTERVAL = 2000;
 

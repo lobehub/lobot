@@ -1,6 +1,6 @@
 import { BUILTIN_AGENT_SLUGS } from '@lobechat/builtin-agents';
 import { INBOX_SESSION_ID, isHeterogeneousAgentModelId } from '@lobechat/const';
-import { applyWorkingDirByDevicePatch } from '@lobechat/types';
+import { applyWorkingDirByDevicePatch } from '@lobot/types';
 import { toRecord } from '@lobechat/utils/object';
 import { TRPCError } from '@trpc/server';
 import { and, eq } from 'drizzle-orm';

@@ -1,4 +1,4 @@
-import type { EnvironmentKind } from '@lobechat/types';
+import type { EnvironmentKind } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 import type { environmentService } from '@/services/environment';

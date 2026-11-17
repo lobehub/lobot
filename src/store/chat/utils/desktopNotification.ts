@@ -10,8 +10,8 @@ import {
   type DesktopNotificationSender,
   HeterogeneousAgentSessionErrorCode,
 } from '@lobechat/electron-client-ipc';
-import type { ChatMessageError, ConversationContext } from '@lobechat/types';
-import { agentDisplayName } from '@lobechat/types';
+import type { ChatMessageError, ConversationContext } from '@lobot/types';
+import { agentDisplayName } from '@lobot/types';
 import { t } from 'i18next';
 
 import { getAgentStoreState } from '@/store/agent';

@@ -18,7 +18,7 @@ import type {
   AgentInterventionStatus,
   AgentInterventionSurface,
   AgentInterventionSystemActionEligibility,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import {
   boolean,

@@ -1,4 +1,4 @@
-import type { TaskDetailActivity, TaskDetailData } from '@lobechat/types';
+import type { TaskDetailActivity, TaskDetailData } from '@lobot/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { aiAgentService } from '@/services/aiAgent';

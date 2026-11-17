@@ -1,4 +1,4 @@
-import type { AgentInboxSourceType } from '@lobechat/types';
+import type { AgentInboxSourceType } from '@lobot/types';
 import { index, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';
 

@@ -1,4 +1,4 @@
-import { AgentRuntimeErrorType } from '@lobechat/types';
+import { AgentRuntimeErrorType } from '@lobot/types';
 import createDebug from 'debug';
 import type { TTSAudioFormat } from 'model-bank';
 import { DEFAULT_TTS_AUDIO_FORMAT } from 'model-bank';

@@ -1,5 +1,5 @@
 import { LOADING_FLAT } from '@lobechat/const';
-import { RequestTrigger, type UIChatMessage } from '@lobechat/types';
+import { RequestTrigger, type UIChatMessage } from '@lobot/types';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { type Mock } from 'vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

@@ -27,7 +27,7 @@ const initRepo = async (parent: string, name = 'lobehub'): Promise<string> => {
 
 /**
  * The `~/.lobehub/worktrees/<repoKey>/<branchFolder>` shape `deriveWorktreePath`
- * (`@lobechat/types`, which owns the repo-key hash) hands the device.
+ * (`@lobot/types`, which owns the repo-key hash) hands the device.
  */
 const deriveWorktreePath = (sourcePath: string, branch: string, hash = '0000beef'): string =>
   `${home}/.lobehub/worktrees/${path.basename(sourcePath)}-${hash}/${branch.replaceAll('/', '-') || 'worktree'}`;

@@ -1,4 +1,4 @@
-import type { DocumentCommentJson, DocumentCommentSelectionAnchor } from '@lobechat/types';
+import type { DocumentCommentJson, DocumentCommentSelectionAnchor } from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 import { check, index, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';

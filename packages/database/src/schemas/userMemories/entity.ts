@@ -2,7 +2,7 @@ import type {
   UserMemoryEntityNameKind,
   UserMemoryEntityType,
   UserMemoryVisibility,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import {
   type AnyPgColumn,

@@ -1,4 +1,4 @@
-import { isRemoteServerNetworkError } from '@lobechat/types';
+import { isRemoteServerNetworkError } from '@lobot/types';
 import { t } from 'i18next';
 
 export interface UnreadableResponseDetail {

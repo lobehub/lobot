@@ -1,6 +1,6 @@
 'use client';
 
-import type { NotificationMetadata } from '@lobechat/types';
+import type { NotificationMetadata } from '@lobot/types';
 import { Flexbox, Icon, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

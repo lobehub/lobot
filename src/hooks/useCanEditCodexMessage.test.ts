@@ -1,5 +1,5 @@
 import type * as LobechatConst from '@lobechat/const';
-import type { LobeAgentAgencyConfig } from '@lobechat/types';
+import type { LobeAgentAgencyConfig } from '@lobot/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useCanEditCodexMessage } from './useCanEditCodexMessage';

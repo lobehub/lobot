@@ -1,5 +1,5 @@
 import { CHANNEL_URL } from '@lobechat/const';
-import type { ChannelListItem, ChannelPublicThread } from '@lobechat/types';
+import type { ChannelListItem, ChannelPublicThread } from '@lobot/types';
 import { copyToClipboard, toast } from '@lobehub/ui';
 import { Archive, ArchiveRestore, Copy, Link2, Trash } from 'lucide-react';
 import { useTranslation } from 'react-i18next';

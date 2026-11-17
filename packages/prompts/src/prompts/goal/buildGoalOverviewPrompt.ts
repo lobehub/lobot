@@ -6,7 +6,7 @@
 // injects it into the last user message (same channel as the Task Manager
 // context) — the agent answers from the on-screen state without tool calls.
 
-import type { InitialGoalOverviewContext } from '@lobechat/types';
+import type { InitialGoalOverviewContext } from '@lobot/types';
 
 export type BuildGoalOverviewPromptInput = InitialGoalOverviewContext;
 

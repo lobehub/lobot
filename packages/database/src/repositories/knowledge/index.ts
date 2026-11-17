@@ -7,7 +7,7 @@ import {
   MARKDOWN_MIME_TYPES,
   RESOURCE_CONTENT_PREVIEW_SOURCE_LENGTH,
 } from '@lobechat/const';
-import type { FileUploader, QueryFileListParams } from '@lobechat/types';
+import type { FileUploader, QueryFileListParams } from '@lobot/types';
 import {
   AI_GENERATED_FILE_SOURCES,
   FileSource,
@@ -15,7 +15,7 @@ import {
   LIBRARY_HIDDEN_FILE_SOURCES,
   ResourceSourceFilter,
   SortType,
-} from '@lobechat/types';
+} from '@lobot/types';
 import {
   and,
   asc,

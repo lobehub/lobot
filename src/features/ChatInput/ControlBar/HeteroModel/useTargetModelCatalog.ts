@@ -1,4 +1,4 @@
-import type { ListHeterogeneousAgentModelsParams } from '@lobechat/types';
+import type { ListHeterogeneousAgentModelsParams } from '@lobot/types';
 
 import { isDesktop } from '@/const/version';
 import { resolveTargetDeviceId } from '@/helpers/agentWorkingDirectory';

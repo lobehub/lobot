@@ -1,4 +1,4 @@
-import { agentDisplayName, type SidebarAgentItem } from '@lobechat/types';
+import { agentDisplayName, type SidebarAgentItem } from '@lobot/types';
 import { useMemo, useState } from 'react';
 
 import type { ForwardTarget } from '@/store/chat/slices/forward/action';

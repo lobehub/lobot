@@ -1,4 +1,4 @@
-import type { DeviceMetricSample } from '@lobechat/types';
+import type { DeviceMetricSample } from '@lobot/types';
 
 // ─── Device Info ───
 

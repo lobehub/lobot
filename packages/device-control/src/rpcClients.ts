@@ -1,4 +1,4 @@
-import type { DeviceClient } from '@lobechat/types';
+import type { DeviceClient } from '@lobot/types';
 
 import type { DeviceRpcMethod } from './dispatch';
 

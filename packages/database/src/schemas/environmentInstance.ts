@@ -3,7 +3,7 @@ import type {
   EnvironmentInstanceConfiguration,
   EnvironmentInstanceKind,
   EnvironmentInstanceStatus,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import {
   boolean,
@@ -28,7 +28,7 @@ import { environments } from './environment';
  * `MANAGED_CLOUD_CLUSTER_PROVIDER_V1`, `providerScope` the region it runs in,
  * and `providerResourceId` the managed device id (equal to `devices.deviceId`
  * of its device row, which is unique only within the owner's scope). See
- * `@lobechat/types` `managedDevice`.
+ * `@lobot/types` `managedDevice`.
  */
 export const environmentInstances = pgTable(
   'environment_instances',

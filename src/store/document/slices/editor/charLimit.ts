@@ -1,4 +1,4 @@
-import { DOCUMENT_CHAR_LIMIT_EXCEEDED, type DocumentCharLimitErrorData } from '@lobechat/types';
+import { DOCUMENT_CHAR_LIMIT_EXCEEDED, type DocumentCharLimitErrorData } from '@lobot/types';
 import { toast } from '@lobehub/ui';
 import i18next, { t } from 'i18next';
 

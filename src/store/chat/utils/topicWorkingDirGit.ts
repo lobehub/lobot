@@ -4,8 +4,8 @@ import type {
   DeviceGitUpstreamRef,
   WorkingDirConfig,
   WorkingDirGithubState,
-} from '@lobechat/types';
-import { getWorkingDirEffectivePath } from '@lobechat/types';
+} from '@lobot/types';
+import { getWorkingDirEffectivePath } from '@lobot/types';
 
 import { resolveTargetDeviceId } from '@/helpers/agentWorkingDirectory';
 import type { GitLinkedPRSummary } from '@/services/git';

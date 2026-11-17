@@ -1,6 +1,6 @@
 'use client';
 
-import type { EnvironmentConfiguration } from '@lobechat/types';
+import type { EnvironmentConfiguration } from '@lobot/types';
 import { Button, Flexbox, Icon, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

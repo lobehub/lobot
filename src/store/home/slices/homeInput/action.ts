@@ -1,6 +1,6 @@
 import { CUSTOM_DOCUMENT_FILE_TYPE } from '@lobechat/const';
 import { BUILTIN_AGENT_SLUGS } from '@lobechat/const/builtinAgents';
-import type { ContextSelection, PageSelection } from '@lobechat/types';
+import type { ContextSelection, PageSelection } from '@lobot/types';
 
 import { docsPagePath } from '@/features/ResourceHome/paths';
 import { stableWorkspaceAwareNavigate } from '@/features/Workspace/stableWorkspaceAwareNavigate';

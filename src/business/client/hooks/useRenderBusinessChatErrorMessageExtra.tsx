@@ -1,4 +1,4 @@
-import { type ChatMessageError } from '@lobechat/types';
+import { type ChatMessageError } from '@lobot/types';
 
 interface BusinessChatErrorMessageExtraOptions {
   /**

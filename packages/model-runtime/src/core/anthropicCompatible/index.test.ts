@@ -1,6 +1,6 @@
 // @vitest-environment node
 import Anthropic from '@anthropic-ai/sdk';
-import { AgentRuntimeErrorType } from '@lobechat/types';
+import { AgentRuntimeErrorType } from '@lobot/types';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { ModelRuntimeDiagnostics } from '../../types/providerDiagnostics';

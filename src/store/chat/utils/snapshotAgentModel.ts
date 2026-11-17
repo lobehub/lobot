@@ -1,8 +1,8 @@
-import type { ChatTopicMetadata } from '@lobechat/types';
+import type { ChatTopicMetadata } from '@lobot/types';
 import {
   resolveHeterogeneousProviderTopicModel,
   resolveHeterogeneousTopicRuntimeSnapshot,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import { getAgentStoreState } from '@/store/agent';
 import { agentByIdSelectors } from '@/store/agent/selectors';

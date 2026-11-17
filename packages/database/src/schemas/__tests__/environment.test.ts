@@ -1,11 +1,11 @@
 // @vitest-environment node
 import { readFile } from 'node:fs/promises';
 
-import type { EnvironmentConfiguration } from '@lobechat/types';
+import type { EnvironmentConfiguration } from '@lobot/types';
 import {
   MANAGED_CLOUD_CLUSTER_PROVIDER_V1,
   MANAGED_CLOUD_DEVICE_IDENTITY_SOURCE,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { eq, inArray, sql } from 'drizzle-orm';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 

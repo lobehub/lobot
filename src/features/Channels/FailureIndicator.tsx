@@ -1,4 +1,4 @@
-import type { ChannelDetail } from '@lobechat/types';
+import type { ChannelDetail } from '@lobot/types';
 import { Button, Flexbox, Icon, Popover, Text, usePopoverContext } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { CircleAlert, LocateFixed } from 'lucide-react';

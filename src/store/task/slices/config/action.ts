@@ -4,8 +4,8 @@ import type {
   TaskAutomationSnapshot,
   TaskDetailData,
   TaskExecutionConfig,
-} from '@lobechat/types';
-import { toTaskExecutionConfigPatch } from '@lobechat/types';
+} from '@lobot/types';
+import { toTaskExecutionConfigPatch } from '@lobot/types';
 import type { Draft } from 'immer';
 
 import { taskService } from '@/services/task';

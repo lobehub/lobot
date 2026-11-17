@@ -7,8 +7,8 @@ import type {
   RemoteHeterogeneousAgentType,
 } from '@lobechat/heterogeneous-agents';
 import { isRemoteHeterogeneousType } from '@lobechat/heterogeneous-agents';
-import type { DeviceListItem } from '@lobechat/types';
-import { agentDisplayName } from '@lobechat/types';
+import type { DeviceListItem } from '@lobot/types';
+import { agentDisplayName } from '@lobot/types';
 import {
   Alert,
   Button,

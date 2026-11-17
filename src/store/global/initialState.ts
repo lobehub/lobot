@@ -1,4 +1,4 @@
-import { type TaskListFilter } from '@lobechat/types';
+import { type TaskListFilter } from '@lobot/types';
 import { type NavigateFunction } from 'react-router';
 
 import { type LocaleMode } from '@/types/locale';

@@ -1,4 +1,4 @@
-import type { AiProviderSDKType } from '@lobechat/types';
+import type { AiProviderSDKType } from '@lobot/types';
 
 export interface BuildClaudeCodeDirectEnvInput {
   /** Decrypted provider credentials. This function is for trusted local execution only. */

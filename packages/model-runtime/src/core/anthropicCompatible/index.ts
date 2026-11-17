@@ -1,7 +1,7 @@
 import Anthropic, { type ClientOptions } from '@anthropic-ai/sdk';
 import type { Stream } from '@anthropic-ai/sdk/streaming';
 import { CURRENT_VERSION } from '@lobechat/const';
-import type { ChatModelCard } from '@lobechat/types';
+import type { ChatModelCard } from '@lobot/types';
 import debug from 'debug';
 import type { Pricing } from 'model-bank';
 

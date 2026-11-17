@@ -1,4 +1,4 @@
-import type { ChatAudioItem, ChatFileItem, ChatImageItem, ChatVideoItem } from '@lobechat/types';
+import type { ChatAudioItem, ChatFileItem, ChatImageItem, ChatVideoItem } from '@lobot/types';
 
 import { audiosPrompts } from './audio';
 import { filePrompts } from './file';

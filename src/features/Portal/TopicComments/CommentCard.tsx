@@ -1,4 +1,4 @@
-import type { TopicCommentItem } from '@lobechat/types';
+import type { TopicCommentItem } from '@lobot/types';
 import type { DropdownItem } from '@lobehub/ui';
 import {
   ActionIcon,

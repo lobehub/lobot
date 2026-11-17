@@ -1,4 +1,4 @@
-import type { SignalMetadata, SignalStatus } from '@lobechat/types';
+import type { SignalMetadata, SignalStatus } from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import { index, integer, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';

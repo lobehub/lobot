@@ -1,4 +1,4 @@
-import type { TaskAutomationMode } from '@lobechat/types';
+import type { TaskAutomationMode } from '@lobot/types';
 
 /** The schedule a scheduled task is created with, before it exists to be updated. */
 export interface ScheduleDraft {

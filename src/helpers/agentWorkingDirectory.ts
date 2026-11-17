@@ -2,8 +2,8 @@ import type {
   LobeAgentAgencyConfig,
   WorkingDirConfig,
   WorkingDirConfigValue,
-} from '@lobechat/types';
-import { getWorkingDirEffectivePath, getWorkingDirSourcePath } from '@lobechat/types';
+} from '@lobot/types';
+import { getWorkingDirEffectivePath, getWorkingDirSourcePath } from '@lobot/types';
 
 interface ResolveTargetDeviceIdOptions {
   workspaceScoped?: boolean;

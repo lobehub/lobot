@@ -1,4 +1,4 @@
-import type { TopicCommentItem, TopicCommentSummary, TopicCommentThread } from '@lobechat/types';
+import type { TopicCommentItem, TopicCommentSummary, TopicCommentThread } from '@lobot/types';
 
 import { definePagedReplica, defineReplica, type ReplicaPagedData } from '@/libs/replica';
 

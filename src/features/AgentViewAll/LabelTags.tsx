@@ -1,6 +1,6 @@
 'use client';
 
-import { type SidebarAgentLabel } from '@lobechat/types';
+import { type SidebarAgentLabel } from '@lobot/types';
 import { createStaticStyles } from '@lobehub/ui';
 import { memo } from 'react';
 

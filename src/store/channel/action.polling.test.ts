@@ -1,4 +1,4 @@
-import type { ChannelDetail, ChannelPublicJob, ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelDetail, ChannelPublicJob, ChannelPublicMessage } from '@lobot/types';
 import { act, cleanup, renderHook } from '@testing-library/react';
 import { createElement, type PropsWithChildren } from 'react';
 import { SWRConfig } from 'swr';

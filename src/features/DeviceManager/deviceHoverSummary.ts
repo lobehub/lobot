@@ -1,4 +1,4 @@
-import type { DeviceListItem, DeviceMetricSeries } from '@lobechat/types';
+import type { DeviceListItem, DeviceMetricSeries } from '@lobot/types';
 
 import { getPlatformLabel } from './getDeviceIcon';
 

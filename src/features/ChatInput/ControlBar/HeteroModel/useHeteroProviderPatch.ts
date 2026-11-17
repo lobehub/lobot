@@ -1,5 +1,5 @@
-import type { HeterogeneousProviderConfig, HeteroSelection } from '@lobechat/types';
-import { applyHeteroSelection } from '@lobechat/types';
+import type { HeterogeneousProviderConfig, HeteroSelection } from '@lobot/types';
+import { applyHeteroSelection } from '@lobot/types';
 import { useCallback } from 'react';
 
 import { useAgentStore } from '@/store/agent';

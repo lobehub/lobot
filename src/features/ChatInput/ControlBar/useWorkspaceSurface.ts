@@ -1,5 +1,5 @@
 import { isDesktop } from '@lobechat/const';
-import type { LobeAgentAgencyConfig } from '@lobechat/types';
+import type { LobeAgentAgencyConfig } from '@lobot/types';
 
 import { resolveExecutionTarget } from '@/helpers/executionTarget';
 import { useIsGatewayModeEnabled } from '@/helpers/gatewayMode';

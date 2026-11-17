@@ -17,7 +17,7 @@ import {
   type GoalMetricCriterion,
   type GoalTickResult,
   RequestTrigger,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import {
   createReplicaSlice,

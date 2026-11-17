@@ -1,5 +1,5 @@
 import type { BuiltinAgentSlug } from '@lobechat/const/builtinAgents';
-import type { LobeAgentAgencyConfig, LobeAgentChatConfig, LobeAgentConfig } from '@lobechat/types';
+import type { LobeAgentAgencyConfig, LobeAgentChatConfig, LobeAgentConfig } from '@lobot/types';
 
 import type { GroupSupervisorContext } from './agents/group-supervisor/type';
 

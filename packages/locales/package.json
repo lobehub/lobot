@@ -21,7 +21,7 @@
     "rtl-detect": "^1.1.2"
   },
   "devDependencies": {
-    "@lobechat/types": "workspace:*",
+    "@lobot/types": "workspace:*",
     "vite-tsconfig-paths": "^6.1.1"
   }
 }

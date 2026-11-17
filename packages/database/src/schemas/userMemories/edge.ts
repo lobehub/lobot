@@ -1,4 +1,4 @@
-import type { UserMemoryEdgeRelation } from '@lobechat/types';
+import type { UserMemoryEdgeRelation } from '@lobot/types';
 import { index, integer, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
 import { timestamps, varchar255 } from '../_helpers';

@@ -1,5 +1,5 @@
 import { isDesktop } from '@lobechat/const';
-import type { UserGeneralConfig } from '@lobechat/types';
+import type { UserGeneralConfig } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import type { ReplicaSlice } from 'local-replica/zustand';
 import useSWR from 'swr';

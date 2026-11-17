@@ -1,4 +1,4 @@
-import type { TaskDetailActivity, TaskDetailActivityAuthor } from '@lobechat/types';
+import type { TaskDetailActivity, TaskDetailActivityAuthor } from '@lobot/types';
 
 /**
  * Distinguishes a locally synthesized row from a persisted one until the

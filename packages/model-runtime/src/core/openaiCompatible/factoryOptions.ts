@@ -1,4 +1,4 @@
-import type { ChatModelCard } from '@lobechat/types';
+import type { ChatModelCard } from '@lobot/types';
 import type { AiFullModelCard } from 'model-bank';
 import type OpenAI from 'openai';
 import type { ClientOptions } from 'openai';

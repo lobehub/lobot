@@ -1,4 +1,4 @@
-import { type SSOProvider } from '@lobechat/types';
+import { type SSOProvider } from '@lobot/types';
 
 import { clearActiveScopeKey } from '@/libs/swr/useCacheScope';
 import { type StoreSetter } from '@/store/types';

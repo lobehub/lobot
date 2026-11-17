@@ -1,4 +1,4 @@
-import { type IdentityListItem, type IdentityListSort } from '@lobechat/types';
+import { type IdentityListItem, type IdentityListSort } from '@lobot/types';
 
 import { type ReplicaPagedData } from '@/libs/replica';
 import { userMemoryService } from '@/services/userMemory';

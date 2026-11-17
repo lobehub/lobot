@@ -1,5 +1,5 @@
-import type { BotNoReplyClaimedReason } from '@lobechat/types';
-import { parseBotNoReplyToken } from '@lobechat/types';
+import type { BotNoReplyClaimedReason } from '@lobot/types';
+import { parseBotNoReplyToken } from '@lobot/types';
 import { Flexbox, Icon } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

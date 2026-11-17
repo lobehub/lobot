@@ -15,7 +15,7 @@ import {
   type WorkItem,
   type WorkSkillProvider,
   type WorkVisibility,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import type { LobeChatDatabase } from '../../type';
 import {

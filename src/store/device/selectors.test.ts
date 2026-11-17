@@ -1,4 +1,4 @@
-import { DEVICE_TERMINAL_METADATA_KEY, type DeviceListItem } from '@lobechat/types';
+import { DEVICE_TERMINAL_METADATA_KEY, type DeviceListItem } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import type { DeviceState } from './initialState';

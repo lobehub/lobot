@@ -1,5 +1,5 @@
-import type { NewTask } from '@lobechat/types';
-import { withoutTaskExecutionSelection } from '@lobechat/types';
+import type { NewTask } from '@lobot/types';
+import { withoutTaskExecutionSelection } from '@lobot/types';
 import { and, eq, inArray, isNull, sql } from 'drizzle-orm';
 
 import {

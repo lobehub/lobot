@@ -11,7 +11,7 @@ import {
   RequestTrigger,
   type ThreadItem,
   type UIChatMessage,
-} from '@lobechat/types';
+} from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';

@@ -1,5 +1,5 @@
 import { AGENT_SHARE_VISITOR_TOPIC_LIST_LIMIT } from '@lobechat/const';
-import type { ChatTopicMetadata } from '@lobechat/types';
+import type { ChatTopicMetadata } from '@lobot/types';
 import { and, count, countDistinct, desc, eq, isNotNull } from 'drizzle-orm';
 
 import { topics } from '../../schemas';

@@ -1,4 +1,4 @@
-import type { TaskExecutionConfig } from '@lobechat/types';
+import type { TaskExecutionConfig } from '@lobot/types';
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

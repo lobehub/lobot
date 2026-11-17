@@ -1,4 +1,4 @@
-import type { ChannelListItem, ChannelPublicMember } from '@lobechat/types';
+import type { ChannelListItem, ChannelPublicMember } from '@lobot/types';
 import type { ISlashOption } from '@lobehub/editor';
 import {
   INSERT_MENTION_COMMAND,

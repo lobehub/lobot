@@ -1,5 +1,5 @@
 import { CHANNEL_URL } from '@lobechat/const';
-import type { ChannelDetail, ChannelPublicMember } from '@lobechat/types';
+import type { ChannelDetail, ChannelPublicMember } from '@lobot/types';
 import { Button, Flexbox, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

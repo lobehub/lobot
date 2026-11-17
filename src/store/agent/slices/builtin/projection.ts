@@ -1,4 +1,4 @@
-import { type AgentItem } from '@lobechat/types';
+import { type AgentItem } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 

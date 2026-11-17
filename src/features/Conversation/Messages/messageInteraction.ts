@@ -1,4 +1,4 @@
-import type { UIChatMessage } from '@lobechat/types';
+import type { UIChatMessage } from '@lobot/types';
 
 import { isLocalOnlyMessage } from '@/store/chat/utils/localMessages';
 

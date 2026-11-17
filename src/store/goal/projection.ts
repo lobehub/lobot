@@ -1,4 +1,4 @@
-import type { GoalGraphSnapshot } from '@lobechat/types';
+import type { GoalGraphSnapshot } from '@lobot/types';
 
 import { defineReplica, type ReplicaEntityAdapter } from '@/libs/replica';
 import type { GoalListItem, goalService } from '@/services/goal';

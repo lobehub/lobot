@@ -1,4 +1,4 @@
-import { type CustomPluginParams, type LobeTool } from '@lobechat/types';
+import { type CustomPluginParams, type LobeTool } from '@lobot/types';
 
 import { arrayEntity, defineReplica, type ReplicaEntityAdapter } from '@/libs/replica';
 

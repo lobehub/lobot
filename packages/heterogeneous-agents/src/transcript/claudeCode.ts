@@ -1,4 +1,4 @@
-import type { HeteroSessionImportMessage, HeteroSessionImportToolCall } from '@lobechat/types';
+import type { HeteroSessionImportMessage, HeteroSessionImportToolCall } from '@lobot/types';
 
 import {
   parseJsonlRecords,

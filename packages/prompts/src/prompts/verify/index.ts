@@ -1,4 +1,4 @@
-import type { VerifyCheckItem, VerifyEvidenceType } from '@lobechat/types';
+import type { VerifyCheckItem, VerifyEvidenceType } from '@lobot/types';
 
 export interface VerifierPromptEvidence {
   content?: string | null;

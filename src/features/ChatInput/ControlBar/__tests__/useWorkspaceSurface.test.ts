@@ -2,7 +2,7 @@
  * @vitest-environment happy-dom
  */
 import type * as LobechatConstModule from '@lobechat/const';
-import type { LobeAgentAgencyConfig } from '@lobechat/types';
+import type { LobeAgentAgencyConfig } from '@lobot/types';
 import { renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

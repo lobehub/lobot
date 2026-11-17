@@ -1,4 +1,4 @@
-import type { ChannelListItem } from '@lobechat/types';
+import type { ChannelListItem } from '@lobot/types';
 import { confirmModal, toast } from '@lobehub/ui';
 import { useTranslation } from 'react-i18next';
 

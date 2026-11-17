@@ -12,7 +12,7 @@ import type {
   ScmRepositorySelection,
   ScmReviewDecision,
   ScmWebhookDeliveryStatus,
-} from '@lobechat/types';
+} from '@lobot/types';
 import {
   boolean,
   index,

@@ -1,4 +1,4 @@
-import { BOT_NO_REPLY_REASONS, BOT_NO_REPLY_TOKEN } from '@lobechat/types';
+import { BOT_NO_REPLY_REASONS, BOT_NO_REPLY_TOKEN } from '@lobot/types';
 
 /** Who else took part lately, and how sure the addressed check was (0..1). */
 export interface OptionalReplyFollowup {

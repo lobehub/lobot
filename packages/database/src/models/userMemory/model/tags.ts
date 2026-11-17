@@ -1,4 +1,4 @@
-import { RelationshipEnum } from '@lobechat/types';
+import { RelationshipEnum } from '@lobot/types';
 import { and, desc, eq, inArray, isNotNull, ne, sql } from 'drizzle-orm';
 
 import { userMemories, userMemoriesIdentities } from '../../../schemas';

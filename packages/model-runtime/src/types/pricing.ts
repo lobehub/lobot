@@ -1,1 +1,1 @@
-export type { ModelPricingContext } from '@lobechat/types';
+export type { ModelPricingContext } from '@lobot/types';

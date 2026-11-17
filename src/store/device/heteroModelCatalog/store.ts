@@ -1,4 +1,4 @@
-import type { HeterogeneousAgentModelCatalogSuccess } from '@lobechat/types';
+import type { HeterogeneousAgentModelCatalogSuccess } from '@lobot/types';
 import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
 

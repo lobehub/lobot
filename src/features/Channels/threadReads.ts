@@ -1,4 +1,4 @@
-import type { ChannelPublicThread, ChannelThreadMention } from '@lobechat/types';
+import type { ChannelPublicThread, ChannelThreadMention } from '@lobot/types';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 

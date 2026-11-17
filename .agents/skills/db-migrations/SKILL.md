@@ -13,7 +13,7 @@ Apply these before generating any migration — they change what the schema file
 - **No pg enums (and no fixed value sets) for growing domains.** For columns whose value set will keep expanding (resource types, statuses, providers, …), use a plain `text` column typed via `.$type<UnionType>()`. `pgEnum` requires an `ALTER TYPE ... ADD VALUE` migration for every new literal, and even the Drizzle `text('col', { enum: [...] })` option hardwires the value list into the schema file. With `.$type<>()`, onboarding a new value is a type-only change — no migration at all.
 
   ```ts
-  // ✅ Good — type lives in @lobechat/types, column stays plain text
+  // ✅ Good — type lives in @lobot/types, column stays plain text
   resourceType: text('resource_type').$type<TransferResourceType>().notNull(),
 
   // ❌ Bad — pg enum, needs ALTER TYPE per new value
@@ -23,7 +23,7 @@ Apply these before generating any migration — they change what the schema file
   resourceType: text('resource_type', { enum: TRANSFER_RESOURCE_TYPES }).notNull(),
   ```
 
-- **Keep domain constants out of schema files.** In new or modified schema files under `packages/database/src/schemas/`, shared domain literal arrays, union types, and option interfaces belong in `@lobechat/types` (one module per domain, re-exported from its `index.ts`); both the schema (`.$type<>()`) and consumers (routers via `z.enum(...)`, services, UI) import from there. This rule targets domain constants only — table objects, inferred row types, Drizzle relation objects, and zod insert/select schemas (`insertAgentSchema`, …) are the schema file's job and stay put. Existing schema files that already export such constants (e.g. `resourcePermission.ts`) are grandfathered; migrate them opportunistically when the file is next touched, not in bulk.
+- **Keep domain constants out of schema files.** In new or modified schema files under `packages/database/src/schemas/`, shared domain literal arrays, union types, and option interfaces belong in `@lobot/types` (one module per domain, re-exported from its `index.ts`); both the schema (`.$type<>()`) and consumers (routers via `z.enum(...)`, services, UI) import from there. This rule targets domain constants only — table objects, inferred row types, Drizzle relation objects, and zod insert/select schemas (`insertAgentSchema`, …) are the schema file's job and stay put. Existing schema files that already export such constants (e.g. `resourcePermission.ts`) are grandfathered; migrate them opportunistically when the file is next touched, not in bulk.
 
 - **Prefixed ids only for rows that are addressed one at a time.** An `idGenerator` prefix (`task_`, `cmt_`, `brf_`) earns its keep when the id turns up somewhere a person reads it — a URL segment, an API argument, a tool-call payload, a support ticket. A child table whose rows are only ever fetched in bulk for their parent takes a plain uuid instead, like `task_dependencies` / `task_documents` / `task_topics`; there the prefix costs a registry entry in `idGenerator.ts` and buys nothing back.
 

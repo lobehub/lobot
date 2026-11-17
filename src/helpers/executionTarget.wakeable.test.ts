@@ -1,4 +1,4 @@
-import type { LobeAgentAgencyConfig } from '@lobechat/types';
+import type { LobeAgentAgencyConfig } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import {

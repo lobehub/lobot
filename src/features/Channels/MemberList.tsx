@@ -1,4 +1,4 @@
-import type { ChannelDetail, ChannelPublicMember } from '@lobechat/types';
+import type { ChannelDetail, ChannelPublicMember } from '@lobot/types';
 import type { DropdownItem } from '@lobehub/ui';
 import { ActionIcon, DropdownMenu, Flexbox, Icon, Text, toast, Tooltip } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';

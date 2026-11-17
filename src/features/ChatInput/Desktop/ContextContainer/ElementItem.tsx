@@ -1,4 +1,4 @@
-import type { ChatContextContent } from '@lobechat/types';
+import type { ChatContextContent } from '@lobot/types';
 import { Tag, Tooltip } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

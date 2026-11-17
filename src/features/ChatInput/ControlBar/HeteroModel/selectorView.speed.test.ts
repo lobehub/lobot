@@ -1,5 +1,5 @@
-import type { HeterogeneousAgentModel, HeterogeneousSpeedMode } from '@lobechat/types';
-import { getHeteroSelectorCapability } from '@lobechat/types';
+import type { HeterogeneousAgentModel, HeterogeneousSpeedMode } from '@lobot/types';
+import { getHeteroSelectorCapability } from '@lobot/types';
 import type { TFunction } from 'i18next';
 import { describe, expect, it } from 'vitest';
 

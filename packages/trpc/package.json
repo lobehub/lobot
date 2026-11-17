@@ -13,7 +13,7 @@
     "@lobechat/const": "workspace:*",
     "@lobechat/database": "workspace:*",
     "@lobechat/desktop-bridge": "workspace:*",
-    "@lobechat/types": "workspace:*",
+    "@lobot/types": "workspace:*",
     "@lobechat/utils": "workspace:*",
     "@trpc/client": "^11.18.0",
     "@trpc/react-query": "^11.18.0",

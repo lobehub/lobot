@@ -1,6 +1,6 @@
-import type { DeviceUnavailableErrorData } from '@lobechat/types';
+import type { DeviceUnavailableErrorData } from '@lobot/types';
 
-export type { DeviceUnavailableErrorData } from '@lobechat/types';
+export type { DeviceUnavailableErrorData } from '@lobot/types';
 
 /**
  * Human- and model-readable descriptions for device-channel transport

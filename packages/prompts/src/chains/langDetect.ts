@@ -1,4 +1,4 @@
-import type { ChatStreamPayload } from '@lobechat/types';
+import type { ChatStreamPayload } from '@lobot/types';
 
 export const chainLangDetect = (content: string): Partial<ChatStreamPayload> => ({
   messages: [

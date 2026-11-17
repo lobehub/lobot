@@ -1,5 +1,5 @@
-import type { BuiltinToolContext, BuiltinToolResult } from '@lobechat/types';
-import { BaseExecutor } from '@lobechat/types';
+import type { BuiltinToolContext, BuiltinToolResult } from '@lobot/types';
+import { BaseExecutor } from '@lobot/types';
 
 import type {
   BrowserClickArgs,

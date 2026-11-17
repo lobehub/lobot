@@ -1,6 +1,6 @@
 'use client';
 
-import { agentDisplayName, type SidebarAgentItem } from '@lobechat/types';
+import { agentDisplayName, type SidebarAgentItem } from '@lobot/types';
 import type { DropdownItem } from '@lobehub/ui';
 import { ActionIcon, DropdownMenu, Icon } from '@lobehub/ui';
 import { EllipsisIcon, EyeIcon, EyeOffIcon } from 'lucide-react';

@@ -1,5 +1,5 @@
 import type { GenerateObjectSchema } from '@lobechat/model-runtime';
-import { ActivityTypeEnum, TypesEnum } from '@lobechat/types';
+import { ActivityTypeEnum, TypesEnum } from '@lobot/types';
 import type { JSONSchema7 } from 'json-schema';
 import { z } from 'zod';
 

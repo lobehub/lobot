@@ -1,6 +1,6 @@
 'use client';
 
-import type { SidebarAgentItem } from '@lobechat/types';
+import type { SidebarAgentItem } from '@lobot/types';
 import { useEffect, useState } from 'react';
 
 import { coverImageSrc, sampledImageColor, sampleImageColor, seedCoverColor } from './coverColor';

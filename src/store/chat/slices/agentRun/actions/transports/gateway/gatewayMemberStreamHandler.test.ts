@@ -1,5 +1,5 @@
 import type { AgentStreamEvent } from '@lobechat/agent-gateway-client';
-import type { ConversationContext } from '@lobechat/types';
+import type { ConversationContext } from '@lobot/types';
 import { describe, expect, it, vi } from 'vitest';
 
 import type { ChatStore } from '@/store/chat/store';

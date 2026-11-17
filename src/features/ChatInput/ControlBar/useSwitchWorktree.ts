@@ -1,4 +1,4 @@
-import type { WorkingDirEntry } from '@lobechat/types';
+import type { WorkingDirEntry } from '@lobot/types';
 import { useCallback } from 'react';
 
 import { useCommitWorkingDirectory } from './useCommitWorkingDirectory';

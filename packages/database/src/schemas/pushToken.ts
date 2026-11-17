@@ -1,4 +1,4 @@
-import type { ApnsEnvironment } from '@lobechat/types';
+import type { ApnsEnvironment } from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import { check, index, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 

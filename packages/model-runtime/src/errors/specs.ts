@@ -1,5 +1,5 @@
-import type { ILobeAgentRuntimeErrorType } from '@lobechat/types';
-import { AgentRuntimeErrorType, ChatErrorType } from '@lobechat/types';
+import type { ILobeAgentRuntimeErrorType } from '@lobot/types';
+import { AgentRuntimeErrorType, ChatErrorType } from '@lobot/types';
 
 import type { ErrorAttribution, ErrorCategory, ErrorSeverity } from './taxonomy';
 
@@ -63,7 +63,7 @@ type SpecMap = Partial<Record<SpecErrorCode, ErrorCodeSpec>>;
  * Single source of truth for every runtime error code.
  *
  * To add a new code:
- *   1. Add it to `AgentRuntimeErrorType` in `@lobechat/types/agentRuntime.ts`
+ *   1. Add it to `AgentRuntimeErrorType` in `@lobot/types/agentRuntime.ts`
  *      (or `ChatErrorType` + `CloudErrorCode` above for Cloud-only codes).
  *   2. Add a spec entry here (Cloud-only codes use the `9` tier digit).
  *   3. Add a locale key `response.<code>` in `src/locales/default/error.ts`.

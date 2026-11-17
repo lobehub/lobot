@@ -1,4 +1,4 @@
-import type { DeviceMetricPoint, DeviceMetricSeries } from '@lobechat/types';
+import type { DeviceMetricPoint, DeviceMetricSeries } from '@lobot/types';
 
 /**
  * What the device was doing during one bucket:

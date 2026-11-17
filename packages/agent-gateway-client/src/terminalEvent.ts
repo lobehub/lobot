@@ -3,7 +3,7 @@ import type { AgentStreamEvent } from './types';
 /**
  * `ClientLlmExecutorUnavailable` reasons the server parks a run on in
  * `waiting_for_client` instead of failing it. Mirrors
- * `CLIENT_LLM_WAITABLE_REASONS` in `@lobechat/types` (this package has no deps).
+ * `CLIENT_LLM_WAITABLE_REASONS` in `@lobot/types` (this package has no deps).
  */
 const CLIENT_LLM_WAITABLE_REASONS = new Set(['claim_timeout', 'no_executor', 'not_delivered']);
 

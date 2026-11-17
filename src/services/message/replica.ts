@@ -1,4 +1,4 @@
-import type { ConversationContext, UIChatMessage } from '@lobechat/types';
+import type { ConversationContext, UIChatMessage } from '@lobot/types';
 
 import {
   cacheScope,

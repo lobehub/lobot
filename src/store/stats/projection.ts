@@ -1,4 +1,4 @@
-import type { AgentRankItem, ModelRankItem, TopicRankItem } from '@lobechat/types';
+import type { AgentRankItem, ModelRankItem, TopicRankItem } from '@lobot/types';
 import type { HeatmapsProps } from '@lobehub/charts';
 import dayjs from 'dayjs';
 

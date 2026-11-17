@@ -1,5 +1,5 @@
 import type { StreamStartData } from '@lobechat/agent-gateway-client';
-import type { ConversationContext } from '@lobechat/types';
+import type { ConversationContext } from '@lobot/types';
 
 import { dbMessageSelectors } from '@/store/chat/slices/message/selectors';
 import type { OperationMetadata } from '@/store/chat/slices/operation/types';

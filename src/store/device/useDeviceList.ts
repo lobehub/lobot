@@ -1,5 +1,5 @@
 import { isDesktop } from '@lobechat/const';
-import type { DeviceListItem } from '@lobechat/types';
+import type { DeviceListItem } from '@lobot/types';
 import { useCallback } from 'react';
 
 import { useUserStore } from '@/store/user';

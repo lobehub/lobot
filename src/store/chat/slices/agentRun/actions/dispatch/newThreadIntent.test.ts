@@ -1,4 +1,4 @@
-import { ThreadType } from '@lobechat/types';
+import { ThreadType } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { resolveNewThreadIntent } from './newThreadIntent';

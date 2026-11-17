@@ -1,4 +1,4 @@
-import type { ContactItem, ContactRequestItem, ContactSearchResult } from '@lobechat/types';
+import type { ContactItem, ContactRequestItem, ContactSearchResult } from '@lobot/types';
 
 import { useGatewayUserFeed } from '@/hooks/useGatewayUserFeed';
 import { createReplicaSlice, recordLens } from '@/libs/replica';

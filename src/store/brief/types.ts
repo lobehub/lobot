@@ -4,7 +4,7 @@ import {
   type BriefMetadata,
   type BriefType,
   type TaskStatus,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 interface AgentAvatarInfo {
   avatar: string | null;

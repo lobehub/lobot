@@ -4,8 +4,8 @@ import type {
   AgentModelOverride,
   ConversationContext,
   LobeAgentConfig,
-} from '@lobechat/types';
-import { resolveAgentModelConfig } from '@lobechat/types';
+} from '@lobot/types';
+import { resolveAgentModelConfig } from '@lobot/types';
 
 import { getAgentStoreState, useAgentStore } from '@/store/agent';
 import { agentByIdSelectors, agentSelectors } from '@/store/agent/selectors';

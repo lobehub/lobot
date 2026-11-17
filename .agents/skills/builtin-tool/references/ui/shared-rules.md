@@ -9,7 +9,7 @@ Every surface file is the same shape, so internalize it once instead of re-deriv
 ```tsx
 'use client'; // (a) leaves of the chat tree must not block server rendering
 
-import type { BuiltinInspectorProps, SearchQuery, UniformSearchResponse } from '@lobechat/types';
+import type { BuiltinInspectorProps, SearchQuery, UniformSearchResponse } from '@lobot/types';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -1,4 +1,4 @@
-import type { ChannelDetail, ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelDetail, ChannelPublicMessage } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { addOutgoing, channelOutboxKey, type ChannelOutgoingMessage, settleOutbox } from './outbox';

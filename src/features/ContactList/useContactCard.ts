@@ -3,7 +3,7 @@ import {
   agentDisplayName,
   agentSecondaryDisplayName,
   type SidebarAgentItem,
-} from '@lobechat/types';
+} from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { useTranslation } from 'react-i18next';
 

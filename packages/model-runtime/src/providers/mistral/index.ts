@@ -1,4 +1,4 @@
-import type { ChatModelCard } from '@lobechat/types';
+import type { ChatModelCard } from '@lobot/types';
 import type { AiModelSettings } from 'model-bank';
 import { ModelProvider } from 'model-bank';
 

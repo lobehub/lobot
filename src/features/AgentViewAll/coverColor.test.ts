@@ -1,5 +1,5 @@
 import { DEFAULT_AVATAR } from '@lobechat/const';
-import type { SidebarAgentItem } from '@lobechat/types';
+import type { SidebarAgentItem } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import {

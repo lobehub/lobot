@@ -6,7 +6,7 @@ import type {
   UserMemoryInsert,
   UserMemoryPreferenceWithoutVectors,
   UserMemoryWithoutVectors,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import type { FtsSearchCandidateSource } from '../../../repositories/ftsSearch';
 import type { LobeChatDatabase } from '../../../type';

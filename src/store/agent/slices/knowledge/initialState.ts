@@ -1,4 +1,4 @@
-import { type KnowledgeItem } from '@lobechat/types';
+import { type KnowledgeItem } from '@lobot/types';
 
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 

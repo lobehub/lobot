@@ -1,5 +1,5 @@
 import { CHANNEL_URL } from '@lobechat/const';
-import type { ChannelDetail } from '@lobechat/types';
+import type { ChannelDetail } from '@lobot/types';
 import { Button } from '@lobehub/ui';
 import { UserPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';

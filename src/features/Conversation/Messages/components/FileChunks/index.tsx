@@ -1,4 +1,4 @@
-import { type ChatFileChunk } from '@lobechat/types';
+import { type ChatFileChunk } from '@lobot/types';
 import { Flexbox, Icon } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';

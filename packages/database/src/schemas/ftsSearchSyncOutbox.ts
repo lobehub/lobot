@@ -1,4 +1,4 @@
-import type { FtsSearchDocumentEntity } from '@lobechat/types';
+import type { FtsSearchDocumentEntity } from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import {
   bigint,

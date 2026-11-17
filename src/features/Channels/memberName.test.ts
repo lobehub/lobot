@@ -1,4 +1,4 @@
-import type { ChannelPublicMessage } from '@lobechat/types';
+import type { ChannelPublicMessage } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { isCurrentUserAuthor, isCurrentUserMember } from './memberName';

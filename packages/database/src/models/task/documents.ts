@@ -1,4 +1,4 @@
-import type { WorkspaceData, WorkspaceDocNode, WorkspaceTreeNode } from '@lobechat/types';
+import type { WorkspaceData, WorkspaceDocNode, WorkspaceTreeNode } from '@lobot/types';
 import { and, eq, gte, sql } from 'drizzle-orm';
 
 import { documents } from '../../schemas/file';

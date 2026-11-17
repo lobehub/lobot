@@ -1,5 +1,5 @@
 import { deriveOperationEditedFiles } from '@/features/Conversation/operationArtifacts';
-import type { AssistantContentBlock, ChatToolPayloadWithResult } from '@lobechat/types';
+import type { AssistantContentBlock, ChatToolPayloadWithResult } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import { summarizeEditedFilesTotals } from './deriveEditedFiles';

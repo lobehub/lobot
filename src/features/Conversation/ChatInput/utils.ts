@@ -1,4 +1,4 @@
-import type { ConversationContext, OpenAIChatMessage, UIChatMessage } from '@lobechat/types';
+import type { ConversationContext, OpenAIChatMessage, UIChatMessage } from '@lobot/types';
 
 import type { PlaceholderVariant } from '@/features/ChatInput/InputEditor/Placeholder';
 import type { SendButtonProps } from '@/features/ChatInput/store/initialState';

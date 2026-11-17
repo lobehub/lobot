@@ -1,6 +1,6 @@
 import os from 'node:os';
 
-import { DEVICE_TERMINAL_METADATA_KEY } from '@lobechat/types';
+import { DEVICE_TERMINAL_METADATA_KEY } from '@lobot/types';
 import { app } from 'electron';
 
 /** What this desktop reports about itself when it registers its device row. */

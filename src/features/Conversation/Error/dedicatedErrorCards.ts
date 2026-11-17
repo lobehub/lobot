@@ -1,4 +1,4 @@
-import { AgentRuntimeErrorType, ChatErrorType } from '@lobechat/types';
+import { AgentRuntimeErrorType, ChatErrorType } from '@lobot/types';
 
 /**
  * Error types that `ErrorMessageExtra` renders with a dedicated card instead of the

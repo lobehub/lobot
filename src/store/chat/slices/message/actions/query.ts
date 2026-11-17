@@ -1,4 +1,4 @@
-import { type ConversationContext, type UIChatMessage } from '@lobechat/types';
+import { type ConversationContext, type UIChatMessage } from '@lobot/types';
 import debug from 'debug';
 import isEqual from 'fast-deep-equal';
 

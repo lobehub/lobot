@@ -1,4 +1,4 @@
-import type { DeviceListItem } from '@lobechat/types';
+import type { DeviceListItem } from '@lobot/types';
 
 import type { ProjectDirectory } from '@/store/projectWorkingDirectory';
 

@@ -1,4 +1,4 @@
-import type { SendMessageServerParams } from '@lobechat/types';
+import type { SendMessageServerParams } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 
 import { definePagedReplica, defineReplica } from '@/libs/replica';

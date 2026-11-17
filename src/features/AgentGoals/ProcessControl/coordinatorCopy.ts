@@ -10,7 +10,7 @@ import {
   GOAL_MACHINE_GATE_TITLE,
   GOAL_MANAGER_QUESTION_TITLE,
 } from '@lobechat/const/goal';
-import type { GoalDecisionOption } from '@lobechat/types';
+import type { GoalDecisionOption } from '@lobot/types';
 import { coordinatorReasonCopies } from '@lobechat/utils/goalCopy';
 
 import type { GoalNodeView } from './goalGraphViewModel';

@@ -3,7 +3,7 @@ import type {
   AgentEvalRunListItem,
   AgentEvalRunResults,
   EvalRunInputConfig,
-} from '@lobechat/types';
+} from '@lobot/types';
 
 import {
   arrayEntity,

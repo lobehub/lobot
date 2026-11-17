@@ -1,4 +1,4 @@
-import type { BotSenderMetadata } from '@lobechat/types';
+import type { BotSenderMetadata } from '@lobot/types';
 
 /**
  * Matches the IM-bot speaker tag at the start of a user message:

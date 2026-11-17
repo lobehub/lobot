@@ -1,4 +1,4 @@
-import { type AssistantContentBlock, type UIChatMessage } from '@lobechat/types';
+import { type AssistantContentBlock, type UIChatMessage } from '@lobot/types';
 import debug from 'debug';
 import {
   type RefObject,

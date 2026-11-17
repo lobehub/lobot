@@ -1,5 +1,5 @@
 import type { TaskCompletedWindow } from '@lobechat/const/builtinTools';
-import { normalizeTaskListFilter, type TaskListFilter, type TaskStatus } from '@lobechat/types';
+import { normalizeTaskListFilter, type TaskListFilter, type TaskStatus } from '@lobot/types';
 import { useMemo } from 'react';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';

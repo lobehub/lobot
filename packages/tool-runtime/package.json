@@ -11,6 +11,6 @@
     "path-browserify-esm": "*"
   },
   "devDependencies": {
-    "@lobechat/types": "workspace:*"
+    "@lobot/types": "workspace:*"
   }
 }

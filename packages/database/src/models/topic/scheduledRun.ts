@@ -3,7 +3,7 @@ import {
   type ChatTopicStatus,
   parseTopicScheduledRun,
   type TopicScheduledRun,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { and, eq, or, sql } from 'drizzle-orm';
 
 import { type TopicItem, topics } from '../../schemas';

@@ -2,7 +2,7 @@ import type {
   ResourceTransferRequestOptions,
   ResourceTransferRequestStatus,
   TransferResourceType,
-} from '@lobechat/types';
+} from '@lobot/types';
 import { sql } from 'drizzle-orm';
 import { index, jsonb, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
@@ -16,7 +16,7 @@ import { workspaces } from './workspace';
  * ownership column (`agents.userId`, …) only changes when the recipient
  * accepts.
  *
- * `resourceType` / `status` are plain text columns typed via `@lobechat/types`
+ * `resourceType` / `status` are plain text columns typed via `@lobot/types`
  * unions — no DB-level enum, so onboarding a new resource kind or state never
  * needs a migration.
  */

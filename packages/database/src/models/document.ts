@@ -1,10 +1,10 @@
 import { AGENT_ARTIFACT_SOURCE_TYPES } from '@lobechat/const';
-import type { DocumentAccessScope, FileAccessScope } from '@lobechat/types';
+import type { DocumentAccessScope, FileAccessScope } from '@lobot/types';
 import {
   ordinaryDocumentAccessScope,
   ordinaryFileAccessScope,
   stripAgentShareDocumentProvenance,
-} from '@lobechat/types';
+} from '@lobot/types';
 import {
   and,
   asc,
