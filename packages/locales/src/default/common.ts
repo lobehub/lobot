@@ -462,6 +462,22 @@ export default {
   'contacts.agent.remove': 'Remove from contacts',
   'contacts.agent.unavailable': 'The owner stopped sharing this Agent',
   'contacts.members': 'Members',
+  'contacts.externals': 'External contacts',
+  'contacts.external.notOpened': 'Not open to you',
+  'contacts.external.of': 'External contact of {{workspace}}',
+  'contacts.external.invite': 'Invite as external contact',
+  'contacts.external.inviteSent': 'Invitation sent',
+  'contacts.external.invited': 'Invites you to be an external contact of {{workspace}}',
+  'contacts.external.open': 'Open to them',
+  'contacts.external.openHint':
+    'Opening lets them see you and message you in this workspace. They still see nothing else here.',
+  'contacts.external.close': 'Stop opening to them',
+  'contacts.external.close.confirm':
+    'Stop opening to {{name}}? They will no longer see you or message you in this workspace. Chat history is kept.',
+  'contacts.external.remove': 'Remove from workspace',
+  'contacts.external.remove.confirm':
+    'Remove {{name}} from this workspace? Every member stops being open to them, and their pending invitations are withdrawn. Chat history is kept.',
+  'contacts.person.isMember': 'Already a member of this workspace',
   'contacts.people': 'People',
   'contacts.person.accept': 'Accept',
   'contacts.person.cancel': 'Withdraw request',

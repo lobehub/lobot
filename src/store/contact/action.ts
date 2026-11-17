@@ -86,6 +86,14 @@ class ContactActionImpl {
     await contactService.removeUser(userId);
     await this.#refresh(userId);
   };
+  openToExternal = async (userId: string) => {
+    await contactService.openToExternal(userId);
+    await this.#refresh(userId);
+  };
+  removeExternal = async (userId: string) => {
+    await contactService.removeExternal(userId);
+    await this.#refresh(userId);
+  };
   addAgent = async (share: string) => {
     const agent = await contactService.addAgent(share);
     await this.#refresh(agent.owner.id);

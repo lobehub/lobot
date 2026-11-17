@@ -8,10 +8,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import PersonDetailPage from './PersonDetail';
 
-const { navigate, openPeer, state } = vi.hoisted(() => ({
+const { navigate, openPeer, openToExternal, removeExternal, state } = vi.hoisted(() => ({
   navigate: vi.fn(),
   openPeer: vi.fn(),
+  openToExternal: vi.fn(),
+  removeExternal: vi.fn(),
   state: {
+    contacts: [] as object[],
     members: [] as object[],
     profile: undefined as object | undefined,
     workspace: null as { id: string; name: string } | null,
@@ -36,12 +39,32 @@ vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
   useWorkspaceAwareNavigate: () => navigate,
 }));
 vi.mock('@/store/channel', () => ({ channelActions: { openPeer } }));
+vi.mock('@/store/user', () => ({
+  useUserStore: (selector: (s: object) => unknown) => selector({}),
+}));
+vi.mock('@/store/user/selectors', () => ({ userProfileSelectors: { userId: () => 'u_me' } }));
 vi.mock('@/store/contact', async (original) => ({
   ...(await original<object>()),
-  contactActions: { useFetchProfile: () => ({ error: undefined }), useFetchRequests: vi.fn() },
+  contactActions: {
+    openToExternal,
+    removeExternal,
+    useFetchProfile: () => ({ error: undefined }),
+    useFetchRequests: vi.fn(),
+  },
   useContactStore: (selector: (s: object) => unknown) =>
-    selector({ profileMap: { u_bo: state.profile }, requestsMap: {} }),
+    selector({
+      listMap: { all: state.contacts },
+      profileMap: { u_bo: state.profile },
+      requestsMap: {},
+    }),
 }));
+
+/** Bo as one of the active workspace's external contacts, as a member lists them. */
+const externalBo = (openedToMe: boolean) => ({
+  external: { openedToMe },
+  type: 'user',
+  user: { id: 'u_bo' },
+});
 
 const profile = (relation: string) => ({
   relation,
@@ -67,6 +90,7 @@ const renderCard = () =>
 describe('PersonDetail', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    state.contacts = [];
     state.members = [];
     state.workspace = null;
   });
@@ -82,7 +106,7 @@ describe('PersonDetail', () => {
   });
 
   it('messages a fellow workspace member who is not a contact, and names their role', () => {
-    state.profile = profile('none');
+    state.profile = profile('member');
     state.workspace = { id: 'ws_team', name: 'Team' };
     state.members = [{ role: 'admin', userId: 'u_bo' }];
     renderCard();
@@ -91,15 +115,52 @@ describe('PersonDetail', () => {
       screen.getByText('contacts.person.memberOf(workspace.member.roles.admin,Team)'),
     ).toBeInTheDocument();
     expect(screen.getByText('contacts.sendMessage')).toBeInTheDocument();
-    expect(screen.getByText('contacts.person.request')).toBeInTheDocument();
+    expect(screen.queryByText('contacts.external.invite')).not.toBeInTheDocument();
   });
 
-  it('offers no message in a workspace the person is not in, even to a contact', () => {
-    state.profile = profile('contact');
+  it('invites someone outside the workspace as its external contact', () => {
+    state.profile = profile('none');
     state.workspace = { id: 'ws_team', name: 'Team' };
     renderCard();
 
+    expect(screen.getByText('contacts.external.invite')).toBeInTheDocument();
     expect(screen.queryByText('contacts.sendMessage')).not.toBeInTheDocument();
-    expect(screen.getByText('contacts.person.remove')).toBeInTheDocument();
+  });
+
+  it('opens myself to an external contact who is not open to me yet', async () => {
+    state.profile = profile('none');
+    state.workspace = { id: 'ws_team', name: 'Team' };
+    state.contacts = [externalBo(false)];
+    openToExternal.mockResolvedValue(undefined);
+    renderCard();
+
+    expect(screen.getByText('contacts.external.of(Team)')).toBeInTheDocument();
+    expect(screen.queryByText('contacts.sendMessage')).not.toBeInTheDocument();
+    expect(screen.queryByText('contacts.external.invite')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText('contacts.external.open'));
+    await waitFor(() => expect(openToExternal).toHaveBeenCalledWith('u_bo'));
+  });
+
+  it('messages an external contact open to me, and offers to close', () => {
+    state.profile = profile('contact');
+    state.workspace = { id: 'ws_team', name: 'Team' };
+    state.contacts = [externalBo(true)];
+    renderCard();
+
+    expect(screen.getByText('contacts.sendMessage')).toBeInTheDocument();
+    expect(screen.getByText('contacts.external.close')).toBeInTheDocument();
+    expect(screen.queryByText('contacts.person.remove')).not.toBeInTheDocument();
+    // A plain member cannot remove them from the workspace.
+    expect(screen.queryByText('contacts.external.remove')).not.toBeInTheDocument();
+  });
+
+  it('lets an owner or admin remove an external contact from the workspace', () => {
+    state.profile = profile('none');
+    state.workspace = { id: 'ws_team', name: 'Team' };
+    state.contacts = [externalBo(false)];
+    state.members = [{ role: 'owner', userId: 'u_me' }];
+    renderCard();
+
+    expect(screen.getByText('contacts.external.remove')).toBeInTheDocument();
   });
 });

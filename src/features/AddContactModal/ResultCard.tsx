@@ -16,6 +16,7 @@ import {
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import AgentAvatar from '@/components/AgentAvatar';
 import UserAvatar from '@/components/UserAvatar';
 import { AGENT_CONTACT_URL, PERSON_CONTACT_URL } from '@/features/ContactList/const';
@@ -146,6 +147,8 @@ const useResultActions = (result: ContactSearchResult): TileProps[] | string => 
   const { t } = useTranslation('common');
   const { close } = useModalContext();
   const navigate = useWorkspaceAwareNavigate();
+  // In a workspace a request invites someone outside it to be its external contact.
+  const inWorkspace = !!useActiveWorkspaceId();
   const [relation, setRelation] = useState(result.relation);
   const [pending, setPending] = useState<string>();
   const { message: messageAgent, opening } = useMessageSharedAgent(close);
@@ -204,15 +207,30 @@ const useResultActions = (result: ContactSearchResult): TileProps[] | string => 
     onClick: () => open(PERSON_CONTACT_URL(userId)),
   };
 
+  const message: TileProps = {
+    icon: MessageCircleIcon,
+    label: t('contacts.sendMessage'),
+    loading: pending === 'message',
+    onClick: () =>
+      run('message', async () => {
+        const channelId = await channelActions.openPeer(userId);
+        if (channelId) open(CHANNEL_URL(channelId));
+      }),
+  };
+
   switch (relation) {
     case 'self': {
       return t('contacts.person.self');
+    }
+    // A fellow member of the workspace: reachable without being a contact.
+    case 'member': {
+      return [message, viewProfile];
     }
     case 'none': {
       return [
         {
           icon: UserRoundPlusIcon,
-          label: t('contacts.person.request'),
+          label: inWorkspace ? t('contacts.external.invite') : t('contacts.person.request'),
           loading: pending === 'request',
           onClick: () =>
             run('request', async () => {
@@ -223,22 +241,16 @@ const useResultActions = (result: ContactSearchResult): TileProps[] | string => 
       ];
     }
     case 'request_sent': {
-      return [{ disabled: true, icon: CheckIcon, label: t('contacts.person.requestSent') }];
-    }
-    case 'contact': {
       return [
         {
-          icon: MessageCircleIcon,
-          label: t('contacts.sendMessage'),
-          loading: pending === 'message',
-          onClick: () =>
-            run('message', async () => {
-              const channelId = await channelActions.openPeer(userId);
-              if (channelId) open(CHANNEL_URL(channelId));
-            }),
+          disabled: true,
+          icon: CheckIcon,
+          label: inWorkspace ? t('contacts.external.inviteSent') : t('contacts.person.requestSent'),
         },
-        viewProfile,
       ];
+    }
+    case 'contact': {
+      return [message, viewProfile];
     }
     default: {
       // A request waiting for me: the profile has accept and decline.
@@ -261,7 +273,9 @@ const ResultCard = memo<{ result: ContactSearchResult }>(({ result }) => {
         })
       : result.relation === 'request_received'
         ? t('contacts.person.requestReceived')
-        : undefined;
+        : result.relation === 'member'
+          ? t('contacts.person.isMember')
+          : undefined;
   const description = result.type === 'agent' ? result.agent.description?.trim() : undefined;
 
   return (

@@ -32,6 +32,10 @@ class ContactService {
   declineRequest = (requestId: string) => lambdaClient.contact.declineRequest.mutate({ requestId });
   cancelRequest = (requestId: string) => lambdaClient.contact.cancelRequest.mutate({ requestId });
   removeUser = (userId: string) => lambdaClient.contact.removeUser.mutate({ userId });
+  /** In a workspace: open myself to one of its external contacts. */
+  openToExternal = (userId: string) => lambdaClient.contact.openToExternal.mutate({ userId });
+  /** In a workspace, as an owner or admin: remove an external contact from it. */
+  removeExternal = (userId: string) => lambdaClient.contact.removeExternal.mutate({ userId });
 
   /** Add another person's Agent by its share id, handle or link. */
   addAgent = (share: string): Promise<ContactAgentProfile> =>

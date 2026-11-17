@@ -13,8 +13,16 @@ export const contactSelectors = {
   incomingRequests: (state: ContactState) =>
     state.requestsMap.all?.filter((request) => request.direction === 'incoming') ?? [],
   isListInit: (state: ContactState) => state.listMap.all !== undefined,
+  /** In a workspace, as a member sees it: the people outside it who are its external contacts. */
+  externals: (state: ContactState) =>
+    state.listMap.all?.filter(
+      (item): item is ContactUserItem => item.type === 'user' && !!item.external,
+    ),
+  /** The people I can talk to in this scope: contacts, never a workspace's external contacts. */
   people: (state: ContactState) =>
-    state.listMap.all?.filter((item): item is ContactUserItem => item.type === 'user'),
+    state.listMap.all?.filter(
+      (item): item is ContactUserItem => item.type === 'user' && !item.external,
+    ),
   profile: (userId: string) => (state: ContactState) => state.profileMap[userId],
   requests: (state: ContactState) => state.requestsMap.all ?? [],
   /** The shared Agent a share id, handle or link resolved to; undefined until loaded. */

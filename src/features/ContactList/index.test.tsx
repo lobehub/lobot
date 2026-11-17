@@ -230,6 +230,60 @@ describe('ContactListBody', () => {
     expect(screen.queryByText('workspace.member.roles.member')).not.toBeInTheDocument();
   });
 
+  it('lists the workspace’s external contacts apart, marking who is not open to me', () => {
+    channels.enabled = true;
+    agentList.init = true;
+    workspace.activeId = 'ws_team';
+    contacts.listMap = {
+      all: [
+        {
+          createdAt: new Date(),
+          external: { openedToMe: true },
+          type: 'user',
+          user: { fullName: 'Eve', id: 'u_eve' },
+        },
+        {
+          createdAt: new Date(),
+          external: { openedToMe: false },
+          type: 'user',
+          user: { fullName: 'Fay', id: 'u_fay' },
+        },
+      ],
+    };
+
+    render(createElement(ContactListBody));
+
+    expect(screen.getByText('contacts.externals').nextElementSibling).toHaveTextContent('2');
+    // They are not my contacts: the people section stays empty.
+    expect(screen.getByText('contacts.people').nextElementSibling).toHaveTextContent('0');
+    expect(screen.getByRole('link', { name: 'Eve' })).toHaveAttribute(
+      'href',
+      '/agents/people/u_eve',
+    );
+    expect(screen.getAllByText('contacts.external.notOpened')).toHaveLength(1);
+  });
+
+  it('names the workspace an invitation to be its external contact comes from', () => {
+    channels.enabled = true;
+    agentList.init = true;
+    contacts.requestsMap = {
+      all: [
+        {
+          createdAt: new Date(),
+          direction: 'incoming',
+          id: 'r1',
+          message: null,
+          user: { fullName: 'Gus', id: 'u_gus' },
+          workspace: { avatar: null, id: 'ws_team', name: 'Team' },
+        },
+      ],
+    };
+
+    render(createElement(ContactListBody));
+
+    expect(screen.getByRole('link', { name: /Gus/ })).toHaveTextContent('Team');
+  });
+
   it('has no members section in the personal space', () => {
     channels.enabled = true;
     agentList.init = true;
@@ -237,5 +291,6 @@ describe('ContactListBody', () => {
     render(createElement(ContactListBody));
 
     expect(screen.queryByText('contacts.members')).not.toBeInTheDocument();
+    expect(screen.queryByText('contacts.externals')).not.toBeInTheDocument();
   });
 });

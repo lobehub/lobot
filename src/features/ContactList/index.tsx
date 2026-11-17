@@ -105,6 +105,7 @@ const Body = memo(() => {
   contactActions.useFetchList(channelsEnabled);
   contactActions.useFetchRequests(channelsEnabled);
   const people = useContactStore((s) => contactSelectors.people(s) ?? [], isEqual);
+  const externals = useContactStore((s) => contactSelectors.externals(s) ?? [], isEqual);
   const sharedAgents = useContactStore((s) => contactSelectors.agents(s) ?? [], isEqual);
   const requests = useContactStore(contactSelectors.incomingRequests, isEqual);
   // In a workspace, its members can be messaged there without being contacts.
@@ -213,6 +214,25 @@ const Body = memo(() => {
           },
         ]
       : []),
+    // People outside the workspace whom a member invited; left out until there is one.
+    ...(channelsEnabled && inWorkspace && externals.length > 0
+      ? [
+          {
+            count: externals.length,
+            key: 'externals',
+            render: () =>
+              externals.map((item) => (
+                <PersonRow
+                  active={item.user.id === activeRouteId}
+                  item={item}
+                  key={item.user.id}
+                  tag={item.external?.openedToMe ? undefined : t('contacts.external.notOpened')}
+                />
+              )),
+            title: t('contacts.externals'),
+          },
+        ]
+      : []),
     // Groups next: there are few, and they would sink below every agent.
     {
       count: groups.length,
@@ -234,7 +254,7 @@ const Body = memo(() => {
     <Flexbox paddingBlock={'4px 12px'} paddingInline={4}>
       <AccordionRoot
         // Listed up front so a section that appears later, like the first pin, opens expanded.
-        defaultValue={['requests', 'pinned', 'people', 'members', 'groups', 'agents']}
+        defaultValue={['requests', 'pinned', 'people', 'members', 'externals', 'groups', 'agents']}
         indicatorPlacement={'inline'}
         style={{ gap: 8 }}
       >

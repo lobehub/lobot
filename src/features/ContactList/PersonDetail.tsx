@@ -6,6 +6,7 @@ import { Button, confirmModal, Empty, Flexbox, Skeleton, Text, toast } from '@lo
 import * as stylex from '@stylexjs/stylex';
 import {
   CheckIcon,
+  DoorOpenIcon,
   MessageCircleIcon,
   UserRoundMinusIcon,
   UserRoundPlusIcon,
@@ -26,6 +27,8 @@ import NavHeader from '@/features/NavHeader';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { channelActions } from '@/store/channel';
 import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
+import { useUserStore } from '@/store/user';
+import { userProfileSelectors } from '@/store/user/selectors';
 
 import { AVATAR_SIZE, styles, TileContent } from './cardParts';
 import { AGENT_CONTACT_URL } from './const';
@@ -108,17 +111,27 @@ const SharedAgentRow = memo<{ agent: ContactAgentProfile }>(({ agent }) => {
 
 SharedAgentRow.displayName = 'SharedAgentRow';
 
+const WORKSPACE_MANAGER_ROLES = new Set(['owner', 'admin']);
+
 /**
  * A person's card: who they are, what to do given our relation (request, accept, message,
  * remove), and, once we are contacts, the Agents they share. A fellow member of the active
- * workspace can be messaged there whether or not we are contacts.
+ * workspace can be messaged there whether or not we are contacts. Someone outside it is invited
+ * as its external contact; a member opens or closes only themselves to an external contact, and
+ * an owner or admin can remove one from the workspace.
  */
 const PersonCard = memo<{ userId: string }>(({ userId }) => {
   const { t } = useTranslation('common');
   const { t: tSetting } = useTranslation('setting');
   const navigate = useWorkspaceAwareNavigate();
   const workspace = useActiveWorkspace();
-  const member = useWorkspaceMembers().find((item) => item.userId === userId);
+  const members = useWorkspaceMembers();
+  const member = members.find((item) => item.userId === userId);
+  const myId = useUserStore(userProfileSelectors.userId);
+  const isManager = WORKSPACE_MANAGER_ROLES.has(
+    members.find((item) => item.userId === myId)?.role ?? '',
+  );
+  const isExternal = useContactStore((s) => !!contactSelectors.userById(userId)(s)?.external);
   const { error } = contactActions.useFetchProfile(userId);
   contactActions.useFetchRequests();
   const profile = useContactStore(contactSelectors.profile(userId));
@@ -147,13 +160,25 @@ const PersonCard = memo<{ userId: string }>(({ userId }) => {
       const channelId = await channelActions.openPeer(userId);
       if (channelId) navigate(CHANNEL_URL(channelId));
     });
+  // In a workspace the entry pairs me with an external contact: removing it closes me to them.
+  const removeLabel = workspace ? t('contacts.external.close') : t('contacts.person.remove');
   const remove = () =>
     confirmModal({
       cancelText: t('cancel'),
-      content: t('contacts.person.remove.confirm', { name }),
+      content: workspace
+        ? t('contacts.external.close.confirm', { name })
+        : t('contacts.person.remove.confirm', { name }),
       okButtonProps: { danger: true },
-      okText: t('contacts.person.remove'),
+      okText: removeLabel,
       onOk: () => run('remove', () => contactActions.removeUser(userId)),
+    });
+  const removeFromWorkspace = () =>
+    confirmModal({
+      cancelText: t('cancel'),
+      content: t('contacts.external.remove.confirm', { name }),
+      okButtonProps: { danger: true },
+      okText: t('contacts.external.remove'),
+      onOk: () => run('removeExternal', () => contactActions.removeExternal(userId)),
     });
 
   return (
@@ -171,14 +196,24 @@ const PersonCard = memo<{ userId: string }>(({ userId }) => {
           })}
         </Text>
       )}
+      {workspace && isExternal && (
+        <Text fontSize={12} type={'secondary'}>
+          {t('contacts.external.of', { workspace: workspace.name })}
+        </Text>
+      )}
 
+      {relation === 'request_received' && request?.workspace && (
+        <Text type={'secondary'}>
+          {t('contacts.external.invited', { workspace: request.workspace.name })}
+        </Text>
+      )}
       {relation === 'request_received' && request?.message && (
         <Text type={'secondary'}>“{request.message}”</Text>
       )}
 
       <div {...stylex.props(styles.actions)}>
-        {/* A contact in the personal space; a fellow member in a workspace. */}
-        {(workspace ? !!member : relation === 'contact') && (
+        {/* A contact in the personal space; a fellow member or a paired external contact in a workspace. */}
+        {(relation === 'contact' || (!!workspace && !!member)) && (
           <button
             disabled={!!pending}
             type="button"
@@ -190,17 +225,40 @@ const PersonCard = memo<{ userId: string }>(({ userId }) => {
         )}
         {relation === 'contact' && (
           <button type="button" onClick={remove} {...stylex.props(styles.tile)}>
-            <TileContent icon={UserRoundMinusIcon} label={t('contacts.person.remove')} />
+            <TileContent icon={UserRoundMinusIcon} label={removeLabel} />
           </button>
         )}
-        {relation === 'none' && (
+        {relation === 'none' && workspace && isExternal && (
+          <button
+            disabled={!!pending}
+            type="button"
+            onClick={() => run('open', () => contactActions.openToExternal(userId))}
+            {...stylex.props(styles.tile)}
+          >
+            <TileContent icon={DoorOpenIcon} label={t('contacts.external.open')} />
+          </button>
+        )}
+        {relation === 'none' && !(workspace && isExternal) && (
           <button
             disabled={!!pending}
             type="button"
             onClick={() => run('request', () => contactActions.sendRequest(userId))}
             {...stylex.props(styles.tile)}
           >
-            <TileContent icon={UserRoundPlusIcon} label={t('contacts.person.request')} />
+            <TileContent
+              icon={UserRoundPlusIcon}
+              label={workspace ? t('contacts.external.invite') : t('contacts.person.request')}
+            />
+          </button>
+        )}
+        {workspace && isExternal && isManager && (
+          <button
+            disabled={!!pending}
+            type="button"
+            onClick={removeFromWorkspace}
+            {...stylex.props(styles.tile)}
+          >
+            <TileContent icon={UserRoundXIcon} label={t('contacts.external.remove')} />
           </button>
         )}
         {relation === 'request_received' && request && (
@@ -237,7 +295,12 @@ const PersonCard = memo<{ userId: string }>(({ userId }) => {
 
       {relation === 'request_sent' && (
         <Text fontSize={12} type={'secondary'}>
-          {t('contacts.person.requestSent')}
+          {workspace ? t('contacts.external.inviteSent') : t('contacts.person.requestSent')}
+        </Text>
+      )}
+      {relation === 'none' && workspace && isExternal && (
+        <Text fontSize={12} style={{ maxWidth: 360 }} type={'secondary'}>
+          {t('contacts.external.openHint')}
         </Text>
       )}
 

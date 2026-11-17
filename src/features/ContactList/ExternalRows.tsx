@@ -15,19 +15,22 @@ import { contactActions } from '@/store/contact';
 
 import { AGENT_CONTACT_URL, PERSON_CONTACT_URL } from './const';
 
-/** A mutual contact: a person you can message. */
-export const PersonRow = memo<{ active: boolean; item: ContactUserItem }>(({ active, item }) => {
-  const name = personName(item.user);
-  return (
-    <ConversationRow
-      singleLine
-      active={active}
-      avatar={<UserAvatar avatar={item.user.avatar} name={name} size={AVATAR_SIZE} />}
-      title={name}
-      url={PERSON_CONTACT_URL(item.user.id)}
-    />
-  );
-});
+/** A person in the address book: a mutual contact, or a workspace's external contact. */
+export const PersonRow = memo<{ active: boolean; item: ContactUserItem; tag?: string }>(
+  ({ active, item, tag }) => {
+    const name = personName(item.user);
+    return (
+      <ConversationRow
+        singleLine
+        active={active}
+        avatar={<UserAvatar avatar={item.user.avatar} name={name} size={AVATAR_SIZE} />}
+        tag={tag}
+        title={name}
+        url={PERSON_CONTACT_URL(item.user.id)}
+      />
+    );
+  },
+);
 
 PersonRow.displayName = 'ContactPersonRow';
 
@@ -120,10 +123,12 @@ export const RequestRow = memo<{ active: boolean; request: ContactRequestItem }>
           <ConversationRow
             singleLine
             active={active}
-            avatar={<UserAvatar avatar={request.user.avatar} name={name} size={AVATAR_SIZE} />}
             preview={request.message || t('contacts.person.requestReceived')}
             title={name}
             url={PERSON_CONTACT_URL(request.user.id)}
+            avatar={<UserAvatar avatar={request.user.avatar} name={name} size={AVATAR_SIZE} />}
+            // An invitation to be a workspace's external contact names the workspace.
+            tag={request.workspace?.name}
           />
         </Flexbox>
         <ActionIcon
