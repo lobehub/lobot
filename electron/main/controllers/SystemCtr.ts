@@ -11,6 +11,7 @@ import { app, dialog, nativeTheme, shell } from 'electron';
 
 import { legacyLocalDbDir } from '@/const/dir';
 import { getRemoteDebuggingLaunchState, REMOTE_DEBUGGING_PORT } from '@/modules/remoteDebugging';
+import { listSystemFonts } from '@/modules/systemFonts';
 import { createLogger } from '@/utils/logger';
 import {
   getAccessibilityStatus,
@@ -313,8 +314,7 @@ export default class SystemController extends ControllerModule {
     let cached = this.systemFontsPromises.get(cacheKey);
     if (cached) return cached;
 
-    cached = import('font-list')
-      .then(({ getFonts2 }) => getFonts2())
+    cached = listSystemFonts()
       .then((fonts) => {
         const families = new Map<string, SystemFont>();
 

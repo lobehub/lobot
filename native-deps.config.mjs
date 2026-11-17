@@ -150,6 +150,10 @@ export function getAsarUnpackPatterns() {
  * @returns {string[]} Array of dependency names
  */
 export function getNativeExternalDependencies() {
+  // A HarmonyOS build loads none of these addons and ships no node_modules for
+  // their dependency trees, so only the addons themselves stay external; their
+  // pure-JS dependencies (semver, env-paths, which, undici…) get bundled.
+  if (targetPlatform === 'openharmony') return [...nativeModules];
   return getAllNativeDependencies();
 }
 
