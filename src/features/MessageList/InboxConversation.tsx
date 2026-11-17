@@ -46,7 +46,6 @@ const InboxConversation = memo<{
 
   return (
     <ConversationRow
-      closeOnReselect
       active={active}
       activity={activity}
       hideKey={'inbox'}

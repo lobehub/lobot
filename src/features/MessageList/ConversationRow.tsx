@@ -8,14 +8,12 @@ import { useTranslation } from 'react-i18next';
 
 import { activityLabel } from '@/features/Channels/activityLabel';
 import { TypingDots } from '@/features/Channels/TypingDots';
-import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import WorkspaceLink, { type WorkspaceLinkProps } from '@/features/Workspace/WorkspaceLink';
 
 import {
   type ChannelPreviewThread,
   type ConversationActivity,
   formatConversationTime,
-  isPlainClick,
 } from './conversations';
 import { hideConversation } from './hiddenConversations';
 import { styles } from './style';
@@ -34,11 +32,6 @@ interface ConversationRowProps {
    */
   activityCount?: number;
   avatar: ReactNode;
-  /**
-   * Clicking the open conversation again closes it, back to the Messages home with no row
-   * selected. Off for directory lists, whose rows open a profile rather than a conversation.
-   */
-  closeOnReselect?: boolean;
   contextMenuItems?: ComponentProps<typeof ContextMenuTrigger>['items'];
   /** The Messages list key this row hides by; its menu then offers "Hide chat". */
   hideKey?: string;
@@ -63,28 +56,6 @@ interface ConversationRowProps {
   url: string;
 }
 
-/** A row link that leaves the conversation when it is already open. Modified clicks keep the link. */
-const CloseOnReselectLink = ({
-  active,
-  onClick,
-  ...rest
-}: WorkspaceLinkProps & { active?: boolean }) => {
-  const navigate = useWorkspaceAwareNavigate();
-  return (
-    <WorkspaceLink
-      {...rest}
-      onClick={(event) => {
-        if (active && isPlainClick(event)) {
-          event.preventDefault();
-          navigate('/');
-          return;
-        }
-        onClick?.(event);
-      }}
-    />
-  );
-};
-
 type MenuItems = ComponentProps<typeof ContextMenuTrigger>['items'];
 
 /** Puts "Hide chat" after the row's leading pin action, like WeChat's chat menu. */
@@ -101,7 +72,6 @@ const withHideItem = (items: MenuItems, hide: ContextMenuItem | '' | undefined):
 const ConversationRow = memo<ConversationRowProps>(
   ({
     active,
-    closeOnReselect,
     activeAt,
     avatar,
     contextMenuItems,
@@ -191,13 +161,7 @@ const ConversationRow = memo<ConversationRowProps>(
         </Flexbox>
       </>
     );
-    const row = closeOnReselect ? (
-      <CloseOnReselectLink {...link} active={active}>
-        {content}
-      </CloseOnReselectLink>
-    ) : (
-      <WorkspaceLink {...link}>{content}</WorkspaceLink>
-    );
+    const row = <WorkspaceLink {...link}>{content}</WorkspaceLink>;
 
     return menuItems ? <ContextMenuTrigger items={menuItems}>{row}</ContextMenuTrigger> : row;
   },

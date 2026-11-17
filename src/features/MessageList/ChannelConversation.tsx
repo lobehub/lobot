@@ -61,7 +61,6 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
   if (counterpart)
     return (
       <ConversationRow
-        closeOnReselect
         active={active}
         activeAt={activeAt}
         contextMenuItems={menuItems(channel)}
@@ -92,7 +91,6 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
 
   return (
     <ConversationRow
-      closeOnReselect
       active={active}
       activeAt={activeAt}
       contextMenuItems={menuItems(channel)}

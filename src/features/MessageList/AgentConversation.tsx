@@ -80,7 +80,6 @@ const AgentConversation = memo<AgentConversationProps>(({ active, conversation }
 
   return (
     <ConversationRow
-      closeOnReselect
       active={active}
       activeAt={activeAt}
       activity={activity}
