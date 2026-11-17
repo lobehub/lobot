@@ -129,14 +129,19 @@ export const directAvatarState = (detail: ChannelDetail) =>
  * reply running or about to, counted once however many replies it holds. Blocked, stopping and
  * deferred replies do not count. Given a member, only that member's replies count.
  */
-export const workingConversationCount = (jobs: ChannelReplyJob[], memberId?: string) =>
-  new Set(
+/** The conversations a member works in at once: `null` is the main one, the rest Thread ids. */
+export const workingConversations = (jobs: ChannelReplyJob[], memberId?: string) => [
+  ...new Set(
     replyActivityJobs(jobs)
       .filter(
         (job) => channelJobTone(job) === 'working' && (!memberId || job.memberId === memberId),
       )
       .map((job) => job.threadId ?? null),
-  ).size;
+  ),
+];
+
+export const workingConversationCount = (jobs: ChannelReplyJob[], memberId?: string) =>
+  workingConversations(jobs, memberId).length;
 
 /**
  * The reply a member (or, without one, the first replying member) is visibly working on: running

@@ -14,6 +14,7 @@ import {
   replyAvatarState,
   unresolvedFailures,
   workingConversationCount,
+  workingConversations,
   workingJob,
 } from './jobStatus';
 
@@ -382,5 +383,25 @@ describe('workingConversationCount', () => {
     expect(workingConversationCount(jobs, 'mem_cook')).toBe(2);
     expect(workingConversationCount(jobs, 'mem_other')).toBe(1);
     expect(workingConversationCount(jobs)).toBe(3);
+  });
+});
+
+describe('workingConversations', () => {
+  it("lists one member's conversations once each, the main one as null", () => {
+    const job = (patch: Partial<ChannelPublicJob>) =>
+      ({
+        blockedCode: null,
+        publicationRevoked: false,
+        writerHeld: true,
+        ...patch,
+      }) as ChannelPublicJob;
+    const jobs = [
+      job({ id: 'main', memberId: 'mem_cook', status: 'running', threadId: null }),
+      job({ id: 'thread-a', memberId: 'mem_cook', status: 'running', threadId: 'thr_a' }),
+      job({ id: 'thread-a-2', memberId: 'mem_cook', status: 'queued', threadId: 'thr_a' }),
+      job({ id: 'other', memberId: 'mem_justin', status: 'running', threadId: 'thr_b' }),
+    ];
+
+    expect(workingConversations(jobs, 'mem_cook')).toEqual([null, 'thr_a']);
   });
 });

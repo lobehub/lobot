@@ -1,6 +1,6 @@
 import type { ChannelDetail, ChannelPublicMember } from '@lobechat/types';
 import type { DropdownItem } from '@lobehub/ui';
-import { ActionIcon, DropdownMenu, Flexbox, Icon, Text } from '@lobehub/ui';
+import { ActionIcon, DropdownMenu, Flexbox, Icon, Text, Tooltip } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { ExternalLink, FolderCog, MoreHorizontal, UserMinus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -16,17 +16,20 @@ import {
   channelJobTone,
   memberCurrentJob,
   memberJobStatus,
-  workingConversationCount,
+  workingConversations,
 } from './jobStatus';
 import { MemberAvatar } from './MemberAvatar';
-import { MemberProfilePopup } from './MemberProfilePopup';
 import { callerMemberRole, canRemoveMember } from './memberManagement';
 import { isCurrentUserMember, memberName } from './memberName';
+import { MemberProfilePopup } from './MemberProfilePopup';
 import { statusStyles, styles, toneStyles } from './styles';
+import { threadTitle } from './threadTitle';
 import { useRemoveMember } from './useMemberActions';
 import { getVisibleStatusMembers, groupMembersByActor } from './visibleMembers';
 
 interface MemberEntry {
+  /** Where a member working in several conversations at once is busy, by name. */
+  conversations?: string[];
   label: string;
   member: ChannelPublicMember;
   name: string;
@@ -54,13 +57,21 @@ export const StatusAvatar = ({ entry, size }: { entry: MemberEntry; size: number
 
 export function useMemberEntries(detail: ChannelDetail) {
   const { t } = useTranslation('channel');
-  const { channel, jobs = [], members: allMembers = [] } = detail;
+  const { channel, jobs = [], members: allMembers = [], messages = [], threads = [] } = detail;
+  const conversationName = (threadId: string | null) => {
+    if (!threadId) return t('main');
+    const thread = threads.find((item) => item.id === threadId);
+    const root = thread && messages.find((message) => message.id === thread.rootMessageId);
+    return threadTitle(root, thread) || t('thread');
+  };
   const entries: MemberEntry[] = getVisibleStatusMembers(allMembers, channel.workspaceId).map(
     (member) => {
       const job = member.actorType === 'agent' ? memberCurrentJob(jobs, member.id) : undefined;
       // Working in two or more conversations at once (the main one and its Threads) says how many.
-      const parallel = job ? workingConversationCount(jobs, member.id) : 0;
+      const working = job ? workingConversations(jobs, member.id) : [];
+      const parallel = working.length;
       return {
+        conversations: parallel > 1 ? working.map(conversationName) : undefined,
         // Idle is the default and goes unlabelled; only a reply in progress or needing attention says so.
         label:
           member.actorType === 'agent' && job
@@ -81,8 +92,9 @@ export function useMemberEntries(detail: ChannelDetail) {
  * A working member reads amber, like a running Agent in the sidebar. The avatar's dot already
  * shows the state, so the line carries no icon of its own.
  */
-const MemberState = ({ entry }: { entry: MemberEntry }) =>
-  !entry.label ? null : (
+const MemberState = ({ entry }: { entry: MemberEntry }) => {
+  if (!entry.label) return null;
+  const state = (
     <span {...stylex.props(statusStyles.memberState)}>
       {entry.tone === 'working' ? (
         <span {...stylex.props(statusStyles.memberWorking)}>{entry.label}</span>
@@ -91,6 +103,26 @@ const MemberState = ({ entry }: { entry: MemberEntry }) =>
       )}
     </span>
   );
+  // "Working on N things" names them on hover: the main conversation and each Thread.
+  return entry.conversations ? (
+    <Tooltip
+      placement="left"
+      title={
+        <Flexbox gap={2}>
+          {entry.conversations.map((name, index) => (
+            <Text ellipsis fontSize={12} key={index} style={{ color: 'inherit', maxWidth: 240 }}>
+              {name}
+            </Text>
+          ))}
+        </Flexbox>
+      }
+    >
+      {state}
+    </Tooltip>
+  ) : (
+    state
+  );
+};
 
 interface MemberRowProps {
   channelId: string;
