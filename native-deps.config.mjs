@@ -154,7 +154,16 @@ export function getNativeExternalDependencies() {
   // their dependency trees, so only the addons themselves stay external; their
   // pure-JS dependencies (semver, env-paths, which, undici…) get bundled.
   if (targetPlatform === 'openharmony') return [...nativeModules];
-  return getAllNativeDependencies();
+
+  // Only externalize what packaging can actually ship. The tree is resolved
+  // against the root node_modules, so a transitive dependency pnpm didn't hoist
+  // (e.g. node-gyp's env-paths / graceful-fs / which, pulled in through
+  // get-windows) is listed but skipped by copyModulesToSource with ENOENT.
+  // Externalizing it anyway turns every `require` of it from bundled code —
+  // conf → env-paths — into a startup crash; leaving it to Vite bundles it.
+  return getAllNativeDependencies().filter((dep) =>
+    fs.existsSync(path.join(configDir, 'node_modules', dep, 'package.json')),
+  );
 }
 
 /**
