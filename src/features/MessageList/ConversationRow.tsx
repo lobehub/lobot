@@ -1,7 +1,8 @@
 'use client';
 
-import { ContextMenuTrigger, Flexbox } from '@lobehub/ui';
+import { type ContextMenuItem, ContextMenuTrigger, Flexbox, Icon } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
+import { EyeOffIcon } from 'lucide-react';
 import { type ComponentProps, memo, type MouseEvent, type ReactNode, type Ref } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,6 +17,7 @@ import {
   formatConversationTime,
   isPlainClick,
 } from './conversations';
+import { hideConversation } from './hiddenConversations';
 import { styles } from './style';
 
 export interface ConversationRowProps {
@@ -33,6 +35,8 @@ export interface ConversationRowProps {
    */
   closeOnReselect?: boolean;
   contextMenuItems?: ComponentProps<typeof ContextMenuTrigger>['items'];
+  /** The Messages list key this row hides by; its menu then offers "Hide chat". */
+  hideKey?: string;
   onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
   onMouseEnter?: () => void;
   preview?: string;
@@ -71,6 +75,19 @@ const CloseOnReselectLink = ({
   );
 };
 
+type MenuItems = ComponentProps<typeof ContextMenuTrigger>['items'];
+
+/** Puts "Hide chat" after the row's leading pin action, like WeChat's chat menu. */
+const withHideItem = (items: MenuItems, hide: ContextMenuItem | '' | undefined): MenuItems => {
+  if (!hide) return items;
+  const insert = (list: ContextMenuItem[] = []) => {
+    const first = list[0];
+    const afterPin = !!first && 'key' in first && /pin$/i.test(String(first.key));
+    return afterPin ? [first, hide, ...list.slice(1)] : [hide, ...list];
+  };
+  return typeof items === 'function' ? () => insert(items()) : insert(items);
+};
+
 const ConversationRow = memo<ConversationRowProps>(
   ({
     active,
@@ -78,6 +95,7 @@ const ConversationRow = memo<ConversationRowProps>(
     activeAt,
     avatar,
     contextMenuItems,
+    hideKey,
     onClick,
     onMouseEnter,
     preview,
@@ -91,6 +109,15 @@ const ConversationRow = memo<ConversationRowProps>(
     url,
   }) => {
     const { t } = useTranslation('channel');
+    const menuItems = withHideItem(
+      contextMenuItems,
+      hideKey && {
+        icon: <Icon icon={EyeOffIcon} />,
+        key: 'hideConversation',
+        label: t('messageList.hide', { ns: 'common' }),
+        onClick: () => hideConversation(hideKey),
+      },
+    );
     const link: WorkspaceLinkProps = {
       'aria-current': active ? 'page' : undefined,
       'aria-label': title,
@@ -155,11 +182,7 @@ const ConversationRow = memo<ConversationRowProps>(
       <WorkspaceLink {...link}>{content}</WorkspaceLink>
     );
 
-    return contextMenuItems ? (
-      <ContextMenuTrigger items={contextMenuItems}>{row}</ContextMenuTrigger>
-    ) : (
-      row
-    );
+    return menuItems ? <ContextMenuTrigger items={menuItems}>{row}</ContextMenuTrigger> : row;
   },
 );
 

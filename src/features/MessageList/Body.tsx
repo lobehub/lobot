@@ -36,8 +36,10 @@ import {
   inboxActivity,
   isPinned,
   latestTopicOf,
+  withoutHidden,
 } from './conversations';
 import GroupConversation from './GroupConversation';
+import { showConversation, useHiddenConversations } from './hiddenConversations';
 import InboxConversation from './InboxConversation';
 import { useMessageSearch } from './SearchContext';
 import { styles } from './style';
@@ -163,21 +165,34 @@ const Body = memo(() => {
 
   const inboxChannel = inboxAgentId ? directChannels.get(inboxAgentId) : undefined;
 
+  // Opening a hidden conversation from elsewhere (contacts, a notification) brings its row back.
+  useEffect(() => {
+    if (!activeRouteId) return;
+    showConversation(activeRouteId);
+    if (activeRouteId === inboxAgentId || activeRouteId === resolveInboxAgentRouteId(inboxAgentId))
+      showConversation('inbox');
+  }, [activeRouteId, inboxAgentId]);
+  const hiddenAt = useHiddenConversations();
+
   const entries = useMemo(
     () =>
-      buildConversationEntries(
-        buildConversationSections(items, recents, directChannels, {
-          activeId: activeRouteId,
-          includeIdle: !!query.trim(),
-        }),
-        {
-          activeAt: inboxActivity(inboxUpdatedAt, inboxTopic, inboxChannel),
-          channel: inboxChannel,
-          title: inboxTitle,
-        },
+      withoutHidden(
+        buildConversationEntries(
+          buildConversationSections(items, recents, directChannels, {
+            activeId: activeRouteId,
+            includeIdle: !!query.trim(),
+          }),
+          {
+            activeAt: inboxActivity(inboxUpdatedAt, inboxTopic, inboxChannel),
+            channel: inboxChannel,
+            title: inboxTitle,
+          },
+          query,
+          channels,
+          (channel) => (channel.projectId ? projectMap.get(channel.projectId)?.name : undefined),
+        ),
+        hiddenAt,
         query,
-        channels,
-        (channel) => (channel.projectId ? projectMap.get(channel.projectId)?.name : undefined),
       ),
     [
       items,
@@ -191,6 +206,7 @@ const Body = memo(() => {
       query,
       channels,
       projectMap,
+      hiddenAt,
     ],
   );
 

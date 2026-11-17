@@ -10,6 +10,7 @@ import {
   latestActivity,
   latestTopicOf,
   messagesUnreadCount,
+  withoutHidden,
 } from './conversations';
 
 const agent = (id: string, updatedAt: string, extra: Partial<SidebarAgentItem> = {}) =>
@@ -475,5 +476,54 @@ describe('directCounterpart', () => {
 
   it('leaves groups to their own avatar', () => {
     expect(directCounterpart({ memberAvatars: [person, agent] })).toBeUndefined();
+  });
+});
+
+describe('withoutHidden', () => {
+  const entries = buildConversationEntries(
+    {
+      pinned: [],
+      recent: [
+        { activeAt: new Date('2026-10-05'), item: agent('a', '2026-10-01') },
+        { activeAt: new Date('2026-10-03'), item: agent('b', '2026-10-01') },
+      ],
+    },
+    { activeAt: new Date('2026-10-02'), title: 'Lobe AI' },
+    '',
+    [
+      {
+        createdAt: new Date('2026-10-01'),
+        id: 'chn_team',
+        title: 'Team',
+        updatedAt: new Date('2026-10-04'),
+      } as ChannelListItem,
+    ],
+  );
+  const ids = (list: typeof entries) =>
+    list.map((e) =>
+      e.type === 'inbox' ? 'inbox' : e.type === 'channel' ? e.channel.id : e.item.id,
+    );
+  const at = (date: string) => new Date(date).getTime();
+
+  it('drops a row hidden after its latest activity, whatever kind of row it is', () => {
+    const hidden = new Map([
+      ['b', at('2026-10-04')],
+      ['chn_team', at('2026-10-04')],
+      ['inbox', at('2026-10-03')],
+    ]);
+    expect(ids(withoutHidden(entries, hidden))).toEqual(['a']);
+  });
+
+  it('brings a hidden row back once it has newer activity', () => {
+    expect(ids(withoutHidden(entries, new Map([['a', at('2026-10-04')]])))).toEqual([
+      'a',
+      'chn_team',
+      'b',
+      'inbox',
+    ]);
+  });
+
+  it('lets a search find hidden rows', () => {
+    expect(ids(withoutHidden(entries, new Map([['b', at('2026-10-09')]]), 'b'))).toContain('b');
   });
 });

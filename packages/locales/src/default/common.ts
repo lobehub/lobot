@@ -494,6 +494,7 @@ export default {
   'contacts.requests': 'New requests',
   'contacts.actionFailed': 'That didn’t work. Try again.',
   'messageList.empty': 'No conversations yet',
+  'messageList.hide': 'Hide chat',
   'messageList.newChat': 'New conversation',
   'messageList.search': 'Search',
   'messageList.startGroupChat': 'Start group chat',

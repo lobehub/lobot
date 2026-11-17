@@ -252,6 +252,26 @@ export const buildConversationEntries = (
   ];
 };
 
+/** The key a list row is hidden by: its Channel, its Agent or group, or Lobe AI. */
+export const conversationKey = (entry: ConversationEntry): string =>
+  entry.type === 'inbox' ? 'inbox' : entry.type === 'channel' ? entry.channel.id : entry.item.id;
+
+/**
+ * Drops the rows the person hid, like WeChat's "Hide chat": one comes back once it has activity
+ * after it was hidden. A search still finds every row.
+ */
+export const withoutHidden = (
+  entries: ConversationEntry[],
+  hiddenAt: ReadonlyMap<string, number>,
+  query = '',
+): ConversationEntry[] =>
+  query.trim() || hiddenAt.size === 0
+    ? entries
+    : entries.filter((entry) => {
+        const hidden = hiddenAt.get(conversationKey(entry));
+        return hidden === undefined || entry.activeAt.getTime() > hidden;
+      });
+
 /**
  * The Messages tab badge: the sum of what the list rows show. A row that opens a direct Channel
  * counts that Channel's unread messages instead of its Agent's unread topics, and an archived

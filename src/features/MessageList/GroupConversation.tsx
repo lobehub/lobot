@@ -44,6 +44,7 @@ const GroupConversation = memo<GroupConversationProps>(({ active, conversation }
       active={active}
       activeAt={activeAt}
       contextMenuItems={contextMenuItems}
+      hideKey={id}
       preview={preview}
       ref={setAnchor}
       title={title}

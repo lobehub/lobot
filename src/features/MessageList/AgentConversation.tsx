@@ -82,6 +82,7 @@ const AgentConversation = memo<AgentConversationProps>(({ active, conversation }
       activeAt={activeAt}
       activity={activity}
       contextMenuItems={menuItems}
+      hideKey={id}
       preview={preview}
       previewThread={previewThread}
       title={title}

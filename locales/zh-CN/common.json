@@ -402,6 +402,7 @@
   "makePrivate.success": "已改为私有",
   "manageOnlyCreator": "仅创建者或工作区 Owner 可操作",
   "messageList.empty": "还没有会话",
+  "messageList.hide": "不显示该聊天",
   "messageList.newChat": "新建会话",
   "messageList.search": "搜索",
   "messageList.startGroupChat": "发起群聊",

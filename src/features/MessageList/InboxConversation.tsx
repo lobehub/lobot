@@ -48,6 +48,7 @@ const InboxConversation = memo<{
     <ConversationRow
       closeOnReselect
       active={active}
+      hideKey={'inbox'}
       previewThread={channelPreviewThread(channel)}
       title={title}
       unread={channel?.unreadCount ?? undefined}
