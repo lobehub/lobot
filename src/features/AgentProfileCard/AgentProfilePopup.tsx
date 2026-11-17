@@ -80,11 +80,13 @@ interface AgentProfilePopupProps extends PropsWithChildren {
   environment?: ChannelMemberEnvironmentPreview | null;
   /** When set, enables group-specific actions (settings nav + model change). */
   groupId?: string;
+  /** Overrides the default: above the trigger on hover, beside it on click. */
+  placement?: 'left' | 'right' | 'top';
   trigger?: 'click' | 'hover';
 }
 
 const AgentProfilePopup = memo<AgentProfilePopupProps>(
-  ({ agent, agentId, environment, groupId, children, trigger = 'click' }) => {
+  ({ agent, agentId, environment, groupId, children, placement, trigger = 'click' }) => {
     const { t } = useTranslation('chat');
     const navigate = useWorkspaceAwareNavigate();
     const [open, setOpen] = useState(false);
@@ -293,7 +295,7 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
         content={content}
         nativeButton={false}
         open={open}
-        placement={trigger === 'hover' ? 'top' : 'right'}
+        placement={placement ?? (trigger === 'hover' ? 'top' : 'right')}
         trigger={trigger}
         styles={{
           content: { borderRadius: 12, overflow: 'hidden', padding: 0 },

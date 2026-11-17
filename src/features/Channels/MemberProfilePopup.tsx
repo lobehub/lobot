@@ -1,6 +1,6 @@
-import type { ChannelPublicMember } from '@lobot/types';
 import { Flexbox, Popover, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ChannelPublicMember } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { type ReactElement, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -130,9 +130,12 @@ export const PersonProfileCard = ({ member }: { member: ChannelPublicMember }) =
 export const MemberProfilePopup = ({
   children,
   member,
+  placement = 'top',
 }: {
   children: ReactElement;
   member: ChannelPublicMember | undefined;
+  /** Where the card opens; the member panel sits at the right edge, so it opens to the left. */
+  placement?: 'left' | 'top';
 }) => {
   const { t } = useTranslation('channel');
   if (!member) return children;
@@ -141,6 +144,7 @@ export const MemberProfilePopup = ({
       <AgentProfilePopup
         agentId={member.agentId}
         environment={member.environment}
+        placement={placement}
         trigger={'hover'}
         agent={{
           avatar: member.avatar,
@@ -155,7 +159,7 @@ export const MemberProfilePopup = ({
     <Popover
       content={<PersonProfileCard member={member} />}
       nativeButton={false}
-      placement={'top'}
+      placement={placement}
       styles={{ content: { borderRadius: 12, overflow: 'hidden', padding: 0 } }}
       trigger={'hover'}
     >

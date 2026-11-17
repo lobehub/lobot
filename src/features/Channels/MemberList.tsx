@@ -1,6 +1,6 @@
-import type { ChannelDetail, ChannelPublicMember } from '@lobot/types';
 import type { DropdownItem } from '@lobehub/ui';
 import { ActionIcon, DropdownMenu, Flexbox, Icon, Text, toast, Tooltip } from '@lobehub/ui';
+import type { ChannelDetail, ChannelPublicMember } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import {
   BellOff,
@@ -223,7 +223,7 @@ const MemberRow = ({
       {...stylex.props(stylex.defaultMarker())}
     >
       {/* Hovering who a member is shows their card, like an avatar or mention in the conversation. */}
-      <MemberProfilePopup member={entry.member}>
+      <MemberProfilePopup member={entry.member} placement={'left'}>
         <div {...stylex.props(styles.memberIdentity)}>
           <StatusAvatar entry={entry} size={28} />
           <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
