@@ -210,12 +210,12 @@ describe('WorkspaceRail', () => {
     expect(mocks.navigate).not.toHaveBeenCalled();
   });
 
-  it("badges each scope's tile with its unread count, capped at 99+", () => {
-    mocks.unread = { 'personal': 3, 'ws-2': 120 };
+  it("badges each scope's tile with its unread count, shown in full like Discord up to 999+", () => {
+    mocks.unread = { 'personal': 260, 'ws-1': 1000 };
     render(<WorkspaceRail />);
 
-    expect(screen.getByRole('button', { name: 'workspaceRail.personal' })).toHaveTextContent('3');
-    expect(screen.getByRole('button', { name: 'Acme' })).toHaveTextContent('99+');
-    expect(screen.getByRole('button', { name: 'LobeHub' }).textContent).toBe('');
+    expect(screen.getByRole('button', { name: 'workspaceRail.personal' })).toHaveTextContent('260');
+    expect(screen.getByRole('button', { name: 'LobeHub' })).toHaveTextContent('999+');
+    expect(screen.getByRole('button', { name: 'Acme' }).textContent).toBe('');
   });
 });

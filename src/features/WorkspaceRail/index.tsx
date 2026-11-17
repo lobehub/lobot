@@ -77,7 +77,7 @@ const RailItem = memo<RailItemProps>(
         )}
         {children}
         {!!unread && unread > 0 && (
-          <span {...stylex.props(styles.unread)}>{unread > 99 ? '99+' : unread}</span>
+          <span {...stylex.props(styles.unread)}>{unread > 999 ? '999+' : unread}</span>
         )}
       </div>
     </Tooltip>
