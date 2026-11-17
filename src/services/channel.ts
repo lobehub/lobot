@@ -91,6 +91,9 @@ class ChannelService {
     lambdaClient.channel.markRead.mutate({ channelId, sequence });
   setPinned = (channelId: string, pinned: boolean) =>
     lambdaClient.channel.setPinned.mutate({ channelId, pinned });
+
+  setMuted = (channelId: string, muted: boolean) =>
+    lambdaClient.channel.setMuted.mutate({ channelId, muted });
   remove = (channelId: string) => lambdaClient.channel.remove.mutate({ channelId });
   removeThread = (channelId: string, threadId: string) =>
     lambdaClient.channel.removeThread.mutate({ channelId, threadId });

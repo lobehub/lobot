@@ -95,6 +95,17 @@ describe('diffChannelActivity', () => {
     expect(diff(before, after, { level: 'mentions' })).toEqual(['direct:message']);
   });
 
+  it('announces only @mentions in a muted conversation', () => {
+    const muted = { mutedAt: new Date('2026-11-15T09:00:00Z') };
+    const before = [channel('chn_dm', muted), channel('chn_team', muted)];
+    const after = [
+      channel('chn_dm', { ...muted, lastMessage: later(1), unreadCount: 1 }),
+      channel('chn_team', { ...muted, lastMessage: later(1), mentionCount: 1, unreadCount: 1 }),
+    ];
+
+    expect(diff(before, after)).toEqual(['chn_team:mention']);
+  });
+
   it('announces nothing when turned off', () => {
     expect(
       diff(

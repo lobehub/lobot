@@ -30,7 +30,15 @@ const keys = (item: ChannelListItem) => {
 
 describe('useChannelMenu', () => {
   it('manages a group Channel', () => {
-    expect(keys(channel)).toEqual(['pin', 'rename', 'copyId', 'archive', 'divider', 'delete']);
+    expect(keys(channel)).toEqual([
+      'pin',
+      'mute',
+      'rename',
+      'copyId',
+      'archive',
+      'divider',
+      'delete',
+    ]);
   });
 
   // Both people own the conversation: renaming, archiving or trashing it would change it for the
@@ -38,6 +46,7 @@ describe('useChannelMenu', () => {
   it('offers a conversation between two people only what changes it for me', () => {
     expect(keys({ ...channel, peerUserId: 'usr_lijian' })).toEqual([
       'pin',
+      'mute',
       'divider',
       'deleteChat',
     ]);

@@ -164,6 +164,8 @@
   "moveToTrash": "移至回收站",
   "moveToTrashConfirm": "将「{{title}}」移至回收站？进行中的回复会停止，你可以在回收站恢复频道和历史消息。Agent 和文件将保留。",
   "moveToTrashSuccess": "频道已移至回收站",
+  "muteNotifications": "消息免打扰",
+  "muted": "已开启消息免打扰",
   "nameOptional": "群聊名称（可选）",
   "newProject.channelNameHint": "群聊会用项目名命名。",
   "newProject.discard": "不新建项目",
@@ -338,6 +340,7 @@
   "unarchiveSuccess": "频道已取消归档",
   "unarchiveThread": "取消归档线程",
   "unarchiveThreadSuccess": "线程已取消归档",
+  "unmuteNotifications": "取消免打扰",
   "unnamedAgent": "未命名 Agent",
   "unreadMentions": "{{count}} 条未读提及"
 }

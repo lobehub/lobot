@@ -124,6 +124,16 @@ class ChannelActionImpl {
       () => channelService.setPinned(channelId, pinned),
     );
   /**
+   * Mutes the conversation's notifications for the caller, or unmutes them; the row changes
+   * before the server confirms. Messages still arrive and count as unread.
+   */
+  setMuted = (channelId: string, muted: boolean) =>
+    this.#private.entity.optimistic(
+      channelId,
+      (channel) => ({ ...channel, mutedAt: muted ? (channel.mutedAt ?? new Date()) : null }),
+      () => channelService.setMuted(channelId, muted),
+    );
+  /**
    * The caller's direct Channel with an Agent, opening it for an Agent that predates direct
    * Channels. Undefined when the Agent cannot answer in a Channel.
    */
