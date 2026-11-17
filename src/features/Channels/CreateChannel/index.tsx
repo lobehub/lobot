@@ -45,21 +45,35 @@ interface ExistingChannel {
   workspaceId: string | null;
 }
 
+type Step = 'basics' | 'members';
+
 interface CreateChannelProps {
   /** Set when inviting members into a Channel that already exists. */
   existing?: ExistingChannel;
   onCreated?: (id: string) => void;
+  /** Resizes the dialog to the step being shown. */
+  onStepChange?: (step: Step) => void;
   /** A new Channel created from a project's sidebar starts out as that project's. */
   projectId?: string;
 }
 
-const openMemberDialog = (props: CreateChannelProps) =>
-  createModal({
-    content: <CreateChannel {...props} />,
+/** The basics are a short form; only the member pickers need the room of two columns. */
+const STEP_WIDTH: Record<Step, string> = {
+  basics: 'min(90vw, 480px)',
+  members: 'min(90vw, 800px)',
+};
+
+const openMemberDialog = (props: Omit<CreateChannelProps, 'onStepChange'>) => {
+  const resize: { current?: (step: Step) => void } = {};
+  const modal = createModal({
+    content: <CreateChannel {...props} onStepChange={(step) => resize.current?.(step)} />,
     footer: null,
     title: t(props.existing ? 'invite.title' : 'create', { ns: 'channel' }),
-    width: 'min(90vw, 800px)',
+    width: STEP_WIDTH[props.existing ? 'members' : 'basics'],
   });
+  resize.current = (step) => modal.update({ width: STEP_WIDTH[step] });
+  return modal;
+};
 
 export const openCreateChannel = (onCreated?: (id: string) => void, projectId?: string) =>
   openMemberDialog({ onCreated, projectId });
@@ -74,7 +88,7 @@ export const openInviteMembers = (existing: ExistingChannel, onCreated?: (id: st
  * defaults to the members' names. Inviting into an existing Channel is only the member step.
  * Workspace Channels, new or existing, also list workspace members.
  */
-function CreateChannel({ existing, onCreated, projectId }: CreateChannelProps) {
+function CreateChannel({ existing, onCreated, onStepChange, projectId }: CreateChannelProps) {
   const { t } = useTranslation('channel');
   const { close, setCanDismissByClickOutside } = useModalContext();
   const [title, setTitle] = useState('');
@@ -86,7 +100,11 @@ function CreateChannel({ existing, onCreated, projectId }: CreateChannelProps) {
   const [scopeProjectId, setScopeProjectId] = useState<string | null>(projectId ?? null);
   const kindsEnabled = useChannelKindsEnabled();
   const [kind, setKind] = useState<ChannelKind>(projectId ? 'project' : 'general');
-  const [step, setStep] = useState<'basics' | 'members'>(existing ? 'members' : 'basics');
+  const [step, setStepState] = useState<Step>(existing ? 'members' : 'basics');
+  const setStep = (next: Step) => {
+    setStepState(next);
+    onStepChange?.(next);
+  };
   // Like Discord, a new workspace Channel is open to the workspace unless made private.
   const [isPrivate, setIsPrivate] = useState(false);
   const projectChannel = kindsEnabled && kind === 'project';
