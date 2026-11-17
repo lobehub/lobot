@@ -154,6 +154,14 @@ export const styles = stylex.create({
   },
   /** Floats over the row's top-right corner while the row is hovered or focused. */
   /** A member row's "more" button: shown on row hover or focus where hover exists. */
+  memberIdentity: {
+    display: 'flex',
+    flex: 1,
+    gap: 8,
+    alignItems: 'center',
+    minWidth: 0,
+    cursor: 'default',
+  },
   memberActions: {
     flex: 'none',
     opacity: {

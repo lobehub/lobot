@@ -19,6 +19,7 @@ import {
   workingConversationCount,
 } from './jobStatus';
 import { MemberAvatar } from './MemberAvatar';
+import { MemberProfilePopup } from './MemberProfilePopup';
 import { callerMemberRole, canRemoveMember } from './memberManagement';
 import { isCurrentUserMember, memberName } from './memberName';
 import { statusStyles, styles, toneStyles } from './styles';
@@ -151,22 +152,27 @@ const MemberRow = ({
       paddingBlock={6}
       {...stylex.props(stylex.defaultMarker())}
     >
-      <StatusAvatar entry={entry} size={28} />
-      <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
-        <Text ellipsis title={entry.name} weight={500}>
-          {entry.name}
-        </Text>
-        {isAgent &&
-          (showDescription ? (
-            entry.member.description && (
-              <Text ellipsis fontSize={12} title={entry.member.description} type="secondary">
-                {entry.member.description}
-              </Text>
-            )
-          ) : (
-            <MemberState entry={entry} />
-          ))}
-      </Flexbox>
+      {/* Hovering who a member is shows their card, like an avatar or mention in the conversation. */}
+      <MemberProfilePopup member={entry.member}>
+        <div {...stylex.props(styles.memberIdentity)}>
+          <StatusAvatar entry={entry} size={28} />
+          <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
+            <Text ellipsis weight={500}>
+              {entry.name}
+            </Text>
+            {isAgent &&
+              (showDescription ? (
+                entry.member.description && (
+                  <Text ellipsis fontSize={12} type="secondary">
+                    {entry.member.description}
+                  </Text>
+                )
+              ) : (
+                <MemberState entry={entry} />
+              ))}
+          </Flexbox>
+        </div>
+      </MemberProfilePopup>
       {showDescription && isAgent && <MemberState entry={entry} />}
       {menuItems.length > 0 && (
         <span {...stylex.props(styles.memberActions)}>
