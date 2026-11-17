@@ -156,11 +156,16 @@ export const styles = stylex.create({
   /** A member row's "more" button: shown on row hover or focus where hover exists. */
   memberIdentity: {
     display: 'flex',
-    flex: 1,
+    flex: '1',
     gap: 8,
     alignItems: 'center',
     minWidth: 0,
     cursor: 'default',
+  },
+  memberAvatarTrigger: {
+    display: 'inline-flex',
+    flex: 'none',
+    cursor: 'pointer',
   },
   memberActions: {
     flex: 'none',

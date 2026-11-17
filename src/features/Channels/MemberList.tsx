@@ -222,27 +222,29 @@ const MemberRow = ({
       paddingBlock={6}
       {...stylex.props(stylex.defaultMarker())}
     >
-      {/* Hovering who a member is shows their card, like an avatar or mention in the conversation. */}
-      <MemberProfilePopup member={entry.member} placement={'left'}>
-        <div {...stylex.props(styles.memberIdentity)}>
-          <StatusAvatar entry={entry} size={28} />
-          <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
-            <Text ellipsis weight={500}>
-              {entry.name}
-            </Text>
-            {isAgent &&
-              (showDescription ? (
-                entry.member.description && (
-                  <Text ellipsis fontSize={12} type="secondary">
-                    {entry.member.description}
-                  </Text>
-                )
-              ) : (
-                <MemberState entry={entry} />
-              ))}
-          </Flexbox>
-        </div>
-      </MemberProfilePopup>
+      <div {...stylex.props(styles.memberIdentity)}>
+        {/* Hovering the avatar shows the member's card, like an avatar in the conversation. */}
+        <MemberProfilePopup member={entry.member} placement={'left'}>
+          <span {...stylex.props(styles.memberAvatarTrigger)}>
+            <StatusAvatar entry={entry} size={28} />
+          </span>
+        </MemberProfilePopup>
+        <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
+          <Text ellipsis weight={500}>
+            {entry.name}
+          </Text>
+          {isAgent &&
+            (showDescription ? (
+              entry.member.description && (
+                <Text ellipsis fontSize={12} type="secondary">
+                  {entry.member.description}
+                </Text>
+              )
+            ) : (
+              <MemberState entry={entry} />
+            ))}
+        </Flexbox>
+      </div>
       {showDescription && isAgent && <MemberState entry={entry} />}
       {menuItems.length > 0 && (
         <span {...stylex.props(styles.memberActions)}>
