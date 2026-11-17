@@ -4403,6 +4403,7 @@ export default {
   'taskLabel.noLabels': 'No labels',
   'taskLabel.searchPlaceholder': 'Search or create labels…',
   'taskProject.add': 'Add to project',
+  'taskProject.create': 'New project',
   'taskProject.empty': 'No projects yet',
   'taskProject.inheritedFromParent': "A subtask stays in its parent's project",
   'taskProject.label': 'Project',

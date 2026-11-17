@@ -1,7 +1,7 @@
 import { Button, cssVar, Flexbox, Icon, Popover, Text, Tooltip } from '@lobehub/ui';
 import { cssVar as sxVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
-import { CheckIcon, FolderXIcon } from 'lucide-react';
+import { CheckIcon, FolderXIcon, PlusIcon } from 'lucide-react';
 import type { CSSProperties, KeyboardEvent, ReactNode } from 'react';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -47,9 +47,12 @@ const triggerStyle: CSSProperties = {
 const blockedContentStyle: CSSProperties = { display: 'contents', pointerEvents: 'none' };
 
 const NONE_KEY = '__none__';
+const CREATE_KEY = '__create__';
 
 type ProjectOption =
-  { key: string; kind: 'none' } | { key: string; kind: 'project'; project: ProjectListItem };
+  | { key: string; kind: 'create' }
+  | { key: string; kind: 'none' }
+  | { key: string; kind: 'project'; project: ProjectListItem };
 
 interface ProjectSelectorProps {
   children: ReactNode;
@@ -60,6 +63,11 @@ interface ProjectSelectorProps {
   noneLabel?: string;
   /** Reports the pick instead of saving it, for a composer holding it in a draft. */
   onChange?: (projectId: string | null) => void;
+  /**
+   * Adds a "New project" option at the end of the list; it reports the search text, so what was
+   * typed becomes the new project's name.
+   */
+  onCreate?: (name: string) => void;
   /** The task a pick is saved to when there is no `onChange`. */
   taskIdentifier?: string;
   value?: string | null;
@@ -77,6 +85,7 @@ const ProjectSelector = memo<ProjectSelectorProps>(
     fullWidth,
     noneLabel: noneLabelProp,
     onChange,
+    onCreate,
     taskIdentifier,
     value,
   }) => {
@@ -110,8 +119,9 @@ const ProjectSelector = memo<ProjectSelectorProps>(
       return [
         ...(showNone ? [{ key: NONE_KEY, kind: 'none' as const }] : []),
         ...matches.map((project) => ({ key: project.id, kind: 'project' as const, project })),
+        ...(onCreate ? [{ key: CREATE_KEY, kind: 'create' as const }] : []),
       ];
-    }, [matches, noneLabel, query]);
+    }, [matches, noneLabel, onCreate, query]);
     const selectedKey = value ?? NONE_KEY;
 
     // Rest on the current project when opening; a search starts from the top match.
@@ -139,6 +149,10 @@ const ProjectSelector = memo<ProjectSelectorProps>(
 
     const handleSelect = (option: ProjectOption) => {
       handleOpenChange(false);
+      if (option.kind === 'create') {
+        onCreate?.(query);
+        return;
+      }
       const projectId = option.kind === 'project' ? option.project.id : null;
       if (projectId === (value ?? null)) return;
       if (onChange) {
@@ -172,7 +186,6 @@ const ProjectSelector = memo<ProjectSelectorProps>(
         <NavItem
           active={index === activeIndex}
           style={{ flexShrink: 0 }}
-          title={option.kind === 'project' ? option.project.name : noneLabel}
           extra={
             option.key === selectedKey ? (
               <Icon color={cssVar.colorTextSecondary} icon={CheckIcon} size={14} />
@@ -187,8 +200,19 @@ const ProjectSelector = memo<ProjectSelectorProps>(
                 size={18}
               />
             ) : (
-              <Icon color={cssVar.colorTextDescription} icon={FolderXIcon} size={16} />
+              <Icon
+                color={cssVar.colorTextDescription}
+                icon={option.kind === 'create' ? PlusIcon : FolderXIcon}
+                size={16}
+              />
             )
+          }
+          title={
+            option.kind === 'project'
+              ? option.project.name
+              : option.kind === 'create'
+                ? t('taskProject.create')
+                : noneLabel
           }
           onClick={() => handleSelect(option)}
         />
@@ -226,7 +250,9 @@ const ProjectSelector = memo<ProjectSelectorProps>(
               {options.map(renderOption)}
             </Flexbox>
           )}
-          {matches.length === 0 && hint(t(query ? 'taskProject.noMatch' : 'taskProject.empty'))}
+          {matches.length === 0 &&
+            !onCreate &&
+            hint(t(query ? 'taskProject.noMatch' : 'taskProject.empty'))}
         </>
       );
     };

@@ -6,8 +6,10 @@ import { openCreateChannel, openInviteMembers } from '.';
 
 const mocks = vi.hoisted(() => ({
   create: vi.fn(async () => 'chn_new'),
-  createModal: vi.fn(),
+  createModal: vi.fn(() => ({ update: mocks.updateModal })),
+  createProject: vi.fn(async ({ name }: { name: string }) => ({ id: 'prj_new', name })),
   optionsProjectIds: [] as (string | undefined)[],
+  updateModal: vi.fn(),
   updateVisibility: vi.fn(async () => ({})),
   workspaceId: null as string | null,
 }));
@@ -29,6 +31,7 @@ vi.mock('@lobehub/ui', () => ({
     </button>
   ),
   createModal: mocks.createModal,
+  cssVar: { colorBorderSecondary: 'border' },
   Flexbox: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   Icon: () => null,
   Input: () => null,
@@ -52,6 +55,29 @@ vi.mock('@/services/channel', () => ({
   channelService: { updateVisibility: mocks.updateVisibility },
 }));
 vi.mock('@/store/channel', () => ({ channelActions: { create: mocks.create } }));
+vi.mock('@/store/project', () => ({
+  useProjectStore: { getState: () => ({ createProject: mocks.createProject }) },
+}));
+vi.mock('./NewProjectPanel', () => ({
+  NewProjectPanel: ({
+    name,
+    onClose,
+    onNameChange,
+  }: {
+    name: string;
+    onClose: () => void;
+    onNameChange: (name: string) => void;
+  }) => (
+    <div data-name={name} data-testid={'new-project'}>
+      <button type={'button'} onClick={() => onNameChange('')}>
+        clear project name
+      </button>
+      <button type={'button'} onClick={onClose}>
+        discard project
+      </button>
+    </div>
+  ),
+}));
 vi.mock('../privateAgentJoin', () => ({
   confirmPublishPrivateAgents: async () => {},
   ownPrivateAgentIds: () => [],
@@ -82,16 +108,25 @@ vi.mock('./ScopeField', () => ({
   useChannelKindsEnabled: () => true,
   ScopeField: ({
     kind,
+    newProjectName,
+    onCreateProject,
     onKindChange,
     onProjectChange,
     projectId,
   }: {
     kind: string;
+    newProjectName?: string;
+    onCreateProject: (name: string) => void;
     onKindChange: (kind: string) => void;
     onProjectChange: (id: string | null) => void;
     projectId: string | null;
   }) => (
-    <div data-kind={kind} data-project={projectId ?? 'none'} data-testid={'scope'}>
+    <div
+      data-kind={kind}
+      data-new-project={newProjectName}
+      data-project={projectId ?? 'none'}
+      data-testid={'scope'}
+    >
       <button type={'button'} onClick={() => onKindChange('project')}>
         kind project
       </button>
@@ -100,6 +135,9 @@ vi.mock('./ScopeField', () => ({
       </button>
       <button type={'button'} onClick={() => onProjectChange('prj_2')}>
         pick project
+      </button>
+      <button type={'button'} onClick={() => onCreateProject('Atlas')}>
+        new project
       </button>
     </div>
   ),
@@ -111,8 +149,8 @@ const renderDialog = (open: () => void) => {
 };
 
 const next = () => fireEvent.click(screen.getByRole('button', { name: 'create.next' }));
-const submit = async () => {
-  fireEvent.click(screen.getByRole('button', { name: 'submit' }));
+const submit = async (label = 'submit') => {
+  fireEvent.click(screen.getByRole('button', { name: label }));
   await waitFor(() => expect(mocks.create).toHaveBeenCalledOnce());
   return mocks.create.mock.calls[0][0] as Record<string, unknown>;
 };
@@ -216,5 +254,58 @@ describe('CreateChannel', () => {
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith('chn_new'));
     // The conversation between the two stays as it is.
     expect(mocks.create.mock.calls[0][0]).not.toHaveProperty('channelId');
+  });
+
+  it('creates a new project beside the Channel, and names the Channel after it', async () => {
+    const onCreated = vi.fn();
+    renderDialog(() => openCreateChannel(onCreated));
+    fireEvent.click(screen.getByRole('button', { name: 'kind project' }));
+    fireEvent.click(screen.getByRole('button', { name: 'new project' }));
+
+    // The dialog widens and the project opens on the right, named by the picker's search.
+    expect(screen.getByTestId('new-project')).toHaveAttribute('data-name', 'Atlas');
+    expect(screen.getByTestId('scope')).toHaveAttribute('data-new-project', 'Atlas');
+    expect(mocks.updateModal).toHaveBeenLastCalledWith({ width: 'min(90vw, 800px)' });
+    expect(mocks.optionsProjectIds.at(-1)).toBeUndefined();
+
+    fireEvent.click(screen.getByRole('button', { name: 'clear project name' }));
+    expect(screen.getByRole('button', { name: 'create.next' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('button', { name: 'new project' }));
+
+    next();
+    expect(await submit('newProject.submit')).toMatchObject({
+      projectId: 'prj_new',
+      title: 'Atlas',
+    });
+    expect(mocks.createProject).toHaveBeenCalledExactlyOnceWith({ name: 'Atlas' });
+    await waitFor(() => expect(onCreated).toHaveBeenCalledWith('chn_new'));
+  });
+
+  it('does not create the project twice when the Channel fails and is retried', async () => {
+    mocks.create.mockRejectedValueOnce(new Error('boom'));
+    renderDialog(() => openCreateChannel());
+    fireEvent.click(screen.getByRole('button', { name: 'kind project' }));
+    fireEvent.click(screen.getByRole('button', { name: 'new project' }));
+    next();
+
+    fireEvent.click(screen.getByRole('button', { name: 'newProject.submit' }));
+    await waitFor(() => expect(mocks.create).toHaveBeenCalledOnce());
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'newProject.submit' })).not.toBeDisabled(),
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'newProject.submit' }));
+    await waitFor(() => expect(mocks.create).toHaveBeenCalledTimes(2));
+    expect(mocks.createProject).toHaveBeenCalledOnce();
+  });
+
+  it('goes back to picking a project when the new one is discarded', () => {
+    renderDialog(() => openCreateChannel());
+    fireEvent.click(screen.getByRole('button', { name: 'kind project' }));
+    fireEvent.click(screen.getByRole('button', { name: 'new project' }));
+    fireEvent.click(screen.getByRole('button', { name: 'discard project' }));
+
+    expect(screen.queryByTestId('new-project')).toBeNull();
+    expect(mocks.updateModal).toHaveBeenLastCalledWith({ width: 'min(90vw, 480px)' });
+    expect(screen.getByRole('button', { name: 'create.next' })).toBeDisabled();
   });
 });

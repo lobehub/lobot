@@ -171,6 +171,28 @@ describe('ProjectSelector', () => {
     ).toHaveTextContent('Apollo');
   });
 
+  it('offers a new project only when asked, named by what was searched', () => {
+    const onCreate = vi.fn();
+    render(
+      <ProjectSelector value={null} onChange={vi.fn()} onCreate={onCreate}>
+        <button data-testid="trigger">trigger</button>
+      </ProjectSelector>,
+    );
+    open();
+    fireEvent.change(search(), { target: { value: 'Atlas' } });
+    // Nothing matches, yet the new-project row stands in for the "no match" hint.
+    expect(screen.queryByText('taskProject.noMatch')).not.toBeInTheDocument();
+    fireEvent.keyDown(search(), { key: 'Enter' });
+    expect(onCreate).toHaveBeenCalledWith('Atlas');
+    expect(screen.queryByTestId('popover-content')).not.toBeInTheDocument();
+  });
+
+  it('has no new-project row by default', () => {
+    render(<Host />);
+    open();
+    expect(screen.queryByText('taskProject.create')).not.toBeInTheDocument();
+  });
+
   it('clears through the "no project" row', () => {
     render(<Host initial="p1" />);
     expect(trigger()).toHaveTextContent('Apollo');
