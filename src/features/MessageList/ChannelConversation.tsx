@@ -44,6 +44,8 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
   );
 
   const counterpart = directCounterpart(channel);
+  // The open Channel is being read; its mentions clear once the read receipt lands.
+  const mentioned = !active && (channel.mentionCount ?? 0) > 0;
 
   if (counterpart)
     return (
@@ -53,6 +55,7 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
         activeAt={activeAt}
         contextMenuItems={menuItems(channel)}
         hideKey={channel.id}
+        mentioned={mentioned}
         preview={channelPreview(channel)}
         previewThread={channelPreviewThread(channel)}
         // Someone else's Agent looks like one's own otherwise; the tag says it is theirs.
@@ -83,6 +86,7 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
       activeAt={activeAt}
       contextMenuItems={menuItems(channel)}
       hideKey={channel.id}
+      mentioned={mentioned}
       preview={channelPreview(channel)}
       previewThread={channelPreviewThread(channel)}
       tag={project?.name}

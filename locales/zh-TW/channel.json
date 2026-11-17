@@ -112,6 +112,7 @@
   "mentionInvite.failed": "無法將 {{name}} 加入頻道。請再試一次。",
   "mentionInvite.failedReason": "無法將 {{name}} 加入頻道：{{reason}}",
   "mentionInvite.section": "不在此頻道中 · 提及即可加入",
+  "mentionedYou": "[@我]",
   "moveToTrash": "將頻道移至垃圾桶",
   "moveToTrashConfirm": "將「{{title}}」移至垃圾桶？回覆將停止。您可以從垃圾桶還原頻道及其歷史記錄。代理和檔案將被保留。",
   "moveToTrashSuccess": "頻道已移至垃圾桶",

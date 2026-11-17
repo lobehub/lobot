@@ -37,6 +37,11 @@ interface ConversationRowProps {
   contextMenuItems?: ComponentProps<typeof ContextMenuTrigger>['items'];
   /** The Messages list key this row hides by; its menu then offers "Hide chat". */
   hideKey?: string;
+  /**
+   * An unread message here @mentions me: the preview line opens with a red "[@me]", like
+   * WeChat's 有人@我, so the row stands out among plain unread ones.
+   */
+  mentioned?: boolean;
   onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
   onMouseEnter?: () => void;
   preview?: string;
@@ -96,6 +101,7 @@ const ConversationRow = memo<ConversationRowProps>(
     avatar,
     contextMenuItems,
     hideKey,
+    mentioned,
     onClick,
     onMouseEnter,
     preview,
@@ -153,7 +159,8 @@ const ConversationRow = memo<ConversationRowProps>(
           </Flexbox>
           {/* No preview: the title sits centered at the full row height, not over a blank line. */}
           {!singleLine && (activity || preview) && (
-            <Flexbox horizontal align={'center'} gap={8}>
+            <Flexbox horizontal align={'center'} gap={4}>
+              {mentioned && <span {...stylex.props(styles.mentioned)}>{t('mentionedYou')}</span>}
               {activity ? (
                 <span role="status" {...stylex.props(styles.preview, styles.typing)}>
                   {activityLabel(t(activity === 'working' ? 'status.working' : 'activity.typing'))}

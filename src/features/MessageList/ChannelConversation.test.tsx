@@ -83,3 +83,48 @@ describe('ChannelConversation shared Agent', () => {
     expect(screen.queryByText('sharedAgent.tag')).toBeNull();
   });
 });
+
+describe('ChannelConversation mention marker', () => {
+  const lastMessage = {
+    content: 'take a look',
+    createdAt: new Date(),
+  } as ChannelListItem['lastMessage'];
+
+  it('opens the preview with "[@me]" while an unread message mentions me', () => {
+    store.project = undefined;
+    renderRow(channel({ lastMessage, memberAvatars: [member('agt_a')], mentionCount: 2 }));
+    expect(screen.getByText('mentionedYou')).toBeTruthy();
+    expect(screen.getByText('take a look')).toBeTruthy();
+  });
+
+  it('marks a conversation with one person too', () => {
+    store.project = undefined;
+    renderRow(
+      channel({
+        lastMessage,
+        memberAvatars: [{ ...member('usr_b'), actorType: 'user' }],
+        mentionCount: 1,
+        peerUserId: 'usr_b',
+      }),
+    );
+    expect(screen.getByText('mentionedYou')).toBeTruthy();
+  });
+
+  it('shows no marker without unread mentions', () => {
+    store.project = undefined;
+    renderRow(channel({ lastMessage, memberAvatars: [member('agt_a')], mentionCount: 0 }));
+    expect(screen.queryByText('mentionedYou')).toBeNull();
+  });
+
+  it('drops the marker on the open conversation, which is being read', () => {
+    store.project = undefined;
+    render(
+      createElement(ChannelConversation, {
+        active: true,
+        activeAt: new Date(),
+        channel: channel({ lastMessage, memberAvatars: [member('agt_a')], mentionCount: 1 }),
+      }),
+    );
+    expect(screen.queryByText('mentionedYou')).toBeNull();
+  });
+});

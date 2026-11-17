@@ -112,6 +112,7 @@
   "mentionInvite.failed": "{{name}} をチャンネルに追加できませんでした。もう一度お試しください。",
   "mentionInvite.failedReason": "{{name}} をチャンネルに追加できませんでした：{{reason}}",
   "mentionInvite.section": "このチャンネルに未参加 · メンションして追加",
+  "mentionedYou": "[@自分]",
   "moveToTrash": "チャンネルをゴミ箱に移動",
   "moveToTrashConfirm": "「{{title}}」をゴミ箱に移動しますか？返信は停止します。チャンネルとその履歴はゴミ箱から復元できます。エージェントとファイルは保持されます。",
   "moveToTrashSuccess": "チャンネルがゴミ箱に移動されました",

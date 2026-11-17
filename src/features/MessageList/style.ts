@@ -39,6 +39,13 @@ export const styles = stylex.create({
     borderRadius: cssVar.borderRadiusLG,
     backgroundColor: cssVar.colorFillQuaternary,
   },
+  /** "[@me]" before the preview; the unread badge's red, so the two read as one signal. */
+  mentioned: {
+    flex: 'none',
+    fontSize: '12px',
+    lineHeight: '16px',
+    color: cssVar.colorError,
+  },
   preview: {
     overflow: 'hidden',
     minWidth: 0,
