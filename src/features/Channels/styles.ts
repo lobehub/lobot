@@ -137,6 +137,112 @@ export const styles = stylex.create({
       },
     },
   },
+  /**
+   * A person's message: a short bubble, theirs on the left under their avatar and name,
+   * your own on the right with neither, like a chat app.
+   */
+  bubbleRow: {
+    display: 'flex',
+    paddingBlock: 6,
+  },
+  /** A follow-up from the same person sits close under the bubble before it. */
+  bubbleRowCompact: { paddingBlock: 2 },
+  bubbleAvatar: {
+    position: 'absolute',
+    insetBlockStart: 6,
+    insetInlineStart: 16,
+    display: 'inline-flex',
+  },
+  bubbleColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 4,
+    minWidth: 0,
+    maxWidth: '100%',
+  },
+  // Clear of the avatar column, so every bubble from one person lines up.
+  bubbleColumnOther: { alignItems: 'flex-start', paddingInlineStart: 36 },
+  // Clear of the hover toolbar on the left, and short enough to read as yours at a glance.
+  bubbleColumnOwn: { alignItems: 'flex-end', marginInlineStart: 'auto', paddingInlineStart: 48 },
+  bubbleColumnEditing: { flexGrow: 1 },
+  bubbleAuthor: {
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: 8,
+    minWidth: 0,
+    fontSize: cssVar.fontSizeSM,
+    color: cssVar.colorTextSecondary,
+  },
+  bubbleAuthorName: {
+    overflow: 'hidden',
+    minWidth: 0,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  bubbleLine: {
+    display: 'flex',
+    alignItems: 'flex-end',
+    gap: 8,
+    minWidth: 0,
+    maxWidth: 'min(100%, 640px)',
+  },
+  bubbleLineOwn: { flexDirection: 'row-reverse' },
+  bubbleStack: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: 4,
+    minWidth: 0,
+  },
+  bubbleStackOwn: { alignItems: 'flex-end' },
+  bubble: {
+    minWidth: 0,
+    maxWidth: '100%',
+    paddingBlock: 8,
+    paddingInline: 12,
+    borderRadius: 16,
+    lineHeight: 1.55,
+    overflowWrap: 'anywhere',
+    backgroundColor: cssVar.colorFillTertiary,
+  },
+  /** Your own words, inverted: the darkest thing in the feed is what you said. */
+  bubbleOwn: {
+    color: cssVar.colorBgContainer,
+    backgroundColor: cssVar.colorText,
+  },
+  /** Time (and any relay or failure mark) beside the bubble, on the side away from it. */
+  bubbleSideMeta: {
+    display: 'inline-flex',
+    flexShrink: 0,
+    alignItems: 'center',
+    gap: 6,
+    paddingBlockEnd: 2,
+  },
+  bubbleSideMetaHover: {
+    opacity: {
+      default: 1,
+      [HOVER]: {
+        default: 0,
+        [stylex.when.ancestor(':hover')]: 1,
+        [stylex.when.ancestor(':focus-within')]: 1,
+      },
+    },
+  },
+  messageEditedOwn: { alignSelf: 'flex-end' },
+  /** An Agent's reply reads as a document: full width, airier lines than chat. */
+  agentBody: { lineHeight: 1.7 },
+  /** Says "this is an Agent" beside its name, so its long replies are never mistaken for a person's. */
+  agentBadge: {
+    flexShrink: 0,
+    alignSelf: 'center',
+    paddingInline: 5,
+    borderRadius: 4,
+    fontSize: 11,
+    lineHeight: '16px',
+    fontWeight: 500,
+    color: cssVar.colorSuccess,
+    backgroundColor: cssVar.colorSuccessBg,
+  },
   /** A plain centered date; a rule on each side read heavier than the messages it separates. */
   dateDivider: {
     display: 'flex',
@@ -190,6 +296,8 @@ export const styles = stylex.create({
       },
     },
   },
+  /** Your bubble sits on the right, so its toolbar floats on the left instead. */
+  messageToolbarOwn: { insetInlineEnd: 'auto', insetInlineStart: 16 },
   /** Inline system line in the timeline, such as who joined. */
   event: {
     paddingBlock: 8,

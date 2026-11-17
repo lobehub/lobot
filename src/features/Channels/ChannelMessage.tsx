@@ -26,12 +26,12 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
+import Avatar from '@/components/Avatar';
 import CollapsibleContent from '@/components/CollapsibleContent';
 import AgentProfilePopup from '@/features/AgentProfileCard/AgentProfilePopup';
 import { ChatItem } from '@/features/Conversation/ChatItem';
 import Markdown from '@/features/Conversation/Markdown';
 import EntityLinkElement from '@/features/EntityLink/element';
-import UserAvatar from '@/features/User/UserAvatar';
 import { channelActions } from '@/store/channel';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
@@ -54,6 +54,9 @@ import type { ChannelReplyTarget } from './useReplyTarget';
 
 const rehypePlugins = [EntityLinkElement.rehypePlugin];
 const HISTORIC_FOLD_OVERFLOW = 240;
+/** An Agent's reply: a small avatar beside its name, the body indented to the name. */
+const AGENT_AVATAR_SIZE = 24;
+const AGENT_BODY_INSET = 32;
 
 /** Message text with the members it mentioned shown as chips that show who they are on hover. */
 const MessageText = ({ content, members }: { content: string; members: ChannelPublicMember[] }) => {
@@ -233,13 +236,218 @@ export const ChannelMessage = ({
   ];
   const hasToolbar = !editing && (!!onReply || canBranch || moreItems.length > 0);
   const mentionedMembers = detail.members.filter((member) => message.mentions.includes(member.id));
+  const replyQuote =
+    !isRoot &&
+    showsReplyQuote(message) &&
+    (message.replyTo ? (
+      <Button
+        aria-label={t('reply.viewOriginal')}
+        icon={Reply}
+        size="small"
+        type="text"
+        style={{
+          alignSelf: isOwnMessage ? 'flex-end' : 'flex-start',
+          maxWidth: '100%',
+          minWidth: 0,
+        }}
+        onClick={() => onJumpToMessage?.(message.replyTo!)}
+      >
+        <Text ellipsis as="span" fontSize={12} type="secondary">
+          {message.replyTo.author.name || t('deletedMember')}
+          {': '}
+          {message.replyTo.content || t('reply.attachment')}
+        </Text>
+      </Button>
+    ) : (
+      <Text fontSize={12} type="secondary">
+        {t('reply.unavailable')}
+      </Text>
+    ));
+  const attachments = message.fileIds.length > 0 && (
+    <MessageAttachments attachments={detail.attachments} fileIds={message.fileIds} />
+  );
+  const text = message.content && (
+    <MessageText content={message.content} members={mentionedMembers} />
+  );
+  const content =
+    message.content &&
+    (collapsible ? (
+      <CollapsibleContent
+        hideCollapseToggle
+        collapsed={collapsed}
+        fade={false}
+        key={message.id}
+        maxHeight={160}
+        // Folding unasked is only worth it for a really long message.
+        overflowThreshold={historic ? HISTORIC_FOLD_OVERFLOW : undefined}
+        onCollapsedChange={setCollapsed}
+        onOverflowChange={setOverflowing}
+      >
+        {text}
+      </CollapsibleContent>
+    ) : (
+      text
+    ));
+  const editor = editing && (
+    <MessageEditor
+      allowEmpty={message.fileIds.length > 0}
+      content={message.content}
+      onCancel={() => setEditing(false)}
+      onSave={(content) => channelActions.editMessage(detail.channel.id, message.id, content)}
+    />
+  );
+  const edited = message.editedAt && !editing && (
+    <time
+      dateTime={new Date(message.editedAt).toISOString()}
+      title={timeFormats.full.format(new Date(message.editedAt))}
+      {...stylex.props(styles.messageEdited, isOwnMessage && styles.messageEditedOwn)}
+    >
+      {t('message.edited')}
+    </time>
+  );
+  const threadCard = thread && (
+    <ThreadPreviewCard
+      detail={detail}
+      root={message}
+      thread={thread}
+      onOpen={() => onOpenThread?.(thread.id)}
+    />
+  );
+  const below = delivery ?? (isRequest ? <MessageRoutingStatus message={message} /> : undefined);
+  const headerMarks = (
+    <>
+      <RelayLabel message={message} />
+      {isRequest && !delivery && <MessageFailureMark detail={detail} message={message} />}
+    </>
+  );
+  const toolbar = hasToolbar && (
+    // Icon-only, like a chat app's hover toolbar; rarer actions sit behind "more".
+    <div {...stylex.props(styles.messageToolbar, isOwnMessage && styles.messageToolbarOwn)}>
+      {onReply && (
+        <ActionIcon
+          aria-label={t('reply.action')}
+          icon={Reply}
+          size="small"
+          title={t('reply.action')}
+          onClick={() => onReply(message)}
+        />
+      )}
+      {canBranch && (
+        <ActionIcon
+          aria-label={t('startThread')}
+          icon={GitBranch}
+          size="small"
+          title={t('startThread')}
+          onClick={startThread}
+        />
+      )}
+      {moreItems.length > 0 && (
+        <DropdownMenu items={moreItems}>
+          <ActionIcon
+            aria-label={t('more', { ns: 'common' })}
+            icon={MoreHorizontal}
+            size="small"
+            title={t('more', { ns: 'common' })}
+          />
+        </DropdownMenu>
+      )}
+    </div>
+  );
+  const rowProps = {
+    'aria-busy': pending || undefined,
+    'aria-label': message.author.name || t('deletedMember'),
+    'data-continuation': compact || undefined,
+    'data-message-id': message.id,
+    'role': 'article',
+  };
+
+  // A person speaks in short bubbles, their own on the right; an Agent's reply reads as a
+  // document, full width, so the two tell apart at a glance without reading names.
+  if (!agentAuthorId) {
+    const author = message.author.name || t('deletedMember');
+    // Beside the bubble: your own message carries its time there; another person's
+    // continuation shows it on hover, its group header having shown the first.
+    const sideMeta = (isOwnMessage || compact) && (
+      <span
+        data-message-meta
+        {...stylex.props(
+          styles.bubbleSideMeta,
+          (compact || !isOwnMessage) && styles.bubbleSideMetaHover,
+        )}
+      >
+        {isOwnMessage && !compact && headerMarks}
+        {timestamp}
+      </span>
+    );
+    return (
+      <div
+        {...rowProps}
+        {...stylex.props(
+          styles.messageRow,
+          styles.bubbleRow,
+          compact && styles.bubbleRowCompact,
+          highlighted && styles.highlightedMessage,
+          pending && styles.pendingMessage,
+          stylex.defaultMarker(),
+        )}
+      >
+        {!isOwnMessage && !compact && (
+          // A person shows who they are on hover, the way an Agent shows its profile.
+          <MemberProfilePopup member={userMember}>
+            <span
+              {...stylex.props(styles.bubbleAvatar, !!userMember && styles.messageAvatarHoverable)}
+            >
+              <Avatar
+                avatar={authorAvatar(message.author)}
+                shape={'circle'}
+                size={28}
+                title={author}
+              />
+            </span>
+          </MemberProfilePopup>
+        )}
+        <div
+          {...stylex.props(
+            styles.bubbleColumn,
+            isOwnMessage ? styles.bubbleColumnOwn : styles.bubbleColumnOther,
+            editing && styles.bubbleColumnEditing,
+          )}
+        >
+          {!isOwnMessage && !compact && (
+            <header data-message-meta {...stylex.props(styles.bubbleAuthor)}>
+              <span {...stylex.props(styles.bubbleAuthorName)}>{author}</span>
+              {timestamp}
+              {headerMarks}
+            </header>
+          )}
+          {replyQuote}
+          {editing ? (
+            editor
+          ) : (
+            <div {...stylex.props(styles.bubbleLine, isOwnMessage && styles.bubbleLineOwn)}>
+              <div {...stylex.props(styles.bubbleStack, isOwnMessage && styles.bubbleStackOwn)}>
+                {attachments}
+                {content && (
+                  <div {...stylex.props(styles.bubble, isOwnMessage && styles.bubbleOwn)}>
+                    {content}
+                  </div>
+                )}
+              </div>
+              {sideMeta}
+            </div>
+          )}
+          {edited}
+          {threadCard}
+          {below}
+        </div>
+        {toolbar}
+      </div>
+    );
+  }
+
   return (
     <div
-      aria-busy={pending || undefined}
-      aria-label={message.author.name || t('deletedMember')}
-      data-continuation={compact || undefined}
-      data-message-id={message.id}
-      role="article"
+      {...rowProps}
       {...stylex.props(
         styles.messageRow,
         compact && hasToolbar && styles.continuationWithAction,
@@ -253,176 +461,62 @@ export const ChannelMessage = ({
         quietHeader
         showAvatar
         showTitle
-        agentId={message.author.type === 'agent' ? message.author.id : undefined}
-        avatarProps={{ shape: 'circle', size: 36 }}
+        agentId={agentAuthorId}
+        avatarProps={{ shape: 'circle', size: AGENT_AVATAR_SIZE }}
+        belowMessage={below}
         gap={4}
         id={message.id}
-        paddingBlock={compact ? 2 : 8}
+        paddingBlock={compact ? 2 : 10}
         placement="left"
         showHeader={!compact}
-        style={{ paddingInlineStart: 48 }}
+        style={{ paddingInlineStart: AGENT_BODY_INSET }}
         avatar={{
           avatar: authorAvatar(message.author),
           title: message.author.name || t('deletedMember'),
         }}
-        belowMessage={
-          delivery ?? (isRequest ? <MessageRoutingStatus message={message} /> : undefined)
-        }
-        customAvatarRender={(_, avatar) => (
+        customAvatarRender={() => (
           <Flexbox {...stylex.props(styles.messageAvatar)}>
-            {!agentAuthorId ? (
-              // A person shows who they are on hover, the way an Agent shows its profile.
-              <MemberProfilePopup member={userMember}>
-                <span
-                  {...stylex.props(
-                    styles.messageAvatarInline,
-                    !!userMember && styles.messageAvatarHoverable,
-                  )}
-                >
-                  {isOwnMessage ? <UserAvatar shape={'circle'} size={36} /> : avatar}
-                </span>
-              </MemberProfilePopup>
-            ) : (
-              // Same profile card an Agent shows on hover in goals and tasks.
-              <AgentProfilePopup
-                agentId={agentAuthorId}
-                trigger={'hover'}
-                agent={{
-                  avatar: message.author.avatar,
-                  description: agentMember?.description,
-                  title: message.author.name,
-                }}
-              >
-                <span {...stylex.props(styles.messageAvatarHoverable)}>
-                  <AgentAvatar
-                    agentId={agentAuthorId}
-                    avatar={message.author.avatar}
-                    name={message.author.name}
-                    shape={'circle'}
-                    size={36}
-                  />
-                </span>
-              </AgentProfilePopup>
-            )}
+            {/* Same profile card an Agent shows on hover in goals and tasks. */}
+            <AgentProfilePopup
+              agentId={agentAuthorId}
+              trigger={'hover'}
+              agent={{
+                avatar: message.author.avatar,
+                description: agentMember?.description,
+                title: message.author.name,
+              }}
+            >
+              <span {...stylex.props(styles.messageAvatarHoverable)}>
+                <AgentAvatar
+                  agentId={agentAuthorId}
+                  avatar={message.author.avatar}
+                  name={message.author.name}
+                  shape={'circle'}
+                  size={AGENT_AVATAR_SIZE}
+                />
+              </span>
+            </AgentProfilePopup>
           </Flexbox>
         )}
         message={
-          <Flexbox gap={8}>
-            {!isRoot &&
-              showsReplyQuote(message) &&
-              (message.replyTo ? (
-                <Button
-                  aria-label={t('reply.viewOriginal')}
-                  icon={Reply}
-                  size="small"
-                  style={{ alignSelf: 'flex-start', maxWidth: '100%', minWidth: 0 }}
-                  type="text"
-                  onClick={() => onJumpToMessage?.(message.replyTo!)}
-                >
-                  <Text ellipsis as="span" fontSize={12} type="secondary">
-                    {message.replyTo.author.name || t('deletedMember')}
-                    {': '}
-                    {message.replyTo.content || t('reply.attachment')}
-                  </Text>
-                </Button>
-              ) : (
-                <Text fontSize={12} type="secondary">
-                  {t('reply.unavailable')}
-                </Text>
-              ))}
-            {message.fileIds.length > 0 && (
-              <MessageAttachments attachments={detail.attachments} fileIds={message.fileIds} />
-            )}
-            {editing ? (
-              <MessageEditor
-                allowEmpty={message.fileIds.length > 0}
-                content={message.content}
-                onCancel={() => setEditing(false)}
-                onSave={(content) =>
-                  channelActions.editMessage(detail.channel.id, message.id, content)
-                }
-              />
-            ) : (
-              message.content &&
-              (collapsible ? (
-                <CollapsibleContent
-                  hideCollapseToggle
-                  collapsed={collapsed}
-                  fade={false}
-                  key={message.id}
-                  maxHeight={160}
-                  // Folding unasked is only worth it for a really long message.
-                  overflowThreshold={historic ? HISTORIC_FOLD_OVERFLOW : undefined}
-                  onCollapsedChange={setCollapsed}
-                  onOverflowChange={setOverflowing}
-                >
-                  <MessageText content={message.content} members={mentionedMembers} />
-                </CollapsibleContent>
-              ) : (
-                <MessageText content={message.content} members={mentionedMembers} />
-              ))
-            )}
-            {message.editedAt && !editing && (
-              <time
-                dateTime={new Date(message.editedAt).toISOString()}
-                title={timeFormats.full.format(new Date(message.editedAt))}
-                {...stylex.props(styles.messageEdited)}
-              >
-                {t('message.edited')}
-              </time>
-            )}
+          <Flexbox gap={8} {...stylex.props(styles.agentBody)}>
+            {replyQuote}
+            {attachments}
+            {editing ? editor : content}
+            {edited}
             {!!message.works?.length && <ReplyWorks works={message.works} />}
-            {thread && (
-              <ThreadPreviewCard
-                detail={detail}
-                root={message}
-                thread={thread}
-                onOpen={() => onOpenThread?.(thread.id)}
-              />
-            )}
+            {threadCard}
           </Flexbox>
         }
         titleAddon={
           <>
+            <span {...stylex.props(styles.agentBadge)}>{t('agentBadge')}</span>
             {timestamp}
-            <RelayLabel message={message} />
-            {isRequest && !delivery && <MessageFailureMark detail={detail} message={message} />}
+            {headerMarks}
           </>
         }
       />
-      {hasToolbar && (
-        // Icon-only, like a chat app's hover toolbar; rarer actions sit behind "more".
-        <div {...stylex.props(styles.messageToolbar)}>
-          {onReply && (
-            <ActionIcon
-              aria-label={t('reply.action')}
-              icon={Reply}
-              size="small"
-              title={t('reply.action')}
-              onClick={() => onReply(message)}
-            />
-          )}
-          {canBranch && (
-            <ActionIcon
-              aria-label={t('startThread')}
-              icon={GitBranch}
-              size="small"
-              title={t('startThread')}
-              onClick={startThread}
-            />
-          )}
-          {moreItems.length > 0 && (
-            <DropdownMenu items={moreItems}>
-              <ActionIcon
-                aria-label={t('more', { ns: 'common' })}
-                icon={MoreHorizontal}
-                size="small"
-                title={t('more', { ns: 'common' })}
-              />
-            </DropdownMenu>
-          )}
-        </div>
-      )}
+      {toolbar}
     </div>
   );
 };

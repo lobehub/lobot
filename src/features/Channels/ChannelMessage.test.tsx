@@ -84,6 +84,9 @@ vi.mock('@/features/Conversation/Markdown', () => ({
 vi.mock('@/components/AgentAvatar', () => ({
   default: ({ name }: { name?: string }) => createElement('i', { 'data-agent-avatar': name }),
 }));
+vi.mock('@/components/Avatar', () => ({
+  default: ({ title }: { title?: string }) => createElement('img', { alt: 'avatar', title }),
+}));
 vi.mock('@/features/User/UserAvatar', () => ({ default: () => createElement('i', {}, 'me') }));
 vi.mock('@/store/user', () => ({
   useUserStore: (selector: (s: unknown) => unknown) => selector({}),
@@ -459,6 +462,45 @@ describe('ChannelMessage thread card', () => {
   });
 });
 
+describe('ChannelMessage layout', () => {
+  it('marks an Agent reply as an Agent beside its name', () => {
+    const { container } = render(
+      <ChannelMessage
+        detail={detail}
+        message={message({ avatar: null, id: 'agt_1', name: 'Cook', type: 'agent' })}
+      />,
+    );
+
+    expect(container.querySelector('header')?.textContent).toContain('agentBadge');
+  });
+
+  it('shows another person’s name and avatar above their message', () => {
+    const { container } = render(
+      <ChannelMessage
+        detail={detail}
+        message={message({ avatar: null, id: 'user-other', name: 'Ann', type: 'user' })}
+      />,
+    );
+
+    expect(container.querySelector('header')?.textContent).toContain('Ann');
+    expect(screen.getByTitle('Ann')).toBeTruthy();
+    expect(screen.queryByText('agentBadge')).toBeNull();
+  });
+
+  it('shows your own message without your name or avatar, keeping its time', () => {
+    const { container } = render(
+      <ChannelMessage
+        detail={detail}
+        message={message({ avatar: null, id: 'user-self', name: 'Me', type: 'user' })}
+      />,
+    );
+
+    expect(screen.queryByText('Me')).toBeNull();
+    expect(screen.queryByTestId('member-popup')).toBeNull();
+    expect(container.querySelector('[data-message-meta] time')).toBeTruthy();
+  });
+});
+
 describe('ChannelMessage relay', () => {
   const relayed = (extra: Partial<ChannelPublicMessage>) =>
     ({
@@ -467,14 +509,12 @@ describe('ChannelMessage relay', () => {
       ...extra,
     }) as ChannelPublicMessage;
 
-  it('names the relaying Agent in the header, after the time', () => {
-    const { container } = render(<ChannelMessage detail={detail} message={relayed({})} />);
+  it('names the relaying Agent beside the time', () => {
+    render(<ChannelMessage detail={detail} message={relayed({})} />);
 
-    const header = container.querySelector('header')!;
-    expect(header.textContent).toContain('message.relayedBy');
-    // The time comes first, then the relay label.
-    expect(header.firstElementChild?.tagName).toBe('TIME');
-    expect(header.querySelector('[data-agent-avatar="Yunuo"]')).toBeTruthy();
+    const meta = screen.getByText('message.relayedBy').closest('[data-message-meta]')!;
+    expect(meta.querySelector('time')).toBeTruthy();
+    expect(meta.querySelector('[data-agent-avatar="Yunuo"]')).toBeTruthy();
   });
 
   it('says whose reply a receipt brings back', () => {
