@@ -19,6 +19,7 @@ import { userProfileSelectors } from '@/store/user/selectors';
 import { ArchivedNotice } from './ArchivedNotice';
 import { visibleChannelDetail } from './channelAccess';
 import { ChannelMessage, ThreadRootMessage } from './ChannelMessage';
+import { useAfterCleared } from './clearedChannels';
 import { Composer } from './Composer';
 import { hasReplyActivity } from './jobStatus';
 import { JoinEventLine } from './JoinEventLine';
@@ -70,7 +71,16 @@ const Timeline = ({
   const params = { before, channelId, threadId };
   const sync = channelActions.useFetchDetail(params);
   const cached = useChannelStore(channelSelectors.detail(params));
-  const detail = visibleChannelDetail(cached, sync.error);
+  const visible = visibleChannelDetail(cached, sync.error);
+  // A conversation the person deleted shows only what came after, on this device.
+  const kept = useAfterCleared(channelId, threadId ? undefined : visible?.messages);
+  const detail = useMemo(
+    () =>
+      visible && kept.cleared
+        ? { ...visible, hasMore: false, messages: kept.messages ?? [] }
+        : visible,
+    [kept, visible],
+  );
   const scope = cacheScope.use();
   useEffect(() => channelActions.restoreOutbox(scope), [scope]);
   const userId = useUserStore(userProfileSelectors.userId);

@@ -98,6 +98,9 @@ export function MemberStatus({
     ),
   ];
 
+  // A conversation between two people has no settings to manage, only the private chat's actions.
+  const peerMenu = () => channelMenu(channel);
+
   // Managing a group lives on its settings page; deleting it is not one click from the header.
   const groupMenu = () => [
     ...channelMenu(channel).filter((item) => 'key' in item && item.key === 'copyId'),
@@ -203,7 +206,7 @@ export function MemberStatus({
           }
         />
       )}
-      <DropdownMenu items={direct ? directMenu() : groupMenu()}>
+      <DropdownMenu items={direct ? directMenu() : channel.peerUserId ? peerMenu() : groupMenu()}>
         <ActionIcon
           aria-label={t('more', { ns: 'common' })}
           icon={MoreHorizontal}

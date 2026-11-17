@@ -9,14 +9,17 @@ import { channelActions } from '@/store/channel';
 import { isTrpcErrorCode } from '@/utils/trpcError';
 
 import { useChannelArchive } from './useChannelArchive';
+import { useDeletePeerChat } from './useDeletePeerChat';
 import { useRemoveChannel } from './useRemoveChannel';
 
 /**
  * A Channel's menu wherever it is listed: pin, rename, copy id, archive, and move to the trash.
+ * A conversation between two people is a private chat instead: pin, and delete it for me only.
  */
 export const useChannelMenu = () => {
   const { t } = useTranslation('channel');
   const remove = useRemoveChannel();
+  const deletePeerChat = useDeletePeerChat();
   const { archive, unarchive } = useChannelArchive();
 
   const rename = (channel: ChannelListItem) =>
@@ -44,14 +47,30 @@ export const useChannelMenu = () => {
     }
   };
 
-  return (channel: ChannelListItem) => [
-    // Any member pins it, for their own list only.
+  // Any member pins it, for their own list only.
+  const pinItem = (channel: ChannelListItem) => ({
+    icon: channel.pinnedAt ? PinOff : Pin,
+    key: channel.pinnedAt ? 'unpin' : 'pin',
+    label: t(channel.pinnedAt ? 'pinOff' : 'pin', { ns: 'common' }),
+    onClick: () => void togglePin(channel),
+  });
+
+  // Both people own the conversation, so renaming, archiving or trashing it would change it for
+  // the other person too.
+  const peerItems = (channel: ChannelListItem) => [
+    pinItem(channel),
+    { type: 'divider' as const },
     {
-      icon: channel.pinnedAt ? PinOff : Pin,
-      key: channel.pinnedAt ? 'unpin' : 'pin',
-      label: t(channel.pinnedAt ? 'pinOff' : 'pin', { ns: 'common' }),
-      onClick: () => void togglePin(channel),
+      danger: true,
+      icon: Trash,
+      key: 'deleteChat',
+      label: t('deleteChat'),
+      onClick: () => deletePeerChat(channel),
     },
+  ];
+
+  const channelItems = (channel: ChannelListItem) => [
+    pinItem(channel),
     ...(channel.canDelete && channel.status !== 'archived'
       ? [{ icon: PencilLine, key: 'rename', label: t('rename'), onClick: () => rename(channel) }]
       : []),
@@ -95,4 +114,7 @@ export const useChannelMenu = () => {
         ]
       : []),
   ];
+
+  return (channel: ChannelListItem) =>
+    channel.peerUserId ? peerItems(channel) : channelItems(channel);
 };

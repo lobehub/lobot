@@ -95,6 +95,10 @@ export default {
   'offline': 'Offline',
   'chooseDirectory': 'Choose directory',
   'delete': 'Delete Channel',
+  'deleteChat': 'Delete chat',
+  'deleteChatConfirm':
+    'Delete your chat with “{{name}}”? Its history will be cleared on this device. {{name}} keeps theirs.',
+  'deleteChatSuccess': 'Chat deleted',
   'deleteConfirm':
     'Delete “{{title}}”? This channel will disappear for all its members and can no longer be opened. Running tasks will be requested to stop. Agents and local files will not be deleted.',
   'deleteFailed': 'Could not confirm the deletion. Try again.',
@@ -325,6 +329,8 @@ export default {
   'settings.danger.archiveHint':
     'Replies in progress stop and the channel stops taking messages. History stays readable.',
   'settings.danger.unarchiveHint': 'Members can send messages in this channel again.',
+  'settings.danger.deleteChatHint':
+    'Clears this chat’s history on this device and removes it from your list. The other person keeps theirs.',
   'settings.danger.trashHint': 'You can restore the channel and its history from the trash.',
   'settings.tab.general': 'General',
   'settings.tab.members': 'Members',

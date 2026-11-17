@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
 import UserAvatar from '@/components/UserAvatar';
+import { useClearedThrough } from '@/features/Channels/clearedChannels';
 import { useChannelMenu } from '@/features/Channels/useChannelMenu';
 import GroupAvatar from '@/features/GroupAvatar';
 import ProjectAvatar from '@/features/Projects/ProjectAvatar';
@@ -44,8 +45,11 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
   );
 
   const counterpart = directCounterpart(channel);
+  // Deleted on this device and nothing new since: a search still finds it, with no old preview.
+  const clearedThrough = useClearedThrough(channel.id);
+  const cleared = clearedThrough !== undefined && channel.sequence <= clearedThrough;
   // The open Channel is being read; its mentions clear once the read receipt lands.
-  const mentioned = !active && (channel.mentionCount ?? 0) > 0;
+  const mentioned = !active && !cleared && (channel.mentionCount ?? 0) > 0;
 
   if (counterpart)
     return (
@@ -56,12 +60,12 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
         contextMenuItems={menuItems(channel)}
         hideKey={channel.id}
         mentioned={mentioned}
-        preview={channelPreview(channel)}
-        previewThread={channelPreviewThread(channel)}
+        preview={cleared ? undefined : channelPreview(channel)}
+        previewThread={cleared ? undefined : channelPreviewThread(channel)}
         // Someone else's Agent looks like one's own otherwise; the tag says it is theirs.
         tag={channel.sharedAgent ? t('sharedAgent.tag') : undefined}
         title={counterpart.name || channel.title}
-        unread={channel.unreadCount}
+        unread={cleared ? 0 : channel.unreadCount}
         url={CHANNEL_URL(channel.id)}
         avatar={
           counterpart.actorType === 'agent' ? (

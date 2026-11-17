@@ -18,7 +18,8 @@ export const useRemoveChannel = () => {
   const latest = useLatest({ location, navigate });
 
   return (channel: ChannelListItem) => {
-    if (!channel.canDelete) return;
+    // Trashing a conversation between two people would take it from the other person too.
+    if (!channel.canDelete || channel.peerUserId) return;
     const scope = cacheScope.get();
     return confirmModal({
       cancelText: t('cancel'),
