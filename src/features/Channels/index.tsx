@@ -22,11 +22,13 @@ import { AgentProfilePanel } from './AgentProfilePanel';
 import { isChannelGone, visibleChannelDetail } from './channelAccess';
 import { ChannelConversation } from './ChannelConversation';
 import { ChannelEmpty } from './ChannelEmpty';
+import { ChannelSearchBox, ChannelSearchPanel } from './ChannelSearch';
 import { ChannelSyncing } from './ChannelSyncing';
 import { DirectAgentRole } from './DirectAgentRole';
 import { workingConversationCount, workingJob } from './jobStatus';
 import { MEMBER_FLOAT_BREAKPOINT, MemberPanel } from './MemberPanel';
 import { MemberStatus } from './MemberStatus';
+import { requestChannelJump } from './messageJump';
 import { openTopic } from './openTopic';
 import { channelTitle } from './peerTitle';
 import { CHANNEL_ENTITY_PORTAL_SCOPE, PortalPanel } from './PortalPanel';
@@ -46,6 +48,10 @@ function EnabledChannelPage() {
   const compact = useCompactLayout();
   const [membersChannelId, setMembersChannelId] = useState<string | null>(null);
   const memberPanelId = useId();
+  const searchPanelId = useId();
+  // The box keeps its text per Channel; the panel shows the query last submitted.
+  const [searchInput, setSearchInput] = useState({ channelId: '', value: '' });
+  const [search, setSearch] = useState<{ channelId: string; query: string } | null>(null);
   const conversationRef = useRef<HTMLDivElement>(null);
   const conversationWidth = useSize(conversationRef)?.width;
   // Shares the main conversation's request; the header and thread panel read the same view.
@@ -96,7 +102,31 @@ function EnabledChannelPage() {
     members: membersOpen,
     thread: !!(threadId || threadDraft || pageThreadId),
   });
+  // A thread, the roster, a report or a reply topic covers the results; closing it uncovers them.
+  const searchOpen =
+    search?.channelId === channelId &&
+    !threadId &&
+    !threadDraft &&
+    !portalOpen &&
+    !membersOpen &&
+    !visibleTopic;
   if (!channelId) return null;
+  const searchValue = searchInput.channelId === channelId ? searchInput.value : '';
+  const openSearch = (query: string) => {
+    if (!pageThreadId) panel.close();
+    setMembersChannelId(null);
+    setTopic(null);
+    clearPortalStack();
+    setSearch({ channelId, query });
+  };
+  // A main-feed hit scrolls the feed; a Thread hit opens that Thread over the results.
+  const openSearchHit = (hit: { id: string; sequence: number; threadId: string | null }) => {
+    requestChannelJump({ channelId, id: hit.id, sequence: hit.sequence, threadId: hit.threadId });
+    if (hit.threadId) {
+      if (pageThreadId) panel.openPage(hit.threadId);
+      else if (panel.threadId !== hit.threadId) panel.openThread(hit.threadId);
+    } else if (pageThreadId) panel.close();
+  };
   // A removed or out-of-reach Channel (e.g. a link from another workspace) leaves nothing open.
   if (isChannelGone(sync.error)) return <ChannelEmpty />;
 
@@ -145,12 +175,18 @@ function EnabledChannelPage() {
           detail && (
             <Flexbox horizontal align="center" gap={8}>
               {pageThreadId && <ThreadPageActions detail={detail} threadId={pageThreadId} />}
+              <ChannelSearchBox
+                value={searchValue}
+                onChange={(value) => setSearchInput({ channelId, value })}
+                onSearch={openSearch}
+              />
               <ThreadsButton
                 activeId={pageThreadId ?? threadId}
                 detail={detail}
                 onOpen={(nextThreadId) => {
                   // A thread page switches in place; the feed opens the thread beside it.
                   if (pageThreadId) return panel.openPage(nextThreadId);
+                  setSearch(null);
                   setTopic(null);
                   clearPortalStack();
                   // Under a report the thread only looks closed, so bring it back, don't toggle it off.
@@ -168,6 +204,7 @@ function EnabledChannelPage() {
                           if (!membersOpen) {
                             // The roster sits beside a thread page; it only replaces a side panel.
                             if (!pageThreadId) panel.close();
+                            setSearch(null);
                             setTopic(null);
                             clearPortalStack();
                           }
@@ -192,7 +229,8 @@ function EnabledChannelPage() {
               key={`${channelId}:${pageThreadId}`}
               threadId={pageThreadId}
               inert={
-                (membersOpen && (conversationWidth ?? 1000) < MEMBER_FLOAT_BREAKPOINT) ||
+                ((membersOpen || searchOpen) &&
+                  (conversationWidth ?? 1000) < MEMBER_FLOAT_BREAKPOINT) ||
                 (portalOpen && (conversationWidth ?? 1000) < THREAD_FLOAT_BREAKPOINT)
               }
             />
@@ -203,7 +241,8 @@ function EnabledChannelPage() {
               inert={
                 (!!(threadId || threadDraft || portalOpen) &&
                   (conversationWidth ?? 1000) < THREAD_FLOAT_BREAKPOINT) ||
-                (membersOpen && (conversationWidth ?? 1000) < MEMBER_FLOAT_BREAKPOINT) ||
+                ((membersOpen || searchOpen) &&
+                  (conversationWidth ?? 1000) < MEMBER_FLOAT_BREAKPOINT) ||
                 (!!visibleTopic && (conversationWidth ?? 1000) < THREAD_FLOAT_BREAKPOINT)
               }
               onOpenThread={(nextThreadId, toggle) => {
@@ -215,11 +254,13 @@ function EnabledChannelPage() {
               }}
               onOpenTopic={(next) => {
                 panel.close();
+                setSearch(null);
                 setMembersChannelId(null);
                 clearPortalStack();
                 setTopic({ ...next, channelId });
               }}
               onStartThread={(draft) => {
+                setSearch(null);
                 setTopic(null);
                 clearPortalStack();
                 panel.openDraft(draft);
@@ -246,6 +287,17 @@ function EnabledChannelPage() {
                 onClose={() => setMembersChannelId(null)}
               />
             ))}
+          {searchOpen && search && (
+            <ChannelSearchPanel
+              availableWidth={conversationWidth}
+              channelId={channelId}
+              id={searchPanelId}
+              key={`${channelId}:${search.query}`}
+              query={search.query}
+              onClose={() => setSearch(null)}
+              onOpen={openSearchHit}
+            />
+          )}
           <ReplyTopicPanel
             availableWidth={conversationWidth}
             topic={visibleTopic}

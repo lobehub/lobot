@@ -1,5 +1,5 @@
-import type { ChannelPublicMessage } from '@lobot/types';
 import { Button, Flexbox } from '@lobehub/ui';
+import type { ChannelPublicMessage } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,7 @@ import { hasReplyActivity } from './jobStatus';
 import { JoinEventLine } from './JoinEventLine';
 import { channelTimeline, conversationJoinEvents } from './joinEvents';
 import { isCurrentUserMember } from './memberName';
+import { consumeChannelJump, useChannelJump } from './messageJump';
 import { channelTimeFormatters, presentChannelTimeline } from './messagePresentation';
 import { presentOutgoingMessage, timelineTail } from './outgoing';
 import { OutgoingStatus } from './OutgoingStatus';
@@ -50,6 +51,9 @@ interface ChannelConversationProps {
   threadId?: string | null;
 }
 
+/** The message a jump scrolls to; older history loads when it is not on the page. */
+type JumpTarget = Pick<ChannelReplyTarget, 'id' | 'sequence'>;
+
 const Timeline = ({
   channelId,
   inert,
@@ -62,7 +66,7 @@ const Timeline = ({
   const timeFormats = useMemo(() => channelTimeFormatters(i18n.language), [i18n.language]);
   const [before, setBefore] = useState<number>();
   const reply = useReplyTarget(channelDraftKey(channelId, threadId));
-  const [jumpTarget, setJumpTarget] = useState<ChannelReplyTarget | null>(null);
+  const [jumpTarget, setJumpTarget] = useState<JumpTarget | null>(null);
   const [highlighted, setHighlighted] = useState<string | null>(null);
   const followSent = useFollowSent(threadId, onOpenThread);
   useEffect(() => {
@@ -106,7 +110,7 @@ const Timeline = ({
   const feedTail = timelineTail(detail?.messages, outgoing);
   const sequence = detail?.channel.sequence;
   useChannelEvents(params);
-  const jumpToMessage = (target: ChannelReplyTarget) => {
+  const jumpToMessage = (target: JumpTarget) => {
     followLatest.current = false;
     setJumpTarget(target);
     if (!feedRef.current?.querySelector(`[data-message-id="${target.id}"]`))
@@ -120,6 +124,15 @@ const Timeline = ({
     setHighlighted(jumpTarget.id);
     setJumpTarget(null);
   }, [detail, jumpTarget]);
+  // A jump asked from outside (a search result) waits for the first page, so a message already
+  // on it scrolls into view instead of reopening the history at it.
+  const externalJump = useChannelJump(channelId, threadId);
+  const loaded = !!detail;
+  useEffect(() => {
+    if (!externalJump || !loaded) return;
+    consumeChannelJump(externalJump);
+    jumpToMessage(externalJump);
+  }, [externalJump, loaded]);
 
   useEffect(() => {
     const feed = feedRef.current;

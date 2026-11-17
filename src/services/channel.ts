@@ -19,6 +19,22 @@ export type ChannelWakeConfig = Record<string, unknown> & {
   pace?: 'active' | 'balanced' | 'calm' | 'custom';
 };
 
+/** One message found by `searchMessages`, with a snippet around its first match. */
+export interface ChannelSearchHit {
+  author: { avatar: string | null; id: string | null; name: string | null; type: 'agent' | 'user' };
+  createdAt: Date | string;
+  id: string;
+  sequence: number;
+  snippet: string;
+  threadId: string | null;
+  threadTitle: string | null;
+}
+
+export interface ChannelSearchPage {
+  hasMore: boolean;
+  messages: ChannelSearchHit[];
+}
+
 export interface ChannelViewParams {
   before?: number;
   channelId: string;
@@ -49,6 +65,13 @@ class ChannelService {
   /** Opens a workspace group Channel to the whole workspace, or makes it invite-only again. */
   updateVisibility = (channelId: string, visibility: 'private' | 'public') =>
     lambdaClient.channel.updateVisibility.mutate({ channelId, visibility });
+  /** Messages in the Channel and its Threads containing every word of `query`, newest first. */
+  searchMessages = async (
+    channelId: string,
+    query: string,
+    before?: number,
+  ): Promise<ChannelSearchPage> =>
+    (await lambdaClient.channel.searchMessages.query({ before, channelId, query })).data;
   rename = (channelId: string, title: string) =>
     lambdaClient.channel.rename.mutate({ channelId, title });
   addUser = (channelId: string, userId: string) =>
