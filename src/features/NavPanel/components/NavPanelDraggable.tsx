@@ -38,6 +38,13 @@ const draggableStyles = createStaticStyles(({ css, cssVar }) => ({
     border-radius: 12px;
     box-shadow: 0 1px 2px rgb(0 0 0 / 3%);
   `,
+  // Compact window: the list column fills the wrap; there is nothing beside it to divide from.
+  compactPanel: css`
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  `,
   content: css`
     position: relative;
 
@@ -120,6 +127,10 @@ interface NavPanelDraggableProps {
     key: string;
     node: ReactNode;
   };
+  /** Compact window: fill the wrap instead of a resizable column. */
+  compact?: boolean;
+  /** Compact window on a content page: keep the list mounted but off screen. */
+  compactHidden?: boolean;
   detached?: boolean;
   homeContent?: ReactNode;
 }
@@ -131,7 +142,7 @@ const classNames = {
 const hiddenLayerStyle = { display: 'none' };
 
 export const NavPanelDraggable = memo<NavPanelDraggableProps>(
-  ({ activeContent, detached, homeContent }) => {
+  ({ activeContent, compact, compactHidden, detached, homeContent }) => {
     const [expand, togglePanel, isStatusInit] = useGlobalStore((s) => [
       systemStatusSelectors.showLeftPanel(s),
       s.toggleLeftPanel,
@@ -159,33 +170,10 @@ export const NavPanelDraggable = memo<NavPanelDraggableProps>(
       [imLayout],
     );
 
-    if (defaultWidthRef.current === 0) {
-      const pendingWidth = systemStatusSelectors.leftPanelWidth(useGlobalStore.getState());
-      return <div aria-hidden style={{ flexShrink: 0, height: '100%', width: pendingWidth }} />;
-    }
-
-    const defaultSize = { height: '100%', width: defaultWidthRef.current };
     const isHomeActive = activeContent.key === 'home';
 
-    return (
-      <DraggablePanel
-        classNames={classNames}
-        defaultSize={defaultSize}
-        expand={expand}
-        expandable={false}
-        maxWidth={NAV_PANEL_MAX_WIDTH}
-        minWidth={NAV_PANEL_MIN_WIDTH}
-        placement="left"
-        showBorder={false}
-        style={styles}
-        className={cx(
-          draggableStyles.panel,
-          imLayout && draggableStyles.imPanel,
-          detached && draggableStyles.detachedPanel,
-        )}
-        onExpandChange={togglePanel}
-        onSizeDragging={handleSizeChange}
-      >
+    const body = (
+      <>
         <div className={draggableStyles.inner}>
           {/* Home stays mounted while a route-owned panel is active so its list
             state survives the round trip. Activity keeps the fibers but not the
@@ -217,6 +205,53 @@ export const NavPanelDraggable = memo<NavPanelDraggableProps>(
             <Footer />
           </Suspense>
         )}
+      </>
+    );
+
+    // A compact window has no room to resize the column: it is either the whole wrap or hidden.
+    if (compact) {
+      return (
+        <div
+          style={compactHidden ? hiddenLayerStyle : styles}
+          className={cx(
+            draggableStyles.panel,
+            draggableStyles.compactPanel,
+            draggableStyles.content,
+            detached && draggableStyles.detachedPanel,
+          )}
+        >
+          {body}
+        </div>
+      );
+    }
+
+    if (defaultWidthRef.current === 0) {
+      const pendingWidth = systemStatusSelectors.leftPanelWidth(useGlobalStore.getState());
+      return <div aria-hidden style={{ flexShrink: 0, height: '100%', width: pendingWidth }} />;
+    }
+
+    const defaultSize = { height: '100%', width: defaultWidthRef.current };
+
+    return (
+      <DraggablePanel
+        classNames={classNames}
+        defaultSize={defaultSize}
+        expand={expand}
+        expandable={false}
+        maxWidth={NAV_PANEL_MAX_WIDTH}
+        minWidth={NAV_PANEL_MIN_WIDTH}
+        placement="left"
+        showBorder={false}
+        style={styles}
+        className={cx(
+          draggableStyles.panel,
+          imLayout && draggableStyles.imPanel,
+          detached && draggableStyles.detachedPanel,
+        )}
+        onExpandChange={togglePanel}
+        onSizeDragging={handleSizeChange}
+      >
+        {body}
       </DraggablePanel>
     );
   },

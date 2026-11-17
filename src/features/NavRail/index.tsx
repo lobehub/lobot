@@ -19,6 +19,7 @@ import { resolveRailTab } from './railTab';
 import { styles } from './style';
 import TabItem from './TabItem';
 import { railTabs } from './tabs';
+import { useCompactLayout } from './useCompactLayout';
 
 /** The badge sums the Messages list rows, so it always matches what the list shows. */
 const useMessagesUnread = (channelsEnabled: boolean) => {
@@ -47,7 +48,10 @@ const NavTabBar = memo(() => {
   // Messages returns to the active Channel, or home where the conversation list lives.
   const { activeChannelId, url: messagesUrl } = useMessagesUrl(pathname, activeWorkspaceSlug);
 
-  const tabs = useMemo(() => railTabs(t, messagesUrl), [messagesUrl, t]);
+  // A compact window shows one column: the Messages tab is the conversation list, like a phone.
+  const compact = useCompactLayout();
+  const tabUrl = compact ? '/' : messagesUrl;
+  const tabs = useMemo(() => railTabs(t, tabUrl), [tabUrl, t]);
 
   return (
     <Flexbox horizontal {...stylex.props(styles.bar)}>

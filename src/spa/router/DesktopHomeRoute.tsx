@@ -7,14 +7,17 @@ import { Navigate } from 'react-router';
 
 import { ChannelEmpty } from '@/features/Channels/ChannelEmpty';
 import { channelActivity } from '@/features/MessageList/conversations';
+import { useCompactLayout } from '@/features/NavRail/useCompactLayout';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 
 /**
  * Lobot has no dashboard: the Messages tab opens the Channel with the latest
  * message, and the Channel list stays beside it. Without any Channel it shows
- * the blank logo page.
+ * the blank logo page. A compact window has no room beside the list, so home is
+ * the list itself and opens nothing.
  */
 const DesktopHomeRoute = () => {
+  const compact = useCompactLayout();
   const sync = channelActions.useFetchList();
   const channels = useChannelStore(channelSelectors.list);
   // Land where the conversation is: the latest message, not the server's order (its first row
@@ -30,7 +33,7 @@ const DesktopHomeRoute = () => {
     );
   }, [channels]);
 
-  if (latest) {
+  if (latest && !compact) {
     return <Navigate replace to={CHANNEL_URL(latest.id)} />;
   }
 

@@ -27,6 +27,33 @@ describe('getNavHeaderLeading', () => {
     });
   });
 
+  describe('compact window', () => {
+    it('leads a page back to the list, even with the panel open or nothing else to show', () => {
+      expect(getNavHeaderLeading(input({ compact: true, compactBack: true }))).toBe('back');
+      expect(getNavHeaderLeading(input({ compact: true, compactBack: true, expand: true }))).toBe(
+        'back',
+      );
+      expect(
+        getNavHeaderLeading(
+          input({ compact: true, compactBack: true, isMacDesktop: true, noContent: true }),
+        ),
+      ).toBe('back');
+    });
+
+    it('never offers the panel toggle', () => {
+      expect(getNavHeaderLeading(input({ compact: true }))).toBe('none');
+      expect(getNavHeaderLeading(input({ compact: true, noContent: true }))).toBe('hidden');
+    });
+
+    it('adds no back button to panel headers that opt out', () => {
+      expect(
+        getNavHeaderLeading(
+          input({ compact: true, compactBack: true, expand: true, showTogglePanelButton: false }),
+        ),
+      ).toBe('none');
+    });
+  });
+
   describe('mobile', () => {
     it('replaces the panel toggle with the back + drawer pair', () => {
       expect(getNavHeaderLeading(input({ mobile: true }))).toBe('mobile');

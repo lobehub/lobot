@@ -2,6 +2,8 @@
 
 import { memo, useSyncExternalStore } from 'react';
 
+import { useCompactRoute } from '@/features/NavRail/useCompactLayout';
+
 import { NavPanelDraggable } from './components/NavPanelDraggable';
 import {
   DEFAULT_NAV_SKELETON_SHAPE,
@@ -19,6 +21,7 @@ const NavPanelFallback = memo<{ navKey: string }>(({ navKey }) => (
 
 const NavPanel = memo(() => {
   const activeNavKey = useActiveNavKey();
+  const { compact, showList } = useCompactRoute();
   const getActiveContent = () => getNavPanelRegistrySnapshot().get(activeNavKey);
   const registeredContent = useSyncExternalStore(
     subscribeNavPanelRegistry,
@@ -43,6 +46,8 @@ const NavPanel = memo(() => {
       {!hidden && (
         <NavPanelDraggable
           activeContent={activeContent}
+          compact={compact}
+          compactHidden={compact && !showList}
           detached={isDetachedNavKey(activeNavKey)}
           homeContent={homeContent}
         />

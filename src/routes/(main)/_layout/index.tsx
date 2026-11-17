@@ -34,6 +34,7 @@ import HotkeyHelperPanel from '@/features/HotkeyHelperPanel';
 import { isDetachedNavKey } from '@/features/NavPanel/railRouteKey';
 import NavPanelShell from '@/features/NavPanel/Shell';
 import { useActiveNavKey } from '@/features/NavPanel/useActiveNavKey';
+import { useCompactRoute } from '@/features/NavRail/useCompactLayout';
 import { useImLayout, useSyncImLayoutHint } from '@/features/NavRail/useImLayout';
 import { wrapStyles } from '@/features/NavRail/wrapStyle';
 import { DndContextWrapper } from '@/features/ResourceManager/DndContextWrapper';
@@ -59,6 +60,9 @@ const Layout: FC = () => {
   // `im_layout`: one rounded wrap (list column with a bottom tab bar + content); off keeps this layout.
   const imLayout = useImLayout();
   const detached = isDetachedNavKey(useActiveNavKey());
+  // A narrow window shows one column at a time, like a phone IM app: the list on a tab root,
+  // otherwise the content with a back button. The rail goes with the list.
+  const { compact, showList } = useCompactRoute();
   useSyncImLayoutHint(imLayout);
 
   useSeedTabsOnBoot();
@@ -100,7 +104,7 @@ const Layout: FC = () => {
           >
             {imLayout ? (
               <>
-                <WorkspaceRail />
+                {(!compact || showList) && <WorkspaceRail />}
                 <Flexbox
                   horizontal
                   {...stylex.props(
@@ -110,7 +114,8 @@ const Layout: FC = () => {
                   )}
                 >
                   <NavPanelShell />
-                  <DesktopLayoutContainer flush transparent={detached}>
+                  {/* Hidden, not unmounted: the tab routers keep their state behind the list. */}
+                  <DesktopLayoutContainer flush hidden={showList} transparent={detached}>
                     <Flexbox height={'100%'} style={tabHostContainer} width={'100%'}>
                       <TabHost />
                     </Flexbox>

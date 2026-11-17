@@ -10,6 +10,7 @@ import { useActiveWorkspace } from '@/business/client/hooks/useActiveWorkspace';
 import { useWorkspaceStore } from '@/business/client/workspace/store';
 import Avatar from '@/components/Avatar';
 import WorkspaceAvatar from '@/components/WorkspaceAvatar';
+import { useCompactLayout } from '@/features/NavRail/useCompactLayout';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
@@ -41,12 +42,14 @@ const styles = stylex.create({
  */
 const ScopeTitle = memo(() => {
   const { t } = useTranslation('common');
+  // A compact titlebar has no room between its controls; the rail already marks the scope.
+  const compact = useCompactLayout();
   const available = useWorkspaceStore((s) => s.isWorkspaceAvailable);
   const workspace = useActiveWorkspace();
   const userAvatar = useUserStore(userProfileSelectors.userAvatar);
   const userName = useUserStore(userProfileSelectors.displayUserName);
 
-  if (!available) return null;
+  if (!available || compact) return null;
 
   const name = workspace ? workspace.name : t('workspaceRail.personal');
 

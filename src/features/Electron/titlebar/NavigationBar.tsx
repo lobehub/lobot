@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import ToggleLeftPanelButton from '@/features/NavPanel/ToggleLeftPanelButton';
 import { WRAP_INSET } from '@/features/NavRail/const';
+import { useCompactLayout } from '@/features/NavRail/useCompactLayout';
 import { useImLayout } from '@/features/NavRail/useImLayout';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { RAIL_WIDTH } from '@/features/WorkspaceRail/railHint';
@@ -44,10 +45,13 @@ const navPanelSelector = (s: GlobalState) => {
 
 const useNavPanelWidth = () => {
   const width = useGlobalStore(navPanelSelector);
+  const compact = useCompactLayout();
   // Under `im_layout` the list column starts after the workspace rail and inside
   // the inset wrap, so the titlebar spans both too.
   const imLayout = useImLayout();
   const railShown = useRailColumnShown();
+  // A compact window has no list column beside the content to line up with.
+  if (compact) return 0;
   if (!imLayout || width === 0) return width;
   return width + WRAP_INSET + (railShown ? RAIL_WIDTH : 0);
 };
@@ -82,6 +86,7 @@ const NavigationBar = memo(() => {
   const activeRecentScope = useElectronStore((state) => state.activeRecentScope);
 
   const leftPanelWidth = useNavPanelWidth();
+  const compact = useCompactLayout();
   const navPanelResizing = useGlobalStore((s) => !!s.isNavPanelResizing);
 
   useWatchBroadcast('windowFullscreenChanged', ({ isFullScreen }) => {
@@ -168,7 +173,8 @@ const NavigationBar = memo(() => {
       }}
     >
       {/* macOS keeps the sidebar toggle here. Windows uses the app icon as the menu. */}
-      {isMac && (
+      {/* A compact window shows the list or the content by route; there is no panel to toggle. */}
+      {isMac && !compact && (
         <Flexbox horizontal align="center" className={electronStylish.nodrag}>
           <ToggleLeftPanelButton forceVisible id={NAV_TOGGLE_ID} size="small" />
         </Flexbox>

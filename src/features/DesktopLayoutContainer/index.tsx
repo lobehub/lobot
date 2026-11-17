@@ -10,12 +10,16 @@ import { getInnerCssVariables, getOuterCssVariables } from './cssVariables';
 import { LayoutContainerContext } from './LayoutContainerContext';
 import { styles } from './style';
 
+const HIDDEN_STYLE = { display: 'none' } as const;
+
 interface DesktopLayoutContainerProps extends PropsWithChildren {
   /**
    * Fill the parent edge to edge, with no outer padding or own border: the
    * `im_layout` rail wrap already draws the rounded border around it.
    */
   flush?: boolean;
+  /** Keep the routed pages mounted but off screen (the compact window shows the list instead). */
+  hidden?: boolean;
   /** No surface of its own: the routed page shows the window background (detached sections) */
   transparent?: boolean;
 }
@@ -23,6 +27,7 @@ interface DesktopLayoutContainerProps extends PropsWithChildren {
 const DesktopLayoutContainer: FC<DesktopLayoutContainerProps> = ({
   children,
   flush,
+  hidden,
   transparent,
 }) => {
   const innerContainerRef = useRef<HTMLDivElement>(null);
@@ -55,7 +60,7 @@ const DesktopLayoutContainer: FC<DesktopLayoutContainerProps> = ({
       className={cx(styles.outerContainer, flush && styles.outerFlush)}
       height={'100%'}
       padding={flush ? 0 : 8}
-      style={flush ? undefined : outerCssVariables}
+      style={hidden ? HIDDEN_STYLE : flush ? undefined : outerCssVariables}
       width={'100%'}
     >
       <Flexbox

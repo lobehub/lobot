@@ -11,6 +11,7 @@ import { RouteLoading } from '@/components/Skeleton/RouteSegment';
 import { EntityLinkHostProvider } from '@/features/EntityLink/host';
 import { directCounterpart } from '@/features/MessageList/conversations';
 import NavHeader from '@/features/NavHeader';
+import { useCompactLayout } from '@/features/NavRail/useCompactLayout';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 import { useChatStore } from '@/store/chat';
 import { serverConfigSelectors, useServerConfigStore } from '@/store/serverConfig';
@@ -42,6 +43,7 @@ function EnabledChannelPage() {
   const { t } = useTranslation('channel');
   const { channelId } = useParams<{ channelId: string }>();
   const panel = useThreadPanel(channelId ?? '');
+  const compact = useCompactLayout();
   const [membersChannelId, setMembersChannelId] = useState<string | null>(null);
   const memberPanelId = useId();
   const conversationRef = useRef<HTMLDivElement>(null);
@@ -96,6 +98,8 @@ function EnabledChannelPage() {
       <NavHeader
         // A rule separates the header from the feed scrolling under it.
         {...stylex.props(styles.threadHeader)}
+        // A thread page leads back to its Channel itself; a second back to the list would compete.
+        showTogglePanelButton={!(compact && pageThreadId)}
         left={
           pageThreadId && detail ? (
             <ThreadPageTitle

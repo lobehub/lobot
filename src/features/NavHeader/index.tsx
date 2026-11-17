@@ -3,7 +3,9 @@ import { Flexbox, TooltipGroup } from '@lobehub/ui';
 import { type CSSProperties, type ReactNode } from 'react';
 import { memo } from 'react';
 
+import BackButton from '@/features/NavPanel/components/BackButton';
 import ToggleLeftPanelButton, { isMacDesktop } from '@/features/NavPanel/ToggleLeftPanelButton';
+import { useCompactRoute } from '@/features/NavRail/useCompactLayout';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 import { isMobileSurface } from '@/utils/mobileSurface';
@@ -41,8 +43,11 @@ const NavHeader = memo<NavHeaderProps>(
     ...rest
   }) => {
     const expand = useGlobalStore(systemStatusSelectors.showLeftPanel);
+    const { backTarget, compact } = useCompactRoute();
 
     const leading = getNavHeaderLeading({
+      compact,
+      compactBack: !!backTarget,
       expand: !!expand,
       isMacDesktop,
       mobile: isMobileSurface(),
@@ -77,6 +82,7 @@ const NavHeader = memo<NavHeaderProps>(
           >
             {leading === 'mobile' && <MobileHeaderNav />}
             {leading === 'toggle' && <ToggleLeftPanelButton />}
+            {leading === 'back' && backTarget && <BackButton to={backTarget} />}
             {/* `left={null}` opts a mobile header out of the route-title fallback. */}
             {left === undefined && leading === 'mobile' && !children ? <MobileRouteTitle /> : left}
           </Flexbox>
