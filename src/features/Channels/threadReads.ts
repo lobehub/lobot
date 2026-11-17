@@ -1,4 +1,4 @@
-import type { ChannelPublicThread } from '@lobechat/types';
+import type { ChannelPublicThread, ChannelThreadMention } from '@lobechat/types';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -69,5 +69,22 @@ export const useUnreadThreadIds = (
   const state = useThreadReadStore();
   return new Set(
     threads.filter((thread) => isThreadUnread(thread, state, scope)).map((thread) => thread.id),
+  );
+};
+
+/**
+ * Whether one of the Channel's Thread @mentions came after what the person last saw in its
+ * Thread, and after tracking began. The Channel's own `mentionCount` misses these once its main
+ * conversation is opened, since that read moves past every Thread message too.
+ */
+export const useHasUnreadThreadMention = (mentions: ChannelThreadMention[] | undefined) => {
+  const scope = cacheScope.use();
+  return useThreadReadStore(
+    (state) =>
+      !!mentions?.some(
+        ({ createdAt, threadId }) =>
+          (toTime(createdAt) ?? 0) >
+          Math.max(state.since, state.readAt[scopedKey(scope, threadId)] ?? 0),
+      ),
   );
 };

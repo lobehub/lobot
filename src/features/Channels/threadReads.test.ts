@@ -3,7 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { cacheScope } from '@/libs/replica';
 
-import { markThreadRead, useThreadReadStore, useUnreadThreadIds } from './threadReads';
+import {
+  markThreadRead,
+  useHasUnreadThreadMention,
+  useThreadReadStore,
+  useUnreadThreadIds,
+} from './threadReads';
 
 const at = (iso: string) => new Date(iso);
 const reply = (iso: string) => ({ lastReply: { createdAt: at(iso) } }) as never;
@@ -57,5 +62,37 @@ describe('useUnreadThreadIds', () => {
     const { result } = renderHook(() => useUnreadThreadIds(threads));
 
     expect([...result.current]).toEqual(['thr_new']);
+  });
+});
+
+describe('useHasUnreadThreadMention', () => {
+  beforeEach(() => {
+    vi.spyOn(cacheScope, 'get').mockReturnValue('personal');
+    vi.spyOn(cacheScope, 'use').mockReturnValue('personal');
+    useThreadReadStore.setState({ readAt: {}, since: at('2026-11-10T00:00:00Z').getTime() });
+  });
+  afterEach(() => vi.restoreAllMocks());
+
+  const mention = (threadId: string, iso: string) => ({ createdAt: at(iso), threadId });
+
+  it('holds a Thread mention until its Thread is read past it', () => {
+    const mentions = [mention('thr_a', '2026-11-18T00:37:00Z')];
+    const { result } = renderHook(() => useHasUnreadThreadMention(mentions));
+    expect(result.current).toBe(true);
+
+    act(() => markThreadRead('thr_a', '2026-11-18T01:00:00Z'));
+    expect(result.current).toBe(false);
+  });
+
+  it('takes mentions from before tracking began as seen', () => {
+    const { result } = renderHook(() =>
+      useHasUnreadThreadMention([mention('thr_a', '2026-11-01T00:00:00Z')]),
+    );
+    expect(result.current).toBe(false);
+  });
+
+  it('is false without Thread mentions', () => {
+    const { result } = renderHook(() => useHasUnreadThreadMention(undefined));
+    expect(result.current).toBe(false);
   });
 });
