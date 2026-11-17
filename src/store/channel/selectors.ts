@@ -50,6 +50,9 @@ export const channelSelectors = {
   directByAgent: (agentId: string) => (state: ChannelState) =>
     state.listMap.all?.find((channel) => channel.agentId === agentId && !channel.projectId),
   list: (state: ChannelState) => state.listMap.all,
+  /** A Channel's own row in the list, available before its conversation has loaded. */
+  listed: (channelId: string) => (state: ChannelState) =>
+    state.listMap.all?.find((channel) => channel.id === channelId),
   /** A listed conversation has a reply in progress, which its row shows until it settles. */
   listHasPendingWork: (state: ChannelState) =>
     !!state.listMap.all?.some((channel) => channel.replyJobs?.some(isProgressing)),
