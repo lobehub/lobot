@@ -39,6 +39,8 @@
   "agentDocument.portal.viewAll": "查看全部文稿",
   "agentNotFound.desc": "该助理不存在或您已无权访问，可能已被删除或被其所有者设为私人。",
   "agentNotFound.title": "助理不可用",
+  "agentProfile.channelDevice": "设备：{{name}}",
+  "agentProfile.channelDirectory": "目录：{{path}}",
   "agentProfile.files_one": "{{count}} 个文件",
   "agentProfile.files_other": "{{count}} 个文件",
   "agentProfile.knowledgeBases_one": "{{count}} 个知识库",

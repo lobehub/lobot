@@ -140,6 +140,7 @@ export const MemberProfilePopup = ({
     return (
       <AgentProfilePopup
         agentId={member.agentId}
+        environment={member.environment}
         trigger={'hover'}
         agent={{
           avatar: member.avatar,

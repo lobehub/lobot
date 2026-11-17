@@ -314,6 +314,8 @@ export default {
   'inaccessibleFile.desc': 'No access — it may have been set to private or deleted by its owner',
   'inaccessibleFile.name': 'Unavailable file',
   'internalLink.agent.open': 'Open agent',
+  'agentProfile.channelDevice': 'Device: {{name}}',
+  'agentProfile.channelDirectory': 'Directory: {{path}}',
   'agentProfile.files_one': '{{count}} file',
   'agentProfile.files_other': '{{count}} files',
   'agentProfile.knowledgeBases_one': '{{count}} library',

@@ -414,6 +414,7 @@ export const ChannelMessage = ({
               // Same profile card an Agent shows on hover in goals and tasks.
               <AgentProfilePopup
                 agentId={agentAuthorId}
+                environment={agentMember?.environment}
                 trigger={'hover'}
                 agent={{
                   avatar: message.author.avatar,

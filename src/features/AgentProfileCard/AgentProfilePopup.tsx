@@ -1,6 +1,6 @@
 'use client';
 
-import { agentDisplayName } from '@lobechat/types';
+import { agentDisplayName, type ChannelMemberEnvironmentPreview } from '@lobechat/types';
 import {
   ActionIcon,
   createStaticStyles,
@@ -11,7 +11,7 @@ import {
   Text,
 } from '@lobehub/ui';
 import { SkillsIcon } from '@lobehub/ui/icons';
-import { BookOpen, FileText, Settings, SquareTerminal } from 'lucide-react';
+import { BookOpen, FileText, Folder, Laptop, Settings, SquareTerminal } from 'lucide-react';
 import { memo, type PropsWithChildren, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -32,7 +32,17 @@ import {
   useAgentProfileDetail,
 } from './useAgentProfileDetail';
 
+/** The last two segments of a path, so a deep directory stays readable on one line. */
+const shortDirectory = (path: string) => {
+  const parts = path.split(/[/\\]/).filter(Boolean);
+  return parts.length > 2 ? `…/${parts.slice(-2).join('/')}` : path;
+};
+
 const styles = createStaticStyles(({ css, cssVar }) => ({
+  environment: css`
+    padding-block-end: 12px;
+    padding-inline: 16px;
+  `,
   footer: css`
     padding-block: 12px;
     padding-inline: 16px;
@@ -64,13 +74,15 @@ interface AgentProfilePopupProps extends PropsWithChildren {
   /** Prefilled data for instant render; fetched data overrides once loaded. */
   agent?: Partial<AgentPreview>;
   agentId: string;
+  /** Where the Agent runs in the Channel the card is opened from. */
+  environment?: ChannelMemberEnvironmentPreview | null;
   /** When set, enables group-specific actions (settings nav + model change). */
   groupId?: string;
   trigger?: 'click' | 'hover';
 }
 
 const AgentProfilePopup = memo<AgentProfilePopupProps>(
-  ({ agent, agentId, groupId, children, trigger = 'click' }) => {
+  ({ agent, agentId, environment, groupId, children, trigger = 'click' }) => {
     const { t } = useTranslation('chat');
     const navigate = useWorkspaceAwareNavigate();
     const [open, setOpen] = useState(false);
@@ -208,6 +220,37 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
         </Flexbox>
       ) : null;
 
+    const deviceName = environment?.deviceName;
+    const directory = environment?.workingDirectory;
+    // Sits under the runtime line when there is one, else opens its own footer.
+    const environmentSection =
+      deviceName || directory ? (
+        <Flexbox className={modelSection ? styles.environment : styles.footer} gap={6}>
+          {deviceName && (
+            <Flexbox horizontal align={'center'} className={styles.statItem} gap={6}>
+              <Icon icon={Laptop} size={14} />
+              <Text ellipsis fontSize={12} type={'secondary'}>
+                {t('agentProfile.channelDevice', { name: deviceName })}
+              </Text>
+            </Flexbox>
+          )}
+          {directory && (
+            <Flexbox
+              horizontal
+              align={'center'}
+              className={styles.statItem}
+              gap={6}
+              title={directory}
+            >
+              <Icon icon={Folder} size={14} />
+              <Text ellipsis fontSize={12} type={'secondary'}>
+                {t('agentProfile.channelDirectory', { path: shortDirectory(directory) })}
+              </Text>
+            </Flexbox>
+          )}
+        </Flexbox>
+      ) : null;
+
     const content = showSkeleton ? (
       <div style={{ padding: 16, width: 280 }}>
         <ArticleSkeleton avatar rows={2} />
@@ -235,6 +278,7 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
         onHeaderClick={canConfigure ? handleHeaderClick : undefined}
       >
         {modelSection}
+        {environmentSection}
       </AgentProfileCard>
     );
 
