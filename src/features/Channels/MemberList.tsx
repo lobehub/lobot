@@ -12,7 +12,12 @@ import { userProfileSelectors } from '@/store/user/selectors';
 import { openChannelAgentEnvironment } from './AgentEnvironment';
 import { ChannelStatus } from './ChannelStatus';
 import type { ChannelStatusTone } from './jobStatus';
-import { channelJobTone, memberCurrentJob, memberJobStatus } from './jobStatus';
+import {
+  channelJobTone,
+  memberCurrentJob,
+  memberJobStatus,
+  workingConversationCount,
+} from './jobStatus';
 import { MemberAvatar } from './MemberAvatar';
 import { callerMemberRole, canRemoveMember } from './memberManagement';
 import { isCurrentUserMember, memberName } from './memberName';
@@ -52,9 +57,16 @@ export function useMemberEntries(detail: ChannelDetail) {
   const entries: MemberEntry[] = getVisibleStatusMembers(allMembers, channel.workspaceId).map(
     (member) => {
       const job = member.actorType === 'agent' ? memberCurrentJob(jobs, member.id) : undefined;
+      // Working in two or more conversations at once (the main one and its Threads) says how many.
+      const parallel = job ? workingConversationCount(jobs, member.id) : 0;
       return {
         // Idle is the default and goes unlabelled; only a reply in progress or needing attention says so.
-        label: member.actorType === 'agent' && job ? t(memberJobStatus(job)) : '',
+        label:
+          member.actorType === 'agent' && job
+            ? parallel > 1
+              ? t('activity.parallel', { count: parallel })
+              : t(memberJobStatus(job))
+            : '',
         member,
         name: memberName(member, t('deletedMember')),
         tone: job ? channelJobTone(job) : 'quiet',

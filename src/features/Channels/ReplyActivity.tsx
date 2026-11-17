@@ -7,7 +7,12 @@ import AgentAvatar from '@/components/AgentAvatar';
 
 import { activityLabel } from './activityLabel';
 import { canManageAgents } from './channelAccess';
-import { channelJobStatus, conversationReplies, memberCurrentJob } from './jobStatus';
+import {
+  channelJobStatus,
+  conversationReplies,
+  memberCurrentJob,
+  workingConversationCount,
+} from './jobStatus';
 import { replyEntries, ReplyList } from './MessageReceipts';
 import { activityStyles, styles } from './styles';
 import { TypingDots } from './TypingDots';
@@ -39,17 +44,23 @@ export function ReplyActivity({
   // One Agent may have several requests queued; describe each Agent once.
   const members = [...new Map(entries.map((entry) => [entry.job.memberId, entry])).values()];
   const names = members.map((entry) => entry.name);
-  const label =
-    members.length === 1
-      ? t('activity.one', {
-          name: names[0],
-          status: t(channelJobStatus(memberCurrentJob(jobs, members[0].job.memberId)!)),
+  // A lone Agent working in several places at once (this conversation and its Threads, whose
+  // replies at work the main view carries) says how many, as its direct conversation does.
+  const soleMemberId = members.length === 1 ? members[0].job.memberId : undefined;
+  const parallel = soleMemberId ? workingConversationCount(detail.jobs ?? [], soleMemberId) : 0;
+  const label = soleMemberId
+    ? t('activity.one', {
+        name: names[0],
+        status:
+          parallel > 1
+            ? t('activity.parallel', { count: parallel })
+            : t(channelJobStatus(memberCurrentJob(jobs, soleMemberId)!)),
+      })
+    : members.length === 2
+      ? t('activity.two', {
+          names: new Intl.ListFormat(i18n.language, { type: 'conjunction' }).format(names),
         })
-      : members.length === 2
-        ? t('activity.two', {
-            names: new Intl.ListFormat(i18n.language, { type: 'conjunction' }).format(names),
-          })
-        : t('activity.many', { count: members.length });
+      : t('activity.many', { count: members.length });
   const avatars = members.slice(0, MAX_AVATARS);
 
   return (

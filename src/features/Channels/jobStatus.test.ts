@@ -372,4 +372,15 @@ describe('workingConversationCount', () => {
     ).toBe(0);
     expect(workingConversationCount([])).toBe(0);
   });
+
+  it("counts only the given member's conversations", () => {
+    const jobs = [
+      job(),
+      job({ id: 'a', threadId: 'thr_1' }),
+      job({ id: 'b', memberId: 'mem_other', threadId: 'thr_2' }),
+    ];
+    expect(workingConversationCount(jobs, 'mem_cook')).toBe(2);
+    expect(workingConversationCount(jobs, 'mem_other')).toBe(1);
+    expect(workingConversationCount(jobs)).toBe(3);
+  });
 });
