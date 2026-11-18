@@ -13,12 +13,14 @@ import { channelMessageTime } from './messagePresentation';
 
 const styles = stylex.create({
   box: {
-    flexShrink: 0,
-    width: 160,
+    // Gives way before the title and icons in a narrow window.
+    flexShrink: 1,
+    minWidth: 140,
+    width: 220,
     transitionDuration: '150ms',
     transitionProperty: 'width',
   },
-  boxActive: { width: 240 },
+  boxActive: { width: 320 },
   list: {
     overflowY: 'auto',
     display: 'flex',
@@ -179,7 +181,6 @@ export function ChannelSearchBox({
       aria-label={t('search.shortcut')}
       placeholder={t('search.placeholder')}
       shortKey="mod+f"
-      size="small"
       title={t('search.shortcut')}
       value={value}
       variant="filled"

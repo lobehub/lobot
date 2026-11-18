@@ -175,11 +175,6 @@ function EnabledChannelPage() {
           detail && (
             <Flexbox horizontal align="center" gap={8}>
               {pageThreadId && <ThreadPageActions detail={detail} threadId={pageThreadId} />}
-              <ChannelSearchBox
-                value={searchValue}
-                onChange={(value) => setSearchInput({ channelId, value })}
-                onSearch={openSearch}
-              />
               <ThreadsButton
                 activeId={pageThreadId ?? threadId}
                 detail={detail}
@@ -213,6 +208,12 @@ function EnabledChannelPage() {
                       }
                     : undefined
                 }
+              />
+              {/* Last in the row, like Discord's search. */}
+              <ChannelSearchBox
+                value={searchValue}
+                onChange={(value) => setSearchInput({ channelId, value })}
+                onSearch={openSearch}
               />
             </Flexbox>
           )
