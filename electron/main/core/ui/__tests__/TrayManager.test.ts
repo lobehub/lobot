@@ -36,6 +36,7 @@ describe('TrayManager', () => {
       broadcast: vi.fn(),
       destroy: vi.fn(),
       setMenu: vi.fn(),
+      setUnreadCount: vi.fn(),
       updateIcon: vi.fn(),
       updateTooltip: vi.fn(),
     };
@@ -88,6 +89,13 @@ describe('TrayManager', () => {
 
       expect(mockApp.menuManager.buildTrayMenu).toHaveBeenCalled();
       expect(mockTray.setMenu).toHaveBeenCalledWith({ _mockMenu: true });
+    });
+
+    it('should keep the unread count for a tray created later', () => {
+      trayManager.setUnreadCount(6);
+      trayManager.initializeTrays();
+
+      expect(mockTray.setUnreadCount).toHaveBeenCalledWith(6);
     });
 
     it('should forward navigation snapshots to the dock menu even without a tray', () => {

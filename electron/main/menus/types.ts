@@ -43,7 +43,7 @@ export interface IMenuPlatform {
   /**
    * Build tray menu
    */
-  buildTrayMenu: (snapshot?: TrayNavigationSnapshot) => Menu;
+  buildTrayMenu: () => Menu;
 
   /**
    * Refresh menu

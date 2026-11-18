@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import type { App } from '@/core/App';
 
-import { buildTrayMenuTemplate } from './trayMenu';
+import { buildDockMenuTemplate, buildTrayMenuTemplate } from './trayMenu';
 
 const createApp = () => {
   const mainWindow = {
@@ -27,16 +27,40 @@ const createApp = () => {
 };
 
 describe('buildTrayMenuTemplate', () => {
+  it('only keeps opening and quitting the app', () => {
+    const { app } = createApp();
+
+    const template = buildTrayMenuTemplate(app);
+
+    expect(template.map((item) => item.label ?? item.type)).toEqual([
+      'tray.open',
+      'separator',
+      'tray.quit',
+    ]);
+  });
+
+  it('opens the main window', () => {
+    const { app } = createApp();
+
+    buildTrayMenuTemplate(app)[0].click?.({} as never, undefined, {} as never);
+
+    expect(app.browserManager.showMainWindow).toHaveBeenCalled();
+  });
+});
+
+describe('buildDockMenuTemplate', () => {
   it('keeps static actions when navigation data is empty', () => {
     const { app } = createApp();
 
-    const template = buildTrayMenuTemplate(app, { agents: [], pinned: [], recent: [] });
+    const template = buildDockMenuTemplate(
+      app,
+      { agents: [], pinned: [], recent: [] },
+      { includeAgents: true },
+    );
     const labels = template.map((item) => item.label);
 
     expect(labels).toContain('tray.openMiniToolbar');
-    expect(labels).toContain('tray.quickChat');
     expect(labels).toContain('tray.newChat');
-    expect(labels).toContain('tray.settings');
     expect(labels).not.toContain('tray.pinned');
     expect(labels).not.toContain('tray.recentAgents');
     expect(labels).not.toContain('tray.recent');
@@ -44,21 +68,25 @@ describe('buildTrayMenuTemplate', () => {
 
   it('limits dynamic sections and offers More only for agents', () => {
     const { app } = createApp();
-    const template = buildTrayMenuTemplate(app, {
-      agents: Array.from({ length: 4 }, (_, index) => ({
-        id: `agent-${index}`,
-        title: `Agent ${index}`,
-        url: `/agent/agent-${index}`,
-      })),
-      pinned: Array.from({ length: 4 }, (_, index) => ({
-        title: `Pinned ${index}`,
-        url: `/page/pinned-${index}`,
-      })),
-      recent: Array.from({ length: 6 }, (_, index) => ({
-        title: `Recent ${index}`,
-        url: `/page/recent-${index}`,
-      })),
-    });
+    const template = buildDockMenuTemplate(
+      app,
+      {
+        agents: Array.from({ length: 4 }, (_, index) => ({
+          id: `agent-${index}`,
+          title: `Agent ${index}`,
+          url: `/agent/agent-${index}`,
+        })),
+        pinned: Array.from({ length: 4 }, (_, index) => ({
+          title: `Pinned ${index}`,
+          url: `/page/pinned-${index}`,
+        })),
+        recent: Array.from({ length: 6 }, (_, index) => ({
+          title: `Recent ${index}`,
+          url: `/page/recent-${index}`,
+        })),
+      },
+      { includeAgents: true },
+    );
     const labels = template.map((item) => item.label);
 
     expect(labels.filter((label) => String(label).startsWith('Pinned '))).toHaveLength(3);
@@ -70,19 +98,23 @@ describe('buildTrayMenuTemplate', () => {
 
   it('lists topics awaiting input before running ones, each capped', () => {
     const { app } = createApp();
-    const template = buildTrayMenuTemplate(app, {
-      activeTopics: [
-        ...Array.from({ length: 6 }, (_, index) => ({
-          status: 'running' as const,
-          title: `Running ${index}`,
-          url: `/agent/a/running-${index}`,
-        })),
-        { status: 'waitingForHuman', subtitle: 'Researcher', title: 'Deploy', url: '/agent/a/t' },
-      ],
-      agents: [],
-      pinned: [],
-      recent: [],
-    });
+    const template = buildDockMenuTemplate(
+      app,
+      {
+        activeTopics: [
+          ...Array.from({ length: 6 }, (_, index) => ({
+            status: 'running' as const,
+            title: `Running ${index}`,
+            url: `/agent/a/running-${index}`,
+          })),
+          { status: 'waitingForHuman', subtitle: 'Researcher', title: 'Deploy', url: '/agent/a/t' },
+        ],
+        agents: [],
+        pinned: [],
+        recent: [],
+      },
+      { includeAgents: true },
+    );
     const labels = template.map((item) => item.label);
 
     expect(labels.slice(0, 3)).toEqual(['tray.waitingForHuman', 'Deploy', undefined]);
@@ -95,11 +127,15 @@ describe('buildTrayMenuTemplate', () => {
 
   it('opens dynamic routes in the main window', () => {
     const { app, mainWindow } = createApp();
-    const template = buildTrayMenuTemplate(app, {
-      agents: [],
-      pinned: [{ title: 'Pinned task', url: '/tasks/pinned' }],
-      recent: [],
-    });
+    const template = buildDockMenuTemplate(
+      app,
+      {
+        agents: [],
+        pinned: [{ title: 'Pinned task', url: '/tasks/pinned' }],
+        recent: [],
+      },
+      { includeAgents: true },
+    );
     const item = template.find(({ label }) => label === 'Pinned task');
 
     item?.click?.(null as never, null as never, null as never);
@@ -113,14 +149,18 @@ describe('buildTrayMenuTemplate', () => {
 
   it('renders recent topics and pages as two-line native items', () => {
     const { app } = createApp();
-    const template = buildTrayMenuTemplate(app, {
-      agents: [],
-      pinned: [],
-      recent: [
-        { subtitle: 'Researcher', title: 'Topic title', url: '/agent/agent-1/topic-1' },
-        { subtitle: 'Page', title: 'Page title', url: '/page/page-1' },
-      ],
-    });
+    const template = buildDockMenuTemplate(
+      app,
+      {
+        agents: [],
+        pinned: [],
+        recent: [
+          { subtitle: 'Researcher', title: 'Topic title', url: '/agent/agent-1/topic-1' },
+          { subtitle: 'Page', title: 'Page title', url: '/page/page-1' },
+        ],
+      },
+      { includeAgents: true },
+    );
 
     expect(template.find(({ label }) => label === 'Topic title')).toMatchObject({
       sublabel: 'Researcher',
@@ -132,11 +172,15 @@ describe('buildTrayMenuTemplate', () => {
 
   it('keeps restoration and creation as separate actions', () => {
     const { app, mainWindow } = createApp();
-    const template = buildTrayMenuTemplate(app, {
-      agents: [{ id: 'agent-1', title: 'Researcher', url: '/agent/agent-1' }],
-      pinned: [],
-      recent: [],
-    });
+    const template = buildDockMenuTemplate(
+      app,
+      {
+        agents: [{ id: 'agent-1', title: 'Researcher', url: '/agent/agent-1' }],
+        pinned: [],
+        recent: [],
+      },
+      { includeAgents: true },
+    );
 
     template
       .find(({ label }) => label === 'Researcher')

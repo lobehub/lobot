@@ -252,7 +252,6 @@ describe('LinuxMenu', () => {
       const template = (Menu.buildFromTemplate as any).mock.calls[0][0];
       expect(template.length).toBeGreaterThan(0);
       expect(template.some((item: any) => item.label?.includes('Open'))).toBe(true);
-      expect(template.some((item: any) => item.label === 'Settings')).toBe(true);
       expect(template.some((item: any) => item.label === 'Quit')).toBe(true);
     });
   });

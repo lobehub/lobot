@@ -83,9 +83,9 @@ export class MenuManager {
   /**
    * Build tray menu (usually called by tray manager)
    */
-  buildTrayMenu(snapshot?: TrayNavigationSnapshot): Menu {
+  buildTrayMenu(): Menu {
     logger.debug('Building tray menu');
-    return this.platformImpl.buildTrayMenu(snapshot);
+    return this.platformImpl.buildTrayMenu();
   }
 
   updateDockMenu(snapshot: TrayNavigationSnapshot) {

@@ -22,7 +22,7 @@ type TrayIdentifiers = 'main';
 
 export class TrayManager {
   app: App;
-  private navigationSnapshot: TrayNavigationSnapshot = { agents: [], pinned: [], recent: [] };
+  private unreadCount = 0;
 
   /**
    * Store all tray instances
@@ -56,10 +56,11 @@ export class TrayManager {
     // Attach the platform-specific context menu built by MenuManager so the
     // tray right-click entries stay in sync with the app menu i18n.
     try {
-      mainTray.setMenu(this.app.menuManager.buildTrayMenu(this.navigationSnapshot));
+      mainTray.setMenu(this.app.menuManager.buildTrayMenu());
     } catch (error) {
       logger.error('Failed to attach tray context menu:', error);
     }
+    mainTray.setUnreadCount(this.unreadCount);
   }
 
   /**
@@ -83,10 +84,15 @@ export class TrayManager {
   }
 
   updateNavigationSnapshot(snapshot: TrayNavigationSnapshot) {
-    this.navigationSnapshot = snapshot;
     this.app.menuManager.updateDockMenu(snapshot);
-    const mainTray = this.getMainTray();
-    if (mainTray) mainTray.setMenu(this.app.menuManager.buildTrayMenu(snapshot));
+  }
+
+  /**
+   * Mirror the unread badge onto the main tray, and remember it for a tray recreated later.
+   */
+  setUnreadCount(count: number) {
+    this.unreadCount = count;
+    this.getMainTray()?.setUnreadCount(count);
   }
 
   /**

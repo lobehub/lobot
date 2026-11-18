@@ -82,8 +82,11 @@ const mockBrowserManager = {
   showMainWindow: vi.fn(),
 };
 
+const mockTrayManager = { setUnreadCount: vi.fn() };
+
 const mockApp = {
   browserManager: mockBrowserManager,
+  trayManager: mockTrayManager,
 } as unknown as App;
 
 describe('NotificationCtr.mac', () => {
@@ -187,12 +190,13 @@ describe('NotificationCtr.mac', () => {
     expect(app.dock.bounce).toHaveBeenCalledWith('informational');
   });
 
-  it('pairs setBadgeCount with the dock badge', async () => {
+  it('pairs setBadgeCount with the dock badge and the menu bar count', async () => {
     const { app } = await import('electron');
 
     controller.setBadgeCount(3);
 
     expect(app.setBadgeCount).toHaveBeenCalledWith(3);
     expect(app.dock.setBadge).toHaveBeenCalledWith('3');
+    expect(mockTrayManager.setUnreadCount).toHaveBeenCalledWith(3);
   });
 });

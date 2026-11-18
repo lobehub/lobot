@@ -189,6 +189,7 @@ export default class NotificationCtr extends ControllerModule {
       const next = Math.max(0, Math.floor(count));
       app.setBadgeCount(next);
       app.dock?.setBadge(next > 0 ? String(next) : '');
+      this.app.trayManager.setUnreadCount(next);
     } catch (error) {
       logger.error('Failed to set badge count:', error);
     }

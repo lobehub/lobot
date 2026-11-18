@@ -83,23 +83,18 @@ export const buildDockMenuTemplate = (
   ];
 };
 
-export const buildTrayMenuTemplate = (
-  app: App,
-  snapshot: TrayNavigationSnapshot,
-): MenuItemConstructorOptions[] => {
+/**
+ * The tray icon itself opens Lobot and carries the unread count, so its right-click menu only keeps
+ * the ways back in and out of the app.
+ */
+export const buildTrayMenuTemplate = (app: App): MenuItemConstructorOptions[] => {
   const t = app.i18n.ns('menu');
   const appName = electronApp.getName();
 
   return [
-    ...buildDockMenuTemplate(app, snapshot, { includeAgents: true }),
-    { type: 'separator' },
     {
       click: () => app.browserManager.showMainWindow(),
       label: t('tray.open', { appName }),
-    },
-    {
-      click: () => openRoute(app, '/settings'),
-      label: t('tray.settings'),
     },
     { type: 'separator' },
     { label: t('tray.quit'), role: 'quit' },

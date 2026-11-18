@@ -48,8 +48,8 @@ export class MacOSMenu extends BaseMenuPlatform implements IMenuPlatform {
     return Menu.buildFromTemplate(template);
   }
 
-  buildTrayMenu(snapshot: TrayNavigationSnapshot = { agents: [], pinned: [], recent: [] }): Menu {
-    const template = buildTrayMenuTemplate(this.app, snapshot);
+  buildTrayMenu(): Menu {
+    const template = buildTrayMenuTemplate(this.app);
     this.trayMenu = Menu.buildFromTemplate(template);
     return this.trayMenu;
   }

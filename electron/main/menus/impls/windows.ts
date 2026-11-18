@@ -1,5 +1,4 @@
 import { DOWNLOAD_URL, GITHUB, OFFICIAL_SITE } from '@lobechat/const/url';
-import type { TrayNavigationSnapshot } from '@lobechat/electron-client-ipc';
 import type { MenuItemConstructorOptions } from 'electron';
 import { app, clipboard, Menu, shell } from 'electron';
 
@@ -40,8 +39,8 @@ export class WindowsMenu extends BaseMenuPlatform implements IMenuPlatform {
     return Menu.buildFromTemplate(template);
   }
 
-  buildTrayMenu(snapshot: TrayNavigationSnapshot = { agents: [], pinned: [], recent: [] }): Menu {
-    const template = buildTrayMenuTemplate(this.app, snapshot);
+  buildTrayMenu(): Menu {
+    const template = buildTrayMenuTemplate(this.app);
     this.trayMenu = Menu.buildFromTemplate(template);
     return this.trayMenu;
   }

@@ -9,14 +9,13 @@ import type {
 import { app, Menu, nativeImage, Tray as ElectronTray } from 'electron';
 
 import { resourcesDir } from '@/const/dir';
-import { isWindows } from '@/const/env';
+import { isMac } from '@/const/env';
 import { createLogger } from '@/utils/logger';
 
 import type { App } from '../App';
 
 // Create logger
 const logger = createLogger('core:Tray');
-const WINDOWS_CLICK_DEBOUNCE_MS = 250;
 
 export interface TrayOptions {
   /**
@@ -55,9 +54,6 @@ export class Tray {
    * happen automatically if we called `_tray.setContextMenu(menu)`).
    */
   private _contextMenu?: ElectronMenu;
-
-  /** Pending Windows click while Electron determines whether it is a double-click. */
-  private _clickTimer?: NodeJS.Timeout;
 
   /**
    * Identifier
@@ -123,31 +119,11 @@ export class Tray {
       // Set default context menu
       this.setContextMenu();
 
-      // Both mouse buttons expose the same native menu.
+      // Left-click opens Lobot directly, like a chat app's menu bar icon.
       this._tray.on('click', () => {
         logger.debug(`[${this.identifier}] Tray clicked`);
-        if (!isWindows) {
-          this.popUpMenu();
-          return;
-        }
-
-        if (this._clickTimer) clearTimeout(this._clickTimer);
-        this._clickTimer = setTimeout(() => {
-          this._clickTimer = undefined;
-          this.popUpMenu();
-        }, WINDOWS_CLICK_DEBOUNCE_MS);
+        this.app.browserManager.showMainWindow();
       });
-
-      if (isWindows) {
-        this._tray.on('double-click', () => {
-          logger.debug(`[${this.identifier}] Tray double-clicked`);
-          if (this._clickTimer) {
-            clearTimeout(this._clickTimer);
-            this._clickTimer = undefined;
-          }
-          this.app.browserManager.showMainWindow();
-        });
-      }
 
       // Right-click: pop the stored context menu manually so left-click stays
       // free (macOS would auto-open the menu on either button if we called
@@ -237,6 +213,14 @@ export class Tray {
   }
 
   /**
+   * Show the unread count beside the menu bar icon; 0 clears it. Only macOS renders tray titles.
+   */
+  setUnreadCount(count: number) {
+    if (!isMac) return;
+    this._tray?.setTitle(count > 0 ? String(count) : '');
+  }
+
+  /**
    * Update tooltip text
    * @param tooltip New tooltip text
    */
@@ -275,10 +259,6 @@ export class Tray {
    */
   destroy() {
     logger.debug(`Destroying tray instance: ${this.identifier}`);
-    if (this._clickTimer) {
-      clearTimeout(this._clickTimer);
-      this._clickTimer = undefined;
-    }
     if (this._tray) {
       this._tray.destroy();
       this._tray = undefined;
