@@ -1,15 +1,15 @@
 import { isDesktop } from '@lobechat/const';
 import { type DataSyncConfig } from '@lobechat/electron-client-ipc';
 import isEqual from 'fast-deep-equal';
-import useSWR from 'swr';
-import { type SWRResponse } from 'swr';
 
-import { mutate } from '@/libs/swr';
-import { electronKeys } from '@/libs/swr/keys';
+import { createReplicaSlice, type ReplicaSyncResult } from '@/libs/replica';
 import { remoteServerService } from '@/services/electron/remoteServer';
 import { type StoreSetter } from '@/store/types';
 import { useUserStore } from '@/store/user';
 
+import { defaultDataSyncConfig } from '../initialState';
+import { selfFieldsLens } from '../lens';
+import { dataSyncConfigResource, DESKTOP_SELF_KEY } from '../projection';
 import { type ElectronStore } from '../store';
 
 /**
@@ -21,6 +21,7 @@ export const remoteSyncSlice = (set: Setter, get: () => ElectronStore, _api?: un
   new ElectronRemoteServerActionImpl(set, get, _api);
 
 class ElectronRemoteServerActionImpl {
+  readonly #dataSyncConfig;
   readonly #get: () => ElectronStore;
   readonly #set: Setter;
 
@@ -28,6 +29,42 @@ class ElectronRemoteServerActionImpl {
     void _api;
     this.#set = set;
     this.#get = get;
+    this.#dataSyncConfig = createReplicaSlice(dataSyncConfigResource, {
+      actionPrefix: 'dataSyncConfig',
+      fetcher: async () => {
+        try {
+          return await remoteServerService.getRemoteServerConfig();
+        } catch (error) {
+          console.error('Failed to get remote server configuration:', error);
+          throw error;
+        }
+      },
+      get,
+      // Only refresh on genuine config changes AFTER the first answer. On
+      // initial load the stores are already fresh, and `refreshUserData` runs
+      // `stores.reset()` which wipes chat state (notably `activeAgentId`) that
+      // `AgentIdSync` just set from the URL — leaving the topic list unable to
+      // resolve its agent scope on reload.
+      prepareHead: (incoming, current) => {
+        if (current !== undefined && !isEqual(incoming, current)) {
+          void this.#get()
+            .refreshUserData()
+            .catch((error) => {
+              console.error('Failed to refresh user data:', error);
+            });
+        }
+        return incoming;
+      },
+      set,
+      stateKey: 'dataSyncConfigReplica',
+      view: selfFieldsLens<ElectronStore, DataSyncConfig>(
+        (s) => (s.isInitRemoteServerConfig ? s.dataSyncConfig : undefined),
+        (data) =>
+          data
+            ? { dataSyncConfig: data, isInitRemoteServerConfig: true }
+            : { dataSyncConfig: defaultDataSyncConfig, isInitRemoteServerConfig: false },
+      ),
+    });
   }
 
   clearRemoteServerSyncError = (): void => {
@@ -71,7 +108,7 @@ class ElectronRemoteServerActionImpl {
   };
 
   refreshServerConfig = async (): Promise<void> => {
-    await mutate(electronKeys.remoteServerConfig());
+    await this.#dataSyncConfig.revalidate();
   };
 
   refreshUserData = async (): Promise<void> => {
@@ -84,39 +121,10 @@ class ElectronRemoteServerActionImpl {
     await useUserStore.getState().refreshUserState();
   };
 
-  useDataSyncConfig = (): SWRResponse => {
-    return useSWR<DataSyncConfig>(
-      // Desktop-only IPC: on web there is no electronAPI, so never fetch off-desktop.
-      isDesktop ? electronKeys.remoteServerConfig() : null,
-      async () => {
-        try {
-          return await remoteServerService.getRemoteServerConfig();
-        } catch (error) {
-          console.error('Failed to get remote server configuration:', error);
-          throw error;
-        }
-      },
-      {
-        onSuccess: (data) => {
-          const { dataSyncConfig, isInitRemoteServerConfig } = this.#get();
-          // Only refresh on genuine config changes AFTER the first hydration.
-          // On initial load the stores are already fresh, and `refreshUserData`
-          // runs `stores.reset()` which wipes chat state (notably `activeAgentId`)
-          // that `AgentIdSync` just set from the URL — leaving the topic list
-          // unable to resolve its agent scope on reload.
-          if (isInitRemoteServerConfig && !isEqual(data, dataSyncConfig)) {
-            void this.#get()
-              .refreshUserData()
-              .catch((error) => {
-                console.error('Failed to refresh user data:', error);
-              });
-          }
-
-          this.#set({ dataSyncConfig: data, isInitRemoteServerConfig: true });
-        },
-      },
-    );
-  };
+  /** Read it from `dataSyncConfig` once `isInitRemoteServerConfig` is set. */
+  useDataSyncConfig = (): ReplicaSyncResult =>
+    // Desktop-only IPC: on web there is no electronAPI, so never fetch off-desktop.
+    this.#dataSyncConfig.useSync(isDesktop ? DESKTOP_SELF_KEY : null);
 }
 
 export type ElectronRemoteServerAction = Pick<

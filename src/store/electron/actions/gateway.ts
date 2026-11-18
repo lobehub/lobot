@@ -1,15 +1,17 @@
 import { isDesktop } from '@lobechat/const';
 import type { GatewayConnectionState } from '@lobechat/electron-client-ipc';
-import useSWR from 'swr';
-import { type SWRResponse } from 'swr';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
-import { electronKeys } from '@/libs/swr/keys';
 import { gatewayConnectionService } from '@/services/electron/gatewayConnection';
 import { type StoreSetter } from '@/store/types';
 
+import { selfFieldsLens } from '../lens';
 import {
+  DESKTOP_SELF_KEY,
   GATEWAY_STABLE_DEVICE_ID_KEY,
+  gatewayConnectionStateResource,
+  gatewayDeviceInfoResource,
+  gatewayKeepAwakeResource,
   type GatewayStableDeviceId,
   gatewayStableDeviceIdResource,
 } from '../projection';
@@ -26,14 +28,49 @@ export interface GatewayDeviceInfo {
 }
 
 class ElectronGatewayActionImpl {
+  readonly #connectionState;
+  readonly #deviceInfo;
   readonly #get: () => ElectronStore;
-  readonly #set: Setter;
+  readonly #keepAwake;
   readonly #stableDeviceId;
 
   constructor(set: Setter, get: () => ElectronStore, _api?: unknown) {
     void _api;
     this.#get = get;
-    this.#set = set;
+    this.#connectionState = createReplicaSlice(gatewayConnectionStateResource, {
+      actionPrefix: 'gatewayConnectionState',
+      fetcher: () => gatewayConnectionService.getConnectionStatus(),
+      get,
+      set,
+      stateKey: 'gatewayConnectionStateReplica',
+      // Always loaded: the store starts out `disconnected` until the main process says otherwise.
+      view: selfFieldsLens<ElectronStore, GatewayConnectionState>(
+        (s) => ({ error: s.gatewayConnectionError, status: s.gatewayConnectionStatus }),
+        (data) => ({
+          gatewayConnectionError: data?.error,
+          gatewayConnectionStatus: data?.status ?? 'disconnected',
+        }),
+      ),
+    });
+    this.#deviceInfo = createReplicaSlice(gatewayDeviceInfoResource, {
+      actionPrefix: 'gatewayDeviceInfo',
+      fetcher: async () => (await gatewayConnectionService.getDeviceInfo()) as GatewayDeviceInfo,
+      get,
+      set,
+      stateKey: 'gatewayDeviceInfoReplica',
+      view: selfFieldsLens<ElectronStore, GatewayDeviceInfo>(
+        (s) => s.gatewayDeviceInfo,
+        (data) => ({ gatewayDeviceInfo: data }),
+      ),
+    });
+    this.#keepAwake = createReplicaSlice(gatewayKeepAwakeResource, {
+      actionPrefix: 'gatewayKeepAwake',
+      fetcher: async () => (await gatewayConnectionService.getKeepAwake()).enabled,
+      get,
+      set,
+      stateKey: 'gatewayKeepAwakeReplica',
+      view: recordLens<ElectronStore, boolean>('gatewayKeepAwakeMap'),
+    });
     this.#stableDeviceId = createReplicaSlice(gatewayStableDeviceIdResource, {
       actionPrefix: 'gatewayStableDeviceId',
       fetcher: async (): Promise<GatewayStableDeviceId> => ({
@@ -47,7 +84,7 @@ class ElectronGatewayActionImpl {
   }
 
   connectGateway = async (): Promise<void> => {
-    this.#set({ gatewayConnectionError: undefined, gatewayConnectionStatus: 'connecting' });
+    this.setGatewayConnectionState({ status: 'connecting' });
     try {
       const result = await gatewayConnectionService.connect();
       if (!result.success) {
@@ -57,15 +94,24 @@ class ElectronGatewayActionImpl {
       }
     } catch (error) {
       console.error('Gateway connect failed:', error);
-      this.#set({ gatewayConnectionStatus: 'disconnected' });
+      this.setGatewayConnectionState({ status: 'disconnected' });
     }
   };
 
   setGatewayConnectionState = ({ error, status }: GatewayConnectionState): void => {
-    this.#set(
-      { gatewayConnectionError: error, gatewayConnectionStatus: status },
-      false,
-      'setGatewayConnectionState',
+    this.#connectionState.update(DESKTOP_SELF_KEY, () => ({ error, status }));
+  };
+
+  /**
+   * Keep this computer from idle-sleeping while its device gateway connection
+   * is enabled. Optimistic; a refused write rolls the switch back.
+   */
+  setGatewayKeepAwake = async (enabled: boolean): Promise<void> => {
+    await this.#keepAwake.optimistic(
+      DESKTOP_SELF_KEY,
+      () => enabled,
+      () => gatewayConnectionService.setKeepAwake(enabled),
+      { confirm: (result) => () => result.enabled },
     );
   };
 
@@ -86,7 +132,7 @@ class ElectronGatewayActionImpl {
       const deviceId = (await gatewayConnectionService.getStableDeviceId()) ?? undefined;
       const cached = this.#get().gatewayDeviceInfo;
       if (deviceId && cached && cached.deviceId !== deviceId) {
-        this.#set({ gatewayDeviceInfo: { ...cached, deviceId } }, false, 'setGatewayDeviceInfo');
+        this.#deviceInfo.update(DESKTOP_SELF_KEY, (info) => info && { ...info, deviceId });
       }
       return deviceId;
     } catch (error) {
@@ -104,26 +150,16 @@ class ElectronGatewayActionImpl {
   useFetchGatewayStableDeviceId = (enabled = true): ReplicaSyncResult =>
     this.#stableDeviceId.useSync(isDesktop && enabled ? GATEWAY_STABLE_DEVICE_ID_KEY : null);
 
-  useFetchGatewayDeviceInfo = (): SWRResponse<GatewayDeviceInfo> => {
-    return useSWR<GatewayDeviceInfo>(
-      // Desktop-only IPC: on web there is no electronAPI, so never fetch off-desktop.
-      isDesktop ? electronKeys.gatewayDeviceInfo() : null,
-      async () => gatewayConnectionService.getDeviceInfo() as Promise<GatewayDeviceInfo>,
-      {
-        onSuccess: (data) => {
-          this.#set({ gatewayDeviceInfo: data }, false, 'setGatewayDeviceInfo');
-        },
-      },
-    );
-  };
+  /** Desktop-only IPC: on web there is no electronAPI, so never fetch off-desktop. */
+  useFetchGatewayDeviceInfo = (): ReplicaSyncResult =>
+    this.#deviceInfo.useSync(isDesktop ? DESKTOP_SELF_KEY : null);
 
-  useFetchGatewayStatus = (): SWRResponse<GatewayConnectionState> => {
-    return useSWR<GatewayConnectionState>(
-      isDesktop ? 'electron:getGatewayConnectionStatus' : null,
-      async () => gatewayConnectionService.getConnectionStatus(),
-      { onSuccess: (data) => this.setGatewayConnectionState(data) },
-    );
-  };
+  /** Read it with `electronGatewaySelectors.keepAwake`. */
+  useFetchGatewayKeepAwake = (): ReplicaSyncResult =>
+    this.#keepAwake.useSync(isDesktop ? DESKTOP_SELF_KEY : null, { revalidateOnFocus: false });
+
+  useFetchGatewayStatus = (): ReplicaSyncResult =>
+    this.#connectionState.useSync(isDesktop ? DESKTOP_SELF_KEY : null);
 }
 
 export type ElectronGatewayAction = Pick<

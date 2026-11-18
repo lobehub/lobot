@@ -11,6 +11,7 @@ import { FORM_STYLE } from '@/const/layoutTokens';
 import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
 import { desktopSettingsService } from '@/services/electron/settings';
 import { useElectronStore } from '@/store/electron';
+import { electronSettingsSelectors } from '@/store/electron/selectors';
 
 import SaveBar from './SaveBar';
 import { useProxyDirty } from './useProxyDirty';
@@ -54,7 +55,9 @@ const ProxyForm = () => {
     s.setProxySettings,
     s.useGetProxySettings,
   ]);
-  const { data: proxySettings, isLoading } = useGetProxySettings();
+  const { error } = useGetProxySettings();
+  const proxySettings = useElectronStore(electronSettingsSelectors.proxySettings);
+  const isLoading = !proxySettings && !error;
 
   const form = useForm<NetworkProxySettings>({
     initialValues: proxySettings,

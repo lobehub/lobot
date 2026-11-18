@@ -1,19 +1,14 @@
-import { useEffect } from 'react';
-
 import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import { getActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
 import { useSingleton } from '@/hooks/useSingleton';
-import { useClientPollingSWR } from '@/libs/swr';
-import { inboxKeys } from '@/libs/swr/keys';
 import { desktopNotificationService } from '@/services/electron/desktopNotification';
-import { notificationService } from '@/services/notification';
+import { useElectronStore } from '@/store/electron';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 import { useUserStore } from '@/store/user';
 import { authSelectors } from '@/store/user/selectors';
 
 import {
-  MAX_MENTION_BANNERS_PER_POLL,
   type MentionNotificationRow,
   type MentionWatermark,
   pickNewMentions,
@@ -21,8 +16,6 @@ import {
 } from './mentionNotification';
 
 export const MENTION_POLL_INTERVAL = 30_000;
-/** Page size: comfortably above the per-poll banner cap so a burst is still diffed whole. */
-const MENTION_PAGE_SIZE = MAX_MENTION_BANNERS_PER_POLL * 5;
 
 /**
  * Raises an OS notification when another workspace member @-mentions the user.
@@ -44,30 +37,24 @@ export const useWorkspaceMentionNotifier = (): void => {
   // Per workspace, so switching away and back doesn't re-announce old mentions.
   const watermarkByWorkspace = useSingleton(() => new Map<string, MentionWatermark>());
 
-  const { data } = useClientPollingSWR<MentionNotificationRow[]>(
-    enabled ? inboxKeys.unreadMentions(workspaceId) : null,
-    () =>
-      notificationService.list({ category: 'mention', isRead: false, limit: MENTION_PAGE_SIZE }),
-    {
-      dedupingInterval: MENTION_POLL_INTERVAL / 2,
-      refreshInterval: MENTION_POLL_INTERVAL,
-      // The banner matters most while the window is minimized or in the background.
-      refreshWhenHidden: true,
+  const useFetchWorkspaceMentions = useElectronStore((s) => s.useFetchWorkspaceMentions);
+
+  useFetchWorkspaceMentions(workspaceId, {
+    enabled,
+    interval: MENTION_POLL_INTERVAL,
+    onPoll: (rows: MentionNotificationRow[]) => {
+      if (!workspaceId) return;
+
+      const { fresh, watermark } = pickNewMentions(rows, watermarkByWorkspace.get(workspaceId));
+      watermarkByWorkspace.set(workspaceId, watermark);
+      if (fresh.length === 0) return;
+
+      const workspaceSlug = getActiveWorkspaceSlug();
+      for (const row of fresh) {
+        desktopNotificationService
+          .showNotification(toMentionNotificationParams(row, workspaceSlug))
+          .catch((error) => console.error('Workspace mention desktop notification failed:', error));
+      }
     },
-  );
-
-  useEffect(() => {
-    if (!data || !workspaceId) return;
-
-    const { fresh, watermark } = pickNewMentions(data, watermarkByWorkspace.get(workspaceId));
-    watermarkByWorkspace.set(workspaceId, watermark);
-    if (fresh.length === 0) return;
-
-    const workspaceSlug = getActiveWorkspaceSlug();
-    for (const row of fresh) {
-      desktopNotificationService
-        .showNotification(toMentionNotificationParams(row, workspaceSlug))
-        .catch((error) => console.error('Workspace mention desktop notification failed:', error));
-    }
-  }, [data, watermarkByWorkspace, workspaceId]);
+  });
 };

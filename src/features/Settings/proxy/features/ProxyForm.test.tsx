@@ -30,11 +30,10 @@ vi.mock('@/services/electron/settings', () => ({
 vi.mock('@/store/electron', () => ({
   useElectronStore: (selector: (state: Record<string, unknown>) => unknown) =>
     selector({
+      isProxySettingsInit: true,
+      proxySettings: defaultProxySettings,
       setProxySettings: setProxySettingsMock,
-      useGetProxySettings: () => ({
-        data: defaultProxySettings,
-        isLoading: false,
-      }),
+      useGetProxySettings: () => ({ error: undefined }),
     }),
 }));
 

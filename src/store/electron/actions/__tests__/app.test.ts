@@ -6,7 +6,7 @@ import { useElectronStore } from '@/store/electron';
 
 describe('ElectronAppActionImpl', () => {
   beforeEach(() => {
-    globalAgentContextManager.setContext({});
+    window.__LOBE_GLOBAL_AGENT_CONTEXT__ = {};
     useElectronStore.setState({ appState: {} });
   });
 
@@ -56,7 +56,7 @@ describe('ElectronAppActionImpl', () => {
     });
 
     it('leaves existing context fields untouched when the update omits them', () => {
-      globalAgentContextManager.setContext({ defaultShell: 'PowerShell 7+ (pwsh)' });
+      globalAgentContextManager.updateContext({ defaultShell: 'PowerShell 7+ (pwsh)' });
 
       act(() => {
         useElectronStore.getState().updateElectronAppState({ locale: 'en-US' });

@@ -527,11 +527,6 @@ export const inboxKeys = {
     'inbox:unreadCount',
     workspaceId,
   ]),
-  /** Desktop mention-banner watcher: unread `mention` rows of the active workspace. */
-  unreadMentions: def('inbox:unreadMentions', (workspaceId: string | null) => [
-    'inbox:unreadMentions',
-    workspaceId,
-  ]),
 };
 
 // ---- share (shared agent / topic / page) ---------------------------------
@@ -718,9 +713,6 @@ export const recommendationsKeys = {
 export const openInAppKeys = {
   detect: def('openInApp:detect', () => ['openInApp:detect']),
 };
-export const gatewayKeys = {
-  reconnect: def('gateway:reconnect', (operationId: string) => ['gateway:reconnect', operationId]),
-};
 export const userKeys = {
   checkTrace: def('user:checkTrace', () => ['user:checkTrace']),
 };
@@ -729,14 +721,6 @@ export const imessageKeys = {
 };
 // Desktop/electron IPC fetches — roots keep their existing `electron:getXxx` value.
 export const electronKeys = {
-  appMenu: def('electron:getAppMenu', () => ['electron:getAppMenu']),
-  appTrayVisible: def('electron:getAppTrayVisible', () => ['electron:getAppTrayVisible']),
-  desktopHotkeys: def('electron:getDesktopHotkeys', () => ['electron:getDesktopHotkeys']),
-  gatewayDeviceInfo: def('electron:getGatewayDeviceInfo', () => ['electron:getGatewayDeviceInfo']),
-  proxySettings: def('electron:getProxySettings', () => ['electron:getProxySettings']),
-  remoteServerConfig: def('electron:getRemoteServerConfig', () => [
-    'electron:getRemoteServerConfig',
-  ]),
   /** This machine's derived device id in a workspace (local, no network). */
   workspaceDeviceId: def('electron:getWorkspaceDeviceId', (workspaceId: string) => [
     'electron:getWorkspaceDeviceId',
@@ -768,7 +752,6 @@ export const swrKeys = {
   electron: electronKeys,
   eval: evalKeys,
   file: fileKeys,
-  gateway: gatewayKeys,
   goal: goalKeys,
   global: globalKeys,
   group: groupKeys,

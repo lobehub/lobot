@@ -1,13 +1,14 @@
-import { type ElectronAppState } from '@lobechat/electron-client-ipc';
-import { type SWRResponse } from 'swr';
+import { isDesktop } from '@lobechat/const';
+import { type AppMenuNode, type ElectronAppState } from '@lobechat/electron-client-ipc';
 
 import { globalAgentContextManager } from '@/helpers/GlobalAgentContextManager';
-import { useOnlyFetchOnceSWR } from '@/libs/swr';
-// Import for type usage
+import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import { electronSystemService } from '@/services/electron/system';
 import { type StoreSetter } from '@/store/types';
 import { merge } from '@/utils/merge';
 
+import { selfFieldsLens } from '../lens';
+import { DESKTOP_SELF_KEY, electronAppMenuResource, electronAppStateResource } from '../projection';
 import { type ElectronStore } from '../store';
 
 // ======== Action Interface ======== //
@@ -46,13 +47,37 @@ const syncAppStateToAgentContext = (state: ElectronAppState): void => {
 };
 
 class ElectronAppActionImpl {
-  readonly #get: () => ElectronStore;
+  readonly #appMenu;
+  readonly #appState;
   readonly #set: Setter;
 
   constructor(set: Setter, get: () => ElectronStore, _api?: unknown) {
     void _api;
     this.#set = set;
-    this.#get = get;
+    this.#appState = createReplicaSlice(electronAppStateResource, {
+      actionPrefix: 'electronAppState',
+      // Locale is intentionally NOT applied here: the SPA boot flow
+      // (SPAGlobalProvider's Locale) owns UI language, and a second switchLang
+      // from this init path would race it.
+      effects: { onApplied: syncAppStateToAgentContext },
+      fetcher: () => electronSystemService.getAppState(),
+      get,
+      set,
+      stateKey: 'appStateReplica',
+      view: selfFieldsLens<ElectronStore, ElectronAppState>(
+        (s) => (s.isAppStateInit ? s.appState : undefined),
+        (data) =>
+          data ? { appState: data, isAppStateInit: true } : { appState: {}, isAppStateInit: false },
+      ),
+    });
+    this.#appMenu = createReplicaSlice(electronAppMenuResource, {
+      actionPrefix: 'electronAppMenu',
+      fetcher: () => electronSystemService.getAppMenu(),
+      get,
+      set,
+      stateKey: 'appMenuReplica',
+      view: recordLens<ElectronStore, AppMenuNode[]>('appMenuMap'),
+    });
   }
 
   setConnectionDrawerOpen = (isOpen: boolean): void => {
@@ -60,27 +85,28 @@ class ElectronAppActionImpl {
   };
 
   updateElectronAppState = (state: ElectronAppState): void => {
-    const prevState = this.#get().appState;
-    this.#set({ appState: merge(prevState, state) });
+    this.#appState.update(DESKTOP_SELF_KEY, (prev) => merge(prev ?? {}, state));
     syncAppStateToAgentContext(state);
   };
 
-  useInitElectronAppState = (): SWRResponse<ElectronAppState> => {
-    return useOnlyFetchOnceSWR<ElectronAppState>(
-      'initElectronAppState',
-      async () => electronSystemService.getAppState(),
-      {
-        onSuccess: (result) => {
-          this.#set({ appState: result, isAppStateInit: true }, false, 'initElectronAppState');
+  /** Load the desktop app state once per launch; read it from `appState`. */
+  useInitElectronAppState = (): ReplicaSyncResult =>
+    this.#appState.useSync(isDesktop ? DESKTOP_SELF_KEY : null, {
+      // The persisted copy paints before the main process answers; keep the
+      // prompt context in step with what the store shows.
+      onHydrated: syncAppStateToAgentContext,
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    });
 
-          // Locale is intentionally NOT applied here anymore: the SPA boot flow
-          // (SPAGlobalProvider's Locale) owns UI language now, and a second
-          // switchLang from this once-dead init path would race it.
-          syncAppStateToAgentContext(result);
-        },
-      },
-    );
-  };
+  /** The live app menu (read it with `electronAppSelectors.appMenu`). */
+  useFetchAppMenu = (): ReplicaSyncResult =>
+    this.#appMenu.useSync(isDesktop ? DESKTOP_SELF_KEY : null, {
+      // The section simply stays hidden; the menu itself still works.
+      onError: (error) => console.error('Failed to load the app menu hotkeys:', error),
+      revalidateOnFocus: false,
+    });
 }
 
 export type ElectronAppAction = Pick<ElectronAppActionImpl, keyof ElectronAppActionImpl>;

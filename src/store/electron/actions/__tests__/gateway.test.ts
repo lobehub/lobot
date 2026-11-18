@@ -10,6 +10,8 @@ const service = vi.hoisted(() => ({
   getStableDeviceId: vi.fn(),
   connect: vi.fn(),
   getConnectionStatus: vi.fn(),
+  getKeepAwake: vi.fn(),
+  setKeepAwake: vi.fn(),
 }));
 
 vi.mock('@lobechat/const', async (importOriginal) => ({
@@ -157,5 +159,42 @@ describe('useFetchGatewayStableDeviceId', () => {
         null,
       ),
     );
+  });
+});
+
+describe('useFetchGatewayDeviceInfo', () => {
+  it('loads the device info into gatewayDeviceInfo', async () => {
+    service.getDeviceInfo.mockResolvedValue({
+      deviceId: 'device-1',
+      hostname: 'mac',
+      platform: 'darwin',
+    });
+
+    renderHook(() => useElectronStore.getState().useFetchGatewayDeviceInfo());
+
+    await waitFor(() =>
+      expect(useElectronStore.getState().gatewayDeviceInfo?.deviceId).toBe('device-1'),
+    );
+  });
+});
+
+describe('gateway keep-awake', () => {
+  it('reads the setting and rolls a refused write back', async () => {
+    service.getKeepAwake.mockResolvedValue({ enabled: true });
+
+    renderHook(() => useElectronStore.getState().useFetchGatewayKeepAwake());
+    await waitFor(() =>
+      expect(electronGatewaySelectors.keepAwake(useElectronStore.getState())).toBe(true),
+    );
+
+    service.setKeepAwake.mockResolvedValueOnce({ enabled: false });
+    await act(() => useElectronStore.getState().setGatewayKeepAwake(false));
+    expect(electronGatewaySelectors.keepAwake(useElectronStore.getState())).toBe(false);
+
+    service.setKeepAwake.mockRejectedValueOnce(new Error('ipc down'));
+    await act(async () => {
+      await expect(useElectronStore.getState().setGatewayKeepAwake(true)).rejects.toThrow();
+    });
+    expect(electronGatewaySelectors.keepAwake(useElectronStore.getState())).toBe(false);
   });
 });

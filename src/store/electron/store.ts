@@ -11,6 +11,7 @@ import { type CurrentRouteMetaAction } from './actions/currentRouteMeta';
 import { createCurrentRouteMetaSlice } from './actions/currentRouteMeta';
 import { type ElectronGatewayAction } from './actions/gateway';
 import { gatewaySlice } from './actions/gateway';
+import { createWorkspaceMentionSlice, type WorkspaceMentionAction } from './actions/mention';
 import { type RecentPagesAction } from './actions/recentPages';
 import { createRecentPagesSlice } from './actions/recentPages';
 import { type ElectronSettingsAction } from './actions/settings';
@@ -33,7 +34,8 @@ export interface ElectronStore
     ElectronSettingsAction,
     CurrentRouteMetaAction,
     RecentPagesAction,
-    TabPagesAction {
+    TabPagesAction,
+    WorkspaceMentionAction {
   /* empty */
 }
 
@@ -43,7 +45,8 @@ type ElectronStoreAction = ElectronRemoteServerAction &
   ElectronSettingsAction &
   CurrentRouteMetaAction &
   RecentPagesAction &
-  TabPagesAction;
+  TabPagesAction &
+  WorkspaceMentionAction;
 
 const createStore: StateCreator<ElectronStore, [['zustand/devtools', never]]> = (
   ...parameters: Parameters<StateCreator<ElectronStore, [['zustand/devtools', never]]>>
@@ -57,6 +60,7 @@ const createStore: StateCreator<ElectronStore, [['zustand/devtools', never]]> = 
     createCurrentRouteMetaSlice(...parameters),
     createRecentPagesSlice(...parameters),
     createTabPagesSlice(...parameters),
+    createWorkspaceMentionSlice(...parameters),
   ]),
 });
 

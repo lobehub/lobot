@@ -6,11 +6,12 @@ import { Form, type FormGroupItem, useForm } from '@lobehub/ui/form';
 import { FolderOpen } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useSWR from 'swr';
 
 import { FORM_STYLE } from '@/const/layoutTokens';
 import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
 import { desktopSettingsService } from '@/services/electron/settings';
+import { useElectronStore } from '@/store/electron';
+import { electronSettingsSelectors } from '@/store/electron/selectors';
 
 import { useRemoteDebuggingItem } from './useRemoteDebuggingItem';
 
@@ -25,11 +26,12 @@ const DebugLogs = memo(() => {
   const form = useForm();
   const remoteDebuggingItem = useRemoteDebuggingItem();
 
-  const { data, mutate } = useSWR(
-    isDesktop ? 'desktop-debug-logging-settings' : null,
-    desktopSettingsService.getDebugLoggingSettings,
-    { revalidateOnFocus: false },
-  );
+  const [useFetchDebugLoggingSettings, setDebugLoggingEnabled] = useElectronStore((s) => [
+    s.useFetchDebugLoggingSettings,
+    s.setDebugLoggingEnabled,
+  ]);
+  useFetchDebugLoggingSettings();
+  const data = useElectronStore(electronSettingsSelectors.debugLoggingSettings);
 
   if (!isDesktop) return null;
 
@@ -44,8 +46,7 @@ const DebugLogs = memo(() => {
             onChange={async (checked: boolean) => {
               setUpdating(true);
               try {
-                const next = await desktopSettingsService.setDebugLoggingEnabled(checked);
-                await mutate(next, { revalidate: false });
+                await setDebugLoggingEnabled(checked);
               } finally {
                 setUpdating(false);
               }

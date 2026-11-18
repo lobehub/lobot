@@ -1,31 +1,17 @@
-import { useCallback } from 'react';
-import useSWR from 'swr';
-
-import { gatewayConnectionService } from '@/services/electron/gatewayConnection';
-
-const SWR_KEY = 'desktop-gateway-keep-awake';
+import { useElectronStore } from '@/store/electron';
+import { electronGatewaySelectors } from '@/store/electron/selectors';
 
 /**
  * Whether this computer is kept from idle-sleeping while its device gateway
  * connection is enabled. Persisted in the desktop main-process store.
  */
 export const useGatewayKeepAwake = () => {
-  const { data, isLoading, mutate } = useSWR(
-    SWR_KEY,
-    async () => (await gatewayConnectionService.getKeepAwake()).enabled,
-    { revalidateOnFocus: false },
-  );
+  const [useFetchGatewayKeepAwake, setKeepAwake] = useElectronStore((s) => [
+    s.useFetchGatewayKeepAwake,
+    s.setGatewayKeepAwake,
+  ]);
+  const { error } = useFetchGatewayKeepAwake();
+  const enabled = useElectronStore(electronGatewaySelectors.keepAwake);
 
-  const setKeepAwake = useCallback(
-    async (enabled: boolean) => {
-      await mutate(async () => (await gatewayConnectionService.setKeepAwake(enabled)).enabled, {
-        optimisticData: enabled,
-        revalidate: false,
-        rollbackOnError: true,
-      });
-    },
-    [mutate],
-  );
-
-  return { enabled: data, isLoading, setKeepAwake };
+  return { enabled, isLoading: enabled === undefined && !error, setKeepAwake };
 };

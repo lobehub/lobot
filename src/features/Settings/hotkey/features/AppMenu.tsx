@@ -4,14 +4,12 @@ import { HotkeyInput } from '@lobehub/ui';
 import { Form, type FormGroupItem, useForm } from '@lobehub/ui/form';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import useSWR from 'swr';
 
 import { AppMenuHotkeysSkeleton } from '@/components/Skeleton/Settings/tabs/Hotkey';
 import { FORM_STYLE } from '@/const/layoutTokens';
-import { isDesktop } from '@/const/version';
 import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
-import { electronKeys } from '@/libs/swr/keys';
-import { electronSystemService } from '@/services/electron/system';
+import { useElectronStore } from '@/store/electron';
+import { electronSettingsSelectors } from '@/store/electron/selectors';
 
 import { collectAppMenuHotkeys } from './appMenuHotkeys';
 
@@ -22,20 +20,12 @@ import { collectAppMenuHotkeys } from './appMenuHotkeys';
 const AppMenuHotkeys = memo(() => {
   const { t } = useTranslation('setting');
   const form = useForm();
-  const { data, isLoading } = useSWR(
-    // Desktop-only IPC: never fetch off-desktop.
-    isDesktop ? electronKeys.appMenu() : null,
-    () => electronSystemService.getAppMenu(),
-    {
-      // The section simply stays hidden; the menu itself still works.
-      onError: (error: unknown) => console.error('Failed to load the app menu hotkeys:', error),
-      revalidateOnFocus: false,
-    },
-  );
+  const { error } = useElectronStore((s) => s.useFetchAppMenu)();
+  const data = useElectronStore(electronSettingsSelectors.appMenu);
 
   const hotkeys = useMemo(() => collectAppMenuHotkeys(data ?? []), [data]);
 
-  if (isLoading) return <AppMenuHotkeysSkeleton />;
+  if (data === undefined && !error) return <AppMenuHotkeysSkeleton />;
 
   if (hotkeys.length === 0) return null;
 

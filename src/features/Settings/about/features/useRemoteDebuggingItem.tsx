@@ -5,10 +5,10 @@ import { confirmModal, Switch } from '@lobehub/ui';
 import { type FormFieldProps } from '@lobehub/ui/form';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useSWR from 'swr';
 
 import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
-import { desktopSettingsService } from '@/services/electron/settings';
+import { useElectronStore } from '@/store/electron';
+import { electronSettingsSelectors } from '@/store/electron/selectors';
 
 /**
  * Desktop-only Diagnostics row: persist the Chromium DevTools protocol (CDP) port for
@@ -20,19 +20,19 @@ export const useRemoteDebuggingItem = (): FormFieldProps | undefined => {
   const { t } = useTranslation('setting');
   const [updating, setUpdating] = useState(false);
 
-  const { data, mutate } = useSWR(
-    isDesktop ? 'desktop-remote-debugging-settings' : null,
-    desktopSettingsService.getRemoteDebuggingSettings,
-    { revalidateOnFocus: false },
-  );
+  const [useFetchRemoteDebuggingSettings, setRemoteDebuggingEnabled] = useElectronStore((s) => [
+    s.useFetchRemoteDebuggingSettings,
+    s.setRemoteDebuggingEnabled,
+  ]);
+  useFetchRemoteDebuggingSettings();
+  const data = useElectronStore(electronSettingsSelectors.remoteDebuggingSettings);
 
   if (!isDesktop) return;
 
   const save = async (enabled: boolean) => {
     setUpdating(true);
     try {
-      const next = await desktopSettingsService.setRemoteDebuggingEnabled(enabled);
-      await mutate(next, { revalidate: false });
+      await setRemoteDebuggingEnabled(enabled);
     } finally {
       setUpdating(false);
     }

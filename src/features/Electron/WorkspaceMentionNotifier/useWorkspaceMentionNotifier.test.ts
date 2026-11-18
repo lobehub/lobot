@@ -1,16 +1,16 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { useSyncExternalStore } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { MentionNotificationRow } from './mentionNotification';
 
 const mocks = vi.hoisted(() => ({
   level: 'all' as 'all' | 'mentions' | 'off',
-  list: vi.fn(),
   listeners: new Set<() => void>(),
+  onPoll: undefined as ((rows: MentionNotificationRow[]) => void) | undefined,
   rows: [] as MentionNotificationRow[],
   showNotification: vi.fn(),
-  swrKey: undefined as unknown,
+  syncKey: undefined as unknown,
   workspaceId: 'ws_1' as string | null,
 }));
 
@@ -20,24 +20,34 @@ vi.mock('@/business/client/hooks/useActiveWorkspaceId', () => ({
 vi.mock('@/business/client/hooks/useActiveWorkspaceSlug', () => ({
   getActiveWorkspaceSlug: () => 'acme',
 }));
-vi.mock('@/libs/swr', () => ({
-  // Reactive like real SWR: a new poll result re-renders the subscriber.
-  useClientPollingSWR: (key: unknown) => {
-    mocks.swrKey = key;
-    const rows = useSyncExternalStore(
-      (listener) => {
-        mocks.listeners.add(listener);
-        return () => mocks.listeners.delete(listener);
+vi.mock('@/store/electron', () => ({
+  useElectronStore: (selector: (s: unknown) => unknown) =>
+    selector({
+      // Reactive like the polling replica: every poll answer reaches `onPoll`.
+      useFetchWorkspaceMentions: (
+        workspaceId: string | null,
+        options: { enabled?: boolean; onPoll?: (rows: MentionNotificationRow[]) => void },
+      ) => {
+        const active = options.enabled !== false && !!workspaceId;
+        mocks.syncKey = active ? workspaceId : null;
+        const rows = useSyncExternalStore(
+          (listener) => {
+            mocks.listeners.add(listener);
+            return () => mocks.listeners.delete(listener);
+          },
+          () => mocks.rows,
+        );
+        mocks.onPoll = options.onPoll;
+        useEffect(() => {
+          if (active) mocks.onPoll?.(rows);
+        }, [active, rows]);
+        return { error: undefined, isHydrated: true, isValidating: false, revalidate: vi.fn() };
       },
-      () => mocks.rows,
-    );
-    return { data: key ? rows : undefined };
-  },
+    }),
 }));
 vi.mock('@/services/electron/desktopNotification', () => ({
   desktopNotificationService: { showNotification: mocks.showNotification },
 }));
-vi.mock('@/services/notification', () => ({ notificationService: { list: mocks.list } }));
 vi.mock('@/store/global', () => ({
   useGlobalStore: (selector: (s: unknown) => unknown) => selector({}),
 }));
@@ -72,7 +82,7 @@ describe('useWorkspaceMentionNotifier', () => {
     mocks.listeners.clear();
     mocks.rows = [];
     mocks.showNotification.mockReset().mockResolvedValue({ success: true });
-    mocks.swrKey = undefined;
+    mocks.syncKey = undefined;
     mocks.workspaceId = 'ws_1';
   });
 
@@ -101,19 +111,19 @@ describe('useWorkspaceMentionNotifier', () => {
     mocks.workspaceId = null;
     renderHook(() => useWorkspaceMentionNotifier());
 
-    expect(mocks.swrKey).toBeNull();
+    expect(mocks.syncKey).toBeNull();
   });
 
   it('watches mentions without any business-features flag (Lobot is Cloud-only)', () => {
     renderHook(() => useWorkspaceMentionNotifier());
 
-    expect(mocks.swrKey).not.toBeNull();
+    expect(mocks.syncKey).not.toBeNull();
   });
 
   it('stays idle when notifications are turned off', () => {
     mocks.level = 'off';
     renderHook(() => useWorkspaceMentionNotifier());
 
-    expect(mocks.swrKey).toBeNull();
+    expect(mocks.syncKey).toBeNull();
   });
 });
