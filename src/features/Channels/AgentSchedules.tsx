@@ -48,6 +48,9 @@ const styles = stylex.create({
     paddingBlockEnd: '4px',
     paddingInline: '16px',
   },
+  contactMore: {
+    height: '36px',
+  },
   contactRow: {
     paddingInline: '16px',
   },
@@ -166,7 +169,7 @@ export function AgentSchedules({
           block
           size="small"
           type="text"
-          {...stylex.props(styles.more)}
+          {...stylex.props(styles.more, variant === 'contact' && styles.contactMore)}
           onClick={() => setExpanded((value) => !value)}
         >
           {expanded ? t('profile.schedules.collapse') : t('profile.schedules.expand')}
