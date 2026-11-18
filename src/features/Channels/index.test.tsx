@@ -1,17 +1,21 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import ChannelPage from './index';
 
 const mocks = vi.hoisted(() => ({
+  close: vi.fn(),
+  detail: undefined as object | undefined,
   error: undefined as unknown,
+  setSearchParams: vi.fn(),
+  threadId: null as string | null,
   list: [] as Array<{ agentId: string | null; id: string; title: string }>,
 }));
 
 vi.mock('react-router', () => ({
   useParams: () => ({ channelId: 'chn_gone' }),
-  useSearchParams: () => [new URLSearchParams(), vi.fn()],
+  useSearchParams: () => [new URLSearchParams(), mocks.setSearchParams],
 }));
 vi.mock('@/store/serverConfig', () => ({
   serverConfigSelectors: { enableChannels: () => true },
@@ -20,7 +24,7 @@ vi.mock('@/store/serverConfig', () => ({
 vi.mock('@/store/channel', () => ({
   channelActions: { useFetchDetail: () => ({ error: mocks.error }) },
   channelSelectors: {
-    detail: () => () => undefined,
+    detail: () => () => mocks.detail,
     isUnconfirmed: () => () => false,
     list: () => mocks.list,
   },
@@ -40,7 +44,12 @@ vi.mock('@/store/chat', () => ({
     selector({ clearPortalStack: vi.fn(), openBrowser: vi.fn() }),
 }));
 vi.mock('./useThreadPanel', () => ({
-  useThreadPanel: () => ({ close: vi.fn(), draft: null, pageThreadId: null, threadId: null }),
+  useThreadPanel: () => ({
+    close: mocks.close,
+    draft: null,
+    pageThreadId: null,
+    threadId: mocks.threadId,
+  }),
 }));
 vi.mock('./usePortalPanel', () => ({
   channelBrowserSessionId: (id: string) => id,
@@ -63,13 +72,25 @@ vi.mock('@/features/EntityLink/host', () => ({
   EntityLinkHostProvider: ({ children }: { children: unknown }) => children,
 }));
 vi.mock('@/features/NavHeader', () => ({
-  default: ({ left }: { left: unknown }) => createElement('header', null, left),
+  default: ({ left, right }: { left: unknown; right: unknown }) =>
+    createElement('header', null, left, right),
+}));
+vi.mock('./peerTitle', () => ({ channelTitle: () => 'General' }));
+vi.mock('./ThreadBrowser', () => ({ ThreadsButton: () => null }));
+vi.mock('./ChannelSearch', () => ({
+  ChannelSearchBox: ({ onSearch }: { onSearch: (query: string) => void }) =>
+    createElement('button', { onClick: () => onSearch('无限') }, 'search'),
+  ChannelSearchPanel: () => null,
 }));
 
 describe('ChannelPage', () => {
   beforeEach(() => {
     mocks.error = undefined;
     mocks.list = [];
+    mocks.detail = undefined;
+    mocks.threadId = null;
+    mocks.close.mockClear();
+    mocks.setSearchParams.mockClear();
   });
 
   // A link to a Channel from another workspace showed a "# Channel" header over a 404 error.
@@ -115,5 +136,19 @@ describe('ChannelPage', () => {
     render(createElement(ChannelPage));
 
     expect(screen.getByRole('banner')).toHaveTextContent(/^General$/);
+  });
+
+  // Searching closed the open thread, then closing the (already closed) settings rewrote the
+  // URL from this render's params and put the thread back over the results.
+  it('closes an open thread for a search without writing it back', () => {
+    mocks.list = [{ agentId: null, id: 'chn_gone', title: 'General' }];
+    mocks.detail = { channel: { id: 'chn_gone', status: 'active' }, members: [] };
+    mocks.threadId = 'thd_open';
+
+    render(createElement(ChannelPage));
+    fireEvent.click(screen.getByRole('button', { name: 'search' }));
+
+    expect(mocks.close).toHaveBeenCalled();
+    expect(mocks.setSearchParams).not.toHaveBeenCalled();
   });
 });

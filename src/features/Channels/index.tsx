@@ -114,7 +114,10 @@ function EnabledChannelPage() {
     !threadId &&
     !threadDraft &&
     !portalOpen;
+  // Only when they are open: setSearchParams starts from this render's URL, so a write here
+  // would put back a thread that panel.close() just removed in the same handler.
   const closeSettings = () =>
+    settingsRequested &&
     setSearchParams(
       (current) => {
         const next = new URLSearchParams(current);
