@@ -1,36 +1,18 @@
 export default {
   'description':
     "These features are experimental. We might remove them, and they might have bugs. We'd love your feedback while using them.",
-  'features.agentGraphConfig.desc':
-    'Show graph runtime configuration in an agent profile advanced settings.',
-  'features.agentGraphConfig.title': 'Agent Graph Runtime Configuration',
-  'features.agentIdentity.desc':
-    'Give an agent its own email address, and read what arrives in its inbox from the agent settings.',
-  'features.agentIdentity.title': 'Agent Identity',
   'features.agentSelfIteration.desc':
     'Allow the agent to reflect, build self-awareness, and continuously iterate through ongoing attempts and interactions.',
   'features.agentSelfIteration.title': 'Agent Self-iteration',
-  'features.artifactDeployment.desc':
-    'Publish artifacts to a hosted URL and manage releases from the conversation sidebar',
-  'features.artifactDeployment.title': 'Artifact Deployments',
   'features.assistantMessageGroup.desc':
     'Group agent messages and their tool call results together for display',
   'features.assistantMessageGroup.title': 'Agent Message Grouping',
-  'features.codexAppServer.desc':
-    'Run Codex sessions through the local app-server instead of one-shot CLI processes. Enables token streaming and native turn control.',
-  'features.codexAppServer.title': 'Codex App Server Runtime',
   'features.evalCapture.desc':
     'Adds a message action that captures a conversation turn — its prior context, input and the answer it produced — as an evaluation test case.',
   'features.evalCapture.title': 'Save a turn as an eval case',
-  'features.deviceTunnel.desc':
-    'Give a port on the working device a link, so a dev server running there can be opened from here. The link only works for people who can reach that device.',
-  'features.deviceTunnel.title': 'Remote Port Links',
   'features.goals.desc':
     'Hand the agent a goal: it breaks the goal into tasks, tracks progress, and delivers the result for you to review.',
   'features.goals.title': 'Goals',
-  'features.imessage.desc':
-    'Connect agents to iMessage through the local LobeHub Desktop BlueBubbles bridge.',
-  'features.imessage.title': 'iMessage Channel',
   'features.inAppBrowser.desc':
     'Show the Browser tab in the conversation side panel: an embedded browser that opens search results in place and lets agents browse visibly.',
   'features.inAppBrowser.title': 'In-App Browser',
@@ -39,18 +21,9 @@ export default {
   'features.messageTextSelectionActions.desc':
     'Show a quick action when selecting text in chat messages so the selected text can be added to the next conversation context.',
   'features.messageTextSelectionActions.title': 'Message Text Selection Actions',
-  'features.oauthApps.desc':
-    'Show OAuth app management in personal and workspace settings. This feature is hidden by default.',
-  'features.oauthApps.title': 'OAuth Apps',
-  'features.pageCollab.desc':
-    "Edit workspace pages together in real time and see who else is on the page. When off, pages still save normally and show teammates' changes after a refresh.",
-  'features.pageCollab.title': 'Live Page Collaboration',
   'features.projects.desc':
     'Organize long-running goals into dedicated workspaces with their own agents, knowledge bases, and tasks.',
   'features.projects.title': 'Project Workspaces',
-  'features.taskVerify.desc':
-    'Add an Acceptance section to the task detail: describe acceptance in one sentence and let AI generate editable verify criteria.',
-  'features.taskVerify.title': 'Acceptance',
   'features.selfLearning.desc':
     'Agents learn from your conversations in the background and review their day each night. See the results under Memory → Self-evolving.',
   'features.selfLearning.note':

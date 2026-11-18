@@ -14,17 +14,9 @@ type LabStage = 'alpha' | 'beta';
  * listed as literals so the dynamic `t()` calls stay inside the typed key union.
  */
 type LabFeatureI18nKey =
-  | 'agentGraphConfig'
-  | 'agentIdentity'
-  | 'artifactDeployment'
-  | 'codexAppServer'
-  | 'deviceTunnel'
   | 'evalCapture'
   | 'goals'
-  | 'imessage'
   | 'messageTextSelectionActions'
-  | 'oauthApps'
-  | 'pageCollab'
   | 'projects'
   | 'selfLearning'
   | 'topicBugReport';
@@ -57,18 +49,6 @@ export interface LabFeatureItem {
 }
 
 const ALL_LAB_FEATURES: LabFeatureItem[] = [
-  {
-    flag: 'enableAgentGraphConfig',
-    i18nKey: 'agentGraphConfig',
-    searchKeywords: ['agent graph', 'graph runtime'],
-    stage: 'alpha',
-  },
-  {
-    flag: 'enableAgentIdentity',
-    i18nKey: 'agentIdentity',
-    searchKeywords: ['agent identity', 'agent mail', 'inbox', 'address'],
-    stage: 'alpha',
-  },
   {
     flag: 'enableMessageTextSelectionActions',
     i18nKey: 'messageTextSelectionActions',
@@ -110,49 +90,9 @@ const ALL_LAB_FEATURES: LabFeatureItem[] = [
     stage: 'beta',
   },
   {
-    flag: 'enableDeviceTunnel',
-    i18nKey: 'deviceTunnel',
-    searchKeywords: ['tunnel', 'port forwarding', 'dev server', 'localhost'],
-    stage: 'alpha',
-  },
-  {
     flag: 'enableProjects',
     i18nKey: 'projects',
     searchKeywords: ['project', 'workspace'],
-    stage: 'alpha',
-  },
-  {
-    flag: 'enableOAuthApps',
-    i18nKey: 'oauthApps',
-    searchKeywords: ['oauth', 'oauth apps'],
-    stage: 'beta',
-  },
-  {
-    flag: 'enableArtifactDeployment',
-    i18nKey: 'artifactDeployment',
-    searchKeywords: ['artifact', 'deploy', 'publish'],
-    stage: 'beta',
-  },
-  {
-    businessOnly: true,
-    flag: 'enablePageCollab',
-    i18nKey: 'pageCollab',
-    searchKeywords: ['collaboration', 'co-editing', 'realtime', 'live editing', 'page'],
-    stage: 'alpha',
-    workspaceOnly: true,
-  },
-  {
-    desktopOnly: true,
-    flag: 'enableImessage',
-    i18nKey: 'imessage',
-    searchKeywords: ['imessage', 'bluebubbles'],
-    stage: 'alpha',
-  },
-  {
-    desktopOnly: true,
-    flag: 'enableCodexAppServer',
-    i18nKey: 'codexAppServer',
-    searchKeywords: ['codex', 'app server'],
     stage: 'alpha',
   },
 ];
