@@ -71,8 +71,8 @@ export const openInviteMembers = (existing: ExistingChannel, onCreated?: (id: st
   openMemberDialog({ existing, onCreated });
 
 /**
- * One step: the name and, for a new workspace Channel, whether it is private, above the member
- * pickers. The name is optional and defaults to the members' names. Inviting into an existing
+ * One step: the member pickers, with the name and, for a new workspace Channel, whether it is
+ * private below them. The name is optional and defaults to the members' names. Inviting into an existing
  * Channel shows only the pickers. Workspace Channels, new or existing, also list workspace members.
  */
 function CreateChannel({ existing, onCreated }: CreateChannelProps) {
@@ -203,13 +203,26 @@ function CreateChannel({ existing, onCreated }: CreateChannelProps) {
           {t('invite.directHint', { name: counterpartName })}
         </Text>
       )}
+      <Flexbox gap={8} inert={busy}>
+        <MemberSelection
+          emptyHint={existing ? undefined : t('create.onlyYou')}
+          exclude={existing?.agentIds}
+          options={options}
+          value={agents}
+          people={
+            canPickPeople
+              ? { channelId: existing?.id, onChange: setPeople, value: people }
+              : undefined
+          }
+          onChange={setAgents}
+        />
+      </Flexbox>
       {(!existing || startsGroup) && (
         <Flexbox gap={6} inert={busy}>
           <label htmlFor="channel-title" style={{ fontWeight: 500 }}>
             {t('nameOptional')}
           </label>
           <Input
-            autoFocus
             id="channel-title"
             maxLength={CHANNEL_LIMITS.titleLength}
             placeholder={autoTitle}
@@ -234,20 +247,6 @@ function CreateChannel({ existing, onCreated }: CreateChannelProps) {
           <Switch checked={isPrivate} onChange={setIsPrivate} />
         </Flexbox>
       )}
-      <Flexbox gap={8} inert={busy}>
-        <MemberSelection
-          emptyHint={existing ? undefined : t('create.onlyYou')}
-          exclude={existing?.agentIds}
-          options={options}
-          value={agents}
-          people={
-            canPickPeople
-              ? { channelId: existing?.id, onChange: setPeople, value: people }
-              : undefined
-          }
-          onChange={setAgents}
-        />
-      </Flexbox>
       {error !== undefined && (
         <AsyncError error={error} title={t(getChannelSaveErrorKey(error))} variant="inline" />
       )}
