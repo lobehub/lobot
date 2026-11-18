@@ -1,9 +1,9 @@
 'use client';
 
 import { randomAgentName } from '@lobechat/const';
-import { ActionIcon, cssVar, Flexbox, Input, Text, TextArea } from '@lobehub/ui';
-import { DicesIcon } from 'lucide-react';
-import { memo, type ReactNode, useCallback } from 'react';
+import { ActionIcon, cssVar, Flexbox, Icon, Input, Text, TextArea } from '@lobehub/ui';
+import { ChevronRightIcon, DicesIcon } from 'lucide-react';
+import { memo, type ReactNode, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useGlobalStore } from '@/store/global';
@@ -43,6 +43,8 @@ interface IdentityFieldsProps {
   /** The agent being edited, so the dice never suggests its own current name back. */
   agentId?: string;
   form: IdentityFieldsForm;
+  /** Tucks the slug under a collapsed "Advanced Settings" toggle, for the create form. */
+  slugCollapsible?: boolean;
   /** Overrides the slug placeholder, e.g. to say an empty slug is generated. */
   slugPlaceholder?: string;
 }
@@ -51,8 +53,12 @@ interface IdentityFieldsProps {
 const DESCRIPTION_MAX_LENGTH = 1000;
 
 /** Name / role / description / slug, shared by the edit and the create form. */
-const IdentityFields = memo<IdentityFieldsProps>(({ agentId, form, slugPlaceholder }) => {
+const IdentityFields = memo<IdentityFieldsProps>((props) => {
+  const { agentId, form, slugCollapsible, slugPlaceholder } = props;
   const { t } = useTranslation('setting');
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  // A slug the server rejected stays in view, so its error is never hidden.
+  const slugShown = !slugCollapsible || advancedOpen || !!form.error;
   const locale = useGlobalStore(globalGeneralSelectors.currentLanguage);
   const { setName } = form;
 
@@ -113,6 +119,35 @@ const IdentityFields = memo<IdentityFieldsProps>(({ agentId, form, slugPlacehold
           onChange={(e) => form.setDescription(e.target.value)}
         />
       </Field>
+      {slugCollapsible && !form.slugLocked && (
+        <button
+          aria-expanded={slugShown}
+          type={'button'}
+          style={{
+            alignItems: 'center',
+            alignSelf: 'flex-start',
+            background: 'none',
+            border: 'none',
+            color: cssVar.colorTextSecondary,
+            cursor: 'pointer',
+            display: 'flex',
+            font: 'inherit',
+            gap: 4,
+            padding: 0,
+          }}
+          onClick={() => setAdvancedOpen((open) => !open)}
+        >
+          {t('advancedSettings')}
+          <Icon
+            icon={ChevronRightIcon}
+            size={14}
+            style={{
+              transform: slugShown ? 'rotate(90deg)' : undefined,
+              transition: 'transform 0.15s',
+            }}
+          />
+        </button>
+      )}
       {/* A builtin agent's identifier is not an editable field at all, so it is
           not dressed as one: a disabled input still reads as "a control you
           can't use right now" and needs a sentence explaining itself. Rendering
@@ -124,7 +159,7 @@ const IdentityFields = memo<IdentityFieldsProps>(({ agentId, form, slugPlacehold
             {form.slug}
           </Text>
         </Field>
-      ) : (
+      ) : slugShown ? (
         <Field
           label={t('settingAgent.slug.label')}
           hint={
@@ -149,7 +184,7 @@ const IdentityFields = memo<IdentityFieldsProps>(({ agentId, form, slugPlacehold
             onChange={(e) => form.setSlug(e.target.value)}
           />
         </Field>
-      )}
+      ) : null}
     </>
   );
 });

@@ -140,6 +140,7 @@ const CreateAgentIdentityContent = memo<CreateAgentIdentityContentProps>(
             />
           </Center>
           <IdentityFields
+            slugCollapsible
             form={form}
             slugPlaceholder={t('settingAgent.slug.autoPlaceholder', { ns: 'setting' })}
           />
