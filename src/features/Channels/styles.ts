@@ -424,6 +424,10 @@ export const statusStyles = stylex.create({
   memberWorking: {
     color: cssVar.colorWarning,
   },
+  /** An idle Agent's dot: present, so every Agent shows its state, but quiet. */
+  memberIdle: {
+    color: cssVar.colorTextQuaternary,
+  },
   /** A member's status line under its name: secondary text, one line. */
   memberState: {
     overflow: 'hidden',

@@ -39,17 +39,29 @@ interface MemberEntry {
   tone: ChannelStatusTone;
 }
 
-export const StatusAvatar = ({ entry, size }: { entry: MemberEntry; size: number }) => (
+export const StatusAvatar = ({
+  entry,
+  showIdle,
+  size,
+}: {
+  entry: MemberEntry;
+  /** The roster gives every Agent a dot, idle ones grey; the compact header keeps idle bare. */
+  showIdle?: boolean;
+  size: number;
+}) => (
   <span {...stylex.props(statusStyles.memberAvatar)}>
     <MemberAvatar member={entry.member} size={size} />
-    {/* Idle is the default; only a reply in progress, waiting or failed earns a dot. */}
-    {entry.member.actorType === 'agent' && entry.tone !== 'quiet' && (
+    {entry.member.actorType === 'agent' && (showIdle || entry.tone !== 'quiet') && (
       <span
         aria-hidden
         {...stylex.props(
           statusStyles.state,
           statusStyles.memberDot,
-          entry.tone === 'working' ? statusStyles.memberWorking : toneStyles[entry.tone],
+          entry.tone === 'working'
+            ? statusStyles.memberWorking
+            : entry.tone === 'quiet'
+              ? statusStyles.memberIdle
+              : toneStyles[entry.tone],
         )}
       >
         <span {...stylex.props(statusStyles.dot)} />
@@ -282,7 +294,7 @@ const MemberRow = ({
         {/* Hovering the avatar shows the member's card, like an avatar in the conversation. */}
         <MemberProfilePopup member={entry.member} placement={'left'}>
           <span {...stylex.props(styles.memberAvatarTrigger)}>
-            <StatusAvatar entry={entry} size={28} />
+            <StatusAvatar showIdle entry={entry} size={28} />
           </span>
         </MemberProfilePopup>
         <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
