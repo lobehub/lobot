@@ -1,6 +1,15 @@
 'use client';
 
-import { Center, createStaticStyles, cssVar, Flexbox, Skeleton, Text, Tooltip } from '@lobehub/ui';
+import {
+  Center,
+  createStaticStyles,
+  cssVar,
+  cx,
+  Flexbox,
+  Skeleton,
+  Text,
+  Tooltip,
+} from '@lobehub/ui';
 import { memo, type ReactNode } from 'react';
 
 import AgentAvatar, { isDefaultAgentAvatar } from '@/components/AgentAvatar';
@@ -80,7 +89,12 @@ const AgentProfileCard = memo<AgentProfileCardProps>(
   }) => {
     return (
       <Flexbox className={styles.container}>
-        <Center className={styles.banner} style={{ background: cssVar.colorFillTertiary }}>
+        {/* The whole header opens the Agent's page, not only its small avatar and name. */}
+        <Center
+          className={cx(styles.banner, onHeaderClick && styles.clickableAvatar)}
+          style={{ background: cssVar.colorFillTertiary }}
+          onClick={onHeaderClick}
+        >
           <AgentAvatar
             agentId={agentId}
             avatar={avatar}

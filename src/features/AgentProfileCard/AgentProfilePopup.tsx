@@ -17,13 +17,15 @@ import { useTranslation } from 'react-i18next';
 
 import { ModelIcon } from '@/components/LobeIcons';
 import { ArticleSkeleton } from '@/components/Skeleton';
+import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { CONTACT_URL } from '@/features/ContactList/const';
 import { useResourceAccess } from '@/features/ResourcePermission/useResourceAccess';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { usePermission } from '@/hooks/usePermission';
-import { contactSelectors, useContactStore } from '@/store/contact';
+import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
 import { useHomeStore } from '@/store/home';
 import { homeAgentListSelectors } from '@/store/home/selectors';
+import { cardPopoverProps } from '@/styles/cardPopover';
 
 import AgentProfileCard from '.';
 import { resolveAgentRuntimeLabel } from './runtime';
@@ -90,6 +92,10 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
       (!groupId || (isGroupAccessResolved && canEditGroup));
 
     const listEntry = useHomeStore(homeAgentListSelectors.getAgentById(agentId));
+    // Contacts load with the Contacts tab; fetch them here too, so a shared Agent's card links to
+    // its contact page before that tab was ever opened.
+    const channelsEnabled = useChannelsEnabled();
+    contactActions.useFetchList(open && channelsEnabled);
     // An Agent in my Contacts, mine or one shared with me, opens its contact card.
     const isContact = useContactStore((s) => !!contactSelectors.agentById(agentId)(s));
     const contactUrl = listEntry || isContact ? CONTACT_URL(agentId) : undefined;
@@ -253,15 +259,13 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
 
     return (
       <Popover
+        {...cardPopoverProps}
         classNames={trigger === 'click' ? { trigger: styles.trigger } : undefined}
         content={content}
         nativeButton={false}
         open={open}
         placement={placement ?? (trigger === 'hover' ? 'top' : 'right')}
         trigger={trigger}
-        styles={{
-          content: { borderRadius: 12, overflow: 'hidden', padding: 0 },
-        }}
         onOpenChange={setOpen}
       >
         {children}

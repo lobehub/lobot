@@ -1,6 +1,5 @@
 'use client';
 
-import type { VerifyCodingScope } from '@lobot/types';
 import {
   ActionIcon,
   Avatar,
@@ -11,6 +10,7 @@ import {
   Popover,
   Text,
 } from '@lobehub/ui';
+import type { VerifyCodingScope } from '@lobot/types';
 import type { TFunction } from 'i18next';
 import {
   BadgeCheckIcon,
@@ -32,6 +32,7 @@ import { documentService } from '@/services/document';
 import { goalService } from '@/services/goal';
 import { taskService } from '@/services/task';
 import { verifyService } from '@/services/verify';
+import { cardPopoverProps } from '@/styles/cardPopover';
 import { openTrustedExternalUrl } from '@/utils/openTrustedExternalUrl';
 
 import type { InternalLinkReference } from '../internalLink';
@@ -320,12 +321,12 @@ export const InternalEntityPreview = memo<InternalEntityPreviewProps>(
 
     return (
       <Popover
+        {...cardPopoverProps}
         // Disabling the SWR key clears data before the exit animation finishes.
         content={<Freeze frozen={!open}>{content}</Freeze>}
         mouseEnterDelay={0.35}
         open={open}
         placement="top"
-        styles={{ content: { borderRadius: 12, overflow: 'hidden', padding: 0 } }}
         trigger="hover"
         triggerProps={{ role: 'link' }}
         onOpenChange={setOpen}

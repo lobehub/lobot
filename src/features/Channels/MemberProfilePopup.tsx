@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import Avatar from '@/components/Avatar';
 import AgentProfilePopup from '@/features/AgentProfileCard/AgentProfilePopup';
+import { cardPopoverProps } from '@/styles/cardPopover';
 
 import { MemberAvatar } from './MemberAvatar';
 import { memberAvatar, memberName } from './memberName';
@@ -157,10 +158,10 @@ export const MemberProfilePopup = ({
     );
   return (
     <Popover
+      {...cardPopoverProps}
       content={<PersonProfileCard member={member} />}
       nativeButton={false}
       placement={placement}
-      styles={{ content: { borderRadius: 12, overflow: 'hidden', padding: 0 } }}
       trigger={'hover'}
     >
       {children}

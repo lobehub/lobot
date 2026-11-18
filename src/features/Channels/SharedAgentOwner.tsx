@@ -1,6 +1,6 @@
-import type { ContactUserProfile } from '@lobot/types';
 import { Popover, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ContactUserProfile } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 
 import UserAvatar from '@/components/UserAvatar';
@@ -9,6 +9,7 @@ import { PERSON_CONTACT_URL } from '@/features/ContactList/const';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { channelSelectors, useChannelStore } from '@/store/channel';
 import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
+import { cardPopoverProps } from '@/styles/cardPopover';
 
 import { PersonCardFrame } from './MemberProfilePopup';
 import { ContactAction } from './PersonAction';
@@ -88,9 +89,9 @@ export const SharedAgentOwner = ({ owner }: { owner: ContactUserProfile }) => {
 
   return (
     <Popover
+      {...cardPopoverProps}
       content={<SharedAgentOwnerCard owner={owner} />}
       placement={'left'}
-      styles={{ content: { borderRadius: 12, overflow: 'hidden', padding: 0 } }}
       trigger={'hover'}
     >
       <button
