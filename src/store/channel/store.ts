@@ -1,4 +1,4 @@
-import type { ChannelDetail, ChannelListItem } from '@lobot/types';
+import type { ChannelDetail, ChannelListItem, ChannelSection } from '@lobot/types';
 import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
 
@@ -21,6 +21,9 @@ export interface ChannelState {
   /** Other scopes' Channel lists, by `scopeChannelListKey`. */
   scopeListMap: Record<string, ChannelListItem[]>;
   scopeListReplica: ReplicaState<ChannelListItem[]>;
+  /** The caller's own list sections, under `all`. */
+  sectionsMap: Record<string, ChannelSection[]>;
+  sectionsReplica: ReplicaState<ChannelSection[]>;
   userCandidatesMap: Record<string, ChannelPersonOption[]>;
   userCandidatesReplica: ReplicaState<ChannelPersonOption[]>;
   wakeConfigMap: Record<string, ChannelWakeConfigData>;
@@ -37,6 +40,8 @@ export const initialState: ChannelState = {
   outbox: {},
   scopeListMap: {},
   scopeListReplica: createReplicaState(),
+  sectionsMap: {},
+  sectionsReplica: createReplicaState(),
   userCandidatesMap: {},
   userCandidatesReplica: createReplicaState(),
   wakeConfigMap: {},

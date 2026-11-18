@@ -1,4 +1,9 @@
-import type { ChannelLastMessage, ChannelListItem, SidebarAgentItem } from '@lobot/types';
+import type {
+  ChannelLastMessage,
+  ChannelListItem,
+  ChannelSection,
+  SidebarAgentItem,
+} from '@lobot/types';
 import { t } from 'i18next';
 
 import { markdownToTxt } from '@/utils/markdownToTxt';
@@ -228,6 +233,38 @@ export const buildConversationEntries = (
     ...[...items(pinned), ...rest.filter(isPinned)].sort(byActivity),
     ...rest.filter((entry) => !isPinned(entry)),
   ];
+};
+
+export interface SectionGroup {
+  entries: ConversationEntry[];
+  section: ChannelSection;
+}
+
+/**
+ * Splits the list into the person's pinned rows, each of their own sections in order, and the
+ * rest. A pin wins over a section, so a pinned conversation leads the list; a row filed under a
+ * section that no longer exists falls back to the rest. Each part keeps the list's order.
+ */
+export const groupBySection = (
+  entries: ConversationEntry[],
+  sections: ChannelSection[] = [],
+): { pinned: ConversationEntry[]; rest: ConversationEntry[]; sections: SectionGroup[] } => {
+  const bySection = new Map(sections.map((section) => [section.id, [] as ConversationEntry[]]));
+  const pinned: ConversationEntry[] = [];
+  const rest: ConversationEntry[] = [];
+  for (const entry of entries) {
+    if (isPinned(entry)) {
+      pinned.push(entry);
+      continue;
+    }
+    const filed = entry.channel?.sectionId ? bySection.get(entry.channel.sectionId) : undefined;
+    (filed ?? rest).push(entry);
+  }
+  return {
+    pinned,
+    rest,
+    sections: sections.map((section) => ({ entries: bySection.get(section.id)!, section })),
+  };
 };
 
 /** The key a list row is hidden by: its Channel, its Agent or group, or Lobe AI. */

@@ -1,4 +1,9 @@
-import type { ChannelLastMessage, ChannelListItem, SidebarAgentItem } from '@lobot/types';
+import type {
+  ChannelLastMessage,
+  ChannelListItem,
+  ChannelSection,
+  SidebarAgentItem,
+} from '@lobot/types';
 import i18n from 'i18next';
 import { beforeAll, describe, expect, it } from 'vitest';
 
@@ -7,8 +12,10 @@ import {
   buildConversationEntries,
   buildConversationSections,
   channelPreview,
+  type ConversationEntry,
   directCounterpart,
   formatConversationTime,
+  groupBySection,
   inboxActivity,
   messagesUnreadCount,
   reuseUnchangedEntries,
@@ -416,6 +423,55 @@ describe('directCounterpart', () => {
 
   it('leaves groups to their own avatar', () => {
     expect(directCounterpart({ memberAvatars: [person, agent] })).toBeUndefined();
+  });
+});
+
+describe('groupBySection', () => {
+  const section = (id: string): ChannelSection => ({
+    collapsed: false,
+    createdAt: new Date('2026-01-01'),
+    id,
+    name: id,
+    sort: null,
+    updatedAt: new Date('2026-01-01'),
+  });
+  const entry = (id: string, patch: Partial<ChannelListItem> = {}): ConversationEntry => ({
+    activeAt: new Date('2026-01-01'),
+    channel: { id, ...patch } as ChannelListItem,
+    type: 'channel',
+  });
+  const ids = (entries: ConversationEntry[]) =>
+    entries.map((e) => (e.type === 'inbox' ? 'inbox' : e.channel!.id));
+
+  it('puts pinned rows first, then each section in its order, then the rest', () => {
+    const groups = groupBySection(
+      [
+        entry('a', { sectionId: 's2' }),
+        entry('b'),
+        entry('c', { pinnedAt: new Date(), sectionId: 's1' }),
+        entry('d', { sectionId: 's1' }),
+        entry('e', { sectionId: 's1' }),
+      ],
+      [section('s1'), section('s2'), section('s3')],
+    );
+
+    expect(ids(groups.pinned)).toEqual(['c']);
+    expect(groups.sections.map((g) => [g.section.id, ids(g.entries)])).toEqual([
+      ['s1', ['d', 'e']],
+      ['s2', ['a']],
+      ['s3', []],
+    ]);
+    expect(ids(groups.rest)).toEqual(['b']);
+  });
+
+  it('keeps a row filed under a missing section, and every row without sections, in the rest', () => {
+    const rows = [
+      entry('a', { sectionId: 'gone' }),
+      { activeAt: new Date(), type: 'inbox' as const },
+    ];
+
+    expect(ids(groupBySection(rows, [section('s1')]).rest)).toEqual(['a', 'inbox']);
+    expect(ids(groupBySection(rows).rest)).toEqual(['a', 'inbox']);
   });
 });
 

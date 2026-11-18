@@ -1,4 +1,9 @@
-import type { ChannelDetail, ChannelListItem, ChannelPublicMessage } from '@lobot/types';
+import type {
+  ChannelDetail,
+  ChannelListItem,
+  ChannelPublicMessage,
+  ChannelSection,
+} from '@lobot/types';
 
 import { defineReplica, type ReplicaEntityAdapter } from '@/libs/replica';
 import {
@@ -66,6 +71,15 @@ export const channelListResource = defineReplica<Record<string, never>, ChannelL
   fetcher: () => channelService.list(),
   key: () => 'all',
   name: 'channelList',
+  storage: 'indexedDB',
+  version: 1,
+});
+
+/** The caller's own sections of the list in the active scope, in order. */
+export const channelSectionsResource = defineReplica<Record<string, never>, ChannelSection[]>({
+  fetcher: () => channelService.listSections(),
+  key: () => 'all',
+  name: 'channelSections',
   storage: 'indexedDB',
   version: 1,
 });

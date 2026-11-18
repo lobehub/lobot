@@ -1,6 +1,6 @@
+import { copyToClipboard, toast } from '@lobehub/ui';
 import type { ChannelListItem } from '@lobot/types';
 import { CHANNEL_LIMITS } from '@lobot/types';
-import { copyToClipboard, toast } from '@lobehub/ui';
 import {
   Archive,
   ArchiveRestore,
@@ -19,19 +19,21 @@ import { channelActions } from '@/store/channel';
 import { isTrpcErrorCode } from '@/utils/trpcError';
 
 import { useChannelArchive } from './useChannelArchive';
+import { useChannelSections } from './useChannelSections';
 import { useDeletePeerChat } from './useDeletePeerChat';
 import { useRemoveChannel } from './useRemoveChannel';
 
 /**
- * A Channel's menu wherever it is listed: pin, mute, rename, copy id, archive, and move to the
- * trash. A conversation between two people is a private chat instead: pin, mute, and delete it
- * for me only.
+ * A Channel's menu wherever it is listed: pin, mute, file under a section, rename, copy id,
+ * archive, and move to the trash. A conversation between two people is a private chat instead:
+ * pin, mute, file under a section, and delete it for me only.
  */
 export const useChannelMenu = () => {
   const { t } = useTranslation('channel');
   const remove = useRemoveChannel();
   const deletePeerChat = useDeletePeerChat();
   const { archive, unarchive } = useChannelArchive();
+  const sections = useChannelSections();
 
   const rename = (channel: ChannelListItem) =>
     openRenameModal({
@@ -85,9 +87,16 @@ export const useChannelMenu = () => {
 
   // Both people own the conversation, so renaming, archiving or trashing it would change it for
   // the other person too.
+  // Each member files it under their own sections.
+  const sectionItems = (channel: ChannelListItem) => {
+    const item = sections.menuItem(channel);
+    return item ? [item] : [];
+  };
+
   const peerItems = (channel: ChannelListItem) => [
     pinItem(channel),
     muteItem(channel),
+    ...sectionItems(channel),
     { type: 'divider' as const },
     {
       danger: true,
@@ -101,6 +110,7 @@ export const useChannelMenu = () => {
   const channelItems = (channel: ChannelListItem) => [
     pinItem(channel),
     muteItem(channel),
+    ...sectionItems(channel),
     ...(channel.canDelete && channel.status !== 'archived'
       ? [{ icon: PencilLine, key: 'rename', label: t('rename'), onClick: () => rename(channel) }]
       : []),

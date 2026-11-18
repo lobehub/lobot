@@ -108,6 +108,66 @@ export const styles = stylex.create({
   rowTextSingleLine: {
     minHeight: 0,
   },
+  /** Sets the unsectioned rows apart from the last section above them. */
+  restDivider: {
+    height: '1px',
+    marginBlockStart: '6px',
+    marginBlockEnd: '4px',
+    marginInline: '8px',
+    backgroundColor: cssVar.colorBorderSecondary,
+  },
+  /** One of the person's own sections: its header, then its rows. */
+  section: {
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1px',
+    marginBlockStart: '6px',
+  },
+  sectionChevron: {
+    flex: 'none',
+    transition: 'transform 150ms ease',
+  },
+  sectionChevronOpen: {
+    transform: 'rotate(90deg)',
+  },
+  /** Quiet like a list caption; the whole line folds the section and drags it. */
+  sectionHeader: {
+    display: 'flex',
+    gap: '4px',
+    alignItems: 'center',
+    width: '100%',
+    height: '26px',
+    paddingInline: '8px',
+    borderWidth: 0,
+    borderStyle: 'none',
+    borderRadius: cssVar.borderRadius,
+    fontSize: '12px',
+    fontWeight: 500,
+    color: {
+      'default': cssVar.colorTextTertiary,
+      ':hover': cssVar.colorTextSecondary,
+    },
+    textAlign: 'start',
+    backgroundColor: {
+      'default': 'transparent',
+      ':hover': cssVar.colorFillTertiary,
+    },
+    cursor: 'pointer',
+  },
+  sectionName: {
+    overflow: 'hidden',
+    flex: '1',
+    minWidth: 0,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  /** A folded section's unread count, as quiet as the caption so it does not compete with rows. */
+  sectionUnread: {
+    flex: 'none',
+    fontSize: '11px',
+    color: cssVar.colorTextSecondary,
+  },
   tag: {
     marginInlineStart: '6px',
     fontSize: '11px',

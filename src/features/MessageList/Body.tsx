@@ -1,5 +1,21 @@
 'use client';
 
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { DEFAULT_INBOX_TITLE } from '@lobechat/const';
 import { Flexbox } from '@lobehub/ui';
 import { agentDisplayName } from '@lobot/types';
@@ -14,6 +30,7 @@ import { resolveInboxAgentRouteId } from '@/features/AgentRoute/useResolvedAgent
 import { matchChannel } from '@/features/Channels/paths';
 import { useChannelEvents } from '@/features/Channels/useChannelEvents';
 import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
+import { suppressNextClick } from '@/features/HomeSidebar/Body/sortableRow';
 import SkeletonList from '@/features/NavPanel/components/SkeletonList';
 import { useActiveLocation } from '@/hooks/useActiveLocation';
 import { useFetchAgentList } from '@/hooks/useFetchAgentList';
@@ -33,8 +50,8 @@ import {
   buildConversationSections,
   type Conversation,
   type ConversationEntry,
+  groupBySection,
   inboxActivity,
-  isPinned,
   reuseUnchangedEntries,
   withoutHidden,
 } from './conversations';
@@ -43,6 +60,7 @@ import { showConversation, useHiddenConversations } from './hiddenConversations'
 import InboxConversation from './InboxConversation';
 import NetworkSearchRow from './NetworkSearchRow';
 import { useMessageSearch } from './SearchContext';
+import SectionGroup from './SectionGroup';
 import { styles } from './style';
 
 /**
@@ -80,6 +98,8 @@ ConversationItem.displayName = 'ConversationItem';
 /** Keeps the Channel list fresh while Channels are on; it has no row of its own. */
 const ChannelSync = memo(() => {
   const { error } = channelActions.useFetchList();
+  // The person's own sections; a server without them leaves the list unsectioned.
+  channelActions.useFetchSections(true);
   useChannelEvents();
 
   return error ? (
@@ -98,6 +118,7 @@ const Body = memo(() => {
   const activeRouteId = useActiveRouteId();
   const channelsEnabled = useChannelsEnabled();
   const allChannels = useChannelStore(channelSelectors.list);
+  const sections = useChannelStore(channelSelectors.sections);
   useProjectStore((s) => s.useFetchProjectList)(channelsEnabled);
   const projects = useCurrentProjectList();
   const projectMap = useMemo(
@@ -194,10 +215,34 @@ const Body = memo(() => {
     userId,
   ]);
 
-  // Pinned rows lead the list; they render as one block rather than a card each.
-  const pinnedCount = entries.findIndex((entry) => !isPinned(entry));
-  const pinnedEntries = pinnedCount === -1 ? entries : entries.slice(0, pinnedCount);
-  const otherEntries = pinnedCount === -1 ? [] : entries.slice(pinnedCount);
+  // Pinned rows lead the list as one block rather than a card each, then the person's own
+  // sections, then the rest.
+  const groups = useMemo(
+    () => groupBySection(entries, channelsEnabled ? sections : undefined),
+    [channelsEnabled, entries, sections],
+  );
+
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
+    // A press-and-hold picks a section up on touch, so a vertical swipe still scrolls the list.
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+  const sectionIds = useMemo(() => groups.sections.map(({ section }) => section.id), [groups]);
+  const handleSectionDragEnd = ({ active, over }: DragEndEvent) => {
+    // The drop lands on the dragged header, whose click would fold it.
+    suppressNextClick();
+    if (!over || active.id === over.id) return;
+    void channelActions
+      .reorderSections(
+        arrayMove(
+          sectionIds,
+          sectionIds.indexOf(String(active.id)),
+          sectionIds.indexOf(String(over.id)),
+        ),
+      )
+      .catch((error) => console.error('Failed to reorder sections', error));
+  };
 
   const renderEntry = (entry: ConversationEntry) =>
     entry.type === 'inbox' ? (
@@ -228,12 +273,33 @@ const Body = memo(() => {
 
   return (
     <Flexbox gap={1} paddingBlock={'0 12px'} paddingInline={6}>
-      {pinnedEntries.length > 0 && (
+      {groups.pinned.length > 0 && (
         <div aria-label={t('navPanel.pinned')} role="group" {...stylex.props(styles.pinnedGroup)}>
-          {pinnedEntries.map(renderEntry)}
+          {groups.pinned.map(renderEntry)}
         </div>
       )}
-      {otherEntries.map(renderEntry)}
+      {groups.sections.length > 0 && (
+        <DndContext
+          collisionDetection={closestCenter}
+          sensors={sensors}
+          onDragEnd={handleSectionDragEnd}
+        >
+          <SortableContext items={sectionIds} strategy={verticalListSortingStrategy}>
+            {groups.sections.map((group) => (
+              <SectionGroup
+                group={group}
+                key={group.section.id}
+                renderEntry={renderEntry}
+                searching={!!query.trim()}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
+      )}
+      {groups.rest.length > 0 && groups.sections.length > 0 && !query.trim() && (
+        <div {...stylex.props(styles.restDivider)} />
+      )}
+      {groups.rest.map(renderEntry)}
       {agentsLoading ? (
         agentsError ? (
           <AsyncError error={agentsError} variant="inline" onRetry={() => void retryAgents()} />

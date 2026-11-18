@@ -68,6 +68,8 @@ export const channelSelectors = {
   directByAgent: (agentId: string) => (state: ChannelState) =>
     state.listMap.all?.find((channel) => channel.agentId === agentId && !channel.projectId),
   list: (state: ChannelState) => state.listMap.all,
+  /** The caller's own list sections in order; undefined until loaded or when unavailable. */
+  sections: (state: ChannelState) => state.sectionsMap.all,
   /** A Channel's own row in the list, available before its conversation has loaded. */
   listed: (channelId: string) => (state: ChannelState) =>
     state.listMap.all?.find((channel) => channel.id === channelId),

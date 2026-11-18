@@ -12,11 +12,12 @@ import {
   Text,
 } from '@lobehub/ui';
 import { GroupBotSquareIcon } from '@lobehub/ui/icons';
-import { BotIcon, CirclePlusIcon, Hash } from 'lucide-react';
+import { BotIcon, CirclePlusIcon, FolderPlus, Hash } from 'lucide-react';
 import { memo, type ReactNode, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { openCreateChannel } from '@/features/Channels/CreateChannel';
+import { useChannelSections } from '@/features/Channels/useChannelSections';
 import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { useCreateMenuItems } from '@/features/HomeSidebar/hooks';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
@@ -77,6 +78,7 @@ const Header = memo(() => {
   const { createAgentMenuItem, createGroupChatMenuItem, isLoading } = useCreateMenuItems();
   const channelsEnabled = useChannelsEnabled();
   const navigate = useWorkspaceAwareNavigate();
+  const { create: createSection, sections } = useChannelSections();
   // Only the two things a conversation is started with: an Agent (whose modal also connects
   // external ones) and a group. With Channels on, the group is a Channel, general or a project's.
   const createItems = useMemo(
@@ -93,8 +95,27 @@ const Header = memo(() => {
           )
         : // Worded the way WeChat's "+" menu starts one.
           createRow(createGroupChatMenuItem(), GroupBotSquareIcon, t('messageList.startGroupChat')),
+      // The person's own sections of this list, once the server has them.
+      ...(channelsEnabled && sections
+        ? [
+            { type: 'divider' as const },
+            createRow(
+              { key: 'newSection', onClick: () => createSection() },
+              FolderPlus,
+              t('section.create', { ns: 'channel' }),
+            ),
+          ]
+        : []),
     ],
-    [channelsEnabled, createAgentMenuItem, createGroupChatMenuItem, navigate, t],
+    [
+      channelsEnabled,
+      createAgentMenuItem,
+      createGroupChatMenuItem,
+      createSection,
+      navigate,
+      sections,
+      t,
+    ],
   );
 
   // WeChat-style header: a search box that filters the list, and one "+" entry.

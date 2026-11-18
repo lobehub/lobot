@@ -120,6 +120,63 @@ class ChannelActionImpl {
       (channel) => ({ ...channel, pinnedAt: pinned ? (channel.pinnedAt ?? new Date()) : null }),
       () => channelService.setPinned(channelId, pinned),
     );
+  /** The caller's own list sections; a server without them leaves the list unsectioned. */
+  useFetchSections = (enabled: boolean) =>
+    this.#private.sections.useSync(enabled ? {} : null, {
+      refreshInterval: CHANNEL_IDLE_REFRESH_MS,
+    });
+  refreshSections = () => this.#private.sections.fetch({}, { fresh: true });
+  /** Adds a section after the others; resolves to its id. */
+  createSection = async (name: string) => {
+    const section = await channelService.createSection(name);
+    await this.#refreshAfterWrite(this.refreshSections);
+    return section.id;
+  };
+  renameSection = (id: string, name: string) =>
+    this.#private.sections.optimistic(
+      'all',
+      (sections) =>
+        sections?.map((section) => (section.id === id ? { ...section, name } : section)),
+      () => channelService.updateSection(id, { name }),
+    );
+  /** Folding is the caller's own and follows them to their other devices. */
+  setSectionCollapsed = (id: string, collapsed: boolean) =>
+    this.#private.sections.optimistic(
+      'all',
+      (sections) =>
+        sections?.map((section) => (section.id === id ? { ...section, collapsed } : section)),
+      () => channelService.updateSection(id, { collapsed }),
+    );
+  /** Puts the sections in the given order; the list moves before the server confirms. */
+  reorderSections = (ids: string[]) =>
+    this.#private.sections.optimistic(
+      'all',
+      (sections) => {
+        if (!sections) return sections;
+        const byId = new Map(sections.map((section) => [section.id, section] as const));
+        return ids.flatMap((id, sort) => {
+          const section = byId.get(id);
+          return section ? [{ ...section, sort }] : [];
+        });
+      },
+      () => channelService.reorderSections(ids),
+    );
+  /** Deletes a section; its conversations go back to the unsectioned part of the list. */
+  removeSection = async (id: string) => {
+    await this.#private.sections.optimistic(
+      'all',
+      (sections) => sections?.filter((section) => section.id !== id),
+      () => channelService.removeSection(id),
+    );
+    await this.#refreshAfterWrite(this.refreshList);
+  };
+  /** Files the conversation under one of the caller's own sections; null takes it out. */
+  moveToSection = (channelId: string, sectionId: string | null) =>
+    this.#private.entity.optimistic(
+      channelId,
+      (channel) => ({ ...channel, sectionId }),
+      () => channelService.moveToSection(channelId, sectionId),
+    );
   /**
    * Mutes the conversation's notifications for the caller, or unmutes them; the row changes
    * before the server confirms. Messages still arrive and count as unread.

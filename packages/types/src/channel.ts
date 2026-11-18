@@ -381,6 +381,19 @@ export interface ChannelThreadMention {
 }
 
 /** Public client projection. No execution configuration, private topic or draft fields. */
+/**
+ * One of the caller's own sections of their conversation list. Personal and per scope: other
+ * members never see it, and a section in one workspace is not listed in another.
+ */
+export interface ChannelSection {
+  collapsed: boolean;
+  createdAt: Date;
+  id: string;
+  name: string;
+  sort: number | null;
+  updatedAt: Date;
+}
+
 export interface ChannelListItem {
   /** The bound Agent of a direct conversation; null for a group. */
   agentId: string | null;
@@ -420,6 +433,11 @@ export interface ChannelListItem {
    * direct Channel's, which also carries its Threads' (`threadId` set).
    */
   replyJobs?: ChannelReplyJob[];
+  /**
+   * The caller's own section holding the conversation, null for none; set by the Channel list.
+   * Personal: other members never see it.
+   */
+  sectionId?: string | null;
   sequence: number;
   /**
    * A direct conversation with another person's Agent, reached through the caller's contact entry

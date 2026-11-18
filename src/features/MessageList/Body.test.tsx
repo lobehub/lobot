@@ -17,6 +17,7 @@ const home = vi.hoisted(() => ({
   isInit: false,
   items: [] as unknown[],
   mutate: () => {},
+  sections: undefined as Record<string, unknown>[] | undefined,
 }));
 
 const openAddContactModal = vi.hoisted(() => vi.fn());
@@ -34,8 +35,9 @@ vi.mock('@/store/channel', () => ({
   channelActions: {
     refreshList: () => {},
     useFetchList: () => ({ error: home.channelsError }),
+    useFetchSections: () => ({}),
   },
-  channelSelectors: { list: () => home.channels },
+  channelSelectors: { list: () => home.channels, sections: () => home.sections },
   useChannelStore: (selector: (state: object) => unknown) => selector({}),
 }));
 vi.mock('@/store/project', () => ({
@@ -119,6 +121,7 @@ beforeEach(() => {
   home.error = undefined;
   home.isInit = false;
   home.items = [];
+  home.sections = undefined;
 });
 
 describe('MessageList Body', () => {
@@ -179,6 +182,27 @@ describe('MessageList Body', () => {
     expect(group).toHaveTextContent('Pinned 2');
     expect(group).not.toHaveTextContent('Agent A');
     expect(group).not.toHaveTextContent('Lobe AI row');
+  });
+
+  it("groups the person's own sections between the pinned rows and the rest", () => {
+    home.isInit = true;
+    home.sections = [
+      { collapsed: false, id: 'sec_work', name: 'Work', sort: 0 },
+      { collapsed: true, id: 'sec_later', name: 'Later', sort: 1 },
+    ];
+    home.channels = [
+      { agentId: null, createdAt: new Date(), id: 'chn_a', sectionId: 'sec_work', title: 'Alpha' },
+      { agentId: null, createdAt: new Date(), id: 'chn_b', sectionId: 'sec_later', title: 'Beta' },
+      { agentId: null, createdAt: new Date(), id: 'chn_c', title: 'Gamma' },
+    ];
+
+    render(createElement(Body));
+
+    expect(screen.getByRole('group', { name: 'Work' })).toHaveTextContent('# Alpha');
+    // A folded section keeps its header but not its rows.
+    expect(screen.getByRole('group', { name: 'Later' })).not.toHaveTextContent('# Beta');
+    expect(screen.queryByText('# Beta')).not.toBeInTheDocument();
+    expect(screen.getByText('# Gamma')).toBeInTheDocument();
   });
 
   // Every agent and group got a row, so the list read like Contacts instead of open conversations.

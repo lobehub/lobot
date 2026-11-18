@@ -1,4 +1,4 @@
-import type { ChannelDetail, ChannelListItem } from '@lobot/types';
+import type { ChannelDetail, ChannelListItem, ChannelSection } from '@lobot/types';
 
 import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
 
@@ -130,6 +130,20 @@ class ChannelService {
     lambdaClient.channel.markRead.mutate({ channelId, sequence });
   setPinned = (channelId: string, pinned: boolean) =>
     lambdaClient.channel.setPinned.mutate({ channelId, pinned });
+
+  /** Files the conversation under one of the caller's own sections; null takes it out. */
+  moveToSection = (channelId: string, sectionId: string | null) =>
+    lambdaClient.channel.moveToSection.mutate({ channelId, sectionId });
+  /** The caller's own sections in the active scope, in list order. */
+  listSections = async (): Promise<ChannelSection[]> =>
+    (await lambdaClient.channel.listSections.query()).data;
+  createSection = async (name: string): Promise<ChannelSection> =>
+    (await lambdaClient.channel.createSection.mutate({ name })).data;
+  updateSection = (id: string, value: { collapsed?: boolean; name?: string }) =>
+    lambdaClient.channel.updateSection.mutate({ id, value });
+  reorderSections = (ids: string[]) => lambdaClient.channel.reorderSections.mutate({ ids });
+  /** Its conversations go back to the unsectioned part of the list. */
+  removeSection = (id: string) => lambdaClient.channel.removeSection.mutate({ id });
 
   setMuted = (channelId: string, muted: boolean) =>
     lambdaClient.channel.setMuted.mutate({ channelId, muted });

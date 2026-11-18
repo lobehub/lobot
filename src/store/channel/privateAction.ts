@@ -1,4 +1,4 @@
-import type { ChannelDetail, ChannelListItem } from '@lobot/types';
+import type { ChannelDetail, ChannelListItem, ChannelSection } from '@lobot/types';
 
 import {
   arrayEntity,
@@ -19,6 +19,7 @@ import {
   channelDetailResource,
   channelListResource,
   channelScopeListResource,
+  channelSectionsResource,
   channelThreadEntityId,
   channelUserCandidatesResource,
   channelViewKey,
@@ -45,6 +46,7 @@ export class ChannelPrivateAction {
   readonly entity;
   readonly list;
   readonly scopeList;
+  readonly sections;
   readonly userCandidates;
   readonly wakeConfig;
   constructor(set: StoreSetter<ChannelState>, get: () => ChannelState) {
@@ -128,6 +130,13 @@ export class ChannelPrivateAction {
       set,
       stateKey: 'wakeConfigReplica',
       view: recordLens<ChannelState, ChannelWakeConfigData>('wakeConfigMap'),
+    });
+    this.sections = createReplicaSlice(channelSectionsResource, {
+      actionPrefix: 'channel/sections',
+      get,
+      set,
+      stateKey: 'sectionsReplica',
+      view: recordLens<ChannelState, ChannelSection[]>('sectionsMap'),
     });
     this.scopeList = createReplicaSlice(channelScopeListResource, {
       actionPrefix: 'channel/scopeList',

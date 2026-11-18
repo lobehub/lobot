@@ -1,5 +1,5 @@
-import type { ChannelListItem } from '@lobot/types';
 import { type DropdownItem } from '@lobehub/ui';
+import type { ChannelListItem } from '@lobot/types';
 import { useCallback } from 'react';
 
 import {
@@ -11,11 +11,12 @@ import { useChannelMenu } from '@/features/Channels/useChannelMenu';
 import { channelSelectors, useChannelStore } from '@/store/channel';
 
 /** The direct Channel's own conversation actions, next to the Agent's own menu. */
-const CONVERSATION_ACTION_KEYS = new Set(['pin', 'unpin', 'unarchive']);
+const CONVERSATION_ACTION_KEYS = new Set(['moveToSection', 'pin', 'unpin', 'unarchive']);
 
 /**
  * A direct Channel is the chat with one Agent, so it cannot be archived or trashed. The row pins it
- * atop the person's own list and frees one that was archived earlier. Keys are prefixed so they cannot collide with the Agent's
+ * atop the person's own list, files it under one of their sections, and frees one that was
+ * archived earlier. Keys are prefixed so they cannot collide with the Agent's
  * own menu.
  */
 const conversationActions = (menu: DropdownItem[]): DropdownItem[] =>
