@@ -97,11 +97,11 @@ describe('ChannelWelcome', () => {
     expect(screen.queryByText('welcome.greet:Alice')).toBeNull();
   });
 
-  it('welcomes a group and lists its members', () => {
+  it('welcomes a group without repeating its members, which the join line already lists', () => {
     render(<ChannelWelcome detail={detail({}, [self, agent])} />);
     expect(screen.getByText('welcome.groupTitle:general')).toBeTruthy();
     expect(screen.getByText('welcome.group:general')).toBeTruthy();
-    expect(screen.getByText('Cook')).toBeTruthy();
+    expect(screen.queryByText('Cook')).toBeNull();
     expect(screen.queryByText('welcome.addMembers')).toBeNull();
   });
 

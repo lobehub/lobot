@@ -212,7 +212,8 @@ export const styles = stylex.create({
   /** Inline system line in the timeline, such as who joined. */
   event: {
     paddingBlock: 8,
-    paddingInlineStart: 48,
+    // Starts where the welcome header and the avatars do, not indented to the message text.
+    paddingInlineStart: 4,
     fontSize: cssVar.fontSizeSM,
     lineHeight: 1.8,
     color: cssVar.colorTextSecondary,

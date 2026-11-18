@@ -13,10 +13,9 @@ import { userProfileSelectors } from '@/store/user/selectors';
 import { canInviteMembers } from './channelAccess';
 import { openInviteMembers } from './CreateChannel';
 import { MemberAvatar } from './MemberAvatar';
-import { isCurrentUserMember, memberName } from './memberName';
+import { isCurrentUserMember } from './memberName';
 import { channelTitle } from './peerTitle';
 import { useChannelProjectName } from './useChannelProjectName';
-import { getVisibleStatusMembers } from './visibleMembers';
 
 const styles = stylex.create({
   root: {
@@ -39,13 +38,6 @@ const styles = stylex.create({
     fontWeight: 700,
     lineHeight: 1.3,
     color: cssVar.colorText,
-  },
-  member: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 6,
-    fontSize: 13,
-    color: cssVar.colorTextSecondary,
   },
 });
 
@@ -103,7 +95,6 @@ export function ChannelWelcome({ detail, onGreet }: ChannelWelcomeProps) {
     );
   }
 
-  const members = getVisibleStatusMembers(detail.members, channel.workspaceId);
   const admin = canInviteMembers(channel);
   return (
     <Flexbox gap={12} {...stylex.props(styles.root)}>
@@ -134,16 +125,6 @@ export function ChannelWelcome({ detail, onGreet }: ChannelWelcomeProps) {
           <Button icon={Settings} onClick={() => navigate(`${CHANNEL_URL(channel.id)}/settings`)}>
             {t('welcome.editChannel')}
           </Button>
-        </Flexbox>
-      )}
-      {members.length > 0 && (
-        <Flexbox horizontal gap={12} wrap="wrap">
-          {members.map((member) => (
-            <span key={member.id} {...stylex.props(styles.member)}>
-              <MemberAvatar member={member} size={24} />
-              {memberName(member, t('deletedMember'))}
-            </span>
-          ))}
         </Flexbox>
       )}
     </Flexbox>
