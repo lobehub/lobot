@@ -2,14 +2,7 @@ import type { DropdownItem } from '@lobehub/ui';
 import { ActionIcon, DropdownMenu, Flexbox, Icon, Popover, Text, toast } from '@lobehub/ui';
 import type { ChannelDetail, ChannelPublicMember } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
-import {
-  BellOff,
-  BellRing,
-  ExternalLink,
-  FolderCog,
-  MoreHorizontal,
-  UserMinus,
-} from 'lucide-react';
+import { AtSign, BellRing, ExternalLink, FolderCog, MoreHorizontal, UserMinus } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -153,7 +146,7 @@ const MemberState = ({
   if (!entry.label)
     return entry.member.muted ? (
       <span {...stylex.props(statusStyles.memberState, statusStyles.memberMuted)}>
-        <Icon icon={BellOff} size={12} />
+        <Icon icon={AtSign} size={12} />
         {t('member.muted')}
       </span>
     ) : null;
@@ -243,7 +236,7 @@ const MemberRow = ({
   if (agentId && entry.member.status === 'active' && mutable) {
     const muted = !!entry.member.muted;
     menuItems.push({
-      icon: <Icon icon={muted ? BellRing : BellOff} />,
+      icon: <Icon icon={muted ? BellRing : AtSign} />,
       key: 'mute',
       label: t(muted ? 'member.unmute' : 'member.mute'),
       onClick: () => {
