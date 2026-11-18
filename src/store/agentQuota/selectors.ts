@@ -2,8 +2,8 @@ import { quotaConfirmedKey, type Store } from './action';
 import {
   hashQuotaSourceKey,
   QUOTA_ACCOUNTS_KEY,
-  type QuotaAgentLoadsParams,
   quotaAgentLoadsKey,
+  type QuotaAgentLoadsParams,
   quotaDeviceAccountKey,
 } from './projection';
 

@@ -3,7 +3,9 @@ import type { DeviceListItem, DeviceMetricSeries, DeviceRunningSummary } from '@
 
 import { createReplicaState, type ReplicaPagedData, type ReplicaState } from '@/libs/replica';
 
+import type { AgentScanResult } from './agentScan';
 import type {
+  AgentDeviceBinding,
   DeviceDirectoryCursor,
   DeviceDirectoryPage,
   DeviceHomePath,
@@ -11,9 +13,6 @@ import type {
 } from './projection';
 
 export type DeviceDirectoryListing = ReplicaPagedData<DeviceDirectoryPage, DeviceDirectoryCursor>;
-
-import type { AgentScanResult } from './agentScan';
-import type { AgentDeviceBinding } from './projection';
 
 export interface DeviceState {
   /** Each agent's resolved device binding, by agent id; read it through `deviceSelectors.agentDeviceBinding`. */
