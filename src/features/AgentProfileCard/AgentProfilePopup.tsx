@@ -28,6 +28,7 @@ import { homeAgentListSelectors } from '@/store/home/selectors';
 import { cardPopoverProps } from '@/styles/cardPopover';
 
 import AgentProfileCard from '.';
+import { AgentCardActions } from './AgentCardActions';
 import { resolveAgentRuntimeLabel } from './runtime';
 import {
   type AgentProfilePreview as AgentPreview,
@@ -254,6 +255,14 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
       >
         {modelSection}
         {environmentSection}
+        {/* Only an Agent the server opens a conversation with: one's own, or a contact. */}
+        {contactUrl && channelsEnabled && (
+          <AgentCardActions
+            agentId={agentId}
+            profileUrl={contactUrl}
+            onDone={() => setOpen(false)}
+          />
+        )}
       </AgentProfileCard>
     );
 

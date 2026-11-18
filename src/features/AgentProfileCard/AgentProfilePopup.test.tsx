@@ -34,8 +34,15 @@ vi.mock('@lobehub/ui', async (importOriginal) => ({
   ),
 }));
 vi.mock('./index', () => ({
-  default: ({ onHeaderClick }: { onHeaderClick?: () => void }) =>
-    onHeaderClick ? <button onClick={onHeaderClick}>header</button> : <span>header</span>,
+  default: ({ children, onHeaderClick }: { children?: ReactNode; onHeaderClick?: () => void }) => (
+    <>
+      {onHeaderClick ? <button onClick={onHeaderClick}>header</button> : <span>header</span>}
+      {children}
+    </>
+  ),
+}));
+vi.mock('./AgentCardActions', () => ({
+  AgentCardActions: ({ profileUrl }: { profileUrl: string }) => <span>actions:{profileUrl}</span>,
 }));
 vi.mock('./useAgentProfileDetail', () => ({
   useAgentProfileDetail: () => ({ detail: undefined, isLoading: false }),
@@ -93,5 +100,25 @@ describe('AgentProfilePopup', () => {
     fireEvent.click(screen.getByText('header'));
 
     expect(navigate).toHaveBeenCalledWith('/agents/agt_shared');
+  });
+
+  it('offers message and profile actions for an Agent the person can talk to', () => {
+    render(
+      <AgentProfilePopup agentId={'agt_shared'} trigger={'hover'}>
+        <span />
+      </AgentProfilePopup>,
+    );
+
+    expect(screen.getByText('actions:/agents/agt_shared')).toBeTruthy();
+  });
+
+  it('offers no actions for an Agent the person cannot open a conversation with', () => {
+    render(
+      <AgentProfilePopup agentId={'agt_stranger'} trigger={'hover'}>
+        <span />
+      </AgentProfilePopup>,
+    );
+
+    expect(screen.queryByText(/^actions:/)).toBeNull();
   });
 });
