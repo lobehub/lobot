@@ -1,9 +1,4 @@
-import type {
-  ChannelLastMessage,
-  ChannelListItem,
-  RecentItem,
-  SidebarAgentItem,
-} from '@lobot/types';
+import type { ChannelLastMessage, ChannelListItem, SidebarAgentItem } from '@lobot/types';
 
 import { markdownToTxt } from '@/utils/markdownToTxt';
 
@@ -13,12 +8,12 @@ export const isPlainClick = (
 ) => event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
 
 export interface Conversation {
-  /** Latest activity: the newer of the item itself and its latest topic. */
+  /** Latest activity: its direct Channel's latest message, else the item's own update time. */
   activeAt: Date;
   /** The agent's direct Channel, when the row opens it. Carries its own archive / trash actions. */
   channel?: ChannelListItem;
   item: SidebarAgentItem;
-  /** One-line preview from the latest topic (assistant reply, else title). */
+  /** One-line preview: the direct Channel's latest message, else the item's description. */
   preview?: string;
   /** The Thread the previewed message was posted in, when it is a Thread reply. */
   previewThread?: ChannelPreviewThread;
@@ -30,18 +25,6 @@ interface ConversationSections {
   pinned: Conversation[];
   recent: Conversation[];
 }
-
-const recentOwnerId = (recent: RecentItem): string | undefined => {
-  if (recent.type !== 'topic') return;
-  // Group topics created by `execGroupAgent` persist the supervisor's `agentId`
-  // *and* the group route, so the route decides ownership: reading `agentId`
-  // first credits the group's replies to the supervisor and the group row never
-  // picks up its own activity.
-  const groupId = recent.routePath.match(/\/group\/([^/?#]+)/)?.[1];
-  return groupId ?? recent.agentId ?? undefined;
-};
-
-const toTime = (value: Date | string) => new Date(value).getTime();
 
 const oneLine = (text: string | null | undefined) =>
   (text ?? '').replaceAll(/\s+/g, ' ').trim() || undefined;
@@ -62,18 +45,11 @@ export const channelPreviewThread = (
 ): ChannelPreviewThread | undefined =>
   channel && channelPreview(channel) ? (channel.lastMessage?.thread ?? undefined) : undefined;
 
-/**
- * A row's preview line: its direct Channel's latest message once it has one, else its latest
- * topic (assistant reply, else title), else its description.
- */
+/** A row's preview line: its direct Channel's latest message once it has one, else its description. */
 export const conversationPreview = (
   description: string | null | undefined,
-  topic: RecentItem | undefined,
   direct?: Pick<ChannelListItem, 'lastMessage'>,
-) =>
-  direct
-    ? (channelPreview(direct) ?? oneLine(description))
-    : oneLine(topic?.lastAssistantMessage || topic?.title || description);
+) => (direct && channelPreview(direct)) || oneLine(description);
 
 /**
  * Pinned by this person atop their own list. The pin lives on their membership of the
@@ -86,59 +62,25 @@ export const isPinned = (entry: { channel?: Pick<ChannelListItem, 'pinnedAt'> })
 export const channelActivity = (channel: ChannelListItem): Date =>
   new Date(channel.lastMessage?.createdAt ?? channel.updatedAt ?? channel.createdAt);
 
-/** Newest topic per owner (agent id, or the group named by the topic route). */
-const topicsByOwner = (recents: RecentItem[] | undefined): Map<string, RecentItem> => {
-  const latest = new Map<string, RecentItem>();
-  for (const recent of recents ?? []) {
-    const owner = recentOwnerId(recent);
-    if (!owner) continue;
-    const current = latest.get(owner);
-    if (!current || toTime(recent.updatedAt) > toTime(current.updatedAt)) latest.set(owner, recent);
-  }
-  return latest;
-};
-
 /**
- * One owner's latest topic. The inbox row is not part of `items`, so it asks
- * for its own activity instead of going through the sections builder.
- */
-export const latestTopicOf = (
-  recents: RecentItem[] | undefined,
-  ownerId: string | undefined,
-): RecentItem | undefined => (ownerId ? topicsByOwner(recents).get(ownerId) : undefined);
-
-/** The newer of an entity's own timestamp and its latest topic. */
-export const latestActivity = (
-  own: Date | string | undefined,
-  topic: RecentItem | undefined,
-): Date | undefined => {
-  const ownTime = own ? toTime(own) : 0;
-  const topicTime = topic ? toTime(topic.updatedAt) : 0;
-  if (!ownTime && !topicTime) return undefined;
-  return new Date(Math.max(ownTime, topicTime));
-};
-
-/**
- * The inbox row's activity: once it opens a direct Channel, that Channel's latest message replaces
- * its legacy topics, and editing the agent no longer moves it.
+ * The inbox row's activity: its direct Channel's latest message once it has one, else the agent's
+ * own update time.
  */
 export const inboxActivity = (
   own: Date | string | undefined,
-  topic: RecentItem | undefined,
   direct?: ChannelListItem,
-): Date | undefined => (direct ? channelActivity(direct) : latestActivity(own, topic));
+): Date | undefined => (direct ? channelActivity(direct) : own ? new Date(own) : undefined);
 
 /**
  * Turn the sidebar agent/group list into IM-style conversations: each row
- * carries a preview of its latest topic and is ordered by latest activity,
- * rows the person pinned first. Only conversations that exist get a row — a direct Channel
- * or a topic; the rest stay in Contacts, pinned or not, since a pin is the workspace's list
+ * carries a preview of its direct Channel and is ordered by latest activity,
+ * rows the person pinned first. Only conversations that exist get a row — a direct Channel;
+ * the rest stay in Contacts, pinned or not, since a pin is the workspace's list
  * order and not a conversation of mine. The open one stays, and a search lists every agent
  * so a new conversation can start from it.
  */
 export const buildConversationSections = (
   items: SidebarAgentItem[],
-  recents: RecentItem[] | undefined,
   /** The person's direct Channel per agent id. A row that opens one shows that conversation. */
   directChannels?: Map<string, ChannelListItem>,
   {
@@ -151,8 +93,6 @@ export const buildConversationSections = (
     includeIdle?: boolean;
   } = {},
 ): ConversationSections => {
-  const latestByOwner = topicsByOwner(recents);
-
   const seen = new Set<string>();
   const conversations: Conversation[] = [];
   for (const item of items) {
@@ -161,29 +101,24 @@ export const buildConversationSections = (
 
     const direct = directChannels?.get(item.id);
     if (direct) {
-      // The row opens the direct Channel, so its legacy topics no longer describe it, and its time
-      // is that Channel's latest message: editing the agent is not a message.
+      // Its time is the Channel's latest message: editing the agent is not a message.
       conversations.push({
         activeAt: channelActivity(direct),
         channel: direct,
         item,
-        preview: conversationPreview(item.description, undefined, direct),
+        preview: conversationPreview(item.description, direct),
         previewThread: channelPreviewThread(direct),
         unread: direct.unreadCount ?? 0,
       });
       continue;
     }
 
-    const latest = latestByOwner.get(item.id);
-    if (!latest && !includeIdle && item.id !== activeId) continue;
-
-    const itemTime = toTime(item.updatedAt);
-    const latestTime = latest ? toTime(latest.updatedAt) : 0;
+    if (!includeIdle && item.id !== activeId) continue;
 
     conversations.push({
-      activeAt: new Date(Math.max(itemTime, latestTime)),
+      activeAt: new Date(item.updatedAt),
       item,
-      preview: conversationPreview(item.description, latest),
+      preview: conversationPreview(item.description),
     });
   }
 
@@ -273,25 +208,17 @@ export const withoutHidden = (
       });
 
 /**
- * The Messages tab badge: the sum of what the list rows show. A row that opens a direct Channel
- * counts that Channel's unread messages instead of its Agent's unread topics, and an archived
- * group Channel has no row. A muted Channel counts only its unread @mentions.
+ * The Messages tab badge: the sum of what the list rows show, every row being a Channel. An Agent's
+ * Channel inside a project and an archived group Channel have no row. A muted Channel counts only
+ * its unread @mentions.
  */
-export const messagesUnreadCount = (
-  items: Pick<SidebarAgentItem, 'id' | 'unreadCount'>[],
-  channels: ChannelListItem[] | undefined,
-): number => {
+export const messagesUnreadCount = (channels: ChannelListItem[] | undefined): number => {
   let sum = 0;
-  const directAgentIds = new Set<string>();
   for (const channel of channels ?? []) {
     const direct = !!channel.agentId && !channel.projectId;
-    if (direct) directAgentIds.add(channel.agentId!);
-    else if (channel.agentId || channel.status === 'archived') continue;
+    if (!direct && (channel.agentId || channel.status === 'archived')) continue;
     // A muted conversation adds only what @mentions the user, like WeChat.
     sum += channel.mutedAt ? (channel.mentionCount ?? 0) : (channel.unreadCount ?? 0);
-  }
-  for (const item of items) {
-    if (!directAgentIds.has(item.id)) sum += item.unreadCount ?? 0;
   }
   return sum;
 };

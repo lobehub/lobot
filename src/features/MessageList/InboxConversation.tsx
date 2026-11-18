@@ -1,7 +1,7 @@
 'use client';
 
 import { DEFAULT_INBOX_AVATAR, DEFAULT_INBOX_TITLE } from '@lobechat/const';
-import type { ChannelListItem, RecentItem } from '@lobot/types';
+import type { ChannelListItem } from '@lobot/types';
 import { agentDisplayName } from '@lobot/types';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,9 +26,7 @@ const InboxConversation = memo<{
   activeRouteId?: string;
   /** The inbox Agent's direct Channel, when the row opens it. */
   channel?: ChannelListItem;
-  /** Its latest topic, previewed like any other Agent row's while it has no direct Channel. */
-  topic?: RecentItem;
-}>(({ activeAt, activeRouteId, channel, topic }) => {
+}>(({ activeAt, activeRouteId, channel }) => {
   const { t } = useTranslation('chat');
   const inboxAgentId = useAgentStore(builtinAgentSelectors.inboxAgentId);
   const routeId = resolveInboxAgentRouteId(inboxAgentId);
@@ -70,7 +68,7 @@ const InboxConversation = memo<{
       contextMenuItems={channel ? channelActions : undefined}
       activityCount={workingCount}
       // Same preview and time as every other Agent row; its tagline when it has nothing yet.
-      preview={conversationPreview(meta.description, topic, channel) ?? t('inbox.desc')}
+      preview={conversationPreview(meta.description, channel) ?? t('inbox.desc')}
     />
   );
 });

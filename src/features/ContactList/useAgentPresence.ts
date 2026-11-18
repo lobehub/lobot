@@ -1,10 +1,9 @@
+import { workingConversationCount } from '@/features/Channels/jobStatus';
 import { getManagedDeviceStatus } from '@/features/DeviceManager/managedDeviceStatus';
 import { useClientDataSWR } from '@/libs/swr';
 import { agentQuotaService } from '@/services/agentQuota';
 import { deviceService } from '@/services/device';
-import { topicService } from '@/services/topic';
-import { useChatStore } from '@/store/chat';
-import { operationSelectors } from '@/store/chat/selectors';
+import { channelSelectors, useChannelStore } from '@/store/channel';
 import { AGENT_DEVICE_BINDING_SWR_KEY } from '@/store/device/agentDeviceBinding';
 import { isDevicePresenceUnknown, useDeviceList } from '@/store/device/useDeviceList';
 
@@ -12,8 +11,6 @@ import { type AgentPresence, type QuotaAccountLoad, resolveAgentPresence } from 
 
 /** A card left open keeps following the Agent, without polling like a live dashboard. */
 const REFRESH_INTERVAL = 30_000;
-/** Upper bound on the running conversations read; a real account runs far fewer at once. */
-const RUNNING_TOPICS_LIMIT = 200;
 
 const fetchQuotaLoads = async (agentId: string): Promise<QuotaAccountLoad[]> => {
   const bindings: { accountId: string; enabled: boolean; role: string }[] =
@@ -40,26 +37,20 @@ export const useAgentPresence = (agentId?: string): AgentPresence | undefined =>
     config,
   );
   const devices = useDeviceList(config);
-  const running = useClientDataSWR(
-    agentId ? ['agent-presence-running', agentId] : null,
-    async () =>
-      (
-        await topicService.queryTopics({ pageSize: RUNNING_TOPICS_LIMIT, statuses: ['running'] })
-      ).some((topic) => topic.agentId === agentId),
-    config,
-  );
   const quota = useClientDataSWR(
     agentId ? ['agent-presence-quota', agentId] : null,
     () => fetchQuotaLoads(agentId!),
     config,
   );
-  // A run started from this window shows before the server's next answer.
-  const runningHere = useChatStore((s) =>
-    agentId ? operationSelectors.isAgentRunning(agentId)(s) : false,
-  );
+  // Working while a reply is pending in its direct Channel, Threads included: the Channel list
+  // carries those jobs and keeps them live.
+  const running = useChannelStore((s) => {
+    const direct = agentId ? channelSelectors.directByAgent(agentId)(s) : undefined;
+    return workingConversationCount(direct?.replyJobs ?? []) > 0;
+  });
 
   if (!agentId) return;
-  if (binding.data === undefined || (running.data === undefined && !running.error)) return;
+  if (binding.data === undefined) return;
   // Quota is a nice-to-have: a failed read only means "not off duty" was not ruled out.
   if (quota.data === undefined && !quota.error) return;
 
@@ -79,6 +70,6 @@ export const useAgentPresence = (agentId?: string): AgentPresence | undefined =>
     deviceId,
     loads: quota.data ?? [],
     now: Date.now(),
-    running: runningHere || !!running.data,
+    running,
   });
 };

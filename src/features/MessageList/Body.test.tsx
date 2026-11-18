@@ -17,9 +17,6 @@ const home = vi.hoisted(() => ({
   isInit: false,
   items: [] as unknown[],
   mutate: () => {},
-  recents: [] as unknown[],
-  recentsError: undefined as unknown,
-  revalidateRecents: vi.fn(async () => {}),
 }));
 
 const openAddContactModal = vi.hoisted(() => vi.fn());
@@ -69,17 +66,10 @@ vi.mock('@/features/AgentRoute/useResolvedAgentRouteId', () => ({
 }));
 
 vi.mock('@/store/home', () => ({
-  useHomeStore: (selector: (state: object) => unknown) =>
-    selector({
-      useFetchConversationRecents: () => ({
-        error: home.recentsError,
-        revalidate: home.revalidateRecents,
-      }),
-    }),
+  useHomeStore: (selector: (state: object) => unknown) => selector({}),
 }));
 vi.mock('@/store/home/selectors', () => ({
   homeAgentListSelectors: { allAgents: () => home.items, isAgentListInit: () => home.isInit },
-  homeRecentSelectors: { conversationRecents: () => () => home.recents },
 }));
 vi.mock('@/store/agent', () => ({
   useAgentStore: (selector: (state: object) => unknown) => selector({ agentMap: {} }),
@@ -129,9 +119,6 @@ beforeEach(() => {
   home.error = undefined;
   home.isInit = false;
   home.items = [];
-  home.recents = [];
-  home.recentsError = undefined;
-  home.revalidateRecents.mockClear();
 });
 
 describe('MessageList Body', () => {
@@ -159,7 +146,7 @@ describe('MessageList Body', () => {
     home.items = [
       { id: 'a', pinned: false, title: 'Agent A', type: 'agent', updatedAt: new Date() },
     ];
-    home.recents = [{ agentId: 'a', routePath: '/agent/a', type: 'topic', updatedAt: new Date() }];
+    home.channels.push({ agentId: 'a', createdAt: new Date(), id: 'chn_a', projectId: null });
 
     render(createElement(Body));
 
@@ -184,7 +171,6 @@ describe('MessageList Body', () => {
       pinnedAt: new Date(),
       title: agentId,
     }));
-    home.recents = [{ agentId: 'a', routePath: '/agent/a', type: 'topic', updatedAt: new Date() }];
 
     render(createElement(Body));
 
@@ -195,63 +181,18 @@ describe('MessageList Body', () => {
     expect(group).not.toHaveTextContent('Lobe AI row');
   });
 
-  // A failed recents request with nothing cached kept the skeleton up with no way to retry.
-  it('replaces the skeleton with a recents retry when recents fail', () => {
-    home.isInit = true;
-    home.items = [
-      { id: 'a', pinned: false, title: 'Agent A', type: 'agent', updatedAt: new Date() },
-    ];
-    home.recents = undefined as unknown as unknown[];
-    home.recentsError = 'recents down';
-
-    render(createElement(Body));
-
-    expect(screen.queryByText('Loading agents')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByText('Failed: recents down'));
-    expect(home.revalidateRecents).toHaveBeenCalledTimes(1);
-  });
-
-  // A first topic started in an idle agent never reached the recents, so leaving it dropped the row.
-  it('refreshes recents when the routed conversation changes, not on mount', () => {
-    home.isInit = true;
-    home.pathname = '/agent/a';
-
-    const { rerender } = render(createElement(Body, { key: 'list' }));
-    expect(home.revalidateRecents).not.toHaveBeenCalled();
-
-    home.pathname = '/agent/b';
-    // A new props object re-renders the memoized Body with the new route.
-    rerender(createElement(Body, { 'data-route': 'b', 'key': 'list' } as object));
-
-    expect(home.revalidateRecents).toHaveBeenCalledTimes(1);
-  });
-
-  it('waits for recents before deciding which agents have a conversation', () => {
-    home.isInit = true;
-    home.items = [
-      { id: 'a', pinned: false, title: 'Agent A', type: 'agent', updatedAt: new Date() },
-    ];
-    home.recents = undefined as unknown as unknown[];
-
-    render(createElement(Body));
-
-    expect(screen.getByText('Loading agents')).toBeInTheDocument();
-  });
-
   // Every agent and group got a row, so the list read like Contacts instead of open conversations.
-  it('lists only agents with a conversation, and every agent while searching', () => {
+  // A conversation is a direct Channel: an Agent's old topics no longer give it a row.
+  it('lists only agents with a direct Channel, and every agent while searching', () => {
     home.isInit = true;
     home.items = [
-      { id: 'a', pinned: false, title: 'Talked', type: 'agent', updatedAt: new Date() },
       { id: 'b', pinned: false, title: 'Idle', type: 'agent', updatedAt: new Date() },
       { id: 'c', pinned: false, title: 'Direct', type: 'agent', updatedAt: new Date() },
     ];
-    home.recents = [{ agentId: 'a', routePath: '/agent/a', type: 'topic', updatedAt: new Date() }];
     home.channels = [{ agentId: 'c', createdAt: new Date(), id: 'chn_c', projectId: null }];
 
     const { unmount } = render(createElement(Body));
 
-    expect(screen.getByText('Talked')).toBeInTheDocument();
     expect(screen.getByText('Direct')).toBeInTheDocument();
     expect(screen.queryByText('Idle')).not.toBeInTheDocument();
 
@@ -356,11 +297,11 @@ describe('MessageList Body active row', () => {
   it('leaves Agent rows unhighlighted inside a group Channel', () => {
     home.isInit = true;
     home.items = [agent];
-    home.recents = [
-      { agentId: 'agt_nasa', routePath: '/agent/agt_nasa', type: 'topic', updatedAt: new Date() },
-    ];
     home.pathname = '/channels/chn_000000000002';
-    home.channels = [{ agentId: null, id: 'chn_000000000002' }];
+    home.channels = [
+      { agentId: 'agt_nasa', id: 'chn_000000000001' },
+      { agentId: null, id: 'chn_000000000002' },
+    ];
 
     render(createElement(Body));
 
@@ -376,20 +317,12 @@ describe('MessageList Body ordering', () => {
     type: 'agent',
     updatedAt: new Date(updatedAt),
   });
-  const topic = (agentId: string, updatedAt: string) => ({
-    agentId,
-    icon: '',
-    id: agentId + updatedAt,
-    routePath: `/agent/${agentId}`,
-    status: null,
-    title: 'topic',
-    type: 'topic',
-    updatedAt: new Date(updatedAt),
-  });
-
   it('moves Lobe AI up by its latest conversation, not its configuration time', () => {
     home.items = [row('a', '2026-10-01')];
-    home.recents = [topic('inbox', '2026-10-06'), topic('a', '2026-10-03')];
+    home.channels = [
+      { agentId: 'inbox', createdAt: new Date('2026-10-06'), id: 'chn_inbox', projectId: null },
+      { agentId: 'a', createdAt: new Date('2026-10-03'), id: 'chn_a', projectId: null },
+    ];
 
     const { container } = render(createElement(Body));
     const text = container.textContent ?? '';

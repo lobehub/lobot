@@ -6,7 +6,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useScopeUnread } from './useScopeUnread';
 
 const mocks = vi.hoisted(() => ({
-  agents: [] as { id: string; unreadCount?: number }[],
   enabled: true,
   list: [] as Record<string, unknown>[],
   listInScope: vi.fn(async (_id: string | null) => [] as Record<string, unknown>[]),
@@ -22,12 +21,6 @@ vi.mock('@/store/channel', () => ({
   channelSelectors: { list: (s: { list: unknown }) => s.list },
   useChannelStore: (selector: (s: unknown) => unknown) => selector({ list: mocks.list }),
 }));
-vi.mock('@/store/home', () => ({
-  useHomeStore: (selector: (s: unknown) => unknown) => selector({}),
-}));
-vi.mock('@/store/home/selectors', () => ({
-  homeAgentListSelectors: { allAgents: () => mocks.agents },
-}));
 vi.mock('@/store/user', () => ({
   useUserStore: (selector: (s: unknown) => unknown) => selector({ user: { id: 'user-1' } }),
 }));
@@ -40,20 +33,18 @@ const wrapper = ({ children }: { children: ReactNode }) =>
 
 describe('useScopeUnread', () => {
   beforeEach(() => {
-    mocks.agents = [];
     mocks.enabled = true;
     mocks.list = [];
     mocks.listInScope.mockReset();
     mocks.listInScope.mockResolvedValue([]);
   });
 
-  it('counts the active scope from the loaded list and agents, without a request', () => {
+  it('counts the active scope from the loaded list, without a request', () => {
     mocks.list = [{ id: 'c1', status: 'active', unreadCount: 2 }];
-    mocks.agents = [{ id: 'a1', unreadCount: 1 }];
 
     const { result } = renderHook(() => useScopeUnread('ws-1', true), { wrapper });
 
-    expect(result.current).toBe(3);
+    expect(result.current).toBe(2);
     expect(mocks.listInScope).not.toHaveBeenCalled();
   });
 

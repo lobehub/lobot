@@ -1,4 +1,4 @@
-import type { ChannelListItem, RecentItem, SidebarAgentItem } from '@lobot/types';
+import type { ChannelListItem, SidebarAgentItem } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -7,8 +7,6 @@ import {
   directCounterpart,
   formatConversationTime,
   inboxActivity,
-  latestActivity,
-  latestTopicOf,
   messagesUnreadCount,
   reuseUnchangedEntries,
   withoutHidden,
@@ -34,44 +32,35 @@ const pinnedDirect = (agentId: string) =>
     pinnedAt: new Date('2026-01-02'),
   }) as ChannelListItem;
 
-const topic = (extra: Partial<RecentItem> & { updatedAt: string }) =>
+/** A direct Channel with an Agent whose latest message was at `at`. */
+const direct = (agentId: string, at: string, extra: Partial<ChannelListItem> = {}) =>
   ({
-    icon: '',
-    id: Math.random().toString(),
-    routePath: '/',
-    status: null,
-    title: 'topic',
-    type: 'topic',
+    agentId,
+    createdAt: new Date('2026-01-01'),
+    id: `chn_${agentId}`,
+    lastMessage: { content: `${agentId} says hi`, createdAt: new Date(at) },
     ...extra,
-    updatedAt: new Date(extra.updatedAt),
-  }) as RecentItem;
+  }) as ChannelListItem;
 
 describe('buildConversationSections', () => {
-  it('orders by latest activity, pinned first, with the latest topic as preview', () => {
+  it('orders by latest message, pinned first, with the latest message as preview', () => {
     const { pinned, recent } = buildConversationSections(
-      [
-        agent('a', '2026-10-01'),
-        agent('b', '2026-10-02'),
-        agent('p', '2026-09-01'),
-        agent('g', '2026-09-01', { type: 'group' }),
-      ],
-      [
-        topic({ agentId: 'a', lastAssistantMessage: 'old', updatedAt: '2026-10-03' }),
-        topic({ agentId: 'a', lastAssistantMessage: 'newest\n reply', updatedAt: '2026-10-05' }),
-        topic({ routePath: '/group/g/tpc_1', title: 'group topic', updatedAt: '2026-10-04' }),
-        topic({ agentId: 'b', type: 'document', updatedAt: '2026-10-09' }),
-      ],
-      new Map([['p', pinnedDirect('p')]]),
+      [agent('a', '2026-10-01'), agent('b', '2026-10-02'), agent('p', '2026-09-01')],
+      new Map([
+        ['a', direct('a', '2026-10-05')],
+        ['b', direct('b', '2026-10-03')],
+        ['p', pinnedDirect('p')],
+      ]),
     );
 
     expect(pinned.map((c) => c.item.id)).toEqual(['p']);
-    // Documents are not conversation activity, so `b` has no conversation and no row.
-    expect(recent.map((c) => c.item.id)).toEqual(['a', 'g']);
-    expect(recent[0].preview).toBe('newest reply');
-    expect(recent[1].preview).toBe('group topic');
+    expect(recent.map((c) => c.item.id)).toEqual(['a', 'b']);
+    expect(recent[0].preview).toBe('a says hi');
   });
 
-  it('lists only agents and groups that have a conversation', () => {
+  // Agents without a direct Channel got a row from their old topics; only Channels are
+  // conversations now.
+  it('lists only agents with a direct Channel, and the open one', () => {
     const items = [
       agent('talked', '2026-10-01'),
       agent('idle', '2026-10-09'),
@@ -80,11 +69,12 @@ describe('buildConversationSections', () => {
       // Pinned by a workspace member, but this person never talked to it.
       agent('pinned', '2026-10-01', { pinned: true }),
     ];
-    const recents = [topic({ agentId: 'talked', updatedAt: '2026-10-02' })];
 
-    const { pinned, recent } = buildConversationSections(items, recents, undefined, {
-      activeId: 'open',
-    });
+    const { pinned, recent } = buildConversationSections(
+      items,
+      new Map([['talked', direct('talked', '2026-10-02')]]),
+      { activeId: 'open' },
+    );
 
     expect(pinned).toEqual([]);
     expect(recent.map((c) => c.item.id)).toEqual(['talked', 'open']);
@@ -94,8 +84,10 @@ describe('buildConversationSections', () => {
   it("pins only the person's own conversations, not an Agent's workspace pin", () => {
     const { pinned, recent } = buildConversationSections(
       [agent('team-pin', '2026-10-01', { pinned: true }), agent('mine', '2026-10-01')],
-      [topic({ agentId: 'team-pin', updatedAt: '2026-10-03' })],
-      new Map([['mine', pinnedDirect('mine')]]),
+      new Map([
+        ['team-pin', direct('team-pin', '2026-10-03')],
+        ['mine', pinnedDirect('mine')],
+      ]),
     );
 
     expect(pinned.map((c) => c.item.id)).toEqual(['mine']);
@@ -105,7 +97,6 @@ describe('buildConversationSections', () => {
   it('keeps every agent while searching so a new conversation can start', () => {
     const { recent } = buildConversationSections(
       [agent('idle', '2026-10-09'), agent('idle-group', '2026-10-08', { type: 'group' })],
-      [],
       undefined,
       { includeIdle: true },
     );
@@ -113,28 +104,9 @@ describe('buildConversationSections', () => {
     expect(recent.map((c) => c.item.id)).toEqual(['idle', 'idle-group']);
   });
 
-  it('attributes a group topic that also carries the supervisor agentId to the group', () => {
-    const { recent } = buildConversationSections(
-      [agent('sup', '2026-09-01'), agent('g', '2026-09-01', { type: 'group' })],
-      [
-        topic({
-          agentId: 'sup',
-          lastAssistantMessage: 'group reply',
-          routePath: '/group/g/tpc_2',
-          updatedAt: '2026-10-05',
-        }),
-      ],
-    );
-
-    // The supervisor has no conversation of its own, so it never shows the group's reply.
-    expect(recent.map((c) => c.item.id)).toEqual(['g']);
-    expect(recent[0].preview).toBe('group reply');
-  });
-
   it('drops duplicate ids and falls back to the description', () => {
     const { recent } = buildConversationSections(
       [agent('a', '2026-10-01', { description: 'helps' }), agent('a', '2026-10-01')],
-      undefined,
       undefined,
       { includeIdle: true },
     );
@@ -156,11 +128,10 @@ describe('buildConversationSections with direct Channels', () => {
     } as ChannelListItem;
     const { recent } = buildConversationSections(
       [agent('a', '2026-10-01', { unreadCount: 5 }), agent('b', '2026-10-05')],
-      [topic({ agentId: 'a', lastAssistantMessage: 'legacy reply', updatedAt: '2026-10-02' })],
       new Map([['a', direct]]),
     );
 
-    // `b` has neither a direct Channel nor a topic.
+    // `b` has no direct Channel.
     expect(recent.map((c) => c.item.id)).toEqual(['a']);
     expect(recent[0]).toMatchObject({
       activeAt: new Date('2026-10-09'),
@@ -178,13 +149,11 @@ describe('buildConversationSections with direct Channels', () => {
       lastMessage: { content: 'hi', createdAt: new Date('2026-10-03') },
     } as ChannelListItem;
     const { recent } = buildConversationSections(
-      [agent('a', '2026-10-09'), agent('b', '2026-10-05')],
-      [topic({ agentId: 'b', updatedAt: '2026-10-05' })],
+      [agent('a', '2026-10-09')],
       new Map([['a', direct]]),
     );
 
-    expect(recent.map((c) => c.item.id)).toEqual(['b', 'a']);
-    expect(recent[1].activeAt).toEqual(new Date('2026-10-03'));
+    expect(recent[0].activeAt).toEqual(new Date('2026-10-03'));
   });
 
   it('falls back to the agent description while its direct Channel is empty', () => {
@@ -197,7 +166,6 @@ describe('buildConversationSections with direct Channels', () => {
     } as ChannelListItem;
     const { recent } = buildConversationSections(
       [agent('a', '2026-10-01', { description: 'Cooks dinner' })],
-      [topic({ agentId: 'a', lastAssistantMessage: 'legacy reply', updatedAt: '2026-10-02' })],
       new Map([['a', direct]]),
     );
 
@@ -218,7 +186,6 @@ describe('buildConversationSections with direct Channels', () => {
     } as ChannelListItem;
     const { recent } = buildConversationSections(
       [agent('a', '2026-10-01')],
-      [],
       new Map([['a', direct]]),
     );
 
@@ -249,7 +216,6 @@ describe('buildConversationEntries', () => {
       agent('b', '2026-10-01', { title: 'Beta' }),
       agent('p', '2026-09-01', { title: 'Pinned' }),
     ],
-    undefined,
     new Map([
       [
         'p',
@@ -377,22 +343,15 @@ describe('messagesUnreadCount', () => {
   it('counts only the unread @mentions of a muted conversation', () => {
     const mutedAt = new Date('2026-11-15');
     expect(
-      messagesUnreadCount(
-        [],
-        [
-          channel({ id: 'chn_quiet', mentionCount: 0, mutedAt, unreadCount: 7 }),
-          channel({ id: 'chn_called', mentionCount: 1, mutedAt, unreadCount: 4 }),
-          channel({ id: 'chn_loud', unreadCount: 2 }),
-        ],
-      ),
+      messagesUnreadCount([
+        channel({ id: 'chn_quiet', mentionCount: 0, mutedAt, unreadCount: 7 }),
+        channel({ id: 'chn_called', mentionCount: 1, mutedAt, unreadCount: 4 }),
+        channel({ id: 'chn_loud', unreadCount: 2 }),
+      ]),
     ).toBe(3);
   });
 
-  it('sums the list rows: topics without a direct Channel, direct, group and project Channels', () => {
-    const items = [
-      agent('agt_topics', '2026-10-01', { unreadCount: 2 }),
-      agent('agt_direct', '2026-10-01', { unreadCount: 5 }),
-    ];
+  it('sums the list rows: direct, group and project Channels', () => {
     const channels = [
       channel({ agentId: 'agt_direct', id: 'chn_direct', unreadCount: 1 }),
       channel({ agentId: 'agt_inbox', id: 'chn_inbox', unreadCount: 3 }),
@@ -400,33 +359,17 @@ describe('messagesUnreadCount', () => {
       channel({ id: 'chn_project', projectId: 'pro_1', unreadCount: 6 }),
     ];
 
-    // 2 (topics) + 1 (direct, not the agent's 5 topics) + 3 (inbox) + 4 (group) + 6 (project)
-    expect(messagesUnreadCount(items, channels)).toBe(16);
+    expect(messagesUnreadCount(channels)).toBe(14);
   });
 
   it('leaves out archived group Channels, which have no row', () => {
     const channels = [channel({ id: 'chn_old', status: 'archived', unreadCount: 7 })];
 
-    expect(messagesUnreadCount([], channels)).toBe(0);
+    expect(messagesUnreadCount(channels)).toBe(0);
   });
 
-  it('counts only Agent topics while Channels are off', () => {
-    expect(messagesUnreadCount([agent('a', '2026-10-01', { unreadCount: 2 })], undefined)).toBe(2);
-  });
-});
-
-describe('latestTopicOf', () => {
-  it("takes one owner's newest topic and leaves other owners alone", () => {
-    const recents = [
-      topic({ agentId: 'inbox', updatedAt: '2026-10-03' }),
-      topic({ agentId: 'inbox', lastAssistantMessage: 'newest', updatedAt: '2026-10-06' }),
-      topic({ agentId: 'a', updatedAt: '2026-10-09' }),
-    ];
-
-    expect(latestTopicOf(recents, 'inbox')?.lastAssistantMessage).toBe('newest');
-    expect(latestTopicOf(recents, 'missing')).toBeUndefined();
-    // No owner id (inbox unresolved) must not match every topic.
-    expect(latestTopicOf(recents, undefined)).toBeUndefined();
+  it('counts nothing while Channels are off', () => {
+    expect(messagesUnreadCount(undefined)).toBe(0);
   });
 });
 
@@ -434,34 +377,13 @@ describe('inboxActivity', () => {
   const direct = (createdAt: string) =>
     ({ lastMessage: { content: 'hi', createdAt } }) as unknown as ChannelListItem;
 
-  it('follows the direct Channel instead of the legacy topics', () => {
-    expect(
-      inboxActivity('2026-10-02', topic({ updatedAt: '2026-10-09' }), direct('2026-10-05')),
-    ).toEqual(new Date('2026-10-05'));
-  });
-
   it('ignores an agent edit newer than the direct Channel latest message', () => {
-    expect(inboxActivity('2026-10-09', undefined, direct('2026-10-05'))).toEqual(
-      new Date('2026-10-05'),
-    );
+    expect(inboxActivity('2026-10-09', direct('2026-10-05'))).toEqual(new Date('2026-10-05'));
   });
 
-  it('falls back to the latest topic without a direct Channel', () => {
-    expect(inboxActivity('2026-10-02', topic({ updatedAt: '2026-10-09' }))).toEqual(
-      new Date('2026-10-09'),
-    );
-  });
-});
-
-describe('latestActivity', () => {
-  it('uses the later of the own timestamp and the latest topic', () => {
-    expect(latestActivity('2026-10-02', topic({ updatedAt: '2026-10-05' }))).toEqual(
-      new Date('2026-10-05'),
-    );
-    expect(latestActivity('2026-10-07', topic({ updatedAt: '2026-10-05' }))).toEqual(
-      new Date('2026-10-07'),
-    );
-    expect(latestActivity(undefined, undefined)).toBeUndefined();
+  it('falls back to the agent time without a direct Channel', () => {
+    expect(inboxActivity('2026-10-02')).toEqual(new Date('2026-10-02'));
+    expect(inboxActivity(undefined)).toBeUndefined();
   });
 });
 

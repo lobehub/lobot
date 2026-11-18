@@ -12,8 +12,6 @@ import UserAvatar from '@/features/User/UserAvatar';
 import { useActiveLocation } from '@/hooks/useActiveLocation';
 import { channelSelectors, useChannelStore } from '@/store/channel';
 import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
-import { useHomeStore } from '@/store/home';
-import { homeAgentListSelectors } from '@/store/home/selectors';
 
 import { ActiveChannelSync, useMessagesUrl } from './messagesTarget';
 import { resolveRailTab } from './railTab';
@@ -25,12 +23,7 @@ import { useCompactLayout } from './useCompactLayout';
 /** The badge sums the Messages list rows, so it always matches what the list shows. */
 const useMessagesUnread = (channelsEnabled: boolean) => {
   const channels = useChannelStore(channelSelectors.list);
-  return useHomeStore((s) =>
-    messagesUnreadCount(
-      homeAgentListSelectors.allAgents(s),
-      channelsEnabled ? channels : undefined,
-    ),
-  );
+  return messagesUnreadCount(channelsEnabled ? channels : undefined);
 };
 
 /** Contacts' badge counts the friend requests waiting in its Requests group. */

@@ -8,8 +8,6 @@ import { useActiveLocation } from '@/hooks/useActiveLocation';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
-import { useHomeStore } from '@/store/home';
-import { homeAgentListSelectors } from '@/store/home/selectors';
 import { useUserStore } from '@/store/user';
 import { authSelectors } from '@/store/user/selectors';
 
@@ -101,9 +99,7 @@ const ActiveChannelNotifier = memo(() => {
     for (const event of events) void notifyChannelActivity(event, null);
   }, [personalList, watchPersonal, level]);
 
-  const unread = useHomeStore((s) =>
-    messagesUnreadCount(homeAgentListSelectors.allAgents(s), list),
-  );
+  const unread = messagesUnreadCount(list);
   useUnreadBadge(unread);
 
   return null;

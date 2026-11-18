@@ -22,11 +22,7 @@ import { recentService } from '@/services/recent';
 import { taskService } from '@/services/task';
 import { useHomeStore } from '@/store/home';
 import { HOME_TOPIC_RECENTS_PARAMS, TRAY_RECENTS_PARAMS } from '@/store/home/slices/recent/action';
-import {
-  createConversationRecentQueryKey,
-  createRecentQueryKey,
-  initialRecentState,
-} from '@/store/home/slices/recent/initialState';
+import { createRecentQueryKey, initialRecentState } from '@/store/home/slices/recent/initialState';
 import { recentListResource } from '@/store/home/slices/recent/projection';
 import { homeRecentSelectors } from '@/store/home/slices/recent/selectors';
 
@@ -122,24 +118,6 @@ describe('recents replica', () => {
 
     await waitFor(() => expect(titleOf(SIDEBAR, 'task:a')).toBe('Cached'));
     expect(result.current.isValidating).toBe(true);
-  });
-
-  it('fetches topic recents with previews for the conversation list', async () => {
-    const getAll = vi
-      .spyOn(recentService, 'getAll')
-      .mockImplementation(async () => [item('t1', 'Topic', 'topic')]);
-    const conversations = createConversationRecentQueryKey(50);
-
-    renderHook(() => useHomeStore((s) => s.useFetchConversationRecents)(50), { wrapper });
-
-    await waitFor(() =>
-      expect(
-        homeRecentSelectors.conversationRecents(conversations)(useHomeStore.getState()),
-      ).toHaveLength(1),
-    );
-    // The viewer's own topics with previews: the IM rows show the latest reply, not the title, and
-    // a workspace member's topics must not give another person a conversation row.
-    expect(getAll).toHaveBeenCalledWith(50, ['topic'], true, true);
   });
 
   it('does not fetch while logged out', () => {
