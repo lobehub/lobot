@@ -55,12 +55,12 @@ describe('useThreadMenu', () => {
     expect(success).toHaveBeenLastCalledWith('copyThreadIdSuccess');
   });
 
-  it('keeps archive and delete after the copy actions for a manager', () => {
+  it('puts archive first and delete last for a manager', () => {
     expect(menu({ canDelete: true }).map((entry) => entry.key ?? entry.type)).toEqual([
+      'archiveThread',
+      'divider',
       'copyThreadLink',
       'copyThreadId',
-      'divider',
-      'archiveThread',
       'divider',
       'deleteThread',
     ]);
