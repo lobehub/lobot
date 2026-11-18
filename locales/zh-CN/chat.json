@@ -2879,6 +2879,7 @@
   "taskSchedule.summary.hourly": "每小时",
   "taskSchedule.summary.hourlyAtMinute": "每小时的 {{minute}} 分",
   "taskSchedule.summary.hourlyHalfPast": "每小时的 30 分",
+  "taskSchedule.summary.monthly": "每月 {{day}} 日 {{time}} 运行",
   "taskSchedule.summary.weekly": "每周 {{days}} {{time}} 运行",
   "taskSchedule.tag.add": "设置计划",
   "taskSchedule.tag.every": "每 {{interval}}",
