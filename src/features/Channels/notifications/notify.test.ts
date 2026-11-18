@@ -25,7 +25,9 @@ vi.mock('@/store/chat/utils/notificationAvatar', () => ({
   ),
 }));
 
-const { buildChannelBanner, buildDirectSender, buildGroupSender } = await import('./notify');
+const { buildChannelBanner, buildDirectSender, buildGroupSender, latestIncoming } =
+  await import('./notify');
+const { channelService } = await import('@/services/channel');
 const { buildNotificationSender } = await import('@/store/chat/utils/desktopNotification');
 
 const channel = (extra: Partial<ChannelListItem> = {}) =>
@@ -203,5 +205,36 @@ describe('buildGroupSender', () => {
 
   it('stays a plain banner when the message page could not load', async () => {
     expect(await buildGroupSender(channel(), undefined, 'Marketing')).toBeUndefined();
+  });
+});
+
+describe('latestIncoming', () => {
+  const at = (minutes: number) => new Date(Date.UTC(2026, 10, 18, 10, minutes));
+  const posted = (content: string, minutes: number) =>
+    ({ ...message('Arvin', content), createdAt: at(minutes) }) as ChannelPublicMessage;
+
+  it('reads the Thread the preview comes from, not the main conversation', async () => {
+    const detail = vi.fn(async () => ({ messages: [posted('in thread', 5)] }));
+    Object.assign(channelService, { detail });
+
+    const result = await latestIncoming({
+      id: 'chn_1',
+      lastMessage: { content: 'in thread', createdAt: at(5), thread: { id: 'thd_1', title: null } },
+    });
+
+    expect(detail).toHaveBeenCalledWith({ channelId: 'chn_1', threadId: 'thd_1' });
+    expect(result?.content).toBe('in thread');
+  });
+
+  // Regression: activity the page did not show announced the main conversation's old message.
+  it('drops a message older than the preview so the banner does not replay it', async () => {
+    Object.assign(channelService, { detail: async () => ({ messages: [posted('old', 1)] }) });
+
+    const result = await latestIncoming({
+      id: 'chn_1',
+      lastMessage: { content: 'newer', createdAt: at(6), thread: null },
+    });
+
+    expect(result).toBeUndefined();
   });
 });

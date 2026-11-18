@@ -58,6 +58,14 @@ describe('diffChannelActivity', () => {
     ]);
   });
 
+  // Regression: an optimistic read zeroed the count and the next poll restored it, which
+  // re-announced the same @mention every few minutes.
+  it('stays quiet when a mention count bounces back without new activity', () => {
+    const mentioned = channel('a', { lastMessage: later(1), mentionCount: 1, unreadCount: 1 });
+    const read = { ...mentioned, mentionCount: 0, unreadCount: 0 };
+    expect(diff([read], [mentioned])).toEqual([]);
+  });
+
   it('announces an @mention as a mention, not a plain message', () => {
     expect(
       diff(

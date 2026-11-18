@@ -70,13 +70,14 @@ export const diffChannelActivity = ({
     const before = previous.get(channel.id);
     const unread = channel.unreadCount ?? 0;
     const mentions = channel.mentionCount ?? 0;
-    // A Channel new to the list (someone just added the user) counts from zero.
-    const mentioned = mentions > (before?.mentions ?? 0);
-    // An Agent's acknowledgement is not news: announced, it reads as the work being done.
-    const newMessage =
-      !channel.lastMessage?.opening &&
-      unread > (before?.unread ?? 0) &&
+    // Counts alone can bounce back (an optimistic read zeroes them, the next poll restores
+    // them), so only activity newer than the last list is news.
+    const advanced =
       time(channel.lastMessage?.createdAt ?? channel.updatedAt) > (before?.lastAt ?? 0);
+    // A Channel new to the list (someone just added the user) counts from zero.
+    const mentioned = advanced && mentions > (before?.mentions ?? 0);
+    // An Agent's acknowledgement is not news: announced, it reads as the work being done.
+    const newMessage = advanced && !channel.lastMessage?.opening && unread > (before?.unread ?? 0);
 
     if (mentioned) events.push({ channel, kind: 'mention' });
     // A muted conversation still announces an @mention of the user, like WeChat.

@@ -18,11 +18,26 @@ import { userProfileSelectors } from '@/store/user/selectors';
 import { isCurrentUserAuthor } from '../memberName';
 import type { ChannelActivityEvent } from './activity';
 
-/** The newest message someone else posted in the main conversation, if the latest page has one. */
-const latestIncoming = async (channelId: string): Promise<ChannelPublicMessage | undefined> => {
-  const detail = await channelService.detail({ channelId });
+/**
+ * The newest message someone else posted where the Channel's latest activity is: its Thread when
+ * the list preview comes from one, else the main conversation. A message older than the preview
+ * is not the news (it is in a part of the Channel the page does not show), so it is dropped and
+ * the banner falls back on the preview instead of replaying an old message.
+ */
+export const latestIncoming = async (
+  channel: Pick<ChannelListItem, 'id' | 'lastMessage'>,
+): Promise<ChannelPublicMessage | undefined> => {
+  const { lastMessage } = channel;
+  const detail = await channelService.detail({
+    channelId: channel.id,
+    threadId: lastMessage?.thread?.id,
+  });
   const userId = userProfileSelectors.userId(getUserStoreState());
-  return detail.messages.findLast((message) => !isCurrentUserAuthor(message.author, userId));
+  const message = detail.messages.findLast((item) => !isCurrentUserAuthor(item.author, userId));
+  if (!message) return undefined;
+  if (lastMessage && new Date(message.createdAt) < new Date(lastMessage.createdAt))
+    return undefined;
+  return message;
 };
 
 interface ChannelBanner {
@@ -143,7 +158,7 @@ export const notifyChannelActivity = async (event: ChannelActivityEvent): Promis
   try {
     const [message, soundName] = await Promise.all([
       // The list preview is enough to fall back on when the page cannot load.
-      latestIncoming(channel.id).catch(() => undefined),
+      latestIncoming(channel).catch(() => undefined),
       completionSoundService.getNotificationSoundFile(),
     ]);
     const projectName = projectListItemSelector(channel.projectId)(
