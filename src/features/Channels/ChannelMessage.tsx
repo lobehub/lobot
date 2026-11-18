@@ -33,7 +33,9 @@ import AgentProfilePopup from '@/features/AgentProfileCard/AgentProfilePopup';
 import { ChatItem } from '@/features/Conversation/ChatItem';
 import Markdown from '@/features/Conversation/Markdown';
 import LobeAgentsElement from '@/features/Conversation/Markdown/plugins/LobeAgents';
+import LocalFileElement from '@/features/Conversation/Markdown/plugins/LocalFile';
 import EntityLinkElement from '@/features/EntityLink/element';
+import { LocalFile } from '@/features/LocalFile';
 import UserAvatar from '@/features/User/UserAvatar';
 import { channelActions } from '@/store/channel';
 import { useUserStore } from '@/store/user';
@@ -65,6 +67,19 @@ const AGENTS_TAG_REGEX = /<lobeAgents\b[^>]*>/g;
 // A tag spread across lines would split into several raw nodes; keep it one node for the plugin.
 const joinAgentTags = (content: string) =>
   content.replaceAll(AGENTS_TAG_REGEX, (tag) => tag.replaceAll(/\r?\n|\r/g, ''));
+// `<localFile … />` names a file on its author's machine, not the viewer's, so the chip is a
+// read-only reference: opening it here would resolve the path against the wrong device.
+const ChannelLocalFile = ({ node }: { node?: { properties?: Record<string, unknown> } }) => {
+  const { isDirectory, name, path } = node?.properties ?? {};
+  return typeof name === 'string' && name ? (
+    <LocalFile
+      readonly
+      isDirectory={isDirectory === true}
+      name={name}
+      path={typeof path === 'string' ? path : undefined}
+    />
+  ) : null;
+};
 const HISTORIC_FOLD_OVERFLOW = 240;
 // Matches the `(hover: hover)` query the toolbar's reveal styles use.
 const canHover = () =>
@@ -85,7 +100,10 @@ const MessageText = ({
   const key = names.join('\n');
   // Polling re-renders every message while replies run; a new plugin array or component map
   // would make the memoized Markdown parse each message again on every refresh.
-  const remarkPlugins = useMemo(() => [remarkChannelMentions(key ? key.split('\n') : [])], [key]);
+  const remarkPlugins = useMemo(
+    () => [LocalFileElement.remarkPlugin!, remarkChannelMentions(key ? key.split('\n') : [])],
+    [key],
+  );
   const memberKey = members.map((member) => member.id).join('\n');
   const components = useMemo(
     () => ({
@@ -104,6 +122,7 @@ const MessageText = ({
       [EntityLinkElement.tag]: EntityLinkElement.Component,
       // The card reads only the tag's attributes, not the conversation's message id.
       [LobeAgentsElement.tag]: LobeAgentsElement.Component as FC,
+      [LocalFileElement.tag]: ChannelLocalFile,
     }),
     // Keyed by member ids and names: the members array is rebuilt on every poll.
     // eslint-disable-next-line react-hooks/exhaustive-deps

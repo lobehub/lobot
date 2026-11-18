@@ -7,6 +7,7 @@ import { act, createElement, type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import LobeAgentsElement from '@/features/Conversation/Markdown/plugins/LobeAgents';
+import LocalFileElement from '@/features/Conversation/Markdown/plugins/LocalFile';
 import EntityLinkElement from '@/features/EntityLink/element';
 
 import { ChannelMessage } from './ChannelMessage';
@@ -83,6 +84,10 @@ vi.mock('@/features/Conversation/Markdown', () => ({
     markdownProps.current = props;
     return null;
   },
+}));
+vi.mock('@/features/LocalFile', () => ({
+  LocalFile: ({ name, readonly }: { name: string; readonly?: boolean }) =>
+    createElement('span', { 'data-readonly': String(!!readonly) }, name),
 }));
 vi.mock('@/components/AgentAvatar', () => ({
   default: ({ name }: { name?: string }) => createElement('i', { 'data-agent-avatar': name }),
@@ -256,6 +261,28 @@ describe('ChannelMessage Agent cards', () => {
     );
 
     expect(markdownProps.current.rehypePlugins).not.toContain(LobeAgentsElement.rehypePlugin);
+  });
+});
+
+describe('ChannelMessage local files', () => {
+  it('renders a localFile tag as a read-only file chip', () => {
+    render(
+      <ChannelMessage
+        detail={detail}
+        message={{
+          ...message({ avatar: null, id: 'agt_1', name: 'Sanjo', type: 'agent' }),
+          content: 'Saved <localFile name="AGENTS.md" path="/Users/a/AGENTS.md" /> to my role.',
+        }}
+      />,
+    );
+
+    expect(markdownProps.current.remarkPlugins).toContain(LocalFileElement.remarkPlugin);
+    const Chip = markdownProps.current.components[LocalFileElement.tag];
+    const { container } = render(
+      <Chip node={{ properties: { name: 'AGENTS.md', path: '/Users/a/AGENTS.md' } }} />,
+    );
+    expect(container.querySelector('span')?.textContent).toBe('AGENTS.md');
+    expect(container.querySelector('span')?.dataset.readonly).toBe('true');
   });
 });
 
