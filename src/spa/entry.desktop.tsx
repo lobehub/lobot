@@ -14,6 +14,7 @@ import { isMainLayoutLocation } from './BootShell/routeScope';
 import { startAppInitialization } from './initialize/bootstrap';
 import { applyDesktopBootstrapIdentity } from './initialize/desktopIdentity';
 import { reserveTitleBarForFloatingLayers } from './initialize/floatingLayers';
+import { markPlatform } from './initialize/platform';
 import { desktopRoutes } from './router/desktopRouter.config';
 import { createSPARoot } from './runtime';
 
@@ -28,6 +29,7 @@ registerLocalDatabaseAdapter(createElectronLocalDatabaseAdapter());
 // the only source that knows it without waiting for `getUserState()`.
 applyDesktopBootstrapIdentity();
 reserveTitleBarForFloatingLayers();
+markPlatform();
 bootTiming.mark('bundle-eval');
 startAppInitialization();
 

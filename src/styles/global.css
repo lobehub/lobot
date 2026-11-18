@@ -64,6 +64,15 @@ body {
   background-color: transparent;
 }
 
+/* Windows: no native scrollbars. Chromium there keeps them on screen unless the OS
+   accessibility settings allow overlay scrollbars, so hide them outright. ScrollArea
+   draws its own auto-hiding scrollbar and is unaffected. The standard property wins
+   over the ::-webkit-scrollbar rules above. */
+html[data-platform='windows'],
+html[data-platform='windows'] * {
+  scrollbar-width: none;
+}
+
 /* antd resets re-apply antialiased on each component root, so body alone is not enough */
 html[data-font-antialiasing='off'] * {
   -webkit-font-smoothing: subpixel-antialiased;
