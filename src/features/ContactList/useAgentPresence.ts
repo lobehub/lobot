@@ -12,7 +12,17 @@ import { type AgentPresence, type QuotaAccountLoad, resolveAgentPresence } from 
 /** A card left open keeps following the Agent, without polling like a live dashboard. */
 const REFRESH_INTERVAL = 30_000;
 
-const fetchQuotaLoads = async (agentId: string): Promise<QuotaAccountLoad[]> => {
+const fetchQuotaLoads = async (
+  agentId: string,
+  deviceId: string | null,
+): Promise<QuotaAccountLoad[]> => {
+  // An account pinned on the bound device is the only one the Agent runs on there, so the rest
+  // of its pool — logged in on other machines — cannot keep it on duty.
+  if (deviceId) {
+    const { accountId } = await agentQuotaService.getDeviceAccount(agentId, deviceId);
+    if (accountId) return agentQuotaService.resolveAccountLoads([accountId]);
+  }
+
   const bindings: { accountId: string; enabled: boolean; role: string }[] =
     await agentQuotaService.listBindings(agentId);
   const accountIds = bindings
@@ -37,9 +47,10 @@ export const useAgentPresence = (agentId?: string): AgentPresence | undefined =>
     config,
   );
   const devices = useDeviceList(config);
+  // Waits for the binding: which accounts count depends on the device the Agent runs on.
   const quota = useClientDataSWR(
-    agentId ? ['agent-presence-quota', agentId] : null,
-    () => fetchQuotaLoads(agentId!),
+    agentId && binding.data !== undefined ? ['agent-presence-quota', agentId, binding.data] : null,
+    () => fetchQuotaLoads(agentId!, binding.data ?? null),
     config,
   );
   // Working while a reply is pending in its direct Channel, Threads included: the Channel list
