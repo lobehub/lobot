@@ -55,7 +55,7 @@ function EnabledChannelPage() {
   const searchPanelId = useId();
   const settingsPanelId = useId();
   const [searchParams, setSearchParams] = useSearchParams();
-  const settingsTab = searchParams.get(CHANNEL_SETTINGS_PARAM);
+  const settingsRequested = searchParams.has(CHANNEL_SETTINGS_PARAM);
   // The box keeps its text per Channel; the panel shows the query last submitted.
   const [searchInput, setSearchInput] = useState({ channelId: '', value: '' });
   const [search, setSearch] = useState<{ channelId: string; query: string } | null>(null);
@@ -107,7 +107,7 @@ function EnabledChannelPage() {
     hasMemberPanel && membersChannelId === channelId && !threadId && !threadDraft && !portalOpen;
   // Only a group its viewer manages has settings; a report covers them like a thread.
   const settingsOpen =
-    !!settingsTab &&
+    settingsRequested &&
     !!detail?.channel.canDelete &&
     !detail.channel.agentId &&
     !detail.channel.peerUserId &&
@@ -125,7 +125,6 @@ function EnabledChannelPage() {
     );
   // Settings open from the header menu and the welcome card through the URL; they replace
   // whichever side panel was open.
-  const settingsRequested = !!settingsTab;
   useEffect(() => {
     if (!settingsRequested) return;
     setMembersChannelId(null);
@@ -345,18 +344,7 @@ function EnabledChannelPage() {
               channel={detail.channel}
               id={settingsPanelId}
               key={detail.channel.id}
-              tab={settingsTab}
               onClose={closeSettings}
-              onTabChange={(tab) =>
-                setSearchParams(
-                  (current) => {
-                    const next = new URLSearchParams(current);
-                    next.set(CHANNEL_SETTINGS_PARAM, tab);
-                    return next;
-                  },
-                  { replace: true },
-                )
-              }
             />
           )}
           {searchOpen && search && (

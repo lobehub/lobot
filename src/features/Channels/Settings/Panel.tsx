@@ -1,6 +1,7 @@
-import { Flexbox, Tabs } from '@lobehub/ui';
+import { Flexbox, Text } from '@lobehub/ui';
 import type { ChannelListItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ChannelSidePanel } from '../MemberPanel';
@@ -9,27 +10,35 @@ import { GeneralSection } from './GeneralSection';
 import { ProjectSection } from './ProjectSection';
 import { ReplySection } from './ReplySection';
 import { settingsStyles } from './styles';
-import { channelSettingsTabs, resolveChannelSettingsTab } from './tabs';
 
-/** Everything an admin manages about a group Channel, beside its feed like the roster. */
+function Group({ children, title }: { children: ReactNode; title: string }) {
+  return (
+    <Flexbox gap={8}>
+      <Text fontSize={12} type="secondary" weight={500}>
+        {title}
+      </Text>
+      {children}
+    </Flexbox>
+  );
+}
+
+/**
+ * Everything an admin manages about a group Channel, beside its feed like the roster, laid out
+ * in one scroll. An archived Channel takes no writes until it is reopened, so it shows no reply
+ * settings; only a Channel that belongs to a project shows that project.
+ */
 export function ChannelSettingsPanel({
   availableWidth,
   channel,
   id,
   onClose,
-  onTabChange,
-  tab: requestedTab,
 }: {
   availableWidth?: number;
   channel: ChannelListItem;
   id: string;
   onClose: () => void;
-  onTabChange: (tab: string) => void;
-  tab: string | null;
 }) {
   const { t } = useTranslation('channel');
-  const tabs = channelSettingsTabs(channel.status === 'archived', !!channel.projectId);
-  const tab = resolveChannelSettingsTab(requestedTab, tabs);
 
   return (
     <ChannelSidePanel
@@ -41,33 +50,23 @@ export function ChannelSettingsPanel({
       onClose={onClose}
     >
       <div {...stylex.props(settingsStyles.scroll)}>
-        <Flexbox gap={16} {...stylex.props(settingsStyles.content)}>
-          <Tabs
-            activeKey={tab}
-            items={tabs.map((key) => ({ key, label: t(`settings.tab.${key}`) }))}
-            size="small"
-            variant="square"
-            onChange={onTabChange}
-          />
-          {/* Kept mounted so switching tabs does not discard a draft. */}
-          <div hidden={tab !== 'general'} key={`general:${channel.id}`}>
+        <Flexbox gap={24} {...stylex.props(settingsStyles.content)}>
+          <Group title={t('settings.tab.general')}>
             <GeneralSection channel={channel} />
-          </div>
+          </Group>
           {channel.projectId && (
-            <div hidden={tab !== 'project'}>
+            <Group title={t('settings.tab.project')}>
               <ProjectSection projectId={channel.projectId} />
-            </div>
+            </Group>
           )}
-          {tabs.includes('reply') && (
-            <div hidden={tab !== 'reply'} key={`reply:${channel.id}`}>
+          {channel.status !== 'archived' && (
+            <Group title={t('settings.tab.reply')}>
               <ReplySection channelId={channel.id} />
-            </div>
+            </Group>
           )}
-          <div hidden={tab !== 'advanced'}>
-            <Flexbox gap={16}>
-              <DangerSection channel={channel} />
-            </Flexbox>
-          </div>
+          <Group title={t('settings.tab.advanced')}>
+            <DangerSection channel={channel} />
+          </Group>
         </Flexbox>
       </div>
     </ChannelSidePanel>
