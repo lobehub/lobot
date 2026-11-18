@@ -1,15 +1,18 @@
+/**
+ * @vitest-environment happy-dom
+ */
+import 'fake-indexeddb/auto';
+
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';
 import { SWRConfig } from 'swr';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { createReplicaState } from '@/libs/replica';
+
 import { getBusinessTrpcHeaders } from '../trpc-headers';
-import {
-  readLastWorkspaceId,
-  useFetchWorkspaces,
-  useWorkspaceStore,
-  writeLastWorkspaceId,
-} from './store';
+import { useFetchWorkspaces } from './list';
+import { readLastWorkspaceId, useWorkspaceStore, writeLastWorkspaceId } from './store';
 
 const mocks = vi.hoisted(() => ({ list: vi.fn() }));
 
@@ -28,7 +31,7 @@ const ws = (id: string, extra: Record<string, unknown> = {}) => ({
 
 // A fresh SWR cache per test, so one test's list never answers another's.
 const wrapper = ({ children }: { children: ReactNode }) =>
-  createElement(SWRConfig, { value: { provider: () => new Map() } }, children);
+  createElement(SWRConfig, { value: { dedupingInterval: 0, provider: () => new Map() } }, children);
 
 describe('workspace store', () => {
   beforeEach(() => {
@@ -36,8 +39,10 @@ describe('workspace store', () => {
     useWorkspaceStore.setState({
       activeWorkspaceId: null,
       isWorkspaceAvailable: false,
+      isWorkspaceListInit: false,
       isWorkspaceLoading: true,
       workspaces: [],
+      workspacesReplica: createReplicaState(),
     });
   });
 
@@ -93,10 +98,11 @@ describe('workspace store', () => {
     act(() => useWorkspaceStore.getState().switchToPersonal());
     rerender({ last: 'ws-a' });
     await act(async () => {
-      await result.current.mutate();
+      await result.current.revalidate();
     });
 
-    expect(mocks.list).toHaveBeenCalledTimes(2);
+    // The switch itself refetches too: replica syncs key by the active workspace.
+    expect(mocks.list.mock.calls.length).toBeGreaterThanOrEqual(2);
     expect(useWorkspaceStore.getState().activeWorkspaceId).toBeNull();
   });
 
@@ -108,7 +114,7 @@ describe('workspace store', () => {
 
     mocks.list.mockResolvedValue([]);
     await act(async () => {
-      await result.current.mutate();
+      await result.current.revalidate();
     });
 
     expect(useWorkspaceStore.getState().activeWorkspaceId).toBeNull();
@@ -136,7 +142,11 @@ describe('workspace store', () => {
   });
 
   it('clears the context when signed out', () => {
-    useWorkspaceStore.setState({ activeWorkspaceId: 'ws-a', workspaces: [ws('ws-a')] as never });
+    useWorkspaceStore.setState({
+      activeWorkspaceId: 'ws-a',
+      isWorkspaceListInit: true,
+      workspaces: [ws('ws-a')] as never,
+    });
 
     renderHook(() => useFetchWorkspaces(false, null), { wrapper });
 

@@ -1,48 +1,77 @@
-import { renderHook } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+/**
+ * @vitest-environment happy-dom
+ */
+import 'fake-indexeddb/auto';
 
-import {
-  CREDS_FOR_CONTEXT_SWR_KEY,
-  PERSONAL_CREDS_SWR_KEY,
-  useCredsForContext,
-  usePersonalCreds,
-} from './useScopedCreds';
+import { randomUUID } from 'node:crypto';
 
-const { mockUseClientDataSWR } = vi.hoisted(() => ({ mockUseClientDataSWR: vi.fn() }));
+import { renderHook, waitFor } from '@testing-library/react';
+import { createElement, type ReactNode } from 'react';
+import { SWRConfig } from 'swr';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/libs/swr', () => ({ mutate: vi.fn(), useClientDataSWR: mockUseClientDataSWR }));
-vi.mock('@/libs/trpc/client', () => ({ lambdaClient: {} }));
+import { cacheScope, createReplicaState } from '@/libs/replica';
+import { useCredsStore } from '@/store/creds';
+
+import { useCredsForContext } from './useScopedCreds';
+
+const { listForContext } = vi.hoisted(() => ({ listForContext: vi.fn() }));
+
+vi.mock('@/libs/trpc/client', () => ({
+  lambdaClient: { market: { creds: { listForContext: { query: listForContext } } } },
+}));
+
+const wrapper = ({ children }: { children: ReactNode }) =>
+  createElement(SWRConfig, { value: { dedupingInterval: 0, provider: () => new Map() } }, children);
 
 describe('useScopedCreds', () => {
+  let scope: string;
+
+  const useScope = (next: string) => {
+    scope = next;
+    vi.spyOn(cacheScope, 'get').mockImplementation(() => scope);
+    vi.spyOn(cacheScope, 'use').mockImplementation(() => scope);
+  };
+
   beforeEach(() => {
-    mockUseClientDataSWR.mockReset();
-    mockUseClientDataSWR.mockReturnValue({ data: undefined, isLoading: false });
+    useScope(`creds-user:${randomUUID()}`);
+    vi.spyOn(cacheScope, 'canPersist').mockReturnValue(false);
+    useCredsStore.setState({
+      credsForContextMap: {},
+      credsForContextReplica: createReplicaState(),
+    });
   });
 
-  // `useClientDataSWR` adds the active workspace id to array keys; the raw TRPC
-  // query key it replaces had no workspace dimension, so a list fetched in one
-  // workspace kept being served after switching to another.
-  it('fetches the run-scope list through the workspace-aware SWR hook', () => {
-    renderHook(() => useCredsForContext());
+  afterEach(() => {
+    vi.restoreAllMocks();
+    listForContext.mockReset();
+  });
 
-    expect(mockUseClientDataSWR).toHaveBeenCalledWith(
-      [CREDS_FOR_CONTEXT_SWR_KEY],
-      expect.any(Function),
+  it('reads the run-scope list', async () => {
+    listForContext.mockResolvedValue({ data: [{ key: 'CLAUDE_CODE_OAUTH_TOKEN', name: 'Token' }] });
+
+    const { result } = renderHook(() => useCredsForContext(), { wrapper });
+
+    expect(result.current.isLoading).toBe(true);
+    await waitFor(() =>
+      expect(result.current.data).toEqual([{ key: 'CLAUDE_CODE_OAUTH_TOKEN', name: 'Token' }]),
     );
+    expect(result.current.isLoading).toBe(false);
   });
 
   it('skips the run-scope fetch when disabled', () => {
-    renderHook(() => useCredsForContext(false));
+    const { result } = renderHook(() => useCredsForContext(false), { wrapper });
 
-    expect(mockUseClientDataSWR).toHaveBeenCalledWith(null, expect.any(Function));
+    expect(listForContext).not.toHaveBeenCalled();
+    expect(result.current.isLoading).toBe(false);
   });
 
-  it('fetches the personal list through the workspace-aware SWR hook', () => {
-    renderHook(() => usePersonalCreds());
+  it('settles a failed lookup instead of loading forever', async () => {
+    listForContext.mockRejectedValue(Object.assign(new Error('UNAUTHORIZED'), { status: 401 }));
 
-    expect(mockUseClientDataSWR).toHaveBeenCalledWith(
-      [PERSONAL_CREDS_SWR_KEY],
-      expect.any(Function),
-    );
+    const { result } = renderHook(() => useCredsForContext(), { wrapper });
+
+    await waitFor(() => expect(result.current.error).toBeDefined());
+    expect(result.current.isLoading).toBe(false);
   });
 });

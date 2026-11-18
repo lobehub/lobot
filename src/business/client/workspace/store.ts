@@ -1,17 +1,13 @@
 'use client';
 
 import { createReplicaState, type ReplicaState } from 'local-replica';
-import { useLayoutEffect } from 'react';
-import useSWR, { type SWRResponse } from 'swr';
 import { shallow } from 'zustand/shallow';
 import { createWithEqualityFn } from 'zustand/traditional';
 
-import { mutate } from '@/libs/swr/mutate';
 import { expose } from '@/store/middleware/expose';
 
 import type { WorkspaceListItem } from '../hooks/useActiveWorkspace';
 import type { WorkspaceMemberWithProfile } from '../hooks/useWorkspaceMembers';
-import { workspaceService } from './service';
 
 /**
  * The workspace context Lobot sends to the server. LobeHub Cloud keeps it in the
@@ -24,6 +20,8 @@ export interface WorkspaceState {
   activeWorkspaceId: string | null;
   /** The server answered the list, so workspaces can be listed and created (not self-hosted). */
   isWorkspaceAvailable: boolean;
+  /** `workspaces` holds a list (persisted or fetched), not the empty default. */
+  isWorkspaceListInit: boolean;
   isWorkspaceLoading: boolean;
   /**
    * Workspace members by workspace id, for author names and avatars. A local replica
@@ -32,6 +30,8 @@ export interface WorkspaceState {
   membersMap: Record<string, WorkspaceMemberWithProfile[]>;
   membersReplica: ReplicaState<WorkspaceMemberWithProfile[]>;
   workspaces: WorkspaceListItem[];
+  /** Replica bookkeeping for `workspaces` (`./list.ts`). */
+  workspacesReplica: ReplicaState<WorkspaceListItem[]>;
 }
 
 interface WorkspaceActions {
@@ -40,8 +40,6 @@ interface WorkspaceActions {
 }
 
 export type WorkspaceStore = WorkspaceState & WorkspaceActions;
-
-export const FETCH_WORKSPACES_KEY = 'workspace/list';
 
 /** The last scope the user picked, per user, so a restart reopens it. */
 const lastWorkspaceKey = (userId: string) => `lobot:last-workspace:${userId}`;
@@ -70,6 +68,7 @@ export const useWorkspaceStore = createWithEqualityFn<WorkspaceStore>()(
     isWorkspaceAvailable: false,
     // Loading until the first list settles, so nothing paints a scope it may leave.
     isWorkspaceLoading: true,
+    isWorkspaceListInit: false,
     membersMap: {},
     membersReplica: createReplicaState(),
     switchToPersonal: () => {
@@ -79,6 +78,7 @@ export const useWorkspaceStore = createWithEqualityFn<WorkspaceStore>()(
       if (get().activeWorkspaceId !== id) set({ activeWorkspaceId: id });
     },
     workspaces: [],
+    workspacesReplica: createReplicaState(),
   }),
   shallow,
 );
@@ -87,73 +87,3 @@ export const useWorkspaceStore = createWithEqualityFn<WorkspaceStore>()(
 expose('workspace', useWorkspaceStore);
 
 export const getWorkspaceStoreState = () => useWorkspaceStore.getState();
-
-/** Refetch the list, e.g. after creating a workspace, so the rail shows it. */
-export const refreshWorkspaces = () =>
-  mutate((key) => Array.isArray(key) && key[0] === FETCH_WORKSPACES_KEY);
-
-/**
- * A locked-out membership (lapsed subscription) cannot be entered, so it is
- * neither listed nor restored.
- */
-const enterable = (workspaces: WorkspaceListItem[]) => workspaces.filter((ws) => !ws.lockedOut);
-
-/**
- * Loads the user's workspaces once signed in and restores the last scope they
- * picked: the `lastWorkspaceId` user preference, else the local copy.
- * `enabled` is `undefined` while sign-in is still resolving.
- */
-export const useFetchWorkspaces = (
-  enabled: boolean | undefined,
-  userId: string | null | undefined,
-  lastWorkspaceId?: string | null,
-): SWRResponse<WorkspaceListItem[]> => {
-  const swr = useSWR<WorkspaceListItem[]>(
-    enabled && userId ? [FETCH_WORKSPACES_KEY, userId] : null,
-    () => workspaceService.list(),
-    {
-      onSuccess: (data) => {
-        const workspaces = enterable(data ?? []);
-        const { activeWorkspaceId, isWorkspaceAvailable } = useWorkspaceStore.getState();
-        // `null` in the preference is an explicit pick of the personal space.
-        const remembered =
-          lastWorkspaceId !== undefined
-            ? lastWorkspaceId
-            : userId
-              ? readLastWorkspaceId(userId)
-              : null;
-        // The remembered scope only restores the first load. Afterwards the pick made
-        // this session stands, personal included: a switch refetches the user state,
-        // and one read before the preference write lands still names the old scope.
-        const candidate = isWorkspaceAvailable
-          ? activeWorkspaceId
-          : (activeWorkspaceId ?? remembered);
-        // A workspace the user lost access to falls back to the personal space.
-        const active = candidate && workspaces.some((ws) => ws.id === candidate) ? candidate : null;
-        useWorkspaceStore.setState({
-          activeWorkspaceId: active,
-          isWorkspaceAvailable: true,
-          workspaces,
-        });
-      },
-    },
-  );
-
-  const { error, isLoading } = swr;
-  useLayoutEffect(() => {
-    if (enabled === undefined) return;
-    if (!enabled) {
-      useWorkspaceStore.setState({
-        activeWorkspaceId: null,
-        isWorkspaceAvailable: false,
-        isWorkspaceLoading: false,
-        workspaces: [],
-      });
-      return;
-    }
-    // A server without workspaces (self-hosted) errors here; stay personal.
-    useWorkspaceStore.setState({ isWorkspaceLoading: isLoading && !error });
-  }, [enabled, error, isLoading]);
-
-  return swr;
-};

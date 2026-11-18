@@ -280,11 +280,6 @@ export const videoKeys = {
   ]),
 };
 
-// ---- serverConfig -------------------------------------------------------
-export const serverConfigKeys = {
-  get: 'serverConfig:get' as const,
-};
-
 // ---- agent eval ---------------------------------------------------------
 export const evalKeys = {
   benchmarkDetail: def('eval:benchmarkDetail', (id: string) => ['eval:benchmarkDetail', id]),
@@ -421,13 +416,6 @@ export const toolKeys = {
     appSlug,
   ]),
   composioConnections: def('tool:composioConnections', () => ['tool:composioConnections']),
-};
-
-// ---- global -------------------------------------------------------------
-export const globalKeys = {
-  latestVersion: def('global:latestVersion', () => ['global:latestVersion']),
-  serverVersion: def('global:serverVersion', () => ['global:serverVersion']),
-  systemStatus: def('global:systemStatus', () => ['global:systemStatus']),
 };
 
 // ---- file ---------------------------------------------------------------
@@ -711,7 +699,6 @@ export const swrKeys = {
   eval: evalKeys,
   file: fileKeys,
   goal: goalKeys,
-  global: globalKeys,
   group: groupKeys,
   image: imageKeys,
   imessage: imessageKeys,
@@ -726,7 +713,6 @@ export const swrKeys = {
   ragEval: ragEvalKeys,
   recommendations: recommendationsKeys,
   resource: resourceKeys,
-  serverConfig: serverConfigKeys,
   share: shareKeys,
   thread: threadKeys,
   tool: toolKeys,

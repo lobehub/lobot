@@ -34,7 +34,7 @@ export const useTopicMigrationPending = (target: MigrationTarget, topicId?: stri
 export const TopicMigrationPlaceholder = memo<MigrationBannerProps>(
   ({ agentId, groupId, topicId }) => {
     const { t } = useTranslation('chat');
-    const { data, mutate } = useAgentTransferJob({ agentId, groupId });
+    const { data, revalidate } = useAgentTransferJob({ agentId, groupId });
     const refreshMessages = useChatStore((s) => s.refreshMessages);
     // Tracks WHICH topic was prioritized (not just whether one was): switching
     // straight from one pending topic to another reuses this component, and the
@@ -51,14 +51,14 @@ export const TopicMigrationPlaceholder = memo<MigrationBannerProps>(
           // Already migrated between render and request — sync the job status
           // and pull the messages straight away.
           if (!pending) {
-            void mutate();
+            void revalidate();
             void refreshMessages();
           }
         })
         .catch(() => {
           if (prioritizedTopicId.current === topicId) prioritizedTopicId.current = null;
         });
-    }, [topicId, mutate, refreshMessages]);
+    }, [topicId, revalidate, refreshMessages]);
 
     // The placeholder unmounts when `pendingTopicIds` stops listing this topic;
     // fetch the freshly migrated history exactly once on the way out.

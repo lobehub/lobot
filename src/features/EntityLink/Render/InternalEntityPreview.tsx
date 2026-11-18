@@ -10,8 +10,6 @@ import {
   Popover,
   Text,
 } from '@lobehub/ui';
-import type { VerifyCodingScope } from '@lobot/types';
-import type { TFunction } from 'i18next';
 import {
   BadgeCheckIcon,
   BotIcon,
@@ -21,21 +19,19 @@ import {
   FileTextIcon,
   TargetIcon,
 } from 'lucide-react';
-import { memo, type PropsWithChildren, useState } from 'react';
+import { memo, type PropsWithChildren, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ArticleSkeleton } from '@/components/Skeleton';
-import { goalStatusKey } from '@/features/AgentGoals/goalPresentation';
-import { useClientDataSWR } from '@/libs/swr';
-import { agentService } from '@/services/agent';
-import { documentService } from '@/services/document';
-import { goalService } from '@/services/goal';
-import { taskService } from '@/services/task';
-import { verifyService } from '@/services/verify';
 import { cardPopoverProps } from '@/styles/cardPopover';
 import { openTrustedExternalUrl } from '@/utils/openTrustedExternalUrl';
 
-import type { InternalLinkReference } from '../internalLink';
+import {
+  entityPreviewSelectors,
+  type PreviewableReference,
+  useEntityPreviewStore,
+  useFetchEntityPreview,
+} from '../store';
 import { useAcceptanceBrowserUrl } from './useAcceptanceBrowserUrl';
 
 const styles = createStaticStyles(({ css, cssVar }) => ({
@@ -79,189 +75,26 @@ const styles = createStaticStyles(({ css, cssVar }) => ({
   `,
 }));
 
-interface PreviewData {
-  avatar?: string | null;
-  backgroundColor?: string | null;
-  description?: string | null;
-  meta?: string | null;
-  secondaryMeta?: string | null;
-  title?: string | null;
-}
-
-const getVerifyStatusLabel = (status: string | null | undefined, t: TFunction<'chat'>) => {
-  switch (status) {
-    case 'delivered': {
-      return t('internalLink.preview.verifyStatus.delivered');
-    }
-    case 'errored': {
-      return t('internalLink.preview.verifyStatus.errored');
-    }
-    case 'failed': {
-      return t('internalLink.preview.verifyStatus.failed');
-    }
-    case 'passed': {
-      return t('internalLink.preview.verifyStatus.passed');
-    }
-    case 'planned': {
-      return t('internalLink.preview.verifyStatus.planned');
-    }
-    case 'repairing': {
-      return t('internalLink.preview.verifyStatus.repairing');
-    }
-    case 'uncertain': {
-      return t('internalLink.preview.verifyStatus.uncertain');
-    }
-    case 'unverified': {
-      return t('internalLink.preview.verifyStatus.unverified');
-    }
-    case 'verifying': {
-      return t('internalLink.preview.verifyStatus.verifying');
-    }
-    default: {
-      return null;
-    }
-  }
-};
-
-/** The part of an acceptance bundle's check row the preview counts. */
-interface AcceptanceBundleCheck {
-  /** Final cross-round state of the check. */
-  state: 'failed' | 'not_executed' | 'passed' | 'uncertain';
-}
-
-/**
- * One cache entry per entity, shared between the hover preview and the eager
- * title resolution on the link itself — whichever fires first warms the other.
- */
-export const internalEntityPreviewKey = (reference: InternalLinkReference) => [
-  'internal-entity-preview',
-  reference.type,
-  reference.pathname,
-];
-
-export const getPreviewData = async (
-  reference: InternalLinkReference,
-  t: TFunction<'chat'>,
-): Promise<PreviewData | null> => {
-  switch (reference.type) {
-    case 'acceptance': {
-      const bundle = await verifyService.getAcceptanceBundle(reference.acceptanceId);
-      if (!bundle) return null;
-
-      const passed = bundle.checks.filter(
-        (check: AcceptanceBundleCheck) => check.state === 'passed',
-      ).length;
-      const exceptions = bundle.checks.filter(
-        (check: AcceptanceBundleCheck) => check.state === 'failed' || check.state === 'uncertain',
-      ).length;
-
-      return {
-        description: bundle.acceptance.requirement || bundle.latestReport?.summary,
-        meta: t('internalLink.preview.acceptanceCounts', {
-          exceptions,
-          passed,
-          total: bundle.checks.length,
-        }),
-        secondaryMeta: t('internalLink.preview.acceptanceRounds', {
-          count: bundle.rounds.length,
-        }),
-        title: bundle.subject.title || bundle.subject.id,
-      };
-    }
-    case 'agent': {
-      return agentService.getAgentConfigById(reference.agentId);
-    }
-    case 'document': {
-      const document = await documentService.getDocumentById(reference.documentId);
-      return document
-        ? {
-            description: document.content,
-            title: document.title || document.filename,
-          }
-        : null;
-    }
-    case 'goal': {
-      const { decisions, goal, nodes } = await goalService.getGraph(reference.goalId);
-      const tasks = nodes.filter((node) => node.kind === 'task');
-      const done = tasks.filter((node) =>
-        ['rejected', 'resolved', 'retired'].includes(node.status),
-      ).length;
-      const pending = decisions.filter((decision) => decision.status === 'pending').length;
-
-      return {
-        description: goal.requirement,
-        meta: [
-          pending > 0 ? t('goalList.needsYou', { count: pending }) : t(goalStatusKey(goal.status)),
-          t('goalList.taskProgress', { done, total: tasks.length }),
-        ].join(' · '),
-        title: goal.title,
-      };
-    }
-    case 'task': {
-      const result = await taskService.getDetail(reference.taskId);
-      const task = result.data;
-      return task
-        ? {
-            description: task.description || task.instruction,
-            title: task.name || task.identifier,
-          }
-        : null;
-    }
-    case 'verify': {
-      const bundle = await verifyService.getReportBundle(reference.runId);
-      if (!bundle) return null;
-
-      const { report, run } = bundle;
-      const status = report?.verdict ?? run.status;
-      const counts = report
-        ? t('internalLink.preview.verifyCounts', {
-            failed: report.failedChecks ?? 0,
-            passed: report.passedChecks ?? 0,
-            uncertain: report.uncertainChecks ?? 0,
-          })
-        : null;
-      // Branch/commit chips only exist on a coding scope (a run with no
-      // scenario predates the column and is coding); testedAt is shared.
-      const codingScope =
-        (run.scenario ?? 'coding') === 'coding' ? (run.context as VerifyCodingScope | null) : null;
-      const testedAt = (run.context as { testedAt?: string } | null)?.testedAt;
-      const scope = [
-        codingScope?.branch,
-        codingScope?.commit?.slice(0, 10),
-        testedAt ? new Date(testedAt).toLocaleString() : null,
-      ].filter(Boolean);
-
-      return {
-        description: report?.summary,
-        meta: [getVerifyStatusLabel(status, t), counts].filter(Boolean).join(' · '),
-        secondaryMeta: scope.join(' · '),
-        title: run.title,
-      };
-    }
-    case 'route': {
-      return null;
-    }
-  }
-};
-
 interface InternalEntityPreviewProps extends PropsWithChildren {
   fallbackTitle: string;
-  reference: Exclude<InternalLinkReference, { type: 'route' }>;
+  reference: PreviewableReference;
 }
 
 export const InternalEntityPreview = memo<InternalEntityPreviewProps>(
   ({ children, fallbackTitle, reference }) => {
-    const { t } = useTranslation('chat');
+    const { i18n, t } = useTranslation('chat');
     const { t: tVerify } = useTranslation('verify');
     const [open, setOpen] = useState(false);
     // A click on the link opens the acceptance in the side panel; this is the
     // explicit way out to a full browser page.
     const browserUrl = useAcceptanceBrowserUrl(reference);
-    const { data, isLoading } = useClientDataSWR(
-      open ? internalEntityPreviewKey(reference) : null,
-      () => getPreviewData(reference, t),
-      { revalidateOnFocus: false },
+    const params = useMemo(
+      () => ({ locale: i18n.language, reference }),
+      [i18n.language, reference],
     );
+    const { error } = useFetchEntityPreview(open ? params : null);
+    const data = useEntityPreviewStore(entityPreviewSelectors.preview(params));
+    const isLoading = data === undefined && !error;
 
     const icon =
       reference.type === 'acceptance'
@@ -330,7 +163,7 @@ export const InternalEntityPreview = memo<InternalEntityPreviewProps>(
     return (
       <Popover
         {...cardPopoverProps}
-        // Disabling the SWR key clears data before the exit animation finishes.
+        // Keep the card as it was while the exit animation runs.
         content={<Freeze frozen={!open}>{content}</Freeze>}
         mouseEnterDelay={0.35}
         open={open}

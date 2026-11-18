@@ -6,9 +6,9 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSwitchWorkspace } from '@/business/client/hooks/useSwitchWorkspace';
+import { refreshWorkspaces } from '@/business/client/workspace/list';
 import { workspaceService } from '@/business/client/workspace/service';
 import { workspaceSlugFromName } from '@/business/client/workspace/slug';
-import { refreshWorkspaces } from '@/business/client/workspace/store';
 import AsyncError from '@/components/AsyncError';
 
 const NAME_MAX = 255;

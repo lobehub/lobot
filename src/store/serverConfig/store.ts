@@ -7,9 +7,14 @@ import { createContext } from 'zustand-utils';
 
 import { type IFeatureFlagsState } from '@/config/featureFlags';
 import { DEFAULT_FEATURE_FLAGS, mapFeatureFlagsEnvToState } from '@/config/featureFlags';
+import { createReplicaState, type ReplicaState } from '@/libs/replica';
 import { createDevtools } from '@/store/middleware/createDevtools';
 import { expose } from '@/store/middleware/expose';
-import { type GlobalBillboard, type GlobalServerConfig } from '@/types/serverConfig';
+import {
+  type GlobalBillboard,
+  type GlobalRuntimeConfig,
+  type GlobalServerConfig,
+} from '@/types/serverConfig';
 import { merge } from '@/utils/merge';
 
 import { flattenActions } from '../utils/flattenActions';
@@ -29,6 +34,9 @@ interface ServerConfigState {
   /** Server-resolved DevDock authorization; never changed by client-side flag overrides. */
   canAccessDevDock: boolean;
   featureFlags: IFeatureFlagsState;
+  /** The global config response (`globalConfigResource`) that `serverConfig` / `featureFlags` come from. */
+  globalConfigMap: Record<string, GlobalRuntimeConfig>;
+  globalConfigReplica: ReplicaState<GlobalRuntimeConfig>;
   isMobile?: boolean;
   segmentVariants?: string;
   serverConfig: GlobalServerConfig;
@@ -47,6 +55,8 @@ const initialState: ServerConfigState = {
   billboard: null,
   canAccessDevDock: false,
   featureFlags: mapFeatureFlagsEnvToState(DEFAULT_FEATURE_FLAGS),
+  globalConfigMap: {},
+  globalConfigReplica: createReplicaState(),
   segmentVariants: '',
   serverConfig: { aiProvider: {}, telemetry: {} },
   serverConfigInit: false,

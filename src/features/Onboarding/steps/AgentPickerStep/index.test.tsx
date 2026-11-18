@@ -40,14 +40,16 @@ const templates: AgentTemplate[] = [
   },
 ];
 
-let swrReturn: { data: AgentTemplate[]; error?: unknown; isLoading: boolean } = {
+let templatesReturn: { data: AgentTemplate[]; error?: unknown; isLoading: boolean } = {
   data: templates,
   error: undefined,
   isLoading: false,
 };
 let searchParams = new URLSearchParams();
 
-vi.mock('swr', () => ({ default: () => swrReturn }));
+vi.mock('@/hooks/useOnboardingAgentTemplates', () => ({
+  useOnboardingAgentTemplates: () => templatesReturn,
+}));
 
 vi.mock('react-router', () => ({
   useNavigate: () => navigate,
@@ -96,7 +98,7 @@ beforeEach(() => {
   metrics.trackOnboardingMarketplacePicked.mockClear();
   metrics.trackOnboardingMarketplaceShown.mockClear();
   metrics.trackOnboardingStepCompleted.mockClear();
-  swrReturn = { data: templates, error: undefined, isLoading: false };
+  templatesReturn = { data: templates, error: undefined, isLoading: false };
   searchParams = new URLSearchParams();
   sessionStorage.clear();
 });

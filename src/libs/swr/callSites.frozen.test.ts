@@ -15,19 +15,7 @@ import { describe, expect, it } from 'vitest';
  * - Your file is reported as new → read through a replica-backed store hook.
  * - You migrated a file off SWR → delete its entry here too.
  */
-const LEGACY_SWR_CALL_SITES = [
-  'src/business/client/workspace/store.ts',
-  'src/features/AgentTransferMigration/useAgentTransferJob.ts',
-  'src/features/CommandMenu/useCommandMenu.ts',
-  'src/features/EntityLink/Render/InternalEntityLink.tsx',
-  'src/features/EntityLink/Render/InternalEntityPreview.tsx',
-  'src/features/ShareModal/useExportMessages.ts',
-  'src/features/Work/ShareVisitorDocumentModal/Content.tsx',
-  'src/hooks/useOnboardingAgentTemplates.ts',
-  'src/hooks/useScopedCreds.ts',
-  'src/store/global/actions/general.ts',
-  'src/store/serverConfig/action.ts',
-];
+const LEGACY_SWR_CALL_SITES = [];
 
 const ROOT = path.resolve(__dirname, '../../..');
 const SCAN_DIRS = ['src', 'apps', 'packages'];

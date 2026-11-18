@@ -1,8 +1,10 @@
+import type { ReplicaSyncResult } from '@/libs/replica';
 import type { StoreSetter } from '@/store/types';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { initialWorkState, type WorkState } from './initialState';
 import { WorkPrivateAction } from './privateAction';
+import type { ShareVisitorDocumentParams } from './projection';
 import { useWorkStore } from './store';
 
 const n = setNamespace('work');
@@ -51,6 +53,10 @@ class WorkActionImpl {
   reset = (): void => {
     this.#set(initialWorkState, false, n('reset'));
   };
+
+  /** Read the body with `workSelectors.shareVisitorDocument(params)`. */
+  useFetchShareVisitorDocument = (params: ShareVisitorDocumentParams): ReplicaSyncResult =>
+    this.#private.shareVisitorDocument.useSync(params);
 }
 
 const { getState, setState } = useWorkStore;

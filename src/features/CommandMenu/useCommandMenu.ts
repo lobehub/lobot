@@ -1,7 +1,6 @@
 import { useDebounce } from 'ahooks';
 import { useTheme as useNextThemesTheme } from 'next-themes';
-import { useCallback, useEffect } from 'react';
-import useSWR from 'swr';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import { useOpenCreateAgentModal } from '@/features/AgentIdentityModal/useOpenCreateAgentModal';
 import { createTaskModal } from '@/features/AgentTasks/CreateTaskModal';
@@ -11,17 +10,21 @@ import { useCreateNewModal } from '@/features/LibraryModal';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { usePermission } from '@/hooks/usePermission';
 import { useGroupWizard } from '@/layout/GlobalProvider/GroupWizardProvider';
-import { lambdaClient } from '@/libs/trpc/client';
 import { useAgentStore } from '@/store/agent';
 import { builtinAgentSelectors } from '@/store/agent/selectors/builtinAgentSelectors';
 import { useChatStore } from '@/store/chat';
 import { topicSelectors } from '@/store/chat/selectors';
 import { useGlobalStore } from '@/store/global';
-import { globalHelpers } from '@/store/global/helpers';
+import { globalGeneralSelectors } from '@/store/global/selectors';
 import type { FtsSearchResult } from '@/types/serverData';
 import { openTrustedExternalUrl } from '@/utils/openTrustedExternalUrl';
 
 import { useCommandMenuContext } from './CommandMenuContext';
+import {
+  commandMenuSearchSelectors,
+  useCommandMenuSearchStore,
+  useFetchCommandMenuSearch,
+} from './store';
 import { type ThemeMode } from './types';
 
 /**
@@ -61,32 +64,15 @@ export const useCommandMenu = () => {
   const hasSearch = debouncedSearch.trim().length > 0;
   const searchQuery = debouncedSearch.trim();
 
-  const {
-    data: searchResults,
-    error: searchError,
-    isLoading: isSearching,
-    isValidating: isSearchValidating,
-  } = useSWR<FtsSearchResult[]>(
-    hasSearch ? ['search', searchQuery, agentId, typeFilter] : null,
-    async () => {
-      const locale = globalHelpers.getCurrentLanguage();
-      return lambdaClient.search.query.query({
-        agentId,
-        // Keep the aggregate response DB-only: marketplace results are reached
-        // through the permanent typed-search entries instead of gating every
-        // keystroke on three remote marketplace round-trips.
-        includeMarketplace: false,
-        limitPerType: typeFilter ? 50 : 5, // Show more results when filtering by type
-        locale,
-        query: searchQuery,
-        type: typeFilter,
-      });
-    },
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    },
+  const locale = useGlobalStore(globalGeneralSelectors.currentLanguage);
+  const searchParams = useMemo(
+    () => (hasSearch ? { agentId, locale, query: searchQuery, type: typeFilter } : null),
+    [agentId, hasSearch, locale, searchQuery, typeFilter],
   );
+  const { error: searchError, isValidating: isSearchValidating } =
+    useFetchCommandMenuSearch(searchParams);
+  const searchResults = useCommandMenuSearchStore(commandMenuSearchSelectors.results(searchParams));
+  const isSearching = hasSearch && searchResults === undefined && !searchError;
 
   // Close on Escape key and prevent body scroll
   useEffect(() => {

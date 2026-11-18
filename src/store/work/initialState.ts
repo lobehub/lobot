@@ -2,6 +2,8 @@ import type { WorkListItem, WorkSummaryItem, WorkVersionItem } from '@lobot/type
 
 import { createReplicaState, type ReplicaPagedData, type ReplicaState } from '@/libs/replica';
 
+import type { ShareVisitorDocument } from './projection';
+
 /** One gallery filter's loaded pages. */
 export type WorkspaceWorksData = ReplicaPagedData<WorkSummaryItem, string>;
 
@@ -12,6 +14,9 @@ export interface WorkState {
   /** Sidebar Work history by conversation (`conversationWorksKey`). */
   conversationWorksMap: Record<string, WorkListItem[]>;
   conversationWorksReplica: ReplicaState<WorkListItem[]>;
+  /** Share-visitor document bodies by `shareVisitorDocumentKey`. */
+  shareVisitorDocumentMap: Record<string, ShareVisitorDocument>;
+  shareVisitorDocumentReplica: ReplicaState<ShareVisitorDocument>;
   /** Workspace gallery pages by filter (`workspaceWorksKey`). */
   workspaceWorksMap: Record<string, WorkspaceWorksData>;
   workspaceWorksReplica: ReplicaState<WorkspaceWorksData>;
@@ -25,6 +30,8 @@ export const initialWorkState: WorkState = {
   agentWorksReplica: createReplicaState(),
   conversationWorksMap: {},
   conversationWorksReplica: createReplicaState(),
+  shareVisitorDocumentMap: {},
+  shareVisitorDocumentReplica: createReplicaState(),
   workVersionsMap: {},
   workVersionsReplica: createReplicaState(),
   workspaceWorksMap: {},

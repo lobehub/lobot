@@ -1,11 +1,15 @@
 import type { UIChatMessage } from '@lobot/types';
-import useSWR from 'swr';
 
-import { messageService } from '@/services/message';
 import {
   mergeStoredToolPayloads,
   selectProjectedToolIds,
 } from '@/services/message/hydrateProjectedTools';
+
+import {
+  exportToolPayloadsSelectors,
+  useExportToolPayloadsStore,
+  useFetchExportToolPayloads,
+} from './store';
 
 /**
  * The messages an export may serialize.
@@ -26,11 +30,9 @@ import {
 export const useExportMessages = (messages: UIChatMessage[]) => {
   const omittedIds = selectProjectedToolIds(messages);
 
-  const { data, isLoading } = useSWR(
-    omittedIds.length > 0 ? ['shareExportToolPayloads', ...omittedIds] : null,
-    ([, ...ids]: string[]) => messageService.getToolResultPayloads(ids),
-    { revalidateOnFocus: false },
-  );
+  const { error } = useFetchExportToolPayloads(omittedIds);
+  const data = useExportToolPayloadsStore(exportToolPayloadsSelectors.payloads(omittedIds));
+  const isLoading = omittedIds.length > 0 && data === undefined && !error;
 
   const hydrated = mergeStoredToolPayloads(messages, data);
 

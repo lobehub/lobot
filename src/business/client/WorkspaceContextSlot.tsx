@@ -5,7 +5,7 @@ import { type PropsWithChildren } from 'react';
 import { useUserStore } from '@/store/user';
 import { authSelectors, userProfileSelectors } from '@/store/user/selectors';
 
-import { useFetchWorkspaces } from './workspace/store';
+import { useFetchWorkspaces } from './workspace/list';
 
 /** Loads the signed-in user's workspaces for the rail and the request scope. */
 export default function WorkspaceContextSlot({ children }: PropsWithChildren) {

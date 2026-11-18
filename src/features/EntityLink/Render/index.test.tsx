@@ -85,13 +85,17 @@ let mockEntityPreview: {
   title?: string;
 } | null = null;
 
-vi.mock('@/libs/swr', () => ({
-  useClientDataSWR: (key: unknown) => {
-    if (key === null) return { data: undefined, mutate: vi.fn() };
-    if (Array.isArray(key) && key[0] === 'internal-entity-preview')
-      return { data: mockEntityPreview, mutate: vi.fn() };
-    return { data: undefined, mutate: vi.fn() };
+vi.mock('../store', () => ({
+  entityPreviewSelectors: {
+    preview: (params: unknown) => () => (params ? mockEntityPreview : undefined),
   },
+  useEntityPreviewStore: (selector: (state: unknown) => unknown) => selector({}),
+  useFetchEntityPreview: () => ({
+    error: undefined,
+    isHydrated: true,
+    isValidating: false,
+    revalidate: vi.fn(),
+  }),
 }));
 
 // The active agent's document-list replica, already loaded.

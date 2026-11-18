@@ -1,10 +1,13 @@
 import { type TaskListFilter } from '@lobot/types';
 import { type NavigateFunction } from 'react-router';
 
+import { createReplicaState, type ReplicaState } from '@/libs/replica';
 import { type LocaleMode } from '@/types/locale';
 import { SessionDefaultGroup } from '@/types/session';
 import { type TopicGroupMode } from '@/types/topic';
 import { AsyncLocalStorage } from '@/utils/localStorage';
+
+import { type ServerVersionValue } from './projection';
 
 export enum SidebarTabKey {
   Chat = 'chat',
@@ -584,12 +587,18 @@ export interface GlobalState {
   isServerVersionOutdated?: boolean;
   isStatusInit?: boolean;
   latestVersion?: string;
+  /** Latest published release by `VERSION_CHECK_KEY` (`latestVersionResource`). */
+  latestVersionCheckMap: Record<string, string>;
+  latestVersionCheckReplica: ReplicaState<string>;
   /** Imperative router navigate; see `NavigatorRegistrar` in `src/utils/router.tsx`. */
   navigationRef: GlobalNavigationRef;
   /**
    * Server version number, used to detect client-server version consistency
    */
   serverVersion?: string;
+  /** Self-hosted server version by `VERSION_CHECK_KEY` (`serverVersionResource`). */
+  serverVersionCheckMap: Record<string, ServerVersionValue>;
+  serverVersionCheckReplica: ReplicaState<ServerVersionValue>;
   sidebarKey: SidebarTabKey;
   status: SystemStatus;
   statusStorage: AsyncLocalStorage<SystemStatus>;
@@ -759,7 +768,11 @@ export const createInitialSystemStatus = (): SystemStatus => {
 export const initialState: GlobalState = {
   isMobile: false,
   isStatusInit: false,
+  latestVersionCheckMap: {},
+  latestVersionCheckReplica: createReplicaState(),
   navigationRef: createNavigationRef(),
+  serverVersionCheckMap: {},
+  serverVersionCheckReplica: createReplicaState(),
   sidebarKey: SidebarTabKey.Chat,
   status: createInitialSystemStatus(),
   statusStorage,

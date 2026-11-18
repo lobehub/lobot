@@ -1,14 +1,13 @@
 import isEqual from 'fast-deep-equal';
+import { useEffect } from 'react';
 import { gt, parse, valid } from 'semver';
-import type { SWRResponse } from 'swr';
 
 import { getActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import { getActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
 import { WEB_APP_VERSION } from '@/const/appVersion';
 import { CURRENT_VERSION, isDesktop } from '@/const/version';
 import { buildWorkspaceAwarePath } from '@/features/Workspace/workspaceAwarePath';
-import { useOnlyFetchOnceSWR } from '@/libs/swr';
-import { globalKeys } from '@/libs/swr/keys';
+import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import { globalService } from '@/services/global';
 import { getElectronStoreState } from '@/store/electron';
 import { electronSyncSelectors } from '@/store/electron/selectors';
@@ -19,10 +18,24 @@ import { switchLang } from '@/utils/client/switchLang';
 import { merge } from '@/utils/merge';
 import { setNamespace } from '@/utils/storeDebug';
 
+import {
+  latestVersionResource,
+  serverVersionResource,
+  type ServerVersionValue,
+  VERSION_CHECK_KEY,
+} from '../projection';
 import { routeOverlayWrites } from '../selectors/systemStatus';
 import type { GlobalStore } from '../store';
 
 const n = setNamespace('g');
+
+const VERSION_PARAMS = {} as Record<string, never>;
+
+/**
+ * Version checks run once per session: focus and reconnect do not repeat them,
+ * and `isPaused` holds the refetch a workspace switch (a new sync key) would start.
+ */
+const ONCE = { revalidateOnFocus: false, revalidateOnReconnect: false } as const;
 
 type Setter = StoreSetter<GlobalStore>;
 export const generalActionSlice = (set: Setter, get: () => GlobalStore, _api?: unknown) =>
@@ -30,13 +43,88 @@ export const generalActionSlice = (set: Setter, get: () => GlobalStore, _api?: u
 
 class GlobalGeneralActionImpl {
   readonly #get: () => GlobalStore;
+  readonly #latestVersion;
+  readonly #serverVersion;
   readonly #set: Setter;
 
   constructor(set: Setter, get: () => GlobalStore, _api?: unknown) {
     void _api;
     this.#set = set;
     this.#get = get;
+    this.#latestVersion = createReplicaSlice(latestVersionResource, {
+      actionPrefix: n('latestVersion'),
+      effects: { onApplied: (data) => this.#applyLatestVersion(data) },
+      fetcher: () => globalService.getLatestVersion(),
+      get,
+      set,
+      stateKey: 'latestVersionCheckReplica',
+      view: recordLens<GlobalStore, string>('latestVersionCheckMap'),
+    });
+    this.#serverVersion = createReplicaSlice(serverVersionResource, {
+      actionPrefix: n('serverVersion'),
+      effects: { onApplied: (data) => this.#applyServerVersion(data) },
+      fetcher: async () => ({ version: await globalService.getServerVersion() }),
+      get,
+      set,
+      stateKey: 'serverVersionCheckReplica',
+      view: recordLens<GlobalStore, ServerVersionValue>('serverVersionCheckMap'),
+    });
   }
+
+  #applyLatestVersion = (data: string) => {
+    const version = isDesktop ? CURRENT_VERSION : WEB_APP_VERSION;
+    if (!valid(version) || !valid(data)) return;
+
+    const currentVersion = parse(version);
+    const latestVersion = parse(data);
+
+    if (!currentVersion || !latestVersion) return;
+
+    const currentMajorMinor = `${currentVersion.major}.${currentVersion.minor}.0`;
+    const latestMajorMinor = `${latestVersion.major}.${latestVersion.minor}.0`;
+
+    if (gt(latestMajorMinor, currentMajorMinor)) {
+      this.#set({ hasNewVersion: true, latestVersion: data }, false, n('checkLatestVersion'));
+    }
+  };
+
+  #applyServerVersion = ({ version: data }: ServerVersionValue) => {
+    if (data === null) {
+      this.#set({ isServerVersionOutdated: true }, false);
+      return;
+    }
+
+    this.#set({ serverVersion: data }, false);
+
+    if (!valid(CURRENT_VERSION) || !valid(data)) return;
+
+    const clientVersion = parse(CURRENT_VERSION);
+    const serverVersion = parse(data);
+
+    if (!clientVersion || !serverVersion) return;
+
+    const DIFF_THRESHOLD = 5;
+    //         Version difference calculation rules
+    // ┌─────────────────┬────────┬───────────┐
+    // │ Client → Server │  Diff  │  Result   │
+    // ├─────────────────┼────────┼───────────┤
+    // │ 1.0.5 → 1.0.0   │ 5      │ ⚠️ Too old│
+    // ├─────────────────┼────────┼───────────┤
+    // │ 1.1.0 → 1.0.5   │ 5      │ ⚠️ Too old│
+    // ├─────────────────┼────────┼───────────┤
+    // │ 2.0.0 → 1.9.9   │ 91     │ ⚠️ Too old│
+    // ├─────────────────┼────────┼───────────┤
+    // │ 1.0.4 → 1.0.0   │ 4      │ ✅ Normal │
+    // └─────────────────┴────────┴───────────┘
+    const versionDiff =
+      (clientVersion.major - serverVersion.major) * 100 +
+      (clientVersion.minor - serverVersion.minor) * 10 +
+      (clientVersion.patch - serverVersion.patch);
+
+    if (versionDiff >= DIFF_THRESHOLD) {
+      this.#set({ isServerVersionOutdated: true }, false);
+    }
+  };
 
   openAgentInNewWindow = async (agentId: string): Promise<void> => {
     if (isDesktop) {
@@ -116,102 +204,40 @@ class GlobalGeneralActionImpl {
     this.#get().statusStorage.saveToLocalStorage(nextStatus);
   };
 
-  useCheckLatestVersion = (enabledCheck: boolean = true): SWRResponse<string> => {
-    return useOnlyFetchOnceSWR(
-      enabledCheck ? globalKeys.latestVersion() : null,
-      async () => globalService.getLatestVersion(),
-      {
-        focusThrottleInterval: 1000 * 60 * 30,
-        onSuccess: (data: string) => {
-          const version = isDesktop ? CURRENT_VERSION : WEB_APP_VERSION;
-          if (!valid(version) || !valid(data)) return;
+  useCheckLatestVersion = (enabledCheck: boolean = true): ReplicaSyncResult =>
+    this.#latestVersion.useSync(VERSION_PARAMS, {
+      ...ONCE,
+      enabled: enabledCheck,
+      isPaused: () => this.#get().latestVersionCheckMap[VERSION_CHECK_KEY] !== undefined,
+    });
 
-          const currentVersion = parse(version);
-          const latestVersion = parse(data);
+  useCheckServerVersion = (): ReplicaSyncResult =>
+    this.#serverVersion.useSync(VERSION_PARAMS, {
+      ...ONCE,
+      enabled: isDesktop && !electronSyncSelectors.isOfficialServer(getElectronStoreState()),
+      isPaused: () => this.#get().serverVersionCheckMap[VERSION_CHECK_KEY] !== undefined,
+    });
 
-          if (!currentVersion || !latestVersion) return;
+  /** Restore the persisted system status once the app mounts. */
+  useInitSystemStatus = (): void => {
+    useEffect(() => {
+      if (this.#get().isStatusInit) return;
 
-          const currentMajorMinor = `${currentVersion.major}.${currentVersion.minor}.0`;
-          const latestMajorMinor = `${latestVersion.major}.${latestVersion.minor}.0`;
+      const status = this.#get().statusStorage.getFromLocalStorageSync();
+      this.#set({ isStatusInit: true }, false, 'setStatusInit');
 
-          if (gt(latestMajorMinor, currentMajorMinor)) {
-            this.#set({ hasNewVersion: true, latestVersion: data }, false, n('checkLatestVersion'));
-          }
-        },
-      },
-    );
-  };
+      // Reset transient UI states that should not persist across page reloads
+      const statusWithResetTransientStates = {
+        ...status,
+        showCommandMenu: false,
+        showHotkeyHelper: false,
+        workingSidebarRevealRequest: undefined,
+      };
 
-  useCheckServerVersion = (): SWRResponse<string | null> => {
-    return useOnlyFetchOnceSWR(
-      isDesktop && !electronSyncSelectors.isOfficialServer(getElectronStoreState())
-        ? globalKeys.serverVersion()
-        : null,
-      async () => globalService.getServerVersion(),
-      {
-        onSuccess: (data: string | null) => {
-          if (data === null) {
-            this.#set({ isServerVersionOutdated: true }, false);
-            return;
-          }
-
-          this.#set({ serverVersion: data }, false);
-
-          if (!valid(CURRENT_VERSION) || !valid(data)) return;
-
-          const clientVersion = parse(CURRENT_VERSION);
-          const serverVersion = parse(data);
-
-          if (!clientVersion || !serverVersion) return;
-
-          const DIFF_THRESHOLD = 5;
-          //         Version difference calculation rules
-          // ┌─────────────────┬────────┬───────────┐
-          // │ Client → Server │  Diff  │  Result   │
-          // ├─────────────────┼────────┼───────────┤
-          // │ 1.0.5 → 1.0.0   │ 5      │ ⚠️ Too old│
-          // ├─────────────────┼────────┼───────────┤
-          // │ 1.1.0 → 1.0.5   │ 5      │ ⚠️ Too old│
-          // ├─────────────────┼────────┼───────────┤
-          // │ 2.0.0 → 1.9.9   │ 91     │ ⚠️ Too old│
-          // ├─────────────────┼────────┼───────────┤
-          // │ 1.0.4 → 1.0.0   │ 4      │ ✅ Normal │
-          // └─────────────────┴────────┴───────────┘
-          const versionDiff =
-            (clientVersion.major - serverVersion.major) * 100 +
-            (clientVersion.minor - serverVersion.minor) * 10 +
-            (clientVersion.patch - serverVersion.patch);
-
-          if (versionDiff >= DIFF_THRESHOLD) {
-            this.#set({ isServerVersionOutdated: true }, false);
-          }
-        },
-      },
-    );
-  };
-
-  useInitSystemStatus = (): SWRResponse => {
-    return useOnlyFetchOnceSWR<SystemStatus>(
-      globalKeys.systemStatus(),
-      () => this.#get().statusStorage.getFromLocalStorage(),
-      {
-        onSuccess: (status) => {
-          this.#set({ isStatusInit: true }, false, 'setStatusInit');
-
-          // Reset transient UI states that should not persist across page reloads
-          const statusWithResetTransientStates = {
-            ...status,
-            showCommandMenu: false,
-            showHotkeyHelper: false,
-            workingSidebarRevealRequest: undefined,
-          };
-
-          this.#get().updateSystemStatus(statusWithResetTransientStates, 'initSystemStatus', {
-            skipWorkspaceOverlay: true,
-          });
-        },
-      },
-    );
+      this.#get().updateSystemStatus(statusWithResetTransientStates, 'initSystemStatus', {
+        skipWorkspaceOverlay: true,
+      });
+    }, []);
   };
 }
 

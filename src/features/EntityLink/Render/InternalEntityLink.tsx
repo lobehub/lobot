@@ -14,7 +14,7 @@ import {
   TargetIcon,
 } from 'lucide-react';
 import type { MouseEvent } from 'react';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
@@ -22,7 +22,6 @@ import { useWorkspaces } from '@/business/client/hooks/useWorkspaces';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { buildWorkspaceAwarePath } from '@/features/Workspace/workspaceAwarePath';
 import { shouldHardNavigateToWorkbench } from '@/libs/next/workbenchNavigation';
-import { useClientDataSWR } from '@/libs/swr';
 import { useAgentStore } from '@/store/agent';
 import {
   agentDocumentActions,
@@ -34,11 +33,8 @@ import { openTrustedExternalUrl } from '@/utils/openTrustedExternalUrl';
 
 import { useEntityLinkHostDismiss, useEntityLinkPortal } from '../host';
 import { type InternalLinkReference, isBareLinkLabel, isEntityIdLabel } from '../internalLink';
-import {
-  getPreviewData,
-  InternalEntityPreview,
-  internalEntityPreviewKey,
-} from './InternalEntityPreview';
+import { entityPreviewSelectors, useEntityPreviewStore, useFetchEntityPreview } from '../store';
+import { InternalEntityPreview } from './InternalEntityPreview';
 import { useAcceptanceBrowserUrl } from './useAcceptanceBrowserUrl';
 import { useTaskLinkUrl } from './useTaskLinkUrl';
 
@@ -110,7 +106,7 @@ interface InternalEntityLinkProps {
 }
 
 export const InternalEntityLink = memo<InternalEntityLinkProps>(({ href, label, reference }) => {
-  const { t } = useTranslation('chat');
+  const { i18n, t } = useTranslation('chat');
   const { t: tVerify } = useTranslation('verify');
   const { t: tPortal } = useTranslation('portal');
   const navigate = useWorkspaceAwareNavigate();
@@ -135,7 +131,7 @@ export const InternalEntityLink = memo<InternalEntityLinkProps>(({ href, label, 
   ]);
   // A pasted URL says nothing about what it points to, so resolve the entity's
   // own title and show that instead — the same read the hover preview makes,
-  // under the same key, so the eager fetch also makes the hover card instant.
+  // under the same replica entry, so the eager fetch also makes the hover card instant.
   // Bare links are sparse in real messages, which is why prefetching the full
   // preview beats a dedicated title read. Cross-workspace links are skipped:
   // the ambient client resolves against the ACTIVE scope, where a
@@ -145,11 +141,12 @@ export const InternalEntityLink = memo<InternalEntityLinkProps>(({ href, label, 
     reference.type !== 'route' &&
     !reference.workspaceSlug &&
     (isBareLinkLabel(label, href) || isEntityIdLabel(label, reference));
-  const { data: entity } = useClientDataSWR(
-    shouldResolveTitle ? internalEntityPreviewKey(reference) : null,
-    () => getPreviewData(reference, t),
-    { revalidateOnFocus: false },
+  const previewParams = useMemo(
+    () => (shouldResolveTitle ? { locale: i18n.language, reference } : null),
+    [i18n.language, reference, shouldResolveTitle],
   );
+  useFetchEntityPreview(previewParams);
+  const entity = useEntityPreviewStore(entityPreviewSelectors.preview(previewParams));
   const displayLabel = (shouldResolveTitle && entity?.title) || label;
   // The absolute report URL: a click on the link opens it in the system
   // browser, and the icon beside the link marks that it leaves the app. A

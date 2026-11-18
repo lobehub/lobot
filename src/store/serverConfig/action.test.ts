@@ -1,9 +1,16 @@
+import { renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { globalService } from '@/services/global';
 import { type GlobalRuntimeConfig } from '@/types/serverConfig';
 import { merge } from '@/utils/merge';
+import { withSWR } from '~test-utils';
 
 import { createServerConfigStore, type ServerConfigStore } from './store';
+
+vi.mock('@/services/global', () => ({
+  globalService: { getGlobalConfig: vi.fn() },
+}));
 
 // Fresh-state store per test: the app keeps one singleton, so reset its state
 // to the defaults merged with the given initial state.
@@ -14,31 +21,7 @@ const initServerConfigStore = (initState: Partial<ServerConfigStore>) => {
   return serverConfigStore;
 };
 
-// Mock SWR
-let mockSWRData: GlobalRuntimeConfig | undefined;
-let mockSWRError: Error | undefined;
-
-vi.mock('@/libs/swr', () => ({
-  useOnlyFetchOnceSWR: vi.fn((key, fetcher, options) => {
-    const { onError, onSuccess } = options || {};
-    // Simulate SWR behavior
-    if (mockSWRData && onSuccess) {
-      onSuccess(mockSWRData);
-    }
-
-    if (mockSWRError && onError) {
-      onError(mockSWRError);
-    }
-
-    return {
-      data: mockSWRData,
-      error: mockSWRError,
-      isLoading: false,
-      isValidating: false,
-      mutate: vi.fn(),
-    };
-  }),
-}));
+const getGlobalConfig = vi.mocked(globalService.getGlobalConfig);
 
 const mockGlobalConfig: GlobalRuntimeConfig = {
   serverConfig: {
@@ -53,65 +36,51 @@ const mockGlobalConfig: GlobalRuntimeConfig = {
   },
 } as any;
 
+const renderInit = (store: typeof serverConfigStore) =>
+  renderHook(() => store.getState().useInitServerConfig(), { wrapper: withSWR });
+
 beforeEach(() => {
   vi.clearAllMocks();
-  vi.resetModules();
-
-  mockSWRData = mockGlobalConfig;
-  mockSWRError = undefined;
+  getGlobalConfig.mockResolvedValue(mockGlobalConfig);
 });
 
 afterEach(() => {
   vi.restoreAllMocks();
-  mockSWRData = undefined;
-  mockSWRError = undefined;
 });
 
 describe('ServerConfigAction', () => {
   describe('useInitServerConfig', () => {
-    it('should return SWR response', () => {
+    it('should update store state on successful fetch', async () => {
       const store = initServerConfigStore({});
 
-      const swrResponse = store.getState().useInitServerConfig();
+      renderInit(store);
 
-      expect(swrResponse).toBeDefined();
-      expect(swrResponse.data).toBeDefined();
-      expect(swrResponse.isLoading).toBe(false);
-    });
-
-    it('should update store state on successful fetch', () => {
-      const store = initServerConfigStore({});
-
-      store.getState().useInitServerConfig();
-
+      await waitFor(() => expect(store.getState().serverConfigLoaded).toBe(true));
       const state = store.getState();
-
-      expect(state.serverConfig).toBeDefined();
-      expect(state.featureFlags).toBeDefined();
+      expect(state.serverConfigInit).toBe(true);
+      expect(state.serverConfig).toEqual(mockGlobalConfig.serverConfig);
+      expect(state.featureFlags).toEqual(mockGlobalConfig.serverFeatureFlags);
       expect(state.canAccessDevDock).toBe(true);
-      expect(state.serverConfigLoaded).toBe(true);
+      expect(getGlobalConfig).toHaveBeenCalledTimes(1);
     });
 
-    it('should mark server config as initialized when the fetch fails', () => {
-      mockSWRData = undefined;
-      mockSWRError = new Error('network error');
+    it('should mark server config as initialized when the fetch fails', async () => {
+      getGlobalConfig.mockRejectedValue(new Error('network error'));
 
       const store = initServerConfigStore({});
 
-      store.getState().useInitServerConfig();
+      renderInit(store);
 
-      expect(store.getState().serverConfigInit).toBe(true);
+      await waitFor(() => expect(store.getState().serverConfigInit).toBe(true));
       // The fallback is not a loaded config: consumers that prune data
       // against server-gated catalogs must keep waiting.
       expect(store.getState().serverConfigLoaded).toBe(false);
       expect(store.getState().serverConfig).toEqual({ aiProvider: {}, telemetry: {} });
       expect(store.getState().canAccessDevDock).toBe(false);
     });
-  });
 
-  describe('onSuccess callback', () => {
-    it('should set serverConfig and featureFlags correctly', () => {
-      const customConfig: GlobalRuntimeConfig = {
+    it('should set serverConfig and featureFlags correctly', async () => {
+      getGlobalConfig.mockResolvedValue({
         serverConfig: {
           telemetry: { langfuse: { publicKey: 'test-key' } },
           aiProvider: {},
@@ -120,60 +89,26 @@ describe('ServerConfigAction', () => {
           enableDevDock: false,
           enableWebrtc: false,
         },
-      } as any;
-
-      mockSWRData = customConfig;
+      } as any);
 
       const store = initServerConfigStore({});
 
-      store.getState().useInitServerConfig();
+      renderInit(store);
 
-      const state = store.getState();
-
-      expect(state.serverConfig).toBeDefined();
-      expect(state.featureFlags).toBeDefined();
-      expect(state.canAccessDevDock).toBe(false);
+      await waitFor(() => expect(store.getState().serverConfigLoaded).toBe(true));
+      expect(store.getState().canAccessDevDock).toBe(false);
     });
 
-    it('should update both serverConfig and serverFeatureFlags in store', () => {
+    // A later answer would overwrite `featureFlags` and drop DevDock overrides.
+    it('does not refetch once the config has loaded', async () => {
       const store = initServerConfigStore({});
 
-      const initialState = store.getState();
-      expect(initialState.serverConfig).toBeDefined();
+      const { result } = renderInit(store);
+      await waitFor(() => expect(store.getState().serverConfigLoaded).toBe(true));
 
-      store.getState().useInitServerConfig();
+      await result.current.revalidate();
 
-      const updatedState = store.getState();
-      expect(updatedState.serverConfig).toEqual(mockGlobalConfig.serverConfig);
-      expect(updatedState.featureFlags).toEqual(mockGlobalConfig.serverFeatureFlags);
-      expect(updatedState.canAccessDevDock).toBe(true);
-    });
-  });
-
-  describe('SWR integration', () => {
-    it('should pass the server config key, fetcher and callbacks', async () => {
-      const { useOnlyFetchOnceSWR } = vi.mocked(await import('@/libs/swr'));
-
-      const store = initServerConfigStore({});
-      store.getState().useInitServerConfig();
-
-      expect(useOnlyFetchOnceSWR).toHaveBeenCalledWith(
-        'serverConfig:get',
-        expect.any(Function),
-        expect.objectContaining({
-          onError: expect.any(Function),
-          onSuccess: expect.any(Function),
-        }),
-      );
-
-      expect(useOnlyFetchOnceSWR).toHaveBeenCalledWith(
-        'serverConfig:get',
-        expect.any(Function),
-        expect.any(Object),
-      );
-
-      const fetcherArg = (useOnlyFetchOnceSWR as any).mock.calls[0][1];
-      expect(typeof fetcherArg).toBe('function');
+      expect(getGlobalConfig).toHaveBeenCalledTimes(1);
     });
   });
 });

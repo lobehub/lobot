@@ -1,22 +1,17 @@
 import { useTranslation } from 'react-i18next';
-import useSWR from 'swr';
 
-import { fetchOnboardingAgentTemplates } from '@/services/agentMarketplace';
-import { getAgentTemplatesSWRKey } from '@/services/agentMarketplace/agentTemplates';
-
-const agentTemplatesSWRConfig = {
-  dedupingInterval: 60_000,
-  revalidateOnFocus: false,
-  shouldRetryOnError: false,
-};
+import {
+  onboardingTemplatesSelectors,
+  useFetchOnboardingAgentTemplates,
+  useOnboardingTemplatesStore,
+} from '@/features/Onboarding/store';
 
 export const useOnboardingAgentTemplates = (enabled = true) => {
   const { i18n } = useTranslation();
-  const swrLocale = i18n.resolvedLanguage || i18n.language;
+  const locale = i18n.resolvedLanguage || i18n.language;
 
-  return useSWR(
-    enabled ? getAgentTemplatesSWRKey(swrLocale) : null,
-    () => fetchOnboardingAgentTemplates(),
-    agentTemplatesSWRConfig,
-  );
+  const { error } = useFetchOnboardingAgentTemplates(locale, enabled);
+  const data = useOnboardingTemplatesStore(onboardingTemplatesSelectors.agentTemplates(locale));
+
+  return { data, error, isLoading: enabled && data === undefined && !error };
 };

@@ -161,16 +161,10 @@ describe('generalActionSlice', () => {
 
       const { result } = renderHook(() => useGlobalStore());
       const getFromLocalStorageSpy = vi
-        .spyOn(result.current.statusStorage, 'getFromLocalStorage')
-        .mockResolvedValueOnce(mockStatus);
+        .spyOn(result.current.statusStorage, 'getFromLocalStorageSync')
+        .mockReturnValueOnce(mockStatus);
 
-      const { result: hookResult } = renderHook(() => useGlobalStore().useInitSystemStatus(), {
-        wrapper: withSWR,
-      });
-
-      await act(async () => {
-        await hookResult.current.data;
-      });
+      renderHook(() => useGlobalStore().useInitSystemStatus());
 
       expect(getFromLocalStorageSpy).toHaveBeenCalled();
       expect(useGlobalStore.getState().isStatusInit).toBe(true);
@@ -192,11 +186,13 @@ describe('generalActionSlice', () => {
         versionContext.webVersion = '2.3.0';
         vi.mocked(globalService.getLatestVersion).mockResolvedValueOnce(latest);
 
-        const { result } = renderHook(() => useGlobalStore().useCheckLatestVersion(), {
+        renderHook(() => useGlobalStore().useCheckLatestVersion(), {
           wrapper: withSWR,
         });
 
-        await waitFor(() => expect(result.current.data).toBe(latest));
+        await waitFor(() =>
+          expect(useGlobalStore.getState().latestVersionCheckMap.current).toBe(latest),
+        );
 
         expect(useGlobalStore.getState().hasNewVersion).toBe(expected);
         expect(useGlobalStore.getState().latestVersion).toBe(expected ? latest : undefined);
@@ -217,13 +213,13 @@ describe('generalActionSlice', () => {
       const latestVersion = '999.0.0';
       vi.spyOn(globalService, 'getLatestVersion').mockResolvedValueOnce(latestVersion);
 
-      const { result } = renderHook(() => useGlobalStore().useCheckLatestVersion(), {
+      renderHook(() => useGlobalStore().useCheckLatestVersion(), {
         wrapper: withSWR,
       });
 
-      await act(async () => {
-        await result.current.data;
-      });
+      await waitFor(() =>
+        expect(useGlobalStore.getState().latestVersionCheckMap.current).toBeDefined(),
+      );
 
       expect(useGlobalStore.getState().hasNewVersion).toBe(true);
       expect(useGlobalStore.getState().latestVersion).toBe(latestVersion);
@@ -234,13 +230,13 @@ describe('generalActionSlice', () => {
       const latestVersion = `${currentParts[0]}.${currentParts[1]}.999`;
       vi.spyOn(globalService, 'getLatestVersion').mockResolvedValueOnce(latestVersion);
 
-      const { result } = renderHook(() => useGlobalStore().useCheckLatestVersion(), {
+      renderHook(() => useGlobalStore().useCheckLatestVersion(), {
         wrapper: withSWR,
       });
 
-      await act(async () => {
-        await result.current.data;
-      });
+      await waitFor(() =>
+        expect(useGlobalStore.getState().latestVersionCheckMap.current).toBeDefined(),
+      );
 
       // Reset hasNewVersion and latestVersion
       useGlobalStore.setState({ hasNewVersion: undefined, latestVersion: undefined });
@@ -252,13 +248,13 @@ describe('generalActionSlice', () => {
     it('should not set hasNewVersion when version is invalid', async () => {
       vi.spyOn(globalService, 'getLatestVersion').mockResolvedValueOnce('invalid.version');
 
-      const { result } = renderHook(() => useGlobalStore().useCheckLatestVersion(), {
+      renderHook(() => useGlobalStore().useCheckLatestVersion(), {
         wrapper: withSWR,
       });
 
-      await act(async () => {
-        await result.current.data;
-      });
+      await waitFor(() =>
+        expect(useGlobalStore.getState().latestVersionCheckMap.current).toBeDefined(),
+      );
 
       // Reset hasNewVersion and latestVersion
       useGlobalStore.setState({ hasNewVersion: undefined, latestVersion: undefined });

@@ -9,6 +9,7 @@ import type {
 
 import { definePagedReplica, defineReplica } from '@/libs/replica';
 import { workKeys } from '@/libs/swr/keys';
+import type { shareChatService } from '@/services/shareChat';
 
 import type { WorkspaceWorksData } from './initialState';
 
@@ -126,3 +127,32 @@ export const workVersionsResource = defineReplica<WorkVersionsParams, WorkVersio
 /** The timeline never renders a version's captured text, so it is not persisted. */
 export const toPersistedVersions = (versions: WorkVersionItem[]): WorkVersionItem[] =>
   versions.map((version) => (version.content === null ? version : { ...version, content: null }));
+
+export interface ShareVisitorDocumentParams {
+  documentId: string;
+  shareId: string;
+  topicId: string;
+}
+
+export type ShareVisitorDocument = Awaited<ReturnType<typeof shareChatService.getDocument>>;
+
+export const shareVisitorDocumentKey = ({
+  documentId,
+  shareId,
+  topicId,
+}: ShareVisitorDocumentParams) => `${shareId}|${topicId}|${documentId}`;
+
+/**
+ * A `document` Work opened from the agent-share visitor surface, read through
+ * the share-authorized endpoint. Memory only: access ends with the share, so a
+ * revoked share must not paint its document from disk.
+ */
+export const shareVisitorDocumentResource = defineReplica<
+  ShareVisitorDocumentParams,
+  ShareVisitorDocument
+>({
+  key: shareVisitorDocumentKey,
+  name: 'shareVisitorDocument',
+  storage: 'memory',
+  version: 1,
+});

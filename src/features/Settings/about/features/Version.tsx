@@ -73,7 +73,7 @@ const Version = memo<{ mobile?: boolean }>(({ mobile }) => {
   const {
     error: updateCheckError,
     isValidating: isCheckingUpdate,
-    mutate: recheckUpdate,
+    revalidate: recheckUpdate,
   } = useCheckLatestVersion(enableCheckUpdates);
 
   const showServerVersion = serverVersion && serverVersion !== CURRENT_VERSION;

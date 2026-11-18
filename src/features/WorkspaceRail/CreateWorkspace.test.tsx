@@ -27,7 +27,7 @@ vi.mock('@lobehub/ui', async (importOriginal) => ({
 vi.mock('@/business/client/workspace/service', () => ({
   workspaceService: { create: mocks.create },
 }));
-vi.mock('@/business/client/workspace/store', () => ({ refreshWorkspaces: mocks.refresh }));
+vi.mock('@/business/client/workspace/list', () => ({ refreshWorkspaces: mocks.refresh }));
 vi.mock('@/business/client/hooks/useSwitchWorkspace', () => ({
   useSwitchWorkspace: () => ({ switchWorkspace: mocks.switchWorkspace }),
 }));

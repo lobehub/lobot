@@ -7,6 +7,7 @@ import {
   recordLens,
   type ReplicaPageResult,
 } from '@/libs/replica';
+import { shareChatService } from '@/services/shareChat';
 import { workService } from '@/services/work';
 import type { StoreSetter } from '@/store/types';
 import { setNamespace } from '@/utils/storeDebug';
@@ -16,6 +17,8 @@ import {
   AGENT_WORKS_LIMIT,
   agentWorksResource,
   conversationWorksResource,
+  type ShareVisitorDocument,
+  shareVisitorDocumentResource,
   toPersistedVersions,
   WORKSPACE_WORKS_PAGE_SIZE,
   type WorkspaceWorksParams,
@@ -32,6 +35,7 @@ const workId = (item: { id: string }) => item.id;
 export class WorkPrivateAction {
   readonly agentWorks;
   readonly conversationWorks;
+  readonly shareVisitorDocument;
   readonly versions;
   readonly workspaceWorks;
   /** One Work card everywhere it is listed: gallery, project dashboard, sidebar history. */
@@ -69,6 +73,15 @@ export class WorkPrivateAction {
       set,
       stateKey: 'conversationWorksReplica',
       view: recordLens<WorkState, WorkListItem[]>('conversationWorksMap'),
+    });
+    this.shareVisitorDocument = createReplicaSlice(shareVisitorDocumentResource, {
+      actionPrefix: n('shareVisitorDocument'),
+      fetcher: ({ documentId, shareId, topicId }) =>
+        shareChatService.getDocument(shareId, topicId, documentId),
+      get,
+      set,
+      stateKey: 'shareVisitorDocumentReplica',
+      view: recordLens<WorkState, ShareVisitorDocument>('shareVisitorDocumentMap'),
     });
     this.versions = createReplicaSlice(workVersionsResource, {
       actionPrefix: n('versions'),
