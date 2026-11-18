@@ -143,28 +143,35 @@ const CreateAgentIdentityContent = memo<CreateAgentIdentityContentProps>(
             slugCollapsible
             form={form}
             slugPlaceholder={t('settingAgent.slug.autoPlaceholder', { ns: 'setting' })}
-          />
-          {/* An entry, not a setting: one click goes straight to picking the device and
-              the agent that drives this one. */}
-          <button type={'button'} {...stylex.props(styles.option)} onClick={goRuntime}>
-            <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
-              <Text>{t('settingAgent.identity.externalRuntime', { ns: 'setting' })}</Text>
-              <Text fontSize={12} type={'secondary'}>
-                {t('settingAgent.identity.externalRuntimeDesc', { ns: 'setting' })}
-              </Text>
-            </Flexbox>
-            <span aria-hidden {...stylex.props(styles.runtimes)}>
-              {featuredRuntimes.map((provider) => (
-                <span key={provider.type} title={provider.title} {...stylex.props(styles.runtime)}>
-                  <provider.brand.Avatar size={22} />
+            advancedExtra={
+              // An entry, not a setting: one click goes straight to picking the device
+              // and the agent that drives this one. Folded with the slug, since most
+              // agents are created without one.
+              <button type={'button'} {...stylex.props(styles.option)} onClick={goRuntime}>
+                <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
+                  <Text>{t('settingAgent.identity.externalRuntime', { ns: 'setting' })}</Text>
+                  <Text fontSize={12} type={'secondary'}>
+                    {t('settingAgent.identity.externalRuntimeDesc', { ns: 'setting' })}
+                  </Text>
+                </Flexbox>
+                <span aria-hidden {...stylex.props(styles.runtimes)}>
+                  {featuredRuntimes.map((provider) => (
+                    <span
+                      key={provider.type}
+                      title={provider.title}
+                      {...stylex.props(styles.runtime)}
+                    >
+                      <provider.brand.Avatar size={22} />
+                    </span>
+                  ))}
                 </span>
-              ))}
-            </span>
-            <Icon
-              icon={ChevronRightIcon}
-              style={{ alignSelf: 'center', color: cssVar.colorTextTertiary }}
-            />
-          </button>
+                <Icon
+                  icon={ChevronRightIcon}
+                  style={{ alignSelf: 'center', color: cssVar.colorTextTertiary }}
+                />
+              </button>
+            }
+          />
           <Flexbox horizontal gap={8} justify={'flex-end'}>
             <Button disabled={form.saving} onClick={() => close()}>
               {t('cancel', { ns: 'common' })}

@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
+import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import CreateAgentIdentityContent from './CreateContent';
@@ -48,7 +49,14 @@ vi.mock('@/features/ConnectAgent/providers', () => ({
     }),
   ),
 }));
-vi.mock('./IdentityFields', () => ({ default: () => <input aria-label={'identity'} /> }));
+vi.mock('./IdentityFields', () => ({
+  default: ({ advancedExtra }: { advancedExtra?: ReactNode }) => (
+    <>
+      <input aria-label={'identity'} />
+      {advancedExtra}
+    </>
+  ),
+}));
 vi.mock('./useCreateAgentIdentityForm', () => ({
   useCreateAgentIdentityForm: () => ({
     name: '小朵',

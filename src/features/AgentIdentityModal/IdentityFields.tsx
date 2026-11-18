@@ -40,6 +40,8 @@ interface IdentityFieldsForm {
 }
 
 interface IdentityFieldsProps {
+  /** Folded together with the slug under "Advanced Settings", e.g. the third-party runtime entry. */
+  advancedExtra?: ReactNode;
   /** The agent being edited, so the dice never suggests its own current name back. */
   agentId?: string;
   form: IdentityFieldsForm;
@@ -54,7 +56,7 @@ const DESCRIPTION_MAX_LENGTH = 1000;
 
 /** Name / role / description / slug, shared by the edit and the create form. */
 const IdentityFields = memo<IdentityFieldsProps>((props) => {
-  const { agentId, form, slugCollapsible, slugPlaceholder } = props;
+  const { advancedExtra, agentId, form, slugCollapsible, slugPlaceholder } = props;
   const { t } = useTranslation('setting');
   const [advancedOpen, setAdvancedOpen] = useState(false);
   // A slug the server rejected stays in view, so its error is never hidden.
@@ -119,7 +121,7 @@ const IdentityFields = memo<IdentityFieldsProps>((props) => {
           onChange={(e) => form.setDescription(e.target.value)}
         />
       </Field>
-      {slugCollapsible && !form.slugLocked && (
+      {slugCollapsible && (!form.slugLocked || advancedExtra) && (
         <button
           aria-expanded={slugShown}
           type={'button'}
@@ -185,6 +187,7 @@ const IdentityFields = memo<IdentityFieldsProps>((props) => {
           />
         </Field>
       ) : null}
+      {slugCollapsible && slugShown && advancedExtra}
     </>
   );
 });
