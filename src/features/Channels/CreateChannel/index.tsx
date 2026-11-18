@@ -1,8 +1,6 @@
-import { agentDisplayName, CHANNEL_LIMITS } from '@lobot/types';
 import {
   Button,
   createModal,
-  cssVar,
   Flexbox,
   Icon,
   Input,
@@ -11,26 +9,24 @@ import {
   toast,
   useModalContext,
 } from '@lobehub/ui';
+import { agentDisplayName, CHANNEL_LIMITS } from '@lobot/types';
 import { t } from 'i18next';
 import { Hash, Lock } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import AsyncError from '@/components/AsyncError';
 import { type ChannelPersonOption, channelService } from '@/services/channel';
 import { channelActions } from '@/store/channel';
-import { type ProjectListItem, useProjectStore } from '@/store/project';
 
 import { confirmPublishPrivateAgents, ownPrivateAgentIds } from '../privateAgentJoin';
 import type { ChannelAgentDraft } from './agentEnvironment';
 import { canSubmitChannelMembers, toChannelAgentSelection } from './agentEnvironment';
 import { defaultChannelTitle } from './channelTitle';
 import { MemberSelection } from './MemberSelection';
-import { NewProjectPanel } from './NewProjectPanel';
 import { usePersonName } from './PeopleOptions';
 import { getChannelSaveErrorKey } from './saveError';
-import { type ChannelKind, ScopeField, useChannelKindsEnabled } from './ScopeField';
 import { useChannelAgentOptions } from './useChannelAgentOptions';
 
 interface ExistingChannel {
@@ -54,28 +50,23 @@ interface ExistingChannel {
 }
 
 type Step = 'basics' | 'members';
-/** The basics step widens into two columns while a new project is filled in beside it. */
-type Layout = Step | 'basicsWithProject';
 
 interface CreateChannelProps {
   /** Set when inviting members into a Channel that already exists. */
   existing?: ExistingChannel;
   onCreated?: (id: string) => void;
   /** Resizes the dialog to what is being shown. */
-  onLayoutChange?: (layout: Layout) => void;
-  /** A new Channel created from a project's sidebar starts out as that project's. */
-  projectId?: string;
+  onLayoutChange?: (step: Step) => void;
 }
 
 /** The basics are a short form; only the member pickers need the room of two columns. */
-const LAYOUT_WIDTH: Record<Layout, string> = {
+const LAYOUT_WIDTH: Record<Step, string> = {
   basics: 'min(90vw, 480px)',
-  basicsWithProject: 'min(90vw, 800px)',
   members: 'min(90vw, 800px)',
 };
 
 const openMemberDialog = (props: Omit<CreateChannelProps, 'onLayoutChange'>) => {
-  const resize: { current?: (layout: Layout) => void } = {};
+  const resize: { current?: (step: Step) => void } = {};
   const modal = createModal({
     content: <CreateChannel {...props} onLayoutChange={(layout) => resize.current?.(layout)} />,
     footer: null,
@@ -86,23 +77,20 @@ const openMemberDialog = (props: Omit<CreateChannelProps, 'onLayoutChange'>) => 
   return modal;
 };
 
-export const openCreateChannel = (onCreated?: (id: string) => void, projectId?: string) =>
-  openMemberDialog({ onCreated, projectId });
+export const openCreateChannel = (onCreated?: (id: string) => void) =>
+  openMemberDialog({ onCreated });
 
 /** The single entry for adding people and Agents to an existing Channel. */
 export const openInviteMembers = (existing: ExistingChannel, onCreated?: (id: string) => void) =>
   openMemberDialog({ existing, onCreated });
 
 /**
- * Creating asks what the Channel is first, like Discord: its kind (general or a project's), its
- * name and whether it is private; members come in a second step. The name is optional and
- * defaults to the members' names. Inviting into an existing Channel is only the member step.
- * Workspace Channels, new or existing, also list workspace members.
- *
- * A project Channel can also start a new project: the dialog opens the project beside the
- * Channel, both are created on submit, and the Channel takes the project's name.
+ * Creating asks what the Channel is first, like Discord: its name and whether it is private;
+ * members come in a second step. The name is optional and defaults to the members' names.
+ * Inviting into an existing Channel is only the member step. Workspace Channels, new or
+ * existing, also list workspace members.
  */
-function CreateChannel({ existing, onCreated, onLayoutChange, projectId }: CreateChannelProps) {
+function CreateChannel({ existing, onCreated, onLayoutChange }: CreateChannelProps) {
   const { t } = useTranslation('channel');
   const { close, setCanDismissByClickOutside } = useModalContext();
   const [title, setTitle] = useState('');
@@ -110,32 +98,15 @@ function CreateChannel({ existing, onCreated, onLayoutChange, projectId }: Creat
   const [people, setPeople] = useState<ChannelPersonOption[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>();
-  // A new Channel is general or a project's; the project, if any, is changeable until created.
-  const [scopeProjectId, setScopeProjectId] = useState<string | null>(projectId ?? null);
-  const kindsEnabled = useChannelKindsEnabled();
-  const [kind, setKind] = useState<ChannelKind>(projectId ? 'project' : 'general');
   const [step, setStep] = useState<Step>(existing ? 'members' : 'basics');
-  // The name of a project created together with the Channel; `undefined` when none is.
-  const [newProjectName, setNewProjectName] = useState<string>();
-  // Kept across a failed submit, so retrying does not create the project twice.
-  const createdProject = useRef<ProjectListItem>(undefined);
-  const creatingProject = newProjectName !== undefined;
-  const layout: Layout = step === 'basics' && creatingProject ? 'basicsWithProject' : step;
-  // The dialog opens at the first layout's width; only a change resizes it.
-  const shownLayout = useRef(layout);
+  // The dialog opens at the first step's width; only a change resizes it.
+  const [shownStep] = useState(step);
   useEffect(() => {
-    if (shownLayout.current === layout) return;
-    shownLayout.current = layout;
-    onLayoutChange?.(layout);
-  }, [layout, onLayoutChange]);
+    if (step !== shownStep) onLayoutChange?.(step);
+  }, [onLayoutChange, shownStep, step]);
   // Like Discord, a new workspace Channel is open to the workspace unless made private.
   const [isPrivate, setIsPrivate] = useState(false);
-  const projectChannel = kindsEnabled && kind === 'project';
-  const newProject = projectChannel && creatingProject;
-  const projectPicked = newProject ? !!newProjectName?.trim() : !!scopeProjectId;
-  const options = useChannelAgentOptions(
-    existing || !projectChannel || newProject ? undefined : (scopeProjectId ?? undefined),
-  );
+  const options = useChannelAgentOptions();
   const direct = existing?.directAgentName !== undefined;
   const peer = existing?.peer;
   // A one-to-one conversation stays as it is: inviting from it starts a new group.
@@ -145,8 +116,7 @@ function CreateChannel({ existing, onCreated, onLayoutChange, projectId }: Creat
   const activeWorkspaceId = useActiveWorkspaceId();
   // People join only workspace Channels: a new one is created in the active workspace.
   const canPickPeople = existing ? !!existing.workspaceId : !!activeWorkspaceId;
-  const dirty =
-    !!title.trim() || !!newProjectName?.trim() || agents.length > 0 || people.length > 0;
+  const dirty = !!title.trim() || agents.length > 0 || people.length > 0;
 
   // A mask click must not drop what the user typed or picked; ✕ and Esc still close.
   useEffect(() => {
@@ -224,20 +194,9 @@ function CreateChannel({ existing, onCreated, onLayoutChange, projectId }: Creat
         });
         close();
       } else {
-        let channelProjectId = projectChannel ? (scopeProjectId ?? undefined) : undefined;
-        let channelTitle = title.trim() || autoTitle;
-        if (newProject && newProjectName !== undefined) {
-          const name = newProjectName.trim();
-          createdProject.current ??= await useProjectStore.getState().createProject({ name });
-          channelProjectId = createdProject.current.id;
-          channelTitle = name.slice(0, CHANNEL_LIMITS.titleLength);
-        }
         const id = await channelActions.create({
           agents: selections,
-          // Agents picked from outside the project join it along with the Channel.
-          joinProject: true,
-          projectId: channelProjectId,
-          title: channelTitle,
+          title: title.trim() || autoTitle,
           userIds: people.map((person) => person.userId),
         });
         // Channels are created private; opening one to the workspace is a second write.
@@ -258,53 +217,26 @@ function CreateChannel({ existing, onCreated, onLayoutChange, projectId }: Creat
     }
   };
 
-  const goToMembers = () => {
-    if (projectChannel && !projectPicked) return;
-    setStep('members');
-  };
+  const goToMembers = () => setStep('members');
 
   if (step === 'basics') {
-    const channelFields = (
-      <Flexbox gap={20} style={{ flex: 1, minWidth: 0 }}>
-        {kindsEnabled && (
-          <ScopeField
-            kind={kind}
-            newProjectName={newProject ? newProjectName : undefined}
-            projectId={scopeProjectId}
-            onCreateProject={(name) => {
-              setNewProjectName(name);
-              setScopeProjectId(null);
-            }}
-            onKindChange={(next) => {
-              setKind(next);
-              if (next === 'general') setNewProjectName(undefined);
-            }}
-            onProjectChange={(id) => {
-              setScopeProjectId(id);
-              setNewProjectName(undefined);
-              // "No project" in the picker is the general kind.
-              if (!id) setKind('general');
-            }}
+    return (
+      <Flexbox gap={20}>
+        <Flexbox gap={6}>
+          <label htmlFor="channel-title" style={{ fontWeight: 500 }}>
+            {t('nameOptional')}
+          </label>
+          <Input
+            autoFocus
+            id="channel-title"
+            maxLength={CHANNEL_LIMITS.titleLength}
+            placeholder={t('create.namePlaceholder')}
+            prefix={<Icon icon={Hash} size={14} />}
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            onPressEnter={goToMembers}
           />
-        )}
-        {/* A Channel created with its project is named after the project. */}
-        {!newProject && (
-          <Flexbox gap={6}>
-            <label htmlFor="channel-title" style={{ fontWeight: 500 }}>
-              {t('nameOptional')}
-            </label>
-            <Input
-              autoFocus
-              id="channel-title"
-              maxLength={CHANNEL_LIMITS.titleLength}
-              placeholder={t('create.namePlaceholder')}
-              prefix={<Icon icon={Hash} size={14} />}
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              onPressEnter={goToMembers}
-            />
-          </Flexbox>
-        )}
+        </Flexbox>
         {activeWorkspaceId && (
           <Flexbox horizontal align={'center'} gap={16} justify={'space-between'}>
             <Flexbox gap={2}>
@@ -319,36 +251,9 @@ function CreateChannel({ existing, onCreated, onLayoutChange, projectId }: Creat
             <Switch checked={isPrivate} onChange={setIsPrivate} />
           </Flexbox>
         )}
-      </Flexbox>
-    );
-
-    return (
-      <Flexbox gap={20}>
-        {newProject ? (
-          <Flexbox horizontal gap={24} style={{ flexWrap: 'wrap' }}>
-            {channelFields}
-            <Flexbox
-              style={{
-                borderInlineStart: `1px solid ${cssVar.colorBorderSecondary}`,
-                flex: 1,
-                minWidth: 260,
-                paddingInlineStart: 24,
-              }}
-            >
-              <NewProjectPanel
-                name={newProjectName ?? ''}
-                onClose={() => setNewProjectName(undefined)}
-                onNameChange={setNewProjectName}
-                onPressEnter={goToMembers}
-              />
-            </Flexbox>
-          </Flexbox>
-        ) : (
-          channelFields
-        )}
         <Flexbox horizontal align="center" gap={8} justify="flex-end">
           <Button onClick={close}>{t('cancel')}</Button>
-          <Button disabled={projectChannel && !projectPicked} type="primary" onClick={goToMembers}>
+          <Button type="primary" onClick={goToMembers}>
             {t('create.next')}
           </Button>
         </Flexbox>
@@ -412,13 +317,7 @@ function CreateChannel({ existing, onCreated, onLayoutChange, projectId }: Creat
           </Button>
         )}
         <Button disabled={!canSubmit} loading={busy} type="primary" onClick={() => void submit()}>
-          {t(
-            existing && !startsGroup
-              ? 'invite.submit'
-              : newProject
-                ? 'newProject.submit'
-                : 'submit',
-          )}
+          {t(existing && !startsGroup ? 'invite.submit' : 'submit')}
         </Button>
       </Flexbox>
     </Flexbox>
