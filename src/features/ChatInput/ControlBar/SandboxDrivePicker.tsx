@@ -12,19 +12,17 @@ import {
   TimerIcon,
   TriangleAlertIcon,
 } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useSWR from 'swr';
 
 import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import RepositoryAvatar from '@/components/RepositoryAvatar';
 import { openCreateEnvironmentModal } from '@/features/EnvironmentManager/CreateEnvironmentModal';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
-import { environmentService } from '@/services/environment';
 import { refreshProjectFiles } from '@/services/projectFile';
-import { sandboxStorageService } from '@/services/sandboxStorage';
 import { useAgentStore } from '@/store/agent';
 import { agentSelectors } from '@/store/agent/selectors';
+import { sandboxActions, sandboxSelectors, useSandboxStore } from '@/store/sandbox';
 
 import OptionRow from './OptionRow';
 import {
@@ -119,17 +117,13 @@ const SandboxDrivePicker = memo<SandboxDrivePickerProps>(
     const persistent = isPersistentSelection(value);
     const onRepository = !!value.environmentId;
 
-    const {
-      data: environmentList,
-      error: environmentsError,
-      mutate: refreshEnvironments,
-    } = useSWR(['sandbox-environment-chip', workspaceId ?? ''], () =>
-      environmentService.listEnvironments(),
-    );
+    const { error: environmentsError } = sandboxActions.useFetchEnvironments();
+    const environmentList = useSandboxStore(sandboxSelectors.environments);
+    const refreshEnvironments = sandboxActions.refreshEnvironments;
     const sharedAgent = useAgentStore(
       (s) => !!workspaceId && agentSelectors.currentAgentVisibility(s) === 'public',
     );
-    const environments = pickableEnvironments(environmentList?.environments ?? [], sharedAgent);
+    const environments = pickableEnvironments(environmentList ?? [], sharedAgent);
     const repository = environments.find((item) => item.id === value.environmentId);
     // Picked once but no longer readable — deleted, or unpublished by its owner
     // — is said rather than hidden; a list that has not loaded says nothing.
@@ -142,28 +136,28 @@ const SandboxDrivePicker = memo<SandboxDrivePickerProps>(
 
     // A legacy environment directory's own row, for its name — from the
     // database, so the chip never waits on a sandbox.
-    const { data: instance, isLoading: instanceLoading } = useSWR(
-      entitled && value.instanceId ? ['sandbox-drive-chip-instance', value.instanceId] : null,
-      () => sandboxStorageService.getInstance({ id: value.instanceId! }),
-    );
+    const instanceId = entitled ? value.instanceId : undefined;
+    const { error: instanceError } = sandboxActions.useFetchInstanceDirectory(instanceId);
+    const instance = useSandboxStore(sandboxSelectors.instanceDirectory(instanceId));
 
     // Whether the pick still holds, asked of the same resolver the run uses:
     // a folder deleted on a shared drive, or an environment directory gone,
     // sends the next run to a temporary sandbox — and the chip says so first.
-    const { data: placement, mutate: revalidatePlacement } = useSWR(
-      entitled && topicId && persistent
-        ? [
-            'sandbox-drive-placement',
-            topicId,
-            value.drive ?? '',
-            value.instanceId ?? '',
-            value.workingDirectory ?? '',
-          ]
-        : null,
-      () => sandboxStorageService.resolveSessionPlacement({ topicId }),
-      { revalidateOnFocus: true },
+    const placementParams = useMemo(
+      () =>
+        entitled && topicId && persistent
+          ? {
+              drive: value.drive,
+              instanceId: value.instanceId,
+              topicId,
+              workingDirectory: value.workingDirectory,
+            }
+          : null,
+      [entitled, persistent, topicId, value.drive, value.instanceId, value.workingDirectory],
     );
-    const fallback = placement?.fallback;
+    const { revalidate: revalidatePlacement } = sandboxActions.useFetchPlacement(placementParams);
+    const fallback =
+      useSandboxStore(sandboxSelectors.placement(placementParams))?.fallback ?? undefined;
 
     // Picking the folder already held keeps the keys unchanged, so SWR would
     // go on showing the old answers — "no longer exists" on the chip and an
@@ -329,7 +323,7 @@ const SandboxDrivePicker = memo<SandboxDrivePickerProps>(
       </Flexbox>
     );
 
-    const resolving = !!value.instanceId && !instance && instanceLoading;
+    const resolving = !!instanceId && !instance && !instanceError;
 
     // A plain div between the popover and the chip, as the device picker has:
     // the popover merges trigger props into its direct child.

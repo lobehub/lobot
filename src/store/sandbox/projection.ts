@@ -1,8 +1,12 @@
-import type { EnvironmentKind } from '@lobot/types';
+import type { EnvironmentKind, EnvironmentSource } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 import type { environmentService } from '@/services/environment';
-import type { sandboxStorageService } from '@/services/sandboxStorage';
+import type {
+  SandboxDrive,
+  SandboxPlacementFallback,
+  sandboxStorageService,
+} from '@/services/sandboxStorage';
 
 type RawEnvironment = Awaited<
   ReturnType<typeof environmentService.listEnvironments>
@@ -46,6 +50,9 @@ export const toSandboxEntitlement = (raw: RawEntitlement): SandboxEntitlement =>
 
 /** What the composer's picker reads of an environment, and nothing more. */
 export interface SandboxPickerEnvironment {
+  /** Only the repository the environment checks out, for its name and avatar. */
+  configuration: { sources: EnvironmentSource[] };
+  description: string | null;
   id: string;
   /** Derived from the configuration at the boundary; the configuration is not kept. */
   kind: EnvironmentKind;
@@ -55,7 +62,24 @@ export interface SandboxPickerEnvironment {
   workspaceId: string | null;
 }
 
+/**
+ * A git source's URL without what may carry a credential (userinfo, query,
+ * fragment); a URL that does not parse is dropped, as are file sources.
+ */
+const toSafeSources = (sources: EnvironmentSource[] | undefined): EnvironmentSource[] =>
+  (sources ?? []).flatMap((source) => {
+    if (source.kind !== 'git') return [];
+    try {
+      const url = new URL(source.url);
+      return [{ kind: 'git' as const, url: `${url.origin}${url.pathname}` }];
+    } catch {
+      return [];
+    }
+  });
+
 export const toPickerEnvironment = (environment: RawEnvironment): SandboxPickerEnvironment => ({
+  configuration: { sources: toSafeSources(environment.configuration?.sources) },
+  description: environment.description ?? null,
   id: environment.id,
   // Every environment is a code environment now; the field stays so the
   // picker's shape does not change under the persisted replica rows.
@@ -125,12 +149,32 @@ export const toPickerInstance = (
  * panel settles on, never persisted.
  */
 export interface SandboxInstanceDirectory {
+  /** What the composer's chip calls a legacy environment directory. */
+  name: string | null;
   workingDirectory: string | null;
 }
 
 export const toInstanceDirectory = (instance: RawInstanceDetail): SandboxInstanceDirectory => ({
+  name: instance ? instance.name : null,
   workingDirectory: instance ? instance.workingDirectory : null,
 });
+
+/** A topic's sandbox pick, as the placement check is asked about it. */
+export interface SandboxPlacementParams {
+  drive?: SandboxDrive;
+  instanceId?: string;
+  topicId: string;
+  workingDirectory?: string;
+}
+
+/** Whether the pick still holds: `fallback` names why the next run would go elsewhere. */
+export interface SandboxPlacementCheck {
+  fallback: SandboxPlacementFallback | null;
+}
+
+export type SandboxGithubRepositories = Awaited<
+  ReturnType<typeof environmentService.listGithubRepositories>
+>;
 
 interface SandboxInstancesParams {
   /** Topic whose occupancy the listing answers; absent before the first send. */
@@ -151,7 +195,8 @@ export const sandboxEnvironmentsResource = defineReplica<
   key: (entry) => entry,
   name: 'sandboxPickerEnvironments',
   storage: 'indexedDB',
-  version: 1,
+  // v2: rows carry the description and the (credential-free) repository source.
+  version: 2,
 });
 
 /**
@@ -176,6 +221,42 @@ export const sandboxInstanceDirectoryResource = defineReplica<string, SandboxIns
   key: (instanceId) => instanceId,
   name: 'sandboxInstanceDirectory',
   persist: { maxEntries: MAX_PERSISTED_INSTANCE_DIRECTORIES },
+  storage: 'indexedDB',
+  // v2: rows carry the instance name.
+  version: 2,
+});
+
+export const sandboxPlacementKey = ({
+  drive,
+  instanceId,
+  topicId,
+  workingDirectory,
+}: SandboxPlacementParams) =>
+  JSON.stringify([topicId, drive ?? '', instanceId ?? '', workingDirectory ?? '']);
+
+/**
+ * Whether a topic's persistent pick still resolves, one entry per topic and
+ * pick: picking another folder is another entry, so an answer about the old
+ * one never shows on the chip.
+ */
+export const sandboxPlacementResource = defineReplica<
+  SandboxPlacementParams,
+  SandboxPlacementCheck
+>({
+  key: sandboxPlacementKey,
+  name: 'sandboxPlacementCheck',
+  persist: { maxEntries: 20 },
+  storage: 'indexedDB',
+  version: 1,
+});
+
+/** The GitHub repositories this scope's GitHub App installations can clone. */
+export const sandboxGithubRepositoriesResource = defineReplica<
+  SandboxScopeEntry,
+  SandboxGithubRepositories
+>({
+  key: (entry) => entry,
+  name: 'sandboxGithubRepositories',
   storage: 'indexedDB',
   version: 1,
 });

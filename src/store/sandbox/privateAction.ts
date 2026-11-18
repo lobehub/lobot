@@ -9,12 +9,16 @@ import {
   type SandboxEntitlement,
   sandboxEntitlementResource,
   sandboxEnvironmentsResource,
+  type SandboxGithubRepositories,
+  sandboxGithubRepositoriesResource,
   type SandboxInstanceDirectory,
   sandboxInstanceDirectoryResource,
   sandboxInstancesResource,
   type SandboxPickerEnvironment,
   type SandboxPickerInstance,
   type SandboxPickerInstanceList,
+  type SandboxPlacementCheck,
+  sandboxPlacementResource,
   toInstanceDirectory,
   toPickerEnvironment,
   toPickerInstance,
@@ -36,8 +40,10 @@ export class SandboxPrivateAction {
   #listSeq = 0;
   readonly entitlement;
   readonly environments;
+  readonly githubRepositories;
   readonly instanceDirectory;
   readonly instances;
+  readonly placement;
 
   constructor(set: Setter, get: () => SandboxState) {
     this.entitlement = createReplicaSlice(sandboxEntitlementResource, {
@@ -108,6 +114,25 @@ export class SandboxPrivateAction {
       // directory persisted earlier so a reload cannot point at it again.
       toPersisted: (data) => (data.workingDirectory === null ? null : data),
       view: recordLens<SandboxState, SandboxInstanceDirectory>('sandboxInstanceDirectoryMap'),
+    });
+    this.placement = createReplicaSlice(sandboxPlacementResource, {
+      actionPrefix: 'sandboxPlacement',
+      fetcher: async ({ topicId }) => {
+        const placement = await sandboxStorageService.resolveSessionPlacement({ topicId });
+        return { fallback: placement?.fallback ?? null };
+      },
+      get,
+      set,
+      stateKey: 'sandboxPlacementReplica',
+      view: recordLens<SandboxState, SandboxPlacementCheck>('sandboxPlacementMap'),
+    });
+    this.githubRepositories = createReplicaSlice(sandboxGithubRepositoriesResource, {
+      actionPrefix: 'sandboxGithubRepositories',
+      fetcher: () => environmentService.listGithubRepositories(),
+      get,
+      set,
+      stateKey: 'sandboxGithubRepositoriesReplica',
+      view: recordLens<SandboxState, SandboxGithubRepositories>('sandboxGithubRepositoriesMap'),
     });
   }
 

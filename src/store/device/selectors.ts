@@ -1,12 +1,21 @@
-import { type DeviceListItem, type DeviceMetricSeries } from '@lobot/types';
+import type { DeviceSandboxCapabilityResult } from '@lobechat/electron-client-ipc';
+import {
+  type DeviceListItem,
+  type DeviceMetricSeries,
+  type DeviceRunningSummary,
+} from '@lobot/types';
 
-import type { DeviceState } from './initialState';
+import type { DeviceDirectoryListing, DeviceState } from './initialState';
 import {
   agentScanKey,
   type AgentScanParams,
   DEVICE_LIST_KEY,
+  DEVICE_RUNNING_SUMMARY_KEY,
+  deviceDirectoryKey,
+  type DeviceDirectoryParams,
   deviceMetricSeriesKey,
   type DeviceMetricSeriesParams,
+  LOCAL_SANDBOX_CAPABILITY_KEY,
 } from './projection';
 
 const EMPTY_DEVICES: DeviceListItem[] = [];
@@ -54,6 +63,30 @@ const agentDeviceBinding = (agentId: string | undefined) => (s: DeviceState) =>
 /** A target's agent inventory, or `undefined` until scanned. */
 const agentScan = (params: AgentScanParams | null) => (s: DeviceState) =>
   params ? s.agentScanMap[agentScanKey(params)] : undefined;
+/** Running topics per device, or `undefined` until storage or the server answers. */
+const runningSummary = (s: DeviceState): DeviceRunningSummary[] | undefined =>
+  s.deviceRunningSummaryMap[DEVICE_RUNNING_SUMMARY_KEY];
+
+/** A remote device's home: `undefined` = not read yet, `null` = the device reports none. */
+const getDeviceHomePath =
+  (deviceId: string | undefined) =>
+  (s: DeviceState): string | null | undefined =>
+    deviceId ? s.deviceHomePathMap[deviceId]?.homePath : undefined;
+
+/** Probed repo type of a local path: `undefined` = not probed, `null` = not a repository. */
+const getLocalRepoType =
+  (path: string | undefined) =>
+  (s: DeviceState): 'git' | 'github' | null | undefined =>
+    path ? s.localRepoTypeMap[path]?.repoType : undefined;
+
+const localSandboxCapability = (s: DeviceState): DeviceSandboxCapabilityResult | undefined =>
+  s.localSandboxCapabilityMap[LOCAL_SANDBOX_CAPABILITY_KEY];
+
+/** One directory listing (each item a page), or `undefined` until it is read. */
+const getDirectoryListing =
+  (params: DeviceDirectoryParams) =>
+  (s: DeviceState): DeviceDirectoryListing | undefined =>
+    s.deviceDirectoryMap[deviceDirectoryKey(params)];
 
 export const deviceSelectors = {
   agentDeviceBinding,
@@ -61,8 +94,13 @@ export const deviceSelectors = {
   deviceList,
   getDeviceById,
   getDeviceDefaultCwd,
+  getDeviceHomePath,
   getDeviceWorkingDirs,
+  getDirectoryListing,
+  getLocalRepoType,
   getMetricSeries,
   isDeviceListConfirmed,
   isDeviceListLoaded,
+  localSandboxCapability,
+  runningSummary,
 };

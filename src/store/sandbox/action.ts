@@ -4,7 +4,7 @@ import { setNamespace } from '@/utils/storeDebug';
 
 import { initialState, type SandboxState } from './initialState';
 import { SandboxPrivateAction } from './privateAction';
-import { SANDBOX_SCOPE_ENTRY } from './projection';
+import { SANDBOX_SCOPE_ENTRY, type SandboxPlacementParams } from './projection';
 import { useSandboxStore } from './store';
 
 const n = setNamespace('sandbox');
@@ -35,6 +35,28 @@ class SandboxActionImpl {
     { revalidateOnFocus = true }: UseFetchEntitlementOptions = {},
   ): ReplicaSyncResult =>
     this.#private.entitlement.useSync(enabled ? SANDBOX_SCOPE_ENTRY : null, { revalidateOnFocus });
+
+  /** The environments a folder or conversation can start from; read with `sandboxSelectors.environments`. */
+  useFetchEnvironments = (): ReplicaSyncResult =>
+    this.#private.environments.useSync(SANDBOX_SCOPE_ENTRY);
+
+  refreshEnvironments = (): Promise<unknown> =>
+    this.#private.environments.revalidate(SANDBOX_SCOPE_ENTRY);
+
+  /** A legacy environment directory's own row; `undefined` disables the read. */
+  useFetchInstanceDirectory = (instanceId: string | undefined): ReplicaSyncResult =>
+    this.#private.instanceDirectory.useSync(instanceId);
+
+  /**
+   * Whether a topic's persistent pick still holds, asked of the resolver the
+   * run uses; `null` disables the read. Read with `sandboxSelectors.placement`.
+   */
+  useFetchPlacement = (params: SandboxPlacementParams | null): ReplicaSyncResult =>
+    this.#private.placement.useSync(params, { revalidateOnFocus: true });
+
+  /** Read with `sandboxSelectors.githubRepositories`. */
+  useFetchGithubRepositories = (): ReplicaSyncResult =>
+    this.#private.githubRepositories.useSync(SANDBOX_SCOPE_ENTRY);
 
   reset = (): void => {
     this.#set(initialState, false, n('reset'));

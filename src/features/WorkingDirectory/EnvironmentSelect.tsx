@@ -3,19 +3,14 @@
 import { Select } from '@lobehub/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import useSWR from 'swr';
 
-import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
-import { environmentService } from '@/services/environment';
+import { sandboxActions, sandboxSelectors, useSandboxStore } from '@/store/sandbox';
+import type { SandboxPickerEnvironment } from '@/store/sandbox/projection';
 
 interface EnvironmentSelectProps {
   disabled?: boolean;
   /** Narrow the list — to the environments this member may initialize a folder from, say. */
-  filter?: (
-    environment: Awaited<
-      ReturnType<typeof environmentService.listEnvironments>
-    >['environments'][number],
-  ) => boolean;
+  filter?: (environment: SandboxPickerEnvironment) => boolean;
   onChange: (environmentId: string | undefined) => void;
   /** Whose environments may be offered; a public agent cannot use a private one. */
   publishedOnly?: boolean;
@@ -31,12 +26,10 @@ interface EnvironmentSelectProps {
 const EnvironmentSelect = memo<EnvironmentSelectProps>(
   ({ disabled, filter, onChange, publishedOnly, value }) => {
     const { t } = useTranslation('device');
-    const workspaceId = useActiveWorkspaceId();
-    const { data, isLoading } = useSWR(['folder-environment-options', workspaceId ?? ''], () =>
-      environmentService.listEnvironments(),
-    );
+    const { error } = sandboxActions.useFetchEnvironments();
+    const data = useSandboxStore(sandboxSelectors.environments);
 
-    const environments = (data?.environments ?? []).filter(
+    const environments = (data ?? []).filter(
       (environment) =>
         (!publishedOnly || !environment.workspaceId || environment.visibility === 'public') &&
         (!filter || filter(environment)),
@@ -47,7 +40,7 @@ const EnvironmentSelect = memo<EnvironmentSelectProps>(
         allowClear
         aria-label={t('workingDirectory.environment.label')}
         disabled={disabled}
-        loading={isLoading}
+        loading={!data && !error}
         placeholder={t('workingDirectory.environment.none')}
         style={{ minWidth: 168 }}
         value={value}

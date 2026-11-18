@@ -1,18 +1,15 @@
 'use client';
 
-import type { DeviceEnroller } from '@lobot/types';
 import { createStaticStyles, cssVar, Flexbox, Icon, Text, Tooltip } from '@lobehub/ui';
+import type { DeviceEnroller } from '@lobot/types';
 import { TriangleAlertIcon } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserAvatar from '@/components/UserAvatar';
 import RunningGlyph from '@/features/Home/components/RunningGlyph';
-import { useClientDataSWR } from '@/libs/swr';
-import { deviceService } from '@/services/device';
+import { deviceSelectors, useDeviceStore } from '@/store/device';
 
-/** Same cadence as the detail page, so a card and its detail agree on what is running. */
-const REFRESH_INTERVAL_MS = 15_000;
 /** Past this the stack turns into a smudge; the rest are counted instead. */
 const MAX_STACKED = 4;
 
@@ -57,24 +54,16 @@ const RunUserAvatar = memo<{ className?: string; size?: number; user: DeviceEnro
 RunUserAvatar.displayName = 'RunUserAvatar';
 
 /**
- * Running-topic counts for every device in the list, from one request. Keyed
- * per workspace by `useClientDataSWR`, like the device list itself.
- */
-const useDeviceRunningSummary = () =>
-  useClientDataSWR(['device/runningSummary'], () => deviceService.getRunningSummary(), {
-    focusThrottleInterval: 1000,
-    refreshInterval: REFRESH_INTERVAL_MS,
-  });
-
-/**
  * How many topics a device is running and whose they are — the card-sized
  * answer to "is anyone using this machine right now?".
  */
 export const DeviceRunningSummaryValue = memo<{ deviceId: string }>(({ deviceId }) => {
   const { t } = useTranslation('setting');
-  const { data, error, isLoading } = useDeviceRunningSummary();
+  // One polled request feeds every card; per-scope like the device list itself.
+  const { error } = useDeviceStore((s) => s.useFetchDeviceRunningSummary)();
+  const data = useDeviceStore(deviceSelectors.runningSummary);
 
-  if (isLoading) return <Text type={'secondary'}>…</Text>;
+  if (!data && !error) return <Text type={'secondary'}>…</Text>;
   // A failed read must not pass for an idle machine — "—" means nothing runs.
   if (error && !data)
     return (

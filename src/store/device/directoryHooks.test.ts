@@ -8,6 +8,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { deviceService } from '@/services/device';
 
 import { useFetchDeviceDirectory } from './directoryHooks';
+import { useDeviceStore } from './store';
 
 const folder = (name: string) => ({
   isSymlink: false,
@@ -29,7 +30,10 @@ const page = (
 const wrapper = ({ children }: PropsWithChildren) =>
   createElement(SWRConfig, { value: { provider: () => new Map(), dedupingInterval: 0 } }, children);
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => {
+  vi.restoreAllMocks();
+  useDeviceStore.setState(useDeviceStore.getInitialState());
+});
 
 describe('useFetchDeviceDirectory', () => {
   it('shows the canonical home directory and appends subsequent pages', async () => {

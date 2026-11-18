@@ -1,21 +1,41 @@
-import type { DeviceListItem, DeviceMetricSeries, WorkingDirEntry } from '@lobot/types';
+import type { DeviceSandboxCapabilityResult } from '@lobechat/electron-client-ipc';
+import type {
+  DeviceListItem,
+  DeviceMetricSeries,
+  DeviceRunningSummary,
+  WorkingDirEntry,
+} from '@lobot/types';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import { deviceService } from '@/services/device';
+import { electronGitService } from '@/services/electron/git';
+import { localFileService } from '@/services/electron/localFileService';
 import { type StoreSetter } from '@/store/types';
 
 import { type AgentScanResult, scanLocalAgents } from './agentScan';
 import { nextWorkingDirs, removeWorkingDir, WORKING_DIRS_MAX } from './deviceCwd';
+import { type DeviceDirectoryListing } from './initialState';
 import {
   type AgentDeviceBinding,
   agentDeviceBindingResource,
   type AgentScanParams,
   agentScanResource,
   DEVICE_LIST_KEY,
+  type DeviceDirectoryCursor,
+  deviceDirectoryKey,
+  type DeviceDirectoryParams,
+  deviceDirectoryResource,
+  type DeviceHomePath,
+  deviceHomePathResource,
   type DeviceListParams,
   deviceListResource,
   type DeviceMetricSeriesParams,
   deviceMetricSeriesResource,
+  deviceRunningSummaryResource,
+  LOCAL_SANDBOX_CAPABILITY_KEY,
+  type LocalRepoType,
+  localRepoTypeResource,
+  localSandboxCapabilityResource,
 } from './projection';
 import { deviceSelectors } from './selectors';
 import { type DeviceStore } from './store';
@@ -37,6 +57,37 @@ const METRIC_SERIES_REFRESH_INTERVAL = 5 * 60_000;
 /** The chip, the hover panel and the detail page mount one device's series together; let them share one request. */
 const METRIC_SERIES_DEDUPING_INTERVAL = 30_000;
 
+/** Same cadence as the device detail page, so a card and its detail agree on what is running. */
+const RUNNING_SUMMARY_REFRESH_INTERVAL = 15_000;
+
+/** A repo-type probe answers the same for a path within a session's minute. */
+const REPO_TYPE_DEDUPING_INTERVAL = 60_000;
+
+/**
+ * Forwarded to SWR as given (the driver passes schedule options through): a
+ * dead path or an unreachable device is not retried in the background.
+ */
+const NO_RETRY = { shouldRetryOnError: false };
+
+const EMPTY_PARAMS = {} as Record<string, never>;
+
+const fetchDirectoryPage = async (
+  { deviceId, path }: DeviceDirectoryParams,
+  next?: DeviceDirectoryCursor,
+) => {
+  const result = await deviceService.browseDirectory({
+    cursor: next?.cursor,
+    deviceId,
+    path: next?.path ?? path,
+  });
+  // Offline / unsupported RPC is returned as null, never an empty directory.
+  if (!result) throw new Error('Device directory unavailable');
+  return {
+    items: [{ ...result, cursor: next?.cursor ?? null }],
+    nextCursor: result.nextCursor ? { cursor: result.nextCursor, path: result.path } : null,
+  };
+};
+
 type UpdateDeviceInput = Parameters<typeof deviceService.updateDevice>[0];
 
 /**
@@ -53,11 +104,16 @@ export const deviceSlice = (set: Setter, get: () => DeviceStore, _api?: unknown)
   new DeviceActionImpl(set, get, _api);
 
 class DeviceActionImpl {
+  readonly #directory;
   readonly #get: () => DeviceStore;
+  readonly #homePath;
   readonly #list;
   readonly #metricSeries;
   readonly #agentDeviceBinding;
   readonly #agentScan;
+  readonly #repoType;
+  readonly #runningSummary;
+  readonly #sandboxCapability;
 
   constructor(set: Setter, get: () => DeviceStore, _api?: unknown) {
     void _api;
@@ -104,6 +160,51 @@ class DeviceActionImpl {
       set,
       stateKey: 'agentScanReplica',
       view: recordLens<DeviceStore, AgentScanResult>('agentScanMap'),
+    });
+    this.#runningSummary = createReplicaSlice(deviceRunningSummaryResource, {
+      actionPrefix: 'device/runningSummary',
+      fetcher: () => deviceService.getRunningSummary(),
+      get,
+      set,
+      stateKey: 'deviceRunningSummaryReplica',
+      view: recordLens<DeviceStore, DeviceRunningSummary[]>('deviceRunningSummaryMap'),
+    });
+    this.#homePath = createReplicaSlice(deviceHomePathResource, {
+      actionPrefix: 'device/homePath',
+      fetcher: async (deviceId) => {
+        const info = await deviceService.getDeviceSystemInfo({ deviceId });
+        return { homePath: info?.homePath || null };
+      },
+      get,
+      set,
+      stateKey: 'deviceHomePathReplica',
+      view: recordLens<DeviceStore, DeviceHomePath>('deviceHomePathMap'),
+    });
+    this.#repoType = createReplicaSlice(localRepoTypeResource, {
+      actionPrefix: 'device/localRepoType',
+      fetcher: async (path) => ({
+        repoType: (await electronGitService.detectRepoType(path)) ?? null,
+      }),
+      get,
+      set,
+      stateKey: 'localRepoTypeReplica',
+      view: recordLens<DeviceStore, LocalRepoType>('localRepoTypeMap'),
+    });
+    this.#sandboxCapability = createReplicaSlice(localSandboxCapabilityResource, {
+      actionPrefix: 'device/localSandboxCapability',
+      fetcher: () => localFileService.getSandboxCapability(),
+      get,
+      set,
+      stateKey: 'localSandboxCapabilityReplica',
+      view: recordLens<DeviceStore, DeviceSandboxCapabilityResult>('localSandboxCapabilityMap'),
+    });
+    this.#directory = createReplicaSlice(deviceDirectoryResource, {
+      actionPrefix: 'device/directory',
+      fetcher: fetchDirectoryPage,
+      get,
+      set,
+      stateKey: 'deviceDirectoryReplica',
+      view: recordLens<DeviceStore, DeviceDirectoryListing>('deviceDirectoryMap'),
     });
   }
 
@@ -295,6 +396,66 @@ class DeviceActionImpl {
       enabled,
       refreshInterval: METRIC_SERIES_REFRESH_INTERVAL,
     });
+
+  /**
+   * Running-topic counts for every device, from one polled request; read them
+   * with `deviceSelectors.runningSummary`.
+   */
+  useFetchDeviceRunningSummary = (): ReplicaSyncResult =>
+    this.#runningSummary.useSync(EMPTY_PARAMS, {
+      focusThrottleInterval: 1000,
+      refreshInterval: RUNNING_SUMMARY_REFRESH_INTERVAL,
+    });
+
+  /** A remote device's reported home; `undefined` disables the read. */
+  useFetchDeviceHomePath = (deviceId: string | undefined): ReplicaSyncResult =>
+    this.#homePath.useSync(deviceId, { revalidateOnFocus: false });
+
+  /** Read a device's home outside a mounted view (joins a read in flight). */
+  fetchDeviceHomePath = async (deviceId: string): Promise<string | undefined> => {
+    const { data } = await this.#homePath.fetch(deviceId);
+    return data.homePath || undefined;
+  };
+
+  /** The desktop's repo-type probe of a local path; `undefined` disables it. */
+  useFetchLocalRepoType = (path: string | undefined): ReplicaSyncResult =>
+    this.#repoType.useSync(path, {
+      ...NO_RETRY,
+      dedupingInterval: REPO_TYPE_DEDUPING_INTERVAL,
+      revalidateOnFocus: false,
+    });
+
+  /** Whether this desktop can fence commands; asked only where `enabled`. */
+  useFetchLocalSandboxCapability = (enabled: boolean): ReplicaSyncResult =>
+    this.#sandboxCapability.useSync(enabled ? LOCAL_SANDBOX_CAPABILITY_KEY : null, {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    });
+
+  /** Re-probe the capability; the desktop may have downgraded its own verdict. */
+  refreshLocalSandboxCapability = (): Promise<unknown> =>
+    this.#sandboxCapability.revalidate(LOCAL_SANDBOX_CAPABILITY_KEY);
+
+  /** Adopt a verdict the desktop already re-probed (after an install) without asking again. */
+  setLocalSandboxCapability = (capability: DeviceSandboxCapabilityResult): void => {
+    this.#sandboxCapability.update(LOCAL_SANDBOX_CAPABILITY_KEY, () => capability, {
+      source: 'server',
+    });
+  };
+
+  /**
+   * One directory of a device, paged. A revisited directory paints from the
+   * store without asking again; `refreshDeviceDirectory` re-reads it.
+   */
+  useFetchDeviceDirectory = (params: DeviceDirectoryParams): ReplicaSyncResult =>
+    this.#directory.useSync(params, {
+      ...NO_RETRY,
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+    });
+
+  loadMoreDeviceDirectory = (params: DeviceDirectoryParams): Promise<void> =>
+    this.#directory.loadMore(deviceDirectoryKey(params), params);
 }
 
 export type DeviceAction = Pick<DeviceActionImpl, keyof DeviceActionImpl>;

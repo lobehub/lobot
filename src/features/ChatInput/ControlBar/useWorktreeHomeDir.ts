@@ -1,9 +1,6 @@
 import { useCallback } from 'react';
 
-import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
-import { useClientDataSWR } from '@/libs/swr';
-import { deviceKeys } from '@/libs/swr/keys';
-import { deviceService } from '@/services/device';
+import { deviceSelectors, useDeviceStore } from '@/store/device';
 import { useElectronStore } from '@/store/electron';
 import { desktopStateSelectors } from '@/store/electron/selectors';
 
@@ -17,20 +14,16 @@ import { desktopStateSelectors } from '@/store/electron/selectors';
  * matching the server for a device that does not report its home.
  */
 export const useWorktreeHomeDir = (deviceId?: string, prefetch = false) => {
-  const workspaceId = useActiveWorkspaceId();
-  const { data } = useClientDataSWR(
-    deviceId && prefetch ? deviceKeys.systemInfo(workspaceId, deviceId) : null,
-    () => deviceService.getDeviceSystemInfo({ deviceId: deviceId! }),
-    { revalidateOnFocus: false },
-  );
+  useDeviceStore((s) => s.useFetchDeviceHomePath)(prefetch ? deviceId : undefined);
+  const homePath = useDeviceStore(deviceSelectors.getDeviceHomePath(deviceId));
+  const fetchDeviceHomePath = useDeviceStore((s) => s.fetchDeviceHomePath);
 
   return useCallback(async (): Promise<string | undefined> => {
     if (!deviceId)
       return desktopStateSelectors.userHomePath(useElectronStore.getState()) || undefined;
-    if (data) return data.homePath || undefined;
+    if (homePath !== undefined) return homePath || undefined;
     // An unreachable device can't create a worktree either; the sibling
     // fallback only shapes the preview until the create call reports why.
-    const info = await deviceService.getDeviceSystemInfo({ deviceId }).catch(() => undefined);
-    return info?.homePath || undefined;
-  }, [data, deviceId]);
+    return fetchDeviceHomePath(deviceId).catch(() => undefined);
+  }, [deviceId, fetchDeviceHomePath, homePath]);
 };

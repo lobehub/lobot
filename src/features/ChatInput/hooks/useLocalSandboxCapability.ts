@@ -1,11 +1,6 @@
 import { isDesktop } from '@lobechat/const';
-import type { DeviceSandboxCapabilityResult } from '@lobechat/electron-client-ipc';
-import type { SWRResponse } from 'swr';
 
-import { useClientDataSWR } from '@/libs/swr';
-import { localFileService } from '@/services/electron/localFileService';
-
-const LOCAL_SANDBOX_CAPABILITY_SWR_KEY = 'local-sandbox-capability';
+import { deviceSelectors, useDeviceStore } from '@/store/device';
 
 /**
  * Whether this machine can actually run sandboxed commands.
@@ -23,9 +18,11 @@ const LOCAL_SANDBOX_CAPABILITY_SWR_KEY = 'local-sandbox-capability';
  *
  * Web has no local machine to fence, so it never asks.
  */
-export const useLocalSandboxCapability = (): SWRResponse<DeviceSandboxCapabilityResult> =>
-  useClientDataSWR<DeviceSandboxCapabilityResult>(
-    isDesktop ? [LOCAL_SANDBOX_CAPABILITY_SWR_KEY] : null,
-    () => localFileService.getSandboxCapability(),
-    { revalidateOnFocus: false, revalidateOnReconnect: false },
-  );
+export const useLocalSandboxCapability = () => {
+  useDeviceStore((s) => s.useFetchLocalSandboxCapability)(isDesktop);
+  const data = useDeviceStore(deviceSelectors.localSandboxCapability);
+  const revalidate = useDeviceStore((s) => s.refreshLocalSandboxCapability);
+  const setCapability = useDeviceStore((s) => s.setLocalSandboxCapability);
+
+  return { data, revalidate, setCapability };
+};

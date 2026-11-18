@@ -1,10 +1,7 @@
 import { isDesktop } from '@lobechat/const';
 import { getWorkingDirEffectivePath } from '@lobot/types';
 import { useEffect, useMemo } from 'react';
-import useSWR from 'swr';
 
-import { deviceKeys } from '@/libs/swr/keys';
-import { electronGitService } from '@/services/electron/git';
 import { deviceSelectors, useDeviceStore } from '@/store/device';
 import { useElectronStore } from '@/store/electron';
 
@@ -46,15 +43,11 @@ export const useRepoType = (path?: string, deviceId?: string): RepoType => {
 
   const shouldProbe = isDesktop && isLocalTarget && !!path && !cached;
 
-  const { data: probed } = useSWR(
-    shouldProbe ? deviceKeys.repoType(path!) : null,
-    () => electronGitService.detectRepoType(path!),
-    {
-      dedupingInterval: 60 * 1000,
-      revalidateOnFocus: false,
-      shouldRetryOnError: false,
-    },
+  useDeviceStore((s) => s.useFetchLocalRepoType)(shouldProbe ? path : undefined);
+  const probedType = useDeviceStore(
+    deviceSelectors.getLocalRepoType(shouldProbe ? path : undefined),
   );
+  const probed = probedType === null ? undefined : probedType;
 
   useEffect(() => {
     if (isLocalTarget && path && probed !== undefined) setRecentDirRepoType(path, probed);

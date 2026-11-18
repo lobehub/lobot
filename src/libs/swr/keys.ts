@@ -28,17 +28,6 @@ const def = <A extends unknown[]>(
   build: (...args: A) => readonly unknown[],
 ): KeyFactory<A> => Object.assign(build, { root });
 
-interface LocalFilePreviewKeyParams {
-  accept?: 'image';
-  allowExternalFile?: boolean;
-  deviceId?: string;
-  filePath: string;
-  resourceScope?: 'workspace';
-  /** Topic scope when the previewed file lives in the topic's cloud sandbox. */
-  sandboxTopicId?: string;
-  workingDirectory: string;
-}
-
 // ---- message ------------------------------------------------------------
 export interface MessageListQueryContext {
   agentId?: string | null;
@@ -341,16 +330,6 @@ export const deviceKeys = {
     workspaceId,
     deviceId,
   ]),
-  systemInfo: def('device:systemInfo', (workspaceId: string | null, deviceId: string) => [
-    'device:systemInfo',
-    workspaceId,
-    deviceId,
-  ]),
-  browseDirectory: def(
-    'device:browseDirectory',
-    (workspaceId: string | null, deviceId: string, path?: string, cursor?: string) =>
-      ['device:browseDirectory', workspaceId, deviceId, path, cursor] as const,
-  ),
   gitLinkedPR: def(
     'device:gitLinkedPR',
     (deviceId: string, path: string, branch: string, pullRequestNumber?: number) => [
@@ -400,7 +379,6 @@ export const deviceKeys = {
       baseRef,
     ],
   ),
-  repoType: def('device:repoType', (path: string) => ['device:repoType', path]),
 };
 
 // ---- user memory --------------------------------------------------------
@@ -590,26 +568,6 @@ export const localFileKeys = {
       'localFile:gitWorkingTreeFiles',
       deviceId ?? 'local',
       dirPath,
-    ],
-  ),
-  preview: def(
-    'localFile:preview',
-    ({
-      accept,
-      allowExternalFile,
-      deviceId,
-      filePath,
-      resourceScope,
-      sandboxTopicId,
-      workingDirectory,
-    }: LocalFilePreviewKeyParams) => [
-      'localFile:preview',
-      sandboxTopicId ? `sandbox:${sandboxTopicId}` : (deviceId ?? 'local'),
-      filePath,
-      workingDirectory,
-      accept ?? 'any',
-      allowExternalFile ? 'external' : 'workspace',
-      resourceScope ?? 'single-file',
     ],
   ),
   projectIndex: def('localFile:projectIndex', (deviceId: string | undefined, dirPath: string) => [

@@ -1,13 +1,13 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import type { CSSProperties } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { localFileKeys } from '@/libs/swr/keys';
+import { projectFileService } from '@/services/projectFile';
+import { initialLocalFilePreviewState, useLocalFilePreviewStore } from '@/store/localFilePreview';
 
 import MarkdownImage from './MarkdownImage';
 
 const mockImage = vi.hoisted(() => vi.fn());
-const mockUseClientDataSWR = vi.hoisted(() => vi.fn());
 
 vi.mock('@lobehub/ui', async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
@@ -42,10 +42,6 @@ vi.mock('@lobehub/ui', async (importOriginal) => ({
   },
 }));
 
-vi.mock('@/libs/swr', () => ({
-  useClientDataSWR: mockUseClientDataSWR,
-}));
-
 vi.mock('@/services/projectFile', () => ({
   projectFileService: {
     getLocalFilePreview: vi.fn(),
@@ -55,7 +51,8 @@ vi.mock('@/services/projectFile', () => ({
 describe('MarkdownImage', () => {
   beforeEach(() => {
     mockImage.mockClear();
-    mockUseClientDataSWR.mockReset();
+    vi.mocked(projectFileService.getLocalFilePreview).mockReset();
+    useLocalFilePreviewStore.setState(initialLocalFilePreviewState);
     vi.stubGlobal('URL', {
       createObjectURL: vi.fn(() => 'blob:markdown-image'),
       revokeObjectURL: vi.fn(),
@@ -63,8 +60,6 @@ describe('MarkdownImage', () => {
   });
 
   it('renders remote markdown images with the LobeHub Image component', () => {
-    mockUseClientDataSWR.mockReturnValue({});
-
     render(
       <MarkdownImage
         alt="remote"
@@ -87,18 +82,14 @@ describe('MarkdownImage', () => {
         variant: 'borderless',
       }),
     );
-    expect(mockUseClientDataSWR).toHaveBeenCalledWith(null, expect.any(Function), {
-      revalidateOnFocus: false,
-    });
+    expect(projectFileService.getLocalFilePreview).not.toHaveBeenCalled();
   });
 
-  it('resolves relative markdown images and renders the loaded blob through LobeHub Image', () => {
-    mockUseClientDataSWR.mockReturnValue({
-      data: {
-        blob: new Blob(['image']),
-        type: 'image',
-      },
-    });
+  it('resolves relative markdown images and renders the loaded blob through LobeHub Image', async () => {
+    vi.mocked(projectFileService.getLocalFilePreview).mockResolvedValue({
+      blob: new Blob(['image']),
+      type: 'image',
+    } as never);
 
     render(
       <MarkdownImage
@@ -110,21 +101,20 @@ describe('MarkdownImage', () => {
       />,
     );
 
-    expect(screen.getByTestId('lobe-image')).toHaveAttribute('src', 'blob:markdown-image');
-    expect(mockUseClientDataSWR).toHaveBeenCalledWith(
-      localFileKeys.preview({
-        accept: 'image',
-        deviceId: 'device-1',
-        filePath: '/repo/.records/assets/screenshot.png',
-        workingDirectory: '/repo',
-      }),
-      expect.any(Function),
-      { revalidateOnFocus: false },
+    await waitFor(() =>
+      expect(screen.getByTestId('lobe-image')).toHaveAttribute('src', 'blob:markdown-image'),
     );
+    expect(projectFileService.getLocalFilePreview).toHaveBeenCalledWith({
+      accept: 'image',
+      allowExternalFile: undefined,
+      deviceId: 'device-1',
+      path: '/repo/.records/assets/screenshot.png',
+      workingDirectory: '/repo',
+    });
   });
 
   it('shows a stable placeholder while a relative markdown image is loading', () => {
-    mockUseClientDataSWR.mockReturnValue({});
+    vi.mocked(projectFileService.getLocalFilePreview).mockReturnValue(new Promise(() => {}));
 
     render(
       <MarkdownImage

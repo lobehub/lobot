@@ -1,54 +1,22 @@
-import type { DeviceDirectoryBrowseResult } from '@lobot/types';
-import { useState } from 'react';
-import useSWRInfinite from 'swr/infinite';
+import { useMemo, useState } from 'react';
 
-import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
-import { deviceKeys } from '@/libs/swr/keys';
-import { deviceService } from '@/services/device';
+import { deviceSelectors } from './selectors';
+import { useDeviceStore } from './store';
 
 /**
- * Each device/path has its own page series, so late responses cannot replace a new location.
- * Listings stay cached per path for fast revisits, so folders created outside the picker
+ * Each device/path is its own replica entry, so late responses cannot replace a new location.
+ * Listings stay in the store per path for fast revisits, so folders created outside the picker
  * only show up after `refresh`.
  */
 export const useFetchDeviceDirectory = (deviceId: string, path?: string) => {
-  const workspaceId = useActiveWorkspaceId();
-  const { data, error, isLoading, isValidating, mutate, setSize, size } = useSWRInfinite(
-    (_index: number, previous: DeviceDirectoryBrowseResult | null) => {
-      if (previous && !previous.nextCursor) return null;
-      return deviceKeys.browseDirectory(
-        workspaceId,
-        deviceId,
-        previous?.path ?? path,
-        previous?.nextCursor,
-      );
-    },
-    async ([, , targetDeviceId, directoryPath, cursor]: readonly [
-      string,
-      string | null,
-      string,
-      string | undefined,
-      string | undefined,
-    ]) => {
-      const result = await deviceService.browseDirectory({
-        cursor,
-        deviceId: targetDeviceId,
-        path: directoryPath,
-      });
-      // Offline / unsupported RPC is returned as null, never an empty directory.
-      if (!result) throw new Error('Device directory unavailable');
-      return result;
-    },
-    {
-      revalidateFirstPage: false,
-      revalidateOnFocus: false,
-      shouldRetryOnError: false,
-    },
-  );
+  const params = useMemo(() => ({ deviceId, path }), [deviceId, path]);
+  const { error, revalidate } = useDeviceStore((s) => s.useFetchDeviceDirectory)(params);
+  const listing = useDeviceStore(deviceSelectors.getDirectoryListing(params));
+  const loadMoreDeviceDirectory = useDeviceStore((s) => s.loadMoreDeviceDirectory);
 
-  const directory = data?.[0];
-  const entries = data?.flatMap((page) => page?.entries ?? []) ?? [];
-  const lastPage = data?.findLast(Boolean);
+  const directory = listing?.items[0];
+  const entries = listing?.items.flatMap((page) => page.entries) ?? [];
+  const loadMoreError = listing?.loadMoreError;
 
   const [refreshingPath, setRefreshingPath] = useState<string>();
   const refresh = async () => {
@@ -56,7 +24,7 @@ export const useFetchDeviceDirectory = (deviceId: string, path?: string) => {
     const target = directory.path;
     setRefreshingPath(target);
     try {
-      await mutate();
+      await revalidate();
     } finally {
       setRefreshingPath((current) => (current === target ? undefined : current));
     }
@@ -65,13 +33,14 @@ export const useFetchDeviceDirectory = (deviceId: string, path?: string) => {
   return {
     directory,
     entries,
-    error,
-    hasMore: !!lastPage?.nextCursor,
-    isLoading,
-    isLoadingMore: !error && (isValidating || (!!directory && !data?.[size - 1])),
+    error: error ?? loadMoreError,
+    hasMore: !!listing?.hasMore,
+    isLoading: !listing && !error,
+    isLoadingMore: !!listing?.isLoadingMore,
     isRefreshing: !!directory && refreshingPath === directory.path,
-    loadMore: () => setSize(size + 1),
+    loadMore: () => loadMoreDeviceDirectory(params),
     refresh,
-    retry: () => mutate(),
+    // A failed page retries that page; a failed listing re-reads the directory.
+    retry: () => (loadMoreError ? loadMoreDeviceDirectory(params) : revalidate()),
   };
 };

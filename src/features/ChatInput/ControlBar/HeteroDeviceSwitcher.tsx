@@ -2,10 +2,10 @@
 
 import { isDesktop } from '@lobechat/const';
 import { HETEROGENEOUS_TYPE_LABELS } from '@lobechat/heterogeneous-agents';
-import type { DeviceExecutionTarget, DeviceListItem } from '@lobot/types';
-import { isManagedCloudDevice } from '@lobot/types';
 import { Button, Flexbox, Icon, Popover, toast, Tooltip } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { DeviceExecutionTarget, DeviceListItem } from '@lobot/types';
+import { isManagedCloudDevice } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import {
   ChevronDownIcon,
@@ -324,8 +324,11 @@ const HeteroDeviceSwitcher = memo<HeteroDeviceSwitcherProps>(({ agentId }) => {
   // exactly when a command would actually be fenced.
   const localSandboxEnabled = isLocalSandboxEnabled(agencyConfig, executionTarget);
   const localSandboxNetwork = agencyConfig?.localSandboxNetwork === true;
-  const { data: sandboxCapability, mutate: revalidateSandboxCapability } =
-    useLocalSandboxCapability();
+  const {
+    data: sandboxCapability,
+    revalidate: revalidateSandboxCapability,
+    setCapability: setSandboxCapability,
+  } = useLocalSandboxCapability();
   const canUseLocalSandbox = sandboxCapability?.available === true;
 
   // The desktop downgrades its own verdict when a fence fails to establish (the
@@ -365,11 +368,11 @@ const HeteroDeviceSwitcher = memo<HeteroDeviceSwitcherProps>(({ agentId }) => {
       // The IPC already re-probed, so trust its verdict rather than firing
       // another round-trip. A cancelled prompt lands here too, with the
       // unchanged capability — nothing to report, the user just said no.
-      await revalidateSandboxCapability(result.capability, { revalidate: false });
+      setSandboxCapability(result.capability);
     } finally {
       setIsInstallingSandbox(false);
     }
-  }, [revalidateSandboxCapability]);
+  }, [setSandboxCapability]);
 
   // Toggling the network does NOT change which environment is selected — same
   // dormant semantics the sandbox flag itself has when another environment is

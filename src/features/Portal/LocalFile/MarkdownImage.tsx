@@ -2,9 +2,7 @@ import { cssVar, Image } from '@lobehub/ui';
 import type { ComponentProps } from 'react';
 import { memo, useEffect, useMemo, useState } from 'react';
 
-import { useClientDataSWR } from '@/libs/swr';
-import { localFileKeys } from '@/libs/swr/keys';
-import { type LocalFilePreview, projectFileService } from '@/services/projectFile';
+import { useLocalFileImagePreview, useLocalFilePreviewStore } from '@/store/localFilePreview';
 
 import { resolveMarkdownRelativeAssetPath } from './Body.helpers';
 
@@ -25,24 +23,12 @@ const MarkdownImage = memo<MarkdownImageProps>(
       [markdownFilePath, markdownSrc],
     );
 
-    const { data: preview } = useClientDataSWR<LocalFilePreview>(
-      resolvedPath
-        ? localFileKeys.preview({
-            accept: 'image',
-            deviceId,
-            filePath: resolvedPath,
-            workingDirectory,
-          })
-        : null,
-      () =>
-        projectFileService.getLocalFilePreview({
-          accept: 'image',
-          deviceId,
-          path: resolvedPath!,
-          workingDirectory,
-        }),
-      { revalidateOnFocus: false },
+    const target = useMemo(
+      () => (resolvedPath ? { deviceId, filePath: resolvedPath, workingDirectory } : undefined),
+      [deviceId, resolvedPath, workingDirectory],
     );
+    useLocalFilePreviewStore((s) => s.useFetchImagePreview)(target);
+    const preview = useLocalFileImagePreview(target);
 
     const [imageSrc, setImageSrc] = useState<string>();
 

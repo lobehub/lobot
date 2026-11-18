@@ -1,35 +1,33 @@
-import useSWR from 'swr';
-
-import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
-import { environmentService } from '@/services/environment';
+import { sandboxActions, sandboxSelectors, useSandboxStore } from '@/store/sandbox';
 
 /**
  * Keeps request failure distinct from a successful empty repository listing.
- * Keyed by workspace: the list comes from that workspace's GitHub App
- * installations, so another workspace's cached list would offer repositories
- * its builds cannot clone.
+ * The replica is partitioned by workspace: the list comes from that
+ * workspace's GitHub App installations, so another workspace's list would
+ * offer repositories its builds cannot clone.
  */
 export const useGithubRepositories = () => {
-  const workspaceId = useActiveWorkspaceId();
-  const swr = useSWR(['sandbox-github-repositories', workspaceId], () =>
-    environmentService.listGithubRepositories(),
-  );
-  const state = swr.error
+  const { error, isValidating, revalidate } = sandboxActions.useFetchGithubRepositories();
+  const data = useSandboxStore(sandboxSelectors.githubRepositories);
+  const state = error
     ? 'error'
-    : !swr.data
+    : !data
       ? 'loading'
-      : swr.data.configured === false
+      : data.configured === false
         ? 'unconfigured'
-        : !swr.data.connected
+        : !data.connected
           ? 'disconnected'
-          : swr.data.repositories.length === 0
+          : data.repositories.length === 0
             ? 'empty'
             : 'ready';
 
   return {
-    ...swr,
+    data,
+    error,
+    isLoading: !data && !error,
+    isValidating,
     state,
-    retry: () =>
-      swr.mutate(undefined, { revalidate: true, populateCache: false, throwOnError: false }),
+    // A failed retry keeps the listing on screen; the error says it is stale.
+    retry: () => revalidate().catch(() => undefined),
   };
 };

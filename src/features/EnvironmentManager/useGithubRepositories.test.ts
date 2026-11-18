@@ -4,6 +4,8 @@ import { SWRConfig } from 'swr';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { environmentService } from '@/services/environment';
+import { useSandboxStore } from '@/store/sandbox';
+import { initialState } from '@/store/sandbox/initialState';
 
 import { useGithubRepositories } from './useGithubRepositories';
 
@@ -21,10 +23,13 @@ const setup = () => {
   });
 };
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => {
+  vi.restoreAllMocks();
+  useSandboxStore.setState(initialState);
+});
 
 describe('GitHub repository loading', () => {
-  it('reports a rejected request as an error and retries the real SWR fetcher', async () => {
+  it('reports a rejected request as an error and retries the real fetcher', async () => {
     const fetcher = vi
       .spyOn(environmentService, 'listGithubRepositories')
       .mockRejectedValueOnce(new Error('HTTP 503'))

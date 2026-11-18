@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { useDeviceStore } from '@/store/device';
 import { useElectronStore } from '@/store/electron';
 
 import { useWorktreeHomeDir } from '../useWorktreeHomeDir';
@@ -11,10 +12,6 @@ vi.mock('@/services/device', () => ({
   deviceService: { getDeviceSystemInfo: getDeviceSystemInfoMock },
 }));
 
-vi.mock('@/business/client/hooks/useActiveWorkspaceId', () => ({
-  useActiveWorkspaceId: () => null,
-}));
-
 const setLocalHome = (home?: string) =>
   useElectronStore.setState((s) => ({
     appState: { ...s.appState, userPath: home ? ({ home } as never) : undefined },
@@ -23,6 +20,7 @@ const setLocalHome = (home?: string) =>
 describe('useWorktreeHomeDir', () => {
   beforeEach(() => {
     getDeviceSystemInfoMock.mockReset();
+    useDeviceStore.setState(useDeviceStore.getInitialState());
     setLocalHome('/Users/local');
   });
 
@@ -49,7 +47,7 @@ describe('useWorktreeHomeDir', () => {
     const { result } = renderHook(() => useWorktreeHomeDir('device-prefetch', true));
     await waitFor(() => expect(getDeviceSystemInfoMock).toHaveBeenCalledTimes(1));
 
-    // Let SWR commit the prefetched answer before resolving.
+    // Let the replica commit the prefetched answer before resolving.
     await act(async () => {});
 
     await expect(result.current()).resolves.toBe('/home/remote');

@@ -109,3 +109,16 @@ export const localFilePreviewResource = defineReplica<string, LocalFilePreview>(
   // v2: the key splits the source kind from its id; v1 rows are dropped.
   version: 2,
 });
+
+/**
+ * Inline image previews of local files (markdown images, chat-input file
+ * tags), keyed like {@link localFilePreviewKey}. Read with `accept: 'image'`,
+ * so a non-image answer is an error rather than a text body. The value holds a
+ * Blob, so it stays in memory and is never persisted.
+ */
+export const localFileImagePreviewResource = defineReplica<string, LocalFilePreview>({
+  key: (key) => key,
+  name: 'localFileImagePreview',
+  storage: 'memory',
+  version: 1,
+});

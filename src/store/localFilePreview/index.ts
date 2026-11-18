@@ -16,6 +16,7 @@ import { isTerminalLocalFileError } from '@/services/electron/localFileService';
 import { type LocalFilePreview, projectFileService } from '@/services/projectFile';
 
 import {
+  localFileImagePreviewResource,
   localFilePreviewKey,
   localFilePreviewResource,
   type LocalFilePreviewTarget,
@@ -80,6 +81,9 @@ interface LocalFilePreviewSyncResult extends ReplicaSyncResult {
 }
 
 interface LocalFilePreviewStoreState {
+  /** Inline image previews by {@link localFilePreviewKey} (memory only). */
+  imagePreviewMap: Record<string, LocalFilePreview>;
+  imagePreviewReplica: ReplicaState<LocalFilePreview>;
   /** Previews by {@link localFilePreviewKey}. */
   previewMap: Record<string, LocalFilePreview>;
   /** Replica bookkeeping for `previewMap`. */
@@ -94,8 +98,10 @@ interface LocalFilePreviewStore extends LocalFilePreviewStoreState {
    * another identity is active — the body belongs to the scope that wrote it.
    */
   beginSave: (target: LocalFilePreviewTarget) => (content: string) => void;
-  /** Re-read the file from its device / sandbox. */
+  /** Re-read the file from its device / sandbox, inline image previews included. */
   refreshPreview: (target: LocalFilePreviewTarget) => Promise<unknown>;
+  /** Fetch orchestration for an inline image preview; read it with `useLocalFileImagePreview`. */
+  useFetchImagePreview: (target: LocalFilePreviewTarget | undefined) => ReplicaSyncResult;
   /** Fetch orchestration only; read the preview with `useLocalFilePreview`. */
   useFetchPreview: (
     target: LocalFilePreviewTarget | undefined,
@@ -104,6 +110,8 @@ interface LocalFilePreviewStore extends LocalFilePreviewStoreState {
 }
 
 export const initialLocalFilePreviewState: LocalFilePreviewStoreState = {
+  imagePreviewMap: {},
+  imagePreviewReplica: createReplicaState(),
   previewMap: {},
   previewReplica: createReplicaState(),
 };
@@ -173,6 +181,25 @@ export const useLocalFilePreviewStore: UseBoundStoreWithEqualityFn<
     view: recordLens<LocalFilePreviewStore, LocalFilePreview>('previewMap'),
   });
 
+  const imagePreviews = createReplicaSlice(localFileImagePreviewResource, {
+    actionPrefix: 'localFilePreview/imagePreviews',
+    fetcher: (key) => {
+      const { allowExternalFile, deviceId, filePath, workingDirectory } =
+        localFilePreviewTargetFromKey(key);
+      return projectFileService.getLocalFilePreview({
+        accept: 'image',
+        allowExternalFile,
+        deviceId,
+        path: filePath,
+        workingDirectory,
+      });
+    },
+    get,
+    set,
+    stateKey: 'imagePreviewReplica',
+    view: recordLens<LocalFilePreviewStore, LocalFilePreview>('imagePreviewMap'),
+  });
+
   return {
     ...initialLocalFilePreviewState,
 
@@ -190,7 +217,17 @@ export const useLocalFilePreviewStore: UseBoundStoreWithEqualityFn<
         );
       };
     },
-    refreshPreview: (target) => previews.revalidate(localFilePreviewKey(target)),
+    refreshPreview: (target) =>
+      Promise.all([
+        previews.revalidate(localFilePreviewKey(target)),
+        // Inline images of the same file, whichever external-file access they were read with.
+        imagePreviews.revalidate(localFilePreviewKey({ ...target, allowExternalFile: false })),
+        imagePreviews.revalidate(localFilePreviewKey({ ...target, allowExternalFile: true })),
+      ]),
+    useFetchImagePreview: (target) =>
+      imagePreviews.useSync(target ? localFilePreviewKey(target) : undefined, {
+        revalidateOnFocus: false,
+      }),
     useFetchPreview: (target, enabled = true) => {
       const key = target ? localFilePreviewKey(target) : undefined;
       // The file's content is not something the user expects to change on a
@@ -203,6 +240,12 @@ export const useLocalFilePreviewStore: UseBoundStoreWithEqualityFn<
     },
   };
 }, shallow);
+
+/** The inline image preview of one file, or `undefined` while nothing is loaded for it. */
+export const useLocalFileImagePreview = (target: LocalFilePreviewTarget | undefined) =>
+  useLocalFilePreviewStore((state) =>
+    target ? state.imagePreviewMap[localFilePreviewKey(target)] : undefined,
+  );
 
 /** The preview of one file, or `undefined` while nothing is loaded for it. */
 export const useLocalFilePreview = (target: LocalFilePreviewTarget | undefined) =>
