@@ -1,8 +1,8 @@
 'use client';
 
-import type { ContactSearchResult } from '@lobot/types';
 import { Button, Center, Flexbox, SearchBar, Text, toast } from '@lobehub/ui';
-import { memo, useState } from 'react';
+import type { ContactSearchResult } from '@lobot/types';
+import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { contactService } from '@/services/contact';
@@ -13,14 +13,13 @@ import ResultCard from './ResultCard';
 /** Fixed so the window doesn't jump between the hint, the empty state and results. */
 const BODY_HEIGHT = 480;
 
-const AddContactContent = memo(() => {
+const AddContactContent = memo<{ initialQuery?: string }>(({ initialQuery }) => {
   const { t } = useTranslation('common');
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState(initialQuery ?? '');
   const [searching, setSearching] = useState(false);
   const [results, setResults] = useState<ContactSearchResult[] | undefined>();
 
-  const search = async () => {
-    const value = query.trim();
+  const search = async (value = query.trim()) => {
     if (!value || searching) return;
     setSearching(true);
     try {
@@ -32,6 +31,13 @@ const AddContactContent = memo(() => {
       setSearching(false);
     }
   };
+
+  // Opened with a query already typed elsewhere: look it up without a second click.
+  useEffect(() => {
+    const value = initialQuery?.trim();
+    if (value) void search(value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const trimmed = query.trim();
 

@@ -517,6 +517,7 @@ export default {
   'contacts.actionFailed': 'That didn’t work. Try again.',
   'messageList.empty': 'No conversations yet',
   'messageList.hide': 'Hide chat',
+  'messageList.networkSearch': 'Find contacts online',
   'messageList.newChat': 'New conversation',
   'messageList.search': 'Search',
   'messageList.startGroupChat': 'Start group chat',

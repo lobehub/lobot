@@ -422,6 +422,7 @@
   "manageOnlyCreator": "Only the creator or a workspace owner can do this",
   "messageList.empty": "No conversations yet",
   "messageList.hide": "Hide chat",
+  "messageList.networkSearch": "Find contacts online",
   "messageList.newChat": "New conversation",
   "messageList.search": "Search",
   "messageList.startGroupChat": "Start group chat",

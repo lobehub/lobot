@@ -1,8 +1,8 @@
 'use client';
 
 import { DEFAULT_INBOX_TITLE } from '@lobechat/const';
-import { agentDisplayName } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
+import { agentDisplayName } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import isEqual from 'fast-deep-equal';
 import { memo, useEffect, useMemo, useRef } from 'react';
@@ -41,6 +41,7 @@ import {
 import GroupConversation from './GroupConversation';
 import { showConversation, useHiddenConversations } from './hiddenConversations';
 import InboxConversation from './InboxConversation';
+import NetworkSearchRow from './NetworkSearchRow';
 import { useMessageSearch } from './SearchContext';
 import { styles } from './style';
 
@@ -266,6 +267,7 @@ const Body = memo(() => {
           </div>
         )
       )}
+      {channelsEnabled && query.trim() && <NetworkSearchRow query={query.trim()} />}
       {channelsEnabled && <ChannelSync />}
     </Flexbox>
   );
