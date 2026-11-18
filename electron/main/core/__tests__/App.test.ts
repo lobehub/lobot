@@ -66,7 +66,8 @@ vi.mock('~common/routes', () => ({
 }));
 
 // Mock other dependencies
-vi.mock('@/utils/platform', () => ({
+vi.mock('@/utils/platform', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
   macOS: vi.fn(() => false),
   windows: vi.fn(() => false),
 }));
@@ -79,7 +80,8 @@ vi.mock('@/utils/shellPath', () => ({
   refreshShellPath: vi.fn(async () => {}),
 }));
 
-vi.mock('@/const/env', () => ({
+vi.mock('@/const/env', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
   isDev: false,
 }));
 
@@ -87,7 +89,8 @@ vi.mock('@/env', () => ({
   getDesktopEnv: vi.fn(() => ({ DESKTOP_RENDERER_STATIC: false })),
 }));
 
-vi.mock('@/const/dir', () => ({
+vi.mock('@/const/dir', async (importOriginal) => ({
+  ...(await importOriginal<object>()),
   binDir: '/mock/bin',
   buildDir: '/mock/build',
   rendererDir: '/mock/export/out',
@@ -309,6 +312,26 @@ describe('App', () => {
       expect(appendSwitch.mock.invocationCallOrder[preciseCall]).toBeLessThan(
         vi.mocked(electronApp.whenReady).mock.invocationCallOrder[0],
       );
+    });
+
+    it('turns on smooth scrolling and overlay scrollbars before Chromium is ready', async () => {
+      appInstance = new App();
+
+      await appInstance.bootstrap();
+
+      const appendSwitch = vi.mocked(electronApp.commandLine.appendSwitch);
+      const readyOrder = vi.mocked(electronApp.whenReady).mock.invocationCallOrder[0];
+      const callOrder = (match: (args: unknown[]) => boolean) =>
+        appendSwitch.mock.invocationCallOrder[appendSwitch.mock.calls.findIndex(match)];
+
+      expect(appendSwitch).toHaveBeenCalledWith('enable-smooth-scrolling');
+      expect(callOrder(([name]) => name === 'enable-smooth-scrolling')).toBeLessThan(readyOrder);
+
+      const features = appendSwitch.mock.calls.find(([name]) => name === 'enable-features')?.[1];
+      expect(features?.split(',')).toEqual(
+        expect.arrayContaining(['OverlayScrollbar', 'FluentOverlayScrollbar']),
+      );
+      expect(callOrder(([name]) => name === 'enable-features')).toBeLessThan(readyOrder);
     });
 
     it('waits for managed processes before destroying services and completing quit', async () => {

@@ -5,8 +5,8 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     alias: {
-      '@': path.resolve(__dirname, './src/main'),
-      '~common': path.resolve(__dirname, './src/common'),
+      '@': path.resolve(__dirname, './electron/main'),
+      '~common': path.resolve(__dirname, './electron/common'),
     },
     coverage: {
       provider: 'v8',
@@ -14,6 +14,6 @@ export default defineConfig({
       reportsDirectory: './coverage/app',
     },
     environment: 'node',
-    setupFiles: ['./src/main/__mocks__/setup.ts'],
+    setupFiles: ['./electron/main/__mocks__/setup.ts'],
   },
 });
