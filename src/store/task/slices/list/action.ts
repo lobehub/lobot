@@ -1,3 +1,5 @@
+import type { TaskAutomationMode } from '@lobot/types';
+
 import { createReplicaSlice, recordLens } from '@/libs/replica';
 import { taskService } from '@/services/task';
 import type { StoreSetter } from '@/store/types';
@@ -154,6 +156,30 @@ export class TaskListSliceActionImpl {
       },
       rollback: () => tokens.forEach((token) => token.rollback()),
     };
+  };
+
+  /** Sync one task list query into `taskListMap` (read it with `taskListSelectors.taskList`). */
+  useFetchTaskList = (
+    query: TaskListQuery | null,
+    options?: { enabled?: boolean; revalidateOnFocus?: boolean },
+  ) => this.#taskList.useSync(query, options);
+
+  /**
+   * Switch a task's automation on (`mode`) or off (`null`) in every loaded list
+   * and board at once; a refused write rolls them back and rethrows.
+   */
+  setTaskAutomationMode = async (taskId: string, mode: TaskAutomationMode | null) => {
+    const collections = this.internal_beginCollectionTaskOptimistic(taskId, (task) => ({
+      ...task,
+      automationMode: mode,
+    }));
+    try {
+      await taskService.update(taskId, { automationMode: mode });
+    } catch (error) {
+      collections.rollback();
+      throw error;
+    }
+    collections.commit();
   };
 
   fetchTaskList = async (params: Parameters<typeof taskService.list>[0]) =>

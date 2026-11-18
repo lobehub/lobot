@@ -1985,6 +1985,7 @@ export default {
   'taskSchedule.summary.hourly': 'Every hour',
   'taskSchedule.summary.hourlyAtMinute': 'Every hour at :{{minute}}',
   'taskSchedule.summary.hourlyHalfPast': 'Every hour at half past',
+  'taskSchedule.summary.monthly': 'Monthly on day {{day}} at {{time}}',
   'taskSchedule.summary.weekly': 'Every {{days}} at {{time}}',
   'taskSchedule.tag.add': 'Set schedule',
   'taskSchedule.tag.every': 'Every {{interval}}',

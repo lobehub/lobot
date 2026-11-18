@@ -1,14 +1,16 @@
-import type { ChannelPublicMember } from '@lobot/types';
-import { agentSecondaryDisplayName } from '@lobot/types';
 import { ActionIcon, Flexbox, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ChannelPublicMember } from '@lobot/types';
+import { agentSecondaryDisplayName } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { SquareArrowOutUpRightIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { useAgentStore } from '@/store/agent';
 import { agentSelectors } from '@/store/agent/selectors';
+import { channelSelectors, useChannelStore } from '@/store/channel';
 
+import { AgentSchedules } from './AgentSchedules';
 import { MemberAvatar } from './MemberAvatar';
 import { memberName } from './memberName';
 import { ChannelSidePanel } from './MemberPanel';
@@ -78,6 +80,10 @@ export function AgentProfilePanel({
   const meta = useAgentStore(agentSelectors.getAgentMetaById(agentId));
   const slug = useAgentStore(agentSelectors.getAgentSlugById(agentId));
   const owner = useSharedAgentOwner(channelId, agentId);
+  // A shared Agent's schedules are its owner's to run, not this viewer's.
+  const shared = useChannelStore(
+    (s) => !!channelSelectors.list(s)?.find((channel) => channel.id === channelId)?.sharedAgent,
+  );
   const name = memberName(member, t('deletedMember'));
   const roleLine = [agentSecondaryDisplayName(meta), slug ? `@${slug}` : undefined]
     .filter(Boolean)
@@ -126,6 +132,7 @@ export function AgentProfilePanel({
               <span {...stylex.props(styles.placeholder)}>{t('profile.noDescription')}</span>
             )}
           </Flexbox>
+          {!shared && <AgentSchedules agentId={agentId} />}
         </Flexbox>
       </Flexbox>
     </ChannelSidePanel>
