@@ -62,11 +62,11 @@ export const managedStatusLabelKey = {
   stopping: 'devices.managed.status.stopping',
 } as const satisfies Record<ManagedDeviceStatus, string>;
 
-/** Presence-dot color: sleeping stays calm, starting reads as in progress, failed as an error. */
+/** Presence-dot color: sleeping stays green (a run wakes it), starting reads as in progress, failed as an error. */
 const managedStatusColor: Record<ManagedDeviceStatus, string> = {
   deleting: cssVar.colorTextQuaternary,
   failed: cssVar.colorError,
-  sleeping: cssVar.colorInfo,
+  sleeping: cssVar.colorSuccess,
   starting: cssVar.colorWarning,
   stopping: cssVar.colorInfo,
 };

@@ -17,7 +17,7 @@ const styles = createStaticStyles(({ css }) => ({
 
     background: ${cssVar.colorTextQuaternary};
   `,
-  // Asleep: a ring, so a cloud device that wakes on use does not read as offline.
+  // Asleep: a green ring, so a cloud device that wakes on use does not read as offline.
   dotSleeping: css`
     flex: none;
 
@@ -25,7 +25,7 @@ const styles = createStaticStyles(({ css }) => ({
     height: 6px;
     border-radius: 50%;
 
-    box-shadow: inset 0 0 0 1.5px ${cssVar.colorInfo};
+    box-shadow: inset 0 0 0 1.5px ${cssVar.colorSuccess};
   `,
   dotWaking: css`
     flex: none;
