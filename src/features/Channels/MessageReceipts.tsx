@@ -1,11 +1,11 @@
 import { AGENT_CHAT_TOPIC_URL } from '@lobechat/const';
+import { ActionIcon, Button, Flexbox, Popover, Text, usePopoverContext } from '@lobehub/ui';
 import type {
   ChannelDetail,
   ChannelPublicJob,
   ChannelPublicMember,
   ChannelPublicMessage,
 } from '@lobot/types';
-import { ActionIcon, Button, Flexbox, Popover, Text, usePopoverContext } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { ExternalLink, Square } from 'lucide-react';
 import { useState } from 'react';
@@ -231,52 +231,6 @@ export function ReplyList({
         />
       ))}
     </Flexbox>
-  );
-}
-
-/**
- * A text-less marker beside a message whose reply failed, so the failure flagged in the
- * header can be traced to its message. The reason is one click away.
- */
-export function MessageFailureMark({
-  detail,
-  message,
-}: {
-  detail: ChannelDetail;
-  message: ChannelPublicMessage;
-}) {
-  const { t, i18n } = useTranslation('channel');
-  const failed = (detail.jobs ?? []).filter(
-    (job) => job.messageId === message.id && job.status === 'failed',
-  );
-  if (!failed.length) return null;
-  const entries = replyEntries(detail, failed, t('unnamedAgent'));
-  const label = t('failure.messageLabel', {
-    names: new Intl.ListFormat(i18n.language, { type: 'conjunction' }).format(
-      entries.map((entry) => entry.name),
-    ),
-  });
-  return (
-    <Popover
-      placement="bottomLeft"
-      trigger="click"
-      content={
-        <ReplyList
-          channelId={detail.channel.id}
-          entries={entries}
-          manageable={canManageAgents(detail.channel)}
-        />
-      }
-    >
-      <button
-        aria-label={label}
-        title={label}
-        type="button"
-        {...stylex.props(statusStyles.failureMark)}
-      >
-        <span aria-hidden {...stylex.props(statusStyles.dot)} />
-      </button>
-    </Popover>
   );
 }
 

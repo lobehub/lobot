@@ -4,6 +4,18 @@ import * as stylex from '@stylexjs/stylex';
 const HOVER = '@media (hover: hover)';
 
 export const styles = stylex.create({
+  /** The body of a failed reply posted in the feed: its reason and the way to retry. */
+  replyFailureCard: {
+    alignSelf: 'flex-start',
+    maxWidth: 560,
+    paddingBlock: 10,
+    paddingInline: 12,
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: cssVar.colorErrorBorder,
+    borderRadius: cssVar.borderRadiusLG,
+    backgroundColor: cssVar.colorErrorBg,
+  },
   layout: {
     display: 'flex',
     flexDirection: 'column',
@@ -405,20 +417,6 @@ export const statusStyles = stylex.create({
   dotHollow: {
     backgroundColor: 'transparent',
     boxShadow: 'inset 0 0 0 1.5px currentcolor',
-  },
-  /** A bare red dot beside a message whose reply failed. */
-  failureMark: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 18,
-    height: 18,
-    padding: 0,
-    borderWidth: 0,
-    borderRadius: '50%',
-    color: cssVar.colorError,
-    cursor: 'pointer',
-    backgroundColor: { 'default': 'transparent', ':hover': cssVar.colorErrorBg },
   },
   failureButton: {
     flex: 'none',

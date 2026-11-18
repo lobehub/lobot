@@ -49,7 +49,7 @@ import { CHANNEL_MENTION_TAG, remarkChannelMentions } from './mentionMarkdown';
 import { MessageAttachments } from './MessageAttachments';
 import { MessageEditor } from './MessageEditor';
 import { channelMessageTime, channelTimeFormatters, foldsByDefault } from './messagePresentation';
-import { MessageFailureMark, MessageRoutingStatus } from './MessageReceipts';
+import { MessageRoutingStatus } from './MessageReceipts';
 import { RelayLabel } from './RelayLabel';
 import { showsReplyQuote } from './replyQuote';
 import type { ReplyTopic } from './ReplyTopicPanel';
@@ -453,7 +453,6 @@ const ChannelMessageView = ({
   const headerMarks = (
     <>
       <RelayLabel message={message} />
-      {isRequest && !delivery && <MessageFailureMark detail={detail} message={message} />}
     </>
   );
   const toolbar = hasToolbar && toolbarMounted && (

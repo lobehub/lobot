@@ -128,7 +128,6 @@ vi.mock('./ThreadRef', () => ({
     ),
 }));
 vi.mock('./MessageReceipts', () => ({
-  MessageFailureMark: () => null,
   MessageRoutingStatus: () => null,
 }));
 

@@ -25,7 +25,7 @@ import { groupChannelName } from './channelName';
 import { ChannelWelcome } from './ChannelWelcome';
 import { useAfterCleared } from './clearedChannels';
 import { Composer } from './Composer';
-import { hasReplyActivity } from './jobStatus';
+import { hasReplyActivity, unresolvedFailures } from './jobStatus';
 import { JoinEventLine } from './JoinEventLine';
 import { channelTimeline, conversationJoinEvents } from './joinEvents';
 import { isCurrentUserMember } from './memberName';
@@ -35,10 +35,12 @@ import {
   presentChannelTimeline,
   visibleChannelMessages,
 } from './messagePresentation';
+import { replyEntries, type ReplyEntry } from './MessageReceipts';
 import { presentOutgoingMessage, timelineTail } from './outgoing';
 import { OutgoingStatus } from './OutgoingStatus';
 import { channelTitle } from './peerTitle';
 import { ReplyActivity } from './ReplyActivity';
+import { ReplyFailureMessage } from './ReplyFailureMessage';
 import type { ReplyTopic } from './ReplyTopicPanel';
 import { styles } from './styles';
 import type { ChannelThreadDraft } from './threadDraft';
@@ -178,6 +180,18 @@ const Timeline = ({
         !detail.hasMore && before === undefined,
       )
     : [];
+  // Failed replies this conversation still owes, each posted under the message it answers.
+  const failures = new Map<string, ReplyEntry[]>();
+  if (detail)
+    for (const entry of replyEntries(
+      detail,
+      unresolvedFailures(
+        (detail.jobs ?? []).filter((job) => (job.threadId ?? null) === (threadId ?? null)),
+      ),
+      t('unnamedAgent'),
+    ))
+      failures.set(entry.job.messageId, [...(failures.get(entry.job.messageId) ?? []), entry]);
+  const presented = presentChannelTimeline(timeline);
 
   return (
     <ChannelDropZone
@@ -280,8 +294,12 @@ const Timeline = ({
                     {threadId && !timeline.length && (
                       <p {...stylex.props(styles.muted)}>{t('threadEmpty')}</p>
                     )}
-                    {presentChannelTimeline(timeline).map(
-                      ({ item, date, startsDay, continuation }) => (
+                    {presented.map(({ item, date, startsDay, continuation }, index) => {
+                      const previous = presented[index - 1]?.item;
+                      // A failed reply posted in between ends the run of the same author.
+                      if (previous?.kind === 'message' && failures.has(previous.message.id))
+                        continuation = false;
+                      return (
                         <Fragment key={item.kind === 'event' ? item.event.id : item.message.id}>
                           {startsDay && (
                             <div
@@ -337,9 +355,19 @@ const Timeline = ({
                               }
                             />
                           )}
+                          {item.kind === 'message' &&
+                            failures
+                              .get(item.message.id)
+                              ?.map((entry) => (
+                                <ReplyFailureMessage
+                                  detail={detail}
+                                  entry={entry}
+                                  key={entry.job.id}
+                                />
+                              ))}
                         </Fragment>
-                      ),
-                    )}
+                      );
+                    })}
                   </WideScreenContainer>
                 </Flexbox>
               ) : (
