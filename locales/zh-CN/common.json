@@ -237,6 +237,7 @@
   "contacts.presence.offDuty": "下班了",
   "contacts.presence.offDuty.resetsAt": "额度用完了，预计 {{time}} 恢复",
   "contacts.presence.offDuty.tip": "额度用完了，等额度恢复后才能继续干活",
+  "contacts.presence.offDuty.until": "下班了 · {{time}} 恢复",
   "contacts.presence.offline": "离线",
   "contacts.presence.offline.tip": "运行它的设备没有连接，消息要等设备上线后才会处理",
   "contacts.presence.online": "在线",

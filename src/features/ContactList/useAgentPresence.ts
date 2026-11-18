@@ -8,23 +8,12 @@ import { operationSelectors } from '@/store/chat/selectors';
 import { AGENT_DEVICE_BINDING_SWR_KEY } from '@/store/device/agentDeviceBinding';
 import { isDevicePresenceUnknown, useDeviceList } from '@/store/device/useDeviceList';
 
-import { type AgentPresence, type QuotaAccountLoad, resolveAgentPresence } from './agentPresence';
+import { type AgentPresence, resolveAgentPresence } from './agentPresence';
 
 /** A card left open keeps following the Agent, without polling like a live dashboard. */
 const REFRESH_INTERVAL = 30_000;
 /** Upper bound on the running conversations read; a real account runs far fewer at once. */
 const RUNNING_TOPICS_LIMIT = 200;
-
-const fetchQuotaLoads = async (agentId: string): Promise<QuotaAccountLoad[]> => {
-  const bindings: { accountId: string; enabled: boolean; role: string }[] =
-    await agentQuotaService.listBindings(agentId);
-  const accountIds = bindings
-    .filter((binding) => binding.enabled && binding.role !== 'disabled')
-    .map((binding) => binding.accountId);
-  if (accountIds.length === 0) return [];
-
-  return agentQuotaService.resolveAccountLoads(accountIds);
-};
 
 /**
  * The status an Agent's contact card shows (see {@link resolveAgentPresence}),
@@ -48,9 +37,13 @@ export const useAgentPresence = (agentId?: string): AgentPresence | undefined =>
       ).some((topic) => topic.agentId === agentId),
     config,
   );
+  // Judged where the Agent runs: a device's own account pick decides, not the whole pool.
+  const quotaDeviceId = binding.data ?? undefined;
   const quota = useClientDataSWR(
-    agentId ? ['agent-presence-quota', agentId] : null,
-    () => fetchQuotaLoads(agentId!),
+    agentId && binding.data !== undefined
+      ? ['agent-presence-quota', agentId, quotaDeviceId ?? null]
+      : null,
+    () => agentQuotaService.resolveAgentAvailability(agentId!, quotaDeviceId),
     config,
   );
   // A run started from this window shows before the server's next answer.
@@ -77,8 +70,7 @@ export const useAgentPresence = (agentId?: string): AgentPresence | undefined =>
     // A managed cloud device that is not connected is usually asleep, not gone.
     device: device && { managedStatus: getManagedDeviceStatus(device), online: device.online },
     deviceId,
-    loads: quota.data ?? [],
-    now: Date.now(),
+    quota: quota.data,
     running: runningHere || !!running.data,
   });
 };

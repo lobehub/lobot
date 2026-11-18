@@ -76,24 +76,36 @@ const tones = stylex.create({
 /** Statuses whose dot breathes: something is under way. */
 const isPulsing = (status: AgentPresenceStatus) => status === 'working' || status === 'waking';
 
-const formatReset = (resetsAt: number) =>
-  new Date(resetsAt).toLocaleString(undefined, {
+const formatReset = (resetsAt: number, locale?: string) =>
+  new Date(resetsAt).toLocaleString(locale, {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
     month: 'numeric',
   });
 
+/** "15:00" for later today, else with the date: short enough for the chip. */
+export const formatResetShort = (resetsAt: number, locale?: string, now: number = Date.now()) => {
+  const at = new Date(resetsAt);
+  const today = at.toDateString() === new Date(now).toDateString();
+  return at.toLocaleString(
+    locale,
+    today
+      ? { hour: '2-digit', minute: '2-digit' }
+      : { day: 'numeric', hour: '2-digit', minute: '2-digit', month: 'numeric' },
+  );
+};
+
 const usePresenceTip = ({ resetsAt, status }: AgentPresence) => {
-  const { t } = useTranslation('common');
+  const { i18n, t } = useTranslation('common');
   if (status === 'offDuty' && resetsAt)
-    return t('contacts.presence.offDuty.resetsAt', { time: formatReset(resetsAt) });
+    return t('contacts.presence.offDuty.resetsAt', { time: formatReset(resetsAt, i18n.language) });
   return t(`contacts.presence.${status}.tip`);
 };
 
 /** The status chip beside an Agent's role: a dot and what it is doing, explained on hover. */
 export const AgentPresenceLabel = memo<{ presence: AgentPresence }>(({ presence }) => {
-  const { t } = useTranslation('common');
+  const { i18n, t } = useTranslation('common');
   const tip = usePresenceTip(presence);
   const status: AgentPresenceStatus = presence.status;
 
@@ -108,7 +120,11 @@ export const AgentPresenceLabel = memo<{ presence: AgentPresence }>(({ presence 
             isPulsing(status) && styles.working,
           )}
         />
-        {t(`contacts.presence.${status}`)}
+        {status === 'offDuty' && presence.resetsAt
+          ? t('contacts.presence.offDuty.until', {
+              time: formatResetShort(presence.resetsAt, i18n.language),
+            })
+          : t(`contacts.presence.${status}`)}
       </span>
     </Tooltip>
   );

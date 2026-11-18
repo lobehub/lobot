@@ -6,3 +6,21 @@
 export interface QuotaDeviceAccount {
   accountId: string | null;
 }
+
+/**
+ * Whether an agent would find quota where it runs, as the server's
+ * `agentQuota.resolveAgentAvailability` judges it: on the accounts the
+ * dispatcher would route a run there to, not the whole pool.
+ *
+ * - `available`: at least one of those accounts has headroom;
+ * - `exhausted`: every one of them is spent;
+ * - `untracked`: none of the agent's accounts is routed there, so its quota
+ *   is not judged.
+ */
+export interface QuotaAgentAvailability {
+  accountIds: string[];
+  mode?: 'balanced' | 'pinned';
+  /** When `exhausted`: the earliest moment one account comes back (ms epoch), when known. */
+  resetsAt?: number;
+  status: 'available' | 'exhausted' | 'untracked';
+}

@@ -9,7 +9,7 @@ import type {
   QuotaAccountIdentity,
   QuotaLimitReading,
 } from '@lobechat/heterogeneous-agents/quota';
-import type { QuotaDeviceAccount } from '@lobot/types';
+import type { QuotaAgentAvailability, QuotaDeviceAccount } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 import type { QuotaAccountItem, QuotaBindingItem } from '@/types/serverData';
@@ -84,6 +84,16 @@ class AgentQuotaService {
 
   listBindings = async (agentId: string): Promise<QuotaBindingItem[]> =>
     lambdaClient.agentQuota.listBindings.query({ agentId });
+
+  /**
+   * Whether the agent would find quota on `deviceId` (its gateway id), judged
+   * on the accounts a run there is routed to — what its presence shows.
+   */
+  resolveAgentAvailability = async (
+    agentId: string,
+    deviceId?: string,
+  ): Promise<QuotaAgentAvailability> =>
+    lambdaClient.agentQuota.resolveAgentAvailability.query({ agentId, deviceId });
 
   /** Each account's current headroom, as the account balancer weighs it. */
   resolveAccountLoads = async (accountIds: string[]) =>

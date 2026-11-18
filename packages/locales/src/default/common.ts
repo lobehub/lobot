@@ -460,6 +460,7 @@ export default {
   'contacts.presence.offDuty': 'Off duty',
   'contacts.presence.offDuty.resetsAt': 'Quota used up — back around {{time}}',
   'contacts.presence.offDuty.tip': 'Quota used up — it can work again once the quota resets',
+  'contacts.presence.offDuty.until': 'Off duty · back {{time}}',
   'contacts.presence.offline': 'Offline',
   'contacts.presence.offline.tip':
     'The device it runs on is not connected; messages wait until it is back',
