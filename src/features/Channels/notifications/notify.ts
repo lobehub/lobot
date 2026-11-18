@@ -51,13 +51,14 @@ interface ChannelBanner {
 /**
  * Banner wording, the way chat apps word it:
  * - a direct conversation is titled by its Agent and shows the message;
- * - a conversation between two people is titled by the other person, like a DM;
+ * - a conversation between two people is titled by the other person, like a DM; when an Agent
+ *   wrote it for them (`lobe-channel.messagePerson`), the title says which Agent relayed it;
  * - a group is titled on one line "sender (Channel · project)" and shows the message;
  * - an @mention says who mentioned the user, and where.
  */
 export const buildChannelBanner = (
   { channel, kind }: ChannelActivityEvent,
-  message: Pick<ChannelPublicMessage, 'author' | 'content'> | undefined,
+  message: Pick<ChannelPublicMessage, 'author' | 'content' | 'receipt' | 'via'> | undefined,
   projectName?: string,
 ): ChannelBanner => {
   const sender = message?.author.name || '';
@@ -69,7 +70,12 @@ export const buildChannelBanner = (
   // The stored title is not the viewer's name for the other person, so it never shows here.
   if (channel.peerUserId) {
     const peer = channel.memberAvatars?.find((item) => item.id === channel.peerUserId);
-    return { body: text, title: sender || peer?.name || channel.title };
+    const name = sender || peer?.name || channel.title;
+    const relay = message?.via && !message.receipt ? message.via.name : undefined;
+    return {
+      body: text,
+      title: relay ? t('notification.relayedTitle', { agent: relay, name, ns: 'channel' }) : name,
+    };
   }
 
   // A project's default Channel goes by the project's name, so the project is not named twice.

@@ -178,6 +178,7 @@
   "notification.mentioned": "有人在 {{channel}} 提到了你",
   "notification.mentionedBy": "{{name}} 在 {{channel}} 提到了你",
   "notification.newMessage": "新消息",
+  "notification.relayedTitle": "{{name}}（由 {{agent}} 代发）",
   "offline": "离线",
   "olderMessages": "更早的消息",
   "openAgent": "打开 Agent",
