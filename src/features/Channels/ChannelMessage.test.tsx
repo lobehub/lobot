@@ -6,6 +6,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { act, createElement, type ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
+import LobeAgentsElement from '@/features/Conversation/Markdown/plugins/LobeAgents';
 import EntityLinkElement from '@/features/EntityLink/element';
 
 import { ChannelMessage } from './ChannelMessage';
@@ -201,6 +202,42 @@ describe('ChannelMessage links', () => {
     );
     expect(markdownProps.current.components[CHANNEL_MENTION_TAG]).toBeDefined();
     expect(markdownProps.current.rehypePlugins).toContain(EntityLinkElement.rehypePlugin);
+  });
+});
+
+describe('ChannelMessage Agent cards', () => {
+  it('renders an Agent reply’s lobeAgents tag as the Agent card, kept on one line', () => {
+    render(
+      <ChannelMessage
+        detail={detail}
+        message={{
+          ...message({ avatar: null, id: 'agt_1', name: 'Sanjo', type: 'agent' }),
+          content: 'Try this one:\n\n<lobeAgents identifier="agt_x"\n  title="Deck" />',
+        }}
+      />,
+    );
+
+    expect(markdownProps.current.components[LobeAgentsElement.tag]).toBe(
+      LobeAgentsElement.Component,
+    );
+    expect(markdownProps.current.rehypePlugins).toContain(LobeAgentsElement.rehypePlugin);
+    expect(markdownProps.current.children).toBe(
+      'Try this one:\n\n<lobeAgents identifier="agt_x"  title="Deck" />',
+    );
+  });
+
+  it('leaves the tag as text in a person’s message', () => {
+    render(
+      <ChannelMessage
+        detail={detail}
+        message={{
+          ...message({ avatar: null, id: 'user-other', name: 'Ann', type: 'user' }),
+          content: '<lobeAgents identifier="agt_x" title="Deck" />',
+        }}
+      />,
+    );
+
+    expect(markdownProps.current.rehypePlugins).not.toContain(LobeAgentsElement.rehypePlugin);
   });
 });
 

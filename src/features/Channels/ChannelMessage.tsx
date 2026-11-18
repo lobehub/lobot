@@ -23,7 +23,7 @@ import {
   Reply,
   Trash2,
 } from 'lucide-react';
-import type { ReactNode } from 'react';
+import type { FC, ReactNode } from 'react';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -32,6 +32,7 @@ import CollapsibleContent from '@/components/CollapsibleContent';
 import AgentProfilePopup from '@/features/AgentProfileCard/AgentProfilePopup';
 import { ChatItem } from '@/features/Conversation/ChatItem';
 import Markdown from '@/features/Conversation/Markdown';
+import LobeAgentsElement from '@/features/Conversation/Markdown/plugins/LobeAgents';
 import EntityLinkElement from '@/features/EntityLink/element';
 import UserAvatar from '@/features/User/UserAvatar';
 import { channelActions } from '@/store/channel';
@@ -56,11 +57,26 @@ import { ThreadPreviewCard } from './ThreadPreviewCard';
 import type { ChannelReplyTarget } from './useReplyTarget';
 
 const rehypePlugins = [EntityLinkElement.rehypePlugin];
+// Agent replies may recommend another Agent with `<lobeAgents ... />`, rendered as the same card
+// the conversation shows. Only Agent-authored text is parsed, matching the element's scope.
+const agentRehypePlugins = [...rehypePlugins, LobeAgentsElement.rehypePlugin];
+const AGENTS_TAG_REGEX = /<lobeAgents\b[^>]*>/g;
+// A tag spread across lines would split into several raw nodes; keep it one node for the plugin.
+const joinAgentTags = (content: string) =>
+  content.replaceAll(AGENTS_TAG_REGEX, (tag) => tag.replaceAll(/\r?\n|\r/g, ''));
 const HISTORIC_FOLD_OVERFLOW = 240;
 const AVATAR_SIZE = 36;
 
 /** Message text with the members it mentioned shown as chips that show who they are on hover. */
-const MessageText = ({ content, members }: { content: string; members: ChannelPublicMember[] }) => {
+const MessageText = ({
+  content,
+  fromAgent,
+  members,
+}: {
+  content: string;
+  fromAgent: boolean;
+  members: ChannelPublicMember[];
+}) => {
   const names = members.map((member) => memberName(member, '')).filter(Boolean);
   const key = names.join('\n');
   // Polling re-renders every message while replies run; a new plugin array or component map
@@ -82,14 +98,20 @@ const MessageText = ({ content, members }: { content: string; members: ChannelPu
       },
       // GitHub and LobeHub links render as the same chips the conversation shows.
       [EntityLinkElement.tag]: EntityLinkElement.Component,
+      // The card reads only the tag's attributes, not the conversation's message id.
+      [LobeAgentsElement.tag]: LobeAgentsElement.Component as FC,
     }),
     // Keyed by member ids and names: the members array is rebuilt on every poll.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [memberKey, key],
   );
   return (
-    <Markdown components={components} rehypePlugins={rehypePlugins} remarkPlugins={remarkPlugins}>
-      {content}
+    <Markdown
+      components={components}
+      rehypePlugins={fromAgent ? agentRehypePlugins : rehypePlugins}
+      remarkPlugins={remarkPlugins}
+    >
+      {fromAgent ? joinAgentTags(content) : content}
     </Markdown>
   );
 };
@@ -322,7 +344,11 @@ const ChannelMessageView = ({
     <MessageAttachments attachments={detail.attachments} fileIds={message.fileIds} />
   );
   const text = message.content && (
-    <MessageText content={message.content} members={mentionedMembers} />
+    <MessageText
+      content={message.content}
+      fromAgent={message.author.type === 'agent'}
+      members={mentionedMembers}
+    />
   );
   const content = deleted ? (
     <Text italic type="secondary">
