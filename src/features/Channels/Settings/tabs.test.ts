@@ -7,6 +7,16 @@ describe('channelSettingsTabs', () => {
     expect(channelSettingsTabs(false)).toEqual(['general', 'members', 'reply', 'advanced']);
     expect(channelSettingsTabs(true)).toEqual(['general', 'members', 'advanced']);
   });
+
+  it('shows the project of a project Channel', () => {
+    expect(channelSettingsTabs(false, true)).toEqual([
+      'general',
+      'project',
+      'members',
+      'reply',
+      'advanced',
+    ]);
+  });
 });
 
 describe('resolveChannelSettingsTab', () => {
@@ -20,5 +30,6 @@ describe('resolveChannelSettingsTab', () => {
 
   it('falls back when the requested tab is unavailable', () => {
     expect(resolveChannelSettingsTab('reply', channelSettingsTabs(true))).toBe('general');
+    expect(resolveChannelSettingsTab('project', channelSettingsTabs(false))).toBe('general');
   });
 });

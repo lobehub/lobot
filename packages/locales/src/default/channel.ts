@@ -396,6 +396,7 @@ export default {
   'settings.danger.trashHint': 'You can restore the channel and its history from the trash.',
   'settings.tab.general': 'General',
   'settings.tab.members': 'Members',
+  'settings.tab.project': 'Project',
   'settings.tab.reply': 'Replies',
   'settings.general.nameDescription': 'Shown in the channel list and at the top of the channel.',
   'settings.general.nameLimit': 'Up to {{count}} characters.',
@@ -410,6 +411,11 @@ export default {
   'settings.reply.section.judgement': 'Duties',
   'settings.reply.section.judgementDesc':
     'What Agents are responsible for, so they can step in without being called, and the instructions they follow.',
+  'settings.project.description': 'This channel belongs to this project.',
+  'settings.project.manage': 'Manage in LobeHub',
+  'settings.project.manageHint': 'Edit the project, its members and its Agents in LobeHub.',
+  'settings.project.missing': 'This project is not available to you, or it has been deleted.',
+  'settings.project.title': 'Project',
   'settings.reply.duties': 'What Agents handle',
   'settings.reply.dutiesHint':
     'In your own words, one duty per line. Agents may step in when a message falls within them. Leave empty to turn this off.',
