@@ -10,7 +10,7 @@ import type {
 
 /**
  * Resolved server feature flags, keyed for the client. The canonical mapping
- * lives in `@lobechat/app-config`'s `mapFeatureFlagsEnvToState`, whose explicit
+ * lives in `src/config/featureFlags`'s `mapFeatureFlagsEnvToState`, whose explicit
  * return-type annotation pins it to this interface — add a flag there and the
  * compiler forces the field to be added here (and vice versa).
  *
