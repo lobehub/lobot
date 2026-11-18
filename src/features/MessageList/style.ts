@@ -31,6 +31,27 @@ export const styles = stylex.create({
     fontSize: '12px',
     color: cssVar.colorTextQuaternary,
   },
+  /** The network lookup row's picture: a filled square the size of an avatar, like WeChat's. */
+  networkSearchIcon: {
+    display: 'inline-flex',
+    flex: 'none',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '28px',
+    height: '28px',
+    borderRadius: cssVar.borderRadius,
+    color: cssVar.colorTextLightSolid,
+    backgroundColor: cssVar.colorPrimary,
+  },
+  /** The query under "Find contacts online", in the accent so it reads as what gets searched. */
+  networkSearchQuery: {
+    color: cssVar.colorPrimary,
+  },
+  networkSearchText: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
   /** Pinned rows share one tinted block, like WeChat's 置顶, instead of a card per row. */
   pinnedGroup: {
     display: 'flex',

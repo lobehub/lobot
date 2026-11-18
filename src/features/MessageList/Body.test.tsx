@@ -22,6 +22,9 @@ const home = vi.hoisted(() => ({
   revalidateRecents: vi.fn(async () => {}),
 }));
 
+const openAddContactModal = vi.hoisted(() => vi.fn());
+vi.mock('@/features/AddContactModal', () => ({ openAddContactModal }));
+
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 
 vi.mock('@/business/client/hooks/useActiveWorkspaceSlug', () => ({
@@ -393,5 +396,34 @@ describe('MessageList Body ordering', () => {
 
     expect(text).toContain('Lobe AI row');
     expect(text.indexOf('Lobe AI row')).toBeLessThan(text.indexOf('a'));
+  });
+});
+
+describe('MessageList Body network search', () => {
+  beforeEach(() => {
+    home.isInit = true;
+    openAddContactModal.mockClear();
+  });
+
+  // Searching only looked through my own conversations, with no way to find someone new.
+  it('ends a search with a row that looks the query up as a person or an Agent', () => {
+    home.query = ' canisminor ';
+
+    render(createElement(Body));
+
+    fireEvent.click(screen.getByRole('button', { name: /messageList\.networkSearch/ }));
+    expect(screen.getByText('canisminor')).toBeInTheDocument();
+    expect(openAddContactModal).toHaveBeenCalledWith('canisminor');
+  });
+
+  it('offers no lookup without a query, or while Channels are off', () => {
+    const { unmount } = render(createElement(Body));
+    expect(screen.queryByText('messageList.networkSearch')).not.toBeInTheDocument();
+    unmount();
+
+    home.query = 'canisminor';
+    home.channelsEnabled = false;
+    render(createElement(Body));
+    expect(screen.queryByText('messageList.networkSearch')).not.toBeInTheDocument();
   });
 });
