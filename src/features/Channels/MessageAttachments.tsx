@@ -1,6 +1,6 @@
 import { buildFileCacheUrl, isDesktop } from '@lobechat/const';
-import type { ChannelDetail } from '@lobot/types';
 import { createModal, Flexbox } from '@lobehub/ui';
+import type { ChannelDetail } from '@lobot/types';
 
 import FileListViewer from '@/features/Conversation/Messages/User/components/FileListViewer';
 import ImageFileListViewer from '@/features/Conversation/Messages/User/components/ImageFileListViewer';
@@ -46,6 +46,9 @@ const openFile = (file: {
 const imageUrl = (file: { id: string; name: string; url: string }) =>
   isDesktop ? buildFileCacheUrl(file) : file.url;
 
+/** File cards stretch to the message width by default, which reads badly in a wide Channel. */
+const FILE_CARD_MAX_WIDTH = 400;
+
 /** A Channel mounts no chat portal, so files open in the shared viewer inside a modal. */
 export function MessageAttachments({
   attachments,
@@ -74,7 +77,11 @@ export function MessageAttachments({
           items={images.map((file) => ({ alt: file.name, id: file.id, url: imageUrl(file) }))}
         />
       )}
-      {others.length > 0 && <FileListViewer items={others} onOpenFile={openFile} />}
+      {others.length > 0 && (
+        <Flexbox style={{ maxWidth: FILE_CARD_MAX_WIDTH }}>
+          <FileListViewer items={others} onOpenFile={openFile} />
+        </Flexbox>
+      )}
     </Flexbox>
   );
 }
