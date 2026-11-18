@@ -10,7 +10,11 @@ const createPasteEvent = (files: File[], html: string) =>
   }) as unknown as ClipboardEvent;
 
 const setup = () => {
-  const editor = createEditor({ onError: (error) => { throw error; } });
+  const editor = createEditor({
+    onError: (error) => {
+      throw error;
+    },
+  });
   const onFiles = vi.fn();
   registerImageFilePastePreferenceOnLexical(editor, onFiles);
   return { editor, onFiles };

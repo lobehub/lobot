@@ -177,7 +177,6 @@ describe('toolSelectors', () => {
       expect(toolSelectors.isToolHasUI('plugin-1')(mockState)).toBe(false);
     });
 
-
     it('should return false if the tool does not exist', () => {
       expect(toolSelectors.isToolHasUI('non-existent')(mockState)).toBe(false);
     });

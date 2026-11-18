@@ -184,12 +184,6 @@ describe('continueHeteroAfterError', () => {
     mockWorkspaceOverride = undefined;
   });
 
-
-
-
-
-
-
   // A device-bound Claude Code run (desktop `local` synced to a bound device, or
   // web) routes through the gateway. Retrying its rate-limit card used to delete
   // the whole group and regenerate from the user prompt, wiping every step.

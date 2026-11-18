@@ -116,8 +116,5 @@ export type SWRefreshMethod<T> = <A extends (...args: any[]) => Promise<any>>(
   params?: SWRRefreshParams<T, A>,
 ) => ReturnType<A>;
 
-// Export hook with auto-sync functionality
-export { useClientDataSWRWithSync } from './useClientDataSWRWithSync';
-
 // Export scoped mutate (for custom cache provider scenarios)
 export { mutate, setScopedMutate } from './mutate';

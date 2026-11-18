@@ -313,9 +313,6 @@ describe('Generation Actions', () => {
       } as any);
     };
 
-
-
-
     it('routes a heterogeneous status error to the session-resuming path', async () => {
       await mockChatStore();
       const store = createStore({ context });
@@ -359,8 +356,6 @@ describe('Generation Actions', () => {
   });
 
   describe('delAndRegenerateMessage', () => {
-
-
     it('should not proceed if assistant message has no parentId', async () => {
       const { useChatStore } = await import('@/store/chat');
       vi.mocked(useChatStore.getState).mockReturnValue({
@@ -397,14 +392,9 @@ describe('Generation Actions', () => {
       expect(mockStartOperation).not.toHaveBeenCalled();
       expect(mockDeleteMessage).not.toHaveBeenCalled();
     });
-
-
-
   });
 
   describe('regenerateUserMessage', () => {
-
-
     it('should bail out if the interim op was cancelled during preflight (Stop pressed)', async () => {
       const { useChatStore } = await import('@/store/chat');
       vi.mocked(useChatStore.getState).mockReturnValue({
@@ -500,7 +490,6 @@ describe('Generation Actions', () => {
       expect(mockExecuteClientAgent).not.toHaveBeenCalled();
       expect(mockExecuteGatewayAgent).not.toHaveBeenCalled();
     });
-
 
     it('should use executeGatewayAgent when gateway mode is enabled', async () => {
       const { useChatStore } = await import('@/store/chat');
@@ -612,7 +601,6 @@ describe('Generation Actions', () => {
       onComplete();
       expect(onRegenerateComplete).toHaveBeenCalledWith('msg-1');
     });
-
 
     it('should not regenerate if the message already has a running regenerate op', async () => {
       const { useChatStore } = await import('@/store/chat');

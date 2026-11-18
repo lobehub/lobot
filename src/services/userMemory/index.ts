@@ -93,5 +93,3 @@ class UserMemoryService {
 }
 
 export const userMemoryService = new UserMemoryService();
-export { memoryCRUDService } from './crud';
-export { memoryExtractionService } from './extraction';

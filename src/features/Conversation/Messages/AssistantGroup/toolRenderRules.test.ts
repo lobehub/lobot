@@ -1,7 +1,4 @@
-import {
-  WebOnboardingApiName,
-  WebOnboardingIdentifier,
-} from '@lobechat/const/builtinTools';
+import { WebOnboardingApiName, WebOnboardingIdentifier } from '@lobechat/const/builtinTools';
 import { describe, expect, it } from 'vitest';
 
 import {

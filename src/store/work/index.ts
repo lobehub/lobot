@@ -6,5 +6,4 @@ export {
   type WorkspaceWorksParams,
   type WorkVersionsParams,
 } from './projection';
-export { workSelectors } from './selectors';
 export { useWorkStore } from './store';
