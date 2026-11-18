@@ -7,7 +7,7 @@ import type {
   ContactUserProfile,
 } from '@lobot/types';
 
-import { lambdaClient } from '@/libs/trpc/client';
+import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
 
 export interface ContactUserProfileData {
   relation: ContactRelation;
@@ -20,6 +20,9 @@ export interface ContactUserProfileData {
 class ContactService {
   list = (): Promise<ContactItem[]> => lambdaClient.contact.list.query();
   listRequests = (): Promise<ContactRequestItem[]> => lambdaClient.contact.listRequests.query();
+  /** The requests of a scope other than the active one; `null` is the personal space. */
+  listRequestsInScope = (workspaceId: string | null): Promise<ContactRequestItem[]> =>
+    createWorkspaceLambdaClient(workspaceId).contact.listRequests.query();
   /** Exact lookup of a username, `@handle`, share handle or pasted share link. */
   search = (query: string): Promise<ContactSearchResult[]> =>
     lambdaClient.contact.search.query({ query });

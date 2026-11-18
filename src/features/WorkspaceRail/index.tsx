@@ -43,6 +43,7 @@ import { useOpenCreateWorkspace } from './CreateWorkspace';
 import { writeWorkspaceRailHint } from './railHint';
 import { RAIL_AVATAR_SIZE, RAIL_TILE_RADIUS, styles } from './style';
 import { useOrderedWorkspaces } from './useOrderedWorkspaces';
+import { usePersonalRequestCount } from './usePersonalRequestCount';
 import { useRailColumnShown } from './useRailColumnShown';
 import { useScopeUnread } from './useScopeUnread';
 
@@ -54,7 +55,7 @@ interface RailItemProps {
   onClick: () => void;
   title: string;
   tooltipDisabled?: boolean;
-  /** The scope's Messages unread count, badged on the tile's bottom-right corner. */
+  /** The scope's unread count, badged on the tile's bottom-right corner. */
   unread?: number;
 }
 
@@ -157,7 +158,9 @@ const WorkspaceRail = memo(() => {
   const navigate = useWorkspaceAwareNavigate();
   const userAvatar = useUserStore(userProfileSelectors.userAvatar);
   const userName = useUserStore(userProfileSelectors.displayUserName);
-  const personalUnread = useScopeUnread(null, activeId === null);
+  // The personal tile also counts friend requests: a workspace's Contacts never shows them.
+  const personalUnread =
+    useScopeUnread(null, activeId === null) + usePersonalRequestCount(activeId === null);
 
   const { pathname } = useActiveLocation();
   const activeWorkspaceSlug = useActiveWorkspaceSlug();

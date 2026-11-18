@@ -12,6 +12,7 @@ const mocks = vi.hoisted(() => ({
   navigate: vi.fn(),
   order: undefined as string[] | undefined,
   pathname: '/',
+  personalRequests: 0,
   updatePreference: vi.fn(async (_patch: unknown) => {}),
   switchToPersonal: vi.fn(async () => {}),
   switchWorkspace: vi.fn(async (_id: string) => {}),
@@ -36,6 +37,9 @@ vi.mock('./style', () => ({
 }));
 vi.mock('./useScopeUnread', () => ({
   useScopeUnread: (scopeId: string | null) => mocks.unread[scopeId ?? 'personal'] ?? 0,
+}));
+vi.mock('./usePersonalRequestCount', () => ({
+  usePersonalRequestCount: () => mocks.personalRequests,
 }));
 vi.mock('./CreateWorkspace', () => ({ useOpenCreateWorkspace: () => mocks.openCreate }));
 vi.mock('@/business/client/workspace/store', () => ({
@@ -78,6 +82,7 @@ describe('WorkspaceRail', () => {
     mocks.activeId = null;
     mocks.available = true;
     mocks.loading = false;
+    mocks.personalRequests = 0;
     mocks.order = undefined;
     mocks.pathname = '/';
     mocks.unread = {};
@@ -217,5 +222,14 @@ describe('WorkspaceRail', () => {
     expect(screen.getByRole('button', { name: 'workspaceRail.personal' })).toHaveTextContent('260');
     expect(screen.getByRole('button', { name: 'LobeHub' })).toHaveTextContent('999+');
     expect(screen.getByRole('button', { name: 'Acme' }).textContent).toBe('');
+  });
+
+  it("adds the personal space's waiting friend requests to its tile only", () => {
+    mocks.unread = { 'personal': 2, 'ws-1': 3 };
+    mocks.personalRequests = 1;
+    render(<WorkspaceRail />);
+
+    expect(screen.getByRole('button', { name: 'workspaceRail.personal' })).toHaveTextContent('3');
+    expect(screen.getByRole('button', { name: 'LobeHub' })).toHaveTextContent('3');
   });
 });
