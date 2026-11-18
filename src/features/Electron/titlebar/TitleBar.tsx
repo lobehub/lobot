@@ -5,7 +5,6 @@ import { memo } from 'react';
 import { electronStylish } from '@/styles/electron';
 import { getPlatform } from '@/utils/platform';
 
-import Connection from '../connection/Connection';
 import DeviceGateway from '../connection/DeviceGateway';
 import { useWatchThemeUpdate } from '../system/useWatchThemeUpdate';
 import { UpdateNotification } from '../updater/UpdateNotification';
@@ -38,7 +37,6 @@ const TitleBar = memo(() => {
         <Flexbox horizontal align={'center'} className={electronStylish.nodrag} gap={8}>
           <UpdateNotification />
           <DeviceGateway />
-          <Connection />
         </Flexbox>
         {showCustomWinControl && (
           <>
