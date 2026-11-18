@@ -4,6 +4,9 @@ import type { DynamicRouteMetaProps } from '@/spa/router/routeMeta';
 import { useAgentStore } from '@/store/agent';
 import { channelSelectors, useChannelStore } from '@/store/channel';
 
+import { groupChannelName } from './channelName';
+import { useChannelProjectName } from './useChannelProjectName';
+
 /**
  * Names the tab after the open Channel, from data the sidebar and page already loaded. A direct
  * conversation stands for its Agent, so its tab wears that Agent's avatar instead of `#`.
@@ -17,6 +20,7 @@ const ChannelDynamicMeta = ({ onResolve, params }: DynamicRouteMetaProps) => {
       channelSelectors.list(state)?.find((item) => item.id === channelId) ?? detail?.channel,
   );
   const visible = !!channel && matchesRouteWorkspace(channel.workspaceId, routeWorkspaceId);
+  const projectName = useChannelProjectName(channel?.projectId);
   const agentId = visible ? (channel.agentId ?? undefined) : undefined;
   const agent = useAgentStore((state) => (agentId ? state.agentMap[agentId] : undefined));
   // The page loads members before the Agent itself, so the member row covers the first paint.
@@ -34,7 +38,7 @@ const ChannelDynamicMeta = ({ onResolve, params }: DynamicRouteMetaProps) => {
           backgroundColor: agent?.backgroundColor || undefined,
           title: channel?.title,
         }
-      : { title: visible ? channel.title : undefined },
+      : { title: visible ? groupChannelName(channel, projectName) : undefined },
     onResolve,
   );
   return null;

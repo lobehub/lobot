@@ -67,6 +67,16 @@ describe('buildChannelBanner', () => {
     });
   });
 
+  it("names a project's default Channel after the project alone", () => {
+    const general = channel({ projectId: 'prj_1', title: 'General' });
+    expect(
+      buildChannelBanner({ channel: general, kind: 'message' }, message('Ann'), 'Launch'),
+    ).toEqual({ body: 'ship it', title: 'notification.groupTitle(channel=Launch,name=Ann)' });
+    expect(
+      buildChannelBanner({ channel: general, kind: 'mention' }, message('Ann'), 'Launch'),
+    ).toEqual({ body: 'ship it', title: 'notification.mentionedBy(channel=Launch,name=Ann)' });
+  });
+
   it('keeps the Channel title when no sender is known', () => {
     expect(buildChannelBanner({ channel: channel(), kind: 'message' }, undefined)).toEqual({
       body: 'preview',

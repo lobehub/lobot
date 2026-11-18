@@ -21,4 +21,25 @@ describe('channelTitle', () => {
       channelTitle({ channel: { peerUserId: null, title: 'Team' }, members: [] } as never, 'u'),
     ).toBe('Team');
   });
+
+  it("names a project's default Channel after the project", () => {
+    const general = { channel: { peerUserId: null, projectId: 'prj_1', title: 'General' } };
+    expect(channelTitle({ ...general, members: [] } as never, 'u', 'lobe-editor')).toBe(
+      'lobe-editor',
+    );
+  });
+
+  it('keeps the own name of a project Channel renamed from the default', () => {
+    const renamed = { channel: { peerUserId: null, projectId: 'prj_1', title: 'Launch' } };
+    expect(channelTitle({ ...renamed, members: [] } as never, 'u', 'lobe-editor')).toBe('Launch');
+  });
+
+  it('keeps "General" until the project name is known, and outside a project', () => {
+    const general = { channel: { peerUserId: null, projectId: 'prj_1', title: 'General' } };
+    expect(channelTitle({ ...general, members: [] } as never, 'u')).toBe('General');
+    const standalone = { channel: { peerUserId: null, projectId: null, title: 'General' } };
+    expect(channelTitle({ ...standalone, members: [] } as never, 'u', 'lobe-editor')).toBe(
+      'General',
+    );
+  });
 });

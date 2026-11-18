@@ -1,9 +1,9 @@
 'use client';
 
 import { CHANNEL_URL } from '@lobechat/const';
-import type { ChannelListItem } from '@lobot/types';
 import { Avatar, Icon } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ChannelListItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { HashIcon } from 'lucide-react';
 import { memo } from 'react';
@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
 import UserAvatar from '@/components/UserAvatar';
+import { isProjectDefaultChannel } from '@/features/Channels/channelName';
 import { useClearedThrough } from '@/features/Channels/clearedChannels';
 import { useHasUnreadThreadMention } from '@/features/Channels/threadReads';
 import { useChannelMenu } from '@/features/Channels/useChannelMenu';
@@ -21,9 +22,6 @@ import { projectListItemSelector, useProjectStore } from '@/store/project';
 import ConversationRow from './ConversationRow';
 import { channelPreview, channelPreviewThread, directCounterpart } from './conversations';
 import { AVATAR_SIZE, styles } from './style';
-
-/** Title the server gives the Channel a project starts with. */
-const DEFAULT_CHANNEL_TITLE = 'General';
 
 interface ChannelConversationProps {
   active: boolean;
@@ -44,7 +42,8 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
   // A project Channel goes by its project's name; one renamed from the default "General" keeps
   // its own name as a tag, so a project's Channels stay apart.
   const title = project?.name || channel.title;
-  const tag = project && channel.title !== DEFAULT_CHANNEL_TITLE ? channel.title : undefined;
+  const tag =
+    project && !isProjectDefaultChannel(channel, project.name) ? channel.title : undefined;
   const members = channel.memberAvatars ?? [];
   const channelMark = (
     <span {...stylex.props(styles.channelMark)}>
