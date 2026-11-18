@@ -1,5 +1,5 @@
-import type { ChannelDetail } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
+import type { ChannelDetail } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { useTranslation } from 'react-i18next';
 
@@ -7,6 +7,7 @@ import { createStore, Provider } from '@/features/Conversation/store';
 import WideScreenContainer from '@/features/WideScreenContainer';
 
 import { ArchivedNotice } from './ArchivedNotice';
+import { ChannelDropZone } from './ChannelDropZone';
 import { ThreadRootMessage } from './ChannelMessage';
 import { type ChannelComposerSend, Composer } from './Composer';
 import { styles } from './styles';
@@ -34,29 +35,34 @@ export function DraftThreadConversation({
         })
       }
     >
-      <Flexbox {...stylex.props(styles.body)}>
-        <Flexbox aria-label={t('thread')} {...stylex.props(styles.feed)}>
-          <WideScreenContainer fullWidth paddingInline={16}>
-            <ThreadRootMessage
-              detail={{ ...detail, attachments: draft.attachments }}
-              root={draft.root}
+      <ChannelDropZone
+        disabled={detail.channel.status === 'archived'}
+        draftKey={channelDraftKey(detail.channel.id, `draft:${draft.root.id}`)}
+      >
+        <Flexbox {...stylex.props(styles.body)}>
+          <Flexbox aria-label={t('thread')} {...stylex.props(styles.feed)}>
+            <WideScreenContainer fullWidth paddingInline={16}>
+              <ThreadRootMessage
+                detail={{ ...detail, attachments: draft.attachments }}
+                root={draft.root}
+              />
+              <p {...stylex.props(styles.muted)}>{t('threadEmpty')}</p>
+            </WideScreenContainer>
+          </Flexbox>
+          {/* The channel can be archived while this preview is open. */}
+          {detail.channel.status === 'archived' ? (
+            <ArchivedNotice channel={detail.channel} threadId={null} />
+          ) : (
+            <Composer
+              channel={detail.channel}
+              draftKey={channelDraftKey(detail.channel.id, `draft:${draft.root.id}`)}
+              members={detail.members.filter((member) => member.status === 'active')}
+              placeholder={t('threadComposer')}
+              onSend={onSend}
             />
-            <p {...stylex.props(styles.muted)}>{t('threadEmpty')}</p>
-          </WideScreenContainer>
+          )}
         </Flexbox>
-        {/* The channel can be archived while this preview is open. */}
-        {detail.channel.status === 'archived' ? (
-          <ArchivedNotice channel={detail.channel} threadId={null} />
-        ) : (
-          <Composer
-            channel={detail.channel}
-            draftKey={channelDraftKey(detail.channel.id, `draft:${draft.root.id}`)}
-            members={detail.members.filter((member) => member.status === 'active')}
-            placeholder={t('threadComposer')}
-            onSend={onSend}
-          />
-        )}
-      </Flexbox>
+      </ChannelDropZone>
     </Provider>
   );
 }

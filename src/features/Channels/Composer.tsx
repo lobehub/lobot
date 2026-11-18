@@ -1,4 +1,3 @@
-import type { ChannelListItem, ChannelPublicMember } from '@lobot/types';
 import type { ISlashOption } from '@lobehub/editor';
 import {
   INSERT_MENTION_COMMAND,
@@ -10,6 +9,7 @@ import {
 import { ChatInput, Editor, SendButton, useEditor } from '@lobehub/editor/react';
 import { ActionIcon, Flexbox, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ChannelListItem, ChannelPublicMember } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { $getSelection, $isRangeSelection, KEY_DOWN_COMMAND } from 'lexical';
 import { Reply, X } from 'lucide-react';
@@ -18,17 +18,14 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
-import { useLocalDragUpload } from '@/components/DragUploadZone/useLocalDragUpload';
 import { usePasteFile } from '@/components/DragUploadZone/usePasteFile';
 import WideScreenContainer from '@/features/WideScreenContainer';
 import { useEnterToSend } from '@/hooks/useEnterToSend';
-import { usePermission } from '@/hooks/usePermission';
 import { useSingleton } from '@/hooks/useSingleton';
 import { cacheScope } from '@/libs/replica';
 import type { ChannelQueuedSendInput } from '@/store/channel';
 import { useHomeStore } from '@/store/home';
 import { homeAgentListSelectors } from '@/store/home/selectors';
-import { featureFlagsSelectors, useServerConfigStore } from '@/store/serverConfig';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
@@ -46,6 +43,7 @@ import {
 import { createChannelSendRequest } from './sendRequest';
 import { styles } from './styles';
 import { useAttachments } from './useAttachments';
+import { useCanUploadAttachments } from './useCanUploadAttachments';
 import { useComposerDraft } from './useComposerDraft';
 import { useMentionInvites } from './useMentionInvites';
 import type { ChannelReplyTarget } from './useReplyTarget';
@@ -133,14 +131,10 @@ export function Composer({
   const [card, setCard] = useState<HTMLDivElement | null>(null);
   const requests = useSingleton(createChannelSendRequest);
   const attachments = useAttachments(draftKey);
-  const { allowed } = usePermission('create_content');
-  const enableUpload = useServerConfigStore((s) => featureFlagsSelectors(s).enableKnowledgeBase);
-  const canUpload = allowed && enableUpload;
+  const { allowed, canUpload, enableUpload } = useCanUploadAttachments();
   const upload = (files: File[]) => {
     if (!sending.current && canUpload) return attachments.upload(files);
   };
-  // Keep consuming file drops even when uploading is blocked; the callback gates uploads.
-  const { getContainerProps } = useLocalDragUpload({ onUploadFiles: upload });
   usePasteFile(editor, upload);
   const hasDraft = !!content.trim() || attachments.items.length > 0;
   const memberIds = members.map((member) => member.id);
@@ -242,7 +236,7 @@ export function Composer({
   );
   return (
     <WideScreenContainer fullWidth paddingInline={8}>
-      <Flexbox {...stylex.props(styles.composer)} gap={4} {...getContainerProps()}>
+      <Flexbox {...stylex.props(styles.composer)} gap={4}>
         {/* Without an activity line the input meets the feed directly, with no empty strip. */}
         {activity != null && (
           <div {...stylex.props(styles.composerStatus)}>

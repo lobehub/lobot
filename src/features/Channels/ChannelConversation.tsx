@@ -19,6 +19,7 @@ import { userProfileSelectors } from '@/store/user/selectors';
 
 import { ArchivedNotice } from './ArchivedNotice';
 import { showsListedShell, visibleChannelDetail } from './channelAccess';
+import { ChannelDropZone } from './ChannelDropZone';
 import { ChannelMessage, ThreadRootMessage } from './ChannelMessage';
 import { groupChannelName } from './channelName';
 import { ChannelWelcome } from './ChannelWelcome';
@@ -179,207 +180,212 @@ const Timeline = ({
     : [];
 
   return (
-    <Flexbox
-      data-channel-conversation={threadId || 'main'}
-      inert={inert}
-      {...stylex.props(styles.body)}
+    <ChannelDropZone
+      disabled={inert || channelArchived || thread?.status === 'archived'}
+      draftKey={channelDraftKey(channelId, threadId)}
     >
-      <AsyncBoundary
-        data={detail ?? shell}
-        error={sync.error}
-        errorVariant="page"
-        isLoading={!detail && !shell && !sync.error}
-        // Delayed so a fast fetch (switching Channels, opening a thread) paints no placeholder;
-        // right after the route skeleton it hands over immediately.
-        loading={delayed(<ChannelConversationSkeleton />)}
-        onRetry={() => void channelActions.refreshDetail(params)}
+      <Flexbox
+        data-channel-conversation={threadId || 'main'}
+        inert={inert}
+        {...stylex.props(styles.body)}
       >
-        {channel && (
-          <>
-            {!!detail && !!sync.error && (
-              <AsyncError
-                error={sync.error}
-                variant="inline"
-                onRetry={() => void channelActions.refreshDetail(params)}
-              />
-            )}
-            {detail ? (
-              <Flexbox
-                aria-label={t(threadId ? 'thread' : 'main')}
-                ref={feedRef}
-                onScroll={(event) => {
-                  const feed = event.currentTarget;
-                  followLatest.current =
-                    feed.scrollHeight - feed.scrollTop - feed.clientHeight < 64;
-                }}
-                {...stylex.props(styles.feed)}
-              >
-                <WideScreenContainer fullWidth paddingInline={16}>
-                  {(detail.hasMore || before !== undefined) && (
-                    <Flexbox horizontal align="center" gap={8} justify="center" paddingBlock={8}>
-                      <Button
-                        disabled={!detail.hasMore}
-                        size="small"
-                        onClick={() => setBefore(detail.messages[0]?.sequence)}
-                      >
-                        {t('olderMessages')}
-                      </Button>
-                      {before !== undefined && (
+        <AsyncBoundary
+          data={detail ?? shell}
+          error={sync.error}
+          errorVariant="page"
+          isLoading={!detail && !shell && !sync.error}
+          // Delayed so a fast fetch (switching Channels, opening a thread) paints no placeholder;
+          // right after the route skeleton it hands over immediately.
+          loading={delayed(<ChannelConversationSkeleton />)}
+          onRetry={() => void channelActions.refreshDetail(params)}
+        >
+          {channel && (
+            <>
+              {!!detail && !!sync.error && (
+                <AsyncError
+                  error={sync.error}
+                  variant="inline"
+                  onRetry={() => void channelActions.refreshDetail(params)}
+                />
+              )}
+              {detail ? (
+                <Flexbox
+                  aria-label={t(threadId ? 'thread' : 'main')}
+                  ref={feedRef}
+                  onScroll={(event) => {
+                    const feed = event.currentTarget;
+                    followLatest.current =
+                      feed.scrollHeight - feed.scrollTop - feed.clientHeight < 64;
+                  }}
+                  {...stylex.props(styles.feed)}
+                >
+                  <WideScreenContainer fullWidth paddingInline={16}>
+                    {(detail.hasMore || before !== undefined) && (
+                      <Flexbox horizontal align="center" gap={8} justify="center" paddingBlock={8}>
                         <Button
+                          disabled={!detail.hasMore}
                           size="small"
-                          type="text"
-                          onClick={() => {
-                            followLatest.current = true;
-                            setBefore(undefined);
-                          }}
+                          onClick={() => setBefore(detail.messages[0]?.sequence)}
                         >
-                          {t('latestMessages')}
+                          {t('olderMessages')}
                         </Button>
-                      )}
-                    </Flexbox>
-                  )}
-                  {detail.rootMessage && (
-                    <ThreadRootMessage
-                      detail={detail}
-                      highlighted={highlighted === detail.rootMessage.id}
-                      root={detail.rootMessage}
-                      onReply={
-                        channelArchived || thread?.status === 'archived' ? undefined : selectReply
-                      }
-                    />
-                  )}
-                  {/* The welcome heads the whole history, so it shows only above its first page. */}
-                  {!threadId && !detail.hasMore && before === undefined && (
-                    <ChannelWelcome
-                      detail={detail}
-                      onGreet={
-                        // Once anyone has spoken, there is nothing left to break the ice for.
-                        channelArchived || timeline.some((entry) => entry.kind === 'message')
-                          ? undefined
-                          : (content) => {
+                        {before !== undefined && (
+                          <Button
+                            size="small"
+                            type="text"
+                            onClick={() => {
                               followLatest.current = true;
-                              followSent(
-                                channelActions.queueSend({
-                                  attachments: [],
-                                  channelId,
-                                  content,
-                                  fileIds: [],
-                                  mentions: [],
-                                  threadId,
-                                }),
-                              );
-                            }
-                      }
-                    />
-                  )}
-                  {threadId && !timeline.length && (
-                    <p {...stylex.props(styles.muted)}>{t('threadEmpty')}</p>
-                  )}
-                  {presentChannelTimeline(timeline).map(
-                    ({ item, date, startsDay, continuation }) => (
-                      <Fragment key={item.kind === 'event' ? item.event.id : item.message.id}>
-                        {startsDay && (
-                          <div
-                            aria-label={timeFormats.date.format(date)}
-                            role="separator"
-                            {...stylex.props(styles.dateDivider)}
-                          >
-                            <time
-                              dateTime={date.toISOString()}
-                              title={timeFormats.date.format(date)}
-                            >
-                              {timeFormats.date.format(date)}
-                            </time>
-                          </div>
-                        )}
-                        {item.kind === 'event' ? (
-                          <JoinEventLine event={item.event} />
-                        ) : outgoingById.has(item.message.id) ? (
-                          <ChannelMessage
-                            continuation={continuation}
-                            message={item.message}
-                            pending={outgoingById.get(item.message.id)!.status === 'sending'}
-                            threadId={threadId}
-                            delivery={
-                              <OutgoingStatus
-                                message={outgoingById.get(item.message.id)!}
-                                onRetry={(failed) => followSent(channelActions.retrySend(failed))}
-                              />
-                            }
-                            detail={{
-                              ...detail,
-                              attachments: outgoingById.get(item.message.id)!.attachments,
+                              setBefore(undefined);
                             }}
-                            onJumpToMessage={jumpToMessage}
-                          />
-                        ) : (
-                          <ChannelMessage
-                            continuation={continuation}
-                            detail={detail}
-                            highlighted={highlighted === item.message.id}
-                            message={item.message}
-                            threadId={threadId}
-                            onJumpToMessage={jumpToMessage}
-                            onOpenThread={onOpenThread && openThread}
-                            onOpenTopic={onOpenTopic && openTopic}
-                            onReply={
-                              channelArchived || thread?.status === 'archived'
-                                ? undefined
-                                : selectReply
-                            }
-                            onStartThread={
-                              channelArchived || !onStartThread ? undefined : startThread
-                            }
-                          />
+                          >
+                            {t('latestMessages')}
+                          </Button>
                         )}
-                      </Fragment>
-                    ),
-                  )}
-                </WideScreenContainer>
-              </Flexbox>
-            ) : (
-              // Opened before its first page arrives: no placeholder, just the input, so the
-              // conversation is usable at once and fills in when it loads.
-              <Flexbox aria-label={t('main')} {...stylex.props(styles.feed)} />
-            )}
-            {channelArchived || thread?.status === 'archived' ? (
-              <ArchivedNotice channel={channel} threadId={threadId} />
-            ) : (
-              <Composer
-                channel={channel}
-                draftKey={channelDraftKey(channelId, threadId)}
-                key={channelDraftKey(channelId, threadId)}
-                members={activeMembers}
-                replyTarget={reply.target}
-                activity={
-                  detail && hasReplyActivity(detail, threadId) ? (
-                    <ReplyActivity detail={detail} threadId={threadId} />
-                  ) : null
-                }
-                placeholder={
-                  threadId
-                    ? t('threadComposer')
-                    : t(oneToOne ? 'directComposer' : 'composer', {
-                        name: detail
-                          ? channelTitle(detail, userId, projectName)
-                          : directCounterpart(channel)?.name ||
-                            groupChannelName(channel, projectName),
-                      })
-                }
-                onCancelReply={() => reply.clear()}
-                onQueue={(message) => {
-                  // A reply picked while outsiders were being invited stays for the next message.
-                  if (reply.snapshot().target?.id === message.replyToId) reply.clear();
-                  followLatest.current = true;
-                  setBefore(undefined);
-                  followSent(channelActions.queueSend({ ...message, channelId, threadId }));
-                }}
-              />
-            )}
-          </>
-        )}
-      </AsyncBoundary>
-    </Flexbox>
+                      </Flexbox>
+                    )}
+                    {detail.rootMessage && (
+                      <ThreadRootMessage
+                        detail={detail}
+                        highlighted={highlighted === detail.rootMessage.id}
+                        root={detail.rootMessage}
+                        onReply={
+                          channelArchived || thread?.status === 'archived' ? undefined : selectReply
+                        }
+                      />
+                    )}
+                    {/* The welcome heads the whole history, so it shows only above its first page. */}
+                    {!threadId && !detail.hasMore && before === undefined && (
+                      <ChannelWelcome
+                        detail={detail}
+                        onGreet={
+                          // Once anyone has spoken, there is nothing left to break the ice for.
+                          channelArchived || timeline.some((entry) => entry.kind === 'message')
+                            ? undefined
+                            : (content) => {
+                                followLatest.current = true;
+                                followSent(
+                                  channelActions.queueSend({
+                                    attachments: [],
+                                    channelId,
+                                    content,
+                                    fileIds: [],
+                                    mentions: [],
+                                    threadId,
+                                  }),
+                                );
+                              }
+                        }
+                      />
+                    )}
+                    {threadId && !timeline.length && (
+                      <p {...stylex.props(styles.muted)}>{t('threadEmpty')}</p>
+                    )}
+                    {presentChannelTimeline(timeline).map(
+                      ({ item, date, startsDay, continuation }) => (
+                        <Fragment key={item.kind === 'event' ? item.event.id : item.message.id}>
+                          {startsDay && (
+                            <div
+                              aria-label={timeFormats.date.format(date)}
+                              role="separator"
+                              {...stylex.props(styles.dateDivider)}
+                            >
+                              <time
+                                dateTime={date.toISOString()}
+                                title={timeFormats.date.format(date)}
+                              >
+                                {timeFormats.date.format(date)}
+                              </time>
+                            </div>
+                          )}
+                          {item.kind === 'event' ? (
+                            <JoinEventLine event={item.event} />
+                          ) : outgoingById.has(item.message.id) ? (
+                            <ChannelMessage
+                              continuation={continuation}
+                              message={item.message}
+                              pending={outgoingById.get(item.message.id)!.status === 'sending'}
+                              threadId={threadId}
+                              delivery={
+                                <OutgoingStatus
+                                  message={outgoingById.get(item.message.id)!}
+                                  onRetry={(failed) => followSent(channelActions.retrySend(failed))}
+                                />
+                              }
+                              detail={{
+                                ...detail,
+                                attachments: outgoingById.get(item.message.id)!.attachments,
+                              }}
+                              onJumpToMessage={jumpToMessage}
+                            />
+                          ) : (
+                            <ChannelMessage
+                              continuation={continuation}
+                              detail={detail}
+                              highlighted={highlighted === item.message.id}
+                              message={item.message}
+                              threadId={threadId}
+                              onJumpToMessage={jumpToMessage}
+                              onOpenThread={onOpenThread && openThread}
+                              onOpenTopic={onOpenTopic && openTopic}
+                              onReply={
+                                channelArchived || thread?.status === 'archived'
+                                  ? undefined
+                                  : selectReply
+                              }
+                              onStartThread={
+                                channelArchived || !onStartThread ? undefined : startThread
+                              }
+                            />
+                          )}
+                        </Fragment>
+                      ),
+                    )}
+                  </WideScreenContainer>
+                </Flexbox>
+              ) : (
+                // Opened before its first page arrives: no placeholder, just the input, so the
+                // conversation is usable at once and fills in when it loads.
+                <Flexbox aria-label={t('main')} {...stylex.props(styles.feed)} />
+              )}
+              {channelArchived || thread?.status === 'archived' ? (
+                <ArchivedNotice channel={channel} threadId={threadId} />
+              ) : (
+                <Composer
+                  channel={channel}
+                  draftKey={channelDraftKey(channelId, threadId)}
+                  key={channelDraftKey(channelId, threadId)}
+                  members={activeMembers}
+                  replyTarget={reply.target}
+                  activity={
+                    detail && hasReplyActivity(detail, threadId) ? (
+                      <ReplyActivity detail={detail} threadId={threadId} />
+                    ) : null
+                  }
+                  placeholder={
+                    threadId
+                      ? t('threadComposer')
+                      : t(oneToOne ? 'directComposer' : 'composer', {
+                          name: detail
+                            ? channelTitle(detail, userId, projectName)
+                            : directCounterpart(channel)?.name ||
+                              groupChannelName(channel, projectName),
+                        })
+                  }
+                  onCancelReply={() => reply.clear()}
+                  onQueue={(message) => {
+                    // A reply picked while outsiders were being invited stays for the next message.
+                    if (reply.snapshot().target?.id === message.replyToId) reply.clear();
+                    followLatest.current = true;
+                    setBefore(undefined);
+                    followSent(channelActions.queueSend({ ...message, channelId, threadId }));
+                  }}
+                />
+              )}
+            </>
+          )}
+        </AsyncBoundary>
+      </Flexbox>
+    </ChannelDropZone>
   );
 };
 

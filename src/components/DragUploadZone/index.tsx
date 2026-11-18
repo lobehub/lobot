@@ -267,6 +267,8 @@ const DragUploadZone = memo<DragUploadZoneProps>(
 
 DragUploadZone.displayName = 'DragUploadZone';
 
+export default DragUploadZone;
+
 export type { DroppedLocalPath } from './useLocalDragUpload';
 export { usePasteFile } from './usePasteFile';
 export { useUploadFiles } from './useUploadFiles';
