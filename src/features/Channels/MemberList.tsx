@@ -148,8 +148,8 @@ const WorkingConversations = ({
 };
 
 /**
- * A working member reads amber, like a running Agent in the sidebar. The avatar's dot already
- * shows the state, so the line carries no icon of its own.
+ * A working member's line reads as plain secondary text, like a description. The avatar's dot
+ * already shows the state, so the line carries no icon of its own.
  */
 const MemberState = ({
   detail,

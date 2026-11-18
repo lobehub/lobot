@@ -427,7 +427,7 @@ export const statusStyles = stylex.create({
     backgroundColor: cssVar.colorBgContainer,
   },
   memberWorking: {
-    color: cssVar.colorWarning,
+    color: cssVar.colorTextDescription,
   },
   /** A member's status line under its name: secondary text, one line. */
   memberState: {

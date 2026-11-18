@@ -73,8 +73,8 @@ const tones = stylex.create({
   working: { color: cssVar.colorInfo },
 });
 
-/** Statuses whose dot breathes: something is under way. */
-const isPulsing = (status: AgentPresenceStatus) => status === 'working' || status === 'waking';
+/** Statuses whose dot breathes: still on the way. Working holds a steady blue dot. */
+const isPulsing = (status: AgentPresenceStatus) => status === 'waking';
 
 const formatReset = (resetsAt: number) =>
   new Date(resetsAt).toLocaleString(undefined, {
