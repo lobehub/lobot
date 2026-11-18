@@ -327,6 +327,11 @@ function EnabledChannelPage() {
                 id={memberPanelId}
                 key={directAgent.agentId}
                 member={directAgent}
+                manageable={
+                  directAgent.status === 'active' &&
+                  detail.channel.canDelete &&
+                  detail.channel.status !== 'archived'
+                }
                 onClose={() => setMembersChannelId(null)}
               />
             ) : (

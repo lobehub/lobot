@@ -6,10 +6,13 @@ import * as stylex from '@stylexjs/stylex';
 import { SquareArrowOutUpRightIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { AgentPresenceDot, AgentPresenceLabel } from '@/features/ContactList/AgentPresenceBadge';
+import { useAgentPresence } from '@/features/ContactList/useAgentPresence';
 import { useAgentStore } from '@/store/agent';
 import { agentSelectors } from '@/store/agent/selectors';
 import { channelSelectors, useChannelStore } from '@/store/channel';
 
+import { AgentProfileEnvironment } from './AgentProfileEnvironment';
 import { AgentSchedules } from './AgentSchedules';
 import { MemberAvatar } from './MemberAvatar';
 import { memberName } from './memberName';
@@ -18,6 +21,10 @@ import { SharedAgentOwner, useSharedAgentOwner } from './SharedAgentOwner';
 import { useOpenDirectAgent } from './useOpenDirectAgent';
 
 const styles = stylex.create({
+  avatar: {
+    position: 'relative',
+    display: 'inline-flex',
+  },
   description: {
     fontSize: '13px',
     lineHeight: '20px',
@@ -62,6 +69,7 @@ export function AgentProfilePanel({
   availableWidth,
   channelId,
   id,
+  manageable,
   member,
   onClose,
 }: {
@@ -69,6 +77,8 @@ export function AgentProfilePanel({
   availableWidth?: number;
   channelId: string;
   id: string;
+  /** The viewer may change where the Agent runs in this conversation. */
+  manageable?: boolean;
   member: ChannelPublicMember;
   onClose: () => void;
 }) {
@@ -80,6 +90,7 @@ export function AgentProfilePanel({
   const meta = useAgentStore(agentSelectors.getAgentMetaById(agentId));
   const slug = useAgentStore(agentSelectors.getAgentSlugById(agentId));
   const owner = useSharedAgentOwner(channelId, agentId);
+  const presence = useAgentPresence(agentId);
   // A shared Agent's schedules are its owner's to run, not this viewer's.
   const shared = useChannelStore(
     (s) => !!channelSelectors.list(s)?.find((channel) => channel.id === channelId)?.sharedAgent,
@@ -111,11 +122,15 @@ export function AgentProfilePanel({
     >
       <Flexbox style={{ minHeight: 0, overflowY: 'auto' }}>
         <Flexbox align="center" gap={6} {...stylex.props(styles.hero)}>
-          <MemberAvatar member={member} size={64} />
+          <span {...stylex.props(styles.avatar)}>
+            <MemberAvatar member={member} size={64} />
+            {presence && <AgentPresenceDot presence={presence} size="small" />}
+          </span>
           <Text ellipsis fontSize={17} style={{ maxWidth: '100%' }} weight={600}>
             {name}
           </Text>
           {roleLine && <span {...stylex.props(styles.role)}>{roleLine}</span>}
+          {presence && <AgentPresenceLabel presence={presence} />}
         </Flexbox>
         <Flexbox gap={16} {...stylex.props(styles.detail)}>
           {owner && (
@@ -132,6 +147,14 @@ export function AgentProfilePanel({
               <span {...stylex.props(styles.placeholder)}>{t('profile.noDescription')}</span>
             )}
           </Flexbox>
+          {!shared && (
+            <AgentProfileEnvironment
+              agentId={agentId}
+              channelId={channelId}
+              manageable={manageable}
+              member={member}
+            />
+          )}
           {!shared && <AgentSchedules agentId={agentId} />}
         </Flexbox>
       </Flexbox>
