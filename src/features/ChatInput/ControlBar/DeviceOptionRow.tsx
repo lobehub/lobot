@@ -1,9 +1,9 @@
 'use client';
 
-import type { DeviceListItem } from '@lobot/types';
 import { Button, Icon } from '@lobehub/ui';
+import type { DeviceListItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
-import { RefreshCwIcon } from 'lucide-react';
+import { PowerIcon, RefreshCwIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -46,10 +46,8 @@ const DeviceOptionRow = ({
   const { t } = useTranslation('chat');
   // A row restored from the persisted list is neither online nor offline yet.
   const presenceUnknown = isDevicePresenceUnknown(device);
-  const { offlineLabelKey, reconnectLabelKey, selectable, showReconnect } = getDeviceOptionState(
-    device,
-    { presenceUnknown },
-  );
+  const { offlineLabelKey, offlineTone, reconnectLabelKey, selectable, showReconnect } =
+    getDeviceOptionState(device, { presenceUnknown });
 
   return (
     <DeviceDetailPopover device={device}>
@@ -70,6 +68,7 @@ const DeviceOptionRow = ({
               ) : (
                 <ExecutionTargetDeviceStatus
                   offlineLabel={t(offlineLabelKey)}
+                  offlineTone={offlineTone}
                   online={device.online}
                   unknown={presenceUnknown}
                   unknownLabel={t('heteroAgent.executionTarget.presenceChecking')}
@@ -81,10 +80,12 @@ const DeviceOptionRow = ({
               {showReconnect ? (
                 <Button
                   className={stylex.props(styles.reconnectButton).className}
-                  icon={<Icon icon={RefreshCwIcon} size={10} />}
                   loading={reconnecting}
                   size={'small'}
                   type={'text'}
+                  icon={
+                    <Icon icon={offlineTone === 'sleeping' ? PowerIcon : RefreshCwIcon} size={10} />
+                  }
                   onClick={(event) => {
                     event.stopPropagation();
                     onReconnect();

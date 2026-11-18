@@ -927,7 +927,8 @@ export default {
   'heteroAgent.executionTarget.wakeFailed': 'Could not wake this cloud device. Try again.',
   'heteroAgent.executionTarget.wakeStarting':
     'The cloud device is still starting. A run on it waits until it is ready.',
-  'heteroAgent.executionTarget.wakesWhenUsed': 'Wakes when used',
+  'heteroAgent.executionTarget.waking': 'Waking…',
+  'heteroAgent.executionTarget.wakesWhenUsed': 'Asleep · wakes when used',
   'hideForYou':
     "Direct message content is hidden. Please enable 'Show Direct Message Content' in settings to view.",
   'history.title': 'The Agent will keep only the latest {{count}} messages.',

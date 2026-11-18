@@ -18,6 +18,7 @@ describe('getDeviceOptionState', () => {
   it('lets the user pick a sleeping managed device, and the bound run wakes it', () => {
     expect(getDeviceOptionState(sleepingManaged, known)).toEqual({
       offlineLabelKey: 'heteroAgent.executionTarget.wakesWhenUsed',
+      offlineTone: 'sleeping',
       reconnectLabelKey: 'heteroAgent.executionTarget.wake',
       selectable: true,
       showReconnect: true,
@@ -38,6 +39,7 @@ describe('getDeviceOptionState', () => {
   it('keeps a managed device that cannot be woken unselectable and without a control', () => {
     expect(getDeviceOptionState({ ...sleepingManaged, managedPhase: 'failed' }, known)).toEqual({
       offlineLabelKey: 'heteroAgent.executionTarget.offline',
+      offlineTone: 'offline',
       reconnectLabelKey: 'heteroAgent.executionTarget.reconnect',
       selectable: false,
       showReconnect: false,
@@ -47,6 +49,7 @@ describe('getDeviceOptionState', () => {
   it('keeps an offline connected device unselectable with its desktop reconnect', () => {
     expect(getDeviceOptionState({ identitySource: 'machine-id', online: false }, known)).toEqual({
       offlineLabelKey: 'heteroAgent.executionTarget.offline',
+      offlineTone: 'offline',
       reconnectLabelKey: 'heteroAgent.executionTarget.reconnect',
       selectable: false,
       showReconnect: true,
@@ -60,5 +63,15 @@ describe('getDeviceOptionState', () => {
     expect(getDeviceOptionState(sleepingManaged, { presenceUnknown: true }).showReconnect).toBe(
       false,
     );
+  });
+
+  it('reads a starting managed device as waking, with nothing left to press', () => {
+    expect(getDeviceOptionState({ ...sleepingManaged, managedPhase: 'waking' }, known)).toEqual({
+      offlineLabelKey: 'heteroAgent.executionTarget.waking',
+      offlineTone: 'waking',
+      reconnectLabelKey: 'heteroAgent.executionTarget.wake',
+      selectable: true,
+      showReconnect: false,
+    });
   });
 });

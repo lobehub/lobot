@@ -1,7 +1,7 @@
 'use client';
 
-import type { DeviceExecutionTarget, DeviceListItem } from '@lobot/types';
 import { createStaticStyles, cssVar, Flexbox, Icon } from '@lobehub/ui';
+import type { DeviceExecutionTarget, DeviceListItem } from '@lobot/types';
 import { BoxIcon, LaptopIcon, MonitorOffIcon, SparklesIcon } from 'lucide-react';
 import { memo } from 'react';
 
@@ -16,6 +16,26 @@ const styles = createStaticStyles(({ css }) => ({
     border-radius: 50%;
 
     background: ${cssVar.colorTextQuaternary};
+  `,
+  // Asleep: a green ring, so a cloud device that wakes on use does not read as offline.
+  dotSleeping: css`
+    flex: none;
+
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+
+    box-shadow: inset 0 0 0 1.5px ${cssVar.colorSuccess};
+  `,
+  dotWaking: css`
+    flex: none;
+
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+
+    background: ${cssVar.colorWarning};
+    box-shadow: 0 0 0 2px ${cssVar.colorWarningBg};
   `,
   dotOnline: css`
     flex: none;
@@ -261,6 +281,8 @@ ExecutionTargetIcon.displayName = 'ExecutionTargetPicker.ExecutionTargetIcon';
 
 interface ExecutionTargetDeviceStatusProps {
   offlineLabel: string;
+  /** How a device that is not connected reads; a sleeping cloud device is not offline. */
+  offlineTone?: 'offline' | 'sleeping' | 'waking';
   online: boolean;
   onlineLabel: string;
   /**
@@ -273,11 +295,21 @@ interface ExecutionTargetDeviceStatusProps {
 }
 
 export const ExecutionTargetDeviceStatus = memo<ExecutionTargetDeviceStatusProps>(
-  ({ offlineLabel, online, onlineLabel, unknown, unknownLabel }) => (
+  ({ offlineLabel, offlineTone = 'offline', online, onlineLabel, unknown, unknownLabel }) => (
     <span className={styles.status}>
       <span
         aria-hidden
-        className={unknown ? styles.dotOffline : online ? styles.dotOnline : styles.dotOffline}
+        className={
+          unknown
+            ? styles.dotOffline
+            : online
+              ? styles.dotOnline
+              : offlineTone === 'sleeping'
+                ? styles.dotSleeping
+                : offlineTone === 'waking'
+                  ? styles.dotWaking
+                  : styles.dotOffline
+        }
       />
       <span>{unknown ? unknownLabel : online ? onlineLabel : offlineLabel}</span>
     </span>
