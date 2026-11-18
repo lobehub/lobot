@@ -1,12 +1,7 @@
 import type { TaskListItem } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
-import {
-  type AgentSchedule,
-  agentScheduleTime,
-  mergeAgentSchedules,
-  toAgentSchedule,
-} from './agentSchedules';
+import { type AgentSchedule, agentScheduleTime, toAgentSchedule } from './agentSchedules';
 
 const t = ((key: string, options?: Record<string, unknown>) =>
   options ? `${key}:${JSON.stringify(options)}` : key) as any;
@@ -35,30 +30,22 @@ const schedule = (patch: Partial<AgentSchedule>): AgentSchedule => ({
 
 describe('toAgentSchedule', () => {
   it('names a task by its name, else the first instruction line', () => {
-    expect(toAgentSchedule(task({ name: ' Daily backup ' }))?.name).toBe('Daily backup');
-    expect(toAgentSchedule(task({}))?.name).toBe('Back up the workspace');
+    expect(toAgentSchedule(task({ name: ' Daily backup ' })).name).toBe('Daily backup');
+    expect(toAgentSchedule(task({})).name).toBe('Back up the workspace');
   });
 
-  it('skips a task without automation', () => {
-    expect(toAgentSchedule(task({ automationMode: null }))).toBeUndefined();
-  });
-});
-
-describe('mergeAgentSchedules', () => {
-  it('keeps a schedule switched off here after the server stops listing it', () => {
-    const off = schedule({ enabled: false, id: 'task-2' });
-    const list = mergeAgentSchedules([schedule({})], { 'task-2': off });
-    expect(list.map((item) => [item.id, item.enabled])).toEqual([
-      ['task-1', true],
-      ['task-2', false],
-    ]);
+  it('shows a row switched off here as off, keeping the mode to restore', () => {
+    const off = toAgentSchedule(
+      task({ automationMode: null, heartbeatInterval: 600, schedulePattern: '0 3 * * *' }),
+      'heartbeat',
+    );
+    expect([off.enabled, off.mode]).toEqual([false, 'heartbeat']);
   });
 
-  it('shows the local switch state over the fetched row', () => {
-    const list = mergeAgentSchedules([schedule({})], {
-      'task-1': schedule({ enabled: false }),
-    });
-    expect(list).toEqual([schedule({ enabled: false })]);
+  it('infers the mode to restore from the columns when none was recorded', () => {
+    const heartbeat = task({ automationMode: null, heartbeatInterval: 600, schedulePattern: null });
+    expect(toAgentSchedule(heartbeat).mode).toBe('heartbeat');
+    expect(toAgentSchedule(task({ automationMode: null })).mode).toBe('schedule');
   });
 });
 

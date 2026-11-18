@@ -14,35 +14,28 @@ export interface AgentSchedule {
   schedulePattern: string | null;
 }
 
-export const toAgentSchedule = (task: TaskListItem): AgentSchedule | undefined => {
-  const mode = task.automationMode;
-  if (!mode) return;
+/**
+ * The list holds live automation only, so a row whose mode is cleared was
+ * switched off in this panel and is still on screen. Turning it back on
+ * restores the mode it was switched off from (`offMode`), else the one its
+ * columns imply.
+ */
+export const toAgentSchedule = (
+  task: TaskListItem,
+  offMode?: TaskAutomationMode,
+): AgentSchedule => {
+  const mode =
+    task.automationMode ??
+    offMode ??
+    (!task.schedulePattern && (task.heartbeatInterval ?? 0) > 0 ? 'heartbeat' : 'schedule');
   return {
-    enabled: true,
+    enabled: !!task.automationMode,
     heartbeatInterval: task.heartbeatInterval,
     id: task.id,
     mode,
     name: task.name?.trim() || task.instruction.trim().split('\n')[0] || task.identifier,
     schedulePattern: task.schedulePattern,
   };
-};
-
-/**
- * The server lists only live automation, so a schedule switched off here drops
- * out on the next fetch. Keep the ones toggled in this panel where they were, so
- * the switch can be turned straight back on.
- */
-export const mergeAgentSchedules = (
-  fetched: AgentSchedule[],
-  toggled: Record<string, AgentSchedule>,
-): AgentSchedule[] => {
-  const seen = new Set<string>();
-  const list = fetched.map((item) => {
-    seen.add(item.id);
-    return toggled[item.id] ?? item;
-  });
-  for (const item of Object.values(toggled)) if (!seen.has(item.id)) list.push(item);
-  return list;
 };
 
 const formatInterval = (seconds: number, t: TFunction<'chat'>) => {

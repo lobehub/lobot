@@ -1,23 +1,34 @@
 import { Button, Flexbox, Icon, Switch, Text, toast } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { TaskAutomationMode } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { ClockIcon } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useClientDataSWR } from '@/libs/swr';
-import { taskService } from '@/services/task';
+import { useTaskStore } from '@/store/task';
+import { taskListSelectors } from '@/store/task/selectors';
+import type { TaskListQuery } from '@/store/task/slices/list/projection';
 
-import {
-  type AgentSchedule,
-  agentScheduleTime,
-  mergeAgentSchedules,
-  toAgentSchedule,
-} from './agentSchedules';
+import { type AgentSchedule, agentScheduleTime, toAgentSchedule } from './agentSchedules';
 
 /** Rows shown before "Show all". */
 export const AGENT_SCHEDULES_COLLAPSED = 5;
 const FETCH_LIMIT = 50;
+/**
+ * A schedule switched off here leaves the live-automation list on the next
+ * fetch, so a focus refetch would pull the row out from under its switch.
+ * The list refreshes when the panel opens again.
+ */
+const SYNC_OPTIONS = { revalidateOnFocus: false };
+
+const schedulesQuery = (agentId: string): TaskListQuery => ({
+  agentId,
+  automated: true,
+  limit: FETCH_LIMIT,
+  orderBy: 'createdAt',
+  visibility: 'all',
+});
 
 const styles = stylex.create({
   card: {
@@ -50,11 +61,9 @@ const styles = stylex.create({
 const ScheduleRow = ({
   item,
   onToggle,
-  pending,
 }: {
   item: AgentSchedule;
   onToggle: (item: AgentSchedule, enabled: boolean) => void;
-  pending: boolean;
 }) => {
   const { t } = useTranslation('chat');
   const time = agentScheduleTime(item, t);
@@ -71,7 +80,6 @@ const ScheduleRow = ({
       <Switch
         aria-label={item.name}
         checked={item.enabled}
-        loading={pending}
         size="small"
         onChange={(checked) => onToggle(item, checked)}
       />
@@ -83,37 +91,30 @@ const ScheduleRow = ({
 export function AgentSchedules({ agentId }: { agentId: string }) {
   const { t } = useTranslation('channel');
   const [expanded, setExpanded] = useState(false);
-  const [toggled, setToggled] = useState<Record<string, AgentSchedule>>({});
-  const [pending, setPending] = useState<Record<string, boolean>>({});
+  // The mode each row was switched off from, so switching it back on restores it.
+  const [offModes, setOffModes] = useState<Record<string, TaskAutomationMode>>({});
 
-  const { data } = useClientDataSWR(['channel:agentSchedules', agentId], () =>
-    taskService.list({
-      assigneeAgentId: agentId,
-      automated: true,
-      limit: FETCH_LIMIT,
-      orderBy: 'createdAt',
-    }),
+  const query = useMemo(() => schedulesQuery(agentId), [agentId]);
+  const useFetchTaskList = useTaskStore((s) => s.useFetchTaskList);
+  useFetchTaskList(query, SYNC_OPTIONS);
+  const tasks = useTaskStore(useMemo(() => taskListSelectors.taskList(query), [query]));
+  const setTaskAutomationMode = useTaskStore((s) => s.setTaskAutomationMode);
+
+  const schedules = useMemo(
+    () => (tasks ?? []).map((task) => toAgentSchedule(task, offModes[task.id])),
+    [tasks, offModes],
   );
-
-  const schedules = useMemo(() => {
-    const fetched = (data?.data ?? []).flatMap((task) => toAgentSchedule(task) ?? []);
-    return mergeAgentSchedules(fetched, toggled);
-  }, [data, toggled]);
 
   const handleToggle = useCallback(
     async (item: AgentSchedule, enabled: boolean) => {
-      setToggled((prev) => ({ ...prev, [item.id]: { ...item, enabled } }));
-      setPending((prev) => ({ ...prev, [item.id]: true }));
+      if (!enabled) setOffModes((prev) => ({ ...prev, [item.id]: item.mode }));
       try {
-        await taskService.update(item.id, { automationMode: enabled ? item.mode : null });
+        await setTaskAutomationMode(item.id, enabled ? item.mode : null);
       } catch {
-        setToggled((prev) => ({ ...prev, [item.id]: item }));
         toast.error(t('profile.schedules.toggleFailed'));
-      } finally {
-        setPending((prev) => ({ ...prev, [item.id]: false }));
       }
     },
-    [t],
+    [setTaskAutomationMode, t],
   );
 
   if (schedules.length === 0) return null;
@@ -126,12 +127,7 @@ export function AgentSchedules({ agentId }: { agentId: string }) {
       <span {...stylex.props(styles.label)}>{t('profile.schedules')}</span>
       <Flexbox {...stylex.props(styles.card)}>
         {visible.map((item) => (
-          <ScheduleRow
-            item={item}
-            key={item.id}
-            pending={!!pending[item.id]}
-            onToggle={handleToggle}
-          />
+          <ScheduleRow item={item} key={item.id} onToggle={handleToggle} />
         ))}
         {hasMore && (
           <Button

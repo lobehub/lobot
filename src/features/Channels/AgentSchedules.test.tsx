@@ -2,7 +2,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { SWRConfig } from 'swr';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { createReplicaState } from '@/libs/replica';
 import { taskService } from '@/services/task';
+import { useTaskStore } from '@/store/task';
 
 import { AgentSchedules } from './AgentSchedules';
 
@@ -32,6 +34,7 @@ describe('AgentSchedules', () => {
   beforeEach(() => {
     vi.mocked(taskService.list).mockReset();
     vi.mocked(taskService.update).mockReset();
+    useTaskStore.setState({ taskListMap: {}, taskListReplica: createReplicaState() });
   });
 
   it("lists the Agent's live schedules and folds past five", async () => {
@@ -79,5 +82,20 @@ describe('AgentSchedules', () => {
     const { container } = renderList();
     await waitFor(() => expect(taskService.list).toHaveBeenCalled());
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it('puts the switch back when the server refuses the change', async () => {
+    vi.mocked(taskService.list).mockResolvedValue({
+      data: [task('a')] as any,
+      success: true,
+      total: 1,
+    });
+    vi.mocked(taskService.update).mockRejectedValue(new Error('nope'));
+    renderList();
+
+    const toggle = await screen.findByRole('switch', { name: 'Task a' });
+    fireEvent.click(toggle);
+    await waitFor(() => expect(taskService.update).toHaveBeenCalled());
+    await waitFor(() => expect(toggle).toHaveAttribute('aria-checked', 'true'));
   });
 });
