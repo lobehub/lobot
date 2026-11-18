@@ -1,7 +1,15 @@
 import type { ChannelDetail } from '@lobot/types';
+import { renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { canInviteMembers, showsListedShell, visibleChannelDetail } from './channelAccess';
+import { useChannelStore } from '@/store/channel';
+
+import {
+  canInviteMembers,
+  showsListedShell,
+  useCanInviteMembers,
+  visibleChannelDetail,
+} from './channelAccess';
 
 describe('Channel access after revalidation', () => {
   const cached = { channel: { title: 'Previously accessible' } } as ChannelDetail;
@@ -29,8 +37,26 @@ describe('inviting members', () => {
     ['a plain member', { canDelete: false }],
     ['an archived Channel', { status: 'archived' as const }],
     ['a personal conversation between two people', { peerUserId: 'peer' }],
+    ["a conversation with another person's shared Agent", { sharedAgent: true }],
   ])('offers no invite to %s', (_, override) => {
     expect(canInviteMembers({ ...open, ...override })).toBe(false);
+  });
+});
+
+describe('inviting from an open conversation', () => {
+  const channel = {
+    canDelete: true,
+    id: 'chn_1',
+    status: 'active',
+    workspaceId: null,
+  } as unknown as ChannelDetail['channel'];
+  it('reads the shared Agent mark from the list row when the detail lacks it', () => {
+    useChannelStore.setState({ listMap: { all: [{ ...channel, sharedAgent: true }] } } as never);
+    expect(renderHook(() => useCanInviteMembers(channel)).result.current).toBe(false);
+  });
+  it('invites when the list row marks no shared Agent', () => {
+    useChannelStore.setState({ listMap: { all: [channel] } } as never);
+    expect(renderHook(() => useCanInviteMembers(channel)).result.current).toBe(true);
   });
 });
 

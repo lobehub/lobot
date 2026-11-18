@@ -1,12 +1,12 @@
 import { CHANNEL_URL } from '@lobechat/const';
-import type { ChannelDetail } from '@lobot/types';
 import { Button } from '@lobehub/ui';
+import type { ChannelDetail } from '@lobot/types';
 import { UserPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 
-import { canInviteMembers } from '../channelAccess';
+import { useCanInviteMembers } from '../channelAccess';
 import { openInviteMembers } from '../CreateChannel';
 import { MemberList, useMemberEntries } from '../MemberList';
 import { peerName } from '../peerName';
@@ -15,6 +15,7 @@ import { FormCard } from './FormCard';
 export function MembersSection({ detail }: { detail: ChannelDetail }) {
   const { t } = useTranslation('channel');
   const { channel, members } = detail;
+  const canInvite = useCanInviteMembers(channel);
   const entries = useMemberEntries(detail);
   const navigate = useWorkspaceAwareNavigate();
   const directAgent = channel.agentId
@@ -27,7 +28,7 @@ export function MembersSection({ detail }: { detail: ChannelDetail }) {
       description={t('settings.members.description')}
       title={t('membersCount', { count: entries.length })}
       headerAction={
-        canInviteMembers(channel) && (
+        canInvite && (
           <Button
             icon={UserPlus}
             onClick={() =>

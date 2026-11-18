@@ -19,7 +19,7 @@ import { useCloseOnNavigate } from '@/hooks/useCloseOnNavigate';
 import { sx } from '@/styles/sx';
 
 import { openChannelAgentEnvironment } from './AgentEnvironment';
-import { canInviteMembers } from './channelAccess';
+import { useCanInviteMembers } from './channelAccess';
 import { openInviteMembers } from './CreateChannel';
 import { FailureIndicator } from './FailureIndicator';
 import { MemberList, StatusAvatar, useMemberEntries } from './MemberList';
@@ -55,6 +55,7 @@ export function MemberStatus({
   const popoverKey = useCloseOnNavigate(open, () => setOpen(false));
   const navigate = useWorkspaceAwareNavigate();
   const { channel, members: allMembers = [] } = detail;
+  const canInvite = useCanInviteMembers(channel);
   const entries = useMemberEntries(detail);
   const directAgent = channel.agentId
     ? entries.find((entry) => entry.member.agentId === channel.agentId)
@@ -188,7 +189,7 @@ export function MemberStatus({
           </Button>
         </Popover>
       )}
-      {canInviteMembers(channel) && (
+      {canInvite && (
         <ActionIcon
           aria-label={t('invite.title')}
           icon={UserPlus}
