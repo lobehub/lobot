@@ -13,6 +13,8 @@ import { useAgentStore } from '@/store/agent';
 import { agentSelectors, builtinAgentSelectors } from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
 import { operationSelectors } from '@/store/chat/selectors';
+import { useUserStore } from '@/store/user';
+import { userProfileSelectors } from '@/store/user/selectors';
 
 import ConversationRow from './ConversationRow';
 import { channelPreviewThread, conversationPreview, replyActivity } from './conversations';
@@ -35,6 +37,7 @@ const InboxConversation = memo<{
     inboxAgentId ? operationSelectors.isAgentVisiblyRunning(inboxAgentId) : () => false,
   );
   const prefetchAgent = usePrefetchAgent();
+  const userId = useUserStore(userProfileSelectors.userId);
   const { onClick, url } = useInboxConversationLink();
   const title = agentDisplayName(meta, DEFAULT_INBOX_TITLE);
   const active = !!activeRouteId && (activeRouteId === routeId || activeRouteId === inboxAgentId);
@@ -68,7 +71,7 @@ const InboxConversation = memo<{
       contextMenuItems={channel ? channelActions : undefined}
       activityCount={workingCount}
       // Same preview and time as every other Agent row; its tagline when it has nothing yet.
-      preview={conversationPreview(meta.description, channel) ?? t('inbox.desc')}
+      preview={conversationPreview(meta.description, channel, userId) ?? t('inbox.desc')}
     />
   );
 });

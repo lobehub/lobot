@@ -1,4 +1,5 @@
 import type { ChannelLastMessage, ChannelListItem, SidebarAgentItem } from '@lobot/types';
+import { t } from 'i18next';
 
 import { markdownToTxt } from '@/utils/markdownToTxt';
 
@@ -29,9 +30,46 @@ interface ConversationSections {
 const oneLine = (text: string | null | undefined) =>
   (text ?? '').replaceAll(/\s+/g, ' ').trim() || undefined;
 
-/** A Channel's latest message as one line of plain text. */
-export const channelPreview = (channel: Pick<ChannelListItem, 'lastMessage'>) =>
-  channel.lastMessage ? oneLine(markdownToTxt(channel.lastMessage.content)) : undefined;
+/** Who reads a preview, so their own message is named as theirs. */
+export interface PreviewViewer {
+  /** A group names every sender; a conversation of two names only the viewer's own messages. */
+  group?: boolean;
+  /** The signed-in person. */
+  userId?: string;
+}
+
+/** A message's text as one line, else what it carries ("[Image]") when it was only files. */
+const messageBody = ({ attachments, content }: ChannelLastMessage) => {
+  const text = oneLine(markdownToTxt(content));
+  if (text || !attachments) return text;
+  return t(attachments.fileType.startsWith('image/') ? 'preview.image' : 'preview.file', {
+    ns: 'channel',
+  });
+};
+
+/** The name a preview starts with: "Me" for the viewer, the sender's name in a group. */
+const senderName = ({ author }: ChannelLastMessage, { group, userId }: PreviewViewer) => {
+  if (!author) return;
+  if (userId && author.type === 'user' && author.id === userId)
+    return t('preview.self', { ns: 'channel' });
+  return group ? author.name || undefined : undefined;
+};
+
+/**
+ * A Channel's latest message as one line, led by its sender like WeChat's list: "Me: [Image]"
+ * for the viewer's own message, and "Alice: …" for anyone else's in a group.
+ */
+export const channelPreview = (
+  channel: Pick<ChannelListItem, 'lastMessage'>,
+  viewer: PreviewViewer = {},
+) => {
+  const message = channel.lastMessage;
+  if (!message) return;
+  const content = messageBody(message);
+  if (!content) return;
+  const name = senderName(message, viewer);
+  return name ? t('preview.sender', { content, name, ns: 'channel' }) : content;
+};
 
 export type ChannelPreviewThread = NonNullable<ChannelLastMessage['thread']>;
 
@@ -49,7 +87,9 @@ export const channelPreviewThread = (
 export const conversationPreview = (
   description: string | null | undefined,
   direct?: Pick<ChannelListItem, 'lastMessage'>,
-) => (direct && channelPreview(direct)) || oneLine(description);
+  /** The signed-in person, whose own latest message reads "Me: …". */
+  userId?: string,
+) => (direct && channelPreview(direct, { userId })) || oneLine(description);
 
 /**
  * Pinned by this person atop their own list. The pin lives on their membership of the
@@ -86,11 +126,14 @@ export const buildConversationSections = (
   {
     activeId,
     includeIdle = false,
+    userId,
   }: {
     /** The routed conversation, kept so the open chat always has its row. */
     activeId?: string;
     /** Keep agents and groups without any conversation yet. */
     includeIdle?: boolean;
+    /** The signed-in person, whose own latest message previews as "Me: …". */
+    userId?: string;
   } = {},
 ): ConversationSections => {
   const seen = new Set<string>();
@@ -106,7 +149,7 @@ export const buildConversationSections = (
         activeAt: channelActivity(direct),
         channel: direct,
         item,
-        preview: conversationPreview(item.description, direct),
+        preview: conversationPreview(item.description, direct, userId),
         previewThread: channelPreviewThread(direct),
         unread: direct.unreadCount ?? 0,
       });

@@ -18,6 +18,8 @@ import { useChannelMenu } from '@/features/Channels/useChannelMenu';
 import GroupAvatar from '@/features/GroupAvatar';
 import ProjectAvatar from '@/features/Projects/ProjectAvatar';
 import { projectListItemSelector, useProjectStore } from '@/store/project';
+import { useUserStore } from '@/store/user';
+import { userProfileSelectors } from '@/store/user/selectors';
 
 import ConversationRow from './ConversationRow';
 import { channelPreview, channelPreviewThread, directCounterpart } from './conversations';
@@ -52,6 +54,7 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
   );
 
   const counterpart = directCounterpart(channel);
+  const userId = useUserStore(userProfileSelectors.userId);
   // Deleted on this device and nothing new since: a search still finds it, with no old preview.
   const clearedThrough = useClearedThrough(channel.id);
   const cleared = clearedThrough !== undefined && channel.sequence <= clearedThrough;
@@ -69,7 +72,7 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
         hideKey={channel.id}
         mentioned={mentioned}
         muted={!!channel.mutedAt}
-        preview={cleared ? undefined : channelPreview(channel)}
+        preview={cleared ? undefined : channelPreview(channel, { userId })}
         previewThread={cleared ? undefined : channelPreviewThread(channel)}
         // Someone else's Agent looks like one's own otherwise; the tag says it is theirs.
         tag={channel.sharedAgent ? t('sharedAgent.tag') : undefined}
@@ -100,7 +103,8 @@ const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, 
       hideKey={channel.id}
       mentioned={mentioned}
       muted={!!channel.mutedAt}
-      preview={channelPreview(channel)}
+      // A group names who said it; the viewer's own message reads "Me: …".
+      preview={channelPreview(channel, { group: true, userId })}
       previewThread={channelPreviewThread(channel)}
       tag={tag}
       title={title}
