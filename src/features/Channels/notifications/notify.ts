@@ -26,12 +26,14 @@ import type { ChannelActivityEvent } from './activity';
  */
 export const latestIncoming = async (
   channel: Pick<ChannelListItem, 'id' | 'lastMessage'>,
+  workspaceId?: string | null,
 ): Promise<ChannelPublicMessage | undefined> => {
   const { lastMessage } = channel;
-  const detail = await channelService.detail({
-    channelId: channel.id,
-    threadId: lastMessage?.thread?.id,
-  });
+  const params = { channelId: channel.id, threadId: lastMessage?.thread?.id };
+  const detail =
+    workspaceId === undefined
+      ? await channelService.detail(params)
+      : await channelService.detailInScope(workspaceId, params);
   const userId = userProfileSelectors.userId(getUserStoreState());
   const message = detail.messages.findLast((item) => !isCurrentUserAuthor(item.author, userId));
   if (!message) return undefined;
@@ -152,13 +154,19 @@ export const buildGroupSender = async (
  * notification sound. The main process shows banners only while the window is hidden or
  * unfocused; when it skips one, the in-app chime plays instead so a message in another Channel
  * is still heard.
+ *
+ * `workspaceId` is the scope the Channel lives in when it is not the active one (`null` is the
+ * personal space): its page loads from there, and clicking the banner switches to it.
  */
-export const notifyChannelActivity = async (event: ChannelActivityEvent): Promise<void> => {
+export const notifyChannelActivity = async (
+  event: ChannelActivityEvent,
+  workspaceId?: string | null,
+): Promise<void> => {
   const { channel } = event;
   try {
     const [message, soundName] = await Promise.all([
       // The list preview is enough to fall back on when the page cannot load.
-      latestIncoming(channel).catch(() => undefined),
+      latestIncoming(channel, workspaceId).catch(() => undefined),
       completionSoundService.getNotificationSoundFile(),
     ]);
     const projectName = projectListItemSelector(channel.projectId)(
@@ -173,7 +181,7 @@ export const notifyChannelActivity = async (event: ChannelActivityEvent): Promis
 
     const result = await desktopNotificationService.showNotification({
       ...banner,
-      navigate: { path: CHANNEL_URL(channel.id) },
+      navigate: { path: CHANNEL_URL(channel.id), workspaceId },
       sender,
       soundName,
     });

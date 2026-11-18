@@ -116,6 +116,12 @@ class ChannelService {
     (await lambdaClient.channel.openPeer.mutate({ userId })).data;
   detail = async (params: ChannelViewParams): Promise<ChannelDetail> =>
     (await lambdaClient.channel.detail.query(params)).data;
+  /** A Channel page in a scope other than the active one; `null` is the personal space. */
+  detailInScope = async (
+    workspaceId: string | null,
+    params: ChannelViewParams,
+  ): Promise<ChannelDetail> =>
+    (await createWorkspaceLambdaClient(workspaceId).channel.detail.query(params)).data;
   list = async (): Promise<ChannelListItem[]> => (await lambdaClient.channel.list.query()).data;
   /** The Channel list of a scope other than the active one; `null` is the personal space. */
   listInScope = async (workspaceId: string | null): Promise<ChannelListItem[]> =>

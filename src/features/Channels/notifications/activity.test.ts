@@ -111,6 +111,12 @@ describe('diffChannelActivity', () => {
     expect(diff(before, after, { level: 'mentions' })).toEqual(['direct:message']);
   });
 
+  it('counts a conversation between two people as direct at the mentions level', () => {
+    const before = [channel('peer', { peerUserId: 'u2' })];
+    const after = [channel('peer', { lastMessage: later(1), peerUserId: 'u2', unreadCount: 1 })];
+    expect(diff(before, after, { level: 'mentions' })).toEqual(['peer:message']);
+  });
+
   it('announces only @mentions in a muted conversation', () => {
     const muted = { mutedAt: new Date('2026-11-15T09:00:00Z') };
     const before = [channel('chn_dm', muted), channel('chn_team', muted)];

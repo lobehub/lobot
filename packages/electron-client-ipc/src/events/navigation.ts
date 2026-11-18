@@ -49,8 +49,15 @@ export interface NavigationBroadcastEvents {
 
   /**
    * Ask renderer to navigate within the SPA without reloading the whole page.
+   * `workspaceId` names the scope the path belongs to (`null` is the personal space); the
+   * renderer switches to it first. Absent, the path opens in the active scope.
    */
-  navigate: (data: { escape?: boolean; path: string; replace?: boolean }) => void;
+  navigate: (data: {
+    escape?: boolean;
+    path: string;
+    replace?: boolean;
+    workspaceId?: string | null;
+  }) => void;
 
   /** Ask the renderer to open the all-agents surface. */
   openAllAgents: () => void;

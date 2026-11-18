@@ -54,9 +54,10 @@ export interface ShowDesktopNotificationParams {
    * `DesktopNavigationBridge` to be mounted on the renderer side.
    *
    * `escape` tells the renderer to use this path literally instead of applying
-   * the currently active workspace prefix.
+   * the currently active workspace prefix. `workspaceId` names the scope the path belongs to
+   * (`null` is the personal space): the renderer switches to it before navigating.
    */
-  navigate?: { escape?: boolean; path: string; replace?: boolean };
+  navigate?: { escape?: boolean; path: string; replace?: boolean; workspaceId?: string | null };
   requestAttention?: boolean;
   sender?: DesktopNotificationSender;
   silent?: boolean;

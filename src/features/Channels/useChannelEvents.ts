@@ -1,8 +1,9 @@
 import { useEffect, useSyncExternalStore } from 'react';
 
+import { getActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import { canUseGatewayProtocolV2 } from '@/helpers/gatewayProtocol';
 import type { ChannelViewParams } from '@/services/channel';
-import { channelActions } from '@/store/channel';
+import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 import {
   getGatewayMux,
   getGatewayMuxAvailabilityVersion,
@@ -11,6 +12,8 @@ import {
   subscribeGatewayMuxAvailability,
 } from '@/store/chat/slices/agentRun/actions/transports/gateway/muxRegistry';
 import { useServerConfigStore } from '@/store/serverConfig';
+
+import { refreshScopeChannelList } from './useScopeChannelList';
 
 /** Public invalidations share the authenticated user socket, never an Agent's private stream. */
 export const useChannelEvents = (params?: ChannelViewParams) => {
@@ -38,6 +41,14 @@ export const useChannelEvents = (params?: ChannelViewParams) => {
     const remove = [
       mux.on('channel_changed', (event) => {
         if (!channelId || event.channelId === channelId) refresh();
+        // From a workspace, a Channel the list lacks may be a personal conversation, whose
+        // list the notifier watches apart.
+        if (
+          !channelId &&
+          getActiveWorkspaceId() !== null &&
+          !channelSelectors.list(useChannelStore.getState())?.some((c) => c.id === event.channelId)
+        )
+          refreshScopeChannelList(null);
       }),
       // Notifications are ephemeral: every reconnect reloads the durable view.
       mux.on('connected', refresh),

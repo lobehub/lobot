@@ -38,8 +38,9 @@ export const snapshotChannels = (list: ChannelListItem[]): ChannelActivitySnapsh
     ]),
   );
 
-/** A direct conversation: one person and their bound Agent. */
-const isDirect = (channel: ChannelListItem) => !!channel.agentId && !channel.projectId;
+/** A direct conversation: one person and their bound Agent, or two people. */
+const isDirect = (channel: ChannelListItem) =>
+  !!channel.peerUserId || (!!channel.agentId && !channel.projectId);
 
 interface DiffParams {
   level: ChannelNotificationLevel;
