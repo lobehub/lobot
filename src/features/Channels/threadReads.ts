@@ -1,8 +1,12 @@
-import type { ChannelPublicThread, ChannelThreadMention } from '@lobot/types';
+import type { ChannelPublicMember, ChannelPublicThread, ChannelThreadMention } from '@lobot/types';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { cacheScope } from '@/libs/replica';
+import { useUserStore } from '@/store/user';
+import { userProfileSelectors } from '@/store/user/selectors';
+
+import { isCurrentUserMember } from './memberName';
 
 interface ThreadReadsState {
   /** `${cacheScope}:${threadId}` → when the newest reply the person saw in it was posted (ms). */
@@ -61,14 +65,31 @@ export const isThreadUnread = (
   return last > Math.max(state.since, state.readAt[scopedKey(scope, thread.id)] ?? 0);
 };
 
-/** Ids of the unread threads among `threads`, re-evaluated as reads are recorded. */
+/**
+ * Ids of the unread threads among `threads`, re-evaluated as reads are recorded. Only threads the
+ * person follows count: replies in a thread they never joined are not news to them, and an
+ * @mention there still shows through `useMentionedThreadIds`.
+ */
 export const useUnreadThreadIds = (
-  threads: Pick<ChannelPublicThread, 'id' | 'lastReply'>[],
+  threads: Pick<ChannelPublicThread, 'followerMemberIds' | 'id' | 'lastReply'>[],
+  members: Pick<ChannelPublicMember, 'actorType' | 'id' | 'userId'>[] | undefined,
 ): Set<string> => {
   const scope = cacheScope.use();
   const state = useThreadReadStore();
+  const userId = useUserStore(userProfileSelectors.userId);
+  const selfIds = new Set(
+    (members ?? [])
+      .filter((member) => isCurrentUserMember(member, userId))
+      .map((member) => member.id),
+  );
   return new Set(
-    threads.filter((thread) => isThreadUnread(thread, state, scope)).map((thread) => thread.id),
+    threads
+      .filter(
+        (thread) =>
+          thread.followerMemberIds?.some((id) => selfIds.has(id)) &&
+          isThreadUnread(thread, state, scope),
+      )
+      .map((thread) => thread.id),
   );
 };
 

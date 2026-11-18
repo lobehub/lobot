@@ -120,7 +120,7 @@ const WorkingConversations = ({
 }) => {
   const { t } = useTranslation('channel');
   const ids = entry.conversations ?? [];
-  const unreadIds = useUnreadThreadIds(detail.threads);
+  const unreadIds = useUnreadThreadIds(detail.threads, detail.members);
   const mentionedIds = useMentionedThreadIds(
     useChannelStore(channelSelectors.listed(detail.channel.id))?.threadMentions,
   );

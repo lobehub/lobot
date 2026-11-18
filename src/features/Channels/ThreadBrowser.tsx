@@ -369,7 +369,7 @@ export const ThreadBrowser = ({
 }) => {
   const { t } = useTranslation('channel');
   const [query, setQuery] = useState('');
-  const unreadIds = useUnreadThreadIds(detail.threads);
+  const unreadIds = useUnreadThreadIds(detail.threads, detail.members);
   const mentionedIds = useMentionedThreadIds(
     useChannelStore(channelSelectors.listed(detail.channel.id))?.threadMentions,
   );
@@ -451,7 +451,7 @@ export const ThreadsButton = ({
   const { t } = useTranslation('channel');
   const [open, setOpen] = useState(false);
   const popoverKey = useCloseOnNavigate(open, () => setOpen(false));
-  const unreadIds = useUnreadThreadIds(detail.threads);
+  const unreadIds = useUnreadThreadIds(detail.threads, detail.members);
   const mentionedIds = useMentionedThreadIds(
     useChannelStore(channelSelectors.listed(detail.channel.id))?.threadMentions,
   );

@@ -2,6 +2,8 @@ import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { cacheScope } from '@/libs/replica';
+import { useUserStore } from '@/store/user';
+import { userProfileSelectors } from '@/store/user/selectors';
 
 import {
   markThreadRead,
@@ -12,31 +14,39 @@ import {
 } from './threadReads';
 
 const at = (iso: string) => new Date(iso);
-const reply = (iso: string) => ({ lastReply: { createdAt: at(iso) } }) as never;
+const reply = (iso: string) =>
+  ({ followerMemberIds: ['mem_me'], lastReply: { createdAt: at(iso) } }) as never;
+
+const members = [
+  { actorType: 'user', id: 'mem_me', userId: 'user_me' },
+  { actorType: 'user', id: 'mem_other', userId: 'user_other' },
+] as never[];
 
 const threads = [
   { id: 'thr_old', ...reply('2026-11-01T00:00:00Z') },
   { id: 'thr_new', ...reply('2026-11-18T10:00:00Z') },
   // Its root is off the loaded page, so nothing is known about its replies.
-  { id: 'thr_unknown' },
+  { followerMemberIds: ['mem_me'], id: 'thr_unknown' },
 ] as never[];
 
 describe('useUnreadThreadIds', () => {
   beforeEach(() => {
     vi.spyOn(cacheScope, 'get').mockReturnValue('personal');
     vi.spyOn(cacheScope, 'use').mockReturnValue('personal');
+    vi.spyOn(userProfileSelectors, 'userId').mockReturnValue('user_me');
+    useUserStore.setState({});
     useThreadReadStore.setState({ readAt: {}, since: at('2026-11-10T00:00:00Z').getTime() });
   });
   afterEach(() => vi.restoreAllMocks());
 
   it('marks only threads with replies after tracking began', () => {
-    const { result } = renderHook(() => useUnreadThreadIds(threads));
+    const { result } = renderHook(() => useUnreadThreadIds(threads, members));
 
     expect([...result.current]).toEqual(['thr_new']);
   });
 
   it('clears a thread once its newest reply is read, and again unread on a newer reply', () => {
-    const { result, rerender } = renderHook(({ list }) => useUnreadThreadIds(list), {
+    const { result, rerender } = renderHook(({ list }) => useUnreadThreadIds(list, members), {
       initialProps: { list: threads },
     });
 
@@ -60,9 +70,24 @@ describe('useUnreadThreadIds', () => {
     markThreadRead('thr_new', '2026-11-18T10:00:00Z');
     vi.spyOn(cacheScope, 'use').mockReturnValue('other');
 
-    const { result } = renderHook(() => useUnreadThreadIds(threads));
+    const { result } = renderHook(() => useUnreadThreadIds(threads, members));
 
     expect([...result.current]).toEqual(['thr_new']);
+  });
+
+  it('leaves out threads the person does not follow', () => {
+    const list = [
+      { id: 'thr_mine', ...reply('2026-11-18T10:00:00Z') },
+      {
+        followerMemberIds: ['mem_other'],
+        id: 'thr_others',
+        lastReply: { createdAt: at('2026-11-18T10:00:00Z') },
+      },
+    ] as never[];
+
+    const { result } = renderHook(() => useUnreadThreadIds(list, members));
+
+    expect([...result.current]).toEqual(['thr_mine']);
   });
 });
 

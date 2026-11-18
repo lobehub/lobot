@@ -5,6 +5,8 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { userProfileSelectors } from '@/store/user/selectors';
+
 import { markThreadRead, useThreadReadStore } from './threadReads';
 import { threadOwner, ThreadSwitchMenu } from './ThreadSwitcher';
 
@@ -41,7 +43,7 @@ vi.mock('@lobehub/ui', () => ({
 }));
 
 const members = [
-  { actorType: 'user', id: 'mem_ann', status: 'active' },
+  { actorType: 'user', id: 'mem_ann', status: 'active', userId: 'user_me' },
   { actorType: 'agent', id: 'mem_cook', status: 'active' },
   { actorType: 'agent', id: 'mem_gone', status: 'left' },
 ];
@@ -84,6 +86,7 @@ const unreadRows = () =>
     .map((item) => item.textContent);
 
 beforeEach(() => {
+  vi.spyOn(userProfileSelectors, 'userId').mockReturnValue('user_me');
   useThreadReadStore.setState({ readAt: {}, since: 0 });
 });
 

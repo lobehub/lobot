@@ -1,6 +1,6 @@
-import type { ChannelDetail, ChannelPublicMember, ChannelPublicThread } from '@lobot/types';
 import { type DropdownItem, DropdownMenu, Icon } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ChannelDetail, ChannelPublicMember, ChannelPublicThread } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { Check } from 'lucide-react';
 import type { ReactNode } from 'react';
@@ -70,7 +70,7 @@ const useThreadItems = (
   onOpen: (threadId: string) => void,
 ): DropdownItem[] => {
   const { t } = useTranslation('channel');
-  const unreadIds = useUnreadThreadIds(detail.threads);
+  const unreadIds = useUnreadThreadIds(detail.threads, detail.members);
   const listed = detail.threads
     .map((thread, index) => ({ index, thread }))
     .filter(({ thread }) => thread.status !== 'archived' || thread.id === activeId);

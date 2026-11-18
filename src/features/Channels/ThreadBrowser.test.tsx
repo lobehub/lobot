@@ -6,6 +6,7 @@ import { createElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useChannelStore } from '@/store/channel';
+import { userProfileSelectors } from '@/store/user/selectors';
 
 import { browseThreads, ThreadBrowser, ThreadsButton } from './ThreadBrowser';
 import { useThreadReadStore } from './threadReads';
@@ -41,18 +42,21 @@ const replied = (iso: string, content = '') => ({
 
 const detail = {
   channel: { id: 'chn_1' },
-  members: [{ actorType: 'agent', id: 'mem_cook', status: 'active' }],
+  members: [
+    { actorType: 'agent', id: 'mem_cook', status: 'active' },
+    { actorType: 'user', id: 'mem_me', status: 'active', userId: 'user_me' },
+  ],
   messages: [{ content: 'Unify Channel members', id: 'msg_1' }],
   threads: [
     {
-      followerMemberIds: ['mem_cook'],
+      followerMemberIds: ['mem_cook', 'mem_me'],
       id: 'thr_1',
       lastReply: replied('2026-11-18T09:00:00Z', 'Members are unified'),
       rootMessageId: 'msg_1',
       status: 'active',
     },
     {
-      followerMemberIds: [],
+      followerMemberIds: ['mem_me'],
       id: 'thr_2',
       lastReply: replied('2026-11-18T11:00:00Z', 'Release **fixed**'),
       rootMessageId: 'msg_2',
@@ -78,6 +82,7 @@ const browse = (
   });
 
 beforeEach(() => {
+  vi.spyOn(userProfileSelectors, 'userId').mockReturnValue('user_me');
   useThreadReadStore.setState({ readAt: {}, since: 0 });
   useChannelStore.setState({ listMap: {} } as never);
 });
