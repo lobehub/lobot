@@ -176,7 +176,12 @@ const ConversationRow = memo<ConversationRowProps>(
         </Flexbox>
       </>
     );
-    const row = <WorkspaceLink {...link}>{content}</WorkspaceLink>;
+    const row = (
+      // A badge's jump to the next unread row finds it by the key it is hidden by.
+      <WorkspaceLink {...link} data-conversation-key={hideKey}>
+        {content}
+      </WorkspaceLink>
+    );
 
     return menuItems ? <ContextMenuTrigger items={menuItems}>{row}</ContextMenuTrigger> : row;
   },

@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
 import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { messagesUnreadCount } from '@/features/MessageList/conversations';
+import { requestUnreadJump } from '@/features/MessageList/unreadJump';
 import UserAvatar from '@/features/User/UserAvatar';
 import { useActiveLocation } from '@/hooks/useActiveLocation';
 import { channelSelectors, useChannelStore } from '@/store/channel';
@@ -69,6 +70,8 @@ const NavTabBar = memo(() => {
           key={tab.key}
           title={tab.title}
           url={tab.url}
+          // Clicking Messages again while it has unread jumps to the next unread conversation.
+          onReselect={tab.key === 'messages' && unread > 0 ? requestUnreadJump : undefined}
         />
       ))}
       {/* Like Telegram's last tab, the avatar opens Settings in the list column and content. */}

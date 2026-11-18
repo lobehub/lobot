@@ -1,6 +1,8 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { useUnreadJumpStore } from '@/features/MessageList/unreadJump';
+
 import WorkspaceRail from './index';
 import { readWorkspaceRailHint, WORKSPACE_RAIL_HINT_KEY, writeWorkspaceRailHint } from './railHint';
 
@@ -86,6 +88,7 @@ describe('WorkspaceRail', () => {
     mocks.order = undefined;
     mocks.pathname = '/';
     mocks.unread = {};
+    useUnreadJumpStore.setState({ lastKey: undefined, requestedAt: undefined });
     mocks.workspaces = [
       { avatar: null, id: 'ws-1', name: 'LobeHub', slug: 'lobehub' },
       { avatar: null, id: 'ws-2', name: 'Acme', slug: 'acme' },
@@ -203,7 +206,7 @@ describe('WorkspaceRail', () => {
     expect(mocks.navigate).toHaveBeenCalledWith('/', { escape: true });
   });
 
-  it('does nothing when the active scope is clicked again', async () => {
+  it('does nothing when the active scope is clicked again with nothing unread', async () => {
     mocks.activeId = 'ws-1';
     render(<WorkspaceRail />);
 
@@ -213,6 +216,48 @@ describe('WorkspaceRail', () => {
 
     expect(mocks.switchWorkspace).not.toHaveBeenCalled();
     expect(mocks.navigate).not.toHaveBeenCalled();
+    expect(useUnreadJumpStore.getState().requestedAt).toBeUndefined();
+  });
+
+  // The badge on the open scope's tile used to do nothing when clicked.
+  it("jumps to the open scope's next unread conversation when its badge is clicked", async () => {
+    mocks.activeId = 'ws-1';
+    mocks.unread = { 'ws-1': 1 };
+    render(<WorkspaceRail />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'LobeHub' }));
+    });
+
+    expect(mocks.switchWorkspace).not.toHaveBeenCalled();
+    expect(mocks.navigate).not.toHaveBeenCalled();
+    expect(useUnreadJumpStore.getState().requestedAt).toBeDefined();
+  });
+
+  it('goes back to the Messages list first when the badge is clicked from Contacts', async () => {
+    mocks.unread = { personal: 2 };
+    mocks.pathname = '/agents/agt-1';
+    render(<WorkspaceRail />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'workspaceRail.personal' }));
+    });
+
+    expect(mocks.switchToPersonal).not.toHaveBeenCalled();
+    expect(mocks.navigate).toHaveBeenCalledWith('/', { escape: true });
+    expect(useUnreadJumpStore.getState().requestedAt).toBeDefined();
+  });
+
+  it('opens Contacts when the personal badge only counts friend requests', async () => {
+    mocks.personalRequests = 1;
+    render(<WorkspaceRail />);
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'workspaceRail.personal' }));
+    });
+
+    expect(mocks.navigate).toHaveBeenCalledWith('/agents', { escape: true });
+    expect(useUnreadJumpStore.getState().requestedAt).toBeUndefined();
   });
 
   it("badges each scope's tile with its unread count, shown in full like Discord up to 999+", () => {

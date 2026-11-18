@@ -62,6 +62,7 @@ import NetworkSearchRow from './NetworkSearchRow';
 import { useMessageSearch } from './SearchContext';
 import SectionGroup from './SectionGroup';
 import { styles } from './style';
+import { useUnreadJump } from './unreadJump';
 
 /**
  * `/agent/:id/...`, `/group/:id/...` or `/channels/:id` → the routed conversation id. A direct
@@ -222,6 +223,10 @@ const Body = memo(() => {
     [channelsEnabled, entries, sections],
   );
 
+  // A click on an already open Messages badge brings the next unread row into view.
+  const listRef = useRef<HTMLDivElement>(null);
+  useUnreadJump(listRef, groups);
+
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
     // A press-and-hold picks a section up on touch, so a vertical swipe still scrolls the list.
@@ -272,7 +277,7 @@ const Body = memo(() => {
   const agentsLoading = !isInit && items.length === 0;
 
   return (
-    <Flexbox gap={1} paddingBlock={'0 12px'} paddingInline={6}>
+    <Flexbox gap={1} paddingBlock={'0 12px'} paddingInline={6} ref={listRef}>
       {groups.pinned.length > 0 && (
         <div aria-label={t('navPanel.pinned')} role="group" {...stylex.props(styles.pinnedGroup)}>
           {groups.pinned.map(renderEntry)}

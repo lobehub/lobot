@@ -17,11 +17,13 @@ interface TabItemProps {
   /** Replaces the icon, e.g. the avatar on the Settings tab. */
   children?: ReactNode;
   icon?: IconType;
+  /** Runs instead of navigating when the tab is clicked while already open. */
+  onReselect?: () => void;
   title: string;
   url: string;
 }
 
-const TabItem = memo<TabItemProps>(({ active, badge, children, icon, title, url }) => {
+const TabItem = memo<TabItemProps>(({ active, badge, children, icon, onReselect, title, url }) => {
   const navigate = useWorkspaceAwareNavigate();
 
   return (
@@ -34,7 +36,8 @@ const TabItem = memo<TabItemProps>(({ active, badge, children, icon, title, url 
         onClick={(e) => {
           if (isModifierClick(e)) return;
           e.preventDefault();
-          navigate(url);
+          if (active && onReselect) onReselect();
+          else navigate(url);
         }}
       >
         {children ?? (icon && <Icon icon={icon} size={TAB_ICON_SIZE} />)}

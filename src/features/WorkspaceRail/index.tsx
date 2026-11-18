@@ -33,6 +33,7 @@ import Avatar from '@/components/Avatar';
 import WorkspaceAvatar from '@/components/WorkspaceAvatar';
 import { CONTACTS_URL } from '@/features/ContactList/const';
 import { suppressNextClick } from '@/features/HomeSidebar/Body/sortableRow';
+import { requestUnreadJump } from '@/features/MessageList/unreadJump';
 import { resolveRailTab } from '@/features/NavRail/railTab';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { useActiveLocation } from '@/hooks/useActiveLocation';
@@ -92,11 +93,13 @@ interface SortableWorkspaceItemProps {
   /** Any tile is being dragged: tooltips would trail the pointer across the rail. */
   dragging: boolean;
   onOpen: (id: string) => void;
+  /** Clicking the open workspace again while it has unread messages. */
+  onReselect: () => void;
   workspace: WorkspaceListItem;
 }
 
 const SortableWorkspaceItem = memo<SortableWorkspaceItemProps>(
-  ({ active, dragging, onOpen, workspace }) => {
+  ({ active, dragging, onOpen, onReselect, workspace }) => {
     const { attributes, isDragging, listeners, setNodeRef, transform, transition } = useSortable({
       id: workspace.id,
     });
@@ -122,7 +125,10 @@ const SortableWorkspaceItem = memo<SortableWorkspaceItemProps>(
           title={workspace.name}
           tooltipDisabled={dragging}
           unread={unread}
-          onClick={() => onOpen(workspace.id)}
+          onClick={() => {
+            if (!active) onOpen(workspace.id);
+            else if (unread > 0) onReselect();
+          }}
         >
           <WorkspaceAvatar
             avatar={workspace.avatar}
@@ -159,12 +165,14 @@ const WorkspaceRail = memo(() => {
   const userAvatar = useUserStore(userProfileSelectors.userAvatar);
   const userName = useUserStore(userProfileSelectors.displayUserName);
   // The personal tile also counts friend requests: a workspace's Contacts never shows them.
-  const personalUnread =
-    useScopeUnread(null, activeId === null) + usePersonalRequestCount(activeId === null);
+  const personalMessagesUnread = useScopeUnread(null, activeId === null);
+  const personalRequests = usePersonalRequestCount(activeId === null);
+  const personalUnread = personalMessagesUnread + personalRequests;
 
   const { pathname } = useActiveLocation();
   const activeWorkspaceSlug = useActiveWorkspaceSlug();
-  const stayOnContacts = resolveRailTab(pathname, activeWorkspaceSlug) === 'contacts';
+  const railTab = resolveRailTab(pathname, activeWorkspaceSlug);
+  const stayOnContacts = railTab === 'contacts';
 
   // Lobot has no workspace routes: switching changes the request scope, then lands on the
   // current tab's root — the Contacts list, or the Messages home — since the open
@@ -175,11 +183,30 @@ const WorkspaceRail = memo(() => {
   );
   const openCreate = useOpenCreateWorkspace(openHome);
 
+  // Clicking the open scope's badge goes to its next unread conversation in the Messages list.
+  const jumpToUnread = useCallback(() => {
+    if (railTab !== 'messages') navigate('/', { escape: true });
+    requestUnreadJump();
+  }, [navigate, railTab]);
+
   const openPersonal = useCallback(async () => {
-    if (activeId === null) return;
+    if (activeId === null) {
+      // Friend requests wait in Contacts; unread messages in the Messages list.
+      if (personalMessagesUnread > 0) jumpToUnread();
+      else if (personalRequests > 0) navigate(CONTACTS_URL, { escape: true });
+      return;
+    }
     await switchToPersonal();
     openHome();
-  }, [activeId, openHome, switchToPersonal]);
+  }, [
+    activeId,
+    jumpToUnread,
+    navigate,
+    openHome,
+    personalMessagesUnread,
+    personalRequests,
+    switchToPersonal,
+  ]);
 
   const openWorkspace = useCallback(
     async (id: string) => {
@@ -250,6 +277,7 @@ const WorkspaceRail = memo(() => {
               key={workspace.id}
               workspace={workspace}
               onOpen={openWorkspace}
+              onReselect={jumpToUnread}
             />
           ))}
         </SortableContext>
