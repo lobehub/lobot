@@ -7,14 +7,10 @@ import { getHomeStoreState } from '@/store/home';
 
 import { type ChatGroupStore } from '../store';
 
-type ChatGroupStoreWithSwitchTopic = ChatGroupStore & {
-  switchTopic: (topicId?: string | null) => void;
-};
-
 export class ChatGroupLifecycleAction {
-  readonly #get: () => ChatGroupStoreWithSwitchTopic;
+  readonly #get: () => ChatGroupStore;
 
-  constructor(_set: unknown, get: () => ChatGroupStoreWithSwitchTopic, _api?: unknown) {
+  constructor(_set: unknown, get: () => ChatGroupStore, _api?: unknown) {
     // keep signature aligned with StateCreator params: (set, get, api)
     void _set;
     void _api;
@@ -53,33 +49,5 @@ export class ChatGroupLifecycleAction {
     }
 
     return group.id;
-  };
-
-  /**
-   * Switch to a new topic in the group
-   * Clears activeTopicId and navigates to group root
-   */
-  switchToNewTopic = () => {
-    this.#get().switchTopic(undefined);
-  };
-
-  /**
-   * Switch to a topic in the group with proper route handling
-   * @param topicId - Topic ID to switch to, or undefined/null for new topic
-   */
-  switchTopic = (topicId?: string | null) => {
-    const { activeGroupId, router } = this.#get();
-    if (!activeGroupId || !router) return;
-
-    // Update chat store's activeTopicId
-    useChatStore.getState().switchTopic(topicId ?? undefined);
-
-    // Navigate to the topic path (or group root for a new topic), aligning with
-    // the agent route's `/agent/:aid/:topicId` scheme. Replace to avoid stacking
-    // history entries on rapid topic switches.
-    const target = topicId
-      ? GROUP_CHAT_TOPIC_URL(activeGroupId, topicId)
-      : GROUP_CHAT_URL(activeGroupId);
-    router.push(target, { replace: true });
   };
 }

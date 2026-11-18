@@ -289,24 +289,6 @@ class ChatGroupInternalAction implements ResetableStore {
   };
 
   /**
-   * The side effects of a group detail that resolved successfully, whether it
-   * came from the network or from the persisted replica: adopt the roster and
-   * supervisor, and settle the not-found state (`null` is the settled "gone /
-   * no access" state). Running it off the hydrated value too is what lets a
-   * cold start with a slow / failed / offline network paint a usable group page
-   * instead of an empty roster behind the 404 guard.
-   */
-  #applyGroupDetail = (groupId: string, groupDetail: AgentGroupDetail | null | undefined) => {
-    if (!groupDetail) {
-      this.#removeStaleGroup(groupId);
-      this.#markGroupNotFound(groupId);
-      return;
-    }
-    this.#clearGroupNotFound(groupId);
-    this.#syncGroupAgents(groupDetail, { onlyIfNewer: true });
-  };
-
-  /**
    * Re-read a group's detail after a write, with or without a mounted page.
    * `fresh`: a request already in flight may hold the pre-write roster. The
    * replica applies the scope / removal / clear guards and settles a terminal
@@ -332,11 +314,6 @@ class ChatGroupInternalAction implements ResetableStore {
       seedTag: 'list',
       source: 'seed',
     });
-  };
-
-  /** Patch one group row in every view that holds it (list row + detail map). */
-  internal_updateGroupRow = (id: string, value: Partial<ChatGroupItem>) => {
-    this.#groupRows.update(id, (group) => ({ ...group, ...value }));
   };
 
   /**
@@ -463,45 +440,6 @@ class ChatGroupInternalAction implements ResetableStore {
       return [];
     }
   };
-
-  refreshGroupDetail = async (groupId: string) => {
-    await this.#groupDetail.revalidate(groupId);
-  };
-
-  refreshGroups = async () => {
-    await this.#groupList.revalidate(AGENT_GROUP_LIST_KEY);
-  };
-
-  toggleGroupSetting = (open: boolean) => {
-    this.#set({ showGroupSetting: open }, false, 'toggleGroupSetting');
-  };
-
-  toggleThread = (agentId: string) => {
-    this.#set({ activeThreadAgentId: agentId }, false, 'toggleThread');
-  };
-
-  /**
-   * Fetch orchestration only; read the group through `groupMap` /
-   * `agentGroupSelectors`. A response of `null` is the settled "gone / no
-   * access" state. The detail also hydrates from the persisted replica with no
-   * response, so the same side effects run off the hydrated value as well.
-   */
-  useFetchGroupDetail = (enabled: boolean, groupId: string): ReplicaSyncResult =>
-    this.#groupDetail.useSync(groupId ? { groupId } : null, {
-      enabled,
-      onHydrated: (groupDetail) => this.#applyGroupDetail(groupId, groupDetail),
-      // Not found is settled by the slice `effects`; this view adopts the roster.
-      onSuccess: (groupDetail) => {
-        if (groupDetail) this.#applyGroupDetail(groupId, groupDetail);
-      },
-    });
-
-  /**
-   * Fetch orchestration only; the authoritative list reconciles `groupMap`
-   * through the slice `effects`.
-   */
-  useFetchGroups = (enabled: boolean, isLogin: boolean): ReplicaSyncResult =>
-    this.#groupList.useSync(LIST_PARAMS, { enabled: enabled && isLogin });
 }
 
 type PublicActions<T> = { [K in keyof T]: T[K] };

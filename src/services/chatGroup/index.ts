@@ -35,14 +35,6 @@ interface SupervisorConfig {
 
 class ChatGroupService {
   /**
-   * Get a group by forkedFromIdentifier stored in config
-   * @returns group id if exists, null otherwise
-   */
-  getGroupByForkedFromIdentifier = async (forkedFromIdentifier: string): Promise<string | null> => {
-    return lambdaClient.group.getGroupByForkedFromIdentifier.query({ forkedFromIdentifier });
-  };
-
-  /**
    * Create a group with a supervisor agent.
    * The supervisor agent is automatically created as a virtual agent.
    */
@@ -89,10 +81,6 @@ class ChatGroupService {
     return lambdaClient.group.deleteGroup.mutate({ id });
   };
 
-  getGroup = (id: string): Promise<ChatGroupItem | undefined> => {
-    return lambdaClient.group.getGroup.query({ id });
-  };
-
   getGroupDetail = (id: string): Promise<AgentGroupDetail | null> => {
     return lambdaClient.group.getGroupDetail.query({ id });
   };
@@ -109,40 +97,6 @@ class ChatGroupService {
   };
 
   /**
-   * Batch create virtual agents and add them to an existing group.
-   * This is more efficient than calling createAgentOnly multiple times.
-   */
-  batchCreateAgentsInGroup = (groupId: string, agents: GroupMemberConfig[]) => {
-    return lambdaClient.group.batchCreateAgentsInGroup.mutate({
-      agents,
-      groupId,
-    });
-  };
-
-  removeAgentsFromGroup = (groupId: string, agentIds: string[]) => {
-    return lambdaClient.group.removeAgentsFromGroup.mutate({ agentIds, groupId });
-  };
-
-  updateAgentInGroup = (
-    groupId: string,
-    agentId: string,
-    updates: { order?: number | null; role?: GroupMemberRole | null },
-  ): Promise<NewChatGroupAgent> => {
-    return lambdaClient.group.updateAgentInGroup.mutate({
-      agentId,
-      groupId,
-      updates: {
-        order: updates.order === null ? undefined : updates.order,
-        role: updates.role === null ? undefined : updates.role,
-      },
-    });
-  };
-
-  getGroupAgents = (groupId: string): Promise<ChatGroupAgentItem[]> => {
-    return lambdaClient.group.getGroupAgents.query({ groupId });
-  };
-
-  /**
    * Duplicate a chat group with all its members.
    * Returns the new group ID and supervisor agent ID.
    */
@@ -151,54 +105,6 @@ class ChatGroupService {
     newTitle?: string,
   ): Promise<{ groupId: string; supervisorAgentId: string } | null> => {
     return lambdaClient.group.duplicateGroup.mutate({ groupId, newTitle });
-  };
-
-  /**
-   * Members these groups only reference (`External` in the roster). A transfer
-   * leaves them where they are and clones them into the target scope.
-   */
-  listReferencedMembers = (
-    groupIds: string[],
-  ): Promise<
-    {
-      agentId: string;
-      avatar: string | null;
-      backgroundColor: string | null;
-      groupId: string;
-      title: string | null;
-    }[]
-  > => {
-    return lambdaClient.group.listReferencedMembers.query({ groupIds });
-  };
-
-  transferGroup = async (
-    groupId: string,
-    targetWorkspaceId: string | null,
-    targetVisibility?: 'private' | 'public',
-  ): Promise<{ groupId: string; transferJobId?: string | null } | null> => {
-    const result = await lambdaClient.group.transferGroup.mutate({
-      groupId,
-      targetVisibility,
-      targetWorkspaceId,
-    });
-    // Without `targetMemberId` the endpoint always takes the scope-move path.
-    return result as { groupId: string; transferJobId?: string | null } | null;
-  };
-
-  /**
-   * Hand ownership to another member of the current workspace. Creates a
-   * pending transfer request the recipient must accept — nothing moves yet.
-   */
-  requestGroupTransferToMember = async (params: {
-    groupId: string;
-    targetMemberId: string;
-  }): Promise<{ requestId: string; status: 'pending' }> => {
-    const result = await lambdaClient.group.transferGroup.mutate({
-      groupId: params.groupId,
-      targetMemberId: params.targetMemberId,
-      targetWorkspaceId: null,
-    });
-    return result as { requestId: string; status: 'pending' };
   };
 
   /**

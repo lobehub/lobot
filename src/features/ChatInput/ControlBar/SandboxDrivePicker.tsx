@@ -1,14 +1,12 @@
 'use client';
 
-import { ENABLE_BUSINESS_FEATURES } from '@lobechat/business-const';
 import { Github } from '@lobehub/icons';
-import { Flexbox, Icon, Popover, Skeleton, Tag, Text, toast, Tooltip } from '@lobehub/ui';
+import { Flexbox, Icon, Popover, Skeleton, Text, toast, Tooltip } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 import {
   ChevronDownIcon,
   FolderIcon,
-  HardDriveIcon,
   InfoIcon,
   PackageIcon,
   TimerIcon,
@@ -18,12 +16,10 @@ import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 
-import { openSandboxStorageUpsell } from '@/business/client/features/SandboxStorageUpsell';
 import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import RepositoryAvatar from '@/components/RepositoryAvatar';
 import { openCreateEnvironmentModal } from '@/features/EnvironmentManager/CreateEnvironmentModal';
 import { SANDBOX_STORAGE_PATH } from '@/features/ResourceHome/paths';
-import { openSandboxDirectoryModal } from '@/features/WorkingDirectory';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { environmentService } from '@/services/environment';
 import { refreshProjectFiles } from '@/services/projectFile';
@@ -32,7 +28,6 @@ import { useAgentStore } from '@/store/agent';
 import { agentSelectors } from '@/store/agent/selectors';
 
 import OptionRow from './OptionRow';
-import SandboxDriveMenu from './SandboxDriveMenu';
 import {
   environmentChipState,
   pickableEnvironments,
@@ -224,22 +219,6 @@ const SandboxDrivePicker = memo<SandboxDrivePickerProps>(
       );
     };
 
-    const openBrowser = () => {
-      setOpen(false);
-      openSandboxDirectoryModal({
-        // A folder that is gone cannot be listed; start from the top instead.
-        defaultPath:
-          value.workingDirectory &&
-          value.workingDirectory !== '.' &&
-          fallback !== 'directoryMissing'
-            ? value.workingDirectory
-            : undefined,
-        drive: value.drive,
-        isWorkspace: !!workspaceId,
-        onPick: pick,
-      });
-    };
-
     const currentLabel = value.instanceId
       ? (instance?.name ?? instance?.workingDirectory)
       : value.workingDirectory === '.'
@@ -300,58 +279,6 @@ const SandboxDrivePicker = memo<SandboxDrivePickerProps>(
           label={t('sandboxStorage.ephemeral')}
           onClick={() => void select({})}
         />
-
-        {ENABLE_BUSINESS_FEATURES &&
-          (entitled ? (
-            <Popover
-              arrow={false}
-              closeDelay={150}
-              placement={'rightBottom'}
-              styles={SUBMENU_STYLES}
-              trigger={['hover', 'click']}
-              content={
-                <SandboxDriveMenu
-                  selectedLabel={showFolder ? currentLabel : undefined}
-                  selectedPath={showFolder ? value.workingDirectory : undefined}
-                  onBrowse={openBrowser}
-                  onPick={(folder) => void select(folder)}
-                  onOpenStorage={() => {
-                    setOpen(false);
-                    navigate(SANDBOX_STORAGE_PATH);
-                  }}
-                />
-              }
-            >
-              <div data-testid={'sandbox-drive-row'}>
-                <OptionRow
-                  arrow
-                  compact
-                  active={showFolder}
-                  icon={<Icon icon={HardDriveIcon} size={16} />}
-                  label={t('sandboxDrive.title')}
-                  onClick={() => {}}
-                />
-              </div>
-            </Popover>
-          ) : (
-            // The drive is part of a plan this account is not on. Offered in the
-            // same list, in the same shape, so the row reads as one more place
-            // files could go — and the tag says why it is not simply selectable.
-            <OptionRow
-              compact
-              icon={<Icon icon={HardDriveIcon} size={16} />}
-              label={t('sandboxDrive.title')}
-              badge={
-                <Tag color={'gold'} size={'small'} style={{ borderRadius: 999, paddingInline: 8 }}>
-                  {t('pro', { ns: 'common' })}
-                </Tag>
-              }
-              onClick={() => {
-                setOpen(false);
-                openSandboxStorageUpsell();
-              }}
-            />
-          ))}
 
         <Popover
           arrow={false}
