@@ -2,7 +2,6 @@ import { toast } from '@lobehub/ui';
 import { t } from 'i18next';
 import { useEffect } from 'react';
 
-import { getDesktopOnboardingCompleted } from '@/features/DesktopOnboarding/storage';
 import { useGlobalStore } from '@/store/global';
 import { useUserStore } from '@/store/user';
 import { authSelectors } from '@/store/user/selectors';
@@ -30,10 +29,10 @@ export const useLaunchAgentDiscovery = () => {
 
   useEffect(() => {
     if (scannedThisSession || !isLogin || !isStatusInit) return;
-    // Onboarding has its own discovery screen.
-    if (!getDesktopOnboardingCompleted() || location.pathname.includes('desktop-onboarding')) {
-      return;
-    }
+    // Onboarding has its own discovery screen. Main only boots into the app once
+    // onboarding is done (its flag lives in the main store, not this renderer), so
+    // being off the onboarding route is the signal.
+    if (location.pathname.includes('desktop-onboarding')) return;
 
     const timer = setTimeout(async () => {
       if (scannedThisSession) return;
