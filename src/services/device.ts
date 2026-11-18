@@ -1,9 +1,4 @@
-import type {
-  DeviceBoundAgentItem,
-  DeviceEnroller,
-  DeviceRunningSummary,
-  DeviceScope,
-} from '@lobot/types';
+import type { DeviceEnroller, DeviceRunningSummary, DeviceScope } from '@lobot/types';
 
 import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
 import { type TopicListItem } from '@/services/topic';

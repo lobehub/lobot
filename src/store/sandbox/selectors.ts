@@ -1,10 +1,5 @@
 import type { SandboxState } from './initialState';
-import {
-  SANDBOX_SCOPE_ENTRY,
-  type SandboxEntitlement,
-  type SandboxPickerEnvironment,
-  type SandboxPickerInstance,
-} from './projection';
+import { SANDBOX_SCOPE_ENTRY, type SandboxEntitlement } from './projection';
 
 /** The active workspace's entitlement, or `undefined` before its first paint. */
 const entitlement = (s: SandboxState): SandboxEntitlement | undefined =>

@@ -1,11 +1,5 @@
-import type { LobeToolMeta } from '@lobot/types';
-
 import type { ToolStoreState } from '../../initialState';
-import {
-  AGENT_SKILL_LIST_KEY,
-  type AgentSkillDetailItem,
-  type AgentSkillListItem,
-} from './projection';
+import { AGENT_SKILL_LIST_KEY, type AgentSkillListItem } from './projection';
 
 const getAgentSkills = (s: ToolStoreState): AgentSkillListItem[] =>
   s.agentSkillListMap?.[AGENT_SKILL_LIST_KEY] || [];

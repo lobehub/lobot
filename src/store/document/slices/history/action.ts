@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-
 import { DOCUMENT_HISTORY_QUERY_LIST_LIMIT } from '@/const/documentHistory';
 import { createReplicaSlice, recordLens } from '@/libs/replica';
 import { documentService } from '@/services/document';
@@ -10,13 +8,7 @@ import type { CompareHistoryItemsOutput, ListHistoryOutput } from '@/types/serve
 import { setNamespace } from '@/utils/storeDebug';
 
 import type { DocumentStore } from '../../store';
-import { useDocumentStore } from '../../store';
-import {
-  documentHistoryCompareKey,
-  type DocumentHistoryCompareParams,
-  documentHistoryCompareResource,
-  documentHistoryListResource,
-} from './projection';
+import { documentHistoryCompareResource, documentHistoryListResource } from './projection';
 
 const n = setNamespace('document/history');
 

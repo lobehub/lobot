@@ -1,15 +1,11 @@
-import { type ExperienceListItem } from '@lobot/types';
-import { type SWRResponse } from 'swr';
-
 import { userMemoryKeys } from '@/libs/swr/keys';
-import { memoryCRUDService, userMemoryService } from '@/services/userMemory';
+import { userMemoryService } from '@/services/userMemory';
 import { type StoreSetter } from '@/store/types';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { type UserMemoryStore, useUserMemoryStore } from '../../store';
-import { type MemoryListPageResult, MemoryQueryList } from '../utils/memoryQueryList';
+import { MemoryQueryList } from '../utils/memoryQueryList';
 import {
-  EXPERIENCE_LIST_PAGE_SIZE,
   type ExperienceListData,
   type ExperienceListParams,
   experienceListResource,

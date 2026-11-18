@@ -1,11 +1,6 @@
 import type { AgentDocumentListItem } from '@/services/agentDocument';
 
 import type { AgentDocumentState } from './initialState';
-import {
-  type AgentDocumentReaderDetail,
-  agentDocumentReaderKey,
-  type AgentDocumentReaderParams,
-} from './projection';
 
 /** One agent's document list, or `undefined` before its first paint. */
 const getDocumentList =

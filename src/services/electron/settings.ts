@@ -1,7 +1,6 @@
 import {
   type NetworkProxySettings,
   type ShortcutUpdateResult,
-  type WindowsShellMode,
 } from '@lobechat/electron-client-ipc';
 
 import { ensureElectronIpc } from '@/utils/electron/ipc';

@@ -1,45 +1,15 @@
-import { CURRENT_VERSION, isDesktop } from '@lobechat/const';
 import { type PluginItem } from '@lobehub/market-sdk';
 import { type ToolManifest } from '@lobot/types';
-import { type TRPCClientError } from '@trpc/client';
 import debug from 'debug';
-import { omit } from 'es-toolkit/compat';
-import { produce } from 'immer';
-import { gt, valid } from 'semver';
 
-import { type MCPErrorData } from '@/libs/mcp/types';
-import { parseStdioErrorMessage } from '@/libs/mcp/types';
-import { renderMcpArgs, renderMcpUrlTemplate } from '@/libs/mcp/urlTemplate';
-import {
-  createReplicaSlice,
-  type ReplicaLens,
-  type ReplicaPageResult,
-  type ReplicaSyncResult,
-} from '@/libs/replica';
+import { createReplicaSlice, type ReplicaLens, type ReplicaPageResult } from '@/libs/replica';
 import { discoverService } from '@/services/discover';
-import { mcpService } from '@/services/mcp';
-import { pluginService } from '@/services/plugin';
-import { globalHelpers } from '@/store/global/helpers';
-import { mcpStoreSelectors } from '@/store/tool/selectors';
 import { type StoreSetter } from '@/store/types';
-import { McpConnectionType } from '@/types/discover';
-import {
-  type CheckMcpInstallResult,
-  type McpConnectionParams,
-  type MCPErrorInfo,
-  type MCPInstallProgress,
-} from '@/types/plugins';
-import { MCPInstallStep } from '@/types/plugins';
-import { ConnectorOAuthError, openConnectorOAuthPopup } from '@/utils/connectorOAuth';
-import { getPlatform } from '@/utils/platform';
-import { sleep } from '@/utils/sleep';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { type ToolStore } from '../../store';
-import { pluginSelectors } from '../plugin/selectors';
-import { type MCPPluginListData, type MCPStoreState } from './initialState';
-import { installOAuthPlugin } from './installOAuthPlugin';
-import { MCP_PLUGIN_LIST_KEY, type MCPPluginListParams, mcpPluginListResource } from './projection';
+import { type MCPPluginListData } from './initialState';
+import { type MCPPluginListParams, mcpPluginListResource } from './projection';
 
 const log = debug('lobe-mcp:store:action');
 

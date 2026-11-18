@@ -1,18 +1,16 @@
 'use client';
 
-import { createStaticStyles, cssVar, cx, DraggablePanel } from '@lobehub/ui';
+import { createStaticStyles, cx, DraggablePanel } from '@lobehub/ui';
 import { type ReactNode } from 'react';
 import { Activity, memo, Suspense, useMemo, useRef } from 'react';
 
 import NavPanelUpgradeEntry from '@/business/client/features/NavPanelUpgradeEntry';
 import { isDesktop } from '@/const/version';
 import { MAC_VIBRANCY_BACKGROUND } from '@/features/Electron/system/macWindowFullscreen';
-import Footer from '@/features/HomeSidebar/Footer';
 import { USER_DROPDOWN_ICON_ID } from '@/features/NavPanel/constants';
 import { TOGGLE_BUTTON_ID } from '@/features/NavPanel/ToggleLeftPanelButton';
 import NavTabBar from '@/features/NavRail';
 import { LIST_COLUMN_BACKGROUND } from '@/features/NavRail/const';
-import { useImLayout } from '@/features/NavRail/useImLayout';
 import { useGlobalStore } from '@/store/global';
 import {
   NAV_PANEL_MAX_WIDTH,
@@ -157,17 +155,12 @@ export const NavPanelDraggable = memo<NavPanelDraggableProps>(
       defaultWidthRef.current = systemStatusSelectors.leftPanelWidth(useGlobalStore.getState());
     }
 
-    const imLayout = useImLayout();
     const styles = useMemo(
       () => ({
-        background: imLayout
-          ? LIST_COLUMN_BACKGROUND
-          : isDesktop && isMacOS()
-            ? MAC_VIBRANCY_BACKGROUND
-            : cssVar.colorBgLayout,
+        background: LIST_COLUMN_BACKGROUND,
         zIndex: 11,
       }),
-      [imLayout],
+      [],
     );
 
     const isHomeActive = activeContent.key === 'home';
@@ -197,14 +190,8 @@ export const NavPanelDraggable = memo<NavPanelDraggableProps>(
         <Suspense fallback={null}>
           <NavPanelUpgradeEntry />
         </Suspense>
-        {/* The tab bar owns navigation, settings and help under `im_layout`. */}
-        {imLayout ? (
-          <NavTabBar />
-        ) : (
-          <Suspense>
-            <Footer />
-          </Suspense>
-        )}
+        {/* The tab bar owns navigation, settings and help. */}
+        <NavTabBar />
       </>
     );
 
@@ -245,7 +232,7 @@ export const NavPanelDraggable = memo<NavPanelDraggableProps>(
         style={styles}
         className={cx(
           draggableStyles.panel,
-          imLayout && draggableStyles.imPanel,
+          draggableStyles.imPanel,
           detached && draggableStyles.detachedPanel,
         )}
         onExpandChange={togglePanel}

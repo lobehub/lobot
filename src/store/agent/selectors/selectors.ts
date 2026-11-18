@@ -1,30 +1,11 @@
-import { DEFAULT_PROVIDER } from '@lobechat/business-const';
-import {
-  DEFAULT_AGENT_CONFIG,
-  DEFAULT_BACKGROUND_COLOR,
-  DEFAULT_INBOX_AVATAR,
-  DEFAULT_MODEL,
-  DEFAUTT_AGENT_TTS_CONFIG,
-  isDesktop,
-} from '@lobechat/const';
+import { DEFAULT_BACKGROUND_COLOR, DEFAULT_INBOX_AVATAR, DEFAULT_MODEL } from '@lobechat/const';
 import {
   agentDisplayName,
-  type AgentMode,
-  type AgentProfile,
   getActivePluginIds,
-  getDisabledPluginIds,
-  getWorkingDirEffectivePath,
-  type KnowledgeItem,
-  KnowledgeType,
   type LobeAgentConfig,
-  type LobeAgentTTSConfig,
   type MetaData,
-  type RuntimeEnvConfig,
 } from '@lobot/types';
 
-import { DEFAULT_OPENING_QUESTIONS } from '@/features/AgentSetting/store/selectors';
-import { resolveTargetDeviceId } from '@/helpers/agentWorkingDirectory';
-import { globalAgentContextManager } from '@/helpers/GlobalAgentContextManager';
 import { filterToolIds } from '@/helpers/toolFilters';
 
 import { type AgentStoreState } from '../initialState';

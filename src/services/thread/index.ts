@@ -1,6 +1,5 @@
 import { type CreateMessageParams } from '@lobot/types';
 
-import { INBOX_SESSION_ID } from '@/const/session';
 import { lambdaClient } from '@/libs/trpc/client';
 import { type CreateThreadParams, type ThreadItem } from '@/types/topic';
 

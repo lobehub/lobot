@@ -1,10 +1,9 @@
-import type { LayersEnum, TopicCommentItem } from '@lobot/types';
+import type { TopicCommentItem } from '@lobot/types';
 
 import { projectFileService } from '@/services/projectFile';
 import { type ChatStore } from '@/store/chat/store';
 import { useGlobalStore } from '@/store/global';
 import { canvasTabKey } from '@/store/global/initialState';
-import { getServerConfigStoreState } from '@/store/serverConfig';
 import { type StoreSetter } from '@/store/types';
 import { type PortalArtifact } from '@/types/artifact';
 
@@ -16,7 +15,6 @@ import {
   getLocalFileTabId,
 } from './helpers';
 import {
-  type GoalMetricKind,
   type OpenLocalFileParams,
   type PortalFile,
   type PortalTaskWorkspace,

@@ -6,10 +6,8 @@ import {
   type CreateMessageParams,
   type GroundingSearch,
   type MessageMetadata,
-  type MessagePluginItem,
   type ModelReasoning,
   type UIChatMessage,
-  type UpdateMessageRAGParams,
 } from '@lobot/types';
 import { ChatErrorType } from '@lobot/types';
 
@@ -17,8 +15,6 @@ import { messageService } from '@/services/message';
 import { type ChatStore } from '@/store/chat/store';
 import type { MessageMapKeyInput } from '@/store/chat/utils/messageMapKey';
 import { type StoreSetter } from '@/store/types';
-
-import { dbMessageSelectors } from '../selectors';
 
 /**
  * Context for optimistic updates to specify session/topic isolation

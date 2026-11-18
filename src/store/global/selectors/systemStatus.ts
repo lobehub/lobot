@@ -1,24 +1,14 @@
-import { type TopicGroupMode } from '@/types/topic';
-
 import type {
   AgentDocumentSort,
   ChannelListSort,
   ContactListSortBy,
-  DocsPageSectionKey,
-  DocsPageSectionView,
   GlobalState,
-  ModelDetailPanelExpandedKey,
-  ProjectListSortBy,
-  ProjectListViewMode,
-  ProjectTopicSubGroupMode,
   SystemStatus,
   WorkspaceOverridableField,
 } from '../initialState';
 import {
-  DEFAULT_DOCS_PAGE_SECTION_VIEW,
   DEFAULT_HOME_SIDEBAR_EXPANDED_KEYS,
   INITIAL_STATUS,
-  MODEL_DETAIL_PANEL_EXPANDABLE_KEYS,
   WORKSPACE_OVERRIDABLE_FIELDS,
 } from '../initialState';
 

@@ -1,5 +1,4 @@
 import { getLobehubSkillProviderById } from '@lobechat/const';
-import { produce } from 'immer';
 
 import {
   cacheScope,
@@ -11,14 +10,9 @@ import {
 } from '@/libs/replica';
 import { toolsClient } from '@/libs/trpc/client';
 import { type StoreSetter } from '@/store/types';
-import { useUserStore } from '@/store/user';
-import { authSelectors } from '@/store/user/selectors';
-import { isSkillConnectionError } from '@/types/skillConnectionError';
-import { type ConnectorActionError, toConnectorActionError } from '@/utils/connectorActionError';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { type ToolStore } from '../../store';
-import { type LobehubSkillStoreState } from './initialState';
 import {
   createLobehubSkillLocalIntent,
   LOBEHUB_SKILL_SERVERS_KEY,
@@ -29,12 +23,7 @@ import {
   mapProviderTools,
   mergeLobehubSkillServers,
 } from './projection';
-import {
-  type CallLobehubSkillToolParams,
-  type CallLobehubSkillToolResult,
-  type LobehubSkillServer,
-  type LobehubSkillTool,
-} from './types';
+import { type LobehubSkillServer, type LobehubSkillTool } from './types';
 import { LobehubSkillStatus } from './types';
 
 const n = setNamespace('lobehubSkillStore');

@@ -8,7 +8,6 @@ import {
   linkReplicaEntity,
   recordLens,
   type ReplicaLens,
-  type ReplicaSyncResult,
 } from '@/libs/replica';
 import { PRE_PAINT_HYDRATE_TIMEOUT, settleWithin } from '@/libs/replica/prePaint';
 import { chatGroupService } from '@/services/chatGroup';

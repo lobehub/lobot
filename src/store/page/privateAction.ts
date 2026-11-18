@@ -5,7 +5,6 @@ import {
   recordLens,
   singleEntity,
 } from '@/libs/replica';
-import { getCacheScope } from '@/libs/swr/useCacheScope';
 import { documentService } from '@/services/document';
 import { useGlobalStore } from '@/store/global';
 import type { StoreSetter } from '@/store/types';
@@ -22,7 +21,6 @@ import {
   pageSectionListResource,
   type PageSectionListValue,
   pageSectionResource,
-  type PageSectionScope,
 } from './projection';
 
 const DEFAULT_PAGE_SIZE = 20;

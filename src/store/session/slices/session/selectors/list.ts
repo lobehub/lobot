@@ -1,7 +1,4 @@
-import { INBOX_SESSION_ID } from '@/const/session';
-import { sessionHelpers } from '@/store/session/slices/session/helpers';
 import {
-  type CustomSessionGroup,
   type GroupMemberWithAgent,
   type LobeGroupSession,
   type LobeSession,

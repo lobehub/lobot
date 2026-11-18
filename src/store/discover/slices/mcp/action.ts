@@ -1,23 +1,12 @@
-import type { CategoryItem, CategoryListQuery } from '@lobehub/market-sdk';
+import type { CategoryItem } from '@lobehub/market-sdk';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import type { DiscoverStore } from '@/store/discover';
-import { globalHelpers } from '@/store/global/helpers';
 import type { StoreSetter } from '@/store/types';
-import type { DiscoverMcpDetail, McpListResponse, McpQueryParams } from '@/types/discover';
+import type { DiscoverMcpDetail, McpListResponse } from '@/types/discover';
 import { setNamespace } from '@/utils/storeDebug';
 
-import {
-  type McpCategoriesParams,
-  mcpCategoriesQueryKey,
-  mcpCategoriesResource,
-  type McpDetailParams,
-  mcpDetailQueryKey,
-  mcpDetailResource,
-  type McpListParams,
-  mcpListQueryKey,
-  mcpListResource,
-} from './projection';
+import { mcpCategoriesResource, mcpDetailResource, mcpListResource } from './projection';
 
 const n = setNamespace('discover/mcp');
 

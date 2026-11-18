@@ -11,7 +11,6 @@ import type {
   BrowserControlSetViewportParams,
   BrowserControlSetViewportResult,
   BrowserControlSnapshotResult,
-  BrowserControlWaitForParams,
   BrowserGatewayToolResultParams,
 } from '@lobechat/electron-client-ipc';
 

@@ -9,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 import ToggleLeftPanelButton from '@/features/NavPanel/ToggleLeftPanelButton';
 import { WRAP_INSET } from '@/features/NavRail/const';
 import { useCompactLayout } from '@/features/NavRail/useCompactLayout';
-import { useImLayout } from '@/features/NavRail/useImLayout';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { RAIL_WIDTH } from '@/features/WorkspaceRail/railHint';
 import { useRailColumnShown } from '@/features/WorkspaceRail/useRailColumnShown';
@@ -46,13 +45,12 @@ const navPanelSelector = (s: GlobalState) => {
 const useNavPanelWidth = () => {
   const width = useGlobalStore(navPanelSelector);
   const compact = useCompactLayout();
-  // Under `im_layout` the list column starts after the workspace rail and inside
-  // the inset wrap, so the titlebar spans both too.
-  const imLayout = useImLayout();
+  // The list column starts after the workspace rail and inside the inset wrap,
+  // so the titlebar spans both too.
   const railShown = useRailColumnShown();
   // A compact window has no list column beside the content to line up with.
   if (compact) return 0;
-  if (!imLayout || width === 0) return width;
+  if (width === 0) return width;
   return width + WRAP_INSET + (railShown ? RAIL_WIDTH : 0);
 };
 

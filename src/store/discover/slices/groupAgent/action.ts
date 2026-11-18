@@ -2,29 +2,18 @@ import type { CategoryItem } from '@lobehub/market-sdk';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import type { DiscoverStore } from '@/store/discover';
-import { globalHelpers } from '@/store/global/helpers';
 import type { StoreSetter } from '@/store/types';
 import type {
   DiscoverGroupAgentDetail,
   GroupAgentListResponse,
-  GroupAgentQueryParams,
   IdentifiersResponse,
 } from '@/types/discover';
 import { setNamespace } from '@/utils/storeDebug';
-import { isTrpcErrorCode } from '@/utils/trpcError';
 
 import {
-  type GroupAgentCategoriesParams,
-  groupAgentCategoriesQueryKey,
   groupAgentCategoriesResource,
-  type GroupAgentDetailParams,
-  groupAgentDetailQueryKey,
   groupAgentDetailResource,
-  type GroupAgentIdentifiersParams,
-  groupAgentIdentifiersQueryKey,
   groupAgentIdentifiersResource,
-  type GroupAgentListParams,
-  groupAgentListQueryKey,
   groupAgentListResource,
 } from './projection';
 

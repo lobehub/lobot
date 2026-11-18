@@ -1,9 +1,8 @@
-import { type ChatPluginPayload } from '@lobot/types';
 import { cx, Flexbox, Icon, Tag, Text } from '@lobehub/ui';
+import { type ChatPluginPayload } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { CircuitBoard } from 'lucide-react';
 import { memo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import PluginAvatar from '@/features/PluginAvatar';
 import { useYamlArguments } from '@/hooks/useYamlArguments';
@@ -20,8 +19,6 @@ interface ArtifactItemProps {
 }
 
 const ArtifactItem = memo<ArtifactItemProps>(({ payload, messageId, identifier = 'unknown' }) => {
-  const { t } = useTranslation('plugin');
-
   const args = useYamlArguments(payload?.arguments);
 
   const pluginMeta = useToolStore(toolSelectors.getMetaById(identifier), isEqual);

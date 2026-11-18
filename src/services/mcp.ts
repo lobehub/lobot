@@ -1,31 +1,12 @@
-import { CURRENT_VERSION, isDesktop } from '@lobechat/const';
-import {
-  getMcpServerFingerprint,
-  isSyncedMcpToolVisibleTo,
-  type McpServerAddress,
-} from '@lobechat/const/mcpApp';
-import { isLocalOrPrivateUrl, safeParseJSON } from '@lobechat/utils';
+import { isDesktop } from '@lobechat/const';
+import { isLocalOrPrivateUrl } from '@lobechat/utils';
 import { deserializeMcpIpcPayload, serializeMcpIpcPayload } from '@lobechat/utils/mcpIpcPayload';
-import { toRecord } from '@lobechat/utils/object';
-import { type PluginManifest } from '@lobehub/market-sdk';
-import { type CallReportRequest } from '@lobehub/market-types';
-import {
-  type ChatToolPayload,
-  type CheckMcpInstallResult,
-  type CustomPluginMetadata,
-} from '@lobot/types';
-import { type ReadResourceResult } from '@modelcontextprotocol/client';
-import { omit } from 'es-toolkit/compat';
+import { type CustomPluginMetadata } from '@lobot/types';
 
-import { type MCPToolCallResult } from '@/libs/mcp';
-import { renderMcpArgs, renderMcpUrlTemplate } from '@/libs/mcp/urlTemplate';
-import { getMCPConnectionErrorType } from '@/libs/mcp/utils';
 import { toolsClient } from '@/libs/trpc/client';
 import { serverConfigSelectors } from '@/store/serverConfig/selectors';
 import { getServerConfigStoreState } from '@/store/serverConfig/store';
 import { ensureElectronIpc } from '@/utils/electron/ipc';
-
-import { discoverService } from './discover';
 
 /** A tool a local MCP server lists, as the desktop main process reports it. */
 export interface LocalMcpTool {

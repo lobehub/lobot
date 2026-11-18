@@ -1,9 +1,5 @@
-import { cacheScope, createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
-import type {
-  ResourceAccessLevel,
-  ResourceCollaborator,
-  ResourceGeneralAccess,
-} from '@/services/resourcePermission';
+import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
+import type { ResourceCollaborator, ResourceGeneralAccess } from '@/services/resourcePermission';
 import { resourcePermissionService } from '@/services/resourcePermission';
 import type { StoreSetter } from '@/store/types';
 import { setNamespace } from '@/utils/storeDebug';
@@ -17,7 +13,6 @@ import {
 import {
   resourceAccessResource,
   resourceCollaboratorsResource,
-  resourceKey,
   type ResourceRef,
 } from './projection';
 import { accessSessionKey } from './selectors';

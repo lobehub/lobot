@@ -1,21 +1,15 @@
 import { type ContextMemorySimple, type UserMemoryItemSimple } from '@lobot/types';
-import { type SWRResponse } from 'swr';
 
 import { userMemoryKeys } from '@/libs/swr/keys';
-import { memoryCRUDService, userMemoryService } from '@/services/userMemory';
+import { userMemoryService } from '@/services/userMemory';
 import { type StoreSetter } from '@/store/types';
 import { type DisplayContextMemory } from '@/types/serverData';
 import { LayersEnum } from '@/types/userMemory';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { type UserMemoryStore, useUserMemoryStore } from '../../store';
-import { type MemoryListPageResult, MemoryQueryList } from '../utils/memoryQueryList';
-import {
-  CONTEXT_LIST_PAGE_SIZE,
-  type ContextListData,
-  type ContextListParams,
-  contextListResource,
-} from './projection';
+import { MemoryQueryList } from '../utils/memoryQueryList';
+import { type ContextListData, type ContextListParams, contextListResource } from './projection';
 
 const n = setNamespace('userMemory/context');
 

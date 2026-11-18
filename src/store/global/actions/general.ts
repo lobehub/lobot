@@ -1,4 +1,3 @@
-import { AGENT_CHAT_TOPIC_URL, GROUP_CHAT_TOPIC_URL } from '@lobechat/const';
 import isEqual from 'fast-deep-equal';
 import { gt, parse, valid } from 'semver';
 import type { SWRResponse } from 'swr';
@@ -14,21 +13,13 @@ import { globalService } from '@/services/global';
 import { getElectronStoreState } from '@/store/electron';
 import { electronSyncSelectors } from '@/store/electron/selectors';
 import type { SystemStatus } from '@/store/global/initialState';
-import {
-  DEFAULT_HOME_SIDEBAR_EXPANDED_KEYS,
-  DEFAULT_RESOURCE_MANAGER_COLUMN_WIDTHS,
-} from '@/store/global/initialState';
 import type { StoreSetter } from '@/store/types';
 import type { LocaleMode } from '@/types/locale';
 import { switchLang } from '@/utils/client/switchLang';
 import { merge } from '@/utils/merge';
 import { setNamespace } from '@/utils/storeDebug';
 
-import {
-  DEFAULT_HIDDEN_SECTIONS,
-  DEFAULT_SIDEBAR_ITEMS,
-  routeOverlayWrites,
-} from '../selectors/systemStatus';
+import { routeOverlayWrites } from '../selectors/systemStatus';
 import type { GlobalStore } from '../store';
 
 const n = setNamespace('g');

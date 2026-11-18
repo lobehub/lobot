@@ -1,5 +1,3 @@
-import { shallow } from 'zustand/shallow';
-
 import { revalidateReplica } from '@/libs/replica';
 import { type ResourceQueryParams } from '@/types/resource';
 

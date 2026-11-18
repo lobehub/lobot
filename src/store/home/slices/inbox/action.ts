@@ -1,4 +1,4 @@
-import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
+import { createReplicaSlice, recordLens } from '@/libs/replica';
 import { type HomeDailyBriefResponse, homeService } from '@/services/home';
 import { type TopicListItem, topicService } from '@/services/topic';
 import type { HomeStore } from '@/store/home/store';
@@ -6,12 +6,7 @@ import type { StoreSetter } from '@/store/types';
 import { type ChatTopicStatus } from '@/types/topic';
 import { setNamespace } from '@/utils/storeDebug';
 
-import {
-  HOME_INBOX_KEY,
-  homeDailyBriefResource,
-  type HomeFeedParams,
-  homeInboxTopicsResource,
-} from './projection';
+import { homeDailyBriefResource, type HomeFeedParams, homeInboxTopicsResource } from './projection';
 
 const n = setNamespace('homeInbox');
 

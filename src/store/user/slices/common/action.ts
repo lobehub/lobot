@@ -2,8 +2,6 @@ import { isDesktop } from '@lobechat/const';
 import type { UserGeneralConfig } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import type { ReplicaSlice } from 'local-replica/zustand';
-import useSWR from 'swr';
-import { type SWRResponse } from 'swr';
 import { type PartialDeep } from 'type-fest';
 
 import { DEFAULT_PREFERENCE } from '@/const/user';
@@ -16,7 +14,6 @@ import {
   type ReplicaSyncResult,
   revalidateReplica,
 } from '@/libs/replica';
-import { userKeys } from '@/libs/swr/keys';
 import { userService } from '@/services/user';
 import { type StoreSetter } from '@/store/types';
 import { type UserStore } from '@/store/user';

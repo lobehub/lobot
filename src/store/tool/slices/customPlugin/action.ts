@@ -1,14 +1,11 @@
-import { merge } from 'es-toolkit/compat';
-
 import { mcpService } from '@/services/mcp';
 import { pluginService } from '@/services/plugin';
 import { type StoreSetter } from '@/store/types';
-import { type LobeToolCustomPlugin, type PluginInstallError } from '@/types/tool/plugin';
+import { type PluginInstallError } from '@/types/tool/plugin';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { type ToolStore } from '../../store';
 import { pluginSelectors } from '../plugin/selectors';
-import { defaultCustomPlugin } from './initialState';
 
 const n = setNamespace('customPlugin');
 

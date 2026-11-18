@@ -1,6 +1,4 @@
-import { type OpenAIChatMessage, type UIChatMessage } from '@lobot/types';
-
-import { encodeAsync } from '@/utils/tokenizer';
+import { type UIChatMessage } from '@lobot/types';
 
 const getMessageById = (messages: UIChatMessage[], id: string): UIChatMessage | undefined => {
   // First try to find in top-level messages

@@ -22,7 +22,6 @@ import {
   DOCS_HOME_LIMIT,
   docsHomeListResource,
   type DocsHomeRow,
-  type DocsHomeTab,
   type RecentListParams,
   recentListResource,
   toDocsHomeRow,

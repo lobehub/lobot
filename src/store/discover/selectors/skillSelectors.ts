@@ -1,11 +1,4 @@
-import type {
-  DiscoverSkillDetail,
-  DiscoverSkillItem,
-  SkillCategoryItem,
-  SkillCommentListResponse,
-  SkillListResponse,
-  SkillRatingDistribution,
-} from '@/types/discover';
+import type { DiscoverSkillItem, SkillCategoryItem, SkillListResponse } from '@/types/discover';
 
 import type { DiscoverStore } from '../store';
 

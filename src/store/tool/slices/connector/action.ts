@@ -1,6 +1,3 @@
-import { isDesktop } from '@lobechat/const';
-import { isLocalOrPrivateUrl } from '@lobechat/utils';
-
 import {
   cacheScope,
   createReplicaSlice,
@@ -9,9 +6,7 @@ import {
 } from '@/libs/replica';
 import { subscribeCacheScope } from '@/libs/replica/cacheScopeEvents';
 import { lambdaClient } from '@/libs/trpc/client';
-import { type LocalMcpTool, mcpService } from '@/services/mcp';
 import type { StoreSetter } from '@/store/types';
-import type { ConnectorToolPermission } from '@/types/serverData';
 
 import type { ToolStore } from '../../store';
 import {

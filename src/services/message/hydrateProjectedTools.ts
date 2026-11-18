@@ -1,4 +1,4 @@
-import type { ChatToolPayloadWithResult, UIChatMessage } from '@lobot/types';
+import type { UIChatMessage } from '@lobot/types';
 
 interface StoredToolPayload {
   content: string;

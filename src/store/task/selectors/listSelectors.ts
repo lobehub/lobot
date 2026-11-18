@@ -1,4 +1,3 @@
-import type { TaskStoreState } from '../initialState';
 import type { TaskGroupItem, TaskListItem } from '../slices/list/initialState';
 
 const EMPTY_TASKS: TaskListItem[] = [];

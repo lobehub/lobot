@@ -3,11 +3,8 @@ import { type NotebookDocumentType as DocumentType } from '@lobechat/const/built
 import { type NotebookDocument } from '@lobot/types';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
-import { invalidateDocumentMutation } from '@/services/document/invalidation';
 import { notebookService } from '@/services/notebook';
-import { useChatStore } from '@/store/chat';
 import { type StoreSetter } from '@/store/types';
-import { type DocumentItem } from '@/types/serverData';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { notebookDocumentsResource } from './projection';

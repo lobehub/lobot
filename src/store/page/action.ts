@@ -1,26 +1,15 @@
 import { CUSTOM_DOCUMENT_FILE_TYPE } from '@lobechat/const';
 
 import { docsPagePath, RESOURCE_HOME_PATH } from '@/features/ResourceHome/paths';
-import { type ReplicaSyncResult } from '@/libs/replica';
 import { documentService } from '@/services/document';
-import { useGlobalStore } from '@/store/global';
-import { systemStatusSelectors } from '@/store/global/selectors';
 import type { StoreSetter } from '@/store/types';
-import { DocumentSourceType, type LobeDocument } from '@/types/document';
+import { DocumentSourceType } from '@/types/document';
 import type { DocumentItem } from '@/types/serverData';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { initialState, type PageState } from './initialState';
-import { currentPageSize, PagePrivateAction } from './privateAction';
-import {
-  documentItemToLobeDocument,
-  PAGE_LIST_KEY,
-  type PageSectionListParams,
-  type PageSectionParams,
-  type PageSectionScope,
-  TEMP_PAGE_ID_PREFIX,
-} from './projection';
-import { listSelectors } from './slices/list/selectors';
+import { PagePrivateAction } from './privateAction';
+import { documentItemToLobeDocument, PAGE_LIST_KEY, TEMP_PAGE_ID_PREFIX } from './projection';
 import { usePageStore } from './store';
 
 const n = setNamespace('page');

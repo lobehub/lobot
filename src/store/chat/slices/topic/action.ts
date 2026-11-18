@@ -8,7 +8,6 @@ import {
 } from '@lobechat/prompts';
 import { toast } from '@lobehub/ui';
 import {
-  type AiModelReasoningConfig,
   type ChatTopicMetadata,
   type HeterogeneousReasoningEffort,
   type HeterogeneousSpeedMode,
@@ -19,8 +18,6 @@ import {
 } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { t } from 'i18next';
-import useSWR from 'swr';
-import { type SWRResponse } from 'swr';
 
 import { LOADING_FLAT } from '@/const/message';
 import {
@@ -31,13 +28,7 @@ import {
   type ReplicaSyncResult,
 } from '@/libs/replica';
 import { subscribeCacheScope } from '@/libs/replica/cacheScopeEvents';
-import { mutate } from '@/libs/swr';
-import { cronKeys, topicKeys } from '@/libs/swr/keys';
-import { getCacheScope } from '@/libs/swr/useCacheScope';
 import { aiChatService } from '@/services/aiChat';
-import { type GitLinkedPRSummary } from '@/services/git';
-import { messageService } from '@/services/message';
-import type { TopicBatchDeleteScope } from '@/services/topic';
 import { topicService } from '@/services/topic';
 import { type ChatStore } from '@/store/chat';
 import { snapshotAgentModel, snapshotAgentReasoning } from '@/store/chat/utils/snapshotAgentModel';
@@ -46,23 +37,9 @@ import {
   isAudioOnlyFirstUserMessage,
   normalizeTopicTitleMessages,
 } from '@/store/chat/utils/topicTitle';
-import {
-  canReadTopicGitTransport,
-  getTopicLinkedPullRequestBase,
-  isSuccessfulLinkedPullRequestLookup,
-  mergeWorkingDirGithubState,
-  resolveTopicGitTransport,
-  toWorkingDirGithubState,
-} from '@/store/chat/utils/topicWorkingDirGit';
-import { useGlobalStore } from '@/store/global';
-import { getHomeStoreState } from '@/store/home';
 import { type StoreSetter } from '@/store/types';
 import { useUserStore } from '@/store/user';
-import {
-  systemAgentSelectors,
-  userGeneralSettingsSelectors,
-  userProfileSelectors,
-} from '@/store/user/selectors';
+import { systemAgentSelectors, userGeneralSettingsSelectors } from '@/store/user/selectors';
 import { type ChatTopic, type ChatTopicStatus, type CreateTopicParams } from '@/types/topic';
 import { setNamespace } from '@/utils/storeDebug';
 
@@ -71,7 +48,6 @@ import { type PendingNewTopicDirectory, type TopicData } from './initialState';
 import { type PendingTopicStatusSource, PendingTopicStatusWrites } from './pendingStatusWrites';
 import {
   applyTopicDispatchToBucket,
-  normalizeTopicListParams,
   type TopicAgentViewParams,
   topicAgentViewResource,
   type TopicListParams,
@@ -81,10 +57,6 @@ import {
 import { type ChatTopicDispatch } from './reducer';
 import { topicSelectors } from './selectors';
 import { createTopicDetailSlice, RUN_WATCH_INTERVAL } from './topicDetail';
-import {
-  type TopicLinkedPullRequestRefreshParams,
-  useTopicLinkedPullRequestSync,
-} from './topicLinkedPullRequest';
 
 const n = setNamespace('t');
 

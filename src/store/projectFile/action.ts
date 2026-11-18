@@ -1,4 +1,4 @@
-import type { GitWorkingTreeFiles, ProjectFileIndexResult } from '@lobechat/electron-client-ipc';
+import type { ProjectFileIndexResult } from '@lobechat/electron-client-ipc';
 import type { ReplicaSyncOptions } from 'local-replica/zustand';
 
 import type { ReplicaSyncResult } from '@/libs/replica';
@@ -7,12 +7,7 @@ import { setNamespace } from '@/utils/storeDebug';
 
 import { initialProjectFileState, type ProjectFileState } from './initialState';
 import { ProjectFilePrivateAction } from './privateAction';
-import {
-  type FilesLocation,
-  type FilesLocationParams,
-  type GitWorkingTreeFilesParams,
-  type ProjectIndexParams,
-} from './projection';
+import { type ProjectIndexParams } from './projection';
 import { useProjectFileStore } from './store';
 
 const n = setNamespace('projectFile');

@@ -1,7 +1,7 @@
 'use client';
 
-import type { UIChatMessage } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
+import type { UIChatMessage } from '@lobot/types';
 import type { ReactNode } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
@@ -18,7 +18,7 @@ import {
 } from '@/store/chat/utils/interventionSync';
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';
 import { useUserStore } from '@/store/user';
-import { authSelectors, labPreferSelectors, settingsSelectors } from '@/store/user/selectors';
+import { authSelectors, settingsSelectors } from '@/store/user/selectors';
 
 import WideScreenContainer from '../../WideScreenContainer';
 import SkeletonList from '../components/SkeletonList';
@@ -165,7 +165,6 @@ const ChatList = memo<ChatListProps>(
     const enableUserMemories = useUserStore(settingsSelectors.memoryEnabled);
     const skipFetch = useConversationStore(dataSelectors.skipFetch);
     const useFetchMessages = useChatStore((s) => s.useFetchMessages);
-    const activeAgentId = useChatStore((s) => s.activeAgentId);
     // Pending cards still refresh during streaming; the data slice merges only
     // intervention changes so lagging DB snapshots cannot replace live text.
     const isStreaming = useChatStore(operationSelectors.isAgentRuntimeRunningByContext(context));
@@ -178,7 +177,6 @@ const ChatList = memo<ChatListProps>(
     const isCreatingTopic = useChatStore(
       (s) => !!context.topicId && s.creatingTopicIds.includes(context.topicId),
     );
-    const enableSelfLearning = useUserStore(labPreferSelectors.enableSelfLearning);
     const messagesSWR = useFetchMessages(context, {
       refreshInterval: hasPendingApproval ? INTERVENTION_REFRESH_INTERVAL : 0,
       revalidateOnFocus: hasPendingApproval || !isStreaming,

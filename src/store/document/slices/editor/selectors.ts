@@ -1,5 +1,4 @@
 import { type DocumentStore } from '../../store';
-import { type EditorContentState } from './initialState';
 
 const isDirty = (id: string) => (s: DocumentStore) => s.documents[id]?.isDirty ?? false;
 

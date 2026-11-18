@@ -1,15 +1,11 @@
-import { copyToClipboard } from '@lobehub/ui';
-import { type MessageMetadata, TraceEventType } from '@lobot/types';
+import { type MessageMetadata } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 
-import { messageService } from '@/services/message';
-import { topicService } from '@/services/topic';
 import { type ChatStore } from '@/store/chat/store';
 import { type StoreSetter } from '@/store/types';
 import { setNamespace } from '@/utils/storeDebug';
 
-import { dbMessageSelectors, displayMessageSelectors } from '../../../selectors';
-import { toggleBooleanList } from '../../../utils';
+import { displayMessageSelectors } from '../../../selectors';
 import { type OptimisticUpdateContext } from './optimisticUpdate';
 
 const n = setNamespace('m');

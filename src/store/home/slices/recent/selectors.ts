@@ -1,7 +1,6 @@
 import { type HomeStore } from '@/store/home/store';
 
 import { type RecentEntityRef, toRecentEntityRef } from './initialState';
-import type { DocsHomeTab } from './projection';
 
 /** Items of one recents query; `undefined` until it is hydrated or fetched. */
 const query = (queryKey: string) => (s: HomeStore) => s.recentListMap[queryKey];

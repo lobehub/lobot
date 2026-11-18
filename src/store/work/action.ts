@@ -1,19 +1,8 @@
-import type { WorkListItem, WorkVersionItem } from '@lobot/types';
-import type { ReplicaSyncOptions } from 'local-replica/zustand';
-
-import type { ReplicaSyncResult } from '@/libs/replica';
 import type { StoreSetter } from '@/store/types';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { initialWorkState, type WorkState } from './initialState';
 import { WorkPrivateAction } from './privateAction';
-import {
-  type AgentWorksParams,
-  type ConversationWorksParams,
-  workspaceWorksKey,
-  type WorkspaceWorksParams,
-  type WorkVersionsParams,
-} from './projection';
 import { useWorkStore } from './store';
 
 const n = setNamespace('work');

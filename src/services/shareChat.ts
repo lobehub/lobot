@@ -1,17 +1,7 @@
-import type {
-  ExecAgentClientIds,
-  ExecAgentResult,
-  UIChatMessage,
-  UserInterventionConfig,
-} from '@lobot/types';
+import type { ExecAgentClientIds, ExecAgentResult, UserInterventionConfig } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
-import type {
-  ResolveAgentInterventionBySourceParams,
-  ResolveAgentInterventionBySourceResult,
-  ResumeApprovalParam,
-  ResumeToolResultParam,
-} from '@/services/aiAgent';
+import type { ResumeApprovalParam, ResumeToolResultParam } from '@/services/aiAgent';
 import type { VisitorTopicItem } from '@/types/serverData';
 
 interface ShareChatExecParams {

@@ -1,24 +1,18 @@
-import type { TaskCompletedWindow } from '@lobechat/const/builtinTools';
-import { normalizeTaskListFilter, type TaskListFilter, type TaskStatus } from '@lobot/types';
-import { useMemo } from 'react';
+import { type TaskListFilter } from '@lobot/types';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import { taskService } from '@/services/task';
 import type { StoreSetter } from '@/store/types';
 
 import type { TaskStore } from '../../store';
-import { useTaskStore } from '../../store';
-import type { TaskKanbanGroupBy, TaskListVisibilityFilter } from './initialState';
 import {
   type CollectionTask,
   taskGroupListEntity,
   type TaskGroupListQuery,
-  taskGroupListQueryKey,
   taskGroupListResource,
   type TaskGroupListValue,
   taskListEntity,
   type TaskListQuery,
-  taskListQueryKey,
   taskListResource,
   type TaskListValue,
 } from './projection';

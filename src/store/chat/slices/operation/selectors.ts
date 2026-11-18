@@ -1,8 +1,7 @@
 import { type ChatStoreState } from '@/store/chat/initialState';
 import { messageMapKey, type MessageMapKeyInput } from '@/store/chat/utils/messageMapKey';
-import { topicMapKey } from '@/store/chat/utils/topicMapKey';
 
-import { type Operation, type OperationType } from './types';
+import { type Operation } from './types';
 import {
   AI_RUNTIME_OPERATION_TYPES,
   INPUT_LOADING_OPERATION_TYPES,

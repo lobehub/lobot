@@ -4,7 +4,6 @@ import { type StoreSetter } from '@/store/types';
 import { type RetrieveMemoryResult } from '@/types/userMemory';
 
 import { type UserMemoryStore } from '../../store';
-import { clearUserReplicas } from '../../utils/replica';
 import { topicMemoriesResource } from './projection';
 
 type Setter = StoreSetter<UserMemoryStore>;

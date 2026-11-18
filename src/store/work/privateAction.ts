@@ -2,7 +2,6 @@ import type { WorkListItem, WorkSummaryItem, WorkVersionItem } from '@lobot/type
 
 import {
   arrayEntity,
-  cacheScope,
   createReplicaSlice,
   linkReplicaEntity,
   recordLens,

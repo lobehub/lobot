@@ -4,7 +4,6 @@ import { INBOX_SESSION_ID } from '@/const/session';
 import { TopicTrigger } from '@/const/topic';
 import { lambdaClient } from '@/libs/trpc/client';
 import type { SettleRunningOperationResult } from '@/types/serverData';
-import { type BatchTaskResult } from '@/types/service';
 import {
   type ChatTopic,
   type ChatTopicMetadata,

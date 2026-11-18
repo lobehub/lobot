@@ -16,7 +16,6 @@ import { setNamespace } from '@/utils/storeDebug';
 
 import { operationSelectors } from './selectors';
 import {
-  type AfterCompletionCallback,
   AI_RUNTIME_OPERATION_TYPES,
   isClientHeldQueuedMessage,
   type Operation,
@@ -24,7 +23,6 @@ import {
   type OperationContext,
   type OperationFilter,
   type OperationMetadata,
-  type OperationStatus,
   type OperationType,
   type QueuedMessage,
 } from './types';

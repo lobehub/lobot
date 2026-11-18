@@ -1,25 +1,15 @@
 import {
   type ActivityListParams,
   type ActivityListResult,
-  type AddActivityMemoryResult,
-  type AddContextMemoryResult,
-  type AddExperienceMemoryResult,
-  type AddIdentityMemoryResult,
-  type AddPreferenceMemoryResult,
   type ExperienceListParams,
   type ExperienceListResult,
   type IdentityListParams,
   type IdentityListResult,
   type LayersEnum,
-  type QueryTaxonomyOptionsParams,
-  type QueryTaxonomyOptionsResult,
-  type RemoveIdentityMemoryResult,
   type SearchMemoryParams,
   type SearchMemoryResult,
   type TypesEnum,
-  type UpdateIdentityMemoryResult,
 } from '@lobot/types';
-import { type z } from 'zod';
 
 import { lambdaClient } from '@/libs/trpc/client';
 

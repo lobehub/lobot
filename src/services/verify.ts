@@ -1,12 +1,4 @@
-import type { AcceptanceVisibility } from '@lobechat/const/verify';
 import type {
-  AcceptanceChecklistItem,
-  AcceptanceCheckReviewAction,
-  AcceptanceRejectIntent,
-  AcceptanceReviewAnnotation,
-  CreatableAcceptanceSubjectType,
-  ReviewAdjudication,
-  ReviewProposalEdit,
   VerifierType,
   VerifyCheckDefinition,
   VerifyCheckItem,
@@ -14,7 +6,6 @@ import type {
   VerifyOnFailStrategy,
   VerifyReport,
   VerifyRubricConfig,
-  VerifyUserDecision,
 } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
@@ -22,7 +13,6 @@ import type {
   VerifyAutoRepairOutcome,
   VerifyCheckResultItem,
   VerifyCriterionItem,
-  VerifyRubricItem,
   VerifyRunItem,
   VerifyStatus,
 } from '@/types/serverData';

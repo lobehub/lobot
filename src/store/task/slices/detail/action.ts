@@ -1,5 +1,5 @@
 import { toast } from '@lobehub/ui';
-import type { TaskDetailActivity, TaskDetailActivityAuthor, TaskDetailData } from '@lobot/types';
+import type { TaskDetailActivityAuthor, TaskDetailData } from '@lobot/types';
 import {
   clearTaskReposSelection,
   readTaskExecutionConfig,
@@ -10,10 +10,8 @@ import { t } from 'i18next';
 
 import { cacheScope, createReplicaSlice, recordLens, revalidateReplica } from '@/libs/replica';
 import { subscribeCacheScope } from '@/libs/replica/cacheScopeEvents';
-import { useClientDataSWR } from '@/libs/swr';
 import { normalizeAsyncError } from '@/libs/swr/normalizeError';
 import { taskService } from '@/services/task';
-import { workService } from '@/services/work';
 import { goalGraphResource } from '@/store/goal/projection';
 import type { StoreSetter } from '@/store/types';
 import { useUserStore } from '@/store/user';
@@ -24,12 +22,9 @@ import type { SaveStatus } from '@/types/saveState';
 import { isTrpcErrorCode } from '@/utils/trpcError';
 
 import type { TaskStore } from '../../store';
-import { useTaskStore } from '../../store';
-import { hasInFlightActivity, TASK_DETAIL_POLL_INTERVAL } from './inFlight';
 import {
   appendOptimisticPropertyActivity,
   buildOptimisticAssignmentActivities,
-  buildOptimisticCommentActivity,
   buildOptimisticPropertyActivity,
 } from './optimisticActivity';
 import { taskDetailResource } from './projection';

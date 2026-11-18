@@ -1,6 +1,6 @@
 import type { FollowUpChip } from '@lobot/types';
 
-import { type FollowUpActionState, type FollowUpActionStatus } from './initialState';
+import { type FollowUpActionState } from './initialState';
 
 const EMPTY_CHIPS: readonly FollowUpChip[] = [];
 

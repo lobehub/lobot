@@ -1,10 +1,4 @@
-import {
-  DEVICE_TERMINAL_METADATA_KEY,
-  type DeviceListItem,
-  type DeviceMetricSeries,
-} from '@lobot/types';
-
-import { getChannelKind } from '@/features/DeviceManager/channelKind';
+import { type DeviceListItem, type DeviceMetricSeries } from '@lobot/types';
 
 import type { DeviceState } from './initialState';
 import {

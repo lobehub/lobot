@@ -1,9 +1,3 @@
-import {
-  CUSTOM_DOCUMENT_FILE_TYPE,
-  CUSTOM_FOLDER_FILE_TYPE,
-  DERIVED_DOCUMENT_SOURCE_TYPE,
-} from '@lobechat/const';
-import { createNanoId } from '@lobechat/utils';
 import isEqual from 'fast-deep-equal';
 
 import { createReplicaSlice, recordLens } from '@/libs/replica';
@@ -11,13 +5,11 @@ import { documentService } from '@/services/document';
 import { type StoreSetter } from '@/store/types';
 import { type LobeDocument } from '@/types/document';
 import { DocumentSourceType } from '@/types/document';
-import { type ResourceItem } from '@/types/resource';
 import { type DocumentItem } from '@/types/serverData';
 import { setNamespace } from '@/utils/storeDebug';
 import { isTrpcErrorCode } from '@/utils/trpcError';
 
 import { type FileStore, useFileStore } from '../../store';
-import { getResourceQueryKey } from '../resource/utils';
 import { type FileDocumentDetail, fileDocumentResource } from './projection';
 
 const n = setNamespace('document');

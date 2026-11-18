@@ -1,5 +1,5 @@
 import type { Draft, Patch } from 'immer';
-import { applyPatches, produceWithPatches } from 'immer';
+import { applyPatches } from 'immer';
 import type { StoreApi } from 'zustand';
 
 type StoreState = object;

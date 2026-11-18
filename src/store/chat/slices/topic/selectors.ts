@@ -1,32 +1,15 @@
 import { isDesktop } from '@lobechat/const';
 import type { AiModelReasoningConfig, HeterogeneousTopicPin } from '@lobot/types';
 import { getWorkingDirEffectivePath } from '@lobot/types';
-import { t } from 'i18next';
 
 import { MAIN_SIDEBAR_EXCLUDE_TRIGGERS, TopicTrigger } from '@/const/topic';
-import {
-  type ChatTopic,
-  type ChatTopicSummary,
-  type GroupedTopic,
-  type TopicGroupMode,
-  type TopicSortBy,
-} from '@/types/topic';
-import {
-  getTopicSortTime,
-  groupTopicsByAgent,
-  groupTopicsByDevice,
-  groupTopicsByProject,
-  groupTopicsByStatus,
-  groupTopicsByTime,
-  groupTopicsByUpdatedTime,
-  type TopicDeviceDirectory,
-} from '@/utils/client/topic';
+import { type ChatTopic, type ChatTopicSummary, type TopicSortBy } from '@/types/topic';
+import { getTopicSortTime } from '@/utils/client/topic';
 
 import { type ChatStoreState } from '../../initialState';
 import { topicMapKey } from '../../utils/topicMapKey';
 import { operationSelectors } from '../operation/selectors';
 import { type TopicData } from './initialState';
-import type { TopicShareEntry } from './projection';
 
 // Helper selector: get current topic data based on session context
 const currentTopicData = (s: ChatStoreState): TopicData | undefined => {

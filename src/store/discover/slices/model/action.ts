@@ -2,28 +2,14 @@ import type { CategoryItem } from '@lobehub/market-sdk';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import type { DiscoverStore } from '@/store/discover';
-import { globalHelpers } from '@/store/global/helpers';
 import type { StoreSetter } from '@/store/types';
-import type {
-  DiscoverModelDetail,
-  IdentifiersResponse,
-  ModelListResponse,
-  ModelQueryParams,
-} from '@/types/discover';
+import type { DiscoverModelDetail, IdentifiersResponse, ModelListResponse } from '@/types/discover';
 import { setNamespace } from '@/utils/storeDebug';
 
 import {
-  type ModelCategoriesParams,
-  modelCategoriesQueryKey,
   modelCategoriesResource,
-  type ModelDetailParams,
-  modelDetailQueryKey,
   modelDetailResource,
-  type ModelIdentifiersParams,
-  modelIdentifiersQueryKey,
   modelIdentifiersResource,
-  type ModelListParams,
-  modelListQueryKey,
   modelListResource,
 } from './projection';
 

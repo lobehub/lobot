@@ -1,9 +1,4 @@
-import {
-  type AddFavoriteParams,
-  type FavoriteItem,
-  type FavoriteType,
-  toFavoriteTitle,
-} from '@lobot/types';
+import { type FavoriteItem, type FavoriteType, toFavoriteTitle } from '@lobot/types';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import { favoriteService } from '@/services/favorite';

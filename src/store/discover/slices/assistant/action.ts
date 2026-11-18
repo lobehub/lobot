@@ -13,14 +13,8 @@ import type {
 import { setNamespace } from '@/utils/storeDebug';
 
 import {
-  type AssistantCategoriesParams,
-  assistantCategoriesQueryKey,
   assistantCategoriesResource,
-  type AssistantDetailParams,
-  assistantDetailQueryKey,
   assistantDetailResource,
-  type AssistantIdentifiersParams,
-  assistantIdentifiersQueryKey,
   assistantIdentifiersResource,
   type AssistantListParams,
   assistantListQueryKey,

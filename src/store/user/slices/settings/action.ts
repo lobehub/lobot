@@ -6,20 +6,13 @@ import { shareService } from '@/services/share';
 import { userService } from '@/services/user';
 import type { StoreSetter } from '@/store/types';
 import type { UserStore } from '@/store/user';
-import type { LobeAgentSettings } from '@/types/session';
 import type {
-  PersonalSystemAgentKey,
-  SystemAgentItem,
   UserGeneralConfig,
-  UserKeyVaults,
-  UserServiceModelConfigKey,
   UserSettings,
   UserSystemAgentConfigKey,
 } from '@/types/user/settings';
 import { difference } from '@/utils/difference';
 import { merge } from '@/utils/merge';
-
-import { settingsSelectors } from './selectors/settings';
 
 type Setter = StoreSetter<UserStore>;
 

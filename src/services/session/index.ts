@@ -1,11 +1,5 @@
 import { lambdaClient } from '@/libs/trpc/client';
-import { type LobeAgentConfig } from '@/types/agent';
-import {
-  type LobeAgentSession,
-  type LobeSessionType,
-  type SessionGroupItem,
-  type UpdateSessionParams,
-} from '@/types/session';
+import { type SessionGroupItem } from '@/types/session';
 
 /**
  * @deprecated Session service is legacy. Use agentService for agent CRUD operations.

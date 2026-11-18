@@ -1,6 +1,4 @@
 import {
-  type BinaryCategory,
-  type BinaryInfo,
   type BinaryStatus,
   type DetectHeterogeneousAgentCommandParams,
 } from '@lobechat/electron-client-ipc';

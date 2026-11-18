@@ -1,13 +1,5 @@
 import { GOAL_GRAPH_CAPABILITY, type GoalStatus } from '@lobechat/const/goal';
-import type {
-  GoalCreateConfig,
-  GoalGraphSnapshot,
-  GoalMetricCriterion,
-  GoalNodeKind,
-  GoalSubscriptionFreshnessPolicy,
-  GoalSubscriptionWakeCondition,
-  GoalTickResult,
-} from '@lobot/types';
+import type { GoalGraphSnapshot } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 

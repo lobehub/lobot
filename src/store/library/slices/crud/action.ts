@@ -3,7 +3,6 @@ import {
   createReplicaSlice,
   linkReplicaEntity,
   recordLens,
-  type ReplicaSyncResult,
   singleEntity,
 } from '@/libs/replica';
 import { knowledgeBaseService } from '@/services/knowledgeBase';
@@ -16,12 +15,10 @@ import type {
 } from '@/types/knowledgeBase';
 
 import {
-  AGENT_SPACE_LIST_KEY,
   agentSpaceListResource,
   KNOWLEDGE_BASE_LIST_ALL_KEY,
   knowledgeBaseItemResource,
   knowledgeBaseListResource,
-  type KnowledgeBaseVisibility,
 } from './projection';
 
 type Setter = StoreSetter<KnowledgeBaseStore>;

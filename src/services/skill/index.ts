@@ -1,15 +1,9 @@
 import type {
-  CreateSkillInput,
-  ImportGitHubInput,
-  ImportUrlInput,
-  ImportZipInput,
   SkillImportResult,
   SkillItem,
   SkillListItem,
-  SkillResourceContent,
   SkillResourceTreeNode,
   SkillSource,
-  UpdateSkillInput,
 } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';

@@ -1,6 +1,5 @@
 import { createStaticStyles, cssVar, cx, Flexbox, Popover } from '@lobehub/ui';
 import { ExternalLink, EyeIcon, FolderOpen, MessageSquarePlus } from 'lucide-react';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FileIcon from '@/components/FileIcon';

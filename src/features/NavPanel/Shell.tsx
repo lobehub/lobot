@@ -1,9 +1,7 @@
 'use client';
 
 import ContactListPortal from '@/features/ContactList';
-import HomeNavPanelPortal from '@/features/HomeSidebar';
 import MessageListPortal from '@/features/MessageList';
-import { useImLayout } from '@/features/NavRail/useImLayout';
 import SettingsListPortal from '@/features/Settings/Layout/SideBar';
 import TaskNavPortal from '@/features/TaskNav';
 
@@ -19,20 +17,12 @@ import NavPanel from './index';
 // Under the `im_layout` trial, `home` is the Messages conversation list and
 // Contacts / the Tasks scope list / the Settings list are shell-owned for the same reason.
 const NavPanelShell = () => {
-  const imLayout = useImLayout();
-
   return (
     <>
-      {imLayout ? (
-        <>
-          <MessageListPortal />
-          <ContactListPortal />
-          <TaskNavPortal />
-          <SettingsListPortal />
-        </>
-      ) : (
-        <HomeNavPanelPortal />
-      )}
+      <MessageListPortal />
+      <ContactListPortal />
+      <TaskNavPortal />
+      <SettingsListPortal />
       <NavPanel />
     </>
   );

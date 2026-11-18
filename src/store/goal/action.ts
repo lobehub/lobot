@@ -1,54 +1,19 @@
-import { TRACING_SCENARIOS } from '@lobechat/const';
-import {
-  GOAL_ACCEPTANCE_TASK_TITLE,
-  GOAL_TITLE_MAX_LENGTH,
-  goalClarificationIslandKey,
-  goalDecisionIslandKey,
-  goalSignOffIslandKey,
-  type GoalStatus,
-} from '@lobechat/const/goal';
-import {
-  chainSummaryTitle,
-  TOPIC_TITLE_JSON_SCHEMA,
-  TOPIC_TITLE_PROMPT_VERSION,
-} from '@lobechat/prompts';
-import {
-  type GoalGraphSnapshot,
-  type GoalMetricCriterion,
-  type GoalTickResult,
-  RequestTrigger,
-} from '@lobot/types';
+import { GOAL_ACCEPTANCE_TASK_TITLE, type GoalStatus } from '@lobechat/const/goal';
+import { type GoalGraphSnapshot } from '@lobot/types';
 
-import {
-  createReplicaSlice,
-  linkReplicaEntity,
-  recordLens,
-  revalidateReplica,
-} from '@/libs/replica';
-import { mutate, useClientDataSWR } from '@/libs/swr';
-import { goalKeys } from '@/libs/swr/keys';
-import { aiChatService } from '@/services/aiChat';
+import { createReplicaSlice, linkReplicaEntity, recordLens } from '@/libs/replica';
 import { type GoalListItem, goalService } from '@/services/goal';
 import { type MetricSeriesWithPoints, metricService } from '@/services/metric';
-import { userService } from '@/services/user';
-import { taskGroupListResource, taskListResource } from '@/store/task/slices/list/projection';
 import type { StoreSetter } from '@/store/types';
-import { useUserStore } from '@/store/user';
-import { systemAgentSelectors, userGeneralSettingsSelectors } from '@/store/user/selectors';
 import { isTrpcErrorCode } from '@/utils/trpcError';
 
 import { goalArchivedForFilter, goalStatusesForFilter } from './goalListFilter';
-import { buildGoalTitleMessages } from './goalTitle';
 import { useGoalStore } from './index';
-import type { GoalListFilter, GoalState, GoalViewMode } from './initialState';
+import type { GoalState } from './initialState';
 import {
-  GOAL_LIST_FILTERS,
   goalGraphResource,
   goalListEntity,
-  goalListKey,
-  type GoalListParams,
   goalListResource,
-  goalListScopeParams,
   type GoalListValue,
   goalMetricSeriesResource,
   homeGoalListResource,

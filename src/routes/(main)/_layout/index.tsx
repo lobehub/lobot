@@ -35,7 +35,7 @@ import { isDetachedNavKey } from '@/features/NavPanel/railRouteKey';
 import NavPanelShell from '@/features/NavPanel/Shell';
 import { useActiveNavKey } from '@/features/NavPanel/useActiveNavKey';
 import { useCompactRoute } from '@/features/NavRail/useCompactLayout';
-import { useImLayout, useSyncImLayoutHint } from '@/features/NavRail/useImLayout';
+import { useSyncImLayoutHint } from '@/features/NavRail/useImLayout';
 import { wrapStyles } from '@/features/NavRail/wrapStyle';
 import { DndContextWrapper } from '@/features/ResourceManager/DndContextWrapper';
 import SharedAgentLinkBridge from '@/features/SharedAgentLinkBridge';
@@ -57,13 +57,12 @@ const tabHostContainer: CSSProperties = { position: 'relative' };
 const Layout: FC = () => {
   const { isPWA } = usePlatform();
   const { showCloudPromotion } = useServerConfigStore(featureFlagsSelectors);
-  // `im_layout`: one rounded wrap (list column with a bottom tab bar + content); off keeps this layout.
-  const imLayout = useImLayout();
+  // One rounded wrap: the list column with a bottom tab bar, then the content.
   const detached = isDetachedNavKey(useActiveNavKey());
   // A narrow window shows one column at a time, like a phone IM app: the list on a tab root,
   // otherwise the content with a back button. The rail goes with the list.
   const { compact, showList } = useCompactRoute();
-  useSyncImLayoutHint(imLayout);
+  useSyncImLayoutHint(true);
 
   useSeedTabsOnBoot();
   useWindowUrlMirror();
@@ -102,36 +101,23 @@ const Layout: FC = () => {
               stylex.props(isPWA ? styles.mainContainerPWA : styles.mainContainer).className
             }
           >
-            {imLayout ? (
-              <>
-                {(!compact || showList) && <WorkspaceRail />}
-                <Flexbox
-                  horizontal
-                  {...stylex.props(
-                    wrapStyles.wrap,
-                    wrapStyles.wrapDesktop,
-                    detached && wrapStyles.wrapDetached,
-                  )}
-                >
-                  <NavPanelShell />
-                  {/* Hidden, not unmounted: the tab routers keep their state behind the list. */}
-                  <DesktopLayoutContainer flush hidden={showList} transparent={detached}>
-                    <Flexbox height={'100%'} style={tabHostContainer} width={'100%'}>
-                      <TabHost />
-                    </Flexbox>
-                  </DesktopLayoutContainer>
+            {(!compact || showList) && <WorkspaceRail />}
+            <Flexbox
+              horizontal
+              {...stylex.props(
+                wrapStyles.wrap,
+                wrapStyles.wrapDesktop,
+                detached && wrapStyles.wrapDetached,
+              )}
+            >
+              <NavPanelShell />
+              {/* Hidden, not unmounted: the tab routers keep their state behind the list. */}
+              <DesktopLayoutContainer flush hidden={showList} transparent={detached}>
+                <Flexbox height={'100%'} style={tabHostContainer} width={'100%'}>
+                  <TabHost />
                 </Flexbox>
-              </>
-            ) : (
-              <>
-                <NavPanelShell />
-                <DesktopLayoutContainer>
-                  <Flexbox height={'100%'} style={tabHostContainer} width={'100%'}>
-                    <TabHost />
-                  </Flexbox>
-                </DesktopLayoutContainer>
-              </>
-            )}
+              </DesktopLayoutContainer>
+            </Flexbox>
           </Flexbox>
         </DndContextWrapper>
         <Suspense fallback={null}>

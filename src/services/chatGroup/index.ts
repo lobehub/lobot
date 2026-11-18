@@ -1,13 +1,7 @@
 import { type AgentGroupDetail } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
-import {
-  type ChatGroupAgentItem,
-  type ChatGroupItem,
-  type GroupMemberRole,
-  type NewChatGroup,
-  type NewChatGroupAgent,
-} from '@/types/serverData';
+import { type ChatGroupItem, type NewChatGroup, type NewChatGroupAgent } from '@/types/serverData';
 
 export interface GroupMemberConfig {
   avatar?: string;

@@ -1,20 +1,7 @@
-import type {
-  ConfirmOnboardingUnderstandingInput,
-  OnboardingUnderstandingPollingResult,
-  PersonalSystemAgentKey,
-  RetryOnboardingUnderstandingProviderInput,
-  ReviseOnboardingUnderstandingInput,
-  StartOnboardingUnderstandingInput,
-} from '@lobot/types';
 import { type PartialDeep } from 'type-fest';
 
 import { lambdaClient } from '@/libs/trpc/client';
-import type { OnboardingUserInfo } from '@/types/agentContext';
-import { type MarkdownPatchHunk } from '@/types/markdownPatch';
 import {
-  type SaveUserQuestionInput,
-  type SSOProvider,
-  type UserGuide,
   type UserInitializationState,
   type UserOnboarding,
   type UserPreference,

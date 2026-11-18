@@ -1,7 +1,6 @@
 import { type LobeTool, type ToolManifest } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
-import { type LobeToolCustomPlugin } from '@/types/tool/plugin';
 
 interface InstallPluginParams {
   customParams?: Record<string, any>;

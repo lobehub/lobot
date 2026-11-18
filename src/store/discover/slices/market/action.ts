@@ -2,7 +2,6 @@ import { type MarketUserProfile } from '@/layout/AuthProvider/MarketAuth/types';
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import { type MarketSkillPackageFile } from '@/services/marketApi';
 import { type DiscoverStore } from '@/store/discover';
-import { globalHelpers } from '@/store/global/helpers';
 import { type StoreSetter } from '@/store/types';
 import type {
   AgentForkSourceResponse,
@@ -10,7 +9,6 @@ import type {
   AssistantListResponse,
 } from '@/types/discover';
 import { setNamespace } from '@/utils/storeDebug';
-import { isTrpcErrorCode } from '@/utils/trpcError';
 
 import {
   agentForkSourceResource,
@@ -19,11 +17,8 @@ import {
   marketAgentGroupStatusResource,
   type MarketAgentStatus,
   marketAgentStatusResource,
-  marketIdentifierKey,
   marketUserProfileKey,
   marketUserProfileResource,
-  type PluginAgentsParams,
-  pluginAgentsQueryKey,
   pluginAgentsResource,
   skillPackageFilesResource,
 } from './projection';

@@ -1,14 +1,6 @@
-import { CUSTOM_DOCUMENT_FILE_TYPE, DERIVED_DOCUMENT_SOURCE_TYPE } from '@lobechat/const';
+import { type FileListItem } from '@/types/files';
+import { type ResourceItem, type ResourceQueryParams } from '@/types/resource';
 
-import { type FileListItem, type KnowledgeItemStatus } from '@/types/files';
-import {
-  type CreateResourceParams,
-  type ResourceItem,
-  type ResourceQueryParams,
-  type UpdateResourceParams,
-} from '@/types/resource';
-
-import { type CreateDocumentParams } from '../document';
 import { documentService } from '../document';
 import { fileService } from '../file';
 

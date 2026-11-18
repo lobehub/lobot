@@ -1,4 +1,3 @@
-import { ragService } from '@/services/rag';
 import { type StoreSetter } from '@/store/types';
 
 import { type FileStore } from '../../store';

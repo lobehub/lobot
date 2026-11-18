@@ -2,28 +2,18 @@ import type { CategoryItem } from '@lobehub/market-sdk';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import type { DiscoverStore } from '@/store/discover';
-import { globalHelpers } from '@/store/global/helpers';
 import type { StoreSetter } from '@/store/types';
 import type {
   DiscoverPluginDetail,
   IdentifiersResponse,
   PluginListResponse,
-  PluginQueryParams,
 } from '@/types/discover';
 import { setNamespace } from '@/utils/storeDebug';
 
 import {
-  type PluginCategoriesParams,
-  pluginCategoriesQueryKey,
   pluginCategoriesResource,
-  type PluginDetailParams,
-  pluginDetailQueryKey,
   pluginDetailResource,
-  type PluginIdentifiersParams,
-  pluginIdentifiersQueryKey,
   pluginIdentifiersResource,
-  type PluginListParams,
-  pluginListQueryKey,
   pluginListResource,
 } from './projection';
 

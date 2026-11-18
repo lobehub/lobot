@@ -1,5 +1,3 @@
-import type { AgentDeviceOverride, AgentModelOverride } from '@lobot/types';
-
 import { type UserStore } from '@/store/user';
 
 const EMPTY_HIDDEN: string[] = [];

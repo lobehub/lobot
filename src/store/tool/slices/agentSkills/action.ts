@@ -1,12 +1,3 @@
-import type {
-  CreateSkillInput,
-  ImportGitHubInput,
-  ImportUrlInput,
-  ImportZipInput,
-  SkillImportResult,
-  UpdateSkillInput,
-} from '@lobot/types';
-
 import {
   createReplicaSlice,
   linkReplicaEntity,
@@ -22,13 +13,11 @@ import {
   AGENT_SKILL_LIST_KEY,
   type AgentSkillDetail,
   agentSkillDetailEntity,
-  type AgentSkillDetailItem,
   agentSkillDetailResource,
   agentSkillListEntity,
   type AgentSkillListItem,
   agentSkillListResource,
 } from './projection';
-import { agentSkillsSelectors } from './selectors';
 
 /** The skills list has a single entry; its params carry no filter. */
 const LIST_PARAMS = {} as Record<string, never>;

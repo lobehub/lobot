@@ -7,9 +7,7 @@ import {
   type FollowStatus,
   type FollowUserItem,
   type PaginatedResponse,
-  type SocialTargetType,
 } from '@/services/social';
-import { socialService } from '@/services/social';
 import { type DiscoverStore } from '@/store/discover';
 import { type StoreSetter } from '@/store/types';
 import { setNamespace } from '@/utils/storeDebug';
@@ -17,16 +15,11 @@ import { setNamespace } from '@/utils/storeDebug';
 import {
   favoriteAgentsResource,
   favoritePluginsResource,
-  favoriteStatusKey,
   favoriteStatusResource,
   followCountsResource,
   followersResource,
   followingResource,
   followStatusResource,
-  socialListKey,
-  type SocialListParams,
-  socialUserKey,
-  type SocialUserParams,
 } from './projection';
 
 const n = setNamespace('discover/social');

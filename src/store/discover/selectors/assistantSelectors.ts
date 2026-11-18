@@ -1,10 +1,6 @@
 import type { CategoryItem } from '@lobehub/market-sdk';
 
-import type {
-  AssistantListResponse,
-  DiscoverAssistantDetail,
-  IdentifiersResponse,
-} from '@/types/discover';
+import type { AssistantListResponse } from '@/types/discover';
 
 import type { DiscoverStore } from '../store';
 

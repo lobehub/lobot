@@ -1,4 +1,3 @@
-import { CURRENT_ONBOARDING_VERSION } from '@lobechat/const';
 import { MAX_ONBOARDING_STEPS } from '@lobot/types';
 
 import { type UserStore } from '../../store';

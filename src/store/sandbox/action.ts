@@ -3,8 +3,8 @@ import type { StoreSetter } from '@/store/types';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { initialState, type SandboxState } from './initialState';
-import { type InstanceListEdit, SandboxPrivateAction } from './privateAction';
-import { SANDBOX_SCOPE_ENTRY, type SandboxPickerInstanceList } from './projection';
+import { SandboxPrivateAction } from './privateAction';
+import { SANDBOX_SCOPE_ENTRY } from './projection';
 import { useSandboxStore } from './store';
 
 const n = setNamespace('sandbox');

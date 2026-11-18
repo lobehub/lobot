@@ -1,24 +1,16 @@
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import type { DiscoverStore } from '@/store/discover';
-import { globalHelpers } from '@/store/global/helpers';
 import type { StoreSetter } from '@/store/types';
 import type {
   DiscoverProviderDetail,
   IdentifiersResponse,
   ProviderListResponse,
-  ProviderQueryParams,
 } from '@/types/discover';
 import { setNamespace } from '@/utils/storeDebug';
 
 import {
-  type ProviderDetailParams,
-  providerDetailQueryKey,
   providerDetailResource,
-  type ProviderIdentifiersParams,
-  providerIdentifiersQueryKey,
   providerIdentifiersResource,
-  type ProviderListParams,
-  providerListQueryKey,
   providerListResource,
 } from './projection';
 

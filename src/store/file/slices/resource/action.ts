@@ -1,7 +1,5 @@
 import debug from 'debug';
-import { useLayoutEffect } from 'react';
 
-import { getActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import {
   createReplicaSlice,
   type ReplicaLens,
@@ -11,30 +9,13 @@ import {
 import { knowledgeBaseService } from '@/services/knowledgeBase';
 import { resourceService } from '@/services/resource';
 import { type StoreSetter } from '@/store/types';
-import {
-  type CreateResourceParams,
-  type ResourceItem,
-  type ResourceQueryParams,
-  type UpdateResourceParams,
-} from '@/types/resource';
+import { type ResourceItem } from '@/types/resource';
 import { setNamespace } from '@/utils/storeDebug';
 
-import { type FileStore, useFileStore } from '../../store';
-import type { ResourceParentKey } from './hooks';
+import { type FileStore } from '../../store';
 import type { ResourceListParams, ResourceListValue } from './projection';
-import {
-  DEFAULT_RESOURCE_PAGE_SIZE,
-  normalizeResourceListParams,
-  RESOURCE_LIST_KEY,
-  resourceListResource,
-} from './projection';
-import {
-  getResourceQueryKey,
-  isOptimisticRowInRequestedPool,
-  listsMovedRowUnfiltered,
-  patchDestinationList,
-  patchSourceList,
-} from './utils';
+import { DEFAULT_RESOURCE_PAGE_SIZE, RESOURCE_LIST_KEY, resourceListResource } from './projection';
+import { getResourceQueryKey, isOptimisticRowInRequestedPool } from './utils';
 
 const log = debug('resource-manager:action');
 

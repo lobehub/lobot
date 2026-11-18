@@ -1,25 +1,8 @@
-import type {
-  CheckpointConfig,
-  TaskAutomationMode,
-  TaskAutomationSnapshot,
-  TaskDetailData,
-  TaskExecutionConfig,
-} from '@lobot/types';
-import { toTaskExecutionConfigPatch } from '@lobot/types';
-import type { Draft } from 'immer';
+import type { TaskDetailData } from '@lobot/types';
 
-import { taskService } from '@/services/task';
 import type { StoreSetter } from '@/store/types';
-import { useUserStore } from '@/store/user';
-import { userProfileSelectors } from '@/store/user/selectors';
-import { OptimisticEngine } from '@/store/utils/optimisticEngine';
-import { saveToast } from '@/store/utils/saveToast';
 
 import type { TaskStore } from '../../store';
-import {
-  appendOptimisticPropertyActivity,
-  buildOptimisticPropertyActivity,
-} from '../detail/optimisticActivity';
 
 // Slice of TaskStore that the OptimisticEngine for detail writes reads/writes.
 // Keeping it narrow ensures `extractAffectedPaths` produces `taskDetailMap.<id>`

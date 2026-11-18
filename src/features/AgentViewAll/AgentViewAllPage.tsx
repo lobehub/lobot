@@ -1,7 +1,6 @@
 'use client';
 
 import { DEFAULT_USER_AVATAR_URL } from '@lobechat/const';
-import { agentDisplayName, type SidebarAgentItem } from '@lobot/types';
 import {
   Avatar,
   Button,
@@ -16,9 +15,9 @@ import {
   SearchBar,
   Segmented,
   Text,
-  toast,
   Tooltip,
 } from '@lobehub/ui';
+import { agentDisplayName, type SidebarAgentItem } from '@lobot/types';
 import dayjs from 'dayjs';
 import isEqual from 'fast-deep-equal';
 import { ChevronDownIcon, ChevronRightIcon, PlusIcon } from 'lucide-react';
@@ -31,16 +30,11 @@ import {
   useWorkspaceMembers,
   useWorkspaceMembersReady,
 } from '@/business/client/hooks/useWorkspaceMembers';
-import {
-  AgentViewAllRowsSkeleton,
-  AgentViewAllSidebarSectionSkeleton,
-} from '@/components/Skeleton/AgentViewAll';
-import { useKeepSidebarGroupsListed } from '@/features/HomeSidebar/Body/Agent/List/useAgentList';
+import { AgentViewAllRowsSkeleton } from '@/components/Skeleton/AgentViewAll';
 import { AgentModalProvider } from '@/features/HomeSidebar/Body/Agent/ModalProvider';
 import { useSidebarItemVisibility } from '@/features/HomeSidebar/Body/Agent/useSidebarItemVisibility';
 import { useCreateMenuItems } from '@/features/HomeSidebar/hooks';
 import NavHeader from '@/features/NavHeader';
-import { useImLayout } from '@/features/NavRail/useImLayout';
 import WideScreenContainer from '@/features/WideScreenContainer';
 import { useFetchAgentLabels } from '@/hooks/useFetchAgentLabels';
 import { useFetchAgentList } from '@/hooks/useFetchAgentList';
@@ -56,7 +50,6 @@ import AgentRow, { type AgentRowAuthor } from './AgentRow';
 import { flattenAgentBuckets } from './flattenBuckets';
 import ListConfig from './ListConfig';
 import { type AgentListViewOptions, normalizeAgentListViewOptions } from './listViewOptions';
-import SidebarAgentsSection from './SidebarAgentsSection';
 
 type SegmentValue = 'private' | 'workspace';
 type ViewMode = 'card' | 'list';
@@ -218,8 +211,7 @@ const AgentViewAllPage = memo(() => {
     isEqual,
   );
 
-  const { isSidebarItemVisible, setSidebarItemVisible } = useSidebarItemVisibility();
-  const keepGroups = useKeepSidebarGroupsListed();
+  const { isSidebarItemVisible } = useSidebarItemVisibility();
 
   const workspaceItems = useMemo(
     () => flattenAgentBuckets(pinnedAgents, agentGroups, ungroupedAgents),
@@ -231,40 +223,6 @@ const AgentViewAllPage = memo(() => {
   );
 
   const items = activeWorkspaceId && segment === 'private' ? privateItems : workspaceItems;
-
-  // "In sidebar" overview data: everything visible in the sidebar across BOTH
-  // the workspace and private buckets — the block answers "what's in my
-  // sidebar right now", so it ignores the tab and the search keyword (it
-  // hides entirely while searching to keep results scannable).
-  const sidebarItems = useMemo(() => {
-    // Rebuilt from folder-filtered buckets rather than reusing the page's
-    // flattened lists: hiding a Category removes its whole section from the
-    // sidebar, so its agents are not "in sidebar" either. The page's own list
-    // deliberately keeps showing them — hiding is a sidebar-only preference.
-    const inSidebar = [
-      ...flattenAgentBuckets(pinnedAgents, keepGroups(agentGroups), ungroupedAgents),
-      ...flattenAgentBuckets(
-        privatePinnedAgents,
-        keepGroups(privateAgentGroups),
-        privateUngroupedAgents,
-      ),
-    ];
-    const seen = new Set<string>();
-    return inSidebar.filter((item) => {
-      if (seen.has(item.id) || !isSidebarItemVisible(item)) return false;
-      seen.add(item.id);
-      return true;
-    });
-  }, [
-    agentGroups,
-    isSidebarItemVisible,
-    keepGroups,
-    pinnedAgents,
-    privateAgentGroups,
-    privatePinnedAgents,
-    privateUngroupedAgents,
-    ungroupedAgents,
-  ]);
 
   // Author info (column, grouping, sorting) only means something on the
   // workspace tab — every private item is the viewer's own.
@@ -444,25 +402,9 @@ const AgentViewAllPage = memo(() => {
     },
     [expandedGroupKeys, expandedGroupSet, updateSystemStatus],
   );
-
-  const handleToggleSidebar = useCallback(
-    async (item: SidebarAgentItem) => {
-      try {
-        await setSidebarItemVisible(item.id, !isSidebarItemVisible(item));
-      } catch (error) {
-        // Personal mode writes the preference optimistically and never rolls
-        // back, workspace mode rolls back silently — either way the row's
-        // state stops matching what was saved, so say so.
-        console.error('Failed to toggle Agent sidebar visibility:', error);
-        toast.error(t('operationFailed'));
-      }
-    },
-    [isSidebarItemVisible, setSidebarItemVisible, t],
-  );
-  // The `im_layout` rail has no agent sidebar, so its "in sidebar" curation
-  // (the section and every per-item toggle) does not apply there.
-  const imLayout = useImLayout();
-  const toggleSidebar = imLayout ? undefined : handleToggleSidebar;
+  // The rail has no agent sidebar, so the "in sidebar" curation (the section and
+  // every per-item toggle) does not apply.
+  const toggleSidebar = undefined;
 
   const renderCard = useCallback(
     (item: SidebarAgentItem) => (
@@ -553,10 +495,6 @@ const AgentViewAllPage = memo(() => {
         paddingInline={16}
         wrapperStyle={{ flex: 1, overflowY: 'auto' }}
       >
-        {!imLayout && !isInit && !keyword.trim() && <AgentViewAllSidebarSectionSkeleton />}
-        {!imLayout && isInit && !keyword.trim() && sidebarItems.length > 0 && (
-          <SidebarAgentsSection items={sidebarItems} onToggleSidebar={handleToggleSidebar} />
-        )}
         <Flexbox horizontal align={'center'} gap={12} justify={'space-between'}>
           {/* The workspace/private split only exists inside a workspace;
               personal mode leads with the search box instead. */}

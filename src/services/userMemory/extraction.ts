@@ -4,8 +4,6 @@ import {
   type UserMemoryExtractionMetadata,
 } from '@lobot/types';
 
-import { lambdaClient } from '@/libs/trpc/client';
-
 interface MemoryExtractionTask {
   error?: IAsyncTaskError | null;
   id: string;

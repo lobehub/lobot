@@ -1,11 +1,10 @@
-import { cacheScope, type ReplicaSyncResult } from '@/libs/replica';
+import { type ReplicaSyncResult } from '@/libs/replica';
 import type { AgentDocumentListItem } from '@/services/agentDocument';
 import type { StoreSetter } from '@/store/types';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { type AgentDocumentState, initialState } from './initialState';
 import { AgentDocumentPrivateAction } from './privateAction';
-import { type AgentDocumentReaderParams } from './projection';
 import { useAgentDocumentStore } from './store';
 
 const n = setNamespace('agentDocument');

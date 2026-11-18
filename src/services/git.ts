@@ -1,6 +1,5 @@
 import type {
   GitBranchDiffPatches,
-  GitFileRevertResult,
   GitRemoteBranchListItem,
   GitWorkingTreeFiles,
   GitWorkingTreePatches,
@@ -13,8 +12,6 @@ import type {
   DeviceGitDeleteBranchResult,
   DeviceGitLinkedPullRequest,
   DeviceGitLinkedPullRequestLookupStatus,
-  DeviceGitPullRequestAction,
-  DeviceGitPullRequestActionResult,
   DeviceGitPullRequestActivity,
   DeviceGitPullRequestDetailResult,
   DeviceGitPullRequestMergeContext,

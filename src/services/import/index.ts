@@ -2,11 +2,9 @@ import { type DefaultErrorShape } from '@trpc/server/unstable-core-do-not-import
 
 import { lambdaClient } from '@/libs/trpc/client';
 import { uploadService } from '@/services/upload';
-import { useUserStore } from '@/store/user';
 import { type ImportPgDataStructure } from '@/types/export';
-import { type ImporterEntryData, type OnImportCallbacks } from '@/types/importer';
+import { type OnImportCallbacks } from '@/types/importer';
 import { ImportStage } from '@/types/importer';
-import { type UserSettings } from '@/types/user/settings';
 import { uuid } from '@/utils/uuid';
 
 class ImportService {

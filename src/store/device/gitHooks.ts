@@ -2,10 +2,6 @@ import { isDesktop } from '@lobechat/const';
 import type {
   DeviceGitAheadBehind,
   DeviceGitBranchListItem,
-  DeviceGitPullRequestActivity,
-  DeviceGitPullRequestDetail,
-  DeviceGitPullRequestDetailResult,
-  DeviceGitPullRequestMergeContext,
   DeviceGitWorkingTreeStatus,
   DeviceGitWorktreeListItem,
 } from '@lobot/types';
@@ -13,16 +9,10 @@ import type { ReplicaOptimisticToken } from 'local-replica';
 import type { ReplicaSlice, ReplicaSyncSchedule } from 'local-replica/zustand';
 import { useCallback, useMemo, useRef } from 'react';
 
-import { mutate } from '@/libs/swr';
-import { deviceKeys, localFileKeys } from '@/libs/swr/keys';
 import type { GitBranchSummary, GitLinkedPRSummary } from '@/services/git';
 
 import {
   gitLinkedPRKey,
-  gitPullRequestKey,
-  gitPullRequestMergeContextKey,
-  type GitPullRequestMergeContextParams,
-  type GitPullRequestParams,
   gitReviewPatchesKey,
   type GitReviewRead,
   type ReviewMode,

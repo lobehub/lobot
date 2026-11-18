@@ -1,6 +1,3 @@
-import { useLayoutEffect, useMemo } from 'react';
-import { type SWRResponse } from 'swr';
-
 import {
   createReplicaSlice,
   linkReplicaEntity,
@@ -14,7 +11,6 @@ import { mutate } from '@/libs/swr';
 import { type StoreSetter } from '@/store/types';
 
 import { type UserMemoryStore } from '../../store';
-import { clearReplicas, clearUserReplicas, memoryListKey } from '../../utils/replica';
 import { OffsetListPager } from './offsetListPager';
 
 /** Query of one memory list page set; `pageSize` is not part of its identity. */

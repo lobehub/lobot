@@ -25,7 +25,6 @@ import {
 import { getCacheScope } from '@/libs/swr/useCacheScope';
 import type { AvailableAgentItem, CreateAgentParams, CreateAgentResult } from '@/services/agent';
 import { agentService, AVAILABLE_AGENTS_CONTEXT_QUERY_LIMIT } from '@/services/agent';
-import { resolveAgentDocumentsContext } from '@/services/agentDocument';
 import { aiAgentService } from '@/services/aiAgent';
 import { refreshChannelListIfEnabled } from '@/store/channel/refreshIfEnabled';
 import { refreshAgentDeviceBindings } from '@/store/device/agentDeviceBinding';
@@ -42,14 +41,13 @@ import type {
   LobeAgentConfig,
   RuntimeEnvConfig,
 } from '@/types/agent';
-import { type AgentContextDocument } from '@/types/agentContext';
 import { merge } from '@/utils/merge';
 
 import type { AgentStore } from '../../store';
 import { heteroAgentDefaultName } from '../../utils/heteroAgentDefaultName';
 import { setLocalAgentWorkingDirectory } from '../../utils/localAgentWorkingDirectoryStorage';
 import { getSidebarAgentNames } from '../../utils/sidebarAgentNames';
-import type { AgentSliceState, LoadingState, SaveStatus } from './initialState';
+import type { SaveStatus } from './initialState';
 import {
   agentConfigResource,
   agentSlugIdResource,

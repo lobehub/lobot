@@ -2,7 +2,6 @@ import type { UIChatMessage } from '@lobot/types';
 
 import {
   type CanonicalMessageListContext,
-  messageKeys,
   type MessageListQueryContext,
   normalizeMessageListQueryContext,
 } from '@/libs/swr/keys';

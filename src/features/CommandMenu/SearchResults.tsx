@@ -23,7 +23,6 @@ import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
 import { taskDetailPath } from '@/features/AgentTasks/shared/taskDetailPath';
-import { useCommandMenuContext } from '@/features/CommandMenu/CommandMenuContext';
 import { docsFilePath, docsPagePath } from '@/features/ResourceHome/paths';
 import { libraryFolderPath, libraryItemPath } from '@/features/ResourceManager/utils/resourcePath';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
@@ -67,7 +66,6 @@ const SearchResults = memo<SearchResultsProps>(
     const { t } = useTranslation('common');
     const { t: tChat } = useTranslation('chat');
     const navigate = useWorkspaceAwareNavigate();
-    const { menuContext } = useCommandMenuContext();
     const handleNavigate = (result: FtsSearchResult, position: number) => {
       onResultClick({ position, resultType: result.type });
       switch (result.type) {

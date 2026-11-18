@@ -7,32 +7,20 @@ import {
   type DiscoverSkillItem,
   type SkillCategoryItem,
   type SkillCommentListResponse,
-  type SkillCommentsQueryParams,
   type SkillListResponse,
   type SkillQueryParams,
   type SkillRatingDistribution,
 } from '@/types/discover';
 import { setNamespace } from '@/utils/storeDebug';
-import { isTrpcErrorCode } from '@/utils/trpcError';
 
 import {
-  type SkillCategoriesParams,
-  skillCategoriesQueryKey,
   skillCategoriesResource,
-  type SkillCommentsParams,
-  skillCommentsQueryKey,
   skillCommentsResource,
-  type SkillDetailParams,
-  skillDetailQueryKey,
   skillDetailResource,
   type SkillListParams,
   skillListQueryKey,
   skillListResource,
-  type SkillRatingDistributionParams,
-  skillRatingDistributionQueryKey,
   skillRatingDistributionResource,
-  type SkillRelatedParams,
-  skillRelatedQueryKey,
   skillRelatedResource,
 } from './projection';
 

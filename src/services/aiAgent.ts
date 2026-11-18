@@ -14,7 +14,7 @@ import type {
 } from '@lobot/types';
 
 import { canUseGatewayProtocolV2 } from '@/helpers/gatewayProtocol';
-import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
+import { lambdaClient } from '@/libs/trpc/client';
 
 /** Gateway stream features every run started from this client handles. */
 const STREAM_FEATURES: AgentStreamClientFeature[] = ['file_works', 'member_runtime_end'];

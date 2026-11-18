@@ -1,6 +1,5 @@
 import { type FilesStoreState } from '@/store/file/initialState';
 import { type FileListItem } from '@/types/files';
-import { type FileUploadStatus } from '@/types/files/upload';
 
 const uploadStatusArray = new Set(['uploading', 'pending', 'processing']);
 

@@ -3,28 +3,17 @@ import { createReplicaSlice, recordLens } from '@/libs/replica';
 import { subscribeCacheScope } from '@/libs/replica/cacheScopeEvents';
 import { getCacheScope } from '@/libs/swr/useCacheScope';
 import { fileService } from '@/services/file';
-import { knowledgeBaseService } from '@/services/knowledgeBase';
-import { resourceService } from '@/services/resource';
-import { useFileStore } from '@/store/file';
 import type { StoreSetter } from '@/store/types';
-import { OptimisticEngine } from '@/store/utils/optimisticEngine';
 import { SortType } from '@/types/files';
-import type { ResourceSorter } from '@/types/resource';
 
-import {
-  isExpandable,
-  revalidateHierarchySearch,
-  sortTreeItems,
-  toTreeItem,
-  toTreeItemFromResource,
-} from './items';
+import { isExpandable, revalidateHierarchySearch, sortTreeItems, toTreeItem } from './items';
 import {
   buildLibraryTreeSnapshot,
   libraryTreeResource,
   type LibraryTreeSnapshot,
   MAX_PERSISTED_FOLDERS,
 } from './projection';
-import type { TreeDataState, TreeItem, TreeState, TreeStoreHandle } from './types';
+import type { TreeState } from './types';
 
 export { isExpandable, sortTreeItems, toTreeItem, toTreeItemFromResource } from './items';
 

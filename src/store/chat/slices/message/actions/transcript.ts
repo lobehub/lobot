@@ -9,7 +9,6 @@ import {
   getMessageListWindowOlderCursor,
   supportsRoundCursor,
 } from '@/services/message/cache';
-import { conversationMessagesResource } from '@/services/message/replica';
 import { operationSelectors } from '@/store/chat/slices/operation/selectors';
 import { topicSelectors } from '@/store/chat/slices/topic/selectors';
 import { type ChatStore } from '@/store/chat/store';

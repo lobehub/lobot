@@ -11,11 +11,7 @@ import { agentService } from '@/services/agent';
 import { type StoreSetter } from '@/store/types';
 
 import { type AgentStore } from '../../store';
-import {
-  agentKnowledgeListKey,
-  type AgentKnowledgeListParams,
-  agentKnowledgeListResource,
-} from './projection';
+import { agentKnowledgeListResource } from './projection';
 
 /**
  * Knowledge Slice Actions

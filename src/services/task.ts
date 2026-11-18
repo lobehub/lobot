@@ -1,15 +1,7 @@
 import type { TaskCompletedWindow } from '@lobechat/const/builtinTools';
-import type {
-  CheckpointConfig,
-  TaskAutomationMode,
-  TaskInstructionSynthesis,
-  TaskIntentAnalysis,
-  TaskListFilter,
-  TaskListItem,
-  TaskStatus,
-} from '@lobot/types';
+import type { TaskAutomationMode, TaskListFilter, TaskListItem, TaskStatus } from '@lobot/types';
 
-import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
+import { lambdaClient } from '@/libs/trpc/client';
 import type { TaskGroupListItem } from '@/types/serverData';
 
 class TaskService {

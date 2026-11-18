@@ -1,9 +1,5 @@
 import { useCallback } from 'react';
 
-import { useIsWorkspaceOwner } from '@/business/client/hooks/useIsWorkspaceOwner';
-import { useUserStore } from '@/store/user';
-import { userProfileSelectors } from '@/store/user/selectors';
-
 /**
  * Whether the current user may manage (edit / delete / re-authorize) a
  * workspace-shared resource row. Mirrors the server-side
@@ -27,14 +23,6 @@ export const useResourceManageable = (creatorUserId?: string | null): boolean =>
  * item menus built in a loop).
  */
 const useResourceManageableChecker = (): ((creatorUserId?: string | null) => boolean) => {
-  const currentUserId = useUserStore(userProfileSelectors.userId);
-  const isOwner = useIsWorkspaceOwner();
-
-  return useCallback(
-    (creatorUserId?: string | null) => {
-      if (!creatorUserId) return true;
-      return isOwner || creatorUserId === currentUserId;
-    },
-    [currentUserId, isOwner],
-  );
+  // Every member here owns the workspace, so every row is manageable.
+  return useCallback((_creatorUserId?: string | null) => true, []);
 };

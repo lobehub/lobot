@@ -4,18 +4,14 @@ import { type SWRResponse } from 'swr';
 import { type StoreApi, useStore } from 'zustand';
 
 import { createReplicaSlice, type ReplicaLens } from '@/libs/replica';
-import { mutate } from '@/libs/swr';
-import { userMemoryKeys } from '@/libs/swr/keys';
 import { userMemoryService } from '@/services/userMemory';
 import { type StoreSetter } from '@/store/types';
-import { type QueryIdentityRolesResult } from '@/types/serverData';
 import { setNamespace } from '@/utils/storeDebug';
 
 // Type-only: the runtime store is reached through the `StoreApi` the store
 // passes to the slice, so this module never imports the store at runtime — the
 // store imports the slice, and a runtime import back would be a cycle.
 import { type UserMemoryStore } from '../../store';
-import { clearUserReplicas } from '../../utils/replica';
 import {
   type HomeReplicaParams,
   IDENTITY_ROLES_KEY,

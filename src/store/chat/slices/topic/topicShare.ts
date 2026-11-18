@@ -1,4 +1,4 @@
-import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
+import { createReplicaSlice, recordLens } from '@/libs/replica';
 import { topicService } from '@/services/topic';
 import type { ChatStore } from '@/store/chat';
 import type { StoreSetter } from '@/store/types';

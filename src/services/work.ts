@@ -1,16 +1,9 @@
 import { TaskApiName, TaskIdentifier } from '@lobechat/const/builtinTools';
 import type {
   ListedWorkType,
-  RegisterCanvasWorkParams,
-  RegisterDocumentWorkParams,
-  RegisterSkillToolResultWorkParams,
-  RegisterTaskWorkParams,
-  WorkItem,
   WorkListItem,
   WorkSkillProvider,
   WorkSummaryItem,
-  WorkVersionEventItem,
-  WorkVersionEventMap,
   WorkVersionItem,
   WorkVisibility,
 } from '@lobot/types';

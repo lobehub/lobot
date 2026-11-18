@@ -1,9 +1,6 @@
 import { type ThreadItem, ThreadType, type UIChatMessage } from '@lobot/types';
 
-import { useAgentStore } from '@/store/agent';
-import { agentChatConfigSelectors } from '@/store/agent/selectors';
 import { type ChatStoreState } from '@/store/chat';
-import { chatHelpers } from '@/store/chat/helpers';
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';
 
 import { genParentMessages } from './util';

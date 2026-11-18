@@ -1,18 +1,10 @@
-import { type Schema, type ValidationResult } from '@cfworker/json-schema';
 import { type LobeTool } from '@lobot/types';
-import { type ReadResourceResult } from '@modelcontextprotocol/client';
-import { type SWRResponse } from 'swr';
 
-import { MESSAGE_CANCEL_FLAT } from '@/const/message';
-import { createReplicaSlice, type ReplicaLens, type ReplicaSyncResult } from '@/libs/replica';
+import { createReplicaSlice, type ReplicaLens } from '@/libs/replica';
 import { subscribeCacheScope } from '@/libs/replica/cacheScopeEvents';
-import { useClientDataSWR } from '@/libs/swr';
-import { mcpAppKeys } from '@/libs/swr/keys';
-import { mcpService } from '@/services/mcp';
 import { pluginService } from '@/services/plugin';
 import { type StoreSetter } from '@/store/types';
 import { type PluginInstallError } from '@/types/tool/plugin';
-import { merge } from '@/utils/merge';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { type ToolStore } from '../../store';
@@ -23,7 +15,6 @@ import {
   installedPluginsResource,
   toInstalledPluginsProjection,
 } from './projection';
-import { pluginSelectors } from './selectors';
 
 const n = setNamespace('plugin');
 

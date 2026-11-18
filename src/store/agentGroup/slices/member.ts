@@ -1,8 +1,3 @@
-import { type LobeAgentConfig } from '@lobot/types';
-import { type PartialDeep } from 'type-fest';
-
-import { chatGroupService, type GroupMemberConfig } from '@/services/chatGroup';
-import { getAgentStoreState } from '@/store/agent';
 import { type ChatGroupStore } from '@/store/agentGroup/store';
 
 export class ChatGroupMemberAction {

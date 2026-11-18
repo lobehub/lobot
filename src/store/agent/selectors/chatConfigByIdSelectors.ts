@@ -1,8 +1,4 @@
-import {
-  DEFAULT_AGENT_CHAT_CONFIG,
-  DEFAULT_AGENT_SEARCH_FC_MODEL,
-  isDesktop,
-} from '@lobechat/const';
+import { DEFAULT_AGENT_CHAT_CONFIG, isDesktop } from '@lobechat/const';
 import {
   type DeviceExecutionTarget,
   type LobeAgentChatConfig,

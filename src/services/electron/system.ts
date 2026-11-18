@@ -4,7 +4,6 @@ import type {
   PopupContextMenuParams,
   PopupContextMenuResult,
   WindowMinimumSizeParams,
-  WindowSizeParams,
 } from '@lobechat/electron-client-ipc';
 
 import { ensureElectronIpc } from '@/utils/electron/ipc';

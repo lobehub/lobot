@@ -1,31 +1,15 @@
-import {
-  type IdentityListItem,
-  type NewUserMemoryIdentity,
-  type UpdateUserMemoryIdentity,
-} from '@lobot/types';
 import isEqual from 'fast-deep-equal';
-import { useLayoutEffect } from 'react';
 
-import {
-  createReplicaSlice,
-  recordLens,
-  type ReplicaLens,
-  type ReplicaSyncResult,
-} from '@/libs/replica';
-import { memoryCRUDService } from '@/services/userMemory';
+import { createReplicaSlice, recordLens, type ReplicaLens } from '@/libs/replica';
 import { type StoreSetter } from '@/store/types';
-import { type AddIdentityEntryResult } from '@/types/serverData';
 import { setNamespace } from '@/utils/storeDebug';
 
 import { type UserMemoryStore } from '../../store';
 import { type IdentityForInjection } from '../../types';
-import { clearReplicas, clearUserReplicas, memoryListKey } from '../../utils/replica';
 import { OffsetListPager } from '../utils/offsetListPager';
 import {
-  DEFAULT_IDENTITY_LIST_PAGE_SIZE,
   GLOBAL_IDENTITIES_KEY,
   globalIdentitiesResource,
-  type IdentityListParams,
   identityListResource,
   type IdentityListView,
 } from './projection';

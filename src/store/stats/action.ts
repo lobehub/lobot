@@ -1,4 +1,4 @@
-import { cacheScope, createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
+import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
 import { agentService } from '@/services/agent';
 import { messageService } from '@/services/message';
 import { topicService } from '@/services/topic';
@@ -11,14 +11,11 @@ import { lastMonth, today } from '@/utils/time';
 
 import { initialState, type StatsState } from './initialState';
 import {
-  type AgentUsageParams,
   agentUsageResource,
-  SINGLE_KEY,
   type StatsCount,
   type StatsCountKind,
   statsCountResource,
   type StatsHeatmap,
-  type StatsHeatmapKind,
   statsHeatmapResource,
   statsMaxTaskDurationResource,
   type StatsRankKind,
@@ -33,7 +30,6 @@ import {
   usageByDayResource,
   type UsageLogs,
   usageLogsResource,
-  usageMonthKey,
 } from './projection';
 import { useStatsStore } from './store';
 

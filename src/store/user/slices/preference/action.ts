@@ -1,7 +1,7 @@
 import { userService } from '@/services/user';
 import { type StoreSetter } from '@/store/types';
 import { type UserStore } from '@/store/user';
-import { type UserGuide, type UserLab, type UserPreference } from '@/types/user';
+import { type UserPreference } from '@/types/user';
 import { merge } from '@/utils/merge';
 import { setNamespace } from '@/utils/storeDebug';
 

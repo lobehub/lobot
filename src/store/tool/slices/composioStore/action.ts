@@ -28,8 +28,6 @@ import {
   mergeComposioServers,
 } from './projection';
 import {
-  type CallComposioToolParams,
-  type CallComposioToolResult,
   type ComposioServer,
   ComposioServerStatus,
   type ComposioTool,

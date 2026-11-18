@@ -1,19 +1,9 @@
-import { isDesktop } from '@lobechat/const';
 import type {
-  CopyLocalFileItem,
-  CreateLocalEntryResult,
-  LocalCopyFilesResultItem,
   LocalFilePreviewUrlParams,
-  LocalMoveFilesResultItem,
-  MoveLocalFileParams,
-  ProjectDirectoryListResult,
   ProjectFileIndexResult,
   ProjectFileSearchResult,
-  RenameLocalFileResult,
-  TrashLocalFilesResult,
 } from '@lobechat/electron-client-ipc';
 import type { DeviceLocalFilePreview } from '@lobot/types';
-import { isAbsolute, relative, resolve } from 'pathe';
 
 import { mutate } from '@/libs/swr';
 import { localFileKeys } from '@/libs/swr/keys';

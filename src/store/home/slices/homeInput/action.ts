@@ -1,11 +1,8 @@
-import { CUSTOM_DOCUMENT_FILE_TYPE } from '@lobechat/const';
 import { BUILTIN_AGENT_SLUGS } from '@lobechat/const/builtinAgents';
 import type { ContextSelection, PageSelection } from '@lobot/types';
 
-import { docsPagePath } from '@/features/ResourceHome/paths';
 import { stableWorkspaceAwareNavigate } from '@/features/Workspace/stableWorkspaceAwareNavigate';
 import { chatGroupService } from '@/services/chatGroup';
-import { documentService } from '@/services/document';
 import { getAgentStoreState } from '@/store/agent';
 import { agentByIdSelectors, agentSelectors, builtinAgentSelectors } from '@/store/agent/selectors';
 import { getChatGroupStoreState } from '@/store/agentGroup';
@@ -15,8 +12,6 @@ import { type HomeStore } from '@/store/home/store';
 import { type StoreSetter } from '@/store/types';
 import { markdownToTxt } from '@/utils/markdownToTxt';
 import { setNamespace } from '@/utils/storeDebug';
-
-import { type StarterMode } from './initialState';
 
 const n = setNamespace('homeInput');
 

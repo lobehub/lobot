@@ -1,19 +1,10 @@
 import {
   DEFAULT_AGENT,
   DEFAULT_AGENT_CONFIG,
-  DEFAULT_AGENT_META,
   DEFAULT_HOTKEY_CONFIG,
   DEFAULT_MEMORY_SETTINGS,
-  DEFAULT_SYSTEM_AGENT_CONFIG,
-  DEFAULT_TTS_CONFIG,
 } from '@lobechat/const';
-import {
-  type GlobalLLMProviderKey,
-  type HotkeyId,
-  type ProviderConfig,
-  type UserModelProviderConfig,
-  type UserSettings,
-} from '@lobot/types';
+import { type HotkeyId, type UserSettings } from '@lobot/types';
 
 import { type UserStore } from '@/store/user';
 import { merge } from '@/utils/merge';

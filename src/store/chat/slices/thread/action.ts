@@ -5,16 +5,9 @@ import {
   TOPIC_TITLE_JSON_SCHEMA,
   TOPIC_TITLE_PROMPT_VERSION,
 } from '@lobechat/prompts';
-import {
-  type CreateMessageParams,
-  type IThreadType,
-  RequestTrigger,
-  type ThreadItem,
-  type UIChatMessage,
-} from '@lobot/types';
-import isEqual from 'fast-deep-equal';
+import { RequestTrigger, type ThreadItem, type UIChatMessage } from '@lobot/types';
 
-import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
+import { createReplicaSlice, recordLens } from '@/libs/replica';
 import { aiChatService } from '@/services/aiChat';
 import { threadService } from '@/services/thread';
 import { threadSelectors } from '@/store/chat/selectors';

@@ -1,7 +1,6 @@
 import { lambdaClient } from '@/libs/trpc/client';
 import { invalidateDocumentMutation } from '@/services/document/invalidation';
 import { type AgentContextDocument } from '@/types/agentContext';
-import type { DocumentLoadFormat, DocumentLoadRule } from '@/types/serverData';
 import { toAgentContextDocuments } from '@/utils/agentDocumentContextMapping';
 
 interface AgentDocumentToolContext {

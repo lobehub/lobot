@@ -1,5 +1,5 @@
 import type { ToolStore } from '../../store';
-import type { AgentBoundConnector, ConnectorTool, ConnectorWithTools } from './types';
+import type { ConnectorTool, ConnectorWithTools } from './types';
 
 // By-id lookups span both pools: base connectors (`s.connectors`) and the
 // agent-bound aggregate (`s.agentBoundConnectors`). The unified settings page
