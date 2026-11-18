@@ -160,16 +160,8 @@ const MemberState = ({
   entry: MemberEntry;
   onOpenThread?: (threadId: string) => void;
 }) => {
-  const { t } = useTranslation('channel');
   const [open, setOpen] = useState(false);
-  // An idle muted Agent says why it stays quiet; a reply it was @mentioned into still shows.
-  if (!entry.label)
-    return entry.member.muted ? (
-      <span {...stylex.props(statusStyles.memberState, statusStyles.memberMuted)}>
-        <Icon icon={AtSign} size={12} />
-        {t('member.muted')}
-      </span>
-    ) : null;
+  if (!entry.label) return null;
   const state = (
     <span {...stylex.props(statusStyles.memberState)}>
       {entry.tone === 'working' ? (
@@ -306,9 +298,15 @@ const MemberRow = ({
           </span>
         </MemberProfilePopup>
         <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
-          <Text ellipsis weight={500}>
-            {entry.name}
-          </Text>
+          {/* Muted is a standing setting, not a passing state: it sits right after the name. */}
+          <span {...stylex.props(statusStyles.memberNameLine)}>
+            <Text ellipsis weight={500}>
+              {entry.name}
+            </Text>
+            {isAgent && entry.member.muted && (
+              <span {...stylex.props(statusStyles.memberMuted)}>{t('member.muted')}</span>
+            )}
+          </span>
           {isAgent &&
             (showDescription ? (
               entry.member.description && (
