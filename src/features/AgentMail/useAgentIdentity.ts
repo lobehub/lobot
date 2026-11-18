@@ -1,10 +1,8 @@
-import useSWR from 'swr';
+import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
 
-import { agentAccountService } from '@/services/agentAccount';
-
-const accountsKey = (agentId: string): [string, string] | null =>
-  agentId ? ['agent-accounts', agentId] : null;
-
-/** The addresses this agent owns. */
-export const useAgentAccounts = (agentId: string) =>
-  useSWR(accountsKey(agentId), ([, id]) => agentAccountService.list({ agentId: id }));
+/** The addresses this agent owns; `data` is `undefined` until loaded. */
+export const useAgentAccounts = (agentId: string) => {
+  const sync = contactActions.useFetchAgentAccounts(agentId || undefined);
+  const data = useContactStore(contactSelectors.agentAccounts(agentId));
+  return { ...sync, data };
+};

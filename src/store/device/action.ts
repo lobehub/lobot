@@ -4,8 +4,13 @@ import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/r
 import { deviceService } from '@/services/device';
 import { type StoreSetter } from '@/store/types';
 
+import { type AgentScanResult, scanLocalAgents } from './agentScan';
 import { nextWorkingDirs, removeWorkingDir, WORKING_DIRS_MAX } from './deviceCwd';
 import {
+  type AgentDeviceBinding,
+  agentDeviceBindingResource,
+  type AgentScanParams,
+  agentScanResource,
   DEVICE_LIST_KEY,
   type DeviceListParams,
   deviceListResource,
@@ -51,6 +56,8 @@ class DeviceActionImpl {
   readonly #get: () => DeviceStore;
   readonly #list;
   readonly #metricSeries;
+  readonly #agentDeviceBinding;
+  readonly #agentScan;
 
   constructor(set: Setter, get: () => DeviceStore, _api?: unknown) {
     void _api;
@@ -70,6 +77,33 @@ class DeviceActionImpl {
       set,
       stateKey: 'deviceMetricSeriesReplica',
       view: recordLens<DeviceStore, DeviceMetricSeries>('deviceMetricSeriesMap'),
+    });
+    this.#agentDeviceBinding = createReplicaSlice(agentDeviceBindingResource, {
+      actionPrefix: 'device/agentDeviceBinding',
+      fetcher: async ({ agentId }) => ({
+        deviceId: (await deviceService.getAgentDeviceBindings([agentId]))[agentId] ?? null,
+      }),
+      get,
+      set,
+      stateKey: 'agentDeviceBindingReplica',
+      view: recordLens<DeviceStore, AgentDeviceBinding>('agentDeviceBindingMap'),
+    });
+    this.#agentScan = createReplicaSlice(agentScanResource, {
+      actionPrefix: 'device/agentScan',
+      // A failed scan is an answer, not a request to retry: retrying would re-probe on its own.
+      fetcher: async (params): Promise<AgentScanResult> => {
+        try {
+          return 'deviceId' in params
+            ? await deviceService.scanAgents({ deviceId: params.deviceId })
+            : { agents: await scanLocalAgents(params.local) };
+        } catch (error) {
+          return { agents: null, error: error instanceof Error ? error.message : String(error) };
+        }
+      },
+      get,
+      set,
+      stateKey: 'agentScanReplica',
+      view: recordLens<DeviceStore, AgentScanResult>('agentScanMap'),
     });
   }
 
@@ -235,6 +269,23 @@ class DeviceActionImpl {
    * `deviceSelectors.getMetricSeries`. `enabled: false` (an off-screen card,
    * an offline device) stops fetching and keeps what the store holds.
    */
+  /**
+   * One agent's resolved device binding; read it with `deviceSelectors.agentDeviceBinding`.
+   * `refreshAgentDeviceBindings` re-resolves every mounted one after a routing write.
+   */
+  useFetchAgentDeviceBinding = (
+    agentId: string | undefined,
+    schedule?: { refreshInterval?: number },
+  ): ReplicaSyncResult => this.#agentDeviceBinding.useSync(agentId ? { agentId } : null, schedule);
+
+  /**
+   * Scan a target's installed agents; read them with `deviceSelectors.agentScan`. Only an
+   * explicit `revalidate` re-probes: a silent refresh (focus, reconnect) would leave picked
+   * runtimes pointing at stale rows.
+   */
+  useFetchAgentScan = (params: AgentScanParams | null): ReplicaSyncResult =>
+    this.#agentScan.useSync(params, { revalidateOnFocus: false, revalidateOnReconnect: false });
+
   useFetchDeviceMetricSeries = (
     params: DeviceMetricSeriesParams,
     enabled = true,

@@ -1,3 +1,4 @@
+import type { ClaudeCodeLocalAccount } from '@lobechat/electron-client-ipc';
 import type { QuotaLimitReading } from '@lobechat/heterogeneous-agents/quota';
 import type { QuotaDeviceAccount } from '@lobot/types';
 
@@ -8,6 +9,9 @@ export type QuotaAccount = Awaited<ReturnType<typeof agentQuotaService.listAccou
 export type QuotaBinding = Awaited<ReturnType<typeof agentQuotaService.listBindings>>[number];
 export type QuotaLatestReading = Awaited<
   ReturnType<typeof agentQuotaService.getLatestReadings>
+>[number];
+export type QuotaAccountLoad = Awaited<
+  ReturnType<typeof agentQuotaService.resolveAccountLoads>
 >[number];
 export type QuotaWindowRow = Awaited<ReturnType<typeof agentQuotaService.getWindows>>[number];
 type QuotaUsageTurn = Awaited<ReturnType<typeof agentQuotaService.listUsageTurns>>[number];
@@ -160,3 +164,35 @@ export const hashQuotaSourceKey = (source: string): string => {
   }
   return `${(h1 >>> 0).toString(16).padStart(8, '0')}${(h2 >>> 0).toString(16).padStart(8, '0')}`;
 };
+
+/** One entry: the Claude Code logins this desktop holds. */
+export const CLAUDE_LOCAL_ACCOUNTS_KEY = 'local';
+
+/**
+ * Claude Code logins held on this machine, listed over desktop IPC. Device-local
+ * and cheap to list again, so they stay in memory.
+ */
+export const claudeLocalAccountsResource = defineReplica<string, ClaudeCodeLocalAccount[]>({
+  key: (key) => key,
+  name: 'agentQuotaClaudeLocalAccounts',
+  storage: 'memory',
+  version: 1,
+});
+
+export interface QuotaAgentLoadsParams {
+  agentId: string;
+  /** The device the Agent is bound to; an account pinned there is the only one that counts. */
+  deviceId: string | null;
+}
+
+export const quotaAgentLoadsKey = ({ agentId, deviceId }: QuotaAgentLoadsParams) =>
+  `${agentId}:${deviceId ?? ''}`;
+
+/** The load of each account an agent may run on, keyed by agent and bound device. */
+export const quotaAgentLoadsResource = defineReplica<QuotaAgentLoadsParams, QuotaAccountLoad[]>({
+  key: quotaAgentLoadsKey,
+  name: 'agentQuotaAgentLoads',
+  persist: { maxEntries: 50 },
+  storage: 'indexedDB',
+  version: 2,
+});

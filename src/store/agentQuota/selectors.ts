@@ -1,7 +1,17 @@
 import { quotaConfirmedKey, type Store } from './action';
-import { hashQuotaSourceKey, QUOTA_ACCOUNTS_KEY, quotaDeviceAccountKey } from './projection';
+import {
+  hashQuotaSourceKey,
+  QUOTA_ACCOUNTS_KEY,
+  type QuotaAgentLoadsParams,
+  quotaAgentLoadsKey,
+  quotaDeviceAccountKey,
+} from './projection';
 
 const accounts = (s: Store) => s.quotaAccountsMap[QUOTA_ACCOUNTS_KEY];
+
+/** The load of each account an agent may run on; `undefined` until loaded. */
+const agentLoads = (params: QuotaAgentLoadsParams | null) => (s: Store) =>
+  params ? s.quotaAgentLoadsMap[quotaAgentLoadsKey(params)] : undefined;
 
 const bindings = (agentId?: string | null) => (s: Store) =>
   agentId ? s.quotaBindingsMap[agentId] : undefined;
@@ -39,6 +49,7 @@ const isHistoryConfirmed = (scope: string, accountId?: string | null) => (s: Sto
 
 export const agentQuotaSelectors = {
   accounts,
+  agentLoads,
   bindings,
   deviceAccount,
   history,

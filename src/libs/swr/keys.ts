@@ -39,23 +39,6 @@ interface LocalFilePreviewKeyParams {
   workingDirectory: string;
 }
 
-export const channelKeys = {
-  agentEnvironment: def(
-    'channel:agentEnvironment',
-    (channelId: string, memberId: string) =>
-      ['channel:agentEnvironment', channelId, memberId] as const,
-  ),
-  wakeConfig: def(
-    'channel:wakeConfig',
-    (channelId: string) => ['channel:wakeConfig', channelId] as const,
-  ),
-  userCandidates: def(
-    'channel:userCandidates',
-    (channelId: string | undefined, search: string) =>
-      ['channel:userCandidates', channelId ?? null, search] as const,
-  ),
-};
-
 // ---- message ------------------------------------------------------------
 export interface MessageListQueryContext {
   agentId?: string | null;
@@ -578,10 +561,6 @@ export const shareKeys = {
       includeWorkIds,
     ],
   ),
-  agentShareStatus: def('share:agentShareStatus', (agentId: string) => [
-    'share:agentShareStatus',
-    agentId,
-  ]),
   artifact: def('share:artifact', (id: string) => ['share:artifact', id]),
   file: def('share:file', (shareId: string) => ['share:file', shareId]),
   pageDocument: def('share:pageDocument', (documentId: string) => [
@@ -750,8 +729,6 @@ export const imessageKeys = {
 };
 // Desktop/electron IPC fetches — roots keep their existing `electron:getXxx` value.
 export const electronKeys = {
-  /** Claude Code logins held on this machine (device-local, never persisted). */
-  claudeCodeAccounts: def('electron:claudeCodeAccounts', () => ['electron:claudeCodeAccounts']),
   appMenu: def('electron:getAppMenu', () => ['electron:getAppMenu']),
   appTrayVisible: def('electron:getAppTrayVisible', () => ['electron:getAppTrayVisible']),
   desktopHotkeys: def('electron:getDesktopHotkeys', () => ['electron:getDesktopHotkeys']),
@@ -780,10 +757,6 @@ export const matchDomain =
 /**
  * Aggregate registry — one entry point for every domain's keys.
  */
-export const taskLabelKeys = {
-  list: def('taskLabel:list', () => ['taskLabel:list'] as const),
-};
-
 export const swrKeys = {
   agent: agentConfigKeys,
   agentHome: agentHomeKeys,
@@ -814,7 +787,6 @@ export const swrKeys = {
   resource: resourceKeys,
   serverConfig: serverConfigKeys,
   share: shareKeys,
-  taskLabel: taskLabelKeys,
   thread: threadKeys,
   tool: toolKeys,
   topic: topicKeys,

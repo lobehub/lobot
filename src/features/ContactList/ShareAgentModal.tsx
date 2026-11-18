@@ -17,9 +17,8 @@ import { useTranslation } from 'react-i18next';
 
 import AsyncError from '@/components/AsyncError';
 import { webAppOrigin } from '@/features/Electron/navigation/webApp';
-import { useClientDataSWR } from '@/libs/swr';
-import { shareKeys } from '@/libs/swr/keys';
-import { type AgentShareLinkItem, agentShareService } from '@/services/agentShare';
+import { type AgentShareLinkItem } from '@/services/agentShare';
+import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
 
 /** The visitor page of a share: its custom slug when set, else its id. */
 export const agentShareLink = (share: AgentShareLinkItem): string =>
@@ -42,10 +41,9 @@ const copyLink = async (link: string) => {
 const ShareAgentContent = memo<{ agentId: string }>(({ agentId }) => {
   const { t } = useTranslation('common');
   const [creating, setCreating] = useState(false);
-  const { data, error, isLoading, mutate } = useClientDataSWR(
-    shareKeys.agentShareStatus(agentId),
-    () => agentShareService.getShareStatus(agentId),
-  );
+  const { error, revalidate } = contactActions.useFetchAgentShare(agentId);
+  const entry = useContactStore(contactSelectors.agentShare(agentId));
+  const data = entry?.share;
 
   const share = data?.visibility === 'link' ? data : undefined;
   const link = share ? agentShareLink(share) : undefined;
@@ -53,8 +51,7 @@ const ShareAgentContent = memo<{ agentId: string }>(({ agentId }) => {
   const create = async () => {
     setCreating(true);
     try {
-      const created = await agentShareService.enableLinkShare(agentId);
-      await mutate(created, { revalidate: false });
+      const created = await contactActions.enableAgentLinkShare(agentId);
       await copyLink(agentShareLink(created));
     } catch (error) {
       console.error('[contacts] Failed to create the share link', error);
@@ -64,17 +61,17 @@ const ShareAgentContent = memo<{ agentId: string }>(({ agentId }) => {
     }
   };
 
-  if (error && !data)
+  if (error && !entry)
     return (
       <Flexbox padding={20}>
-        <AsyncError error={error} variant="inline" onRetry={() => void mutate()} />
+        <AsyncError error={error} variant="inline" onRetry={() => void revalidate()} />
       </Flexbox>
     );
 
   return (
     <Flexbox gap={16} padding={20}>
       <Text type={'secondary'}>{t(link ? 'contacts.share.desc' : 'contacts.share.emptyDesc')}</Text>
-      {isLoading ? (
+      {entry === undefined ? (
         <Skeleton height={32} width={'100%'} />
       ) : link ? (
         <Flexbox horizontal gap={8}>

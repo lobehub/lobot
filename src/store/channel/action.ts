@@ -6,8 +6,6 @@ import type {
 } from '@lobot/types';
 
 import { cacheScope } from '@/libs/replica';
-import { mutate, useClientDataSWR } from '@/libs/swr';
-import { channelKeys } from '@/libs/swr/keys';
 import {
   type ChannelAgentSelection,
   channelService,
@@ -26,7 +24,7 @@ import {
 } from './outbox';
 import { channelOutboxStorage } from './outboxStorage';
 import { ChannelPrivateAction } from './privateAction';
-import { channelMessageEntityId, channelThreadEntityId } from './projection';
+import { channelMessageEntityId, channelThreadEntityId, scopeChannelListKey } from './projection';
 import { channelSelectors } from './selectors';
 import { initialState, useChannelStore } from './store';
 
@@ -48,10 +46,9 @@ export type ChannelQueuedSendInput = Pick<
 
 class ChannelActionImpl {
   readonly #private = new ChannelPrivateAction(useChannelStore.setState, useChannelStore.getState);
+  /** Read the people through `channelSelectors.userCandidates`. */
   useFetchUserCandidates = (channelId: string | undefined, search: string) =>
-    useClientDataSWR(channelKeys.userCandidates(channelId, search), () =>
-      channelService.userCandidates(channelId, search),
-    );
+    this.#private.userCandidates.useSync({ channelId, search });
   useFetchList = () => {
     const pending = useChannelStore(channelSelectors.listHasPendingWork);
     return this.#private.list.useSync(
@@ -266,17 +263,26 @@ class ChannelActionImpl {
       () => channelService.rename(channelId, title),
     );
   };
+  /** Read it through `channelSelectors.agentEnvironment`. */
   useFetchAgentEnvironment = (channelId: string, memberId: string) =>
-    useClientDataSWR(channelKeys.agentEnvironment(channelId, memberId), () =>
-      channelService.agentEnvironment(channelId, memberId),
-    );
-  useFetchWakeConfig = (channelId: string | null) =>
-    useClientDataSWR(channelId ? channelKeys.wakeConfig(channelId) : null, () =>
-      channelService.wakeConfig(channelId!),
-    );
+    this.#private.agentEnvironment.useSync({ channelId, memberId });
+  /** Read it through `channelSelectors.wakeConfig`. */
+  useFetchWakeConfig = (channelId: string | null) => this.#private.wakeConfig.useSync(channelId);
+  /**
+   * Another scope's Channel list (`null` is the personal space), read through
+   * `channelSelectors.scopeList`. The rail tile and the desktop notifier share each request.
+   */
+  useFetchScopeList = (
+    scopeId: string | null,
+    enabled: boolean,
+    schedule: { refreshInterval?: number; refreshWhenHidden?: boolean },
+  ) => this.#private.scopeList.useSync({ scopeId }, { enabled, ...schedule });
+  /** Reload a mounted scope list now, e.g. on a gateway push about a Channel the active list lacks. */
+  refreshScopeList = (scopeId: string | null) =>
+    this.#private.scopeList.revalidate(scopeChannelListKey({ scopeId }));
   updateWakeConfig = async (channelId: string, wake: ChannelWakeConfig) => {
     await channelService.updateWakeConfig(channelId, wake);
-    await this.#refreshAfterWrite(() => mutate(channelKeys.wakeConfig(channelId)));
+    await this.#refreshAfterWrite(() => this.#private.wakeConfig.fetch(channelId, { fresh: true }));
   };
   updateAgentEnvironment = async (
     channelId: string,
@@ -287,7 +293,7 @@ class ChannelActionImpl {
     // Blocked replies may resume on the new device or directory.
     await this.#refreshAfterWrite(() =>
       Promise.all([
-        mutate(channelKeys.agentEnvironment(channelId, memberId)),
+        this.#private.agentEnvironment.fetch({ channelId, memberId }, { fresh: true }),
         this.refreshDetail({ channelId }),
       ]),
     );

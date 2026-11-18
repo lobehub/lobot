@@ -1,12 +1,12 @@
-import type { ChannelPublicMember } from '@lobot/types';
 import { Button, createModal, Flexbox, Text, toast, useModalContext } from '@lobehub/ui';
+import type { ChannelPublicMember } from '@lobot/types';
 import { t } from 'i18next';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AsyncBoundary from '@/components/AsyncBoundary';
 import AsyncError from '@/components/AsyncError';
-import { channelActions } from '@/store/channel';
+import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 import { useDeviceList } from '@/store/device/useDeviceList';
 
 import type { ChannelAgentDraft } from './CreateChannel/agentEnvironment';
@@ -107,12 +107,17 @@ function AgentEnvironment({
   channelId: string;
   member: ChannelPublicMember;
 }) {
-  const { data, error, isLoading, mutate } = channelActions.useFetchAgentEnvironment(
-    channelId,
-    member.id,
+  const { error, revalidate } = channelActions.useFetchAgentEnvironment(channelId, member.id);
+  const data = useChannelStore(
+    channelSelectors.agentEnvironment({ channelId, memberId: member.id }),
   );
   return (
-    <AsyncBoundary data={data} error={error} isLoading={isLoading} onRetry={() => void mutate()}>
+    <AsyncBoundary
+      data={data}
+      error={error}
+      isLoading={data === undefined && !error}
+      onRetry={() => void revalidate()}
+    >
       {data && (
         // The form copies the saved choice once; a refetch that changes it starts the form over.
         <EnvironmentForm

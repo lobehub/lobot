@@ -2,6 +2,8 @@ import { type DeviceListItem, type DeviceMetricSeries } from '@lobot/types';
 
 import type { DeviceState } from './initialState';
 import {
+  agentScanKey,
+  type AgentScanParams,
   DEVICE_LIST_KEY,
   deviceMetricSeriesKey,
   type DeviceMetricSeriesParams,
@@ -45,7 +47,17 @@ const getMetricSeries =
   (s: DeviceState): DeviceMetricSeries | undefined =>
     s.deviceMetricSeriesMap[deviceMetricSeriesKey(params)];
 
+/** One agent's resolved device binding, or `undefined` until loaded. */
+const agentDeviceBinding = (agentId: string | undefined) => (s: DeviceState) =>
+  agentId ? s.agentDeviceBindingMap[agentId] : undefined;
+
+/** A target's agent inventory, or `undefined` until scanned. */
+const agentScan = (params: AgentScanParams | null) => (s: DeviceState) =>
+  params ? s.agentScanMap[agentScanKey(params)] : undefined;
+
 export const deviceSelectors = {
+  agentDeviceBinding,
+  agentScan,
   deviceList,
   getDeviceById,
   getDeviceDefaultCwd,

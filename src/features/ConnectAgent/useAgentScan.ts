@@ -2,9 +2,9 @@ import type { HeterogeneousAgentScanMap } from '@lobechat/heterogeneous-agents';
 import type { DeviceListItem } from '@lobot/types';
 import { useCallback, useMemo } from 'react';
 
-import { useClientDataSWR } from '@/libs/swr';
-import { deviceService } from '@/services/device';
-import { binaryService } from '@/services/electron/binary';
+import { deviceSelectors, useDeviceStore } from '@/store/device';
+import { type LocalAgentScanProbe, scanLocalAgents } from '@/store/device/agentScan';
+import type { AgentScanParams } from '@/store/device/projection';
 
 import { CONNECTABLE_PROVIDERS } from './providers';
 
@@ -27,39 +27,18 @@ const IDLE: AgentScanState = { agents: null, status: 'idle' };
  * Although OpenClaw and Hermes use the gateway execution path, they are installed
  * on and selected from this machine just like the coding-agent CLIs.
  */
-export const scanLocal = async (): Promise<HeterogeneousAgentScanMap> => {
-  const entries = await Promise.all(
-    CONNECTABLE_PROVIDERS.map(async (provider) => {
-      try {
-        const status = await binaryService.detectHeterogeneousAgentCommand({
-          agentType: provider.type,
-          command: provider.command ?? provider.type,
-        });
-        return [
-          provider.type,
-          {
-            available: status.available,
-            ...(status.error ? { reason: status.error } : undefined),
-            version: status.version,
-          },
-        ] as const;
-      } catch (error) {
-        return [
-          provider.type,
-          { available: false, reason: error instanceof Error ? error.message : String(error) },
-        ] as const;
-      }
-    }),
-  );
-  return Object.fromEntries(entries);
-};
+const LOCAL_PROBES: LocalAgentScanProbe[] = CONNECTABLE_PROVIDERS.map((provider) => ({
+  agentType: provider.type,
+  command: provider.command ?? provider.type,
+}));
 
-const scanTargetKey = (target: ScanTarget | null) => {
+export const scanLocal = (): Promise<HeterogeneousAgentScanMap> => scanLocalAgents(LOCAL_PROBES);
+
+const LOCAL_SCAN: AgentScanParams = { local: LOCAL_PROBES };
+
+const scanParams = (target: ScanTarget | null): AgentScanParams | null => {
   if (!target) return null;
-  // Same key as the device page's agent runtimes, so either surface reuses the other's probe.
-  return target.kind === 'local'
-    ? ['connectAgent/localScan']
-    : ['device/agentScan', target.device.deviceId];
+  return target.kind === 'local' ? LOCAL_SCAN : { deviceId: target.device.deviceId };
 };
 
 /**
@@ -67,16 +46,9 @@ const scanTargetKey = (target: ScanTarget | null) => {
  * (or opening the wizard on one) scans it; `rescan` re-probes in place.
  */
 export const useAgentScan = (target: ScanTarget | null) => {
-  const { data, error, isValidating, mutate } = useClientDataSWR(
-    scanTargetKey(target),
-    async (): Promise<{ agents: HeterogeneousAgentScanMap | null; error?: string }> =>
-      target?.kind === 'device'
-        ? deviceService.scanAgents({ deviceId: target.device.deviceId })
-        : { agents: await scanLocal() },
-    // Only an explicit rescan re-probes: it also clears the picked runtimes, which
-    // a silent refresh (focus, reconnect, retry) would leave pointing at stale rows.
-    { revalidateOnFocus: false, revalidateOnReconnect: false, shouldRetryOnError: false },
-  );
+  const params = scanParams(target);
+  const { error, isValidating, revalidate } = useDeviceStore((s) => s.useFetchAgentScan)(params);
+  const data = useDeviceStore(deviceSelectors.agentScan(params));
 
   const state = useMemo<AgentScanState>(() => {
     if (!target) return IDLE;
@@ -87,7 +59,7 @@ export const useAgentScan = (target: ScanTarget | null) => {
     return { agents: data.agents, status: 'success' };
   }, [data, error, isValidating, target]);
 
-  const rescan = useCallback(() => void mutate(), [mutate]);
+  const rescan = useCallback(() => void revalidate(), [revalidate]);
 
   return { rescan, state };
 };

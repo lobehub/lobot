@@ -1,12 +1,14 @@
 import { isDesktop } from '@lobechat/const';
 import type { ClaudeCodeLocalAccount } from '@lobechat/electron-client-ipc';
 import isEqual from 'fast-deep-equal';
-import { type SWRResponse } from 'swr';
 import { type StateCreator } from 'zustand';
 
-import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
-import { mutate, useClientDataSWR } from '@/libs/swr';
-import { electronKeys } from '@/libs/swr/keys';
+import {
+  createReplicaSlice,
+  recordLens,
+  type ReplicaLens,
+  type ReplicaSyncResult,
+} from '@/libs/replica';
 import { agentQuotaService } from '@/services/agentQuota';
 import { heterogeneousAgentService } from '@/services/electron/heterogeneousAgent';
 import { getElectronStoreState } from '@/store/electron';
@@ -15,13 +17,18 @@ import { flattenActions } from '@/store/utils/flattenActions';
 
 import { initialState, type State } from './initialState';
 import {
+  CLAUDE_LOCAL_ACCOUNTS_KEY,
+  claudeLocalAccountsResource,
   hashQuotaSourceKey,
   parseQuotaDeviceAccountKey,
   QUOTA_ACCOUNTS_KEY,
   QUOTA_HISTORY_DAYS,
   QUOTA_HISTORY_WINDOW_LIMIT,
   type QuotaAccount,
+  type QuotaAccountLoad,
   quotaAccountsResource,
+  type QuotaAgentLoadsParams,
+  quotaAgentLoadsResource,
   type QuotaBinding,
   quotaBindingsResource,
   type QuotaDeviceAccount,
@@ -76,6 +83,14 @@ const upsertBinding = (bindings: QuotaBinding[], row: QuotaBinding) =>
       )
     : [...bindings, row];
 
+/** The local logins keep their flat `claudeLocalAccounts` field (`undefined` until listed). */
+const claudeLocalAccountsLens: ReplicaLens<Store, ClaudeCodeLocalAccount[]> = {
+  clear: () => ({ claudeLocalAccounts: undefined }),
+  get: (state) => state.claudeLocalAccounts,
+  keys: (state) => (state.claudeLocalAccounts ? [CLAUDE_LOCAL_ACCOUNTS_KEY] : []),
+  set: (_state, _key, claudeLocalAccounts) => ({ claudeLocalAccounts }),
+};
+
 /**
  * Agent quota (coding agent subscription accounts): the account pool, each
  * agent's bindings, each account's newest readings and calendar history, plus
@@ -91,6 +106,8 @@ class ActionImpl {
   readonly #readings;
   readonly #history;
   readonly #panel;
+  readonly #localAccounts;
+  readonly #agentLoads;
   /** When each `<scope>|<resource>|<key>` last applied a server answer. */
   readonly #appliedAt = new Map<string, number>();
   /** Advanced by every `reset()`, so a live panel sample from before it is dropped. */
@@ -200,6 +217,36 @@ class ActionImpl {
       toPersisted: toPersistedQuotaPanel,
       view: recordLens<Store, QuotaPanelSnapshot>('quotaPanelMap'),
     });
+    this.#localAccounts = createReplicaSlice(claudeLocalAccountsResource, {
+      actionPrefix: 'claudeLocalAccounts',
+      fetcher: () => this.#syncClaudeLocalAccounts(),
+      get,
+      set,
+      stateKey: 'claudeLocalAccountsReplica',
+      view: claudeLocalAccountsLens,
+    });
+    this.#agentLoads = createReplicaSlice(quotaAgentLoadsResource, {
+      actionPrefix: 'quotaAgentLoads',
+      fetcher: async ({ agentId, deviceId }): Promise<QuotaAccountLoad[]> => {
+        // An account pinned on the bound device is the only one the Agent runs on there, so the
+        // rest of its pool — logged in on other machines — cannot keep it on duty.
+        if (deviceId) {
+          const { accountId } = await agentQuotaService.getDeviceAccount(agentId, deviceId);
+          if (accountId) return agentQuotaService.resolveAccountLoads([accountId]);
+        }
+        const bindings = await agentQuotaService.listBindings(agentId);
+        const accountIds = bindings
+          .filter((binding) => binding.enabled && binding.role !== 'disabled')
+          .map((binding) => binding.accountId);
+        if (accountIds.length === 0) return [];
+        return agentQuotaService.resolveAccountLoads(accountIds);
+      },
+      get,
+      merge: sameValue,
+      set,
+      stateKey: 'quotaAgentLoadsReplica',
+      view: recordLens<Store, QuotaAccountLoad[]>('quotaAgentLoadsMap'),
+    });
   }
 
   // ---- sync hooks (fetch orchestration only; data comes from selectors) ----
@@ -235,6 +282,15 @@ class ActionImpl {
       ...this.#syncOptions('readings', accountId),
       ...schedule,
     });
+
+  /**
+   * Sync the load of each account an agent may run on (`quotaAgentLoadsMap`),
+   * for its contact card's off-duty status.
+   */
+  useFetchQuotaAgentLoads = (
+    params: QuotaAgentLoadsParams | null,
+    schedule?: { refreshInterval?: number },
+  ): ReplicaSyncResult => this.#agentLoads.useSync(params, schedule);
 
   useFetchQuotaHistory = (accountId?: string | null): ReplicaSyncResult =>
     this.#history.useSync(accountId || null, this.#syncOptions('history', accountId));
@@ -399,16 +455,10 @@ class ActionImpl {
    * mode can only balance on readings that exist, and a login whose usage call
    * fails (e.g. a blocked network) must still show up as an account.
    */
-  useFetchClaudeLocalAccounts = (enabled = true): SWRResponse<ClaudeCodeLocalAccount[]> =>
-    useClientDataSWR(
-      enabled ? electronKeys.claudeCodeAccounts() : null,
-      () => this.#syncClaudeLocalAccounts(),
-      {
-        onSuccess: (claudeLocalAccounts: ClaudeCodeLocalAccount[]) =>
-          this.#set({ claudeLocalAccounts }, false, 'claudeLocalAccounts'),
-        revalidateOnFocus: false,
-      },
-    );
+  useFetchClaudeLocalAccounts = (enabled = true): ReplicaSyncResult =>
+    this.#localAccounts.useSync(enabled ? CLAUDE_LOCAL_ACCOUNTS_KEY : null, {
+      revalidateOnFocus: false,
+    });
 
   /**
    * Sample every local login into the pool now, without a view mounted. The
@@ -417,8 +467,7 @@ class ActionImpl {
    * stale while the account manager is closed.
    */
   refreshClaudeLocalAccounts = async (): Promise<void> => {
-    const claudeLocalAccounts = await this.#syncClaudeLocalAccounts();
-    this.#set({ claudeLocalAccounts }, false, 'claudeLocalAccounts');
+    await this.#localAccounts.fetch(CLAUDE_LOCAL_ACCOUNTS_KEY, { fresh: true });
   };
 
   /**
@@ -432,7 +481,7 @@ class ActionImpl {
         email ? { email } : undefined,
       );
       await this.#ingestLocalLogin(account, true).catch(() => false);
-      await mutate(electronKeys.claudeCodeAccounts());
+      await this.#localAccounts.revalidate();
       await this.#refresh(this.#accounts, QUOTA_ACCOUNTS_KEY);
       return account;
     } finally {
@@ -463,6 +512,7 @@ class ActionImpl {
       this.#deviceAccount,
       this.#readings,
       this.#history,
+      this.#agentLoads,
     ])
       void slice.clear().then(() => slice.revalidate());
     void this.#panel.clear();
@@ -472,7 +522,11 @@ class ActionImpl {
     this.#set({ ...initialState }, false, 'resetAgentQuotaStore');
     // Local logins outlive the data context, but their accounts must land in
     // the new context's pool: list (and ingest) them again.
-    if (isDesktop) void mutate(electronKeys.claudeCodeAccounts()).catch(() => {});
+    if (isDesktop)
+      void this.#localAccounts
+        .clear()
+        .then(() => this.#localAccounts.revalidate())
+        .catch(() => {});
   };
 
   // ---- internals ----

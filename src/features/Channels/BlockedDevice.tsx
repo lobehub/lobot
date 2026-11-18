@@ -1,11 +1,11 @@
-import type { ChannelPublicMember } from '@lobot/types';
 import { Button, Flexbox, Text, usePopoverContext } from '@lobehub/ui';
+import type { ChannelPublicMember } from '@lobot/types';
 import dayjs from 'dayjs';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getDeviceIcon } from '@/features/DeviceManager/getDeviceIcon';
-import { channelActions } from '@/store/channel';
+import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 import { useDeviceList } from '@/store/device/useDeviceList';
 
 import { openChannelAgentEnvironment } from './AgentEnvironment';
@@ -97,8 +97,10 @@ function ChannelEnvironmentDevice({
   retry?: ReactNode;
   waiting?: boolean;
 }) {
-  const environment = channelActions.useFetchAgentEnvironment(channelId, member.id);
-  const deviceId = environment.data?.deviceId;
+  channelActions.useFetchAgentEnvironment(channelId, member.id);
+  const deviceId = useChannelStore(
+    (s) => channelSelectors.agentEnvironment({ channelId, memberId: member.id })(s)?.deviceId,
+  );
   return deviceId ? (
     <DeviceRow deviceId={deviceId} retry={retry} waiting={waiting} onChange={onChange} />
   ) : (

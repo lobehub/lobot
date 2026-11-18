@@ -73,6 +73,10 @@ describe('per-device account choice', () => {
       'ext-default',
       'ext-2',
     ]);
+    // The listed logins land in the replica view the account manager reads.
+    expect(
+      useAgentQuotaStore.getState().claudeLocalAccounts?.map((a) => a.identity.externalAccountId),
+    ).toEqual(['ext-default', 'ext-2']);
   });
 
   // Regression: signing out removed the pick on the server, but the manager

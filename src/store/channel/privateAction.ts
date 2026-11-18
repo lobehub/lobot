@@ -7,16 +7,23 @@ import {
   linkReplicaEntity,
   recordLens,
 } from '@/libs/replica';
+import type { ChannelPersonOption } from '@/services/channel';
 import type { StoreSetter } from '@/store/types';
 import { isTrpcErrorCode } from '@/utils/trpcError';
 
 import { settleOutbox } from './outbox';
 import {
+  type ChannelAgentEnvironment,
+  channelAgentEnvironmentResource,
   channelDetailEntity,
   channelDetailResource,
   channelListResource,
+  channelScopeListResource,
   channelThreadEntityId,
+  channelUserCandidatesResource,
   channelViewKey,
+  type ChannelWakeConfigData,
+  channelWakeConfigResource,
 } from './projection';
 import type { ChannelState } from './store';
 
@@ -33,9 +40,13 @@ export class ChannelPrivateAction {
     this.deletedThreads.set(scope, ids);
     this.detail.removeEntity(id, { scope });
   };
+  readonly agentEnvironment;
   readonly detail;
   readonly entity;
   readonly list;
+  readonly scopeList;
+  readonly userCandidates;
+  readonly wakeConfig;
   constructor(set: StoreSetter<ChannelState>, get: () => ChannelState) {
     this.list = createReplicaSlice(channelListResource, {
       actionPrefix: 'channel/list',
@@ -97,5 +108,33 @@ export class ChannelPrivateAction {
       view: recordLens<ChannelState, ChannelDetail>('detailMap'),
     });
     this.entity = linkReplicaEntity<ChannelListItem>([this.list, this.detail]);
+    this.userCandidates = createReplicaSlice(channelUserCandidatesResource, {
+      actionPrefix: 'channel/userCandidates',
+      get,
+      set,
+      stateKey: 'userCandidatesReplica',
+      view: recordLens<ChannelState, ChannelPersonOption[]>('userCandidatesMap'),
+    });
+    this.agentEnvironment = createReplicaSlice(channelAgentEnvironmentResource, {
+      actionPrefix: 'channel/agentEnvironment',
+      get,
+      set,
+      stateKey: 'agentEnvironmentReplica',
+      view: recordLens<ChannelState, ChannelAgentEnvironment>('agentEnvironmentMap'),
+    });
+    this.wakeConfig = createReplicaSlice(channelWakeConfigResource, {
+      actionPrefix: 'channel/wakeConfig',
+      get,
+      set,
+      stateKey: 'wakeConfigReplica',
+      view: recordLens<ChannelState, ChannelWakeConfigData>('wakeConfigMap'),
+    });
+    this.scopeList = createReplicaSlice(channelScopeListResource, {
+      actionPrefix: 'channel/scopeList',
+      get,
+      set,
+      stateKey: 'scopeListReplica',
+      view: recordLens<ChannelState, ChannelListItem[]>('scopeListMap'),
+    });
   }
 }

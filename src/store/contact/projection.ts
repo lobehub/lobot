@@ -1,7 +1,10 @@
 import type { ContactItem, ContactRequestItem, ContactSearchResult } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
+import { agentAccountService } from '@/services/agentAccount';
+import { type AgentShareLinkItem, agentShareService } from '@/services/agentShare';
 import { contactService, type ContactUserProfileData } from '@/services/contact';
+import type { AgentAccountView } from '@/types/serverData';
 
 export const contactListResource = defineReplica<Record<string, never>, ContactItem[]>({
   fetcher: () => contactService.list(),
@@ -35,5 +38,40 @@ export const contactShareResource = defineReplica<{ share: string }, ContactSear
   key: ({ share }) => share,
   name: 'contactShare',
   storage: 'memory',
+  version: 1,
+});
+
+/** Incoming and outgoing requests of the personal space, read from inside a workspace. */
+export const contactPersonalRequestsResource = defineReplica<
+  Record<string, never>,
+  ContactRequestItem[]
+>({
+  fetcher: () => contactService.listRequestsInScope(null),
+  key: () => 'personal',
+  name: 'contactPersonalRequests',
+  storage: 'indexedDB',
+  version: 1,
+});
+
+/** One of my Agents' share, as its share dialog shows it; `share` is `null` before one exists. */
+export const agentShareStatusResource = defineReplica<
+  { agentId: string },
+  { share: AgentShareLinkItem | null }
+>({
+  fetcher: async ({ agentId }) => ({ share: await agentShareService.getShareStatus(agentId) }),
+  key: ({ agentId }) => agentId,
+  name: 'contactAgentShareStatus',
+  persist: { maxEntries: 50 },
+  storage: 'indexedDB',
+  version: 1,
+});
+
+/** The mail addresses an Agent owns, for its contact card. */
+export const agentAccountsResource = defineReplica<{ agentId: string }, AgentAccountView[]>({
+  fetcher: ({ agentId }) => agentAccountService.list({ agentId }),
+  key: ({ agentId }) => agentId,
+  name: 'contactAgentAccounts',
+  persist: { maxEntries: 50 },
+  storage: 'indexedDB',
   version: 1,
 });

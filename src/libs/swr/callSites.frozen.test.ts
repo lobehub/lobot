@@ -17,18 +17,13 @@ import { describe, expect, it } from 'vitest';
  */
 const LEGACY_SWR_CALL_SITES = [
   'src/business/client/workspace/store.ts',
-  'src/features/AgentMail/useAgentIdentity.ts',
   'src/features/AgentTransferMigration/useAgentTransferJob.ts',
-  'src/features/Channels/useScopeChannelList.ts',
   'src/features/ChatInput/ControlBar/SandboxDrivePicker.tsx',
   'src/features/ChatInput/ControlBar/useRepoType.ts',
   'src/features/ChatInput/ControlBar/useWorktreeHomeDir.ts',
   'src/features/ChatInput/InputEditor/LocalFileTag/LocalFileTag.tsx',
   'src/features/ChatInput/hooks/useLocalSandboxCapability.ts',
   'src/features/CommandMenu/useCommandMenu.ts',
-  'src/features/ConnectAgent/useAgentScan.ts',
-  'src/features/ContactList/ShareAgentModal.tsx',
-  'src/features/ContactList/useAgentPresence.ts',
   'src/features/DeviceManager/DeviceActivity/RunningUsers.tsx',
   'src/features/Electron/WorkspaceMentionNotifier/useWorkspaceMentionNotifier.ts',
   'src/features/Electron/connection/useGatewayKeepAwake.ts',
@@ -42,12 +37,9 @@ const LEGACY_SWR_CALL_SITES = [
   'src/features/ShareModal/useExportMessages.ts',
   'src/features/Work/ShareVisitorDocumentModal/Content.tsx',
   'src/features/WorkingDirectory/EnvironmentSelect.tsx',
-  'src/features/WorkspaceRail/usePersonalRequestCount.ts',
   'src/hooks/useGatewayReconnect.ts',
   'src/hooks/useOnboardingAgentTemplates.ts',
   'src/hooks/useScopedCreds.ts',
-  'src/store/agentQuota/action.ts',
-  'src/store/channel/action.ts',
   'src/store/device/directoryHooks.ts',
   'src/store/electron/actions/app.ts',
   'src/store/electron/actions/gateway.ts',
@@ -55,7 +47,6 @@ const LEGACY_SWR_CALL_SITES = [
   'src/store/electron/actions/sync.ts',
   'src/store/global/actions/general.ts',
   'src/store/serverConfig/action.ts',
-  'src/store/task/slices/label/action.ts',
 ];
 
 const ROOT = path.resolve(__dirname, '../../..');

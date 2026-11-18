@@ -2,10 +2,15 @@ import type { ContactItem, ContactRequestItem, ContactSearchResult } from '@lobo
 
 import { useGatewayUserFeed } from '@/hooks/useGatewayUserFeed';
 import { createReplicaSlice, recordLens } from '@/libs/replica';
+import { type AgentShareLinkItem, agentShareService } from '@/services/agentShare';
 import { contactService, type ContactUserProfileData } from '@/services/contact';
+import type { AgentAccountView } from '@/types/serverData';
 
 import {
+  agentAccountsResource,
+  agentShareStatusResource,
   contactListResource,
+  contactPersonalRequestsResource,
   contactProfileResource,
   contactRequestsResource,
   contactShareResource,
@@ -13,6 +18,8 @@ import {
 import { type ContactState, useContactStore } from './store';
 
 const REQUESTS_REFRESH_MS = 60_000;
+/** Outside the personal space, its requests poll on the rail's idle cadence. */
+const PERSONAL_REQUESTS_REFRESH_MS = 60_000;
 
 class ContactActionImpl {
   readonly #list = createReplicaSlice(contactListResource, {
@@ -45,6 +52,30 @@ class ContactActionImpl {
     view: recordLens<ContactState, ContactSearchResult[]>('shareMap'),
   });
 
+  readonly #personalRequests = createReplicaSlice(contactPersonalRequestsResource, {
+    actionPrefix: 'contact/personalRequests',
+    get: useContactStore.getState,
+    set: useContactStore.setState,
+    stateKey: 'personalRequestsReplica',
+    view: recordLens<ContactState, ContactRequestItem[]>('personalRequestsMap'),
+  });
+
+  readonly #agentShare = createReplicaSlice(agentShareStatusResource, {
+    actionPrefix: 'contact/agentShare',
+    get: useContactStore.getState,
+    set: useContactStore.setState,
+    stateKey: 'agentShareReplica',
+    view: recordLens<ContactState, { share: AgentShareLinkItem | null }>('agentShareMap'),
+  });
+
+  readonly #agentAccounts = createReplicaSlice(agentAccountsResource, {
+    actionPrefix: 'contact/agentAccounts',
+    get: useContactStore.getState,
+    set: useContactStore.setState,
+    stateKey: 'agentAccountsReplica',
+    view: recordLens<ContactState, AgentAccountView[]>('agentAccountsMap'),
+  });
+
   useFetchList = (enabled = true) => this.#list.useSync({}, { enabled });
   /**
    * The gateway pushes contact changes (`useContactEvents`), so requests are polled only when
@@ -60,6 +91,20 @@ class ContactActionImpl {
   useFetchProfile = (userId: string | undefined) =>
     this.#profile.useSync(userId ? { userId } : null);
   useFetchShare = (share: string | undefined) => this.#share.useSync(share ? { share } : null);
+  /** The personal space's requests, polled from inside a workspace (`contactSelectors.personalIncomingCount`). */
+  useFetchPersonalRequests = (enabled: boolean) =>
+    this.#personalRequests.useSync({}, { enabled, refreshInterval: PERSONAL_REQUESTS_REFRESH_MS });
+  /** My Agent's share, read through `contactSelectors.agentShare`. */
+  useFetchAgentShare = (agentId: string) => this.#agentShare.useSync({ agentId });
+  /** The mail addresses an Agent owns, read through `contactSelectors.agentAccounts`. */
+  useFetchAgentAccounts = (agentId: string | undefined) =>
+    this.#agentAccounts.useSync(agentId ? { agentId } : null);
+  /** Turns on my Agent's link share and returns it; the dialog shows it without another read. */
+  enableAgentLinkShare = async (agentId: string) => {
+    const share = await agentShareService.enableLinkShare(agentId);
+    this.#agentShare.update(agentId, () => ({ share }));
+    return share;
+  };
 
   /** A committed write must not read as failed because its refresh did. */
   #refresh = async (profileUserId?: string) => {

@@ -8,7 +8,7 @@ import AsyncBoundary from '@/components/AsyncBoundary';
 import { ChoiceList } from '@/features/AgentChannel/PlatformDetail/ChoiceList';
 import { ModuleSaveBar } from '@/features/AgentChannel/PlatformDetail/ModuleSaveBar';
 import type { ChannelWakeConfig } from '@/services/channel';
-import { channelActions } from '@/store/channel';
+import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 
 import { applyWakeForm, toWakeForm, WAKE_TEXT_MAX_LENGTH, type WakeFormValues } from './wakeForm';
 
@@ -210,15 +210,16 @@ function ReplyForm({ channelId, stored }: { channelId: string; stored: ChannelWa
 }
 
 export function ReplySection({ channelId }: { channelId: string }) {
-  const { data, error, isLoading, mutate } = channelActions.useFetchWakeConfig(channelId);
+  const { error, revalidate } = channelActions.useFetchWakeConfig(channelId);
+  const data = useChannelStore(channelSelectors.wakeConfig(channelId));
 
   return (
     <AsyncBoundary
       data={data}
       error={error}
-      isLoading={isLoading}
+      isLoading={data === undefined && !error}
       onRetry={() => {
-        void mutate();
+        void revalidate();
       }}
     >
       {data && (

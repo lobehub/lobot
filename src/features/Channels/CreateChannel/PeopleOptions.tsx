@@ -58,12 +58,14 @@ export const PeopleOptions = ({ people, search }: { people: PeopleSelection; sea
   const { t } = useTranslation('channel');
   const nameOf = usePersonName();
   const query = useDebounce(search.trim(), { wait: 200 });
-  const fetched = channelActions.useFetchUserCandidates(people.channelId, query);
+  const { error, revalidate } = channelActions.useFetchUserCandidates(people.channelId, query);
+  const fetched = useChannelStore(
+    channelSelectors.userCandidates({ channelId: people.channelId, search: query }),
+  );
   const local = useLocalUserCandidates(people.channelId, query);
   // The server stays the authority; the local copy only fills the wait for it.
-  const data = fetched.data ?? local;
-  const { error, mutate } = fetched;
-  const isLoading = fetched.isLoading && !local;
+  const data = fetched ?? local;
+  const isLoading = fetched === undefined && !error && !local;
   const toggle = (person: ChannelPersonOption) =>
     people.onChange((current) =>
       current.some((item) => item.userId === person.userId)
@@ -83,7 +85,7 @@ export const PeopleOptions = ({ people, search }: { people: PeopleSelection; sea
             {t(query ? 'people.noMatches' : people.channelId ? 'people.empty' : 'people.noOthers')}
           </Text>
         }
-        onRetry={() => void mutate()}
+        onRetry={() => void revalidate()}
       >
         {data?.map((person) => {
           const name = nameOf(person);

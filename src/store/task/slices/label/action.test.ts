@@ -1,8 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, renderHook } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useClientDataSWR } from '@/libs/swr';
+import { cacheScope, createReplicaState } from '@/libs/replica';
 import { taskLabelService } from '@/services/taskLabel';
 
+import { taskLabelSelectors } from '../../selectors';
 import { useTaskStore } from '../../store';
 
 vi.mock('@/services/taskLabel', () => ({
@@ -15,9 +17,11 @@ vi.mock('@/services/taskLabel', () => ({
   },
 }));
 
+// The replica schedules its fetches through the app's SWR driver; the engine
+// itself is what these tests exercise, so the driver is a bare recorder.
 vi.mock('@/libs/swr', () => ({
   mutate: vi.fn(),
-  useClientDataSWR: vi.fn(),
+  useClientDataSWR: vi.fn(() => ({ isValidating: false, mutate: vi.fn() })),
 }));
 
 vi.mock('@lobehub/ui', async (importOriginal) => ({
@@ -28,64 +32,84 @@ vi.mock('@lobehub/ui', async (importOriginal) => ({
 const label = (id: string, name: string) =>
   ({ color: null, id, isGroup: false, name, parentId: null, usageCount: 0 }) as any;
 
+let scope = 'user-1:ws-a';
+
+const syncCalls = async () => {
+  const { useClientDataSWR } = await import('@/libs/swr');
+  return vi
+    .mocked(useClientDataSWR)
+    .mock.calls.filter(
+      ([key]) => Array.isArray(key) && key[0] === 'replica:sync' && key[1] === 'taskLabels',
+    )
+    .map(([, fetcher, config]) => ({
+      config: config as { onSuccess?: (data: unknown) => void },
+      fetcher: fetcher as () => Promise<any>,
+    }));
+};
+
+const loadRegistry = async (labels: unknown[]) => {
+  vi.mocked(taskLabelService.list).mockResolvedValue(labels as any);
+  renderHook(() => useTaskStore.getState().useFetchTaskLabels(true));
+  const [call] = await syncCalls();
+  const fetched = await call.fetcher();
+  act(() => call.config.onSuccess!(fetched));
+};
+
 beforeEach(() => {
   vi.clearAllMocks();
-  useTaskStore.setState({ taskLabels: [], taskLabelsInit: false, taskLabelsScope: null });
+  scope = 'user-1:ws-a';
+  vi.spyOn(cacheScope, 'get').mockImplementation(() => scope);
+  vi.spyOn(cacheScope, 'use').mockImplementation(() => scope);
+  vi.spyOn(cacheScope, 'canPersist').mockReturnValue(false);
+  useTaskStore.setState({
+    taskLabels: [],
+    taskLabelsInit: false,
+    taskLabelsReplica: createReplicaState(),
+  });
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
 });
 
 describe('TaskLabelSliceAction', () => {
-  describe('workspace scope', () => {
-    it('clears the registry when the scope changes', () => {
-      useTaskStore.setState({
-        taskLabels: [label('a', 'From A')],
-        taskLabelsInit: true,
-        taskLabelsScope: 'ws-a',
-      });
+  describe('useFetchTaskLabels', () => {
+    it('folds the registry into the store the selectors read', async () => {
+      await loadRegistry([label('a', 'From A')]);
 
-      useTaskStore.getState().internal_resetTaskLabelsScope('ws-b');
-
-      expect(useTaskStore.getState()).toMatchObject({
-        taskLabels: [],
-        taskLabelsInit: false,
-        taskLabelsScope: 'ws-b',
-      });
+      const state = useTaskStore.getState();
+      expect(taskLabelSelectors.isLabelsInit(state)).toBe(true);
+      expect(taskLabelSelectors.labels(state)).toEqual([
+        expect.objectContaining({ name: 'From A' }),
+      ]);
     });
 
-    it('keeps the registry when the scope is unchanged', () => {
-      useTaskStore.setState({
-        taskLabels: [label('a', 'From A')],
-        taskLabelsInit: true,
-        taskLabelsScope: 'ws-a',
-      });
+    it('does not sync while disabled', async () => {
+      renderHook(() => useTaskStore.getState().useFetchTaskLabels(false));
 
-      useTaskStore.getState().internal_resetTaskLabelsScope('ws-a');
-
-      expect(useTaskStore.getState().taskLabels).toHaveLength(1);
-    });
-
-    it('ignores a response for a workspace the user already left', () => {
-      useTaskStore.setState({ taskLabelsScope: 'ws-b' });
-      useTaskStore.getState().useFetchTaskLabels(true, 'ws-a');
-      const { onSuccess } = vi.mocked(useClientDataSWR).mock.calls[0][2] as any;
-
-      onSuccess([label('a', 'From A')]);
-      expect(useTaskStore.getState().taskLabelsInit).toBe(false);
-
-      useTaskStore.getState().useFetchTaskLabels(true, 'ws-b');
-      const { onSuccess: onSuccessB } = vi.mocked(useClientDataSWR).mock.calls[1][2] as any;
-      onSuccessB([label('b', 'From B')]);
-      expect(useTaskStore.getState()).toMatchObject({
-        taskLabels: [expect.objectContaining({ name: 'From B' })],
-        taskLabelsInit: true,
-      });
+      const { useClientDataSWR } = await import('@/libs/swr');
+      const keys = vi.mocked(useClientDataSWR).mock.calls.map(([key]) => key);
+      expect(keys.some((key) => Array.isArray(key) && key[1] === 'taskLabels')).toBe(false);
     });
   });
 
   describe('createTaskLabel', () => {
+    it('adds the new label to the loaded registry right away', async () => {
+      await loadRegistry([label('a', 'From A')]);
+      vi.mocked(taskLabelService.create).mockResolvedValue(label('b', 'New'));
+
+      await useTaskStore.getState().createTaskLabel({ name: 'New' });
+
+      expect(taskLabelSelectors.labels(useTaskStore.getState()).map((l) => l.id)).toEqual([
+        'a',
+        'b',
+      ]);
+    });
+
     it('does not add a label created in a workspace the user has since left', async () => {
-      useTaskStore.setState({ taskLabels: [], taskLabelsInit: true, taskLabelsScope: 'ws-a' });
+      await loadRegistry([]);
       vi.mocked(taskLabelService.create).mockImplementation(async () => {
-        useTaskStore.getState().internal_resetTaskLabelsScope('ws-b');
+        scope = 'user-1:ws-b';
         return label('a', 'From A');
       });
 

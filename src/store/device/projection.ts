@@ -7,6 +7,9 @@ import {
   type ReplicaStorage,
 } from '@/libs/replica';
 
+import { AGENT_DEVICE_BINDING_REPLICA } from './agentDeviceBinding';
+import type { AgentScanResult, LocalAgentScanProbe } from './agentScan';
+
 /** The store reads every device of the active scope, so the list has one entry. */
 export const DEVICE_LIST_KEY = 'all';
 
@@ -87,5 +90,33 @@ export const deviceMetricSeriesResource = defineReplica<
   name: 'deviceMetricSeries',
   persist: { maxEntries: 20 },
   storage: 'indexedDB',
+  version: 1,
+});
+
+/** The device an agent runs on for the caller (`null`: it routes to no device). */
+export interface AgentDeviceBinding {
+  deviceId: string | null;
+}
+
+/** One agent's resolved device binding, keyed by agent id. */
+export const agentDeviceBindingResource = defineReplica<{ agentId: string }, AgentDeviceBinding>({
+  key: ({ agentId }) => agentId,
+  name: AGENT_DEVICE_BINDING_REPLICA,
+  persist: { maxEntries: 50 },
+  storage: 'indexedDB',
+  version: 1,
+});
+
+/** A gateway device's agent inventory, or this desktop's (`local`, probed over IPC). */
+export type AgentScanParams = { deviceId: string } | { local: LocalAgentScanProbe[] };
+
+export const agentScanKey = (params: AgentScanParams) =>
+  'deviceId' in params ? `device:${params.deviceId}` : 'local';
+
+/** A live probe: kept in memory only, and re-run whenever a wizard opens on the target. */
+export const agentScanResource = defineReplica<AgentScanParams, AgentScanResult>({
+  key: agentScanKey,
+  name: 'agentScan',
+  storage: 'memory',
   version: 1,
 });

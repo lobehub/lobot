@@ -3,7 +3,14 @@ import type { ChannelJobBlockCode, ChannelReplyJob } from '@lobot/types';
 import type { ChannelViewParams } from '@/services/channel';
 
 import { channelOutboxKey, type ChannelOutgoingMessage } from './outbox';
-import { channelViewKey } from './projection';
+import {
+  channelAgentEnvironmentKey,
+  type ChannelAgentEnvironmentParams,
+  channelUserCandidatesKey,
+  type ChannelUserCandidatesParams,
+  channelViewKey,
+  scopeChannelListKey,
+} from './projection';
 import type { ChannelState } from './store';
 
 const NO_OUTGOING: ChannelOutgoingMessage[] = [];
@@ -27,6 +34,17 @@ const isProgressing = (job: ChannelReplyJob) =>
       job.status === 'running'));
 
 export const channelSelectors = {
+  /** `undefined` until loaded. */
+  agentEnvironment: (params: ChannelAgentEnvironmentParams) => (state: ChannelState) =>
+    state.agentEnvironmentMap[channelAgentEnvironmentKey(params)],
+  /** Another scope's Channel list (`null` is the personal space); `undefined` until loaded. */
+  scopeList: (scopeId: string | null) => (state: ChannelState) =>
+    state.scopeListMap[scopeChannelListKey({ scopeId })],
+  /** `undefined` until loaded. */
+  userCandidates: (params: ChannelUserCandidatesParams) => (state: ChannelState) =>
+    state.userCandidatesMap[channelUserCandidatesKey(params)],
+  /** `undefined` until loaded. */
+  wakeConfig: (channelId: string) => (state: ChannelState) => state.wakeConfigMap[channelId],
   detail: (params: ChannelViewParams) => (state: ChannelState) =>
     state.detailMap[channelViewKey(params)],
   /**

@@ -1,21 +1,34 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { AGENT_DEVICE_BINDING_SWR_KEY, refreshAgentDeviceBindings } from './agentDeviceBinding';
+import { cacheScope, replicaSWRDriver } from '@/libs/replica';
 
-const mocks = vi.hoisted(() => ({ mutate: vi.fn() }));
+import { refreshAgentDeviceBindings } from './agentDeviceBinding';
+import { agentDeviceBindingResource } from './projection';
 
-vi.mock('@/libs/swr', () => ({ mutate: mocks.mutate }));
+const syncKey = (name: string, scope: string, agentId: string) => [
+  'replica:sync',
+  name,
+  1,
+  scope,
+  agentId,
+  { agentId },
+];
 
 describe('refreshAgentDeviceBindings', () => {
-  beforeEach(() => mocks.mutate.mockClear());
+  afterEach(() => vi.restoreAllMocks());
 
-  it('revalidates only the cached agent device bindings, in every workspace context', () => {
-    refreshAgentDeviceBindings();
+  it('revalidates every mounted agent device binding of the active scope, and nothing else', () => {
+    vi.spyOn(cacheScope, 'get').mockReturnValue('user-1:ws-1');
+    const revalidate = vi.spyOn(replicaSWRDriver, 'revalidate').mockResolvedValue(undefined);
 
-    const matcher = mocks.mutate.mock.calls[0][0] as (key: unknown) => boolean;
-    expect(matcher([AGENT_DEVICE_BINDING_SWR_KEY, 'agt_1', 'ws-1'])).toBe(true);
-    expect(matcher([AGENT_DEVICE_BINDING_SWR_KEY, 'agt_2'])).toBe(true);
+    void refreshAgentDeviceBindings();
+
+    const matcher = revalidate.mock.calls[0][0];
+    const name = agentDeviceBindingResource.name;
+    expect(matcher(syncKey(name, 'user-1:ws-1', 'agt_1'))).toBe(true);
+    expect(matcher(syncKey(name, 'user-1:ws-1', 'agt_2'))).toBe(true);
+    expect(matcher(syncKey(name, 'user-1:ws-2', 'agt_1'))).toBe(false);
+    expect(matcher(syncKey('deviceList', 'user-1:ws-1', 'all'))).toBe(false);
     expect(matcher(['device/listDevices'])).toBe(false);
-    expect(matcher(AGENT_DEVICE_BINDING_SWR_KEY)).toBe(false);
   });
 });

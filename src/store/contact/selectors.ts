@@ -10,6 +10,14 @@ export const contactSelectors = {
   /** Other people's Agents added through their share. */
   agents: (state: ContactState) =>
     state.listMap.all?.filter((item): item is ContactAgentItem => item.type === 'agent'),
+  /** The mail addresses an Agent owns; `undefined` until loaded. */
+  agentAccounts: (agentId: string) => (state: ContactState) => state.agentAccountsMap[agentId],
+  /** My Agent's share entry; `undefined` until loaded, `share: null` before one exists. */
+  agentShare: (agentId: string) => (state: ContactState) => state.agentShareMap[agentId],
+  /** Incoming requests of the personal space read from inside a workspace; 0 until loaded. */
+  personalIncomingCount: (state: ContactState) =>
+    state.personalRequestsMap.personal?.filter((request) => request.direction === 'incoming')
+      .length ?? 0,
   incomingRequests: (state: ContactState) =>
     state.requestsMap.all?.filter((request) => request.direction === 'incoming') ?? [],
   isListInit: (state: ContactState) => state.listMap.all !== undefined,
