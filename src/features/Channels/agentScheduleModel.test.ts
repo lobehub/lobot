@@ -1,7 +1,7 @@
 import type { TaskListItem } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
-import { type AgentSchedule, agentScheduleTime, toAgentSchedule } from './agentSchedules';
+import { type AgentSchedule, agentScheduleTime, toAgentSchedule } from './agentScheduleModel';
 
 const t = ((key: string, options?: Record<string, unknown>) =>
   options ? `${key}:${JSON.stringify(options)}` : key) as any;

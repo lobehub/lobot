@@ -10,7 +10,7 @@ import { useTaskStore } from '@/store/task';
 import { taskListSelectors } from '@/store/task/selectors';
 import type { TaskListQuery } from '@/store/task/slices/list/projection';
 
-import { type AgentSchedule, agentScheduleTime, toAgentSchedule } from './agentSchedules';
+import { type AgentSchedule, agentScheduleTime, toAgentSchedule } from './agentScheduleModel';
 
 /** Rows shown before "Show all". */
 export const AGENT_SCHEDULES_COLLAPSED = 5;
