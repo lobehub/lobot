@@ -165,16 +165,13 @@ const IdentityFields = memo<IdentityFieldsProps>((props) => {
         <Field
           label={t('settingAgent.slug.label')}
           hint={
-            <Text style={{ fontSize: 12 }} type={form.error ? 'danger' : 'secondary'}>
-              {/* Show the url the current input actually produces — a literal
-                  `<slug>` leaves the reader to do the substitution themselves,
-                  and it updates as they type. Only an empty field falls back to
-                  describing the field in the abstract. */}
-              {form.error ??
-                (form.slug.trim()
-                  ? t('settingAgent.slug.openWith', { slug: form.slug.trim().toLowerCase() })
-                  : t('settingAgent.slug.tooltip'))}
-            </Text>
+            // An empty field needs no caption; what it holds shows the url it opens.
+            (form.error || form.slug.trim()) && (
+              <Text style={{ fontSize: 12 }} type={form.error ? 'danger' : 'secondary'}>
+                {form.error ??
+                  t('settingAgent.slug.openWith', { slug: form.slug.trim().toLowerCase() })}
+              </Text>
+            )
           }
         >
           <Input
