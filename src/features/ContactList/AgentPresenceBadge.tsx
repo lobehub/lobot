@@ -52,6 +52,13 @@ const styles = stylex.create({
     backgroundColor: 'transparent',
     boxShadow: 'inset 0 0 0 1.5px currentcolor',
   },
+  // A 64px avatar, as in a direct conversation's profile panel.
+  avatarDotSmall: {
+    insetBlockEnd: '1px',
+    insetInlineEnd: '1px',
+    width: '16px',
+    height: '16px',
+  },
   avatarDotHollow: {
     backgroundColor: cssVar.colorBgContainer,
     boxShadow: 'inset 0 0 0 2.5px currentcolor',
@@ -126,22 +133,25 @@ export const AgentPresenceLabel = memo<{ presence: AgentPresence }>(({ presence 
 AgentPresenceLabel.displayName = 'AgentPresenceLabel';
 
 /** The same status as a dot on the avatar, for a glance before reading the chip. */
-export const AgentPresenceDot = memo<{ presence: AgentPresence }>(({ presence }) => {
-  const { t } = useTranslation('common');
-  const status = presence.status;
+export const AgentPresenceDot = memo<{ presence: AgentPresence; size?: 'default' | 'small' }>(
+  ({ presence, size = 'default' }) => {
+    const { t } = useTranslation('common');
+    const status = presence.status;
 
-  return (
-    <span
-      aria-label={t(`contacts.presence.${status}`)}
-      role={'img'}
-      {...stylex.props(
-        styles.avatarDot,
-        tones[status],
-        status === 'sleeping' && styles.avatarDotHollow,
-        isPulsing(status) && styles.working,
-      )}
-    />
-  );
-});
+    return (
+      <span
+        aria-label={t(`contacts.presence.${status}`)}
+        role={'img'}
+        {...stylex.props(
+          styles.avatarDot,
+          size === 'small' && styles.avatarDotSmall,
+          tones[status],
+          status === 'sleeping' && styles.avatarDotHollow,
+          isPulsing(status) && styles.working,
+        )}
+      />
+    );
+  },
+);
 
 AgentPresenceDot.displayName = 'AgentPresenceDot';

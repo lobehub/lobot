@@ -146,6 +146,8 @@ export default {
   'openAgent': 'Open Agent',
   'openAgentNamed': 'Open {{name}}',
   'profile.about': 'About',
+  'profile.device': 'Device',
+  'profile.directory': 'Working directory',
   'profile.hide': 'Hide Agent profile',
   'profile.noDescription': 'No description yet',
   'profile.owner': 'Shared by',

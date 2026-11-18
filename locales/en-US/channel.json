@@ -206,6 +206,8 @@
   "privateAgentJoin.ok": "Publish and add",
   "privateAgentJoin.title": "Publish {{names}} to the workspace?",
   "profile.about": "About",
+  "profile.device": "Device",
+  "profile.directory": "Working directory",
   "profile.hide": "Hide Agent profile",
   "profile.noDescription": "No description yet",
   "profile.owner": "Shared by",
