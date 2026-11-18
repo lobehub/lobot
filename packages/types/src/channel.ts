@@ -139,6 +139,8 @@ export interface ChannelMemberWorktree {
 
 /** Free-form member state that does not need its own column. */
 export type ChannelMemberMetadata = Record<string, unknown> & {
+  /** The member who added this one; absent when they joined on their own or before it was kept. */
+  invitedBy?: string;
   /** Worktree per conversation branch: a Thread id, or `main` for the main timeline. */
   worktrees?: Record<string, ChannelMemberWorktree>;
   /** The configured directory could not host a worktree (e.g. not a git repo); retried later. */
@@ -450,6 +452,11 @@ export interface ChannelPublicMember {
   /** Agent members only; null when the Channel sets no device or directory for it. */
   environment?: ChannelMemberEnvironmentPreview | null;
   id: string;
+  /**
+   * The member who added this one; null when they joined on their own or the adder is unknown.
+   * Absent from servers that do not keep it yet.
+   */
+  invitedBy?: string | null;
   joinedAt: Date;
   /** An Agent that answers only when @mentioned; set by `channel.setMemberMuted`. */
   muted?: boolean;
