@@ -198,7 +198,7 @@ class DiscoverService {
       source: eventData.source ?? 'community/agent',
     });
 
-    lambdaClient.market.reportAgentEvent.mutate(payload).catch((error) => {
+    lambdaClient.market.reportAgentEvent.mutate(payload).catch((error: unknown) => {
       console.warn('Failed to report Agent event:', error);
     });
   };

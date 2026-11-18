@@ -1,8 +1,5 @@
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
-import type {
-  CompareHistoryItemsOutput,
-  ListHistoryOutput,
-} from '@/server/routers/lambda/_schema/documentHistory';
+import type { CompareHistoryItemsOutput, ListHistoryOutput } from '@/types/serverData';
 
 export interface DocumentHistoryState {
   /** Head-vs-version diffs, keyed by `documentHistoryCompareKey`. */

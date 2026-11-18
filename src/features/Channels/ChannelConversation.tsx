@@ -170,7 +170,7 @@ const Timeline = ({
   const timeline = detail
     ? channelTimeline(
         outgoing.length ? [...messages, ...outgoing.map((item) => item.message)] : messages,
-        conversationJoinEvents(detail, threadId),
+        conversationJoinEvents(detail, threadId ?? undefined),
         !detail.hasMore && before === undefined,
       )
     : [];
@@ -319,13 +319,13 @@ const Timeline = ({
                             onJumpToMessage={jumpToMessage}
                             onOpenThread={onOpenThread && openThread}
                             onOpenTopic={onOpenTopic && openTopic}
-                            onStartThread={
-                              channelArchived || !onStartThread ? undefined : startThread
-                            }
                             onReply={
                               channelArchived || thread?.status === 'archived'
                                 ? undefined
                                 : selectReply
+                            }
+                            onStartThread={
+                              channelArchived || !onStartThread ? undefined : startThread
                             }
                           />
                         )}

@@ -3,6 +3,7 @@ import type { UpdateTopicMetadataInput } from '@lobot/types';
 import { INBOX_SESSION_ID } from '@/const/session';
 import { TopicTrigger } from '@/const/topic';
 import { lambdaClient } from '@/libs/trpc/client';
+import type { SettleRunningOperationResult } from '@/types/serverData';
 import { type BatchTaskResult } from '@/types/service';
 import {
   type ChatTopic,
@@ -140,15 +141,13 @@ export class TopicService {
     groupId?: string,
     onlyMine?: boolean,
   ): Promise<ChatTopic[]> => {
-    const topics = await lambdaClient.topic.searchTopics.query({
+    const topics: ChatTopic[] = await lambdaClient.topic.searchTopics.query({
       agentId,
       groupId,
       keywords,
       onlyMine: onlyMine || undefined,
     });
-    return topics.filter(
-      (topic) => topic.trigger !== TopicTrigger.Channel,
-    ) as unknown as ChatTopic[];
+    return topics.filter((topic) => topic.trigger !== TopicTrigger.Channel);
   };
 
   updateTopic = (id: string, data: Partial<ChatTopic>) => {
@@ -179,7 +178,7 @@ export class TopicService {
     id: string,
     operationId: string,
     status?: NonNullable<ChatTopic['status']>,
-  ) => {
+  ): Promise<SettleRunningOperationResult> => {
     return lambdaClient.topic.settleRunningOperation.mutate({ id, operationId, status });
   };
 

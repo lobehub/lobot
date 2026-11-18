@@ -286,7 +286,9 @@ export const useProjectStore = createWithEqualityFn<ProjectStore>()(
       removeProjectAgent: async (projectId, agentId) => {
         patchDetail(projectId, (value) => ({
           ...value,
-          agents: value.agents?.filter(({ agent }) => agent.id !== agentId) ?? value.agents,
+          agents:
+            value.agents?.filter(({ agent }: { agent: { id: string } }) => agent.id !== agentId) ??
+            value.agents,
         }));
         await mutateAndRefresh(projectId, () => projectService.removeAgent(projectId, agentId));
       },
@@ -295,7 +297,8 @@ export const useProjectStore = createWithEqualityFn<ProjectStore>()(
           ...value,
           knowledgeBases:
             value.knowledgeBases?.filter(
-              ({ knowledgeBase }) => knowledgeBase.id !== knowledgeBaseId,
+              ({ knowledgeBase }: { knowledgeBase: { id: string } }) =>
+                knowledgeBase.id !== knowledgeBaseId,
             ) ?? value.knowledgeBases,
         }));
         await mutateAndRefresh(projectId, () =>
@@ -314,7 +317,7 @@ export const useProjectStore = createWithEqualityFn<ProjectStore>()(
         patchDetail(projectId, (value) => ({
           ...value,
           agents:
-            value.agents?.map((item) =>
+            value.agents?.map((item: { agent: { id: string }; binding: object }) =>
               item.agent.id === agentId
                 ? { ...item, binding: { ...item.binding, ...patch } }
                 : item,
@@ -328,7 +331,7 @@ export const useProjectStore = createWithEqualityFn<ProjectStore>()(
         patchDetail(projectId, (value) => ({
           ...value,
           knowledgeBases:
-            value.knowledgeBases?.map((item) =>
+            value.knowledgeBases?.map((item: { binding: object; knowledgeBase: { id: string } }) =>
               item.knowledgeBase.id === knowledgeBaseId
                 ? { ...item, binding: { ...item.binding, ...patch } }
                 : item,

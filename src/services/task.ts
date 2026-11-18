@@ -5,10 +5,12 @@ import type {
   TaskInstructionSynthesis,
   TaskIntentAnalysis,
   TaskListFilter,
+  TaskListItem,
   TaskStatus,
 } from '@lobot/types';
 
 import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
+import type { TaskGroupListItem } from '@/types/serverData';
 
 class TaskService {
   // ── Queries ──
@@ -39,7 +41,8 @@ class TaskService {
     scope?: 'assigned' | 'created';
     statuses?: TaskStatus[];
     visibility?: 'private' | 'public';
-  }) => lambdaClient.task.list.query(params);
+  }): Promise<{ data: TaskListItem[]; success: boolean; total: number }> =>
+    lambdaClient.task.list.query(params);
 
   groupList = async (params: {
     assigneeAgentId?: string;
@@ -62,7 +65,7 @@ class TaskService {
     /** "My tasks" narrowing: assigned to the caller, or created by them. */
     scope?: 'assigned' | 'created';
     visibility?: 'private' | 'public';
-  }) =>
+  }): Promise<{ data: TaskGroupListItem[]; success: boolean }> =>
     lambdaClient.task.groupList.query({
       ...params,
       // Keep `assignee`'s released hybrid API semantics for older clients.

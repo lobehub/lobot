@@ -79,7 +79,10 @@ class ChannelService {
   addUser = (channelId: string, userId: string) =>
     lambdaClient.channel.addUser.mutate({ channelId, userId });
   /** Without a Channel, the people a new Channel in the active workspace can start with. */
-  userCandidates = async (channelId: string | undefined, search: string) =>
+  userCandidates = async (
+    channelId: string | undefined,
+    search: string,
+  ): Promise<ChannelPersonOption[]> =>
     (await lambdaClient.channel.userCandidates.query({ channelId, search })).data;
   /** In a project Channel, `joinProject` adds an Agent from outside to the project first. */
   addAgent = (channelId: string, agent: ChannelAgentSelection, joinProject?: boolean) =>
@@ -147,4 +150,9 @@ class ChannelService {
 export const channelService = new ChannelService();
 
 /** A workspace member who can still be invited into a Channel. */
-export type ChannelPersonOption = Awaited<ReturnType<typeof channelService.userCandidates>>[number];
+export interface ChannelPersonOption {
+  avatar: string | null;
+  fullName: string | null;
+  userId: string;
+  username: string | null;
+}

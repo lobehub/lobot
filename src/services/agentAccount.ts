@@ -1,18 +1,7 @@
 import type { AgentAccountKind, AgentInboxMessage, AgentInboxMessageSummary } from '@lobot/types';
-import type { inferRouterOutputs } from '@trpc/server';
 
 import { lambdaClient } from '@/libs/trpc/client';
-import type { LambdaRouter } from '@/server/routers/lambda';
-
-type AgentAccountRouterOutputs = inferRouterOutputs<LambdaRouter>['agentAccount'];
-type InboxRow = AgentAccountRouterOutputs['inbox']['get'];
-
-/**
- * One identity account as the control plane returns it. Derived from the router
- * rather than restated, so the client can never drift from the contract; the
- * credential is structurally absent, and `hasCredential` is all a read knows.
- */
-type AgentAccountView = AgentAccountRouterOutputs['list'][number];
+import type { AgentAccountView } from '@/types/serverData';
 
 interface ListAgentAccountsParams {
   agentId?: string;
@@ -36,6 +25,12 @@ interface ListAgentInboxParams {
   limit?: number;
   unreadOnly?: boolean;
 }
+
+/** The inbox entry the server returns, whose lists may be missing on older rows. */
+type InboxRow = Omit<AgentInboxMessage, 'attachments' | 'codes'> & {
+  attachments?: AgentInboxMessage['attachments'] | null;
+  codes?: AgentInboxMessage['codes'] | null;
+};
 
 /** The detail read, normalized at the boundary into the client's read model. */
 const toInboxMessage = (row: InboxRow): AgentInboxMessage => ({

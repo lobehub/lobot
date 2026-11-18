@@ -224,7 +224,10 @@ class AgentService {
   };
 
   /** Rename an agent's url slug (validated server-side; see `updateAgentSlug`). */
-  updateAgentSlug = async (agentId: string, slug: string) => {
+  updateAgentSlug = async (
+    agentId: string,
+    slug: string,
+  ): Promise<{ reason?: 'builtin' | 'invalid' | 'reserved' | 'taken'; success: boolean }> => {
     return lambdaClient.agent.updateAgentSlug.mutate({ agentId, slug });
   };
 

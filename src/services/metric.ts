@@ -6,6 +6,7 @@ import type {
 } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
+import type { MetricSeriesWithPointsRecord } from '@/types/serverData';
 
 /** One observation; who recorded it and how is optional for persisted older reads. */
 interface MetricSeriesPoint {
@@ -48,12 +49,13 @@ class MetricService {
   ): Promise<MetricSeriesWithPoints[]> => {
     if (keys.length === 0) return [];
 
-    const { data } = await lambdaClient.metric.listSeriesWithPoints.query({
-      keys,
-      limit: SERIES_POINT_LIMIT,
-      subjectId,
-      subjectType,
-    });
+    const { data }: { data: MetricSeriesWithPointsRecord[] } =
+      await lambdaClient.metric.listSeriesWithPoints.query({
+        keys,
+        limit: SERIES_POINT_LIMIT,
+        subjectId,
+        subjectType,
+      });
 
     return data.map((item) => ({
       config: item.config,

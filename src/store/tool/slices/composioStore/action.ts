@@ -1,4 +1,5 @@
 import { COMPOSIO_APP_TYPES } from '@lobechat/const';
+import type { LobeTool } from '@lobot/types';
 import { produce } from 'immer';
 
 import {
@@ -498,7 +499,7 @@ class ComposioStoreActionImpl {
    * an app is a server-side concern, not a side effect of a client fetch.
    */
   #fetchServers = async (): Promise<ComposioServer[]> => {
-    const composioPlugins = await lambdaClient.composio.getComposioPlugins.query();
+    const composioPlugins: LobeTool[] = await lambdaClient.composio.getComposioPlugins.query();
 
     if (composioPlugins.length === 0) return [];
 

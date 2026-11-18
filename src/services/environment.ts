@@ -1,4 +1,9 @@
-import type { EnvironmentKind, EnvironmentSource, EnvironmentVisibility } from '@lobot/types';
+import type {
+  EnvironmentConfiguration,
+  EnvironmentKind,
+  EnvironmentSource,
+  EnvironmentVisibility,
+} from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 
@@ -27,6 +32,36 @@ export type NewEnvironmentSpecification = Omit<SandboxEnvironmentSpecification, 
   kind?: 'code';
 };
 
+/** Who created a listed environment; every field is null when the user row is gone. */
+export interface EnvironmentCreator {
+  avatar: string | null;
+  fullName: string | null;
+  id: string | null;
+  username: string | null;
+}
+
+/** One row of `environment.listEnvironments`: the specification and its creator. */
+export interface EnvironmentListItem {
+  configuration: EnvironmentConfiguration;
+  createdAt: Date;
+  creator: EnvironmentCreator | null;
+  description: string | null;
+  id: string;
+  name: string;
+  updatedAt: Date;
+  userId: string;
+  visibility: EnvironmentVisibility;
+  workspaceId: string | null;
+}
+
+/** A repository the account's GitHub App installations can clone. */
+export interface GithubRepositoryOption {
+  defaultBranch: string;
+  isPrivate: boolean;
+  name: string;
+  owner: string;
+}
+
 /**
  * Renderer-side data layer for code environments: the definitions a folder
  * can be initialized from. Answered from the database alone and available
@@ -34,7 +69,9 @@ export type NewEnvironmentSpecification = Omit<SandboxEnvironmentSpecification, 
  * goes through `sandboxStorageService`.
  */
 class EnvironmentService {
-  listEnvironments = async (params?: { visibility?: EnvironmentVisibility }) =>
+  listEnvironments = async (params?: {
+    visibility?: EnvironmentVisibility;
+  }): Promise<{ environments: EnvironmentListItem[] }> =>
     lambdaClient.environment.listEnvironments.query(params);
 
   /** The definition alone; a conversation applies it to its working directory. */
@@ -86,7 +123,12 @@ class EnvironmentService {
    * `connected: false` rather than failing when GitHub is not linked — for the
    * picker that is a state to resolve, not an error.
    */
-  listGithubRepositories = async () => lambdaClient.environment.listGithubRepositories.query();
+  listGithubRepositories = async (): Promise<{
+    configured: boolean;
+    connected: boolean;
+    repositories: GithubRepositoryOption[];
+    truncated: boolean;
+  }> => lambdaClient.environment.listGithubRepositories.query();
 }
 
 export const environmentService = new EnvironmentService();

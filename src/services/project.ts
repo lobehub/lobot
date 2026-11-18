@@ -1,8 +1,49 @@
 import type { ProjectStatus, ProjectVisibility } from '@lobot/types';
 
 import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
+import type { ProjectOverviewItem } from '@/types/serverData';
 
 const PROJECT_PAGE_SIZE = 100;
+
+/** A `projects` row as the server returns it. */
+export interface ProjectRow {
+  accessedAt: Date;
+  archivedAt: Date | null;
+  avatar: string | null;
+  completedAt: Date | null;
+  completedReviewId: string | null;
+  /** Filled with LobeAI's id when the main agent was deleted. */
+  coordinatorAgentId: string;
+  createdAt: Date;
+  deletedAt: Date | null;
+  description: string | null;
+  id: string;
+  identifier: string | null;
+  isDeleted: boolean | null;
+  name: string;
+  slug: string | null;
+  sortOrder: number | null;
+  startedAt: Date | null;
+  status: ProjectStatus;
+  updatedAt: Date;
+  userId: string;
+  visibility: ProjectVisibility;
+  workspaceId: string | null;
+}
+
+/** Display meta of a project's main agent, joined by `project.list`. */
+export interface ProjectCoordinatorAgentMeta {
+  avatar: string | null;
+  backgroundColor: string | null;
+  id: string;
+  name: string | null;
+  title: string | null;
+}
+
+/** One row of `project.list`. */
+export interface ProjectListRow extends ProjectRow {
+  coordinatorAgent: ProjectCoordinatorAgentMeta | null;
+}
 
 export interface ProjectAgentBindingPatch {
   enabled?: boolean;
@@ -26,10 +67,12 @@ class ProjectService {
     patch: ProjectKnowledgeBaseBindingPatch = {},
   ) => lambdaClient.project.addKnowledgeBase.mutate({ id, knowledgeBaseId, ...patch });
 
-  listAll = async (params: { statuses?: ProjectStatus[] } = {}) => {
-    const projects = [];
+  listAll = async (
+    params: { statuses?: ProjectStatus[] } = {},
+  ): Promise<{ data: ProjectListRow[]; success: boolean }> => {
+    const projects: ProjectListRow[] = [];
     let offset = 0;
-    let response;
+    let response: { data: ProjectListRow[]; success: boolean };
 
     do {
       response = await lambdaClient.project.list.query({
@@ -45,7 +88,8 @@ class ProjectService {
   };
 
   /** Folder-card content (recent topics, task progress, members) for every visible project. */
-  listOverviews = async () => lambdaClient.project.listOverviews.query();
+  listOverviews = async (): Promise<{ data: ProjectOverviewItem[]; success: boolean }> =>
+    lambdaClient.project.listOverviews.query();
 
   detail = async (id: string) => lambdaClient.project.detail.query({ id });
 

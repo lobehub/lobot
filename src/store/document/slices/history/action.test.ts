@@ -15,8 +15,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { cacheScope } from '@/libs/replica';
 import { setScopedMutate } from '@/libs/swr/mutate';
-import type { ListHistoryOutput } from '@/server/routers/lambda/_schema/documentHistory';
 import { documentService } from '@/services/document';
+import type { ListHistoryOutput } from '@/types/serverData';
 
 import { useDocumentStore } from '../../store';
 import { documentHistoryCompareResource, documentHistoryListResource } from './projection';

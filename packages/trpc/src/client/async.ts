@@ -1,9 +1,9 @@
 import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import superjson from 'superjson';
 
-import { type AsyncRouter } from '@/server/routers/async';
+import { type AsyncRouter, type UntypedClient } from './routers';
 
-export const asyncClient = createTRPCClient<AsyncRouter>({
+export const asyncClient: UntypedClient = createTRPCClient<AsyncRouter>({
   links: [
     httpBatchLink({
       maxURLLength: 2083,

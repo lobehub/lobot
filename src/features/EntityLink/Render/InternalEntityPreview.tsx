@@ -123,6 +123,12 @@ const getVerifyStatusLabel = (status: string | null | undefined, t: TFunction<'c
   }
 };
 
+/** The part of an acceptance bundle's check row the preview counts. */
+interface AcceptanceBundleCheck {
+  /** Final cross-round state of the check. */
+  state: 'failed' | 'not_executed' | 'passed' | 'uncertain';
+}
+
 /**
  * One cache entry per entity, shared between the hover preview and the eager
  * title resolution on the link itself — whichever fires first warms the other.
@@ -142,9 +148,11 @@ export const getPreviewData = async (
       const bundle = await verifyService.getAcceptanceBundle(reference.acceptanceId);
       if (!bundle) return null;
 
-      const passed = bundle.checks.filter((check) => check.state === 'passed').length;
+      const passed = bundle.checks.filter(
+        (check: AcceptanceBundleCheck) => check.state === 'passed',
+      ).length;
       const exceptions = bundle.checks.filter(
-        (check) => check.state === 'failed' || check.state === 'uncertain',
+        (check: AcceptanceBundleCheck) => check.state === 'failed' || check.state === 'uncertain',
       ).length;
 
       return {

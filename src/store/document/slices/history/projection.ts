@@ -1,8 +1,5 @@
 import { defineReplica } from '@/libs/replica';
-import type {
-  CompareHistoryItemsOutput,
-  ListHistoryOutput,
-} from '@/server/routers/lambda/_schema/documentHistory';
+import type { CompareHistoryItemsOutput, ListHistoryOutput } from '@/types/serverData';
 
 /** How many documents keep a persisted version list (`persist.maxEntries`). */
 const MAX_PERSISTED_HISTORY_LISTS = 20;

@@ -12,6 +12,7 @@ import type {
 import type { QuotaDeviceAccount } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
+import type { QuotaAccountItem, QuotaBindingItem } from '@/types/serverData';
 
 /**
  * Renderer-side service for the account-scoped quota data layer (persisted via
@@ -58,7 +59,8 @@ class AgentQuotaService {
       readings: params.readings.map((r) => ({ ...r, scopeKey: r.scopeKey ?? '' })),
     });
 
-  listAccounts = async () => lambdaClient.agentQuota.listAccounts.query();
+  listAccounts = async (): Promise<QuotaAccountItem[]> =>
+    lambdaClient.agentQuota.listAccounts.query();
 
   /**
    * Newest reading per limit bucket — what the panel renders. Windows are keyed
@@ -80,7 +82,8 @@ class AgentQuotaService {
   listUsageTurns = async (accountId: string, sinceDays?: number) =>
     lambdaClient.agentQuota.listUsageTurns.query({ accountId, sinceDays });
 
-  listBindings = async (agentId: string) => lambdaClient.agentQuota.listBindings.query({ agentId });
+  listBindings = async (agentId: string): Promise<QuotaBindingItem[]> =>
+    lambdaClient.agentQuota.listBindings.query({ agentId });
 
   /** Each account's current headroom, as the account balancer weighs it. */
   resolveAccountLoads = async (accountIds: string[]) =>

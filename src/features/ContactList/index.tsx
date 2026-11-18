@@ -18,7 +18,7 @@ import { agentDisplayName, type SidebarAgentItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import isEqual from 'fast-deep-equal';
 import { ArrowDownUpIcon, Pin, PinOff, UserRoundPlusIcon } from 'lucide-react';
-import { type Key, memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
@@ -257,7 +257,7 @@ const Body = memo(() => {
   const expandedSections = sections
     .map((section) => section.key)
     .filter((key) => !collapsedSections.includes(key));
-  const handleExpandedChange = (keys: Key[]) => {
+  const handleExpandedChange = (keys: unknown[]) => {
     const expanded = new Set(keys.map(String));
     // Keep collapsed keys of sections not rendered right now (e.g. requests
     // with nothing pending) so they stay collapsed when they come back.

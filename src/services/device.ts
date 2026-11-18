@@ -80,12 +80,16 @@ class DeviceService {
   }
 
   /** Probe whether an agent platform (openclaw / hermes) is available on a device. */
-  checkCapability(input: Parameters<DeviceClient['checkCapability']['query']>[0]) {
+  checkCapability(
+    input: Parameters<DeviceClient['checkCapability']['query']>[0],
+  ): Promise<{ available: boolean; reason?: string; version?: string }> {
     return lambdaClient.device.checkCapability.query(input);
   }
 
   /** Fetch the agent profile (title / description / avatar) from a device platform. */
-  getAgentProfile(input: Parameters<DeviceClient['getAgentProfile']['query']>[0]) {
+  getAgentProfile(
+    input: Parameters<DeviceClient['getAgentProfile']['query']>[0],
+  ): Promise<{ avatar?: string; description?: string; title?: string }> {
     return lambdaClient.device.getAgentProfile.query(input);
   }
 

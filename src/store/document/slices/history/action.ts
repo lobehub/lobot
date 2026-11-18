@@ -4,12 +4,9 @@ import { useEffect, useRef } from 'react';
 
 import { DOCUMENT_HISTORY_QUERY_LIST_LIMIT } from '@/const/documentHistory';
 import { createReplicaSlice, recordLens } from '@/libs/replica';
-import type {
-  CompareHistoryItemsOutput,
-  ListHistoryOutput,
-} from '@/server/routers/lambda/_schema/documentHistory';
 import { documentService } from '@/services/document';
 import type { StoreSetter } from '@/store/types';
+import type { CompareHistoryItemsOutput, ListHistoryOutput } from '@/types/serverData';
 import { setNamespace } from '@/utils/storeDebug';
 
 import type { DocumentStore } from '../../store';

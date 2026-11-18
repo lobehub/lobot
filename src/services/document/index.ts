@@ -1,7 +1,9 @@
 import { lambdaClient } from '@/libs/trpc/client';
+import { workService } from '@/services/work';
 import type {
   CompareHistoryItemsInput,
   CompareHistoryItemsOutput,
+  DocumentItem,
   GetHistoryItemInput,
   GetHistoryItemOutput,
   ListHistoryInput,
@@ -10,9 +12,7 @@ import type {
   SaveDocumentHistoryOutput,
   UpdateDocumentInput,
   UpdateDocumentOutput,
-} from '@/server/routers/lambda/_schema/documentHistory';
-import { workService } from '@/services/work';
-import { type DocumentItem } from '@/types/serverData';
+} from '@/types/serverData';
 
 import { abortableRequest } from '../utils/abortableRequest';
 

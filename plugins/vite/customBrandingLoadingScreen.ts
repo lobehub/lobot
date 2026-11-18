@@ -5,6 +5,10 @@
 import { BRANDING_NAME } from '@lobechat/business-const/branding';
 import type { Plugin } from 'vite';
 
+// Widened to `string`: BRANDING_NAME is a literal constant, so comparing it to
+// the default brand would otherwise be flagged as a no-overlap comparison.
+const brandName: string = BRANDING_NAME;
+
 const LOADING_BRAND_BLOCK = /<div id="loading-brand"[^>]*>[\S\s]*?<\/div>/;
 
 const escapeHtml = (value: string) =>
@@ -24,12 +28,12 @@ export const customBrandingLoadingScreen = (): Plugin => ({
   name: 'custom-branding-loading-screen',
   transformIndexHtml: {
     handler(html) {
-      if (BRANDING_NAME === 'LobeHub') return html;
+      if (brandName === 'LobeHub') return html;
 
       return html.replace(
         LOADING_BRAND_BLOCK,
         `<div id="loading-brand" aria-label="Loading" role="status" style="font-size: 26px; font-weight: 700; letter-spacing: 0.02em;">${escapeHtml(
-          BRANDING_NAME,
+          brandName,
         )}</div>`,
       );
     },

@@ -197,6 +197,21 @@ export type QueuedFollowUpRequest = Omit<
   | 'steer'
 >;
 
+/** One follow-up of `agentSteerQueue.list`, as the server projects it for its sender. */
+export interface QueuedFollowUpListItem {
+  createdAt: number;
+  /** Taken by a run but not confirmed yet; a failed delivery returns it to the queue. */
+  delivering: boolean;
+  editorData?: Record<string, unknown>;
+  fileIds?: QueuedFollowUpRequest['fileIds'];
+  filesPreview?: Record<string, unknown>[];
+  id: string;
+  mentionedAgents?: QueuedFollowUpRequest['mentionedAgents'];
+  prompt: QueuedFollowUpRequest['prompt'];
+  selectedSkillIds?: QueuedFollowUpRequest['selectedSkillIds'];
+  selectedToolIds?: QueuedFollowUpRequest['selectedToolIds'];
+}
+
 interface QueuedFollowUpSurface {
   threadId?: string | null;
   topicId: string;
@@ -341,7 +356,7 @@ class AiAgentService {
   }
 
   /** This user's follow-ups still waiting on the server, oldest first. */
-  async listQueuedFollowUps(surface: QueuedFollowUpSurface) {
+  async listQueuedFollowUps(surface: QueuedFollowUpSurface): Promise<QueuedFollowUpListItem[]> {
     return await lambdaClient.agentSteerQueue.list.query(surface);
   }
 

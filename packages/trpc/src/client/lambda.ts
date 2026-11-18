@@ -14,8 +14,8 @@ import debug from 'debug';
 import superjson from 'superjson';
 
 import { isDesktop } from '@/const/version';
-import { type LambdaRouter } from '@/server/routers/lambda';
 
+import { type LambdaRouter, type UntypedClient } from './routers';
 import {
   detectUnreadableServerResponse,
   findUnreadableServerResponseError,
@@ -330,7 +330,7 @@ const customSplitLink = splitLink({
 // 4. assembly links
 const links = [errorHandlingLink, customSplitLink];
 
-export const lambdaClient = createTRPCClient<LambdaRouter>({
+export const lambdaClient: UntypedClient = createTRPCClient<LambdaRouter>({
   links,
 });
 
@@ -344,7 +344,7 @@ export const lambdaClient = createTRPCClient<LambdaRouter>({
  * `null` pins the personal scope: the workspace header is dropped even while a
  * workspace is active.
  */
-export const createWorkspaceLambdaClient = (workspaceId: string | null) => {
+export const createWorkspaceLambdaClient = (workspaceId: string | null): UntypedClient => {
   const scopedLinkOptions = {
     ...linkOptions,
     headers: async () => {
@@ -369,6 +369,6 @@ export const createWorkspaceLambdaClient = (workspaceId: string | null) => {
   });
 };
 
-export const lambdaQuery = createTRPCReact<LambdaRouter>();
+export const lambdaQuery: UntypedClient = createTRPCReact<LambdaRouter>();
 
 export const lambdaQueryClient = lambdaQuery.createClient({ links });

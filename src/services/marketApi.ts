@@ -9,6 +9,7 @@ import { lambdaClient } from '@/libs/trpc/client';
 import { discoverService } from '@/services/discover';
 import {
   type AgentForkBatchInput,
+  type AgentForkBatchResult,
   type AgentForkSourceResponse,
   type AgentForksResponse,
   type AgentGroupForkRequest,
@@ -48,7 +49,7 @@ class MarketApiService {
    * Best-effort: each item is reported individually with `success` true or
    * false. A failed item does not abort the rest of the batch.
    */
-  async forkAgent(items: AgentForkBatchInput[]) {
+  async forkAgent(items: AgentForkBatchInput[]): Promise<AgentForkBatchResult[]> {
     return lambdaClient.market.agent.forkAgent.mutate({
       items,
     });

@@ -772,7 +772,7 @@ export class ChatTopicActionImpl {
     const patch: Partial<ChatTopic> =
       status === 'completed' ? { completedAt: new Date(), status } : { status };
 
-    await topicService.updateTopic(topicId, patch).catch((err) => {
+    await topicService.updateTopic(topicId, patch).catch((err: unknown) => {
       console.error('[updateTopicStatus] persist failed:', err);
       // The DB never got the write — stop pinning it over fetched rows.
       this.#pendingTopicStatusWrites.drop(topicId);

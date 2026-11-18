@@ -1,17 +1,39 @@
+import type { AssistantContentBlock, UIChatMessage, WorkSummaryItem } from '@lobot/types';
 import debug from 'debug';
 
-import type { lambdaClient } from '@/libs/trpc/client';
+import type {
+  OperationEditedFile,
+  OperationGoal,
+} from '@/features/Conversation/operationArtifacts';
 
 const log = debug('lobe-client:topic-preview');
 
 export const TOPIC_PREVIEW_TTL_MS = 60_000;
 export const TOPIC_PREVIEW_MAX_ENTRIES = 50;
 
-type TopicPreviewItem = Awaited<
-  ReturnType<typeof lambdaClient.message.getTopicPreviews.query>
->[number];
+export interface TopicPreviewTimelineRow {
+  createdAt: Date | number | string;
+  finishType?: string;
+  id: string;
+  updatedAt: Date | number | string;
+}
 
-export type TopicPreview = Extract<TopicPreviewItem, { status: 'ok' }>;
+/** A `message.getTopicPreviews` answer that has a preview to draw. */
+export interface TopicPreview {
+  blocks: AssistantContentBlock[];
+  editedFiles: OperationEditedFile[];
+  goals: OperationGoal[];
+  kind: 'group' | 'single';
+  /** The rows above the answer, sent only when this round is the whole topic. */
+  leading: UIChatMessage[] | null;
+  message: UIChatMessage;
+  status: 'ok';
+  timeline: TopicPreviewTimelineRow[];
+  topicId: string;
+  topicUpdatedAt: string;
+  workRootOperationId: string | null;
+  works: WorkSummaryItem[];
+}
 
 interface CacheEntry {
   fetchedAt: number;

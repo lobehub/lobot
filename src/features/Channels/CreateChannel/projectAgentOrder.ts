@@ -1,5 +1,11 @@
 import type { ProjectDetail } from '@/store/project';
 
+/** What the ordering reads of one `project.detail` member: the agent and its binding. */
+interface ProjectAgentEntry {
+  agent: { id: string };
+  binding: { enabled: boolean };
+}
+
 /**
  * The project's own Agents in the order its team reads them: the main agent first, then the
  * enabled members by their project sort order. A disabled member is still a candidate, just
@@ -9,8 +15,8 @@ export const projectAgentIds = (detail?: Pick<ProjectDetail, 'agents' | 'project
   if (!detail) return [];
   const mainAgentId = detail.project.coordinatorAgentId;
   const members = (detail.agents ?? [])
-    .filter(({ agent, binding }) => binding.enabled && agent.id !== mainAgentId)
-    .map(({ agent }) => agent.id);
+    .filter(({ agent, binding }: ProjectAgentEntry) => binding.enabled && agent.id !== mainAgentId)
+    .map(({ agent }: ProjectAgentEntry) => agent.id);
   return mainAgentId ? [mainAgentId, ...members] : members;
 };
 

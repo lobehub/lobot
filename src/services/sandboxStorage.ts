@@ -1,9 +1,51 @@
 import type { SandboxDrive } from '@lobechat/const/builtinTools';
 import { markDefaultInstances } from '@lobechat/utils/environmentInstance';
+import type {
+  EnvironmentConfiguration,
+  EnvironmentInstanceConfiguration,
+  EnvironmentInstanceKind,
+  EnvironmentInstanceStatus,
+} from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
+import type { SandboxStorageFileList } from '@/types/serverData';
 
 export type { SandboxDrive };
+
+/** One environment instance row, with the caller's drive it sits on (`null` if not theirs). */
+export interface SandboxInstanceDetail {
+  buildError: string | null;
+  buildId: string | null;
+  configuration: EnvironmentInstanceConfiguration | null;
+  configurationSnapshot: EnvironmentConfiguration;
+  createdAt: Date;
+  deviceId: string | null;
+  drive: SandboxDrive | null;
+  enabled: boolean;
+  environmentId: string;
+  id: string;
+  kind: EnvironmentInstanceKind;
+  name: string;
+  provider: string | null;
+  providerResourceId: string | null;
+  providerScope: string | null;
+  status: EnvironmentInstanceStatus;
+  updatedAt: Date;
+  workingDirectory: string;
+}
+
+/** Why a placement the topic chose falls back to a temporary sandbox. */
+export type SandboxPlacementFallback =
+  'directoryMissing' | 'instanceRebuildRequired' | 'instanceUnavailable' | 'rootNotAllowed';
+
+/** Where a topic's sandbox commands run; `null` when it gets no persistent workspace. */
+export interface SandboxSessionPlacement {
+  cwd?: string;
+  drive: SandboxDrive;
+  fallback?: SandboxPlacementFallback;
+  mode: 'drive' | 'ephemeral' | 'persistent';
+  workingDir?: string;
+}
 
 /**
  * Renderer-side data layer for the user's network drives and the environment
@@ -52,7 +94,7 @@ class SandboxStorageService {
   };
 
   /** One instance, from the database alone — no sandbox session, no wait. */
-  getInstance = async (params: { id: string }) =>
+  getInstance = async (params: { id: string }): Promise<SandboxInstanceDetail | null> =>
     lambdaClient.sandboxStorage.getInstance.query(params);
 
   createInstance = async (params: {
@@ -66,7 +108,9 @@ class SandboxStorageService {
    * Where this topic's sandbox commands run, for the prompt that describes it.
    * The placement only — the entitlement it follows never leaves the server.
    */
-  resolveSessionPlacement = async (params: { topicId?: string }) =>
+  resolveSessionPlacement = async (params: {
+    topicId?: string;
+  }): Promise<SandboxSessionPlacement | null> =>
     lambdaClient.sandboxStorage.resolveSessionPlacement.query(params);
 
   /**
@@ -87,7 +131,7 @@ class SandboxStorageService {
       recursive?: boolean;
       topicId?: string;
     } = {},
-  ) => lambdaClient.sandboxStorage.listFiles.query(params);
+  ): Promise<SandboxStorageFileList> => lambdaClient.sandboxStorage.listFiles.query(params);
 }
 
 export const sandboxStorageService = new SandboxStorageService();

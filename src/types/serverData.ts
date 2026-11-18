@@ -3,10 +3,20 @@
  * package so the app can type what it receives.
  */
 import type {
+  AgentAccountCapabilities,
+  AgentAccountCredentialHint,
+  AgentAccountPersistedKind,
+  AgentAccountSettings,
+  AgentAccountStatus,
   GroupMemberAvatar,
   LobeDocumentPage,
+  MetricActorType,
+  MetricConfig,
+  MetricKind,
+  MetricPointSourceType,
   SidebarAgentLabel,
   SidebarVisibility,
+  TaskItem,
   ToulminVerdict,
   UserMemoryEvidenceSource,
   VerifyCheckDecisionDetail,
@@ -673,3 +683,327 @@ export type FtsSearchResultType =
   | 'knowledgeBase'
   | 'task'
   | 'goal';
+
+/** An agent account as every read returns it: the credential is absent, `hasCredential` says if one is set. */
+export interface AgentAccountView {
+  agentId: string;
+  capabilities: AgentAccountCapabilities;
+  createdAt: Date;
+  credentialHint: AgentAccountCredentialHint | null;
+  displayName: string | null;
+  hasCredential: boolean;
+  id: string;
+  identifier: string;
+  kind: AgentAccountPersistedKind;
+  metadata: Record<string, unknown> | null;
+  provider: string;
+  revokedAt: Date | null;
+  settings: AgentAccountSettings;
+  status: AgentAccountStatus;
+  updatedAt: Date;
+  userId: string;
+  workspaceId: string | null;
+}
+
+// ============================== Document history ==============================
+
+export type DocumentHistorySaveSource = 'autosave' | 'llm_call' | 'manual' | 'restore' | 'system';
+
+export interface DocumentHistoryListItem {
+  agentId?: string | null;
+  editorIds?: string[] | null;
+  id: string;
+  isCurrent: boolean;
+  savedAt: string;
+  saveSource: DocumentHistorySaveSource;
+  userId: string;
+}
+
+export interface ListHistoryInput {
+  beforeId?: string;
+  beforeSavedAt?: string;
+  documentId: string;
+  includeCurrent?: boolean;
+  limit?: number;
+}
+
+export interface ListHistoryOutput {
+  items: DocumentHistoryListItem[];
+  nextBeforeId?: string;
+  nextBeforeSavedAt?: string;
+}
+
+export interface GetHistoryItemInput {
+  documentId: string;
+  historyId: string;
+}
+
+export interface GetHistoryItemOutput {
+  editorData: Record<string, any> | null;
+  id: string;
+  isCurrent: boolean;
+  savedAt: string;
+  saveSource: DocumentHistorySaveSource;
+}
+
+export interface CompareHistoryItemsInput {
+  documentId: string;
+  fromHistoryId: string;
+  toHistoryId: string;
+}
+
+export interface CompareHistoryItemState {
+  editorData: Record<string, any> | null;
+  id: string;
+  isCurrent: boolean;
+  savedAt: string;
+  saveSource: DocumentHistorySaveSource;
+}
+
+export interface CompareHistoryItemsOutput {
+  from: CompareHistoryItemState;
+  to: CompareHistoryItemState;
+}
+
+export interface SaveDocumentHistoryInput {
+  documentId: string;
+  editorData: string;
+  /** Edit-session id proving the client still holds the workspace page lease. */
+  lockOwnerId?: string;
+  saveSource: DocumentHistorySaveSource;
+}
+
+export interface SaveDocumentHistoryOutput {
+  savedAt: string;
+}
+
+export interface UpdateDocumentInput {
+  breakAutosaveWindow?: boolean;
+  content?: string;
+  editorData?: string;
+  /** The save succeeds only if the stored row's `updatedAt` still equals this. */
+  expectedUpdatedAt?: Date;
+  fileType?: string;
+  id: string;
+  lockOwnerId?: string;
+  metadata?: Record<string, any>;
+  parentId?: string | null;
+  restoreFromHistoryId?: string;
+  saveSource?: DocumentHistorySaveSource;
+  title?: string;
+}
+
+export interface UpdateDocumentOutput {
+  historyAppended: boolean;
+  id: string;
+  savedAt?: string;
+  updatedAt: string;
+}
+
+// ============================== Cloud sandbox ==============================
+
+export interface CallToolResult {
+  error?: { message: string; name?: string };
+  result: any;
+  sessionExpiredAndRecreated?: boolean;
+  success: boolean;
+}
+
+export interface ExecInSandboxInput {
+  params: Record<string, any>;
+  toolName: string;
+  topicId: string;
+  /** Ignored by the server, which uses the caller's identity; older clients still send it. */
+  userId?: string;
+}
+
+export interface ExportAndUploadFileInput {
+  filename: string;
+  path: string;
+  topicId: string;
+}
+
+export interface ExportAndUploadFileResult {
+  error?: { message: string };
+  fileId?: string;
+  filename: string;
+  mimeType?: string;
+  size?: number;
+  success: boolean;
+  url?: string;
+}
+
+// ============================== Sandbox storage ==============================
+
+/** One file or folder of a drive listing; `path` is relative to the drive's root. */
+export interface SandboxStorageFileEntry {
+  isDirectory: boolean;
+  /** A directory that is the top of a git checkout; absent where it is not. */
+  isGitRepository?: boolean;
+  modifiedAt?: string;
+  name: string;
+  path: string;
+  size?: number;
+}
+
+export interface SandboxStorageFileList {
+  entries: SandboxStorageFileEntry[];
+  path: string;
+  /** True when the listing hit the server-side entry cap. */
+  truncated: boolean;
+}
+
+// ============================== Metric ==============================
+
+/** One `metric_points` row as `metric.listSeriesWithPoints` serializes it. */
+export interface MetricPointRecord {
+  actorType: MetricActorType;
+  observedAt: Date | string;
+  sourceType: MetricPointSourceType;
+  /** `numeric` column — may arrive as a decimal string. */
+  value: number | string;
+}
+
+/** One series of `metric.listSeriesWithPoints`, with its recent window and first observation. */
+export interface MetricSeriesWithPointsRecord {
+  config: MetricConfig | null;
+  firstPoint: MetricPointRecord | null;
+  id: string;
+  key: string;
+  kind: MetricKind;
+  points: MetricPointRecord[];
+  title: string | null;
+  unit: string | null;
+}
+
+// ============================== Agent quota ==============================
+
+/** Where a referenced-mode credential lives on the device that reported it. */
+export interface QuotaAccountCredentialRef {
+  /** Custom CLI profile dir (CLAUDE_CONFIG_DIR / CODEX_HOME) if any. */
+  configDir?: string;
+  origin: 'keychain' | 'config-dir' | 'default-file';
+}
+
+/** An `agent_provider_accounts` row as `agentQuota.listAccounts` returns it (no `credentials`). */
+export interface QuotaAccountItem {
+  accessedAt: Date;
+  createdAt: Date;
+  credentialMode: string;
+  credentialRef: QuotaAccountCredentialRef | null;
+  displayName: string | null;
+  email: string | null;
+  enabled: boolean;
+  externalAccountId: string | null;
+  id: string;
+  label: string | null;
+  lastValidatedAt: Date | null;
+  metadata: Record<string, unknown> | null;
+  organizationId: string | null;
+  planTier: string | null;
+  provider: string;
+  rateLimitTier: string | null;
+  status: string;
+  tokenExpiresAt: Date | null;
+  updatedAt: Date;
+  userId: string;
+  visibility: 'private' | 'public';
+  workspaceId: string | null;
+}
+
+/** An `agent_account_bindings` row: one account in one agent's pool. */
+export interface QuotaBindingItem {
+  accessedAt: Date;
+  accountId: string;
+  agentId: string;
+  createdAt: Date;
+  enabled: boolean;
+  id: string;
+  /** Lower = preferred when ordering the pool. */
+  priority: number;
+  role: string;
+  updatedAt: Date;
+  userId: string;
+  /** Weighted round-robin weight within the pool. */
+  weight: number;
+  workspaceId: string | null;
+}
+
+// ============================== Topic ==============================
+
+/** `topic.settleRunningOperation` outcome, by why the marker was (or was not) cleared. */
+export type SettleRunningOperationResult =
+  | { assistantMessageId?: string; status: 'corrected' | 'missing' }
+  | { activeOperationId: string; status: 'conflict' | 'not_owner' }
+  | { activeOperationId: string; operationStatus: string; status: 'in_flight' }
+  | { assistantMessageId?: string; status: 'settled'; threadId?: string };
+
+/** The visitor-safe subset of `metadata.runningOperation` a share visitor receives. */
+export interface VisitorRunningOperation {
+  assistantMessageId: string;
+  heteroType?: string | null;
+  operationId: string;
+  scope?: string;
+  startedAt?: string;
+  threadId?: string | null;
+}
+
+/** One topic of `shareChat.getTopics`: the narrow DTO a share visitor sees. */
+export interface VisitorTopicItem {
+  createdAt: Date;
+  id: string;
+  runningOperation?: VisitorRunningOperation | null;
+  title: string | null;
+  updatedAt: Date;
+}
+
+// ============================== Project ==============================
+
+export interface ProjectOverviewTask {
+  id: string;
+  identifier: string;
+  name: string | null;
+  status: string;
+  /** Only the latest task carries one; the card shows it under the headline. */
+  summary: string | null;
+  updatedAt: Date;
+}
+
+export interface ProjectOverviewAgent {
+  avatar: string | null;
+  backgroundColor: string | null;
+  id: string;
+  name: string | null;
+  title: string | null;
+}
+
+/** What a project folder card draws, as `project.listOverviews` returns it per project. */
+export interface ProjectOverviewItem {
+  agentCount: number;
+  /** Members, the main agent first, at most three. */
+  agents: ProjectOverviewAgent[];
+  projectId: string;
+  /** Last updated first, at most four. */
+  recentTasks: ProjectOverviewTask[];
+  taskCount: number;
+  taskDoneCount: number;
+}
+
+// ============================== Task ==============================
+
+/** One column of `task.groupList`; only the field its `groupBy` names is set. */
+export interface TaskGroupListItem {
+  assigneeAgentId?: string | null;
+  assigneeUserId?: string | null;
+  hasMore: boolean;
+  key: string;
+  /** Label column of a `label` board; null is the "no label" column. */
+  labelId?: string | null;
+  limit: number;
+  offset: number;
+  priority?: number;
+  /** Project column of a `project` board; null is the "no project" column. */
+  projectId?: string | null;
+  tasks: TaskItem[];
+  total: number;
+}

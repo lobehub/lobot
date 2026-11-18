@@ -12,6 +12,7 @@ import type {
   ResumeApprovalParam,
   ResumeToolResultParam,
 } from '@/services/aiAgent';
+import type { VisitorTopicItem } from '@/types/serverData';
 
 interface ShareChatExecParams {
   /** Client-minted ids for the rows this run creates (fresh sends only). */
@@ -113,7 +114,7 @@ class ShareChatService {
     return await lambdaClient.shareChat.execAgent.mutate(params, options);
   }
 
-  async getTopics(shareId: string) {
+  async getTopics(shareId: string): Promise<VisitorTopicItem[]> {
     return await lambdaClient.shareChat.getTopics.query({ shareId });
   }
 
