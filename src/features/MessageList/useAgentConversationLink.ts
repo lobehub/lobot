@@ -1,14 +1,15 @@
 import { CHANNEL_URL } from '@lobechat/const';
 import { toast } from '@lobehub/ui';
+import { useLatest } from 'ahooks';
 import { t } from 'i18next';
-import { type MouseEvent, useCallback, useEffect, useRef } from 'react';
+import { type MouseEvent, useCallback, useRef } from 'react';
 
 import { useActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
 import { resolveInboxAgentRouteId } from '@/features/AgentRoute/useResolvedAgentRouteId';
 import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { usePreservedAgentUrl } from '@/features/HomeSidebar/Body/Agent/List/usePreservedAgentUrl';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
-import { useActiveLocation } from '@/hooks/useActiveLocation';
+import { useActiveLocationReader } from '@/hooks/useActiveLocation';
 import { cacheScope } from '@/libs/replica';
 import { useAgentStore } from '@/store/agent';
 import { builtinAgentSelectors } from '@/store/agent/selectors';
@@ -29,15 +30,15 @@ export const useAgentConversationLink = (agentId: string | undefined, agentUrl: 
   );
   const navigate = useWorkspaceAwareNavigate();
   const opening = useRef(false);
-  const { pathname, search } = useActiveLocation();
-  const slug = useActiveWorkspaceSlug();
+  const getLocation = useActiveLocationReader();
+  const slug = useLatest(useActiveWorkspaceSlug());
   // Where the person is now. Opening a missing Channel takes a request, and by the time it
-  // answers they may have picked another conversation or workspace.
-  const location = `${slug ?? ''}|${pathname}${search}`;
-  const here = useRef(location);
-  useEffect(() => {
-    here.current = location;
-  }, [location]);
+  // answers they may have picked another conversation or workspace. Read on demand: every list
+  // row uses this hook, and subscribing would re-render all of them on each navigation.
+  const here = useCallback(() => {
+    const { pathname, search } = getLocation();
+    return `${slug.current ?? ''}|${pathname}${search}`;
+  }, [getLocation, slug]);
 
   const onClick = useCallback(
     (event: MouseEvent<HTMLAnchorElement>) => {
@@ -45,12 +46,12 @@ export const useAgentConversationLink = (agentId: string | undefined, agentUrl: 
       event.preventDefault();
       if (opening.current) return;
       opening.current = true;
-      const from = here.current;
+      const from = here();
       const scope = cacheScope.get();
       // Navigate only if nothing else was selected meanwhile, and never route an id from the
       // previous workspace under a new one.
       const go = (path: string) => {
-        if (here.current === from && cacheScope.get() === scope) navigate(path);
+        if (here() === from && cacheScope.get() === scope) navigate(path);
       };
       void channelActions
         .openDirect(agentId)
@@ -66,7 +67,7 @@ export const useAgentConversationLink = (agentId: string | undefined, agentUrl: 
           opening.current = false;
         });
     },
-    [agentId, navigate],
+    [agentId, here, navigate],
   );
 
   if (directChannelId) return { url: CHANNEL_URL(directChannelId) };

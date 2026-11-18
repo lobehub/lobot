@@ -39,6 +39,7 @@ import { channelActions } from '@/store/channel';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
+import { DeferredHoverCard } from './DeferredHoverCard';
 import { callerMemberRole } from './memberManagement';
 import { authorAvatar, isCurrentUserAuthor, isCurrentUserMember, memberName } from './memberName';
 import { MemberProfilePopup } from './MemberProfilePopup';
@@ -65,6 +66,9 @@ const AGENTS_TAG_REGEX = /<lobeAgents\b[^>]*>/g;
 const joinAgentTags = (content: string) =>
   content.replaceAll(AGENTS_TAG_REGEX, (tag) => tag.replaceAll(/\r?\n|\r/g, ''));
 const HISTORIC_FOLD_OVERFLOW = 240;
+// Matches the `(hover: hover)` query the toolbar's reveal styles use.
+const canHover = () =>
+  typeof window !== 'undefined' && !!window.matchMedia?.('(hover: hover)').matches;
 const AVATAR_SIZE = 36;
 
 /** Message text with the members it mentioned shown as chips that show who they are on hover. */
@@ -149,7 +153,7 @@ const ChannelMessageView = ({
   threadId?: string | null;
 }) => {
   const { t, i18n } = useTranslation('channel');
-  const timeFormats = useMemo(() => channelTimeFormatters(i18n.language), [i18n.language]);
+  const timeFormats = channelTimeFormatters(i18n.language);
   const date = new Date(message.createdAt);
   // Failed/unassigned requests keep their identity row and recovery affordance.
   // A relayed message keeps its header, so the relay label beside the time stays visible.
@@ -218,6 +222,11 @@ const ChannelMessageView = ({
   const [collapsed, setCollapsed] = useState(historic);
   const [overflowing, setOverflowing] = useState(false);
   const [editing, setEditing] = useState(false);
+  // The toolbar only shows on hover, yet its tooltips and menu are a real share of a message's
+  // render; mount it when the row is first pointed at or focused, and keep it so an open menu
+  // survives the pointer leaving. Without hover (touch) it is always visible, so mount it upfront.
+  const [toolbarMounted, setToolbarMounted] = useState(() => !canHover());
+  const mountToolbar = () => setToolbarMounted(true);
   // Only a person's own sent message; one still sending has nothing on the server to edit yet.
   const canEdit =
     !deleted && isOwnMessage && message.author.type === 'user' && !pending && !delivery;
@@ -406,7 +415,7 @@ const ChannelMessageView = ({
       {isRequest && !delivery && <MessageFailureMark detail={detail} message={message} />}
     </>
   );
-  const toolbar = hasToolbar && (
+  const toolbar = hasToolbar && toolbarMounted && (
     // Icon-only, like a chat app's hover toolbar; rarer actions sit behind "more".
     <div {...stylex.props(styles.messageToolbar)}>
       {onReply && (
@@ -451,6 +460,8 @@ const ChannelMessageView = ({
   return (
     <div
       {...rowProps}
+      onFocus={toolbarMounted ? undefined : mountToolbar}
+      onPointerEnter={toolbarMounted ? undefined : mountToolbar}
       {...stylex.props(
         styles.messageRow,
         mentionsMe && styles.mentionedMessage,
@@ -493,15 +504,21 @@ const ChannelMessageView = ({
               </MemberProfilePopup>
             ) : (
               // Same profile card an Agent shows on hover in goals and tasks.
-              <AgentProfilePopup
-                agentId={agentAuthorId}
-                environment={agentMember?.environment}
-                trigger={'hover'}
-                agent={{
-                  avatar: message.author.avatar,
-                  description: agentMember?.description,
-                  title: message.author.name,
-                }}
+              <DeferredHoverCard
+                render={(trigger) => (
+                  <AgentProfilePopup
+                    agentId={agentAuthorId}
+                    environment={agentMember?.environment}
+                    trigger={'hover'}
+                    agent={{
+                      avatar: message.author.avatar,
+                      description: agentMember?.description,
+                      title: message.author.name,
+                    }}
+                  >
+                    {trigger}
+                  </AgentProfilePopup>
+                )}
               >
                 <span {...stylex.props(styles.messageAvatarHoverable)}>
                   <AgentAvatar
@@ -512,7 +529,7 @@ const ChannelMessageView = ({
                     size={AVATAR_SIZE}
                   />
                 </span>
-              </AgentProfilePopup>
+              </DeferredHoverCard>
             )}
           </Flexbox>
         )}

@@ -1,11 +1,11 @@
-import type { ChannelListItem } from '@lobot/types';
 import { confirmModal, toast } from '@lobehub/ui';
+import type { ChannelListItem } from '@lobot/types';
 import { useLatest } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 
 import { hideConversation } from '@/features/MessageList/hiddenConversations';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
-import { useActiveLocation } from '@/hooks/useActiveLocation';
+import { useActiveLocationReader } from '@/hooks/useActiveLocation';
 import { cacheScope } from '@/libs/replica';
 import { channelActions } from '@/store/channel';
 
@@ -20,9 +20,10 @@ import { peerName } from './peerName';
  */
 export const useDeletePeerChat = () => {
   const { t } = useTranslation('channel');
-  const location = useActiveLocation();
+  // Read where the person is when they confirm; subscribing would re-render every list row on navigation.
+  const getLocation = useActiveLocationReader();
   const navigate = useWorkspaceAwareNavigate();
-  const latest = useLatest({ location, navigate });
+  const latest = useLatest({ getLocation, navigate });
 
   return (channel: ChannelListItem) => {
     if (!channel.peerUserId) return;
@@ -36,7 +37,7 @@ export const useDeletePeerChat = () => {
       onOk: () => {
         // A confirmation belongs to the identity that opened it.
         if (cacheScope.get() !== scope) return;
-        if (matchChannel(latest.current.location.pathname) === channel.id)
+        if (matchChannel(latest.current.getLocation().pathname) === channel.id)
           latest.current.navigate('/', { replace: true });
         clearChannelLocally(channel.id, channel.sequence);
         hideConversation(channel.id);

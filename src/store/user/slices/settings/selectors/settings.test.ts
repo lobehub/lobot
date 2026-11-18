@@ -97,6 +97,23 @@ describe('settingsSelectors', () => {
 
       expect(result).toMatchSnapshot();
     });
+
+    it('returns the same object while the settings are unchanged, and a new one after they change', () => {
+      const settings = { defaultAgent: { config: { model: 'gpt-4' } } };
+      const s = { settings } as unknown as UserStore;
+
+      const first = settingsSelectors.defaultAgentConfig(s);
+      expect(settingsSelectors.defaultAgentConfig({ settings } as unknown as UserStore)).toBe(
+        first,
+      );
+      expect(settingsSelectors.currentSettings(s)).toBe(settingsSelectors.currentSettings(s));
+
+      const changed = {
+        settings: { defaultAgent: { config: { model: 'gpt-5' } } },
+      } as unknown as UserStore;
+      expect(settingsSelectors.defaultAgentConfig(changed)).not.toBe(first);
+      expect(settingsSelectors.defaultAgentConfig(changed).model).toBe('gpt-5');
+    });
   });
 
   describe('exportSettings', () => {

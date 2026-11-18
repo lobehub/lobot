@@ -9,6 +9,7 @@ import Avatar from '@/components/Avatar';
 import AgentProfilePopup from '@/features/AgentProfileCard/AgentProfilePopup';
 import { cardPopoverProps } from '@/styles/cardPopover';
 
+import { DeferredHoverCard } from './DeferredHoverCard';
 import { MemberAvatar } from './MemberAvatar';
 import { memberAvatar, memberName } from './memberName';
 import { PersonAction } from './PersonAction';
@@ -140,31 +141,37 @@ export const MemberProfilePopup = ({
 }) => {
   const { t } = useTranslation('channel');
   if (!member) return children;
-  if (member.agentId)
-    return (
-      <AgentProfilePopup
-        agentId={member.agentId}
-        environment={member.environment}
-        placement={placement}
-        trigger={'hover'}
-        agent={{
-          avatar: member.avatar,
-          description: member.description,
-          title: memberName(member, t('deletedMember')),
-        }}
-      >
-        {children}
-      </AgentProfilePopup>
-    );
   return (
-    <Popover
-      {...cardPopoverProps}
-      content={<PersonProfileCard member={member} />}
-      nativeButton={false}
-      placement={placement}
-      trigger={'hover'}
+    <DeferredHoverCard
+      render={(trigger) =>
+        member.agentId ? (
+          <AgentProfilePopup
+            agentId={member.agentId}
+            environment={member.environment}
+            placement={placement}
+            trigger={'hover'}
+            agent={{
+              avatar: member.avatar,
+              description: member.description,
+              title: memberName(member, t('deletedMember')),
+            }}
+          >
+            {trigger}
+          </AgentProfilePopup>
+        ) : (
+          <Popover
+            {...cardPopoverProps}
+            content={<PersonProfileCard member={member} />}
+            nativeButton={false}
+            placement={placement}
+            trigger={'hover'}
+          >
+            {trigger}
+          </Popover>
+        )
+      }
     >
       {children}
-    </Popover>
+    </DeferredHoverCard>
   );
 };

@@ -45,6 +45,60 @@ interface MessageContentProps {
   variant?: 'bubble' | 'default';
 }
 
+interface MessageEditorModalProps {
+  canCreate: boolean;
+  canEdit: boolean;
+  id: string;
+  message?: ReactNode;
+  onEditingChange: (editing: boolean) => void;
+}
+
+/**
+ * Opens the message editor while mounted. Only the row being edited mounts it, so the
+ * edit-confirmation hooks (Codex runtime, execution target, workspace preference) run for that
+ * one row instead of for every message in a feed.
+ */
+const MessageEditorModal = ({
+  canCreate,
+  canEdit,
+  id,
+  message,
+  onEditingChange,
+}: MessageEditorModalProps) => {
+  const { t } = useTranslation('common');
+  const editorData = useConversationStore(
+    (s) => dataSelectors.getDisplayMessageById(id)(s)?.editorData,
+  );
+  const { notice, onConfirm, shouldSendOnConfirm } = useEditConfirmation({
+    canCreate,
+    canEdit,
+    editing: true,
+    id,
+    onEditingChange,
+  });
+
+  // Held in a ref rather than in the effect's deps: the editor snapshots the
+  // message when it opens, so a re-render (a streaming token, a permission
+  // refresh) must not tear down and reopen a modal the user is typing in.
+  const openEditorRef = useRef<() => ModalInstance>(undefined);
+  openEditorRef.current = () =>
+    openEditorModal({
+      editorData,
+      notice,
+      okText: shouldSendOnConfirm ? t('send') : t('save'),
+      value: message ? String(message) : '',
+      onClose: () => onEditingChange(false),
+      onConfirm: (value, data) => onConfirm(value, data as Record<string, unknown> | undefined),
+    });
+
+  useEffect(() => {
+    const instance = openEditorRef.current!();
+    return () => instance.close();
+  }, []);
+
+  return null;
+};
+
 const MessageContent = memo<MessageContentProps>(
   ({
     editing,
@@ -60,11 +114,6 @@ const MessageContent = memo<MessageContentProps>(
     const toggleMessageEditing = useConversationStore((s) => s.toggleMessageEditing);
     const printMode = usePrintMode();
 
-    const editorData = useConversationStore(
-      (s) => dataSelectors.getDisplayMessageById(id)(s)?.editorData,
-    );
-
-    const { t } = useTranslation('common');
     const { allowed: canCreate } = usePermission('create_content');
     const { allowed: canEdit } = usePermission('edit_own_content');
 
@@ -75,36 +124,6 @@ const MessageContent = memo<MessageContentProps>(
       },
       [canEdit, id, toggleMessageEditing],
     );
-
-    const { notice, onConfirm, shouldSendOnConfirm } = useEditConfirmation({
-      canCreate,
-      canEdit,
-      editing,
-      id,
-      onEditingChange,
-    });
-
-    // Held in a ref rather than in the effect's deps: the editor snapshots the
-    // message when it opens, so a re-render (a streaming token, a permission
-    // refresh) must not tear down and reopen a modal the user is typing in.
-    const openEditorRef = useRef<() => ModalInstance>(undefined);
-    openEditorRef.current = () =>
-      openEditorModal({
-        editorData,
-        notice,
-        okText: shouldSendOnConfirm ? t('send') : t('save'),
-        value: message ? String(message) : '',
-        onClose: () => onEditingChange(false),
-        onConfirm: (value, data) => onConfirm(value, data as Record<string, unknown> | undefined),
-      });
-
-    useEffect(() => {
-      // The print copy renders this component too; opening a second editor for it
-      // would close the real one (and drop its draft) when printing ends.
-      if (!editing || printMode) return;
-      const instance = openEditorRef.current!();
-      return () => instance.close();
-    }, [editing, printMode]);
 
     return (
       <Flexbox
@@ -120,6 +139,17 @@ const MessageContent = memo<MessageContentProps>(
       >
         {children || message}
         {messageExtra}
+        {/* The print copy renders this component too; opening a second editor for it
+            would close the real one (and drop its draft) when printing ends. */}
+        {editing && !printMode && (
+          <MessageEditorModal
+            canCreate={canCreate}
+            canEdit={canEdit}
+            id={id}
+            message={message}
+            onEditingChange={onEditingChange}
+          />
+        )}
       </Flexbox>
     );
   },

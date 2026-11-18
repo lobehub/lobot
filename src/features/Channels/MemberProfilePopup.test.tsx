@@ -2,7 +2,7 @@
  * @vitest-environment happy-dom
  */
 import type { ChannelPublicMember } from '@lobot/types';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { createElement, type ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -85,7 +85,22 @@ describe('MemberProfilePopup', () => {
       </MemberProfilePopup>,
     );
 
+    // A feed shows many of these; the card mounts once its trigger is first pointed at.
+    expect(screen.queryByTestId('agent-profile-popup')).toBeNull();
+    fireEvent.pointerEnter(screen.getByText('Coco'));
+
     expect(screen.getByTestId('agent-profile-popup').dataset.agentId).toBe('agt_1');
+  });
+
+  it('mounts the card when keyboard focus reaches its trigger', () => {
+    render(
+      <MemberProfilePopup member={{ ...person, actorType: 'agent', agentId: 'agt_1' }}>
+        <span>Coco</span>
+      </MemberProfilePopup>,
+    );
+
+    fireEvent.focus(screen.getByText('Coco'));
+    expect(screen.getByTestId('agent-profile-popup')).toBeTruthy();
   });
 
   it('leaves the trigger alone without a member', () => {

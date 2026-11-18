@@ -79,6 +79,11 @@ describe('channel timestamps', () => {
     expect(en.time.format(date)).toMatch(/03:04\sPM/);
     expect(zh.full.format(date)).toContain('2026年10月31日');
   });
+
+  it('builds the formatters once per language, so a long feed does not rebuild them per message', () => {
+    expect(channelTimeFormatters('zh-CN')).toBe(channelTimeFormatters('zh-CN'));
+    expect(channelTimeFormatters('zh-CN')).not.toBe(channelTimeFormatters('en-US'));
+  });
 });
 
 describe('channelMessageTime', () => {

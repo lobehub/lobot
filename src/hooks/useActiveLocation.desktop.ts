@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { type Location } from 'react-router';
 
 import { selectActiveTabUrl } from '@/features/Electron/shell/activeTabUrl';
-import { useElectronStore } from '@/store/electron';
+import { type ElectronStore, useElectronStore } from '@/store/electron';
 
 // Tab urls only ever carry pathname+search: `TabLocationReporter` and the
 // eviction snapshot both persist `pathname + search`, never a hash. Drop any
@@ -21,3 +21,24 @@ export const useActiveLocation = (): Location => {
   const url = useElectronStore(selectActiveTabUrl) ?? '/';
   return useMemo(() => parseLocation(url), [url]);
 };
+
+const activeLocation = (state: ElectronStore): Location =>
+  parseLocation(selectActiveTabUrl(state) ?? '/');
+
+/**
+ * Subscribes to one value derived from the active tab's location, re-rendering only when that
+ * value changes. `useActiveLocation` re-renders on every navigation, which is what made every row
+ * of a long list repaint each time the person opened another conversation.
+ *
+ * Expects:
+ * - A selector returning a primitive (or otherwise stable) value; it runs on every store change.
+ */
+export const useActiveLocationSelector = <T>(selector: (location: Location) => T): T =>
+  useElectronStore((s) => selector(activeLocation(s)));
+
+/**
+ * Returns a getter for the active tab's location, for handlers that need where the person is when
+ * they run. Reading it does not subscribe, so a navigation does not re-render the caller.
+ */
+export const useActiveLocationReader = (): (() => Location) =>
+  useCallback(() => activeLocation(useElectronStore.getState()), []);

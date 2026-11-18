@@ -19,7 +19,9 @@ vi.mock('@lobehub/ui', () => ({ confirmModal: confirm, toast: { error: vi.fn(), 
 vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
   useWorkspaceAwareNavigate: () => navigate,
 }));
-vi.mock('@/hooks/useActiveLocation', () => ({ useActiveLocation: () => ({ ...location }) }));
+vi.mock('@/hooks/useActiveLocation', () => ({
+  useActiveLocationReader: () => () => ({ ...location }),
+}));
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, args?: { name?: string }) => (args?.name ? `${key}:${args.name}` : key),

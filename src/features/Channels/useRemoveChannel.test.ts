@@ -22,7 +22,7 @@ vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
   useWorkspaceAwareNavigate: () => navigate,
 }));
 vi.mock('@/hooks/useActiveLocation', () => ({
-  useActiveLocation: () => ({ ...location }),
+  useActiveLocationReader: () => () => ({ ...location }),
 }));
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({

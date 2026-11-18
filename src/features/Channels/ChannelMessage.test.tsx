@@ -4,7 +4,7 @@
 import type { ChannelDetail, ChannelPublicMessage, ExternalWorkSummaryItem } from '@lobot/types';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { act, createElement, type ReactNode } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import LobeAgentsElement from '@/features/Conversation/Markdown/plugins/LobeAgents';
 import EntityLinkElement from '@/features/EntityLink/element';
@@ -132,6 +132,20 @@ const message = (author: ChannelPublicMessage['author']) =>
     routingStatus: author.type === 'agent' ? 'reply' : 'routed',
   }) as unknown as ChannelPublicMessage;
 
+// Without hover (touch) the message toolbar is always visible, so it mounts with the row; the
+// tests below act on it directly. `ChannelMessage toolbar` covers the hover-capable path.
+let hoverCapable = false;
+beforeEach(() => {
+  hoverCapable = false;
+  vi.stubGlobal(
+    'matchMedia',
+    (query: string) => ({ matches: hoverCapable && query === '(hover: hover)' }) as MediaQueryList,
+  );
+});
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
 describe('ChannelMessage avatar', () => {
   it('shows the Agent profile card when hovering an Agent author', () => {
     render(
@@ -140,6 +154,10 @@ describe('ChannelMessage avatar', () => {
         message={message({ avatar: null, id: 'agt_1', name: 'Sanjo', type: 'agent' })}
       />,
     );
+
+    // The card mounts once its avatar is first pointed at.
+    expect(screen.queryByTestId('agent-profile-popup')).toBeNull();
+    fireEvent.pointerEnter(document.querySelector('[data-agent-avatar="Sanjo"]')!.parentElement!);
 
     const popup = screen.getByTestId('agent-profile-popup');
     expect(popup.dataset.agentId).toBe('agt_1');
@@ -694,5 +712,33 @@ describe('ChannelMessage deletion', () => {
     expect(screen.getByText('message.deleted')).toBeTruthy();
     expect(screen.queryByLabelText('reply.action')).toBeNull();
     expect(screen.queryByText('message.delete')).toBeNull();
+  });
+});
+
+describe('ChannelMessage toolbar', () => {
+  const own = {
+    ...message({ avatar: null, id: 'user-self', name: 'Me', type: 'user' }),
+    content: 'Oops',
+  };
+
+  it('mounts the hover toolbar only once the row is pointed at, and keeps it', () => {
+    hoverCapable = true;
+    render(<ChannelMessage detail={detail} message={own} />);
+    expect(screen.queryByText('message.delete')).toBeNull();
+
+    const row = screen.getByRole('article');
+    fireEvent.pointerEnter(row);
+    expect(screen.getByText('message.delete')).toBeTruthy();
+
+    fireEvent.pointerLeave(row);
+    expect(screen.getByText('message.delete')).toBeTruthy();
+  });
+
+  it('mounts it when keyboard focus enters the row', () => {
+    hoverCapable = true;
+    render(<ChannelMessage detail={detail} message={own} />);
+
+    fireEvent.focus(screen.getByRole('article'));
+    expect(screen.getByText('message.delete')).toBeTruthy();
   });
 });

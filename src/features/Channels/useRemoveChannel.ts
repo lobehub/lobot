@@ -1,10 +1,10 @@
-import type { ChannelListItem } from '@lobot/types';
 import { confirmModal, toast } from '@lobehub/ui';
+import type { ChannelListItem } from '@lobot/types';
 import { useLatest } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
-import { useActiveLocation } from '@/hooks/useActiveLocation';
+import { useActiveLocationReader } from '@/hooks/useActiveLocation';
 import { cacheScope } from '@/libs/replica';
 import { channelActions } from '@/store/channel';
 import { isTrpcErrorCode } from '@/utils/trpcError';
@@ -13,9 +13,10 @@ import { matchChannel } from './paths';
 
 export const useRemoveChannel = () => {
   const { t } = useTranslation('channel');
-  const location = useActiveLocation();
+  // Read where the person is when they confirm; subscribing would re-render every list row on navigation.
+  const getLocation = useActiveLocationReader();
   const navigate = useWorkspaceAwareNavigate();
-  const latest = useLatest({ location, navigate });
+  const latest = useLatest({ getLocation, navigate });
 
   return (channel: ChannelListItem) => {
     // Trashing a conversation between two people would take it from the other person too.
@@ -39,7 +40,7 @@ export const useRemoveChannel = () => {
         }
         if (cacheScope.get() !== scope) return;
         // Home holds the Channel list, a project's Channels included.
-        if (matchChannel(latest.current.location.pathname) === channel.id)
+        if (matchChannel(latest.current.getLocation().pathname) === channel.id)
           latest.current.navigate('/', { replace: true });
         toast.success(t('moveToTrashSuccess'));
       },

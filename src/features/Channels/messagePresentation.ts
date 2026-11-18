@@ -46,12 +46,26 @@ export const presentChannelTimeline = (items: TimelineItem[]) =>
     return { continuation, date, item, startsDay };
   });
 
+type ChannelTimeFormatters = Record<'date' | 'day' | 'full' | 'time', Intl.DateTimeFormat>;
+
+// Building an `Intl.DateTimeFormat` costs far more than formatting with one, and every message in
+// the feed asks for the same few: build them once per locale.
+const formattersByLocale = new Map<string, ChannelTimeFormatters>();
+
 /** Stable clock labels keep the feed scannable and do not depend on dayjs's global locale. */
-export const channelTimeFormatters = (locale: string) => ({
-  date: new Intl.DateTimeFormat(locale, { dateStyle: 'long' }),
-  full: new Intl.DateTimeFormat(locale, { dateStyle: 'full', timeStyle: 'medium' }),
-  time: new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }),
-});
+export const channelTimeFormatters = (locale: string): ChannelTimeFormatters => {
+  let formatters = formattersByLocale.get(locale);
+  if (!formatters) {
+    formatters = {
+      date: new Intl.DateTimeFormat(locale, { dateStyle: 'long' }),
+      day: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'numeric', year: 'numeric' }),
+      full: new Intl.DateTimeFormat(locale, { dateStyle: 'full', timeStyle: 'medium' }),
+      time: new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }),
+    };
+    formattersByLocale.set(locale, formatters);
+  }
+  return formatters;
+};
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -80,17 +94,11 @@ export const channelMessageTime = (
     yesterday: string;
   },
 ) => {
-  const time = new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(date);
+  const formatters = channelTimeFormatters(locale);
+  const time = formatters.time.format(date);
   const days = calendarDaysAgo(date, now);
   if (days === 0) return time;
-  const day =
-    days === 1
-      ? yesterday
-      : new Intl.DateTimeFormat(locale, {
-          day: 'numeric',
-          month: 'numeric',
-          year: 'numeric',
-        }).format(date);
+  const day = days === 1 ? yesterday : formatters.day.format(date);
   return `${day} ${time}`;
 };
 

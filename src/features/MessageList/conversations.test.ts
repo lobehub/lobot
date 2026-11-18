@@ -10,6 +10,7 @@ import {
   latestActivity,
   latestTopicOf,
   messagesUnreadCount,
+  reuseUnchangedEntries,
   withoutHidden,
 } from './conversations';
 
@@ -539,5 +540,54 @@ describe('withoutHidden', () => {
 
   it('lets a search find hidden rows', () => {
     expect(ids(withoutHidden(entries, new Map([['b', at('2026-10-09')]]), 'b'))).toContain('b');
+  });
+});
+
+describe('reuseUnchangedEntries', () => {
+  const team = {
+    createdAt: new Date('2026-10-01'),
+    id: 'chn_team',
+    title: 'Team',
+    updatedAt: new Date('2026-10-04'),
+  } as ChannelListItem;
+  const a = agent('a', '2026-10-01');
+  const b = agent('b', '2026-10-01');
+  // Every build makes fresh entry objects and fresh `activeAt` dates, as opening another
+  // conversation does.
+  const build = (bActiveAt = '2026-10-03') =>
+    buildConversationEntries(
+      {
+        pinned: [],
+        recent: [
+          { activeAt: new Date('2026-10-05'), item: a, preview: 'hi' },
+          { activeAt: new Date(bActiveAt), item: b },
+        ],
+      },
+      { activeAt: new Date('2026-10-02'), title: 'Lobe AI' },
+      '',
+      [team],
+    );
+
+  it('keeps the previous list and entry objects when a rebuild says the same thing', () => {
+    const first = build();
+    const second = build();
+    expect(second[0]).not.toBe(first[0]);
+
+    const reused = reuseUnchangedEntries(first, second);
+
+    expect(reused).toBe(first);
+  });
+
+  it('swaps in only the entries that changed', () => {
+    const first = build();
+    const reused = reuseUnchangedEntries(first, build('2026-10-06'));
+    const byKey = (list: typeof first, key: string) =>
+      list.find((e) => (e.type === 'item' ? e.item.id : e.type) === key);
+
+    expect(reused).not.toBe(first);
+    expect(byKey(reused, 'a')).toBe(byKey(first, 'a'));
+    expect(byKey(reused, 'inbox')).toBe(byKey(first, 'inbox'));
+    expect(byKey(reused, 'b')).not.toBe(byKey(first, 'b'));
+    expect(reused[0]).toBe(byKey(reused, 'b'));
   });
 });

@@ -36,6 +36,7 @@ import {
   inboxActivity,
   isPinned,
   latestTopicOf,
+  reuseUnchangedEntries,
   withoutHidden,
 } from './conversations';
 import GroupConversation from './GroupConversation';
@@ -68,16 +69,13 @@ const useActiveRouteId = () => {
   return root === 'agent' || root === 'group' ? id : undefined;
 };
 
-const ConversationItem = memo<{ activeRouteId?: string; conversation: Conversation }>(
-  ({ activeRouteId, conversation }) => {
-    const active = conversation.item.id === activeRouteId;
-
-    return conversation.item.type === 'group' ? (
+const ConversationItem = memo<{ active: boolean; conversation: Conversation }>(
+  ({ active, conversation }) =>
+    conversation.item.type === 'group' ? (
       <GroupConversation active={active} conversation={conversation} />
     ) : (
       <AgentConversation active={active} conversation={conversation} />
-    );
-  },
+    ),
 );
 
 ConversationItem.displayName = 'ConversationItem';
@@ -175,8 +173,12 @@ const Body = memo(() => {
   }, [activeRouteId, inboxAgentId]);
   const hiddenAt = useHiddenConversations();
 
-  const entries = useMemo(
-    () =>
+  // Opening another conversation rebuilds the list; keep each unchanged entry's object so only
+  // the rows whose content changed (the two whose highlight moves) re-render.
+  const previousEntries = useRef<ConversationEntry[]>([]);
+  const entries = useMemo(() => {
+    const next = reuseUnchangedEntries(
+      previousEntries.current,
       withoutHidden(
         buildConversationEntries(
           buildConversationSections(items, recents, directChannels, {
@@ -195,21 +197,23 @@ const Body = memo(() => {
         hiddenAt,
         query,
       ),
-    [
-      items,
-      recents,
-      directChannels,
-      activeRouteId,
-      inboxUpdatedAt,
-      inboxTitle,
-      inboxTopic,
-      inboxChannel,
-      query,
-      channels,
-      projectMap,
-      hiddenAt,
-    ],
-  );
+    );
+    previousEntries.current = next;
+    return next;
+  }, [
+    items,
+    recents,
+    directChannels,
+    activeRouteId,
+    inboxUpdatedAt,
+    inboxTitle,
+    inboxTopic,
+    inboxChannel,
+    query,
+    channels,
+    projectMap,
+    hiddenAt,
+  ]);
 
   // Pinned rows lead the list; they render as one block rather than a card each.
   const pinnedCount = entries.findIndex((entry) => !isPinned(entry));
@@ -233,7 +237,11 @@ const Body = memo(() => {
         key={entry.channel.id}
       />
     ) : (
-      <ConversationItem activeRouteId={activeRouteId} conversation={entry} key={entry.item.id} />
+      <ConversationItem
+        active={entry.item.id === activeRouteId}
+        conversation={entry}
+        key={entry.item.id}
+      />
     );
 
   // Only the agent rows wait on the agent list and recents (which decide what has a conversation):

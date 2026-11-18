@@ -328,3 +328,49 @@ export type ConversationActivity = 'typing' | 'working';
  */
 export const replyActivity = (state?: string): ConversationActivity | undefined =>
   state === 'working' ? 'working' : state === 'thinking' ? 'typing' : undefined;
+
+const sameValue = (a: unknown, b: unknown): boolean => {
+  if (Object.is(a, b)) return true;
+  if (a instanceof Date && b instanceof Date) return a.getTime() === b.getTime();
+  if (!a || !b || typeof a !== 'object' || typeof b !== 'object') return false;
+  if (Array.isArray(a) || Array.isArray(b) || Object.getPrototypeOf(a) !== Object.prototype)
+    return false;
+  const left = a as Record<string, unknown>;
+  const right = b as Record<string, unknown>;
+  const keys = Object.keys(left);
+  return (
+    keys.length === Object.keys(right).length &&
+    keys.every((key) => Object.is(left[key], right[key]))
+  );
+};
+
+const sameEntry = (a: ConversationEntry, b: ConversationEntry) => {
+  const left = a as unknown as Record<string, unknown>;
+  const right = b as unknown as Record<string, unknown>;
+  const keys = Object.keys(left);
+  return (
+    keys.length === Object.keys(right).length &&
+    keys.every((key) => sameValue(left[key], right[key]))
+  );
+};
+
+/**
+ * Hands back the previous entry object wherever a rebuilt entry says the same thing, so memoized
+ * rows skip the re-render. The list is rebuilt whenever another conversation opens, and each
+ * build makes fresh `activeAt` dates; without this every row repainted on every switch.
+ */
+export const reuseUnchangedEntries = (
+  previous: ConversationEntry[],
+  next: ConversationEntry[],
+): ConversationEntry[] => {
+  if (previous.length === 0) return next;
+  const byKey = new Map(previous.map((entry) => [conversationKey(entry), entry] as const));
+  let changed = previous.length !== next.length;
+  const merged = next.map((entry, index) => {
+    const old = byKey.get(conversationKey(entry));
+    const kept = old && sameEntry(old, entry) ? old : entry;
+    if (kept !== previous[index]) changed = true;
+    return kept;
+  });
+  return changed ? merged : previous;
+};

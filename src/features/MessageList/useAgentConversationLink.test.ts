@@ -22,7 +22,7 @@ const state = vi.hoisted(() => ({
 vi.mock('@lobehub/ui', () => ({ toast: { error: state.toastError } }));
 vi.mock('i18next', () => ({ t: (key: string) => key }));
 vi.mock('@/hooks/useActiveLocation', () => ({
-  useActiveLocation: () => ({ pathname: state.pathname, search: '' }),
+  useActiveLocationReader: () => () => ({ pathname: state.pathname, search: '' }),
 }));
 vi.mock('@/business/client/hooks/useActiveWorkspaceSlug', () => ({
   useActiveWorkspaceSlug: () => state.slug,

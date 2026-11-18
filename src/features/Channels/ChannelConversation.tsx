@@ -68,7 +68,7 @@ const Timeline = ({
   onStartThread,
 }: ChannelConversationProps) => {
   const { t, i18n } = useTranslation('channel');
-  const timeFormats = useMemo(() => channelTimeFormatters(i18n.language), [i18n.language]);
+  const timeFormats = channelTimeFormatters(i18n.language);
   const [before, setBefore] = useState<number>();
   const reply = useReplyTarget(channelDraftKey(channelId, threadId));
   const [jumpTarget, setJumpTarget] = useState<JumpTarget | null>(null);

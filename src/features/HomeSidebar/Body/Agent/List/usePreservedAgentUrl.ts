@@ -1,7 +1,6 @@
 import { AGENT_CHAT_URL } from '@lobechat/const';
-import { useMemo } from 'react';
 
-import { useActiveLocation } from '@/hooks/useActiveLocation';
+import { useActiveLocationSelector } from '@/hooks/useActiveLocation';
 
 // Sub-routes that are agent-scoped views (not tied to a specific topic/task id),
 // safe to carry over when switching between agents from the sidebar switcher.
@@ -22,7 +21,6 @@ export const resolvePreservedAgentUrl = (pathname: string, agentId: string): str
   return AGENT_CHAT_URL(agentId, false);
 };
 
-export const usePreservedAgentUrl = (agentId: string): string => {
-  const { pathname } = useActiveLocation();
-  return useMemo(() => resolvePreservedAgentUrl(pathname, agentId), [agentId, pathname]);
-};
+// Subscribes to the resolved URL only, so a list of agent rows does not re-render on every navigation.
+export const usePreservedAgentUrl = (agentId: string): string =>
+  useActiveLocationSelector(({ pathname }) => resolvePreservedAgentUrl(pathname, agentId));
