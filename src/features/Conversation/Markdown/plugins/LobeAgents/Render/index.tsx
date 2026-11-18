@@ -6,6 +6,7 @@ import { ChevronRight } from 'lucide-react';
 import { memo } from 'react';
 
 import AgentAvatar from '@/components/AgentAvatar';
+import { useAgentDisplayMeta } from '@/features/AgentTasks/shared/useAgentDisplayMeta';
 import { useAgentConversationLink } from '@/features/MessageList/useAgentConversationLink';
 import WorkspaceLink from '@/features/Workspace/WorkspaceLink';
 
@@ -98,21 +99,29 @@ const Render = memo<LobeAgentsProps>(
   ({ identifier, title, description, avatar, backgroundColor }) => {
     // Opens the person's direct Channel with the Agent, the same way an Agent row does.
     const link = useAgentConversationLink(identifier || undefined, AGENT_CHAT_URL(identifier));
+    // The tag is a snapshot the model wrote from a tool result — often without
+    // the avatar, and stale once the agent is renamed. A known agent's local
+    // copy (agent store, then the sidebar list) wins; the tag covers the rest.
+    const live = useAgentDisplayMeta(identifier || undefined, { fallbackToDefault: false });
 
     if (!identifier) return null;
+
+    const displayTitle = live?.title || title;
+    const displayAvatar = live ? live.avatar : avatar;
+    const displayBackground = live ? live.backgroundColor : backgroundColor;
 
     return (
       <WorkspaceLink className={styles.card} to={link.url} onClick={link.onClick}>
         <AgentAvatar
           agentId={identifier}
-          avatar={avatar}
-          background={backgroundColor}
-          name={title || undefined}
+          avatar={displayAvatar}
+          background={displayBackground}
+          name={displayTitle || undefined}
           size={36}
-          title={title || undefined}
+          title={displayTitle || undefined}
         />
         <span className={styles.content}>
-          <span className={styles.title}>{title || identifier}</span>
+          <span className={styles.title}>{displayTitle || identifier}</span>
           {description && <span className={styles.description}>{description}</span>}
         </span>
         <ChevronRight className={`${styles.arrow} lobe-agents-arrow`} size={16} />
