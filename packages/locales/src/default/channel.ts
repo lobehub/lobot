@@ -393,12 +393,10 @@ export default {
     'Clears this chat’s history on this device and removes it from your list. The other person keeps theirs.',
   'settings.danger.trashHint': 'You can restore the channel and its history from the trash.',
   'settings.tab.general': 'General',
-  'settings.tab.members': 'Members',
   'settings.tab.project': 'Project',
   'settings.tab.reply': 'Replies',
   'settings.general.nameDescription': 'Shown in the channel list and at the top of the channel.',
   'settings.general.nameLimit': 'Up to {{count}} characters.',
-  'settings.members.description': 'Agents and people who can read and reply in this channel.',
   'settings.tab.advanced': 'Advanced',
   'settings.reply.intro':
     'How Agents in this channel respond to messages that do not @mention them.',

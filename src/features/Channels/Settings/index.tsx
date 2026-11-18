@@ -15,7 +15,6 @@ import { visibleChannelDetail } from '../channelAccess';
 import { styles } from '../styles';
 import { DangerSection } from './DangerSection';
 import { GeneralSection } from './GeneralSection';
-import { MembersSection } from './MembersSection';
 import { ProjectSection } from './ProjectSection';
 import { ReplySection } from './ReplySection';
 import { settingsStyles } from './styles';
@@ -85,9 +84,6 @@ function EnabledChannelSettings() {
                   <ProjectSection projectId={channel.projectId} />
                 </div>
               )}
-              <div hidden={tab !== 'members'}>
-                <MembersSection detail={detail} />
-              </div>
               {tabs.includes('reply') && (
                 <div hidden={tab !== 'reply'} key={`reply:${channel.id}`}>
                   <ReplySection channelId={channel.id} />

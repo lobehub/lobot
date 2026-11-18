@@ -1,4 +1,4 @@
-type ChannelSettingsTab = 'advanced' | 'general' | 'members' | 'project' | 'reply';
+type ChannelSettingsTab = 'advanced' | 'general' | 'project' | 'reply';
 
 /**
  * An archived Channel takes no writes until it is reopened, so its replies cannot be edited. Only
@@ -10,7 +10,6 @@ export const channelSettingsTabs = (
 ): ChannelSettingsTab[] => [
   'general',
   ...(hasProject ? (['project'] as const) : []),
-  'members',
   ...(archived ? [] : (['reply'] as const)),
   'advanced',
 ];

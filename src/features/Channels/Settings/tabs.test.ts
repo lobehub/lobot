@@ -4,18 +4,12 @@ import { channelSettingsTabs, resolveChannelSettingsTab } from './tabs';
 
 describe('channelSettingsTabs', () => {
   it('drops replies for an archived Channel', () => {
-    expect(channelSettingsTabs(false)).toEqual(['general', 'members', 'reply', 'advanced']);
-    expect(channelSettingsTabs(true)).toEqual(['general', 'members', 'advanced']);
+    expect(channelSettingsTabs(false)).toEqual(['general', 'reply', 'advanced']);
+    expect(channelSettingsTabs(true)).toEqual(['general', 'advanced']);
   });
 
   it('shows the project of a project Channel', () => {
-    expect(channelSettingsTabs(false, true)).toEqual([
-      'general',
-      'project',
-      'members',
-      'reply',
-      'advanced',
-    ]);
+    expect(channelSettingsTabs(false, true)).toEqual(['general', 'project', 'reply', 'advanced']);
   });
 });
 
