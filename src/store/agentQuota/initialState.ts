@@ -1,10 +1,10 @@
 import type { ClaudeCodeLocalAccount } from '@lobechat/electron-client-ipc';
+import type { AgentAvailability } from '@lobot/types';
 
 import { createReplicaState, type ReplicaState } from '@/libs/replica';
 
 import type {
   QuotaAccount,
-  QuotaAccountLoad,
   QuotaBinding,
   QuotaDeviceAccount,
   QuotaHistory,
@@ -13,6 +13,10 @@ import type {
 } from './projection';
 
 export interface State {
+  /** Replica view of whether each agent can take work, keyed by agent id. */
+  agentAvailabilityMap: Record<string, AgentAvailability | null>;
+  /** Replica bookkeeping of `agentAvailabilityMap`. */
+  agentAvailabilityReplica: ReplicaState<AgentAvailability | null>;
   /**
    * Claude Code logins held on THIS desktop (default login + per-account
    * profiles). `undefined` until listed, and always on the web.
@@ -26,10 +30,6 @@ export interface State {
   quotaAccountsMap: Record<string, QuotaAccount[]>;
   /** Replica bookkeeping of `quotaAccountsMap`. */
   quotaAccountsReplica: ReplicaState<QuotaAccount[]>;
-  /** Replica view of the load of each account an agent may run on, keyed by agent id. */
-  quotaAgentLoadsMap: Record<string, QuotaAccountLoad[]>;
-  /** Replica bookkeeping of `quotaAgentLoadsMap`. */
-  quotaAgentLoadsReplica: ReplicaState<QuotaAccountLoad[]>;
   /** Replica view of each agent's account bindings, keyed by agent id. */
   quotaBindingsMap: Record<string, QuotaBinding[]>;
   /** Replica bookkeeping of `quotaBindingsMap`. */
@@ -65,13 +65,13 @@ export interface State {
 }
 
 export const initialState: State = {
+  agentAvailabilityMap: {},
+  agentAvailabilityReplica: createReplicaState(),
   claudeLocalAccounts: undefined,
   claudeLocalAccountsReplica: createReplicaState(),
   claudeLoginPending: false,
   quotaAccountsMap: {},
   quotaAccountsReplica: createReplicaState(),
-  quotaAgentLoadsMap: {},
-  quotaAgentLoadsReplica: createReplicaState(),
   quotaBindingsMap: {},
   quotaBindingsReplica: createReplicaState(),
   quotaConfirmed: {},

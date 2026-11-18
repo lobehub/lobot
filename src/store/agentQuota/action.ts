@@ -1,5 +1,6 @@
 import { isDesktop } from '@lobechat/const';
 import type { ClaudeCodeLocalAccount } from '@lobechat/electron-client-ipc';
+import type { AgentAvailability } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { type StateCreator } from 'zustand';
 
@@ -9,6 +10,7 @@ import {
   type ReplicaLens,
   type ReplicaSyncResult,
 } from '@/libs/replica';
+import { agentAvailabilityService } from '@/services/agentAvailability';
 import { agentQuotaService } from '@/services/agentQuota';
 import { heterogeneousAgentService } from '@/services/electron/heterogeneousAgent';
 import { getElectronStoreState } from '@/store/electron';
@@ -17,6 +19,7 @@ import { flattenActions } from '@/store/utils/flattenActions';
 
 import { initialState, type State } from './initialState';
 import {
+  agentAvailabilityResource,
   CLAUDE_LOCAL_ACCOUNTS_KEY,
   claudeLocalAccountsResource,
   hashQuotaSourceKey,
@@ -25,10 +28,7 @@ import {
   QUOTA_HISTORY_DAYS,
   QUOTA_HISTORY_WINDOW_LIMIT,
   type QuotaAccount,
-  type QuotaAccountLoad,
   quotaAccountsResource,
-  type QuotaAgentLoadsParams,
-  quotaAgentLoadsResource,
   type QuotaBinding,
   quotaBindingsResource,
   type QuotaDeviceAccount,
@@ -107,7 +107,7 @@ class ActionImpl {
   readonly #history;
   readonly #panel;
   readonly #localAccounts;
-  readonly #agentLoads;
+  readonly #availability;
   /** When each `<scope>|<resource>|<key>` last applied a server answer. */
   readonly #appliedAt = new Map<string, number>();
   /** Advanced by every `reset()`, so a live panel sample from before it is dropped. */
@@ -225,27 +225,15 @@ class ActionImpl {
       stateKey: 'claudeLocalAccountsReplica',
       view: claudeLocalAccountsLens,
     });
-    this.#agentLoads = createReplicaSlice(quotaAgentLoadsResource, {
-      actionPrefix: 'quotaAgentLoads',
-      fetcher: async ({ agentId, deviceId }): Promise<QuotaAccountLoad[]> => {
-        // An account pinned on the bound device is the only one the Agent runs on there, so the
-        // rest of its pool — logged in on other machines — cannot keep it on duty.
-        if (deviceId) {
-          const { accountId } = await agentQuotaService.getDeviceAccount(agentId, deviceId);
-          if (accountId) return agentQuotaService.resolveAccountLoads([accountId]);
-        }
-        const bindings = await agentQuotaService.listBindings(agentId);
-        const accountIds = bindings
-          .filter((binding) => binding.enabled && binding.role !== 'disabled')
-          .map((binding) => binding.accountId);
-        if (accountIds.length === 0) return [];
-        return agentQuotaService.resolveAccountLoads(accountIds);
-      },
+    this.#availability = createReplicaSlice(agentAvailabilityResource, {
+      actionPrefix: 'agentAvailability',
+      fetcher: async (agentId): Promise<AgentAvailability | null> =>
+        (await agentAvailabilityService.getAvailability([agentId]))[agentId] ?? null,
       get,
       merge: sameValue,
       set,
-      stateKey: 'quotaAgentLoadsReplica',
-      view: recordLens<Store, QuotaAccountLoad[]>('quotaAgentLoadsMap'),
+      stateKey: 'agentAvailabilityReplica',
+      view: recordLens<Store, AgentAvailability | null>('agentAvailabilityMap'),
     });
   }
 
@@ -284,13 +272,13 @@ class ActionImpl {
     });
 
   /**
-   * Sync the load of each account an agent may run on (`quotaAgentLoadsMap`),
-   * for its contact card's off-duty status.
+   * Sync whether an agent can take work (`agentAvailabilityMap`), for its contact
+   * card's status. The server resolves it the way dispatch does.
    */
-  useFetchQuotaAgentLoads = (
-    params: QuotaAgentLoadsParams | null,
+  useFetchAgentAvailability = (
+    agentId: string | null | undefined,
     schedule?: { refreshInterval?: number },
-  ): ReplicaSyncResult => this.#agentLoads.useSync(params, schedule);
+  ): ReplicaSyncResult => this.#availability.useSync(agentId || null, schedule);
 
   useFetchQuotaHistory = (accountId?: string | null): ReplicaSyncResult =>
     this.#history.useSync(accountId || null, this.#syncOptions('history', accountId));
@@ -512,7 +500,7 @@ class ActionImpl {
       this.#deviceAccount,
       this.#readings,
       this.#history,
-      this.#agentLoads,
+      this.#availability,
     ])
       void slice.clear().then(() => slice.revalidate());
     void this.#panel.clear();

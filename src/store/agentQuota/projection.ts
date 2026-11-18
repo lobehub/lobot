@@ -1,6 +1,6 @@
 import type { ClaudeCodeLocalAccount } from '@lobechat/electron-client-ipc';
 import type { QuotaLimitReading } from '@lobechat/heterogeneous-agents/quota';
-import type { QuotaDeviceAccount } from '@lobot/types';
+import type { AgentAvailability, QuotaDeviceAccount } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 import type { agentQuotaService } from '@/services/agentQuota';
@@ -179,20 +179,17 @@ export const claudeLocalAccountsResource = defineReplica<string, ClaudeCodeLocal
   version: 1,
 });
 
-export interface QuotaAgentLoadsParams {
-  agentId: string;
-  /** The device the Agent is bound to; an account pinned there is the only one that counts. */
-  deviceId: string | null;
-}
+/** Replica name of agent availability (`agentAvailabilityResource`). */
+export const AGENT_AVAILABILITY_REPLICA = 'agentAvailability';
 
-export const quotaAgentLoadsKey = ({ agentId, deviceId }: QuotaAgentLoadsParams) =>
-  `${agentId}:${deviceId ?? ''}`;
-
-/** The load of each account an agent may run on, keyed by agent and bound device. */
-export const quotaAgentLoadsResource = defineReplica<QuotaAgentLoadsParams, QuotaAccountLoad[]>({
-  key: quotaAgentLoadsKey,
-  name: 'agentQuotaAgentLoads',
-  persist: { maxEntries: 50 },
-  storage: 'indexedDB',
-  version: 2,
+/**
+ * Whether an agent can take work, as the server resolves it for the caller; `null` when the
+ * server has no answer for it (the caller cannot see the agent). Kept in memory: a status
+ * restored from an earlier session would paint a state that no longer holds.
+ */
+export const agentAvailabilityResource = defineReplica<string, AgentAvailability | null>({
+  key: (agentId) => agentId,
+  name: AGENT_AVAILABILITY_REPLICA,
+  storage: 'memory',
+  version: 1,
 });

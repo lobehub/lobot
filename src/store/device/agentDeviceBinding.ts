@@ -1,5 +1,8 @@
 import { cacheScope, revalidateReplica } from '@/libs/replica';
 
+/** Replica name of agent availability (`agentAvailabilityResource` in the agent quota store). */
+const AGENT_AVAILABILITY_REPLICA = 'agentAvailability';
+
 /** Replica name of one agent's resolved device binding (`agentDeviceBindingResource`). */
 export const AGENT_DEVICE_BINDING_REPLICA = 'agentDeviceBinding';
 
@@ -15,4 +18,8 @@ export const AGENT_DEVICE_BINDING_REPLICA = 'agentDeviceBinding';
  * close a module cycle through `@/libs/replica`.
  */
 export const refreshAgentDeviceBindings = () =>
-  revalidateReplica({ name: AGENT_DEVICE_BINDING_REPLICA, scope: cacheScope });
+  Promise.all([
+    revalidateReplica({ name: AGENT_DEVICE_BINDING_REPLICA, scope: cacheScope }),
+    // Availability is resolved on the server from the same binding.
+    revalidateReplica({ name: AGENT_AVAILABILITY_REPLICA, scope: cacheScope }),
+  ]);
