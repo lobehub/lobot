@@ -5,6 +5,7 @@ import { Button, createModal, ModalFooter } from '@lobehub/ui';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useLaunchAgentDiscovery } from '@/features/ConnectAgent/useLaunchAgentDiscovery';
 import { useMacWindowFullscreen } from '@/features/Electron/system/useMacWindowFullscreen';
 import { rendererOtaService } from '@/services/electron/rendererOta';
 import { useElectronStore } from '@/store/electron';
@@ -22,6 +23,7 @@ import { useElectronStore } from '@/store/electron';
  */
 const ElectronAppStateSync = () => {
   useMacWindowFullscreen();
+  useLaunchAgentDiscovery();
   const { t: tElectron } = useTranslation('electron');
   const { t } = useTranslation('common');
   const dismissConfirmation = useRef<(() => void) | null>(null);

@@ -18,6 +18,15 @@ export default {
   'keepAwake.title2': 'So your agents can reach it anytime',
   'keepAwake.title3': 'Even when you step away',
   'navigation.next': 'Continue',
+  'discoverAgents.description':
+    'These agents are installed on this computer. Pick the ones to bring in — each gets its own chat right away.',
+  'discoverAgents.empty': 'No new agents found on this computer. You can connect one later from the sidebar.',
+  'discoverAgents.footerNote': 'Agents installed later will be offered when the app starts',
+  'discoverAgents.import': 'Import {{count}} and finish',
+  'discoverAgents.scanning': 'Looking for agents on this computer…',
+  'discoverAgents.skip': 'Finish',
+  'discoverAgents.title': 'Found some agents on your computer',
+  'discoverAgents.title2': 'Want to bring them in?',
   'next': 'Next',
 
   'screen1.description': 'AI-powered productivity platform with intelligent agents',

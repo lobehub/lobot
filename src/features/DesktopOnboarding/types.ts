@@ -1,5 +1,6 @@
 export enum DesktopOnboardingScreen {
   DataMode = 'data-mode',
+  DiscoverAgents = 'discover-agents',
   KeepAwake = 'keep-awake',
   Login = 'login',
   Permissions = 'permissions',

@@ -226,6 +226,11 @@ export interface SystemStatus {
   contactListCollapsedSections?: string[];
   /** Order of the Contacts list; absent means by name. Device-local view setting. */
   contactListSortBy?: ContactListSortBy;
+  /**
+   * Local agent types already offered by auto-discovery (imported or declined),
+   * so a deleted or dismissed agent is not offered again on the next launch.
+   */
+  discoveredAgentTypes?: string[];
   disabledModelProvidersSortType?: string;
   disabledModelsSortType?: string;
   /**

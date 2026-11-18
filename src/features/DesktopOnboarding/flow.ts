@@ -18,12 +18,14 @@ const getDesktopOnboardingFlow = (isMac: boolean) =>
         DesktopOnboardingScreen.Permissions,
         DesktopOnboardingScreen.KeepAwake,
         DesktopOnboardingScreen.DataMode,
+        DesktopOnboardingScreen.DiscoverAgents,
       ]
     : [
         DesktopOnboardingScreen.Welcome,
         DesktopOnboardingScreen.Login,
         DesktopOnboardingScreen.KeepAwake,
         DesktopOnboardingScreen.DataMode,
+        DesktopOnboardingScreen.DiscoverAgents,
       ];
 
 export const resolveNextScreen = ({
@@ -41,7 +43,12 @@ export const resolveNextScreen = ({
   const index = flow.indexOf(current);
   const next = flow[index + 1] ?? null;
 
-  return next ?? (isAuthenticated ? null : DesktopOnboardingScreen.Login);
+  // Discovering agents imports them into the account, so it needs a session.
+  if (!isAuthenticated && (!next || next === DesktopOnboardingScreen.DiscoverAgents)) {
+    return DesktopOnboardingScreen.Login;
+  }
+
+  return next;
 };
 
 export const resolvePreviousScreen = ({

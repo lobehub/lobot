@@ -13,6 +13,7 @@ import { resolveNextScreen, resolvePreviousScreen } from './flow';
 import OnboardingContainer from './Layout';
 import { resolveInitialScreen } from './resolveInitialScreen';
 import DataModeStep from './steps/DataModeStep';
+import DiscoverAgentsStep from './steps/DiscoverAgentsStep';
 import KeepAwakeStep from './steps/KeepAwakeStep';
 import LoginStep from './steps/LoginStep';
 import PermissionsStep from './steps/PermissionsStep';
@@ -209,6 +210,9 @@ const DesktopOnboardingPage = memo(() => {
       }
       case DesktopOnboardingScreen.DataMode: {
         return <DataModeStep onBack={goToPreviousStep} onNext={goToNextStep} />;
+      }
+      case DesktopOnboardingScreen.DiscoverAgents: {
+        return <DiscoverAgentsStep onBack={goToPreviousStep} onNext={goToNextStep} />;
       }
       case DesktopOnboardingScreen.Login: {
         return <LoginStep onBack={goToPreviousStep} onNext={goToNextStep} />;

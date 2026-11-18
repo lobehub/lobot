@@ -71,7 +71,7 @@ describe('desktop onboarding flow', () => {
       ).toBe(DesktopOnboardingScreen.DataMode);
     });
 
-    it('finishes after DataMode for a first-time user', () => {
+    it('continues from DataMode to DiscoverAgents', () => {
       expect(
         resolveNextScreen({
           current: DesktopOnboardingScreen.DataMode,
@@ -79,7 +79,29 @@ describe('desktop onboarding flow', () => {
           isAuthenticated: true,
           isMac: true,
         }),
+      ).toBe(DesktopOnboardingScreen.DiscoverAgents);
+    });
+
+    it('finishes after DiscoverAgents for a first-time user', () => {
+      expect(
+        resolveNextScreen({
+          current: DesktopOnboardingScreen.DiscoverAgents,
+          everCompleted: false,
+          isAuthenticated: true,
+          isMac: false,
+        }),
       ).toBeNull();
+    });
+
+    it('routes an unauthenticated DiscoverAgents deep link to Login', () => {
+      expect(
+        resolveNextScreen({
+          current: DesktopOnboardingScreen.DiscoverAgents,
+          everCompleted: false,
+          isAuthenticated: false,
+          isMac: true,
+        }),
+      ).toBe(DesktopOnboardingScreen.Login);
     });
 
     it('does not leave Login before authentication succeeds', () => {
@@ -117,6 +139,15 @@ describe('desktop onboarding flow', () => {
   });
 
   describe('resolvePreviousScreen', () => {
+    it('returns from DiscoverAgents to DataMode', () => {
+      expect(
+        resolvePreviousScreen({
+          current: DesktopOnboardingScreen.DiscoverAgents,
+          isMac: true,
+        }),
+      ).toBe(DesktopOnboardingScreen.DataMode);
+    });
+
     it('returns from Login to Welcome', () => {
       expect(
         resolvePreviousScreen({
