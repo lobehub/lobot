@@ -96,6 +96,19 @@ describe('PersonDetail', () => {
     state.workspace = null;
   });
 
+  it("shows a listed contact's name before their profile loads, without any action yet", () => {
+    state.profile = undefined;
+    state.contacts = [
+      { type: 'user', user: { avatar: null, fullName: 'Bo', id: 'u_bo', username: 'bo' } },
+    ];
+    renderCard();
+
+    expect(screen.getByText('Bo')).toBeInTheDocument();
+    expect(screen.getByText('@bo')).toBeInTheDocument();
+    expect(screen.queryByText('contacts.sendMessage')).not.toBeInTheDocument();
+    expect(screen.queryByText('contacts.person.remove')).not.toBeInTheDocument();
+  });
+
   it('messages a contact in the personal space', async () => {
     state.profile = profile('contact');
     openPeer.mockResolvedValue('chn_peer');

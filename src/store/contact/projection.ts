@@ -20,11 +20,12 @@ export const contactRequestsResource = defineReplica<Record<string, never>, Cont
   version: 1,
 });
 
+/** Persisted so a person's card opens from the last copy after a restart, then revalidates. */
 export const contactProfileResource = defineReplica<{ userId: string }, ContactUserProfileData>({
   fetcher: ({ userId }) => contactService.userProfile(userId),
   key: ({ userId }) => userId,
   name: 'contactProfile',
-  storage: 'memory',
+  storage: 'indexedDB',
   version: 1,
 });
 

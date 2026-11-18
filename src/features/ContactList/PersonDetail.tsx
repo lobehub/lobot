@@ -1,8 +1,8 @@
 'use client';
 
 import { CHANNEL_URL } from '@lobechat/const';
-import type { ContactAgentProfile, ContactRequestItem } from '@lobot/types';
 import { Button, confirmModal, Empty, Flexbox, Skeleton, Text, toast } from '@lobehub/ui';
+import type { ContactAgentProfile, ContactRequestItem, ContactUserProfile } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import {
   CheckIcon,
@@ -112,6 +112,21 @@ const SharedAgentRow = memo<{ agent: ContactAgentProfile }>(({ agent }) => {
 
 SharedAgentRow.displayName = 'SharedAgentRow';
 
+/** Avatar, name and handle: everything a person's card shows before their relation is known. */
+const PersonHeader = ({ user }: { user: ContactUserProfile }) => {
+  const { t } = useTranslation('common');
+  const name = personName(user, t('contacts.people'));
+  return (
+    <>
+      <UserAvatar avatar={user.avatar} name={name} shape={'circle'} size={AVATAR_SIZE} />
+      <Text ellipsis as={'h1'} fontSize={22} style={{ margin: 0, maxWidth: '100%' }} weight={600}>
+        {name}
+      </Text>
+      {user.username && <Text type={'secondary'}>@{user.username}</Text>}
+    </>
+  );
+};
+
 const WORKSPACE_MANAGER_ROLES = new Set(['owner', 'admin']);
 
 /**
@@ -138,19 +153,34 @@ const PersonCard = memo<{ userId: string }>(({ userId }) => {
   const request = useContactStore((s) =>
     contactSelectors.requests(s).find((item: ContactRequestItem) => item.user.id === userId),
   );
+  // A contact's name and avatar are already in the persisted list; show them while the profile loads.
+  const listedUser = useContactStore((s) => contactSelectors.userById(userId)(s)?.user);
   const { pending, run } = usePendingAction();
 
-  if (!profile)
-    return error ? (
-      <Flexbox align={'center'} flex={1} justify={'center'} {...stylex.props(styles.state)}>
-        <AsyncError error={error} variant="inline" />
-      </Flexbox>
-    ) : (
+  if (!profile) {
+    if (error)
+      return (
+        <Flexbox align={'center'} flex={1} justify={'center'} {...stylex.props(styles.state)}>
+          <AsyncError error={error} variant="inline" />
+        </Flexbox>
+      );
+    if (listedUser)
+      return (
+        <Flexbox align={'center'} gap={8} {...stylex.props(styles.body, styles.coverless)}>
+          <PersonHeader user={listedUser} />
+          <div {...stylex.props(styles.actions)}>
+            <Skeleton height={66} radius={12} width={'100%'} />
+            <Skeleton height={66} radius={12} width={'100%'} />
+          </div>
+        </Flexbox>
+      );
+    return (
       <Flexbox align={'center'} gap={12} {...stylex.props(styles.state)}>
         <Skeleton.Avatar shape={'circle'} size={AVATAR_SIZE} />
         <Skeleton height={28} width={160} />
       </Flexbox>
     );
+  }
 
   const { relation, sharedAgents, user } = profile;
   const name = personName(user, t('contacts.people'));
@@ -183,11 +213,7 @@ const PersonCard = memo<{ userId: string }>(({ userId }) => {
 
   return (
     <Flexbox align={'center'} gap={8} {...stylex.props(styles.body, styles.coverless)}>
-      <UserAvatar avatar={user.avatar} name={name} shape={'circle'} size={AVATAR_SIZE} />
-      <Text ellipsis as={'h1'} fontSize={22} style={{ margin: 0, maxWidth: '100%' }} weight={600}>
-        {name}
-      </Text>
-      {user.username && <Text type={'secondary'}>@{user.username}</Text>}
+      <PersonHeader user={user} />
       {workspace && member?.title && (
         <span className={cardStyles.role} title={member.title}>
           {member.title}
