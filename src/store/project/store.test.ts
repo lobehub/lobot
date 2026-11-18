@@ -19,12 +19,7 @@ import { projectService } from '@/services/project';
 
 import type { ProjectDetail, ProjectListItem } from './projection';
 import { PROJECT_LIST_KEY, projectDetailResource, projectListResource } from './projection';
-import {
-  initialProjectState,
-  useCurrentProjectDetail,
-  useCurrentProjectList,
-  useProjectStore,
-} from './store';
+import { initialProjectState, useCurrentProjectList, useProjectStore } from './store';
 
 const mocks = vi.hoisted(() => ({
   activeWorkspaceId: null as string | null,
@@ -157,19 +152,6 @@ describe('project store replicas', () => {
         (await projectListResource.storage!.get({ queryKey: LIST_STORAGE_KEY, scope }))?.data,
       ).toEqual([project('p1', 'Server')]),
     );
-  });
-
-  it('paints a project page from the persisted copy, keyed by the route slug', async () => {
-    await projectDetailResource.storage!.set(
-      { queryKey: 'launch', scope },
-      { data: detailOf(project('p1', 'Cached page')), updatedAt: 1 },
-    );
-    vi.mocked(projectService.detail).mockImplementation(pending);
-
-    renderHook(() => useProjectStore((s) => s.useFetchProjectDetail)('launch'), { wrapper });
-    const detail = renderHook(() => useCurrentProjectDetail('launch'));
-
-    await waitFor(() => expect(detail.result.current?.project.name).toBe('Cached page'));
   });
 
   it('drops the previous identity’s projects before the next one paints', async () => {

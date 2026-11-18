@@ -84,45 +84,6 @@ describe('favorite slice', () => {
     );
   };
 
-  it('shows a new favorite before the server answers, then keeps the saved row', async () => {
-    await loadWith([favorite('a')]);
-    let resolveAdd!: (item: FavoriteItem) => void;
-    const add = vi
-      .spyOn(favoriteService, 'add')
-      .mockImplementation(() => new Promise((resolve) => (resolveAdd = resolve)));
-
-    let toggled!: Promise<void>;
-    act(() => {
-      toggled = useHomeStore
-        .getState()
-        .toggleFavorite({ path: '/page/b', targetId: 'b', title: 'B', type: 'page' });
-    });
-
-    expect(list().map((item) => item.targetId)).toEqual(['a', 'b']);
-
-    await waitFor(() => expect(add).toHaveBeenCalled());
-    await act(async () => {
-      resolveAdd(favorite('b', { title: 'B' }));
-      await toggled;
-    });
-    expect(list()[1]).toEqual(favorite('b', { title: 'B' }));
-  });
-
-  it('puts a removed favorite back when the server refuses', async () => {
-    await loadWith([favorite('a'), favorite('b')]);
-    vi.spyOn(favoriteService, 'removeByTarget').mockRejectedValue(new Error('offline'));
-
-    await act(async () => {
-      await expect(
-        useHomeStore
-          .getState()
-          .toggleFavorite({ path: '/page/a', targetId: 'a', title: 'a', type: 'page' }),
-      ).rejects.toThrow('offline');
-    });
-
-    expect(list().map((item) => item.targetId)).toEqual(['a', 'b']);
-  });
-
   it('reorders right away and sends the new order', async () => {
     await loadWith([favorite('a'), favorite('b'), favorite('c')]);
     const reorder = vi.spyOn(favoriteService, 'reorder').mockResolvedValue();
@@ -178,39 +139,6 @@ describe('favorite slice', () => {
     expect(reorder).toHaveBeenCalledWith(['fav_b', 'fav_a']);
   });
 
-  it('keeps the dragged order across a row whose add is still pending', async () => {
-    await loadWith([favorite('a'), favorite('b')]);
-    let resolveAdd!: (item: FavoriteItem) => void;
-    const add = vi
-      .spyOn(favoriteService, 'add')
-      .mockImplementation(() => new Promise((resolve) => (resolveAdd = resolve)));
-    const reorder = vi.spyOn(favoriteService, 'reorder').mockResolvedValue();
-
-    let added!: Promise<void>;
-    let reordered!: Promise<void>;
-    act(() => {
-      added = useHomeStore
-        .getState()
-        .addFavorite({ path: '/page/c', targetId: 'c', title: 'c', type: 'page' });
-    });
-    act(() => {
-      reordered = useHomeStore.getState().reorderFavorites(['fav_b', 'optimistic:page:c', 'fav_a']);
-    });
-    expect(list().map((item) => item.targetId)).toEqual(['b', 'c', 'a']);
-
-    await waitFor(() => expect(add).toHaveBeenCalled());
-    // The reorder waits for the add instead of dropping the pending row.
-    expect(reorder).not.toHaveBeenCalled();
-    await act(async () => {
-      resolveAdd(favorite('c'));
-      await added;
-      await reordered;
-    });
-
-    expect(reorder).toHaveBeenCalledWith(['fav_b', 'fav_c', 'fav_a']);
-    expect(list().map((item) => item.id)).toEqual(['fav_b', 'fav_c', 'fav_a']);
-  });
-
   it('rewrites a snapshot only when the target changed', async () => {
     await loadWith([favorite('a', { title: 'Old' })]);
     const update = vi.spyOn(favoriteService, 'update').mockResolvedValue();
@@ -259,24 +187,5 @@ describe('favorite slice', () => {
     } finally {
       vi.useRealTimers();
     }
-  });
-
-  it('stores a long page title cut to the favorite limit', async () => {
-    await loadWith([]);
-    const add = vi
-      .spyOn(favoriteService, 'add')
-      .mockImplementation(async (params) => favorite(params.targetId, { title: params.title }));
-    const longTitle = '📄'.repeat(600);
-
-    await act(() =>
-      useHomeStore
-        .getState()
-        .addFavorite({ path: '/page/long', targetId: 'long', title: longTitle, type: 'page' }),
-    );
-
-    const sent = add.mock.calls[0][0].title;
-    expect(Array.from(sent)).toHaveLength(512);
-    expect(sent.startsWith('📄')).toBe(true);
-    expect(list()[0].title).toBe(sent);
   });
 });

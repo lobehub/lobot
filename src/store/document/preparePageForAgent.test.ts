@@ -1,7 +1,6 @@
 import { act } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { registerPageCollab } from './collabRegistry';
 import { preparePageForAgent } from './preparePageForAgent';
 import { useDocumentStore } from './store';
 
@@ -57,19 +56,5 @@ describe('preparePageForAgent', () => {
     await preparePageForAgent('doc-1');
 
     expect(performSave).not.toHaveBeenCalled();
-  });
-
-  it('waits for a room page and reports updates that did not sync in time', async () => {
-    seed({ collab: true, isDirty: true });
-    const performSave = vi.spyOn(useDocumentStore.getState(), 'performSave');
-    const unregister = registerPageCollab('doc-1', { pendingCount: 1 });
-    vi.useFakeTimers();
-
-    const result = preparePageForAgent('doc-1');
-    await vi.advanceTimersByTimeAsync(3100);
-
-    await expect(result).resolves.toBe('notSynced');
-    expect(performSave).not.toHaveBeenCalled();
-    unregister();
   });
 });

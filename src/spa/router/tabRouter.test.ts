@@ -10,34 +10,20 @@ const matchedPaths = (router: ReturnType<typeof createTabRouter>) =>
   router.state.matches.map((match) => match.route.path);
 
 describe('createTabRouter', () => {
-  it('matches the agent chat route for /agent/abc', () => {
-    const router = createTabRouter('/agent/abc');
+  it('matches the contact route for /agents/abc', () => {
+    const router = createTabRouter('/agents/abc');
     const paths = matchedPaths(router);
 
-    expect(router.state.location.pathname).toBe('/agent/abc');
-    expect(paths).toContain('agent');
-    expect(paths).toContain(':aid');
+    expect(router.state.location.pathname).toBe('/agents/abc');
+    expect(paths).toContain('agents');
+    expect(paths).toContain(':id');
   });
 
-  it('matches a nested agent route for /agent/abc/topics', () => {
-    const paths = matchedPaths(createTabRouter('/agent/abc/topics'));
+  it('matches a nested channel route for /channels/abc/settings', () => {
+    const paths = matchedPaths(createTabRouter('/channels/abc/settings'));
 
-    expect(paths).toContain(':aid');
-    expect(paths).toContain('topics');
-  });
-
-  it('matches the workspace-mirrored agent route for /my-team/agent/abc', () => {
-    const paths = matchedPaths(createTabRouter('/my-team/agent/abc'));
-
-    expect(paths).toContain(':workspaceSlug');
-    expect(paths).toContain('agent');
-    expect(paths).toContain(':aid');
-  });
-
-  it('matches the catch-all route for an unknown URL', () => {
-    const paths = matchedPaths(createTabRouter('/definitely/not/a/route'));
-
-    expect(paths.at(-1)).toBe('*');
+    expect(paths).toContain('channels');
+    expect(paths).toContain(':channelId/settings');
   });
 
   it('still reports the location from the root error element, which replaces the layout', () => {
@@ -50,14 +36,14 @@ describe('createTabRouter', () => {
   });
 
   it('creates independent instances for different URLs', () => {
-    const first = createTabRouter('/agent/abc');
-    const second = createTabRouter('/image');
+    const first = createTabRouter('/agents/abc');
+    const second = createTabRouter('/channels/xyz');
 
-    expect(first.state.location.pathname).toBe('/agent/abc');
-    expect(second.state.location.pathname).toBe('/image');
+    expect(first.state.location.pathname).toBe('/agents/abc');
+    expect(second.state.location.pathname).toBe('/channels/xyz');
     expect(first.state.location.pathname).not.toBe(second.state.location.pathname);
-    expect(matchedPaths(first)).toContain('agent');
-    expect(matchedPaths(second)).toContain('image');
+    expect(matchedPaths(first)).toContain('agents');
+    expect(matchedPaths(second)).toContain('channels');
   });
 });
 

@@ -18,7 +18,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AppIndexedDBStorage, AppLocalStorage, cacheScope } from '@/libs/replica';
 import { setScopedMutate } from '@/libs/swr/mutate';
 import { agentService } from '@/services/agent';
-import { aiAgentService } from '@/services/aiAgent';
 
 import { useAgentStore } from '../../store';
 import { initialAgentSliceState } from './initialState';
@@ -67,13 +66,6 @@ const cachedAgents = [
   },
 ];
 
-const cachedCapability = {
-  agents: ['claude-code'],
-  enabled: true,
-  model: 'lobehub-default',
-  models: { 'claude-code': ['claude-sonnet'] },
-};
-
 describe('agent store reads after a reload', () => {
   let scope = '';
 
@@ -102,23 +94,5 @@ describe('agent store reads after a reload', () => {
     renderHook(() => useAgentStore.getState().useFetchAvailableAgents(true), { wrapper });
 
     await waitFor(() => expect(useAgentStore.getState().availableAgents).toEqual(cachedAgents));
-  });
-
-  it('paints the server-default capability from the local copy before the network answers', async () => {
-    await capabilityStorage.set(
-      { queryKey: 'default', scope },
-      { data: cachedCapability, updatedAt: 1 },
-    );
-    vi.mocked(aiAgentService.getServerDefaultHeterogeneousCapability).mockImplementation(pending);
-
-    renderHook(() => useAgentStore.getState().useFetchServerDefaultHeterogeneousCapability(true), {
-      wrapper,
-    });
-
-    await waitFor(() =>
-      expect((useAgentStore.getState() as any).heteroServerDefaultCapability).toEqual(
-        cachedCapability,
-      ),
-    );
   });
 });

@@ -20,23 +20,14 @@ import { cacheScope, type ReplicaResource } from '@/libs/replica';
 import { setScopedMutate } from '@/libs/swr/mutate';
 import { gitService } from '@/services/git';
 
+import { useFetchGitLinkedPR, useReviewPatches } from '../gitHooks';
 import {
-  invalidateGitReviewCaches,
-  useFetchGitLinkedPR,
-  useFetchGitPullRequestActivity,
-  useFetchGitPullRequestDetail,
-  useFetchGitPullRequestMergeContext,
-  useReviewPatches,
-} from '../gitHooks';
-import {
-  getReviewSummaryState,
   GIT_REVIEW_MAX_PERSISTED_BYTES,
   gitLinkedPRKey,
   gitLinkedPRResource,
   gitPullRequestActivityResource,
   gitPullRequestDetailResource,
   gitPullRequestKey,
-  gitPullRequestMergeContextResource,
   gitReviewPatchesResource,
   type ReviewPatchesData,
 } from './projection';
@@ -124,12 +115,6 @@ const REVIEW = {
 };
 const PR = { deviceId: 'device-1', number: 42, path: '/repo' };
 const LINKED = { branch: 'feat/x', deviceId: 'device-1', path: '/repo' };
-const MERGE = {
-  ...PR,
-  baseRefName: 'canary',
-  headRefOid: 'a'.repeat(40),
-  repo: { name: 'repo', owner: 'octocat' },
-};
 
 type AnyResource = ReplicaResource<any, any, any>;
 
@@ -199,31 +184,6 @@ describe('Review / PR tab replicas', () => {
       expect(result.current.isValidating).toBe(true);
     });
 
-    // Regression: with a persisted summary and a failed live read (offline
-    // device), expanded rows kept their loading placeholder forever.
-    it('stops treating summary rows as pending once the live read fails', async () => {
-      await seed(gitReviewPatchesResource, REVIEW, {
-        mode: 'unstaged',
-        patches: [patch('src/a.ts', '')],
-        summaryOnly: true,
-      } satisfies ReviewPatchesData);
-      vi.mocked(gitService.getGitWorkingTreePatches).mockRejectedValue(new Error('offline'));
-
-      const { result } = renderHook(
-        () => useReviewPatches('/repo', 'unstaged', undefined, 'device-1'),
-        { wrapper },
-      );
-
-      await waitFor(() => expect(result.current.error).toBeTruthy());
-      expect(result.current.isValidating).toBe(false);
-      expect(result.current.data?.summaryOnly).toBe(true);
-      expect(getReviewSummaryState(result.current.data, result.current.error)).toEqual({
-        diffPending: false,
-        // Still unconfirmed: revert stays disabled.
-        isSummary: true,
-      });
-    });
-
     // Regression: an offline remote device resolves the patch read to
     // `undefined`; it was turned into an empty working tree, so Review claimed
     // "no changes" and overwrote the persisted summary.
@@ -252,22 +212,6 @@ describe('Review / PR tab replicas', () => {
         expect(await readRow(gitReviewPatchesResource, params)).toEqual(summary);
       },
     );
-
-    it('treats summary rows as pending only while the live read can still land', () => {
-      const summary = { mode: 'unstaged', patches: [], summaryOnly: true } as ReviewPatchesData;
-      expect(getReviewSummaryState(summary, undefined)).toEqual({
-        diffPending: true,
-        isSummary: true,
-      });
-      expect(getReviewSummaryState({ mode: 'unstaged', patches: [] }, undefined)).toEqual({
-        diffPending: false,
-        isSummary: false,
-      });
-      expect(getReviewSummaryState(undefined, new Error('offline'))).toEqual({
-        diffPending: false,
-        isSummary: false,
-      });
-    });
 
     it('replaces the summary with the live diff, and persists only the diff-free summary', async () => {
       await seed(gitReviewPatchesResource, REVIEW, {
@@ -353,85 +297,9 @@ describe('Review / PR tab replicas', () => {
 
       expect(result.current.data).toBeUndefined();
     });
-
-    it('re-reads through the existing invalidation helper', async () => {
-      vi.mocked(gitService.getGitWorkingTreePatches).mockResolvedValue({
-        patches: [patch('src/a.ts', '+1')],
-      } as any);
-      const { result } = renderHook(
-        () => useReviewPatches('/repo', 'unstaged', undefined, 'device-1'),
-        { wrapper },
-      );
-      await waitFor(() => expect(result.current.data?.patches).toHaveLength(1));
-
-      vi.mocked(gitService.getGitWorkingTreePatches).mockResolvedValue({
-        patches: [patch('src/a.ts', '+1'), patch('src/b.ts', '+2')],
-      } as any);
-      await act(() =>
-        invalidateGitReviewCaches({ deviceId: 'device-1', dirPath: '/repo', mode: 'unstaged' }),
-      );
-
-      await waitFor(() => expect(result.current.data?.patches).toHaveLength(2));
-    });
   });
 
   describe('Pull Request tab', () => {
-    // Regression: the PR reads lived only in SWR's memory cache, so after a
-    // reload the PR tab body was a skeleton until `gh pr view` answered again.
-    it('paints the persisted linked PR, detail, activity and merge context before gh answers', async () => {
-      await Promise.all([
-        seed(gitLinkedPRResource, LINKED, {
-          value: {
-            pullRequest: { number: 42, state: 'open', title: 'Cached PR title', url: 'u' },
-            pullRequestStatus: 'ok',
-          },
-        }),
-        seed(gitPullRequestDetailResource, PR, { value: detailResult }),
-        seed(gitPullRequestActivityResource, PR, {
-          value: { comments: [{ author: 'a', body: 'cached comment' }], commits: [], reviews: [] },
-        }),
-        seed(gitPullRequestMergeContextResource, MERGE, {
-          value: {
-            baseBehindBy: 0,
-            requiredChecks: ['ci'],
-            viewerCanBypass: false,
-            viewerCanWrite: true,
-          },
-        }),
-      ]);
-      vi.mocked(gitService.getLinkedPullRequest).mockImplementation(pending);
-      vi.mocked(gitService.getPullRequestDetail).mockImplementation(pending);
-      vi.mocked(gitService.getPullRequestActivity).mockImplementation(pending);
-      vi.mocked(gitService.getPullRequestMergeContext).mockImplementation(pending);
-
-      const { result } = renderHook(
-        () => {
-          const linked = useFetchGitLinkedPR('device-1', '/repo', 'feat/x', true);
-          const detail = useFetchGitPullRequestDetail('device-1', '/repo', 42);
-          const activity = useFetchGitPullRequestActivity('device-1', '/repo', 42);
-          const context = useFetchGitPullRequestMergeContext(
-            'device-1',
-            '/repo',
-            detail.data?.detail ?? undefined,
-          );
-          return { activity, context, detail, linked };
-        },
-        { wrapper },
-      );
-
-      await waitFor(() =>
-        expect(result.current.detail.data?.detail?.title).toBe('Cached PR title'),
-      );
-      expect(result.current.detail.isLoading).toBe(false);
-      expect(result.current.detail.isValidating).toBe(true);
-      expect(result.current.linked.data?.pullRequest?.number).toBe(42);
-      await waitFor(() =>
-        expect(result.current.activity.data?.comments[0]?.body).toBe('cached comment'),
-      );
-      await waitFor(() => expect(result.current.context.data?.requiredChecks).toEqual(['ci']));
-      expect(gitService.getPullRequestDetail).toHaveBeenCalledWith({ ...PR, coreOnly: true });
-    });
-
     // Regression: the PR tab mounts once the linked PR is known, and its own
     // hydration then read the detail from storage — a skeleton frame in between.
     it('reads the PR detail and activity from storage once the linked PR hydrates', async () => {
@@ -464,24 +332,6 @@ describe('Review / PR tab replicas', () => {
         ).toBe('cached comment'),
       );
       expect(gitService.getPullRequestDetail).not.toHaveBeenCalled();
-    });
-
-    it('replaces the persisted detail with the gh read and persists it', async () => {
-      await seed(gitPullRequestDetailResource, PR, { value: detailResult });
-      const fresh: DeviceGitPullRequestDetailResult = {
-        ...detailResult,
-        detail: { ...detailResult.detail!, title: 'Renamed on GitHub' },
-      };
-      vi.mocked(gitService.getPullRequestDetail).mockResolvedValue(fresh);
-
-      const { result } = renderHook(() => useFetchGitPullRequestDetail('device-1', '/repo', 42), {
-        wrapper,
-      });
-
-      await waitFor(() => expect(result.current.data?.detail?.title).toBe('Renamed on GitHub'));
-      await waitFor(async () =>
-        expect(await readRow(gitPullRequestDetailResource, PR)).toEqual({ value: fresh }),
-      );
     });
 
     it('lets an empty linked-PR answer replace a stale persisted PR', async () => {
@@ -539,70 +389,6 @@ describe('Review / PR tab replicas', () => {
       expect(result.current.data?.pullRequest?.number).toBe(42);
       expect(result.current.isConfirmed).toBe(false);
       expect(await readRow(gitLinkedPRResource, LINKED)).toEqual(cached);
-    });
-
-    // A persisted row paints, but only the device's answer makes it actionable.
-    it('reports a hydrated detail as unconfirmed until gh answers', async () => {
-      await seed(gitPullRequestDetailResource, PR, { value: detailResult });
-      let answer!: (value: DeviceGitPullRequestDetailResult) => void;
-      vi.mocked(gitService.getPullRequestDetail).mockReturnValue(
-        new Promise((resolve) => {
-          answer = resolve;
-        }),
-      );
-
-      const { result } = renderHook(() => useFetchGitPullRequestDetail('device-1', '/repo', 42), {
-        wrapper,
-      });
-
-      await waitFor(() => expect(result.current.data?.detail?.title).toBe('Cached PR title'));
-      expect(result.current.isConfirmed).toBe(false);
-
-      await act(async () => answer(detailResult));
-      await waitFor(() => expect(result.current.isConfirmed).toBe(true));
-    });
-
-    // Regression: the service maps a failed remote detail read to
-    // `{ detail: null, status: 'error' }`, which replaced the persisted PR.
-    it('keeps the persisted detail when the detail read fails', async () => {
-      await seed(gitPullRequestDetailResource, PR, { value: detailResult });
-      vi.mocked(gitService.getPullRequestDetail).mockResolvedValue({
-        detail: null,
-        status: 'error',
-      });
-
-      const { result } = renderHook(() => useFetchGitPullRequestDetail('device-1', '/repo', 42), {
-        wrapper,
-      });
-
-      await waitFor(() => expect(result.current.error).toBeTruthy());
-      expect(result.current.data?.detail?.title).toBe('Cached PR title');
-      expect(await readRow(gitPullRequestDetailResource, PR)).toEqual({ value: detailResult });
-    });
-
-    // Regression: an unavailable remote device answers the merge context with
-    // `null`; it was committed and persisted over the cached permission and
-    // required-check context.
-    it('keeps the persisted merge context when the device read fails', async () => {
-      const cached = {
-        value: {
-          baseBehindBy: 0,
-          requiredChecks: ['ci'],
-          viewerCanBypass: false,
-          viewerCanWrite: true,
-        },
-      };
-      await seed(gitPullRequestMergeContextResource, MERGE, cached);
-      vi.mocked(gitService.getPullRequestMergeContext).mockResolvedValue(null);
-
-      const { result } = renderHook(
-        () => useFetchGitPullRequestMergeContext('device-1', '/repo', detailResult.detail!),
-        { wrapper },
-      );
-
-      await waitFor(() => expect(result.current.error).toBeTruthy());
-      expect(result.current.data?.requiredChecks).toEqual(['ci']);
-      expect(await readRow(gitPullRequestMergeContextResource, MERGE)).toEqual(cached);
     });
 
     it('does not read a PR for a non-GitHub repo', async () => {

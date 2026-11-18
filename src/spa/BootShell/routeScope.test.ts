@@ -11,7 +11,7 @@ const variants: Array<[string, typeof webDesktopRoutes]> = [
 ];
 
 // Paths that render the nav panel + rounded container the shell imitates.
-const MAIN_LAYOUT_PATHS = ['/', '/agent/agent-1', '/settings/memory', '/acme/settings/oauth-apps'];
+const MAIN_LAYOUT_PATHS = ['/', '/agents/agent-1', '/channels/channel-1', '/settings/appearance'];
 
 describe('isMainLayoutLocation', () => {
   it.each(variants)('%s recognises main-layout urls', (_, routes) => {
@@ -36,17 +36,13 @@ describe('isMainLayoutLocation', () => {
   it('honours the debug-proxy basename', () => {
     const base = '/_dangerous_local_dev_proxy';
 
-    expect(isMainLayoutLocation(webDesktopRoutes, `${base}/agent/agent-1`, base)).toBe(true);
-    // Without it the prefix is eaten as a `:workspaceSlug`, so `/onboarding`
-    // stops being recognised as standalone — which is why the entry must pass it.
+    expect(isMainLayoutLocation(webDesktopRoutes, `${base}/agents/agent-1`, base)).toBe(true);
     expect(isMainLayoutLocation(webDesktopRoutes, `${base}/onboarding`, base)).toBe(false);
-    expect(isMainLayoutLocation(webDesktopRoutes, `${base}/onboarding`)).toBe(true);
   });
 
-  // Not a "known route" test: the main area carries a `:workspaceSlug` segment,
-  // so an unrecognised path really does render the main layout and the shell is
-  // the right placeholder for it.
-  it('treats an unrecognised path as a workspace inside the main layout', () => {
-    expect(isMainLayoutLocation(webDesktopRoutes, '/_nonexistent_top_level')).toBe(true);
+  // The Electron main area ends in a `*` stub (the tab routers render the page),
+  // so an unrecognised path still lands inside the main layout there.
+  it('treats an unrecognised path as inside the Electron main layout', () => {
+    expect(isMainLayoutLocation(electronDesktopRoutes, '/_nonexistent_top_level')).toBe(true);
   });
 });

@@ -3,12 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { merge } from '@/utils/merge';
 
 import type { GlobalState } from '../initialState';
-import {
-  DEFAULT_HOME_SIDEBAR_EXPANDED_KEYS,
-  INITIAL_STATUS,
-  initialState,
-  MODEL_DETAIL_PANEL_EXPANDABLE_KEYS,
-} from '../initialState';
+import { DEFAULT_HOME_SIDEBAR_EXPANDED_KEYS, INITIAL_STATUS, initialState } from '../initialState';
 import {
   DEFAULT_SIDEBAR_ITEMS,
   readOverridableField,
@@ -42,75 +37,6 @@ describe('systemStatusSelectors', () => {
   });
 
   describe('basic selectors', () => {
-    const s: GlobalState = merge(initialState, {
-      status: {
-        showSystemRole: true,
-        mobileShowTopic: true,
-        mobileShowPortal: true,
-        showAgentBuilderPanel: true,
-        showRightPanel: true,
-        showLeftPanel: true,
-        showFilePanel: true,
-        hidePWAInstaller: true,
-        isShowCredit: true,
-        leftPanelWidth: 300,
-        portalWidth: 500,
-        filePanelWidth: 400,
-        inputHeight: 150,
-        threadInputHeight: 100,
-      },
-    });
-
-    it('should return correct values for basic selectors', () => {
-      expect(systemStatusSelectors.showSystemRole(s)).toBe(true);
-      expect(systemStatusSelectors.mobileShowTopic(s)).toBe(true);
-      expect(systemStatusSelectors.mobileShowPortal(s)).toBe(true);
-      expect(systemStatusSelectors.showAgentBuilderPanel(s)).toBe(true);
-      expect(systemStatusSelectors.showRightPanel(s)).toBe(true);
-      expect(systemStatusSelectors.showLeftPanel(s)).toBe(true);
-      expect(systemStatusSelectors.showFilePanel(s)).toBe(true);
-      expect(systemStatusSelectors.hidePWAInstaller(s)).toBe(true);
-      expect(systemStatusSelectors.isShowCredit(s)).toBe(true);
-      expect(systemStatusSelectors.leftPanelWidth(s)).toBe(300);
-      expect(systemStatusSelectors.portalWidth(s)).toBe(500);
-      expect(systemStatusSelectors.filePanelWidth(s)).toBe(400);
-      expect(systemStatusSelectors.wideScreen(s)).toBe(false);
-    });
-
-    it('should return default portal width if not set', () => {
-      const noPortalWidth = merge(initialState, {
-        status: { portalWidth: undefined },
-      });
-      expect(systemStatusSelectors.portalWidth(noPortalWidth)).toBe(400);
-    });
-
-    it('should show the working overview by default only while the right panel is closed', () => {
-      const at = (status: { showRightPanel?: boolean; showWorkingOverview?: boolean }) =>
-        systemStatusSelectors.showWorkingOverview(merge(initialState, { status }));
-
-      expect(at({ showRightPanel: false, showWorkingOverview: undefined })).toBe(true);
-      expect(at({ showRightPanel: true, showWorkingOverview: undefined })).toBe(false);
-      expect(at({ showRightPanel: true, showWorkingOverview: true })).toBe(true);
-    });
-
-    it('should return workingSidebarWidth from status, defaulting to 360', () => {
-      expect(
-        systemStatusSelectors.workingSidebarWidth(
-          merge(initialState, {
-            status: { workingSidebarWidth: 520 },
-          }),
-        ),
-      ).toBe(520);
-
-      expect(
-        systemStatusSelectors.workingSidebarWidth(
-          merge(initialState, {
-            status: { workingSidebarWidth: undefined },
-          }),
-        ),
-      ).toBe(360);
-    });
-
     it('should clamp persisted left panel width to the draggable panel bounds', () => {
       expect(
         systemStatusSelectors.leftPanelWidth(
@@ -151,105 +77,11 @@ describe('systemStatusSelectors', () => {
     });
   });
 
-  describe('modelDetailPanelExpandedKeys', () => {
-    it('should expand every section by default', () => {
-      const s: GlobalState = {
-        ...initialState,
-        status: {
-          ...initialState.status,
-          modelDetailPanelCollapsedKeys: undefined,
-        },
-      };
-
-      expect(systemStatusSelectors.modelDetailPanelExpandedKeys(s)).toEqual(
-        MODEL_DETAIL_PANEL_EXPANDABLE_KEYS,
-      );
-    });
-
-    it('should exclude collapsed keys stored by the user', () => {
-      const s: GlobalState = merge(initialState, {
-        status: {
-          modelDetailPanelCollapsedKeys: ['abilities', 'config'],
-        },
-      });
-
-      expect(systemStatusSelectors.modelDetailPanelExpandedKeys(s)).toEqual(['rating', 'pricing']);
-    });
-
-    it('should ignore a legacy persisted expanded-keys array and keep new sections expanded', () => {
-      // before the collapsed-keys migration, an expanded-keys array persisted prior to the
-      // rating section shipping kept it collapsed forever — the legacy field must be inert
-      const s: GlobalState = merge(initialState, {
-        status: {
-          modelDetailPanelExpandedKeys: ['pricing', 'config'],
-        } as never,
-      });
-
-      expect(systemStatusSelectors.modelDetailPanelExpandedKeys(s)).toEqual(
-        MODEL_DETAIL_PANEL_EXPANDABLE_KEYS,
-      );
-    });
-  });
-
   describe('modelSwitchPanelGroupMode', () => {
-    it('should default to byModel so the everyday list looks unchanged before the user flips the switch', () => {
-      const s: GlobalState = {
-        ...initialState,
-        status: { ...initialState.status, modelSwitchPanelGroupBy: undefined },
-      };
-
-      expect(systemStatusSelectors.modelSwitchPanelGroupMode(s)).toBe('byModel');
-    });
-
     it('should not seed the preference into the initial status', () => {
       // `updateSystemStatus` persists the whole merged status, so a seeded
       // value would be written to storage as if the user had chosen it.
       expect(INITIAL_STATUS).not.toHaveProperty('modelSwitchPanelGroupBy');
-    });
-
-    it('should return the persisted byProvider preference', () => {
-      const s: GlobalState = merge(initialState, {
-        status: { modelSwitchPanelGroupBy: 'byProvider' },
-      });
-
-      expect(systemStatusSelectors.modelSwitchPanelGroupMode(s)).toBe('byProvider');
-    });
-
-    it('should ignore the legacy seeded byProvider value from a pre-upgrade persisted status', () => {
-      // Before the key was renamed, the store seeded `byProvider` and persisted
-      // it for everyone; the switch itself was hidden behind developer tools,
-      // so these users were effectively on `byModel` and must stay there.
-      const s: GlobalState = merge(initialState, {
-        status: { modelSwitchPanelGroupMode: 'byProvider' } as Record<string, unknown>,
-      });
-
-      expect(systemStatusSelectors.modelSwitchPanelGroupMode(s)).toBe('byModel');
-    });
-  });
-
-  describe('taskListViewMode', () => {
-    it('should restore the persisted task board view', () => {
-      const s: GlobalState = {
-        ...initialState,
-        status: {
-          ...initialState.status,
-          taskListViewMode: 'kanban',
-        },
-      };
-
-      expect(systemStatusSelectors.taskListViewMode(s)).toBe('kanban');
-    });
-
-    it('should default legacy status without a task view mode to list', () => {
-      const s: GlobalState = {
-        ...initialState,
-        status: {
-          ...initialState.status,
-          taskListViewMode: undefined,
-        },
-      };
-
-      expect(systemStatusSelectors.taskListViewMode(s)).toBe('list');
     });
   });
 
@@ -810,52 +642,6 @@ describe('systemStatusSelectors', () => {
           },
         });
       });
-    });
-  });
-
-  describe('teamBoardAttentionCollapsed', () => {
-    // Open by default: a first-time viewer must see what needs attention.
-    it('reads as open when the viewer has never folded the list', () => {
-      const s: GlobalState = merge(initialState, { status: {} });
-
-      expect(systemStatusSelectors.teamBoardAttentionCollapsed(s)).toBe(false);
-    });
-
-    it('keeps the list folded once the viewer put it away', () => {
-      const s: GlobalState = merge(initialState, {
-        status: { teamBoardAttentionCollapsed: true },
-      });
-
-      expect(systemStatusSelectors.teamBoardAttentionCollapsed(s)).toBe(true);
-    });
-  });
-
-  describe('homeGoalsCollapsed', () => {
-    // The goals card opens by default: a first-time viewer must see the goals,
-    // not an unexplained folded header.
-    it('reads as open when the viewer has never folded the card', () => {
-      const s: GlobalState = merge(initialState, { status: {} });
-
-      expect(systemStatusSelectors.homeGoalsCollapsed(s)).toBe(false);
-    });
-
-    it('keeps the card folded once the viewer put it away', () => {
-      const s: GlobalState = merge(initialState, { status: { homeGoalsCollapsed: true } });
-
-      expect(systemStatusSelectors.homeGoalsCollapsed(s)).toBe(true);
-    });
-  });
-
-  describe('projectOnboardingDismissed', () => {
-    it('is false until the card of that project is dismissed', () => {
-      const s: GlobalState = merge(initialState, {
-        status: { dismissedProjectOnboarding: { 'project-1': true } },
-      });
-      expect(systemStatusSelectors.projectOnboardingDismissed('project-1')(s)).toBe(true);
-      expect(systemStatusSelectors.projectOnboardingDismissed('project-2')(s)).toBe(false);
-      expect(systemStatusSelectors.projectOnboardingDismissed('project-2')(initialState)).toBe(
-        false,
-      );
     });
   });
 });

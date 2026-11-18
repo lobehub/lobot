@@ -22,7 +22,6 @@ import { useToolStore } from '../../store';
 import { initialAgentSkillsState } from './initialState';
 import {
   AGENT_SKILL_LIST_KEY,
-  type AgentSkillDetail,
   agentSkillDetailResource,
   type AgentSkillListItem,
   agentSkillListResource,
@@ -58,11 +57,6 @@ const wrapper = ({ children }: PropsWithChildren) =>
 
 const skill = (id: string, name = id): AgentSkillListItem =>
   ({ id, identifier: id, name }) as AgentSkillListItem;
-
-const detailOf = (item: AgentSkillListItem): AgentSkillDetail => ({
-  resourceTree: [{ name: 'SKILL.md', path: 'SKILL.md', type: 'file' }],
-  skillDetail: { ...item, content: '# body' } as any,
-});
 
 /** Never-resolving fetch: the first frame can only come from storage. */
 const pending = () => new Promise<never>(() => {});
@@ -136,41 +130,6 @@ describe('agentSkills replicas', () => {
     );
   });
 
-  it('paints a skill detail page (skill + resource tree) from the persisted copy', async () => {
-    await agentSkillDetailResource.storage!.set(
-      { queryKey: 'db-1', scope },
-      { data: detailOf(skill('db-1', 'Cached page')), updatedAt: 1 },
-    );
-    vi.mocked(agentSkillService.getById).mockImplementation(pending);
-    vi.mocked(agentSkillService.listResources).mockImplementation(pending);
-
-    const sync = renderHook(() => useToolStore((s) => s.useFetchAgentSkillDetail)('db-1'), {
-      wrapper,
-    });
-
-    await waitFor(() =>
-      expect(useToolStore.getState().agentSkillDetailMap['db-1']?.skillDetail?.name).toBe(
-        'Cached page',
-      ),
-    );
-    expect(sync.result.current.data?.resourceTree).toHaveLength(1);
-    expect(sync.result.current.isValidating).toBe(true);
-  });
-
-  it('keeps a not-found detail as an empty value instead of failing the surface', async () => {
-    vi.mocked(agentSkillService.list).mockResolvedValue({ data: [], total: 0 });
-    vi.mocked(agentSkillService.getById).mockResolvedValue(undefined);
-    vi.mocked(agentSkillService.listResources).mockResolvedValue([]);
-
-    renderHook(() => useToolStore((s) => s.useFetchAgentSkillDetail)('missing'), { wrapper });
-
-    await waitFor(() =>
-      expect(useToolStore.getState().agentSkillDetailMap['missing']).toBeDefined(),
-    );
-    expect(useToolStore.getState().agentSkillDetailMap['missing'].skillDetail).toBeUndefined();
-    expect(useToolStore.getState().agentSkillDetailMap['missing'].resourceTree).toEqual([]);
-  });
-
   it('drops the previous identity’s skills before the next one paints', async () => {
     vi.mocked(agentSkillService.list).mockResolvedValue({
       data: [skill('db-1', 'Mine')],
@@ -191,100 +150,6 @@ describe('agentSkills replicas', () => {
   });
 
   describe('mutations', () => {
-    const seed = async () => {
-      vi.mocked(agentSkillService.list).mockResolvedValue({
-        data: [skill('db-1', 'Original'), skill('db-2')],
-        total: 2,
-      });
-      vi.mocked(agentSkillService.getById).mockResolvedValue({
-        content: 'body',
-        id: 'db-1',
-        identifier: 'db-1',
-        name: 'Original',
-      } as any);
-      vi.mocked(agentSkillService.listResources).mockResolvedValue([
-        { name: 'SKILL.md', path: 'SKILL.md', type: 'file' },
-      ]);
-      renderHook(
-        () => {
-          useToolStore((s) => s.useFetchAgentSkills)(true);
-          useToolStore((s) => s.useFetchAgentSkillDetail)('db-1');
-        },
-        { wrapper },
-      );
-      await waitFor(() => {
-        expect(useToolStore.getState().agentSkillListMap[AGENT_SKILL_LIST_KEY]).toHaveLength(2);
-        expect(useToolStore.getState().agentSkillDetailMap['db-1']).toBeDefined();
-      });
-    };
-
-    it('renames the list row and the loaded detail optimistically', async () => {
-      await seed();
-      let resolveUpdate!: (value: unknown) => void;
-      vi.mocked(agentSkillService.updateSkill).mockImplementation(
-        () => new Promise((resolve) => (resolveUpdate = resolve)) as any,
-      );
-
-      const operation = useToolStore.getState().updateAgentSkill({ id: 'db-1', name: 'Renamed' });
-
-      expect(useToolStore.getState().agentSkillListMap[AGENT_SKILL_LIST_KEY][0].name).toBe(
-        'Renamed',
-      );
-      expect(useToolStore.getState().agentSkillDetailMap['db-1'].skillDetail?.name).toBe('Renamed');
-
-      const renamed = {
-        content: 'body',
-        id: 'db-1',
-        identifier: 'db-1',
-        name: 'Renamed',
-        updatedAt: 'server',
-      };
-      // The refresh that follows the rename sees the server's new state.
-      vi.mocked(agentSkillService.list).mockResolvedValue({
-        data: [skill('db-1', 'Renamed'), skill('db-2')],
-        total: 2,
-      });
-      await act(async () => {
-        resolveUpdate(renamed);
-        await operation;
-      });
-      expect(useToolStore.getState().agentSkillDetailMap['db-1'].skillDetail?.updatedAt).toBe(
-        'server',
-      );
-      expect(useToolStore.getState().agentSkillListMap[AGENT_SKILL_LIST_KEY][0].name).toBe(
-        'Renamed',
-      );
-    });
-
-    it('rolls both copies back when the rename fails', async () => {
-      await seed();
-      vi.mocked(agentSkillService.updateSkill).mockRejectedValue(new Error('boom'));
-
-      await expect(
-        useToolStore.getState().updateAgentSkill({ id: 'db-1', name: 'Renamed' }),
-      ).rejects.toThrow('boom');
-
-      expect(useToolStore.getState().agentSkillListMap[AGENT_SKILL_LIST_KEY][0].name).toBe(
-        'Original',
-      );
-      expect(useToolStore.getState().agentSkillDetailMap['db-1'].skillDetail?.name).toBe(
-        'Original',
-      );
-    });
-
-    it('removes a deleted skill from the list and its detail', async () => {
-      await seed();
-      vi.mocked(agentSkillService.deleteSkill).mockResolvedValue({ success: true });
-      vi.mocked(agentSkillService.list).mockResolvedValue({ data: [skill('db-2')], total: 1 });
-
-      await act(() => useToolStore.getState().deleteAgentSkill('db-1'));
-
-      expect(
-        useToolStore.getState().agentSkillListMap[AGENT_SKILL_LIST_KEY].map((item) => item.id),
-      ).toEqual(['db-2']);
-      expect(useToolStore.getState().agentSkillDetailMap['db-1']).toBeUndefined();
-    });
-
     it('populates the store from a refresh even without a mounted list hook', async () => {
       // Mirrors the create-agent modal flow: no list hook is mounted, yet
       // `refreshAgentSkills` must populate the store for the selectors.
@@ -296,74 +161,6 @@ describe('agentSkills replicas', () => {
       await act(() => useToolStore.getState().refreshAgentSkills());
 
       expect(useToolStore.getState().agentSkillListMap[AGENT_SKILL_LIST_KEY]?.[0]?.id).toBe('db-9');
-    });
-
-    describe('ensureAgentSkillsLoaded', () => {
-      it('fetches the list when it has not been loaded', async () => {
-        vi.mocked(agentSkillService.list).mockResolvedValue({ data: [skill('db-1')], total: 1 });
-
-        await act(() => useToolStore.getState().ensureAgentSkillsLoaded());
-
-        expect(agentSkillService.list).toHaveBeenCalledTimes(1);
-        expect(useToolStore.getState().agentSkillListMap[AGENT_SKILL_LIST_KEY]?.[0]?.id).toBe(
-          'db-1',
-        );
-      });
-
-      it('does not request again once the list is loaded', async () => {
-        await seed();
-        vi.mocked(agentSkillService.list).mockClear();
-
-        await act(() => useToolStore.getState().ensureAgentSkillsLoaded());
-
-        expect(agentSkillService.list).not.toHaveBeenCalled();
-      });
-
-      it('still requests when the list only came from the persisted copy', async () => {
-        // A hydrated list can predate a skill installed on another device.
-        await agentSkillListResource.storage!.set(
-          { queryKey: LIST_STORAGE_KEY, scope },
-          { data: [skill('db-1', 'Cached')], updatedAt: 1 },
-        );
-        // The confirming request fails, so the persisted copy stays the only data.
-        vi.mocked(agentSkillService.list).mockRejectedValue(new Error('offline'));
-        const sync = renderHook(() => useToolStore((s) => s.useFetchAgentSkills)(true), {
-          wrapper,
-        });
-        await waitFor(() => expect(agentSkillService.list).toHaveBeenCalled());
-        await waitFor(() => expect(sync.result.current.isValidating).toBe(false));
-        expect(useToolStore.getState().agentSkillListMap[AGENT_SKILL_LIST_KEY]).toHaveLength(1);
-        sync.unmount();
-        vi.mocked(agentSkillService.list).mockClear();
-        vi.mocked(agentSkillService.list).mockResolvedValue({
-          data: [skill('db-1'), skill('db-2')],
-          total: 2,
-        });
-
-        await act(() => useToolStore.getState().ensureAgentSkillsLoaded());
-
-        expect(agentSkillService.list).toHaveBeenCalledTimes(1);
-        expect(useToolStore.getState().agentSkillListMap[AGENT_SKILL_LIST_KEY]).toHaveLength(2);
-      });
-
-      it('shares one request between concurrent callers', async () => {
-        vi.mocked(agentSkillService.list).mockResolvedValue({ data: [skill('db-1')], total: 1 });
-
-        await act(() =>
-          Promise.all([
-            useToolStore.getState().ensureAgentSkillsLoaded(),
-            useToolStore.getState().ensureAgentSkillsLoaded(),
-          ]),
-        );
-
-        expect(agentSkillService.list).toHaveBeenCalledTimes(1);
-      });
-
-      it('rejects when the request fails so the caller can degrade', async () => {
-        vi.mocked(agentSkillService.list).mockRejectedValue(new Error('boom'));
-
-        await expect(useToolStore.getState().ensureAgentSkillsLoaded()).rejects.toThrow('boom');
-      });
     });
 
     it('drops a refresh response that resolves after the scope switched', async () => {

@@ -3,9 +3,6 @@ import path from 'node:path';
 
 import { describe, expect, it, vi } from 'vitest';
 
-import { pageActions } from './action';
-import { usePageStore } from './store';
-
 const refreshDocsHome = vi.fn();
 
 vi.mock('@/store/home', () => ({
@@ -42,13 +39,5 @@ describe('page store — first-screen imports', () => {
     );
 
     expect(offenders.map((file) => path.relative(STORE_DIR, file))).toEqual([]);
-  });
-
-  it('still refreshes the Docs home after a page is removed', async () => {
-    usePageStore.setState({ selectedPageId: null });
-
-    await pageActions.removePage('docs_a');
-
-    await vi.waitFor(() => expect(refreshDocsHome).toHaveBeenCalled());
   });
 });

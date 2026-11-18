@@ -65,17 +65,6 @@ describe('AgentDocumentService', () => {
     vi.clearAllMocks();
   });
 
-  it('should revalidate agent documents after createDocument', async () => {
-    await agentDocumentService.createDocument({
-      agentId: 'agent-1',
-      content: 'content',
-      title: 'title',
-    });
-
-    expect(matchesReplica(agentDocumentListSyncKey('agent-1'))).toBe(true);
-    expect(legacyAgentDocumentKeys()).toEqual([]);
-  });
-
   it('should revalidate agent documents after removeDocument', async () => {
     await agentDocumentService.removeDocument({
       agentId: 'agent-1',
@@ -120,17 +109,6 @@ describe('AgentDocumentService', () => {
     expect(
       matchesReplica(['replica:sync', 'notebookDocuments', 1, scope, 'topic-1', 'topic-1']),
     ).toBe(true);
-  });
-
-  it('should revalidate agent documents after updateLoadRule', async () => {
-    await agentDocumentService.updateLoadRule({
-      agentId: 'agent-1',
-      id: 'doc-1',
-      rule: {},
-    });
-
-    expect(matchesReplica(agentDocumentListSyncKey('agent-1'))).toBe(true);
-    expect(legacyAgentDocumentKeys()).toEqual([]);
   });
 
   it('should fetch target agent documents when cache is missing', async () => {

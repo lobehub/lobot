@@ -111,34 +111,4 @@ describe('toolInterventionSelectors', () => {
       expect(result).toEqual(allowList);
     });
   });
-
-  describe('config', () => {
-    it('should return empty object by default', () => {
-      const s: UserState = merge(initialState, {
-        settings: {},
-      });
-
-      const result = toolInterventionSelectors.config(s as UserStore);
-
-      expect(result).toEqual({});
-    });
-
-    it('should return full humanIntervention config', () => {
-      const config = {
-        approvalMode: 'allow-list' as const,
-        allowList: ['bash/bash'],
-      };
-      const s: UserState = merge(initialState, {
-        settings: {
-          tool: {
-            humanIntervention: config,
-          },
-        },
-      });
-
-      const result = toolInterventionSelectors.config(s as UserStore);
-
-      expect(result).toEqual(config);
-    });
-  });
 });

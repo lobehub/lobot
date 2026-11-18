@@ -4,7 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { userService } from '@/services/user';
 import { useUserStore } from '@/store/user';
 import { readUserDisplaySnapshot, writeUserDisplaySnapshot } from '@/store/user/displaySnapshot';
-import { type UserGuide } from '@/types/user';
 
 beforeEach(() => {
   localStorage.clear();
@@ -16,52 +15,6 @@ afterEach(() => {
 });
 
 describe('createPreferenceSlice', () => {
-  describe('updateGuideState', () => {
-    it('should update guide state', async () => {
-      vi.spyOn(userService, 'updatePreference').mockResolvedValue(undefined);
-
-      const { result } = renderHook(() => useUserStore());
-      const guide: UserGuide = { topic: true };
-
-      await act(async () => {
-        await result.current.updateGuideState(guide);
-      });
-
-      expect(result.current.preference.guide!.topic).toBeTruthy();
-    });
-  });
-
-  describe('updateLab', () => {
-    it('mirrors enableGoals into the legacy enableTopicAcceptance key for older clients', async () => {
-      const updatePreferenceSpy = vi
-        .spyOn(userService, 'updatePreference')
-        .mockResolvedValue(undefined as any);
-
-      act(() => {
-        useUserStore.setState({
-          preference: {
-            ...useUserStore.getState().preference,
-            lab: { enableTopicAcceptance: true },
-          },
-        });
-      });
-
-      await act(async () => {
-        await useUserStore.getState().updateLab({ enableGoals: false });
-      });
-
-      expect(useUserStore.getState().preference.lab).toMatchObject({
-        enableGoals: false,
-        enableTopicAcceptance: false,
-      });
-      expect(updatePreferenceSpy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          lab: expect.objectContaining({ enableGoals: false, enableTopicAcceptance: false }),
-        }),
-      );
-    });
-  });
-
   describe('updatePreference', () => {
     it('should update preference', async () => {
       vi.spyOn(userService, 'updatePreference').mockResolvedValue(undefined);

@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { mapFeatureFlagsEnvToState } from '@/config/featureFlags';
 import { SettingsTabs } from '@/store/global/initialState';
-import { initServerConfigStore, Provider } from '@/store/serverConfig/store';
+import { createServerConfigStore, Provider } from '@/store/serverConfig/store';
 
 import { SettingsGroupKey, useCategory } from './useCategory';
 
@@ -15,21 +15,20 @@ vi.hoisted(() => {
   });
 });
 
-const renderCategory = (featureFlags: Record<string, boolean> = {}) =>
-  renderHook(() => useCategory(), {
+const renderCategory = (featureFlags: Record<string, boolean> = {}) => {
+  // The server config store is a singleton: reset its flags for every render.
+  const store = createServerConfigStore();
+  store.setState({
+    featureFlags: { ...mapFeatureFlagsEnvToState({}), ...featureFlags },
+    serverConfig: { aiProvider: {}, enableBusinessFeatures: true, telemetry: {} } as any,
+  });
+
+  return renderHook(() => useCategory(), {
     wrapper: ({ children }: { children: ReactNode }) => (
-      <Provider
-        createStore={() =>
-          initServerConfigStore({
-            featureFlags: { ...mapFeatureFlagsEnvToState({}), ...featureFlags },
-            serverConfig: { aiProvider: {}, enableBusinessFeatures: true, telemetry: {} },
-          })
-        }
-      >
-        {children}
-      </Provider>
+      <Provider createStore={() => store}>{children}</Provider>
     ),
   }).result.current;
+};
 
 afterEach(() => cleanup());
 

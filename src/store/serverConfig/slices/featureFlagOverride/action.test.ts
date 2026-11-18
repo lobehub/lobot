@@ -2,9 +2,19 @@ import { act } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { DEFAULT_FEATURE_FLAGS, mapFeatureFlagsEnvToState } from '@/config/featureFlags';
+import { merge } from '@/utils/merge';
 
-import { initServerConfigStore } from '../../store';
+import { createServerConfigStore, type ServerConfigStore } from '../../store';
 import { DEV_FLAG_OVERRIDE_SCHEMA_VERSION, DEV_FLAG_OVERRIDE_STORAGE_KEY } from './constants';
+
+// Fresh-state store per test: the app keeps one singleton, so reset its state
+// to the defaults merged with the given initial state.
+const serverConfigStore = createServerConfigStore();
+const defaultServerConfigState = serverConfigStore.getState();
+const initServerConfigStore = (initState: Partial<ServerConfigStore>) => {
+  serverConfigStore.setState(merge(defaultServerConfigState, initState), true);
+  return serverConfigStore;
+};
 
 const baseFeatureFlags = mapFeatureFlagsEnvToState(DEFAULT_FEATURE_FLAGS);
 

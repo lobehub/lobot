@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_FEATURE_FLAGS, mapFeatureFlagsEnvToState } from '@/config/featureFlags';
 
 import { type ServerConfigStore } from './store';
-import { createServerConfigStore, initServerConfigStore } from './store';
+import { createServerConfigStore } from './store';
 
 describe('createServerConfigStore', () => {
   beforeEach(() => {
@@ -28,7 +28,7 @@ describe('createServerConfigStore', () => {
     });
   });
 
-  it('should initialize store with custom initial state', () => {
+  it('should initialize store with custom initial state', async () => {
     const initialState: Partial<ServerConfigStore> = {
       featureFlags: {
         ...mapFeatureFlagsEnvToState(DEFAULT_FEATURE_FLAGS),
@@ -37,7 +37,10 @@ describe('createServerConfigStore', () => {
       serverConfig: { telemetry: { langfuse: true }, aiProvider: {} },
     };
 
-    const store = initServerConfigStore(initialState);
+    // The singleton only honours the initial state on first creation, so load a fresh module.
+    vi.resetModules();
+    const { createServerConfigStore: createFreshServerConfigStore } = await import('./store');
+    const store = createFreshServerConfigStore(initialState);
 
     expect(store.getState().featureFlags.isAgentEditable).toBeFalsy();
     expect(store.getState().serverConfig).toEqual({

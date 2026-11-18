@@ -3,7 +3,7 @@ import { act } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { messageService } from '@/services/message';
-import { clearMessageListClientCacheState, runMessageListQuery } from '@/services/message/cache';
+import { runMessageListQuery } from '@/services/message/cache';
 import { useChatStore } from '@/store/chat';
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';
 
@@ -257,7 +257,6 @@ describe('DataSlice', () => {
   describe('loadEarlierMessages', () => {
     beforeEach(() => {
       vi.clearAllMocks();
-      clearMessageListClientCacheState();
     });
 
     const windowMessages: UIChatMessage[] = [
@@ -478,15 +477,16 @@ describe('DataSlice', () => {
   });
 
   describe('loadEarlierMessages on a round-cursor topic', () => {
-    beforeEach(() => {
-      vi.clearAllMocks();
-      clearMessageListClientCacheState();
-    });
-
     const context = { agentId: 'agent-round', threadId: null, topicId: 'topic-round' };
     const windowMessages: UIChatMessage[] = [
       { id: 'u2', content: 'q2', role: 'user', createdAt: 1000, updatedAt: 1000 } as any,
     ];
+
+    beforeEach(async () => {
+      vi.clearAllMocks();
+      // A window read without a round cursor forgets any cursor an earlier test recorded.
+      await runMessageListQuery(context, async () => windowMessages, { force: true });
+    });
     const windowCursor = { createdAt: '1970-01-01T00:00:01.000123Z', id: 'u2' };
 
     it('waits for the window cursor instead of deriving a lossy one', async () => {

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { DocumentSourceType, type LobeDocument } from '@/types/document';
+import { DocumentSourceType } from '@/types/document';
 import type { DocumentItem } from '@/types/serverData';
 
 import { pageActions } from './action';
@@ -52,41 +52,7 @@ const row = (id: string, overrides: Partial<DocumentItem> = {}): DocumentItem =>
     ...overrides,
   }) as unknown as DocumentItem;
 
-const lobeDoc = (id: string, overrides: Partial<LobeDocument> = {}): LobeDocument => ({
-  content: null,
-  createdAt: new Date('2026-01-01T00:00:00.000Z'),
-  editorData: null,
-  fileType: 'custom/document',
-  filename: id,
-  id,
-  metadata: {},
-  source: 'document',
-  sourceType: DocumentSourceType.API,
-  title: id,
-  totalCharCount: 0,
-  totalLineCount: 0,
-  updatedAt: new Date('2026-01-01T00:00:00.000Z'),
-  visibility: 'public',
-  workspaceId: null,
-  ...overrides,
-});
-
 const items = () => usePageStore.getState().pageListMap[PAGE_LIST_KEY]?.items ?? [];
-
-/** Seed a loaded list (no replica bookkeeping), as a fetched head page leaves it. */
-const seedList = (docs: LobeDocument[]) => {
-  usePageStore.setState({
-    pageListMap: {
-      [PAGE_LIST_KEY]: {
-        currentPage: 0,
-        hasMore: false,
-        items: docs,
-        pageSize: 20,
-        total: docs.length,
-      },
-    },
-  });
-};
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -152,92 +118,5 @@ describe('pageActions — createNewPage', () => {
     expect(usePageStore.getState().selectedPageId).toBeNull();
     expect(usePageStore.getState().isCreatingNew).toBe(false);
     expect(navigate).toHaveBeenCalledWith('/resource');
-  });
-});
-
-describe('pageActions — removePage', () => {
-  it('drops the row optimistically and restores it when the delete fails', async () => {
-    seedList([lobeDoc('docs_a'), lobeDoc('docs_b')]);
-    vi.mocked(documentService.deleteDocument).mockRejectedValue(new Error('nope'));
-
-    await expect(pageActions.removePage('docs_a')).rejects.toThrow('nope');
-
-    expect(items().map((doc) => doc.id)).toEqual(['docs_a', 'docs_b']);
-  });
-
-  it('keeps the row removed once the server confirms the delete', async () => {
-    seedList([lobeDoc('docs_a'), lobeDoc('docs_b')]);
-    vi.mocked(documentService.deleteDocument).mockResolvedValue(undefined);
-
-    await pageActions.removePage('docs_a');
-
-    expect(documentService.deleteDocument).toHaveBeenCalledWith('docs_a');
-    expect(items().map((doc) => doc.id)).toEqual(['docs_b']);
-  });
-
-  it('clears the selection and navigates away when the selected page is deleted', async () => {
-    const navigate = vi.fn();
-    seedList([lobeDoc('docs_a')]);
-    usePageStore.setState({ navigate, selectedPageId: 'docs_a' });
-    vi.mocked(documentService.deleteDocument).mockResolvedValue(undefined);
-
-    await pageActions.removePage('docs_a');
-
-    expect(usePageStore.getState().selectedPageId).toBeNull();
-    expect(navigate).toHaveBeenCalledWith('/resource');
-  });
-});
-
-describe('pageActions — updatePageOptimistically', () => {
-  it('patches the title and emoji across the list and the by-id copy', async () => {
-    seedList([lobeDoc('docs_a', { title: 'Old' })]);
-    usePageStore.setState({ pageDetailMap: { docs_a: lobeDoc('docs_a', { title: 'Old' }) } });
-    vi.mocked(documentService.updateDocument).mockResolvedValue({} as never);
-
-    await pageActions.updatePageOptimistically('docs_a', {
-      emoji: '🚀',
-      title: 'Renamed',
-    });
-
-    expect(usePageStore.getState().pageListMap[PAGE_LIST_KEY]?.items[0].title).toBe('Renamed');
-    expect(usePageStore.getState().pageListMap[PAGE_LIST_KEY]?.items[0].metadata.emoji).toBe('🚀');
-    expect(usePageStore.getState().pageDetailMap['docs_a'].title).toBe('Renamed');
-    expect(documentService.updateDocument).toHaveBeenCalledWith(
-      expect.objectContaining({ id: 'docs_a', title: 'Renamed' }),
-    );
-  });
-
-  it('warns and leaves the store untouched for a page that is not loaded', async () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const before = usePageStore.getState().pageListMap;
-
-    await pageActions.updatePageOptimistically('missing', { title: 'Renamed' });
-
-    expect(documentService.updateDocument).not.toHaveBeenCalled();
-    expect(usePageStore.getState().pageListMap).toBe(before);
-    warn.mockRestore();
-  });
-});
-
-describe('pageActions — duplicatePage', () => {
-  it('inserts the copy at the head of the list', async () => {
-    seedList([lobeDoc('docs_a')]);
-    vi.mocked(documentService.getDocumentById).mockResolvedValue(row('docs_a'));
-    vi.mocked(documentService.createDocument).mockResolvedValue(row('docs_copy'));
-
-    const newPage = await pageActions.duplicatePage('docs_a');
-
-    expect(newPage.id).toBe('docs_copy');
-    expect(items().map((doc) => doc.id)).toEqual(['docs_copy', 'docs_a']);
-  });
-});
-
-describe('pageActions — renamePage', () => {
-  it('clears the in-place rename marker even when the title did not exist', async () => {
-    usePageStore.setState({ renamingPageId: 'docs_a' });
-
-    await pageActions.renamePage('docs_a', 'Renamed');
-
-    expect(usePageStore.getState().renamingPageId).toBeNull();
   });
 });

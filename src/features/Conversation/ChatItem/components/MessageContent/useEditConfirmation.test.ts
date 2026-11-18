@@ -4,7 +4,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { createStore, messageStateSelectors, Provider } from '@/features/Conversation/store';
 import { useCanEditCodexMessage } from '@/hooks/useCanEditCodexMessage';
-import { agentByIdSelectors, agentSelectors } from '@/store/agent/selectors';
+import { useAgentStore } from '@/store/agent';
+import { agentByIdSelectors } from '@/store/agent/selectors';
 
 import { useEditConfirmation } from './useEditConfirmation';
 
@@ -20,11 +21,15 @@ describe('message edit confirmation', () => {
     globalProvider = provider,
   ) => {
     vi.mocked(useCanEditCodexMessage).mockReturnValue(canEditCodex);
-    vi.spyOn(agentSelectors, 'currentAgentHeterogeneousProviderType').mockReturnValue(
-      globalProvider,
-    );
+    // The globally active agent is a different one, running `globalProvider`.
+    useAgentStore.setState({ activeAgentId: 'global-agent' });
     vi.spyOn(agentByIdSelectors, 'getAgencyConfigById').mockImplementation(
-      (id) => () => (id === 'agent' ? { heterogeneousProvider: { type: provider } } : undefined),
+      (id) => () =>
+        id === 'agent'
+          ? { heterogeneousProvider: { type: provider } }
+          : id === 'global-agent'
+            ? { heterogeneousProvider: { type: globalProvider } }
+            : undefined,
     );
     const store = createStore({
       context: { agentId: 'agent', topicId: 'topic', threadId: null },

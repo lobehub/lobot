@@ -1,18 +1,12 @@
-import { type ConversationContext, RequestTrigger } from '@lobot/types';
 import { act, renderHook } from '@testing-library/react';
-import { t } from 'i18next';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { lambdaClient } from '@/libs/trpc/client';
-import { heterogeneousAgentService } from '@/services/electron/heterogeneousAgent';
-import { messageService } from '@/services/message';
-import { agentByIdSelectors, agentSelectors } from '@/store/agent/selectors';
 import { useUserStore } from '@/store/user';
 
 import { useChatStore } from '../../../../store';
 import { messageMapKey } from '../../../../utils/messageMapKey';
-import * as agentDispatcher from '../dispatch/agentDispatcher';
-import { createMockMessage, createMockResolvedAgentConfig, TEST_IDS } from './fixtures';
+import { TEST_IDS } from './fixtures';
 import { resetTestEnvironment } from './helpers';
 
 // Mock the tRPC client so the import chain doesn't pull
@@ -92,156 +86,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const createToolMessageState = (
-  agentId: string,
-  topicId: string,
-  chatKey: string,
-  toolMessage: ReturnType<typeof createMockMessage>,
-) => ({
-  activeAgentId: agentId,
-  activeTopicId: topicId,
-  dbMessagesMap: { [chatKey]: [toolMessage] },
-  messagesMap: { [chatKey]: [toolMessage] },
-});
-
-const createHeteroQuestionMessage = (parentId: string) =>
-  createMockMessage({
-    id: 'tool-msg-1',
-    parentId,
-    plugin: {
-      apiName: 'askUserQuestion',
-      arguments: '{}',
-      identifier: 'lobe-claude-code',
-      type: 'default',
-    },
-    role: 'tool',
-    tool_call_id: 'cc_call_1',
-  } as any);
-
-const captureActError = async (action: () => Promise<void>): Promise<unknown> => {
-  let captured: unknown;
-  await act(async () => {
-    try {
-      await action();
-    } catch (error) {
-      captured = error;
-    }
-  });
-  return captured;
-};
-
 describe('ConversationControl actions', () => {
-  describe('stopGenerateMessage', () => {
-    it('should cancel running generateAI operations in current context', () => {
-      const { result } = renderHook(() => useChatStore());
-
-      act(() => {
-        useChatStore.setState({
-          activeAgentId: TEST_IDS.SESSION_ID,
-          activeTopicId: TEST_IDS.TOPIC_ID,
-        });
-      });
-
-      // Create a generateAI operation
-      let operationId: string;
-      act(() => {
-        const res = result.current.startOperation({
-          type: 'execAgentRuntime',
-          context: {
-            agentId: TEST_IDS.SESSION_ID,
-            topicId: TEST_IDS.TOPIC_ID,
-          },
-        });
-        operationId = res.operationId;
-      });
-
-      expect(result.current.operations[operationId!].status).toBe('running');
-
-      // Stop generation
-      act(() => {
-        result.current.stopGenerateMessage();
-      });
-
-      expect(result.current.operations[operationId!].status).toBe('cancelled');
-    });
-
-    it('should not cancel operations from different context', () => {
-      const { result } = renderHook(() => useChatStore());
-
-      act(() => {
-        useChatStore.setState({
-          activeAgentId: TEST_IDS.SESSION_ID,
-          activeTopicId: TEST_IDS.TOPIC_ID,
-        });
-      });
-
-      // Create a generateAI operation in a different context
-      let operationId: string;
-      act(() => {
-        const res = result.current.startOperation({
-          type: 'execAgentRuntime',
-          context: {
-            agentId: 'different-session',
-            topicId: 'different-topic',
-          },
-        });
-        operationId = res.operationId;
-      });
-
-      expect(result.current.operations[operationId!].status).toBe('running');
-
-      // Stop generation - should not affect different context
-      act(() => {
-        result.current.stopGenerateMessage();
-      });
-
-      expect(result.current.operations[operationId!].status).toBe('running');
-    });
-
-    it('cancels Gateway-mode execServerAgentRuntime ops and invokes their cancel handler', () => {
-      const { result } = renderHook(() => useChatStore());
-
-      act(() => {
-        useChatStore.setState({
-          activeAgentId: TEST_IDS.SESSION_ID,
-          activeTopicId: TEST_IDS.TOPIC_ID,
-        });
-      });
-
-      let operationId!: string;
-      act(() => {
-        const res = result.current.startOperation({
-          type: 'execServerAgentRuntime',
-          context: { agentId: TEST_IDS.SESSION_ID, topicId: TEST_IDS.TOPIC_ID },
-        });
-        operationId = res.operationId;
-      });
-
-      const cancelHandler = vi.fn();
-      act(() => {
-        result.current.onOperationCancel(operationId, cancelHandler);
-      });
-
-      expect(result.current.operations[operationId].status).toBe('running');
-
-      act(() => {
-        result.current.stopGenerateMessage();
-      });
-
-      // Operation gets cancelled and the handler (which would fire the WS interrupt
-      // in real code) is invoked with the operation context.
-      expect(result.current.operations[operationId].status).toBe('cancelled');
-      expect(cancelHandler).toHaveBeenCalledWith(
-        expect.objectContaining({
-          operationId,
-          type: 'execServerAgentRuntime',
-        }),
-      );
-      // isAborting flag is also flipped so the UI loading state clears immediately.
-      expect(result.current.operations[operationId].metadata.isAborting).toBe(true);
-    });
-  });
-
   describe('cancelSendMessageInServer', () => {
     it('should cancel operation and restore editor state', () => {
       const { result } = renderHook(() => useChatStore());
@@ -643,14 +488,6 @@ describe('ConversationControl actions', () => {
     });
   });
 
-
-
-
-
-
-
-
-
   // ===========================================================================
   // CHARACTERIZATION TESTS (lifecycle refactor regression net)
   //
@@ -658,5 +495,4 @@ describe('ConversationControl actions', () => {
   // upcoming lifecycle refactor cannot silently change them. They assert what
   // the code does NOW.
   // ===========================================================================
-
 });

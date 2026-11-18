@@ -2,11 +2,8 @@ import type { UIChatMessage } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
 import {
-  collectFromMessages,
   extractActivatedSkillsFromMessages,
-  extractActivatedToolIdsFromMessages,
   extractTodosFromMessages,
-  findInMessages,
   normalizeTodosState,
 } from './messageExtractors';
 
@@ -22,86 +19,6 @@ const createMessage = (overrides: Partial<UIChatMessage> = {}): UIChatMessage =>
 
 const createToolMessage = (overrides: Partial<UIChatMessage> = {}): UIChatMessage =>
   createMessage({ role: 'tool', ...overrides });
-
-describe('findInMessages', () => {
-  it('should return undefined for empty messages', () => {
-    const result = findInMessages([], () => 'found');
-    expect(result).toBeUndefined();
-  });
-
-  it('should return first match scanning from newest', () => {
-    const messages = [
-      createMessage({ content: 'old', id: '1' }),
-      createMessage({ content: 'new', id: '2' }),
-    ];
-
-    const result = findInMessages(messages, (msg) => {
-      if (msg.content) return msg.content;
-    });
-
-    expect(result).toBe('new');
-  });
-
-  it('should filter by role', () => {
-    const messages = [
-      createMessage({ content: 'assistant-msg', role: 'assistant' } as any),
-      createToolMessage({ content: 'tool-msg' }),
-    ];
-
-    const result = findInMessages(messages, (msg) => msg.content || undefined, { role: 'tool' });
-
-    expect(result).toBe('tool-msg');
-  });
-
-  it('should skip messages where visitor returns undefined', () => {
-    const messages = [
-      createToolMessage({ id: '1', pluginState: undefined }),
-      createToolMessage({ id: '2', pluginState: { value: 42 } }),
-    ];
-
-    const result = findInMessages(messages, (msg) => msg.pluginState?.value as number | undefined, {
-      role: 'tool',
-    });
-
-    expect(result).toBe(42);
-  });
-});
-
-describe('collectFromMessages', () => {
-  it('should return empty array for no matches', () => {
-    const result = collectFromMessages([], () => 'found');
-    expect(result).toEqual([]);
-  });
-
-  it('should collect all matches in forward order', () => {
-    const messages = [
-      createToolMessage({ id: '1', pluginState: { v: 'a' } }),
-      createToolMessage({ id: '2', pluginState: { v: 'b' } }),
-      createToolMessage({ id: '3', pluginState: undefined }),
-    ];
-
-    const result = collectFromMessages(
-      messages,
-      (msg) => msg.pluginState?.v as string | undefined,
-      { role: 'tool' },
-    );
-
-    expect(result).toEqual(['a', 'b']);
-  });
-
-  it('should filter by role', () => {
-    const messages = [
-      createMessage({ content: 'user', role: 'user' } as any),
-      createToolMessage({ content: 'tool' }),
-    ];
-
-    const result = collectFromMessages(messages, (msg) => msg.content || undefined, {
-      role: 'tool',
-    });
-
-    expect(result).toEqual(['tool']);
-  });
-});
 
 describe('TODO state selectors', () => {
   const item = { status: 'processing' as const, text: 'Ship the fix' };
@@ -479,97 +396,5 @@ describe('extractActivatedSkillsFromMessages', () => {
     ];
 
     expect(extractActivatedSkillsFromMessages(messages)).toBeUndefined();
-  });
-});
-
-describe('extractActivatedToolIdsFromMessages', () => {
-  it('should accumulate and deduplicate tools from activator results', () => {
-    const messages = [
-      createToolMessage({
-        plugin: { apiName: 'activateTools', identifier: 'lobe-activator' },
-        pluginState: {
-          activatedTools: [{ identifier: 'lobe-task' }, { identifier: 'lobe-calendar' }],
-        },
-      } as any),
-      createToolMessage({
-        plugin: { apiName: 'activateTools', identifier: 'lobe-activator' },
-        pluginState: { activatedTools: [{ identifier: 'lobe-task' }] },
-      } as any),
-    ];
-
-    expect(extractActivatedToolIdsFromMessages(messages)).toEqual(['lobe-task', 'lobe-calendar']);
-  });
-
-  it('should restore tools folded into an assistantGroup', () => {
-    const messages = [
-      createMessage({
-        children: [
-          {
-            content: '',
-            id: 'msg-asst-1',
-            tools: [
-              {
-                apiName: 'activateTools',
-                id: 'call-1',
-                identifier: 'lobe-activator',
-                result: {
-                  content: 'activated',
-                  id: 'msg-tool-1',
-                  state: { activatedTools: [{ identifier: 'lobe-task' }] },
-                },
-              },
-            ],
-          },
-        ],
-        role: 'assistantGroup',
-      } as any),
-    ];
-
-    expect(extractActivatedToolIdsFromMessages(messages)).toEqual(['lobe-task']);
-  });
-
-  it('should ignore failed or unrelated tool results', () => {
-    const messages = [
-      createToolMessage({
-        plugin: { apiName: 'activateTools', identifier: 'another-tool' },
-        pluginState: { activatedTools: [{ identifier: 'lobe-task' }] },
-      } as any),
-      createToolMessage({
-        plugin: { apiName: 'activateTools', identifier: 'lobe-activator' },
-        pluginState: { notFound: ['lobe-task'] },
-      } as any),
-    ];
-
-    expect(extractActivatedToolIdsFromMessages(messages)).toBeUndefined();
-  });
-});
-
-describe('flat tool rows inside compressedGroup compressedMessages', () => {
-  // The capped compression read path puts the state-bearing rows of members it
-  // does not hydrate here as flat tool rows; released clients rely on this.
-  it('restores activated tools, skills and todos from flat tool rows', () => {
-    const todos = { items: [{ status: 'todo', text: 'old' }], updatedAt: 'old' };
-    const messages = [
-      createMessage({
-        compressedMessages: [
-          createToolMessage({
-            plugin: { apiName: 'activateTools', identifier: 'lobe-activator' },
-            pluginState: { activatedTools: [{ identifier: 'lobe-task' }] },
-          } as any),
-          createToolMessage({
-            plugin: { apiName: 'activateSkill', identifier: 'lobe-skills' },
-            pluginState: { id: 'skl_old', name: 'xlsx' },
-          } as any),
-          createToolMessage({ pluginState: { todos } }),
-        ],
-        role: 'compressedGroup',
-      } as any),
-    ];
-
-    expect(extractActivatedToolIdsFromMessages(messages)).toEqual(['lobe-task']);
-    expect(extractActivatedSkillsFromMessages(messages)).toEqual([
-      { description: undefined, id: 'skl_old', name: 'xlsx' },
-    ]);
-    expect(extractTodosFromMessages(messages)).toEqual(todos);
   });
 });

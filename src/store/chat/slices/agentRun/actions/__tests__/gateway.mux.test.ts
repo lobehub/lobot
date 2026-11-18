@@ -191,6 +191,9 @@ describe('GatewayActionImpl (multiplexed gateway transport)', () => {
   beforeEach(() => {
     mockServer.agentGatewayProtocol = 2;
     (globalThis as any).window = {
+      // An unavailable mux schedules its retry on the `online` event.
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
       global_serverConfigStore: {
         getState: () => ({
           serverConfig: {

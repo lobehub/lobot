@@ -114,7 +114,6 @@ beforeEach(() => {
 });
 
 describe('buildRunLifecycle.completeRun — transport-driven disposition', () => {
-
   it('summarizes an audio-first topic before returning a queued follow-up', async () => {
     const { get, store } = makeStore();
     const messages = [
@@ -131,8 +130,8 @@ describe('buildRunLifecycle.completeRun — transport-driven disposition', () =>
     store.messagesMap = { [messageMapKey(CONTEXT)]: messages } as any;
     store.topicDataMap = createDefaultTopicMap() as any;
 
-    const { requeued } = await lifecycle('client', get).completeRun(
-      completeEvent('client', { runtimeStatus: 'done' }),
+    const { requeued } = await lifecycle('gateway', get).completeRun(
+      completeEvent('gateway', { status: 'completed' }),
     );
 
     expect(requeued).toBe(true);
@@ -369,7 +368,6 @@ describe('buildRunLifecycle.afterRunComplete — one notification per server ope
     expect(desktopNotificationMock.notifyDesktopAgentCompleted).toHaveBeenCalledTimes(2);
   });
 });
-
 
 describe('buildRunLifecycle.afterUserMessagePersisted — topic title (all runtimes)', () => {
   const persistedEvent = (

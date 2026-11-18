@@ -8,7 +8,6 @@ import {
   reattachUntrackedHeteroRun,
   refreshUntrackedHeteroMarker,
   releaseUntrackedMarker,
-  resetReleasedMarkers,
 } from './untrackedHeteroRun';
 
 const context = { agentId: 'agt-1', threadId: null, topicId: 'tpc-1' };
@@ -33,7 +32,6 @@ const makeGet = (params: { heteroType?: string | null; operations?: Record<strin
 };
 
 afterEach(() => {
-  resetReleasedMarkers();
   vi.restoreAllMocks();
 });
 

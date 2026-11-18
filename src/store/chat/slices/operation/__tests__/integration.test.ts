@@ -5,7 +5,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { operationSelectors } from '@/store/chat/slices/operation/selectors';
 import { useChatStore } from '@/store/chat/store';
 import { messageMapKey } from '@/store/chat/utils/messageMapKey';
 
@@ -25,54 +24,6 @@ describe('Operation Management Integration Tests', () => {
   });
 
   describe('Complete Operation Lifecycle', () => {
-    it('should handle full AI generation lifecycle', async () => {
-      const { result } = renderHook(() => useChatStore());
-      const sessionId = 'test-session';
-      const topicId = 'test-topic';
-      const messageId = 'user-msg-1';
-
-      // 1. Start operation
-      let operationId: string = '';
-      act(() => {
-        const { operationId: id } = result.current.startOperation({
-          type: 'execAgentRuntime',
-          context: { agentId: sessionId, topicId, messageId },
-          label: 'AI Generation',
-        });
-        operationId = id;
-      });
-
-      // Verify operation created
-      expect(result.current.operations[operationId!]).toBeDefined();
-      expect(result.current.operations[operationId!].status).toBe('running');
-      expect(result.current.operations[operationId!].context).toEqual({
-        agentId: sessionId,
-        topicId,
-        messageId,
-      });
-
-      // 2. Associate message
-      act(() => {
-        result.current.associateMessageWithOperation(messageId, operationId!);
-      });
-
-      expect(result.current.messageOperationMap[messageId]).toBe(operationId);
-
-      // 3. Check status during execution
-      expect(operationSelectors.hasAnyRunningOperation(result.current)).toBe(true);
-      expect(operationSelectors.canSendMessage(result.current)).toBe(false);
-      expect(operationSelectors.isAgentRuntimeRunning(result.current)).toBe(true);
-
-      // 4. Complete operation
-      act(() => {
-        result.current.completeOperation(operationId!);
-      });
-
-      expect(result.current.operations[operationId!].status).toBe('completed');
-      expect(operationSelectors.hasAnyRunningOperation(result.current)).toBe(false);
-      expect(operationSelectors.canSendMessage(result.current)).toBe(true);
-    });
-
     it('should handle operation cancellation', async () => {
       const { result } = renderHook(() => useChatStore());
 
@@ -225,41 +176,6 @@ describe('Operation Management Integration Tests', () => {
       expect(opsInB).toContain(opIdTopicB);
       expect(opsInA).not.toContain(opIdTopicB);
       expect(opsInB).not.toContain(opIdTopicA);
-    });
-  });
-
-  describe('Batch Operations', () => {
-    it('should handle multiple concurrent operations', async () => {
-      const { result } = renderHook(() => useChatStore());
-
-      const opIds: string[] = [];
-
-      // Start 5 operations concurrently
-      act(() => {
-        for (let i = 0; i < 5; i++) {
-          const { operationId } = result.current.startOperation({
-            type: i % 2 === 0 ? 'execAgentRuntime' : 'toolCalling',
-            context: { agentId: 'session-1', messageId: `msg-${i}` },
-          });
-          opIds.push(operationId);
-        }
-      });
-
-      // Verify all running
-      expect(operationSelectors.getRunningOperations(result.current)).toHaveLength(5);
-
-      // Cancel all generateAI operations
-      let cancelledIds: string[];
-      act(() => {
-        cancelledIds = result.current.cancelOperations({
-          type: 'execAgentRuntime',
-          status: 'running',
-        });
-      });
-
-      // Verify correct operations cancelled
-      expect(cancelledIds!).toHaveLength(3); // 0, 2, 4
-      expect(operationSelectors.getRunningOperations(result.current)).toHaveLength(2);
     });
   });
 

@@ -123,73 +123,6 @@ describe('pluginSelectors', () => {
     });
   });
 
-  describe('getPluginSettingsById', () => {
-    it('should return the plugin settings by id', () => {
-      const mockSettings = { setting1: 'value1' };
-
-      const result = pluginSelectors.getPluginSettingsById('plugin-1')(mockState);
-      expect(result).toEqual(mockSettings);
-    });
-  });
-
-  describe('hasPluginUI', () => {
-    it('should return false when the plugin does not have a UI component', () => {
-      const result = pluginSelectors.isPluginHasUI('non-ui-plugin')(mockState);
-      expect(result).toBe(false);
-    });
-
-    it('should return true when the plugin has a UI component', () => {
-      const stateWithUIPlugin = {
-        ...mockState,
-        installedPlugins: [
-          ...mockState.installedPlugins,
-          {
-            ...mockState.installedPlugins[0],
-            identifier: 'ui-plugin',
-            manifest: {
-              ...mockState.installedPlugins[0].manifest,
-              identifier: 'ui-plugin',
-              ui: true,
-            },
-          },
-        ],
-      } as ToolStoreState;
-      const result = pluginSelectors.isPluginHasUI('ui-plugin')(stateWithUIPlugin);
-      expect(result).toBe(true);
-    });
-  });
-
-  describe('isPluginInstalled', () => {
-    it('should return true if the plugin is installed', () => {
-      const result = pluginSelectors.isPluginInstalled('plugin-1')(mockState);
-      expect(result).toBe(true);
-    });
-
-    it('should return false if the plugin is not installed', () => {
-      const result = pluginSelectors.isPluginInstalled('non-installed-plugin')(mockState);
-      expect(result).toBe(false);
-    });
-  });
-
-  describe('getInstalledPluginById', () => {
-    it('should return the installed plugin by id', () => {
-      const result = pluginSelectors.getInstalledPluginById('plugin-1')(mockState);
-      expect(result).toEqual(mockState.installedPlugins[0]);
-    });
-
-    it('should return undefined if the plugin is not installed', () => {
-      const result = pluginSelectors.getInstalledPluginById('non-installed-plugin')(mockState);
-      expect(result).toBeUndefined();
-    });
-  });
-
-  describe('storeAndInstallPluginsIdList', () => {
-    it('should return a list of unique plugin identifiers from installed plugins', () => {
-      const result = pluginSelectors.storeAndInstallPluginsIdList(mockState);
-      expect(result).toEqual(['plugin-1', 'plugin-2', 'plugin-3']);
-    });
-  });
-
   describe('installedPluginManifestList', () => {
     it('should return a list of manifests for installed plugins', () => {
       const result = pluginSelectors.installedPluginManifestList(mockState);
@@ -220,14 +153,6 @@ describe('pluginSelectors', () => {
 
       const [item] = pluginSelectors.installedPluginMetaList(state);
       expect(item.title).toBe('Alpaca MCP');
-    });
-  });
-
-  describe('installedCustomPluginMetaList', () => {
-    it('should return a list of meta information for installed plugins', () => {
-      const result = pluginSelectors.installedCustomPluginMetaList(mockState);
-
-      expect(result).toEqual([{ identifier: 'plugin-3', type: 'customPlugin' }]);
     });
   });
 });

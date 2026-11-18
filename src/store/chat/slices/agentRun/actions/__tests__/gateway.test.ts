@@ -849,26 +849,6 @@ describe('GatewayActionImpl', () => {
     });
   });
 
-  describe('getGatewayConnectionStatus', () => {
-    it('should return status for active connection', () => {
-      const { action } = createTestAction();
-
-      action.connectToGateway({
-        gatewayUrl: 'https://gateway.test.com',
-        operationId: 'op-1',
-        token: 'test-token',
-        topicId: TEST_TOPIC_ID,
-      });
-
-      expect(action.getGatewayConnectionStatus('op-1')).toBe('connecting');
-    });
-
-    it('should return undefined for unknown operationId', () => {
-      const { action } = createTestAction();
-      expect(action.getGatewayConnectionStatus('nonexistent')).toBeUndefined();
-    });
-  });
-
   describe('executeGatewayAgent', () => {
     function createExecuteTestAction() {
       const mockClient = createMockClient();

@@ -1,8 +1,18 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { type GlobalRuntimeConfig } from '@/types/serverConfig';
+import { merge } from '@/utils/merge';
 
-import { initServerConfigStore } from './store';
+import { createServerConfigStore, type ServerConfigStore } from './store';
+
+// Fresh-state store per test: the app keeps one singleton, so reset its state
+// to the defaults merged with the given initial state.
+const serverConfigStore = createServerConfigStore();
+const defaultServerConfigState = serverConfigStore.getState();
+const initServerConfigStore = (initState: Partial<ServerConfigStore>) => {
+  serverConfigStore.setState(merge(defaultServerConfigState, initState), true);
+  return serverConfigStore;
+};
 
 // Mock SWR
 let mockSWRData: GlobalRuntimeConfig | undefined;

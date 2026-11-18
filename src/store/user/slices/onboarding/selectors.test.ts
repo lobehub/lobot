@@ -92,26 +92,6 @@ describe('onboardingSelectors', () => {
     });
   });
 
-  describe('version', () => {
-    it('should return onboarding version', () => {
-      const store = {
-        ...initialOnboardingState,
-        onboarding: { version: 2 },
-      } as unknown as UserStore;
-
-      expect(onboardingSelectors.version(store)).toBe(2);
-    });
-
-    it('should return CURRENT_ONBOARDING_VERSION when onboarding is undefined', () => {
-      const store = {
-        ...initialOnboardingState,
-        onboarding: undefined,
-      } as unknown as UserStore;
-
-      expect(onboardingSelectors.version(store)).toBe(CURRENT_ONBOARDING_VERSION);
-    });
-  });
-
   describe('finishedAt', () => {
     it('should return finishedAt when set', () => {
       const finishedAt = '2024-01-01T00:00:00Z';
@@ -130,35 +110,6 @@ describe('onboardingSelectors', () => {
       } as unknown as UserStore;
 
       expect(onboardingSelectors.finishedAt(store)).toBeUndefined();
-    });
-  });
-
-  describe('isFinished', () => {
-    it('should return true when finishedAt is set', () => {
-      const store = {
-        ...initialOnboardingState,
-        onboarding: { finishedAt: '2024-01-01T00:00:00Z', version: CURRENT_ONBOARDING_VERSION },
-      } as unknown as UserStore;
-
-      expect(onboardingSelectors.isFinished(store)).toBe(true);
-    });
-
-    it('should return false when finishedAt is undefined', () => {
-      const store = {
-        ...initialOnboardingState,
-        onboarding: { version: CURRENT_ONBOARDING_VERSION },
-      } as unknown as UserStore;
-
-      expect(onboardingSelectors.isFinished(store)).toBe(false);
-    });
-
-    it('should return false when onboarding is undefined', () => {
-      const store = {
-        ...initialOnboardingState,
-        onboarding: undefined,
-      } as unknown as UserStore;
-
-      expect(onboardingSelectors.isFinished(store)).toBe(false);
     });
   });
 

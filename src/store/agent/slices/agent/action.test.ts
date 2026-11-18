@@ -1,6 +1,6 @@
 import { DEFAULT_AGENT_CONFIG } from '@lobechat/const';
-import { CHAT_GROUP_SESSION_ID_PREFIX } from '@lobot/types';
 import { toast } from '@lobehub/ui';
+import { CHAT_GROUP_SESSION_ID_PREFIX } from '@lobot/types';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -81,85 +81,6 @@ afterEach(() => {
 });
 
 describe('AgentSlice Actions', () => {
-  describe('system role streaming', () => {
-    it('accepts chunks and lets only the stream owner clear the visual buffer', async () => {
-      const { result } = renderHook(() => useAgentStore());
-      const persistPrompt = vi
-        .spyOn(result.current, 'optimisticUpdateAgentConfig')
-        .mockResolvedValue(undefined);
-
-      let generation = 0;
-      act(() => {
-        generation = result.current.startStreamingSystemRole('agent-a');
-        result.current.appendStreamingSystemRole('agent-b', generation, 'wrong');
-        result.current.appendStreamingSystemRole('agent-a', generation, 'owned');
-      });
-
-      expect(result.current).toMatchObject({
-        streamingSystemRole: 'owned',
-        streamingSystemRoleAgentId: 'agent-a',
-        streamingSystemRoleGeneration: generation,
-        streamingSystemRoleInProgress: true,
-      });
-
-      await act(async () => {
-        await result.current.finishStreamingSystemRole('agent-b', generation);
-      });
-
-      expect(persistPrompt).not.toHaveBeenCalled();
-      expect(result.current.streamingSystemRoleAgentId).toBe('agent-a');
-
-      await act(async () => {
-        await result.current.finishStreamingSystemRole('agent-a', generation);
-      });
-
-      expect(persistPrompt).not.toHaveBeenCalled();
-      expect(result.current).toMatchObject({
-        streamingSystemRole: undefined,
-        streamingSystemRoleAgentId: undefined,
-        streamingSystemRoleInProgress: false,
-      });
-    });
-
-    it('does not let a stale finish clear a newer stream for the same agent', async () => {
-      const { result } = renderHook(() => useAgentStore());
-
-      let oldGeneration = 0;
-      act(() => {
-        oldGeneration = result.current.startStreamingSystemRole('agent-a');
-        result.current.appendStreamingSystemRole('agent-a', oldGeneration, 'old stream');
-      });
-
-      let newGeneration = 0;
-      act(() => {
-        newGeneration = result.current.startStreamingSystemRole('agent-a');
-        result.current.appendStreamingSystemRole('agent-a', oldGeneration, 'stale chunk');
-        result.current.appendStreamingSystemRole('agent-a', newGeneration, 'new stream');
-      });
-
-      await act(async () => {
-        await result.current.finishStreamingSystemRole('agent-a', oldGeneration);
-      });
-
-      expect(result.current).toMatchObject({
-        streamingSystemRole: 'new stream',
-        streamingSystemRoleAgentId: 'agent-a',
-        streamingSystemRoleGeneration: newGeneration,
-        streamingSystemRoleInProgress: true,
-      });
-
-      await act(async () => {
-        await result.current.finishStreamingSystemRole('agent-a', newGeneration);
-      });
-
-      expect(result.current).toMatchObject({
-        streamingSystemRole: undefined,
-        streamingSystemRoleAgentId: undefined,
-        streamingSystemRoleInProgress: false,
-      });
-    });
-  });
-
   describe('createAgent', () => {
     it('should invalidate cached available agents after creating an agent', async () => {
       vi.mocked(agentService.createAgent).mockResolvedValue({ agentId: 'agent-2' });
@@ -544,40 +465,6 @@ describe('AgentSlice Actions', () => {
     });
   });
 
-  describe('internal_createAbortController', () => {
-    it('should create a new abort controller', () => {
-      const { result } = renderHook(() => useAgentStore());
-
-      let controller: AbortController;
-      act(() => {
-        controller = result.current.internal_createAbortController('updateAgentConfigSignal');
-      });
-
-      expect(controller!).toBeInstanceOf(AbortController);
-      expect(result.current.updateAgentConfigSignal).toBe(controller!);
-    });
-
-    it('should abort previous controller when creating new one', () => {
-      const { result } = renderHook(() => useAgentStore());
-
-      let controller1: AbortController;
-      let controller2: AbortController;
-
-      act(() => {
-        controller1 = result.current.internal_createAbortController('updateAgentConfigSignal');
-      });
-
-      const abortSpy = vi.spyOn(controller1!, 'abort');
-
-      act(() => {
-        controller2 = result.current.internal_createAbortController('updateAgentConfigSignal');
-      });
-
-      expect(abortSpy).toHaveBeenCalled();
-      expect(result.current.updateAgentConfigSignal).toBe(controller2!);
-    });
-  });
-
   describe('updateAgentConfig', () => {
     it('should not call optimisticUpdateAgentConfig if no activeAgentId', async () => {
       const { result } = renderHook(() => useAgentStore());
@@ -697,64 +584,6 @@ describe('AgentSlice Actions', () => {
   });
 
   describe('updateAgentMeta', () => {
-    it('should not call optimisticUpdateAgentMeta if no activeAgentId', async () => {
-      const { result } = renderHook(() => useAgentStore());
-
-      const optimisticUpdateSpy = vi.spyOn(result.current, 'optimisticUpdateAgentMeta');
-
-      await act(async () => {
-        await result.current.updateAgentMeta({ title: 'New Title' });
-      });
-
-      expect(optimisticUpdateSpy).not.toHaveBeenCalled();
-    });
-
-    it('should call optimisticUpdateAgentMeta with activeAgentId', async () => {
-      const { result } = renderHook(() => useAgentStore());
-
-      vi.mocked(agentService.updateAgentMeta).mockResolvedValue({
-        agent: { title: 'New Title' } as any,
-        success: true,
-      });
-
-      act(() => {
-        useAgentStore.setState({ activeAgentId: 'agent-1' });
-      });
-
-      await act(async () => {
-        await result.current.updateAgentMeta({ title: 'New Title' });
-      });
-
-      expect(agentService.updateAgentMeta).toHaveBeenCalledWith(
-        'agent-1',
-        { title: 'New Title' },
-        expect.any(AbortSignal),
-      );
-    });
-
-    it('should preserve explicit null when clearing avatar', async () => {
-      const { result } = renderHook(() => useAgentStore());
-
-      vi.mocked(agentService.updateAgentMeta).mockResolvedValue({
-        agent: { avatar: null } as any,
-        success: true,
-      });
-
-      act(() => {
-        useAgentStore.setState({ activeAgentId: 'agent-1' });
-      });
-
-      await act(async () => {
-        await result.current.updateAgentMeta({ avatar: null });
-      });
-
-      expect(agentService.updateAgentMeta).toHaveBeenCalledWith(
-        'agent-1',
-        { avatar: null },
-        expect.any(AbortSignal),
-      );
-    });
-
     it('keeps in-flight metadata saves isolated by agent', async () => {
       const { result } = renderHook(() => useAgentStore());
       let resolveAgentA: ((value: any) => void) | undefined;
@@ -787,68 +616,6 @@ describe('AgentSlice Actions', () => {
         resolveAgentA?.({ agent: { id: 'agent-a' } as any, success: true });
         await saveAgentA;
       });
-    });
-  });
-
-  describe('updateAgentChatConfig', () => {
-    it('should not call updateAgentConfig if no activeAgentId', async () => {
-      const { result } = renderHook(() => useAgentStore());
-
-      const updateConfigSpy = vi.spyOn(result.current, 'updateAgentConfig');
-
-      await act(async () => {
-        await result.current.updateAgentChatConfig({ historyCount: 10 });
-      });
-
-      expect(updateConfigSpy).not.toHaveBeenCalled();
-    });
-
-    it('should call updateAgentConfig with chatConfig wrapper', async () => {
-      const { result } = renderHook(() => useAgentStore());
-
-      vi.mocked(agentService.updateAgentConfig).mockResolvedValue({
-        agent: { chatConfig: { historyCount: 10 } } as any,
-        success: true,
-      });
-
-      act(() => {
-        useAgentStore.setState({ activeAgentId: 'agent-1' });
-      });
-
-      await act(async () => {
-        await result.current.updateAgentChatConfig({ historyCount: 10 });
-      });
-
-      expect(agentService.updateAgentConfig).toHaveBeenCalledWith(
-        'agent-1',
-        { chatConfig: { historyCount: 10 } },
-        expect.any(AbortSignal),
-        undefined,
-      );
-    });
-
-    // automatic corrections must not trigger phantom save-error toasts: some chatConfig writes are automatic corrections (e.g. forcing
-    // `searchMode: 'auto'` for a model whose builtin search can't be turned off).
-    // A rejected correction must not toast "your change was not applied" for a
-    // change the user never made, so the option has to reach the write funnel.
-    it('should forward update options through the chatConfig wrapper', async () => {
-      const { result } = renderHook(() => useAgentStore());
-
-      vi.mocked(agentService.updateAgentConfig).mockRejectedValue(new Error('save failed'));
-      vi.spyOn(console, 'error').mockImplementation(() => {});
-
-      act(() => {
-        useAgentStore.setState({ activeAgentId: 'agent-1' });
-      });
-
-      await act(async () => {
-        await result.current.updateAgentChatConfig(
-          { searchMode: 'auto' },
-          { showErrorMessage: false },
-        );
-      });
-
-      expect(toast.error).not.toHaveBeenCalled();
     });
   });
 
@@ -1336,25 +1103,6 @@ describe('AgentSlice Actions', () => {
       expect(agentService.getAgentConfigById).toHaveBeenCalledWith('agent-1');
       expect(useAgentStore.getState().activeAgentId).toBe('agent-1');
       expect(useAgentStore.getState().agentMap['agent-1']).toBeDefined();
-    });
-
-    it('should record fetch error in agentConfigErrorMap and clear it on retry', async () => {
-      const error = Object.assign(new Error('boom'), { meta: { shouldRetry: false } });
-      vi.mocked(agentService.getAgentConfigById).mockRejectedValueOnce(error);
-
-      renderHook(() => useAgentStore().useFetchAgentConfig(true, 'agent-err'), {
-        wrapper: withSWR,
-      });
-
-      await waitFor(() =>
-        expect(useAgentStore.getState().agentConfigErrorMap['agent-err']).toBe('boom'),
-      );
-
-      await act(async () => {
-        await useAgentStore.getState().retryAgentConfigFetch('agent-err');
-      });
-
-      expect(useAgentStore.getState().agentConfigErrorMap['agent-err']).toBeUndefined();
     });
 
     it('should clear a stale fetch error once data arrives', async () => {

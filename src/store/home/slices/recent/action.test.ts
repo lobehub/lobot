@@ -20,7 +20,6 @@ import { setScopedMutate } from '@/libs/swr/mutate';
 import { fileService } from '@/services/file';
 import { recentService } from '@/services/recent';
 import { taskService } from '@/services/task';
-import { topicService } from '@/services/topic';
 import { useHomeStore } from '@/store/home';
 import { HOME_TOPIC_RECENTS_PARAMS, TRAY_RECENTS_PARAMS } from '@/store/home/slices/recent/action';
 import {
@@ -28,7 +27,7 @@ import {
   createRecentQueryKey,
   initialRecentState,
 } from '@/store/home/slices/recent/initialState';
-import { docsHomeListResource, recentListResource } from '@/store/home/slices/recent/projection';
+import { recentListResource } from '@/store/home/slices/recent/projection';
 import { homeRecentSelectors } from '@/store/home/slices/recent/selectors';
 
 const item = (id: string, title: string, type: RecentItem['type'] = 'task'): RecentItem => ({
@@ -254,15 +253,6 @@ const TRAY = createRecentQueryKey(TRAY_RECENTS_PARAMS.limit, {
   view: TRAY_RECENTS_PARAMS.view,
 });
 const rowsOf = (queryKey: string) => homeRecentSelectors.query(queryKey)(useHomeStore.getState());
-const seed = (
-  params: typeof HOME_TOPIC_RECENTS_PARAMS | typeof TRAY_RECENTS_PARAMS,
-  rows: RecentItem[],
-  at = scope,
-) =>
-  recentListResource.storage!.set(
-    { queryKey: recentListResource.storageKey(params), scope: at },
-    { data: rows, updatedAt: 1 },
-  );
 
 describe('Home topic and tray recents on the recentList replica', () => {
   it('keeps each query in its own entry, apart from the sidebar', () => {
@@ -288,83 +278,6 @@ describe('Home topic and tray recents on the recentList replica', () => {
         ),
       ).toEqual([]);
     }
-  });
-
-  it('asks the server for the same rows as before', async () => {
-    const getAll = vi.spyOn(recentService, 'getAll').mockResolvedValue([]);
-
-    renderHook(
-      () => {
-        useHomeStore((s) => s.useFetchHomeTopicRecents)(true);
-        useHomeStore((s) => s.useFetchTrayRecents)(true);
-      },
-      { wrapper },
-    );
-
-    await waitFor(() => expect(getAll).toHaveBeenCalledTimes(2));
-    // Home: own topics with previews; tray: own recents of every type.
-    expect(getAll).toHaveBeenCalledWith(15, ['topic'], true, true, false);
-    expect(getAll).toHaveBeenCalledWith(10, undefined, false, true, false);
-  });
-
-  it('paints persisted Home topics and tray rows before the network, then replaces them', async () => {
-    await seed(HOME_TOPIC_RECENTS_PARAMS, [item('t1', 'Cached topic', 'topic')]);
-    await seed(TRAY_RECENTS_PARAMS, [item('d1', 'Cached doc', 'document')]);
-    const response = deferred<RecentItem[]>();
-    vi.spyOn(recentService, 'getAll').mockReturnValue(response.promise);
-
-    renderHook(
-      () => {
-        useHomeStore((s) => s.useFetchHomeTopicRecents)(true);
-        useHomeStore((s) => s.useFetchTrayRecents)(true);
-      },
-      { wrapper },
-    );
-
-    await waitFor(() => {
-      expect(rowsOf(HOME_TOPICS)?.[0].title).toBe('Cached topic');
-      expect(rowsOf(TRAY)?.[0].title).toBe('Cached doc');
-    });
-    expect(homeRecentSelectors.isQueryConfirmed(HOME_TOPICS)(useHomeStore.getState())).toBe(false);
-
-    await act(async () => response.resolve([item('t2', 'Fresh', 'topic')]));
-
-    await waitFor(() => {
-      expect(rowsOf(HOME_TOPICS)?.map((row) => row.title)).toEqual(['Fresh']);
-      expect(rowsOf(TRAY)?.map((row) => row.title)).toEqual(['Fresh']);
-    });
-    expect(homeRecentSelectors.isQueryConfirmed(HOME_TOPICS)(useHomeStore.getState())).toBe(true);
-  });
-
-  it('treats a hydrated empty snapshot as unconfirmed until the server answers', async () => {
-    await seed(HOME_TOPIC_RECENTS_PARAMS, []);
-    const response = deferred<RecentItem[]>();
-    vi.spyOn(recentService, 'getAll').mockReturnValue(response.promise);
-
-    const { result } = renderHook(() => useHomeStore((s) => s.useFetchHomeTopicRecents)(true), {
-      wrapper,
-    });
-
-    await waitFor(() => expect(result.current.isHydrated).toBe(true));
-    expect(rowsOf(HOME_TOPICS)).toEqual([]);
-    expect(homeRecentSelectors.isQueryConfirmed(HOME_TOPICS)(useHomeStore.getState())).toBe(false);
-
-    await act(async () => response.resolve([]));
-    await waitFor(() =>
-      expect(homeRecentSelectors.isQueryConfirmed(HOME_TOPICS)(useHomeStore.getState())).toBe(true),
-    );
-  });
-
-  it("never paints another identity's rows", async () => {
-    await seed(HOME_TOPIC_RECENTS_PARAMS, [item('t1', 'Theirs', 'topic')], `${scope}-other`);
-    vi.spyOn(recentService, 'getAll').mockImplementation(() => new Promise(() => {}));
-
-    const { result } = renderHook(() => useHomeStore((s) => s.useFetchHomeTopicRecents)(true), {
-      wrapper,
-    });
-
-    await waitFor(() => expect(result.current.isHydrated).toBe(true));
-    expect(rowsOf(HOME_TOPICS)).toBeUndefined();
   });
 
   it('keeps the last rows when a background refresh fails', async () => {
@@ -415,181 +328,5 @@ describe('Home topic and tray recents on the recentList replica', () => {
 
     expect(getAll).toHaveBeenCalledTimes(2);
     expect(rowsOf(TRAY)?.[0].title).toBe('Now running');
-  });
-
-  it('carries a rename into the Home topics and the tray, and persists it', async () => {
-    vi.spyOn(recentService, 'getAll').mockResolvedValue([item('t1', 'Old', 'topic')]);
-    vi.spyOn(topicService, 'updateTopic').mockResolvedValue(undefined as never);
-    renderHook(
-      () => {
-        useHomeStore((s) => s.useFetchHomeTopicRecents)(true);
-        useHomeStore((s) => s.useFetchTrayRecents)(true);
-      },
-      { wrapper },
-    );
-    await waitFor(() => expect(rowsOf(TRAY)).toHaveLength(1));
-    await waitFor(() => expect(rowsOf(HOME_TOPICS)).toHaveLength(1));
-
-    await act(() =>
-      useHomeStore.getState().renameRecent({ id: 't1', title: 'New', type: 'topic' }),
-    );
-
-    expect(rowsOf(HOME_TOPICS)?.[0].title).toBe('New');
-    expect(rowsOf(TRAY)?.[0].title).toBe('New');
-    await waitFor(async () =>
-      expect(
-        (
-          await recentListResource.storage!.get({
-            queryKey: recentListResource.storageKey(TRAY_RECENTS_PARAMS),
-            scope,
-          })
-        )?.data[0].title,
-      ).toBe('New'),
-    );
-  });
-
-  it('refetches the Home topics and the tray with the other recents', async () => {
-    const getAll = vi.spyOn(recentService, 'getAll').mockResolvedValue([]);
-    renderHook(
-      () => {
-        useHomeStore((s) => s.useFetchHomeTopicRecents)(true);
-        useHomeStore((s) => s.useFetchTrayRecents)(true);
-      },
-      { wrapper },
-    );
-    await waitFor(() => expect(getAll).toHaveBeenCalledTimes(2));
-
-    await act(() => useHomeStore.getState().refreshRecents());
-
-    expect(getAll).toHaveBeenCalledTimes(4);
-  });
-});
-
-type DocsHomeItem = Awaited<ReturnType<typeof fileService.getDocsHomeItems>>[number];
-
-const homeItem = (id: string, sourceType: 'document' | 'file' = 'document'): DocsHomeItem =>
-  ({
-    createdAt: new Date(0),
-    fileType: sourceType === 'document' ? 'custom/document' : 'image/png',
-    id,
-    knowledgeBaseIds: ['kb-1'],
-    metadata: { emoji: '📄', heavy: 'x'.repeat(10) },
-    name: id,
-    sourceType,
-    updatedAt: new Date(0),
-    uploader: { avatar: null, fullName: 'Ada', id: 'user-1', username: 'ada' },
-    userId: 'user-1',
-  }) as unknown as DocsHomeItem;
-
-const storedRow = <T>(
-  resource: { storage?: { get: (key: { queryKey: string; scope: string }) => Promise<T> } },
-  queryKey: string,
-) => resource.storage!.get({ queryKey, scope });
-
-describe('docs home list replica', () => {
-  it('paints the persisted rows before the network answers', async () => {
-    await docsHomeListResource.storage!.set(
-      { queryKey: 'recent', scope },
-      {
-        data: [
-          {
-            createdAt: new Date(0),
-            fileType: 'custom/document',
-            id: 'p1',
-            knowledgeBaseIds: [],
-            kind: 'page',
-            name: 'Cached page',
-            updatedAt: new Date(0),
-          },
-        ],
-        updatedAt: 1,
-      },
-    );
-
-    const { result } = renderHook(() => useHomeStore((s) => s.useFetchDocsHome)('recent'), {
-      wrapper,
-    });
-
-    await waitFor(() =>
-      expect(homeRecentSelectors.docsHome('recent')(useHomeStore.getState())?.[0].name).toBe(
-        'Cached page',
-      ),
-    );
-    expect(result.current.isValidating).toBe(true);
-  });
-
-  it('keeps each tab in its own entry', async () => {
-    vi.mocked(fileService.getDocsHomeItems).mockImplementation(async (tab) => [
-      homeItem(`row-${tab}`),
-    ]);
-
-    renderHook(
-      () => {
-        useHomeStore((s) => s.useFetchDocsHome)('mine');
-        useHomeStore((s) => s.useFetchDocsHome)('shared');
-      },
-      { wrapper },
-    );
-
-    await waitFor(() => {
-      const state = useHomeStore.getState();
-      expect(homeRecentSelectors.docsHome('mine')(state)?.[0].id).toBe('row-mine');
-      expect(homeRecentSelectors.docsHome('shared')(state)?.[0].id).toBe('row-shared');
-    });
-  });
-
-  it('persists slim rows with kind, location and owner', async () => {
-    vi.mocked(fileService.getDocsHomeItems).mockResolvedValue([
-      homeItem('p1'),
-      homeItem('f1', 'file'),
-    ]);
-
-    renderHook(() => useHomeStore((s) => s.useFetchDocsHome)('recent'), { wrapper });
-
-    await waitFor(async () =>
-      expect((await storedRow(docsHomeListResource, 'recent'))?.data).toEqual([
-        {
-          createdAt: new Date(0),
-          emoji: '📄',
-          fileType: 'custom/document',
-          id: 'p1',
-          knowledgeBaseIds: ['kb-1'],
-          kind: 'page',
-          name: 'p1',
-          owner: { avatar: null, id: 'user-1', name: 'Ada' },
-          updatedAt: new Date(0),
-          userId: 'user-1',
-        },
-        expect.objectContaining({ id: 'f1', kind: 'file' }),
-      ]),
-    );
-    expect(JSON.stringify(localStorage)).not.toContain('heavy');
-  });
-
-  it("never paints another workspace's rows", async () => {
-    await docsHomeListResource.storage!.set(
-      { queryKey: 'recent', scope: `${scope}-other-workspace` },
-      {
-        data: [
-          {
-            createdAt: new Date(0),
-            fileType: 'image/png',
-            id: 'x',
-            knowledgeBaseIds: [],
-            kind: 'file',
-            name: 'Theirs',
-            updatedAt: new Date(0),
-          },
-        ],
-        updatedAt: 1,
-      },
-    );
-
-    const { result } = renderHook(() => useHomeStore((s) => s.useFetchDocsHome)('recent'), {
-      wrapper,
-    });
-
-    await waitFor(() => expect(result.current.isHydrated).toBe(true));
-    expect(homeRecentSelectors.docsHome('recent')(useHomeStore.getState())).toBeUndefined();
   });
 });

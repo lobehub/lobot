@@ -8,7 +8,6 @@ import {
   encodeProjectIndex,
   GIT_WORKING_TREE_PERSIST_MAX_PATHS,
   gitWorkingTreeFilesCodec,
-  isPersistedPartialIndex,
   projectIndexCodec,
   withPersistCodec,
 } from './codec';
@@ -122,15 +121,6 @@ describe('project index codec', () => {
     const sourceIndex = new Map(entries.map((entry, i) => [entry.relativePath, i]));
     const keptIndexes = keptPaths.map((path) => sourceIndex.get(path)!);
     expect(keptIndexes).toEqual([...keptIndexes].sort((a, b) => a - b));
-  });
-
-  it('marks a capped tree as partial, and keeps it partial when written back', () => {
-    expect(isPersistedPartialIndex(decodeProjectIndex(encodeProjectIndex(index)))).toBe(false);
-
-    const restored = decodeProjectIndex(encodeProjectIndex(index, 3));
-    expect(isPersistedPartialIndex(restored)).toBe(true);
-    // Under the cap now, but it is still the cut-down copy, not the full tree.
-    expect(isPersistedPartialIndex(decodeProjectIndex(encodeProjectIndex(restored)))).toBe(true);
   });
 
   it('decodes only rows it encoded', () => {

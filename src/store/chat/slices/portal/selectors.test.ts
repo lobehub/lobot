@@ -84,17 +84,6 @@ describe('chatDockSelectors', () => {
     });
   });
 
-  describe('agent detail', () => {
-    it('should expose the active agent detail id', () => {
-      const state = createState({
-        portalStack: [{ agentId: 'agt_1', type: PortalViewType.AgentDetail }],
-      });
-
-      expect(chatPortalSelectors.showAgentDetail(state)).toBe(true);
-      expect(chatPortalSelectors.agentDetailId(state)).toBe('agt_1');
-    });
-  });
-
   describe('topic comments', () => {
     it('extracts list and thread view data only from the active view', () => {
       const listState = createState({
@@ -130,41 +119,6 @@ describe('chatDockSelectors', () => {
       });
       expect(chatPortalSelectors.topicCommentsView(threadState)).toBeNull();
     });
-
-    it('keeps comment views out of the standalone desktop portal', () => {
-      const listState = createState({
-        portalStack: [
-          {
-            topicId: 'topic-1',
-            type: PortalViewType.TopicComments,
-          },
-        ],
-        showPortal: true,
-      });
-      const threadState = createState({
-        portalStack: [
-          {
-            rootCommentId: 'comment-1',
-            topicId: 'topic-1',
-            type: PortalViewType.TopicCommentThread,
-          },
-        ],
-        showPortal: true,
-      });
-
-      expect(chatPortalSelectors.showTopicComments(listState)).toBe(true);
-      expect(chatPortalSelectors.showStandalonePortal(listState)).toBe(false);
-      expect(chatPortalSelectors.showTopicComments(threadState)).toBe(true);
-      expect(chatPortalSelectors.showStandalonePortal(threadState)).toBe(false);
-      expect(
-        chatPortalSelectors.showStandalonePortal(
-          createState({
-            portalStack: [{ type: PortalViewType.Notebook }],
-            showPortal: true,
-          }),
-        ),
-      ).toBe(true);
-    });
   });
 
   describe('canGoBack', () => {
@@ -188,109 +142,6 @@ describe('chatDockSelectors', () => {
     });
   });
 
-  describe('showArtifactUI', () => {
-    it('should return false when current view is not Artifact', () => {
-      expect(chatPortalSelectors.showArtifactUI(createState())).toBe(false);
-      expect(
-        chatPortalSelectors.showArtifactUI(
-          createState({ portalStack: [{ type: PortalViewType.Notebook }] }),
-        ),
-      ).toBe(false);
-    });
-
-    it('should return true when current view is Artifact', () => {
-      const state = createState({
-        portalStack: [
-          {
-            type: PortalViewType.Artifact,
-            artifact: { id: 'test', title: 'Test', type: 'text' },
-          },
-        ],
-      });
-      expect(chatPortalSelectors.showArtifactUI(state)).toBe(true);
-    });
-  });
-
-  describe('showDock', () => {
-    it('should return the showDock state', () => {
-      expect(chatPortalSelectors.showPortal(createState({ showPortal: true }))).toBe(true);
-      expect(chatPortalSelectors.showPortal(createState({ showPortal: false }))).toBe(false);
-    });
-  });
-
-  describe('toolUIMessageId', () => {
-    it('should return undefined when no ToolUI view on stack', () => {
-      expect(chatPortalSelectors.toolMessageId(createState())).toBeUndefined();
-    });
-
-    it('should return the messageId when ToolUI view is on stack', () => {
-      const state = createState({
-        portalStack: [{ type: PortalViewType.ToolUI, messageId: 'test-id', identifier: 'test' }],
-      });
-      expect(chatPortalSelectors.toolMessageId(state)).toBe('test-id');
-    });
-  });
-
-  describe('isMessageToolUIOpen', () => {
-    it('should return false when id does not match or showDock is false', () => {
-      const state = createState({
-        portalStack: [{ type: PortalViewType.ToolUI, messageId: 'test-id', identifier: 'test' }],
-        showPortal: false,
-      });
-      expect(chatPortalSelectors.isPluginUIOpen('test-id')(state)).toBe(false);
-      expect(chatPortalSelectors.isPluginUIOpen('other-id')(state)).toBe(false);
-    });
-
-    it('should return true when id matches and showDock is true', () => {
-      const state = createState({
-        portalStack: [{ type: PortalViewType.ToolUI, messageId: 'test-id', identifier: 'test' }],
-        showPortal: true,
-      });
-      expect(chatPortalSelectors.isPluginUIOpen('test-id')(state)).toBe(true);
-    });
-  });
-
-  describe('showToolUI', () => {
-    it('should return false when no ToolUI view on stack', () => {
-      expect(chatPortalSelectors.showPluginUI(createState())).toBe(false);
-    });
-
-    it('should return true when ToolUI view is on stack', () => {
-      const state = createState({
-        portalStack: [{ type: PortalViewType.ToolUI, messageId: 'test-id', identifier: 'test' }],
-      });
-      expect(chatPortalSelectors.showPluginUI(state)).toBe(true);
-    });
-  });
-
-  describe('toolUIIdentifier', () => {
-    it('should return undefined when no ToolUI view on stack', () => {
-      expect(chatPortalSelectors.toolUIIdentifier(createState())).toBeUndefined();
-    });
-
-    it('should return the identifier when ToolUI view is on stack', () => {
-      const state = createState({
-        portalStack: [{ type: PortalViewType.ToolUI, messageId: 'test-id', identifier: 'test' }],
-      });
-      expect(chatPortalSelectors.toolUIIdentifier(state)).toBe('test');
-    });
-  });
-
-  describe('showFilePreview', () => {
-    it('should return false when no FilePreview view on stack', () => {
-      expect(chatPortalSelectors.showFilePreview(createState())).toBe(false);
-    });
-
-    it('should return true when FilePreview view is on stack', () => {
-      const state = createState({
-        portalStack: [
-          { type: PortalViewType.FilePreview, file: { fileId: 'file-id', chunkText: 'chunk' } },
-        ],
-      });
-      expect(chatPortalSelectors.showFilePreview(state)).toBe(true);
-    });
-  });
-
   describe('previewFileId', () => {
     it('should return undefined when no FilePreview view on stack', () => {
       expect(chatPortalSelectors.previewFileId(createState())).toBeUndefined();
@@ -303,24 +154,6 @@ describe('chatDockSelectors', () => {
         ],
       });
       expect(chatPortalSelectors.previewFileId(state)).toBe('file-id');
-    });
-  });
-
-  describe('showLocalFile', () => {
-    it('should return false when no LocalFile view on stack', () => {
-      expect(chatPortalSelectors.showLocalFile(createState())).toBe(false);
-      expect(
-        chatPortalSelectors.showLocalFile(
-          createState({ portalStack: [{ type: PortalViewType.Notebook }] }),
-        ),
-      ).toBe(false);
-    });
-
-    it('should return true when LocalFile view is on top of stack', () => {
-      const state = createState({
-        portalStack: [{ type: PortalViewType.LocalFile }],
-      });
-      expect(chatPortalSelectors.showLocalFile(state)).toBe(true);
     });
   });
 
@@ -495,34 +328,6 @@ describe('chatDockSelectors', () => {
         id: projectAActiveId,
         workingDirectory: '/project-a',
       });
-    });
-  });
-
-  describe('localFilePath', () => {
-    it('should return undefined when no active file', () => {
-      expect(chatPortalSelectors.localFilePath(createState())).toBeUndefined();
-    });
-
-    it('should return the filePath of the active tab', () => {
-      const state = createState({
-        activeLocalFilePath: '/path/to/file.ts',
-        openLocalFiles: [{ filePath: '/path/to/file.ts', workingDirectory: '/path/to' }],
-      } as Partial<ChatStoreState>);
-      expect(chatPortalSelectors.localFilePath(state)).toBe('/path/to/file.ts');
-    });
-  });
-
-  describe('localFileWorkingDirectory', () => {
-    it('should return undefined when no active file', () => {
-      expect(chatPortalSelectors.localFileWorkingDirectory(createState())).toBeUndefined();
-    });
-
-    it('should return the workingDirectory of the active tab', () => {
-      const state = createState({
-        activeLocalFilePath: '/path/to/file.ts',
-        openLocalFiles: [{ filePath: '/path/to/file.ts', workingDirectory: '/path/to' }],
-      } as Partial<ChatStoreState>);
-      expect(chatPortalSelectors.localFileWorkingDirectory(state)).toBe('/path/to');
     });
   });
 

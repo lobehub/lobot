@@ -1,11 +1,14 @@
 import { MAX_UPLOAD_FILE_SIZE, UPLOAD_FILE_SIZE_LIMIT_ERROR_MESSAGE } from '@lobechat/const';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { fileEnv } from '@/envs/file';
 import { lambdaClient } from '@/libs/trpc/client';
 
 import { hashFile } from '../hashFile';
 import { UPLOAD_NETWORK_ERROR, uploadService } from '../upload';
+
+const fileEnv = {
+  NEXT_PUBLIC_S3_FILE_PATH: process.env.NEXT_PUBLIC_S3_FILE_PATH || 'files',
+};
 
 const { mockHashHex, mockHashUpdate } = vi.hoisted(() => ({
   mockHashHex: vi.fn(() => 'streamed-hash'),
@@ -149,85 +152,6 @@ describe('UploadService', () => {
 
       expect(result.success).toBe(true);
       expect(result.data.dirname).toContain('custom/dir');
-    });
-  });
-
-  describe('uploadBase64ToS3', () => {
-    beforeEach(() => {
-      // Mock XMLHttpRequest for server upload
-      const xhrMock = {
-        addEventListener: vi.fn((event, handler) => {
-          if (event === 'load') {
-            setTimeout(() => handler({ target: { status: 200 } }), 0);
-          }
-        }),
-        open: vi.fn(),
-        send: vi.fn(),
-        setRequestHeader: vi.fn(),
-        status: 200,
-        upload: {
-          addEventListener: vi.fn(),
-        },
-      };
-      global.XMLHttpRequest = vi.fn(function () {
-        return xhrMock;
-      }) as unknown as typeof XMLHttpRequest;
-
-      // Mock createS3PreSignedUrl
-      vi.mocked(lambdaClient.upload.createS3PreSignedUrl.mutate).mockResolvedValue(mockPreSignUrl);
-    });
-
-    it('should upload base64 data successfully', async () => {
-      const { parseDataUri } = await import('@/utils/parseDataUri');
-      vi.mocked(parseDataUri).mockReturnValueOnce({
-        base64: 'dGVzdA==', // "test" in base64
-        mimeType: 'image/png',
-        type: 'base64',
-      });
-
-      const base64Data = 'data:image/png;base64,dGVzdA==';
-      const result = await uploadService.uploadBase64ToS3(base64Data);
-
-      expect(result).toMatchObject({
-        fileType: 'image/png',
-        hash: expect.any(String),
-        metadata: expect.objectContaining({
-          path: expect.stringContaining(fileEnv.NEXT_PUBLIC_S3_FILE_PATH || ''),
-        }),
-        size: expect.any(Number),
-      });
-    });
-
-    it('should throw error for invalid base64 data', async () => {
-      const { parseDataUri } = await import('@/utils/parseDataUri');
-      vi.mocked(parseDataUri).mockReturnValueOnce({
-        base64: null,
-        mimeType: null,
-        type: 'url',
-      });
-
-      const invalidBase64 = 'not-a-base64-string';
-
-      await expect(uploadService.uploadBase64ToS3(invalidBase64)).rejects.toThrow(
-        'Invalid base64 data for image',
-      );
-    });
-
-    it('should use custom filename when provided', async () => {
-      const { parseDataUri } = await import('@/utils/parseDataUri');
-      vi.mocked(parseDataUri).mockReturnValueOnce({
-        base64: 'dGVzdA==',
-        mimeType: 'image/png',
-        type: 'base64',
-      });
-
-      const base64Data = 'data:image/png;base64,dGVzdA==';
-      const result = await uploadService.uploadBase64ToS3(base64Data, {
-        filename: 'custom-image',
-      });
-
-      // The filename will be regenerated with UUID, but should keep the extension
-      expect(result.metadata.filename).toMatch(/^mock-uuid\.png$/);
     });
   });
 

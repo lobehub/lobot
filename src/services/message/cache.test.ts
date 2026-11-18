@@ -1,18 +1,19 @@
 import type { UIChatMessage } from '@lobot/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { MESSAGE_CACHE_VERSION } from '@/libs/swr/keys';
+import { MESSAGE_CACHE_VERSION, messageKeys } from '@/libs/swr/keys';
 
-import {
-  clearMessageListClientCacheState,
-  getMessageListFetchPolicy,
-  getMessageListWindowOlderCursor,
-  invalidateMessageListClientState,
-  isMessageListServerVerified,
-  MESSAGE_LIST_VERIFICATION_INTERVAL,
-  messageListKey,
-  runMessageListQuery,
-} from './cache';
+import type * as CacheModule from './cache';
+import { MESSAGE_LIST_VERIFICATION_INTERVAL } from './cache';
+
+// The cache keeps module-level state; a fresh module per test isolates it.
+let getMessageListFetchPolicy: typeof CacheModule.getMessageListFetchPolicy;
+let getMessageListWindowOlderCursor: typeof CacheModule.getMessageListWindowOlderCursor;
+let invalidateMessageListClientState: typeof CacheModule.invalidateMessageListClientState;
+let isMessageListServerVerified: typeof CacheModule.isMessageListServerVerified;
+let runMessageListQuery: typeof CacheModule.runMessageListQuery;
+
+const messageListKey = messageKeys.list;
 
 const getCacheScopeMock = vi.hoisted(() => vi.fn(() => 'user-1:personal'));
 
@@ -35,8 +36,15 @@ const deferred = <T>() => {
   return { promise, reject, resolve };
 };
 
-beforeEach(() => {
-  clearMessageListClientCacheState();
+beforeEach(async () => {
+  vi.resetModules();
+  ({
+    getMessageListFetchPolicy,
+    getMessageListWindowOlderCursor,
+    invalidateMessageListClientState,
+    isMessageListServerVerified,
+    runMessageListQuery,
+  } = await import('./cache'));
   getCacheScopeMock.mockReturnValue('user-1:personal');
 });
 

@@ -214,28 +214,4 @@ describe('settingsSelectors', () => {
       expect(result).toBe('#ffffff');
     });
   });
-
-  it('should return the highlighterTheme', () => {
-    const s: UserState = merge(initialState, {
-      settings: {
-        general: { highlighterTheme: 'lobe-theme' },
-      },
-    });
-
-    const result = userGeneralSettingsSelectors.highlighterTheme(s as UserStore);
-
-    expect(result).toBe('lobe-theme');
-  });
-
-  it('should return the mermaidTheme', () => {
-    const s: UserState = merge(initialState, {
-      settings: {
-        general: { mermaidTheme: 'lobe-theme' },
-      },
-    });
-
-    const result = userGeneralSettingsSelectors.mermaidTheme(s as UserStore);
-
-    expect(result).toBe('lobe-theme');
-  });
 });

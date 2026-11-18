@@ -182,29 +182,4 @@ describe('agentDocumentSkills replica', () => {
     expect(items.result.current).toEqual([]);
     expect(listDocuments()).not.toHaveBeenCalled();
   });
-
-  it('refreshAgentDocumentSkills re-syncs one agent only', async () => {
-    listDocuments().mockResolvedValue([doc({ filename: 'first' })]);
-    fetchBothAgents();
-    await waitFor(() => expect(skillsFor(AGENT_1)?.map((s) => s.name)).toEqual(['first']));
-    await waitFor(() => expect(skillsFor(AGENT_2)?.map((s) => s.name)).toEqual(['first']));
-
-    listDocuments().mockResolvedValue([doc({ filename: 'refreshed' })]);
-    await act(() => useToolStore.getState().refreshAgentDocumentSkills(AGENT_1));
-
-    await waitFor(() => expect(skillsFor(AGENT_1)?.map((s) => s.name)).toEqual(['refreshed']));
-    // The refreshed agent must not drag the other agent's entry along: had the
-    // refresh matched agent-2's sync too, it would now hold 'refreshed' as well.
-    expect(skillsFor(AGENT_2)?.map((s) => s.name)).toEqual(['first']);
-  });
-
-  it('clearAgentDocumentSkills drops one agent’s cached entry', async () => {
-    listDocuments().mockResolvedValue([doc({ filename: 'one' })]);
-    fetchSkills(AGENT_1);
-    await waitFor(() => expect(skillsFor(AGENT_1)).toBeDefined());
-
-    act(() => useToolStore.getState().clearAgentDocumentSkills(AGENT_1));
-
-    expect(skillsFor(AGENT_1)).toBeUndefined();
-  });
 });

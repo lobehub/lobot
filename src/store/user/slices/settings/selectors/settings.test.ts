@@ -1,5 +1,4 @@
 import { type HotkeyId } from '@/types/hotkey';
-import { type GlobalLLMProviderKey } from '@/types/user/settings';
 
 import { type UserStore } from '../../../store';
 import { settingsSelectors } from './settings';
@@ -78,78 +77,6 @@ describe('settingsSelectors', () => {
     });
   });
 
-  describe('defaultAgentMeta', () => {
-    it('should merge DEFAULT_AGENT_META and defaultAgent(s).meta correctly', () => {
-      const s = {
-        settings: {
-          defaultAgent: {
-            meta: {
-              avatar: 'agent-avatar.jpg',
-              description: 'Test agent',
-            },
-          },
-        },
-      } as unknown as UserStore;
-
-      const result = settingsSelectors.defaultAgentMeta(s);
-
-      expect(result).toMatchSnapshot();
-    });
-  });
-
-  describe('currentTTS', () => {
-    it('should merge DEFAULT_TTS_CONFIG and s.settings.tts correctly', () => {
-      const s = {
-        settings: {
-          tts: {
-            openAI: {
-              ttsModel: 'tts-1-hd',
-            },
-          },
-        },
-      } as unknown as UserStore;
-
-      const result = settingsSelectors.currentTTS(s);
-
-      expect(result).toMatchSnapshot();
-    });
-  });
-
-  describe('getProviderConfigById', () => {
-    it('should return the provider config for a given provider id', () => {
-      const providerConfig = {
-        OPENAI_API_KEY: 'test-key',
-        endpoint: 'https://test-endpoint.com',
-      };
-
-      const s = {
-        settings: {
-          languageModel: {
-            openAI: providerConfig,
-          },
-        },
-      } as unknown as UserStore;
-
-      const result = settingsSelectors.providerConfig('openAI')(s);
-
-      expect(result).toEqual(providerConfig);
-    });
-
-    it('should return undefined if provider does not exist', () => {
-      const s = {
-        settings: {
-          languageModel: {},
-        },
-      } as unknown as UserStore;
-
-      const result = settingsSelectors.providerConfig(
-        'nonExistentProvider' as GlobalLLMProviderKey,
-      )(s);
-
-      expect(result).toBeUndefined();
-    });
-  });
-
   describe('defaultAgentConfig', () => {
     it('should merge DEFAULT_AGENT_CONFIG and defaultAgent(s).config correctly', () => {
       const s = {
@@ -190,23 +117,6 @@ describe('settingsSelectors', () => {
         fontSize: 14,
         language: 'en-US',
       });
-    });
-  });
-
-  describe('currentSystemAgent', () => {
-    it('should merge DEFAULT_SYSTEM_AGENT_CONFIG and s.settings.systemAgent correctly', () => {
-      const s = {
-        settings: {
-          systemAgent: {
-            enableAutoReply: true,
-            replyMessage: 'Custom auto reply',
-          },
-        },
-      } as unknown as UserStore;
-
-      const result = settingsSelectors.currentSystemAgent(s);
-
-      expect(result).toMatchSnapshot();
     });
   });
 

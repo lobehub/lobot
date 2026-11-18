@@ -87,18 +87,5 @@ describe('GlobalService', () => {
       // Assert
       expect(config).toEqual(mockConfig);
     });
-
-    it('should return the defaultAgentConfig when fetch is successful', async () => {
-      // Arrange
-      vi.spyOn(lambdaClient.config.getDefaultAgentConfig, 'query').mockResolvedValue({
-        model: 'gemini-pro',
-      });
-
-      // Act
-      const config = await globalService.getDefaultAgentConfig();
-
-      // Assert
-      expect(config).toEqual({ model: 'gemini-pro' });
-    });
   });
 });

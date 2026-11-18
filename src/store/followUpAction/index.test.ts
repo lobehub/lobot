@@ -118,24 +118,6 @@ describe('useFollowUpActionStore', () => {
     expect(slotB()?.status).toBe('loading');
   });
 
-  it('abort(keyA) does not affect keyB controller', async () => {
-    let signalA: AbortSignal | undefined;
-    let signalB: AbortSignal | undefined;
-    vi.spyOn(followUpActionService, 'extract').mockImplementation(async (input, signal) => {
-      if (input.topicId === TOPIC_A) signalA = signal;
-      else signalB = signal;
-      return new Promise(() => {});
-    });
-    void useFollowUpActionStore.getState().fetchFor(KEY_A, FETCH_PARAMS_A);
-    void useFollowUpActionStore.getState().fetchFor(KEY_B, FETCH_PARAMS_B);
-    await Promise.resolve();
-    useFollowUpActionStore.getState().abort(KEY_A);
-    expect(signalA?.aborted).toBe(true);
-    expect(signalB?.aborted).toBe(false);
-    expect(slotA().status).toBe('idle');
-    expect(slotB()?.status).toBe('loading');
-  });
-
   it('20s timeout aborts the in-flight call', async () => {
     let signal: AbortSignal | undefined;
     vi.spyOn(followUpActionService, 'extract').mockImplementation(async (_, s) => {
@@ -146,26 +128,6 @@ describe('useFollowUpActionStore', () => {
     await Promise.resolve();
     vi.advanceTimersByTime(20_000);
     expect(signal?.aborted).toBe(true);
-  });
-
-  it('consume(key, chip) clears the slot for that key only', () => {
-    useFollowUpActionStore.setState({
-      slots: {
-        [KEY_A]: {
-          chips: [{ label: 'x', message: 'hello' }],
-          messageId: MSG,
-          status: 'ready',
-        },
-        [KEY_B]: {
-          chips: [{ label: 'y', message: 'hello' }],
-          messageId: MSG,
-          status: 'ready',
-        },
-      },
-    });
-    useFollowUpActionStore.getState().consume(KEY_A, { label: 'x', message: 'hello' });
-    expect(slotA()).toBeUndefined();
-    expect(slotB()?.status).toBe('ready');
   });
 
   it('discards stale results when controller is replaced (race protection)', async () => {

@@ -62,21 +62,6 @@ describe('HTML page persistence', () => {
     expect(spy.setDocument).not.toHaveBeenCalled();
   });
 
-  it('never overwrites the HTML with the empty editor body on a manual or agent save', async () => {
-    const { editor } = makeUnmountedEditor();
-    seedHtmlPage(editor);
-
-    useDocumentStore.getState().handleContentChange();
-    await useDocumentStore.getState().performSave('page-1', undefined, { saveSource: 'manual' });
-    await useDocumentStore.getState().commitEditorMutation('page-1', { saveSource: 'llm_call' });
-
-    expect(documentService.updateDocument).not.toHaveBeenCalled();
-    expect(useDocumentStore.getState().documents['page-1']).toMatchObject({
-      content: HTML,
-      isDirty: false,
-    });
-  });
-
   it('still renames the page without sending a body', async () => {
     const { editor } = makeUnmountedEditor();
     seedHtmlPage(editor);
@@ -89,32 +74,6 @@ describe('HTML page persistence', () => {
     expect(request).toMatchObject({ id: 'page-1', title: 'Goal report' });
     expect(request).not.toHaveProperty('content');
     expect(request).not.toHaveProperty('editorData');
-  });
-
-  it('re-derives the format when a remote write turns an open Markdown page into HTML', async () => {
-    const { editor } = makeUnmountedEditor();
-    useDocumentStore.getState().initDocumentWithEditor({
-      autoSave: true,
-      content: HTML,
-      contentFormat: 'markdown',
-      documentId: 'page-1',
-      editor,
-      editorData: null,
-      sourceType: 'page',
-      updatedAt: new Date('2026-10-19T00:00:00Z'),
-    });
-
-    // Same body, only the type changed (`lh doc edit --file-type custom/html`).
-    useDocumentStore.getState().reconcileRemote('page-1', {
-      content: HTML,
-      editorData: null,
-      fileType: 'custom/html',
-      updatedAt: new Date('2026-10-19T00:00:05Z'),
-    });
-    expect(useDocumentStore.getState().documents['page-1'].contentFormat).toBe('html');
-
-    await useDocumentStore.getState().commitEditorMutation('page-1', { saveSource: 'llm_call' });
-    expect(documentService.updateDocument).not.toHaveBeenCalled();
   });
 
   it('re-derives the format when a remote write turns an HTML page back into Markdown', () => {

@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createReplicaState } from '@/libs/replica';
 import { messageService } from '@/services/message';
-import { clearMessageListClientCacheState } from '@/services/message/cache';
+import { invalidateMessageListClientState } from '@/services/message/cache';
 import { conversationMessagesKey } from '@/services/message/replica';
 import { topicService } from '@/services/topic';
 import { useChatStore } from '@/store/chat';
@@ -61,7 +61,8 @@ const seedPending = () =>
 describe('pending approval message polling', () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    clearMessageListClientCacheState();
+    // Forget which lists were server-verified, so each test's mount reads again.
+    invalidateMessageListClientState(() => true);
     useChatStore.setState({ topicDataMap: {}, topicDetailMap: {} });
     vi.mocked(messageService.getMessages).mockResolvedValue([pending]);
     vi.mocked(messageService.getMessageListPage).mockImplementation(async (params) => ({

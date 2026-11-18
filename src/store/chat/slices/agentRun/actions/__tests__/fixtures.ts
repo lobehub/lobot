@@ -1,8 +1,5 @@
 import { type UIChatMessage } from '@lobot/types';
 
-import { DEFAULT_AGENT_CHAT_CONFIG, DEFAULT_AGENT_CONFIG } from '@/const/settings';
-import { type ResolvedAgentConfig } from '@/services/chat/mecha';
-
 // Test Constants
 export const TEST_IDS = {
   ASSISTANT_MESSAGE_ID: 'test-assistant-message-id',
@@ -37,28 +34,3 @@ export const createMockMessage = (overrides: Partial<UIChatMessage> = {}): UICha
   // Merge overrides, preserving all provided properties
   return { ...base, ...overrides } as UIChatMessage;
 };
-
-const createMockAgentConfig = (overrides: any = {}) => ({
-  ...DEFAULT_AGENT_CONFIG,
-  ...overrides,
-});
-
-const createMockChatConfig = (overrides: any = {}) => ({
-  ...DEFAULT_AGENT_CHAT_CONFIG,
-  ...overrides,
-});
-
-// Mock Store State Factory
-
-/**
- * Create a mock ResolvedAgentConfig for testing
- */
-export const createMockResolvedAgentConfig = (
-  overrides: Partial<ResolvedAgentConfig> = {},
-): ResolvedAgentConfig => ({
-  agentConfig: createMockAgentConfig(),
-  chatConfig: createMockChatConfig(),
-  isBuiltinAgent: false,
-  plugins: [],
-  ...overrides,
-});

@@ -36,7 +36,12 @@ let created: Creation[];
 
 const createTestRouter = (url: string): TabRouter => {
   const router = createMemoryRouter(
-    [{ element: React.createElement(TestRoute), path: '/item/:id' }],
+    [
+      { element: React.createElement(TestRoute), path: '/item/:id' },
+      // A tab navigation (navigateTab) reads an unknown first segment such as `/item` as a
+      // workspace prefix and drops it; a Lobot page keeps its path.
+      { element: React.createElement(TestRoute), path: '/settings/:id' },
+    ],
     { initialEntries: [url] },
   );
   const dispose = vi.spyOn(router, 'dispose');
@@ -467,7 +472,7 @@ describe('TabHost', () => {
   it('restores a tab to its earlier location once another tab takes its slot', async () => {
     setStore(
       [
-        { id: 'origin', lastVisited: 2, url: '/item/clicked' },
+        { id: 'origin', lastVisited: 2, url: '/settings/clicked' },
         { id: 'other', lastVisited: 1, url: '/item/other' },
       ],
       'origin',
@@ -475,18 +480,18 @@ describe('TabHost', () => {
     renderHost();
     await screen.findByTestId('param-clicked');
 
-    restoreTabWhenHidden('origin', { from: '/item/clicked', to: '/item/before' });
+    restoreTabWhenHidden('origin', { from: '/settings/clicked', to: '/settings/before' });
     await act(async () => {});
-    expect(getTabRouter('origin')!.state.location.pathname).toBe('/item/clicked');
+    expect(getTabRouter('origin')!.state.location.pathname).toBe('/settings/clicked');
 
     act(() => useElectronStore.setState({ activeTabId: 'other' }));
     await screen.findByTestId('param-other');
 
     await vi.waitFor(() =>
-      expect(getTabRouter('origin')!.state.location.pathname).toBe('/item/before'),
+      expect(getTabRouter('origin')!.state.location.pathname).toBe('/settings/before'),
     );
     expect(useElectronStore.getState().tabs.find((t) => t.id === 'origin')!.url).toBe(
-      '/item/before',
+      '/settings/before',
     );
   });
 

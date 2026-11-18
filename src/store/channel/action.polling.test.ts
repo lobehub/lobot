@@ -173,10 +173,9 @@ describe('Channel in-progress refresh without gateway notifications', () => {
     },
   );
 
-  it('does not fast-poll the main view for another thread or a fully stopped job', async () => {
+  it('does not fast-poll the main view for a fully stopped job', async () => {
     response = detail({
       jobs: [
-        job({ threadId: 'other' }),
         job({ id: 'stopped', status: 'cancelled', publicationRevoked: true, writerHeld: false }),
       ],
     });
@@ -185,6 +184,26 @@ describe('Channel in-progress refresh without gateway notifications', () => {
     const calls = vi.mocked(channelService.detail).mock.calls.length;
     await tick(5000);
     expect(channelService.detail).toHaveBeenCalledTimes(calls);
+  });
+
+  // The main view shows its threads' work on their thread cards, so it keeps
+  // polling for them; a thread view only follows its own thread.
+  it('fast-polls the main view for a thread job, but not a thread view for another thread', async () => {
+    response = detail({ jobs: [job({ threadId: 'other' })] });
+    const main = renderHook(() => channelActions.useFetchDetail(params), { wrapper });
+    await tick(0);
+    const mainCalls = vi.mocked(channelService.detail).mock.calls.length;
+    await tick(CHANNEL_ACTIVE_REFRESH_MS);
+    expect(vi.mocked(channelService.detail).mock.calls.length).toBeGreaterThan(mainCalls);
+    main.unmount();
+
+    renderHook(() => channelActions.useFetchDetail({ channelId: 'channel', threadId: 'mine' }), {
+      wrapper,
+    });
+    await tick(0);
+    const threadCalls = vi.mocked(channelService.detail).mock.calls.length;
+    await tick(5000);
+    expect(channelService.detail).toHaveBeenCalledTimes(threadCalls);
   });
 
   it('does not fast-poll a queued job blocked on a device or a person', async () => {

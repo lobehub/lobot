@@ -350,9 +350,17 @@ describe('useHighlightSave', () => {
         });
       });
 
+    // Drop the document's store entry, as leaving the document does.
+    const dropStoreDocument = () =>
+      act(() => {
+        useDocumentStore
+          .getState()
+          .internal_dispatchDocument({ id: 'doc-1', type: 'deleteDocument' });
+      });
+
     beforeEach(() => {
       resetRefusedDraftsForTests();
-      act(() => useDocumentStore.getState().closeDocument('doc-1'));
+      dropStoreDocument();
     });
 
     const updatedAt = new Date('2024-01-01T00:00:00.000Z');
@@ -374,7 +382,7 @@ describe('useHighlightSave', () => {
       editor.unmount();
       await act(async () => {});
       // Closing the portal drops the document's store entry.
-      act(() => useDocumentStore.getState().closeDocument('doc-1'));
+      dropStoreDocument();
     };
 
     it('reopens a refused draft and its banner after the editor unmounts', async () => {

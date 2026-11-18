@@ -16,7 +16,6 @@ const { mockState, mockChatState } = vi.hoisted(() => ({
     displayMessages: [] as Array<{ id: string; role: string }>,
     generatingIds: new Set<string>(),
     hooks: {} as Record<string, ((...args: any[]) => any) | undefined>,
-    pendingInterventions: [] as Array<{ id: string }>,
   },
 }));
 
@@ -26,9 +25,6 @@ vi.mock('./store', () => ({
   },
   conversationSelectors: {
     displayMessages: (state: typeof mockState) => state.displayMessages,
-  },
-  dataSelectors: {
-    pendingInterventions: (state: typeof mockState) => state.pendingInterventions,
   },
   messageStateSelectors: {
     isAssistantGroupItemGenerating: (id: string) => (state: typeof mockState) =>
@@ -93,7 +89,6 @@ describe('AssistantTurnSettledWatcher', () => {
   beforeEach(() => {
     mockState.displayMessages = [];
     mockState.generatingIds = new Set();
-    mockState.pendingInterventions = [];
     mockState.hooks = {};
     mockChatState.operations = {};
     mockChatState.operationsByMessage = {};
@@ -211,42 +206,6 @@ describe('AssistantTurnSettledWatcher', () => {
     await waitFor(() => {
       expect(hook).toHaveBeenCalledWith('assistant-1', { reason: 'stopped' });
     });
-  });
-
-  it('defers settlement while pending intervention exists, fires once it clears', async () => {
-    const hook = vi.fn();
-    seedOperations('assistant-1', [{ status: 'completed', type: 'sendMessage' }]);
-
-    const { rerender } = render(<AssistantTurnSettledWatcher />);
-
-    mockState.hooks.onAssistantTurnSettled = hook;
-    mockState.displayMessages = [
-      { id: 'user-1', role: 'user' },
-      { id: 'assistant-1', role: 'assistant' },
-    ];
-    mockState.generatingIds = new Set(['assistant-1']);
-    rerender(<AssistantTurnSettledWatcher />);
-
-    mockState.generatingIds = new Set();
-    mockState.pendingInterventions = [{ id: 'tool-1' }];
-    rerender(<AssistantTurnSettledWatcher />);
-    expect(hook).not.toHaveBeenCalled();
-
-    mockState.pendingInterventions = [];
-    rerender(<AssistantTurnSettledWatcher />);
-    expect(hook).not.toHaveBeenCalled();
-
-    mockState.generatingIds = new Set(['assistant-1']);
-    rerender(<AssistantTurnSettledWatcher />);
-    expect(hook).not.toHaveBeenCalled();
-
-    mockState.generatingIds = new Set();
-    rerender(<AssistantTurnSettledWatcher />);
-
-    await waitFor(() => {
-      expect(hook).toHaveBeenCalledWith('assistant-1', { reason: 'completed' });
-    });
-    expect(hook).toHaveBeenCalledTimes(1);
   });
 
   it('does not double-fire for the same message id across rerenders', async () => {

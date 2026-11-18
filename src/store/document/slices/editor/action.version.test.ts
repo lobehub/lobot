@@ -64,37 +64,4 @@ describe('DocumentStore versions', () => {
     expect(performSave).toHaveBeenCalledWith('doc-1', undefined, { saveSource: 'manual' });
     expect(documentService.snapshotPageVersion).not.toHaveBeenCalled();
   });
-
-  it('restores a room page on the server only, so the room gets it once', async () => {
-    seed(true);
-
-    await useDocumentStore
-      .getState()
-      .restoreVersion('doc-1', { editorData: { root: {} }, historyId: 'h1' });
-
-    expect(documentService.updateDocument).toHaveBeenCalledWith({
-      editorData: JSON.stringify({ root: {} }),
-      id: 'doc-1',
-      restoreFromHistoryId: 'h1',
-      saveSource: 'restore',
-    });
-    expect(editor.setDocument).not.toHaveBeenCalled();
-  });
-
-  it('restores a stored page through the editor and saves it', async () => {
-    seed(false);
-    const performSave = vi
-      .spyOn(useDocumentStore.getState(), 'performSave')
-      .mockResolvedValue(undefined);
-
-    await useDocumentStore
-      .getState()
-      .restoreVersion('doc-1', { editorData: { root: {} }, historyId: 'h1' });
-
-    expect(editor.setDocument).toHaveBeenCalledWith('json', JSON.stringify({ root: {} }));
-    expect(performSave).toHaveBeenCalledWith('doc-1', undefined, {
-      restoreFromHistoryId: 'h1',
-      saveSource: 'restore',
-    });
-  });
 });

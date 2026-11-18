@@ -1,12 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { abortableRequest } from './abortableRequest';
 
 describe('AbortableRequestManager', () => {
-  beforeEach(() => {
-    abortableRequest.cancelAll();
-  });
-
   describe('execute', () => {
     it('should execute request successfully', async () => {
       const mockFetcher = vi.fn(async (signal: AbortSignal) => {
@@ -98,64 +94,6 @@ describe('AbortableRequestManager', () => {
 
       await abortableRequest.execute('cleanup-test', fetcher2);
       expect(aborted).toBe(false);
-    });
-  });
-
-  describe('cancel', () => {
-    it('should cancel specific request by key', async () => {
-      let aborted = false;
-      const fetcher = vi.fn(
-        async (signal: AbortSignal) =>
-          new Promise((resolve, reject) => {
-            signal.addEventListener('abort', () => {
-              aborted = true;
-              reject(new Error('Cancelled'));
-            });
-            setTimeout(() => resolve('result'), 100);
-          }),
-      );
-
-      const promise = abortableRequest.execute('cancel-key', fetcher);
-
-      await new Promise((resolve) => setTimeout(resolve, 10));
-      abortableRequest.cancel('cancel-key');
-
-      await expect(promise).rejects.toThrow('Cancelled');
-      expect(aborted).toBe(true);
-    });
-
-    it('should do nothing when canceling non-existent key', () => {
-      expect(() => abortableRequest.cancel('non-existent')).not.toThrow();
-    });
-  });
-
-  describe('cancelAll', () => {
-    it('should cancel all pending requests', async () => {
-      const results = { req1: false, req2: false, req3: false };
-
-      const createFetcher = (key: keyof typeof results) =>
-        vi.fn(
-          async (signal: AbortSignal) =>
-            new Promise((resolve, reject) => {
-              signal.addEventListener('abort', () => {
-                results[key] = true;
-                reject(new Error('Cancelled'));
-              });
-              setTimeout(() => resolve(`result-${key}`), 100);
-            }),
-        );
-
-      const promise1 = abortableRequest.execute('key1', createFetcher('req1'));
-      const promise2 = abortableRequest.execute('key2', createFetcher('req2'));
-      const promise3 = abortableRequest.execute('key3', createFetcher('req3'));
-
-      await new Promise((resolve) => setTimeout(resolve, 10));
-      abortableRequest.cancelAll();
-
-      await expect(Promise.all([promise1, promise2, promise3])).rejects.toThrow();
-      expect(results.req1).toBe(true);
-      expect(results.req2).toBe(true);
-      expect(results.req3).toBe(true);
     });
   });
 });

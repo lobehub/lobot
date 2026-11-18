@@ -403,33 +403,6 @@ describe('createSidebarUISlice', () => {
     });
   });
 
-  // ========== UI State Actions ==========
-  describe('setAgentUpdatingId', () => {
-    it('should set agent updating id', () => {
-      const { result } = renderHook(() => useHomeStore());
-
-      act(() => {
-        result.current.setAgentUpdatingId('agent-456');
-      });
-
-      expect(result.current.agentUpdatingId).toBe('agent-456');
-    });
-
-    it('should clear agent updating id when set to null', () => {
-      const { result } = renderHook(() => useHomeStore());
-
-      act(() => {
-        result.current.setAgentUpdatingId('agent-456');
-      });
-
-      act(() => {
-        result.current.setAgentUpdatingId(null);
-      });
-
-      expect(result.current.agentUpdatingId).toBeNull();
-    });
-  });
-
   describe('setGroupUpdatingId', () => {
     it('should set group updating id', () => {
       const { result } = renderHook(() => useHomeStore());

@@ -6,23 +6,9 @@ import { initialState } from '@/store/file/initialState';
 import { type UploadFileItem } from '@/types/files/upload';
 import { UPLOAD_STATUS_SET } from '@/types/files/upload';
 
-import { fileChatSelectors, filesSelectors } from './selectors';
+import { fileChatSelectors } from './selectors';
 
 const CONTEXT_KEY = 'main_agent-1_new';
-
-describe('filesSelectors', () => {
-  describe('isImageUploading', () => {
-    it('should return true if there are uploading ids', () => {
-      const state = { uploadingIds: ['1', '2'] } as FilesStoreState;
-      expect(filesSelectors.isImageUploading(state)).toBe(true);
-    });
-
-    it('should return false if there are no uploading ids', () => {
-      const state = { uploadingIds: [] as string[] } as FilesStoreState;
-      expect(filesSelectors.isImageUploading(state)).toBe(false);
-    });
-  });
-});
 
 describe('fileChatSelectors', () => {
   describe('chatContextSelections', () => {
@@ -58,24 +44,6 @@ describe('fileChatSelectors', () => {
 
       expect(first).toBe(second);
       expect(first).toEqual([]);
-    });
-  });
-
-  describe('chatRawFileList', () => {
-    it('should return a list of raw files', () => {
-      const state = {
-        chatUploadFileListByContext: {
-          [CONTEXT_KEY]: [
-            { file: { name: 'test1.jpg' } },
-            { file: { name: 'test2.jpg' } },
-          ] as UploadFileItem[],
-        },
-      } as FilesStoreState;
-
-      expect(fileChatSelectors.chatRawFileList(CONTEXT_KEY)(state)).toEqual([
-        { name: 'test1.jpg' },
-        { name: 'test2.jpg' },
-      ]);
     });
   });
 

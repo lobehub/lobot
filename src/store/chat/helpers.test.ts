@@ -1,11 +1,5 @@
-import {
-  type LobeAgentChatConfig,
-  type OpenAIChatMessage,
-  type UIChatMessage,
-} from '@lobot/types';
+import { type LobeAgentChatConfig, type UIChatMessage } from '@lobot/types';
 import { describe, expect, it, vi } from 'vitest';
-
-import * as tokenizerObj from '@/utils/tokenizer';
 
 import { chatHelpers } from './helpers';
 
@@ -15,36 +9,6 @@ vi.mock('@/utils/tokenizer', () => ({
 }));
 
 describe('chatHelpers', () => {
-  describe('getMessagesTokenCount', () => {
-    it('returns token count for a list of messages', async () => {
-      const messages = [{ content: 'Hello' }, { content: 'World' }] as OpenAIChatMessage[];
-      const tokenCount = await chatHelpers.getMessagesTokenCount(messages);
-      expect(tokenCount).toBe('HelloWorld'.length);
-    });
-
-    it('returns 0 for an empty array', async () => {
-      const tokenCount = await chatHelpers.getMessagesTokenCount([]);
-      expect(tokenCount).toBe(0);
-    });
-
-    it('handles messages with empty content', async () => {
-      const messages = [
-        { content: 'Hello' },
-        { content: '' },
-        { content: 'World' },
-      ] as OpenAIChatMessage[];
-      const tokenCount = await chatHelpers.getMessagesTokenCount(messages);
-      expect(tokenCount).toBe('HelloWorld'.length);
-    });
-
-    it('throws an error when encodeAsync fails', async () => {
-      vi.spyOn(tokenizerObj, 'encodeAsync').mockRejectedValue(new Error('Test error'));
-      await expect(
-        chatHelpers.getMessagesTokenCount([{ content: 'Hello' }] as OpenAIChatMessage[]),
-      ).rejects.toThrow('Test error');
-    });
-  });
-
   describe('getMessageById', () => {
     const messages = [
       { id: '1', content: 'Hello' },

@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  getTemplatesByCategories,
-  getTemplatesByCategoryPriority,
-  normalizeAgentTemplate,
-} from './agentTemplates';
+import { getTemplatesByCategoryPriority, normalizeAgentTemplate } from './agentTemplates';
 import { type AgentTemplate, MarketplaceCategory } from './types';
 
 const fixture: AgentTemplate[] = [
@@ -30,18 +26,6 @@ describe('getTemplatesByCategoryPriority', () => {
     expect(result[1]?.category).toBe(MarketplaceCategory.Engineering);
     expect(result[2]?.category).toBe(MarketplaceCategory.ContentCreation);
     expect(result.some((t) => t.category === MarketplaceCategory.PersonalLife)).toBe(true);
-  });
-});
-
-describe('getTemplatesByCategories', () => {
-  it('returns all templates when no categories are provided', () => {
-    expect(getTemplatesByCategories(fixture, [])).toEqual(fixture);
-  });
-
-  it('keeps only templates whose category matches the filter', () => {
-    const result = getTemplatesByCategories(fixture, [MarketplaceCategory.Engineering]);
-    expect(result).toHaveLength(2);
-    expect(result.every((t) => t.category === MarketplaceCategory.Engineering)).toBe(true);
   });
 });
 

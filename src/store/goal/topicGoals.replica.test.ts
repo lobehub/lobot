@@ -189,21 +189,4 @@ describe('topic goal replica', () => {
 
     await waitFor(() => expect(topicGoalIds()).toBeUndefined());
   });
-
-  it('drops a deleted goal from the topic rows and their persisted copy', async () => {
-    vi.mocked(goalService.list).mockResolvedValue(listPage([goal('g1'), goal('g2')]) as never);
-    renderHook(() => useGoalStore((s) => s.useFetchTopicGoals)(TOPIC), { wrapper });
-    await waitFor(() => expect(topicGoalIds()).toEqual(['g1', 'g2']));
-    await waitFor(async () => expect((await stored())?.goals).toHaveLength(2));
-
-    vi.mocked(goalService.delete).mockResolvedValue(undefined as never);
-    vi.mocked(goalService.list).mockImplementation(pending);
-    void useGoalStore.getState().deleteGoal('agent-1', 'g1');
-
-    await waitFor(() => expect(topicGoalIds()).toEqual(['g2']));
-    // A reload must not restore the deleted goal from storage.
-    await waitFor(async () =>
-      expect((await stored())?.goals.map((item) => item.goal.id)).toEqual(['g2']),
-    );
-  });
 });

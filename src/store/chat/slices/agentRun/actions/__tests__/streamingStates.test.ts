@@ -36,29 +36,4 @@ describe('StreamingStates actions', () => {
       expect(result.current.toolCallingStreamIds[TEST_IDS.MESSAGE_ID]).toBeUndefined();
     });
   });
-
-  describe('internal_toggleSearchWorkflow', () => {
-    it('should enable search workflow loading state', () => {
-      const { result } = renderHook(() => useChatStore());
-
-      act(() => {
-        result.current.internal_toggleSearchWorkflow(true, TEST_IDS.MESSAGE_ID);
-      });
-
-      const state = useChatStore.getState();
-      expect(state.searchWorkflowLoadingIds).toEqual([TEST_IDS.MESSAGE_ID]);
-    });
-
-    it('should disable search workflow loading state', () => {
-      const { result } = renderHook(() => useChatStore());
-
-      act(() => {
-        result.current.internal_toggleSearchWorkflow(true, TEST_IDS.MESSAGE_ID);
-        result.current.internal_toggleSearchWorkflow(false, TEST_IDS.MESSAGE_ID);
-      });
-
-      const state = useChatStore.getState();
-      expect(state.searchWorkflowLoadingIds).toEqual([]);
-    });
-  });
 });

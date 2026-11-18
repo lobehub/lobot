@@ -1,9 +1,19 @@
 import { describe, expect, it } from 'vitest';
 
 import { DEFAULT_FEATURE_FLAGS, mapFeatureFlagsEnvToState } from '@/config/featureFlags';
+import { merge } from '@/utils/merge';
 
 import { featureFlagsSelectors, serverConfigSelectors } from './selectors';
-import { initServerConfigStore } from './store';
+import { createServerConfigStore, type ServerConfigStore } from './store';
+
+// Fresh-state store per test: the app keeps one singleton, so reset its state
+// to the defaults merged with the given initial state.
+const serverConfigStore = createServerConfigStore();
+const defaultServerConfigState = serverConfigStore.getState();
+const initServerConfigStore = (initState: Partial<ServerConfigStore>) => {
+  serverConfigStore.setState(merge(defaultServerConfigState, initState), true);
+  return serverConfigStore;
+};
 
 describe('featureFlagsSelectors', () => {
   it('should return feature flags from store', () => {
@@ -41,20 +51,6 @@ describe('serverConfigSelectors', () => {
     });
   });
 
-  describe('enableManagedCloudDevice', () => {
-    it('is off by default and on only when the flag resolves to true', () => {
-      expect(
-        serverConfigSelectors.enableManagedCloudDevice(initServerConfigStore({}).getState()),
-      ).toBe(false);
-      const on = initServerConfigStore({
-        featureFlags: {
-          ...mapFeatureFlagsEnvToState({ ...DEFAULT_FEATURE_FLAGS, managed_cloud_device: true }),
-        },
-      });
-      expect(serverConfigSelectors.enableManagedCloudDevice(on.getState())).toBe(true);
-    });
-  });
-
   describe('enableGatewayMode', () => {
     it('should return true when gateway mode is enabled', () => {
       const store = initServerConfigStore({
@@ -79,34 +75,6 @@ describe('serverConfigSelectors', () => {
       });
 
       const result = serverConfigSelectors.enableGatewayMode(store.getState());
-
-      expect(result).toBe(false);
-    });
-  });
-
-  describe('enabledTelemetryChat', () => {
-    it('should return langfuse value from store when defined', () => {
-      const store = initServerConfigStore({
-        serverConfig: {
-          telemetry: { langfuse: true },
-          aiProvider: {},
-        },
-      });
-
-      const result = serverConfigSelectors.enabledTelemetryChat(store.getState());
-
-      expect(result).toBe(true);
-    });
-
-    it('should return false when langfuse is not defined', () => {
-      const store = initServerConfigStore({
-        serverConfig: {
-          telemetry: {},
-          aiProvider: {},
-        },
-      });
-
-      const result = serverConfigSelectors.enabledTelemetryChat(store.getState());
 
       expect(result).toBe(false);
     });

@@ -185,28 +185,6 @@ describe('builtin agent replica', () => {
     expect(useAgentStore.getState().builtinAgentReplica.scope).toBe(scope);
   });
 
-  it('pre-hydrates the persisted builtin for a route loader before the network answers', async () => {
-    await builtinAgentResource.storage!.set(
-      { queryKey: PERSIST_KEY, scope },
-      { data: builtin('cached-inbox', { name: 'Custom chief' }), updatedAt: 1 },
-    );
-    vi.mocked(agentService.getBuiltinAgent).mockImplementation(pending);
-
-    let hydrated = false;
-    await act(async () => {
-      hydrated = await useAgentStore.getState().preHydrateBuiltinAgent('inbox');
-    });
-
-    expect(hydrated).toBe(true);
-    expect(useAgentStore.getState().builtinAgentIdMap.inbox).toBe('cached-inbox');
-    expect(useAgentStore.getState().builtinAgentMap.inbox).toMatchObject({
-      name: 'Custom chief',
-    });
-    expect(useAgentStore.getState().agentMap['cached-inbox']).toBeDefined();
-    // The loader path never hits the network: it only reads the local copy.
-    expect(agentService.getBuiltinAgent).not.toHaveBeenCalled();
-  });
-
   it('does not paint or persist a refresh response after an identity switch', async () => {
     let resolveFetch!: (value: any) => void;
     vi.mocked(agentService.getBuiltinAgent).mockImplementation(

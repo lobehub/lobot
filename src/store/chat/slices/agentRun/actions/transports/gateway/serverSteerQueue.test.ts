@@ -17,7 +17,7 @@ import {
   watchServerQueue,
   withdrawQueuedMessage,
 } from './serverSteerQueue';
-import { findUntrackedHeteroMarker, resetReleasedMarkers } from './untrackedHeteroRun';
+import { findUntrackedHeteroMarker } from './untrackedHeteroRun';
 
 const context = { agentId: 'agt-1', topicId: 'tpc-1' };
 const key = messageMapKey(context);
@@ -50,7 +50,6 @@ beforeEach(() => {
 });
 
 afterEach(async () => {
-  resetReleasedMarkers();
   // An emptied tray ends any watch a test left running.
   useChatStore.setState(useChatStore.getInitialState());
   await vi.runOnlyPendingTimersAsync();
@@ -558,13 +557,18 @@ describe('server queue watch after the run ended without taking them', () => {
 });
 
 describe('server queue watch behind a hetero run this tab no longer follows', () => {
-  const marker = {
-    assistantMessageId: 'msg-1',
-    heteroType: 'claude-code',
-    operationId: 'op-hetero',
-  };
+  // Released markers are module state with no reset hook, so each test runs
+  // behind its own operation id and one test's release cannot leak into the next.
+  let markerSeq = 0;
+  let marker: { assistantMessageId: string; heteroType: string; operationId: string };
 
   beforeEach(() => {
+    markerSeq += 1;
+    marker = {
+      assistantMessageId: 'msg-1',
+      heteroType: 'claude-code',
+      operationId: `op-hetero-${markerSeq}`,
+    };
     useChatStore.setState({ reconnectToGatewayOperation: vi.fn().mockResolvedValue(undefined) });
     get().internal_dispatchTopic({
       type: 'addTopic',
@@ -631,7 +635,7 @@ describe('server queue watch behind a hetero run this tab no longer follows', ()
 
     await handOffQueuedMessage(get, key, context, 'q1', async () => request);
     expect(queue()[0]).toMatchObject({ serverDelivery: 'server', serverUnconfirmed: true });
-    expect(findUntrackedHeteroMarker(get, context)?.operationId).toBe('op-hetero');
+    expect(findUntrackedHeteroMarker(get, context)?.operationId).toBe(marker.operationId);
 
     await vi.advanceTimersByTimeAsync(SERVER_QUEUE_POLL_MS * 2);
 
@@ -653,7 +657,7 @@ describe('server queue watch behind a hetero run this tab no longer follows', ()
     expect(remove).not.toHaveBeenCalled();
     expect(queue()[0].serverDelivery).toBe('server');
     expect(get().reconnectToGatewayOperation).toHaveBeenCalledWith(
-      expect.objectContaining({ operationId: 'op-hetero', topicId: 'tpc-1' }),
+      expect.objectContaining({ operationId: marker.operationId, topicId: 'tpc-1' }),
     );
   });
 });
