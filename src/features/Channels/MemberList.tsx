@@ -33,7 +33,7 @@ import { useRemoveMember } from './useMemberActions';
 import { getVisibleStatusMembers, groupMembersByActor } from './visibleMembers';
 
 interface MemberEntry {
-  /** Where a member working in several conversations at once is busy: `null` is the main one. */
+  /** Where a working member is busy, shown on hover: `null` is the main one. */
   conversations?: (string | null)[];
   label: string;
   member: ChannelPublicMember;
@@ -88,7 +88,7 @@ export function useMemberEntries(detail: ChannelDetail) {
       const working = job ? workingConversations(jobs, member.id) : [];
       const parallel = working.length;
       return {
-        conversations: parallel > 1 ? working : undefined,
+        conversations: parallel > 0 ? working : undefined,
         // Idle is the default and goes unlabelled; only a reply in progress or needing attention says so.
         label:
           member.actorType === 'agent' && job
@@ -171,7 +171,7 @@ const MemberState = ({
       )}
     </span>
   );
-  // "Working on N things" lists them on hover as Thread cards, each one a way into its Thread.
+  // A working line lists where the work is on hover as Thread cards, each one a way into its Thread.
   return entry.conversations ? (
     <Popover
       open={open}

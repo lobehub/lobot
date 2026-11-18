@@ -42,8 +42,8 @@ vi.mock('./threadReads', () => ({
   useUnreadThreadIds: () => new Set(),
 }));
 vi.mock('./ThreadBrowser', () => ({
-  browseThreads: (detail: { threads: { id: string; title: string }[] }) =>
-    detail.threads.map((thread) => ({ thread, title: thread.title })),
+  browseThreads: (detail: { threads?: { id: string; title: string }[] }) =>
+    (detail.threads ?? []).map((thread) => ({ thread, title: thread.title })),
   ThreadCard: ({ entry, onOpen }: { entry: { title: string }; onOpen: () => void }) =>
     createElement('button', { onClick: onOpen }, entry.title),
 }));
@@ -153,5 +153,16 @@ describe('MemberList busy member', () => {
     fireEvent.click(screen.getByText('Import'));
 
     expect(onOpenThread).toHaveBeenCalledWith('thr_b');
+  });
+
+  it('shows the one Thread it works in on hover too', () => {
+    const onOpenThread = vi.fn();
+    const single = { ...busy, jobs: [running('job_1', 'thr_a')] } as never;
+    render(createElement(MemberList, { detail: single, onOpenThread }));
+
+    expect(screen.queryByText('main')).toBeNull();
+    fireEvent.click(screen.getByText('Quota'));
+
+    expect(onOpenThread).toHaveBeenCalledWith('thr_a');
   });
 });
