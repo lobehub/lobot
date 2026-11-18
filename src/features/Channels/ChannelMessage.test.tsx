@@ -12,6 +12,7 @@ import EntityLinkElement from '@/features/EntityLink/element';
 
 import { ChannelMessage } from './ChannelMessage';
 import { CHANNEL_MENTION_TAG } from './mentionMarkdown';
+import { CHANNEL_THREAD_REF_TAG, remarkChannelThreadRefs } from './threadRefMarkdown';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ i18n: { language: 'en-US' }, t: (key: string) => key }),
@@ -110,6 +111,22 @@ const editMessage = vi.hoisted(() => vi.fn());
 const deleteMessage = vi.hoisted(() => vi.fn());
 vi.mock('@/store/channel', () => ({ channelActions: { deleteMessage, editMessage } }));
 vi.mock('./MessageAttachments', () => ({ MessageAttachments: () => null }));
+vi.mock('./ThreadRef', () => ({
+  ThreadRef: ({
+    channelId,
+    onOpenThread,
+    threadId,
+  }: {
+    channelId: string;
+    onOpenThread?: (id: string) => void;
+    threadId: string;
+  }) =>
+    createElement(
+      'button',
+      { 'data-channel-id': channelId, 'onClick': () => onOpenThread?.(threadId) },
+      `ref:${threadId}`,
+    ),
+}));
 vi.mock('./MessageReceipts', () => ({
   MessageFailureMark: () => null,
   MessageRoutingStatus: () => null,
@@ -394,6 +411,39 @@ describe('ChannelMessage works', () => {
     );
 
     expect(screen.queryByText('Show works in channels')).toBeNull();
+  });
+});
+
+describe('ChannelMessage thread references', () => {
+  it('renders `<#cht_…>` as a chip that opens the thread, without reparsing on polls', () => {
+    const onOpenThread = vi.fn();
+    const agentMessage = {
+      ...message({ avatar: null, id: 'agt_1', name: 'Sanjo', type: 'agent' }),
+      content: '这个接着在这个 Thread 里说 <#cht_abc123>',
+    };
+    const { rerender } = render(
+      <ChannelMessage detail={detail} message={agentMessage} onOpenThread={onOpenThread} />,
+    );
+    const { components, remarkPlugins } = markdownProps.current;
+    expect(remarkPlugins).toContain(remarkChannelThreadRefs);
+
+    const Ref = components[CHANNEL_THREAD_REF_TAG];
+    render(<Ref threadId={'cht_abc123'} />);
+    const chip = screen.getByText('ref:cht_abc123');
+    expect(chip.dataset.channelId).toBe('chn_1');
+    fireEvent.click(chip);
+    expect(onOpenThread).toHaveBeenCalledWith('cht_abc123');
+
+    // A poll hands over a new detail object; the Markdown inputs keep their identity.
+    rerender(
+      <ChannelMessage
+        detail={{ ...detail, members: [...detail.members] }}
+        message={agentMessage}
+        onOpenThread={onOpenThread}
+      />,
+    );
+    expect(markdownProps.current.components).toBe(components);
+    expect(markdownProps.current.remarkPlugins).toBe(remarkPlugins);
   });
 });
 

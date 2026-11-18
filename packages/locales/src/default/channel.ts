@@ -199,6 +199,8 @@ export default {
   'threadUnread': 'Unread',
   'threadDivider': 'Replies in this thread',
   'threadPreview': '↳ {{title}}: {{content}}',
+  'threadRef.unavailable': 'Unavailable thread',
+  'threadRef.unknown': 'Thread',
   'preview.file': '[File]',
   'preview.image': '[Image]',
   'preview.self': 'Me',

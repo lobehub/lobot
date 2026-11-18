@@ -256,6 +256,42 @@ export const styles = stylex.create({
     backgroundColor: { 'default': cssVar.colorInfoBg, ':hover': cssVar.colorInfoBgHover },
     transition: 'background-color 0.15s',
   },
+  /** A `<#thread>` reference inside message text: Discord's channel chip, a glyph and the title. */
+  threadRef: {
+    display: 'inline-flex',
+    gap: 2,
+    alignItems: 'center',
+    maxWidth: '100%',
+    marginBlock: 0,
+    marginInline: 0,
+    paddingBlock: 0,
+    paddingInline: 4,
+    borderWidth: 0,
+    borderRadius: 4,
+    font: 'inherit',
+    fontWeight: 500,
+    lineHeight: 'inherit',
+    color: cssVar.colorInfo,
+    verticalAlign: 'bottom',
+    backgroundColor: cssVar.colorInfoBg,
+  },
+  threadRefClickable: {
+    cursor: 'pointer',
+    backgroundColor: { 'default': cssVar.colorInfoBg, ':hover': cssVar.colorInfoBgHover },
+    transition: 'background-color 0.15s',
+  },
+  /** A thread that is gone, or that this view cannot open: present, but not a link. */
+  threadRefMuted: {
+    color: cssVar.colorTextTertiary,
+    backgroundColor: cssVar.colorFillQuaternary,
+  },
+  threadRefTitle: {
+    overflow: 'hidden',
+    minWidth: 0,
+    maxWidth: 280,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
   messageAvatarInline: {
     display: 'inline-flex',
   },

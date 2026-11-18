@@ -57,6 +57,8 @@ import { ReplyWorks } from './ReplyWorks';
 import { styles } from './styles';
 import type { ChannelThreadDraft } from './threadDraft';
 import { ThreadPreviewCard } from './ThreadPreviewCard';
+import { ThreadRef } from './ThreadRef';
+import { CHANNEL_THREAD_REF_TAG, remarkChannelThreadRefs } from './threadRefMarkdown';
 import type { ChannelReplyTarget } from './useReplyTarget';
 
 const rehypePlugins = [EntityLinkElement.rehypePlugin];
@@ -86,22 +88,34 @@ const canHover = () =>
   typeof window !== 'undefined' && !!window.matchMedia?.('(hover: hover)').matches;
 const AVATAR_SIZE = 36;
 
-/** Message text with the members it mentioned shown as chips that show who they are on hover. */
+/**
+ * Message text with the members it mentioned shown as chips that show who they are on hover, and
+ * `<#cht_…>` thread references as chips that open the thread.
+ */
 const MessageText = ({
+  channelId,
   content,
   fromAgent,
   members,
+  onOpenThread,
 }: {
+  channelId: string;
   content: string;
   fromAgent: boolean;
   members: ChannelPublicMember[];
+  /** Kept stable by the timeline, so it can key the memoized component map. */
+  onOpenThread?: (threadId: string) => void;
 }) => {
   const names = members.map((member) => memberName(member, '')).filter(Boolean);
   const key = names.join('\n');
   // Polling re-renders every message while replies run; a new plugin array or component map
   // would make the memoized Markdown parse each message again on every refresh.
   const remarkPlugins = useMemo(
-    () => [LocalFileElement.remarkPlugin!, remarkChannelMentions(key ? key.split('\n') : [])],
+    () => [
+      LocalFileElement.remarkPlugin!,
+      remarkChannelMentions(key ? key.split('\n') : []),
+      remarkChannelThreadRefs,
+    ],
     [key],
   );
   const memberKey = members.map((member) => member.id).join('\n');
@@ -118,15 +132,21 @@ const MessageText = ({
           </MemberProfilePopup>
         );
       },
+      // The chip resolves the thread's title from the store itself, so polls do not touch this map.
+      [CHANNEL_THREAD_REF_TAG]: ({ threadId }: { threadId?: string }) =>
+        threadId ? (
+          <ThreadRef channelId={channelId} threadId={threadId} onOpenThread={onOpenThread} />
+        ) : null,
       // GitHub and LobeHub links render as the same chips the conversation shows.
       [EntityLinkElement.tag]: EntityLinkElement.Component,
       // The card reads only the tag's attributes, not the conversation's message id.
       [LobeAgentsElement.tag]: LobeAgentsElement.Component as FC,
       [LocalFileElement.tag]: ChannelLocalFile,
     }),
-    // Keyed by member ids and names: the members array is rebuilt on every poll.
+    // Keyed by member ids and names: the members array is rebuilt on every poll. The thread
+    // handler is a stable event callback.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [memberKey, key],
+    [memberKey, key, channelId, onOpenThread],
   );
   return (
     <Markdown
@@ -373,9 +393,11 @@ const ChannelMessageView = ({
   );
   const text = message.content && (
     <MessageText
+      channelId={detail.channel.id}
       content={message.content}
       fromAgent={message.author.type === 'agent'}
       members={mentionedMembers}
+      onOpenThread={onOpenThread}
     />
   );
   const content = deleted ? (
