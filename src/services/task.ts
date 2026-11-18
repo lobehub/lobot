@@ -126,8 +126,6 @@ class TaskService {
       scheduleTimezone?: string | null;
     },
   ) => lambdaClient.task.update.mutate({ id, ...data });
-
-  delete = async (id: string) => lambdaClient.task.delete.mutate({ id });
 }
 
 export const taskService = new TaskService();

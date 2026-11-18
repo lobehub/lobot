@@ -32,14 +32,6 @@ interface AgentSkillsSyncResult extends ReplicaSyncResult {
   mutate: () => Promise<unknown>;
 }
 
-/** Sync result of one skill detail page. */
-interface AgentSkillDetailSyncResult extends ReplicaSyncResult {
-  /** The detail value: the skill and its resource tree. */
-  data: AgentSkillDetail | undefined;
-  /** A request is in flight and there is nothing to show for this entry yet. */
-  isLoading: boolean;
-}
-
 type Setter = StoreSetter<ToolStore>;
 
 export const createAgentSkillsSlice = (set: Setter, get: () => ToolStore, _api?: unknown) =>

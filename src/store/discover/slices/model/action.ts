@@ -1,6 +1,6 @@
 import type { CategoryItem } from '@lobehub/market-sdk';
 
-import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
+import { createReplicaSlice, recordLens } from '@/libs/replica';
 import type { DiscoverStore } from '@/store/discover';
 import type { StoreSetter } from '@/store/types';
 import type { DiscoverModelDetail, IdentifiersResponse, ModelListResponse } from '@/types/discover';
@@ -14,20 +14,6 @@ import {
 } from './projection';
 
 const n = setNamespace('discover/model');
-
-/**
- * Sync flags of a market read, plus the aliases the old SWR hooks returned
- * (`isLoading` / `mutate`) so a call site only has to move its `data` read to
- * the matching `modelSelectors` entry.
- */
-interface ModelSyncResult extends ReplicaSyncResult {
-  /** A request is in flight and this entry has no value to show yet. */
-  isLoading: boolean;
-  /** Alias of `revalidate`. */
-  mutate: () => Promise<unknown>;
-  /** Read the value with `modelSelectors.*(queryKey)`; undefined while disabled. */
-  queryKey?: string;
-}
 
 type Setter = StoreSetter<DiscoverStore>;
 

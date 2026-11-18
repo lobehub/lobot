@@ -97,12 +97,6 @@ class SandboxStorageService {
   getInstance = async (params: { id: string }): Promise<SandboxInstanceDetail | null> =>
     lambdaClient.sandboxStorage.getInstance.query(params);
 
-  createInstance = async (params: {
-    environmentId: string;
-    name: string;
-    workingDirectory: string;
-  }) => lambdaClient.sandboxStorage.createInstance.mutate(params);
-
   /** A second directory that starts with everything the first one had installed. */
   /**
    * Where this topic's sandbox commands run, for the prompt that describes it.

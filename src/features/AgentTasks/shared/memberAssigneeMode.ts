@@ -1,11 +1,6 @@
 export const hasWorkspaceMemberDirectory = (activeWorkspaceId?: string | null) =>
   Boolean(activeWorkspaceId);
 
-export const shouldShowMemberAssignee = (
-  activeWorkspaceId?: string | null,
-  assigneeUserId?: string | null,
-) => hasWorkspaceMemberDirectory(activeWorkspaceId) || Boolean(assigneeUserId);
-
 /**
  * The member a new workspace task is assigned to before the creator picks one:
  * the creator, when their role can be a task assignee. Personal mode has no

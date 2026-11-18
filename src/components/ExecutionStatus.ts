@@ -1,6 +1,5 @@
-import type { ProjectStatus, TaskStatus } from '@lobot/types';
-import { PROJECT_STATUSES } from '@lobot/types';
 import { cssVar } from '@lobehub/ui';
+import type { TaskStatus } from '@lobot/types';
 import type { LucideIcon } from 'lucide-react';
 import {
   Archive,
@@ -50,9 +49,3 @@ export const TASK_STATUS_VISUALS: Record<TaskStatus, ExecutionStatusVisual> = {
   running: VISUALS.running,
   scheduled: VISUALS.scheduled,
 };
-
-const PROJECT_STATUS_SET = new Set<string>(PROJECT_STATUSES);
-
-/** Normalize untrusted persisted/API values before rendering a project status. */
-export const resolveProjectStatus = (status: null | string | undefined): ProjectStatus =>
-  status && PROJECT_STATUS_SET.has(status) ? (status as ProjectStatus) : 'backlog';

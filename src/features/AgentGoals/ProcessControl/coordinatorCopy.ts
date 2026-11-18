@@ -11,7 +11,6 @@ import {
   GOAL_MANAGER_QUESTION_TITLE,
 } from '@lobechat/const/goal';
 import type { GoalDecisionOption } from '@lobot/types';
-import { coordinatorReasonCopies } from '@lobechat/utils/goalCopy';
 
 import type { GoalNodeView } from './goalGraphViewModel';
 
@@ -66,45 +65,6 @@ export const viewGateKind = (view: GoalNodeView): CoordinatorGateKind | undefine
 
 export const gateTitleKey = (kind: CoordinatorGateKind): string => `goalProcess.gate.title.${kind}`;
 
-/**
- * Locale key for a coordinator gate option, or undefined for a planner-authored
- * option that keeps its stored label. The machine gate's Retry says the person
- * fixed something first.
- */
-export const gateOptionLabelKey = (
-  option: Pick<GoalDecisionOption, 'id'>,
-  kind?: CoordinatorGateKind,
-): string | undefined => {
-  switch (option.id) {
-    case 'fail': {
-      return 'goalProcess.gate.option.fail';
-    }
-    case 'retire': {
-      return 'goalProcess.gate.option.retire';
-    }
-    case 'retry': {
-      return kind === 'fixSetup'
-        ? 'goalProcess.gate.option.fixedRetry'
-        : 'goalProcess.gate.option.retry';
-    }
-    // The release gate shares the id, but sends the plan back without re-probing.
-    case GOAL_BATCH_BREAK_OPTION.revise: {
-      return kind === 'batchRelease'
-        ? 'goalProcess.gate.option.sendBackBatch'
-        : 'goalProcess.gate.option.reviseBatch';
-    }
-    case GOAL_BATCH_BREAK_OPTION.newClass: {
-      return 'goalProcess.gate.option.newClassBatch';
-    }
-    case GOAL_BATCH_RELEASE_OPTION.release: {
-      return 'goalProcess.gate.option.releaseBatch';
-    }
-    default: {
-      return undefined;
-    }
-  }
-};
-
 /** The coordinator's terminal Task that accepts the whole Goal (matched by its fixed title). */
 export const isGoalAcceptanceTask = (view: GoalNodeView): boolean =>
   view.node.kind === 'task' && view.node.title === GOAL_ACCEPTANCE_TASK_TITLE;
@@ -131,19 +91,6 @@ export const coordinatorNodeTitleKey = (view: GoalNodeView): string | undefined 
     if (kind) return gateTitleKey(kind);
   }
   return undefined;
-};
-
-/**
- * A stored coordinator reason in the reader's language: every blocker of a
- * compound batch reason localized and rejoined, or the stored text when it is
- * not (wholly) coordinator-authored.
- */
-export const localizedCoordinatorReason = <R extends string | null | undefined>(
-  reason: R,
-  t: (key: string, params?: Record<string, unknown>) => string,
-): string | R => {
-  const copies = coordinatorReasonCopies(reason);
-  return copies ? copies.map((copy) => t(copy.key, copy.params)).join('; ') : reason;
 };
 
 export {

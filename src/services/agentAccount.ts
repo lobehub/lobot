@@ -1,4 +1,4 @@
-import type { AgentAccountKind, AgentInboxMessage, AgentInboxMessageSummary } from '@lobot/types';
+import type { AgentAccountKind, AgentInboxMessage } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 import type { AgentAccountView } from '@/types/serverData';
@@ -7,23 +7,6 @@ interface ListAgentAccountsParams {
   agentId?: string;
   kind?: AgentAccountKind;
   provider?: string;
-}
-
-interface ProvisionAgentAccountParams {
-  agentId: string;
-  displayName?: string;
-  /** Preferred local part for a mail address; the provider may ignore it. */
-  prefix?: string;
-  provider: string;
-}
-
-interface ListAgentInboxParams {
-  accountId?: string;
-  agentId: string;
-  /** Keyset cursor: the last row of the previous page. */
-  before?: { id: string; receivedAt: Date };
-  limit?: number;
-  unreadOnly?: boolean;
 }
 
 /** The inbox entry the server returns, whose lists may be missing on older rows. */
@@ -65,20 +48,8 @@ class AgentAccountService {
   list = (params?: ListAgentAccountsParams): Promise<AgentAccountView[]> =>
     lambdaClient.agentAccount.list.query(params);
 
-  // --------------- Inbox ---------------
-
-  /** A page of summaries; the body and attachments come from {@link getInboxMessage}. */
-  listInbox = (params: ListAgentInboxParams): Promise<AgentInboxMessageSummary[]> =>
-    lambdaClient.agentAccount.inbox.list.query(params);
-
-  /** Unread across the whole inbox, not just the page a list happened to load. */
-  getInboxUnreadCount = async (agentId: string, accountId?: string): Promise<number> =>
-    (await lambdaClient.agentAccount.inbox.unreadCount.query({ accountId, agentId })).unreadCount;
-
   getInboxMessage = async (id: string): Promise<AgentInboxMessage> =>
     toInboxMessage(await lambdaClient.agentAccount.inbox.get.query({ id }));
-
-  markInboxRead = (ids: string[]) => lambdaClient.agentAccount.inbox.markRead.mutate({ ids });
 }
 
 export const agentAccountService = new AgentAccountService();

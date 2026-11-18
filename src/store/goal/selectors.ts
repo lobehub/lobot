@@ -1,8 +1,4 @@
-import type { GoalListItem } from '@/services/goal';
-
 import type { GoalStore } from './action';
-
-const EMPTY_GOALS: GoalListItem[] = [];
 
 const goalGraph = (goalId?: string | null) => (s: GoalStore) =>
   goalId ? s.goalGraphById[goalId] : undefined;

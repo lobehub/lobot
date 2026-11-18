@@ -1,15 +1,11 @@
 import type { AssistantContentBlock, UIChatMessage, WorkSummaryItem } from '@lobot/types';
-import debug from 'debug';
 
 import type {
   OperationEditedFile,
   OperationGoal,
 } from '@/features/Conversation/operationArtifacts';
 
-const log = debug('lobe-client:topic-preview');
-
 export const TOPIC_PREVIEW_TTL_MS = 60_000;
-export const TOPIC_PREVIEW_MAX_ENTRIES = 50;
 
 export interface TopicPreviewTimelineRow {
   createdAt: Date | number | string;

@@ -38,5 +38,3 @@ export const TransferErrorCode = {
   /** Member transfer accept: the owner changed (or the resource left the workspace) since the request. */
   TransferRequestStale: 'TRANSFER_REQUEST_STALE',
 } as const;
-
-export type TransferErrorCode = (typeof TransferErrorCode)[keyof typeof TransferErrorCode];

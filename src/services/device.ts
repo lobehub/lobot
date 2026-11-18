@@ -1,14 +1,8 @@
-import type { DeviceEnroller, DeviceRunningSummary, DeviceScope } from '@lobot/types';
+import type { DeviceRunningSummary, DeviceScope } from '@lobot/types';
 
 import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
-import { type TopicListItem } from '@/services/topic';
 
 type DeviceClient = typeof lambdaClient.device;
-
-/** A running topic on a device, with the member who started it. */
-interface DeviceRunningTopic extends TopicListItem {
-  user: DeviceEnroller | null;
-}
 
 /**
  * Single chokepoint for the `device` TRPC router. Components, hooks and stores

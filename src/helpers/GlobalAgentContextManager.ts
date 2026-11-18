@@ -60,31 +60,6 @@ class GlobalAgentContextManager {
   public updateContext(updates: Partial<LobeGlobalAgentContext>): void {
     this.context = { ...this.context, ...updates };
   }
-
-  /**
-   * Sets the entire global agent context, replacing the existing one.
-   * @param context - The new context object.
-   */
-  public setContext(context: LobeGlobalAgentContext): void {
-    this.context = context;
-  }
-
-  /**
-   * Fills a template string using the current global agent context.
-   * Replaces {{key}} placeholders with values from the context.
-   * @param template - The template string with placeholders.
-   * @returns The filled template string.
-   */
-  public fillTemplate(template?: string): string {
-    const ctx = this.getContext();
-    if (!template) return '';
-
-    // Updated to use replaceAll for potentially multiple occurrences
-    return template.replaceAll(/\{\{([^}]+)\}\}/g, (match, key) => {
-      const trimmedKey = key.trim() as keyof LobeGlobalAgentContext;
-      return ctx[trimmedKey] !== undefined ? String(ctx[trimmedKey]) : '[N/A]';
-    });
-  }
 }
 
 // Export a singleton instance for global use

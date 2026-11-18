@@ -130,9 +130,6 @@ export const CONNECTABLE_PROVIDERS: ConnectableProvider[] = [
   })),
 ];
 
-export const getConnectableProvider = (type: HeterogeneousAgentType) =>
-  CONNECTABLE_PROVIDERS.find((provider) => provider.type === type);
-
 export const buildPlatformAgencyConfig = (
   type: RemoteHeterogeneousAgentType,
   target: { deviceId: string; kind: 'device' } | { kind: 'local' },

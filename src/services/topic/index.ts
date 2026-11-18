@@ -9,7 +9,6 @@ import {
   type ChatTopicMetadata,
   type CreateTopicParams,
   type QueryTopicParams,
-  type RecentTopic,
   type TopicRankItem,
 } from '@/types/topic';
 
@@ -40,8 +39,6 @@ export interface TopicListItem extends ChatTopic {
    */
   runStartedAt?: ChatTopic['runStartedAt'];
 }
-
-export type TopicBatchDeleteScope = 'own' | 'workspace';
 
 export class TopicService {
   cancelRateLimitContinuation = (id: string) =>
@@ -114,28 +111,9 @@ export class TopicService {
     return lambdaClient.topic.getTopicDetail.query({ id }) as Promise<ChatTopic | null>;
   };
 
-  getRecentTopics = async (limit?: number): Promise<RecentTopic[]> => {
-    return lambdaClient.topic.recentTopics.query({ limit });
-  };
-
   hasTopicFiles = async (ids: string[]): Promise<boolean> => {
     const result = await lambdaClient.topic.hasTopicFiles.query({ ids });
     return result.data.hasFiles;
-  };
-
-  searchTopics = async (
-    keywords: string,
-    agentId?: string,
-    groupId?: string,
-    onlyMine?: boolean,
-  ): Promise<ChatTopic[]> => {
-    const topics: ChatTopic[] = await lambdaClient.topic.searchTopics.query({
-      agentId,
-      groupId,
-      keywords,
-      onlyMine: onlyMine || undefined,
-    });
-    return topics.filter((topic) => topic.trigger !== TopicTrigger.Channel);
   };
 
   updateTopic = (id: string, data: Partial<ChatTopic>) => {

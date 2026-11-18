@@ -27,9 +27,6 @@ import type { TopicCommentStore } from './store';
 
 type Setter = StoreSetter<TopicCommentStore>;
 
-/** Roots preloaded per warmup round (the topic feed, then its reply threads). */
-const PREFETCH_CONCURRENCY = 4;
-
 export const createTopicCommentSlice = (
   set: Setter,
   get: () => TopicCommentStore,
@@ -48,8 +45,6 @@ export const createTopicCommentSlice = (
 class TopicCommentActionImpl {
   readonly #detail;
   readonly #get: () => TopicCommentStore;
-  /** Topics with a warmup in flight, so a remount cannot double-fetch the feed. */
-  readonly #prefetching = new Set<string>();
   readonly #replies;
   readonly #set: Setter;
   readonly #summary;
@@ -178,45 +173,6 @@ class TopicCommentActionImpl {
 
   /** Drop a hard-deleted comment from the by-id detail replica (view + storage). */
   removeTopicCommentDetail = (commentId: string) => this.#detail.remove(commentId);
-
-  /**
-   * Warm the topic feed and the reply threads of its roots so opening the
-   * portal paints from the replica instead of a skeleton. Best-effort: a failed
-   * warmup is simply retried by the feed's own sync when it mounts.
-   */
-  prefetchTopicComments = async (topicId: string): Promise<void> => {
-    if (this.#prefetching.has(topicId)) return;
-    this.#prefetching.add(topicId);
-    try {
-      const params = { pageSize: TOPIC_COMMENT_PAGE_SIZE, topicId };
-      // The whole warmup belongs to the partition it started under. Every
-      // fetch settles into it, so one that lands after a workspace / account
-      // switch is dropped instead of painting (or persisting) the previous
-      // identity's rows into the new one; and once the scope moved on, the
-      // remaining roots — that identity's ids — are not fetched at all.
-      const scope = topicCommentThreadResource.scope.get();
-      const { applied, data: threads } = await this.#thread.fetch(params, { scope });
-      if (!applied) return;
-
-      const rootCommentIds = threads.items.flatMap(({ replyCount, root }) =>
-        replyCount > 0 ? [root.id] : [],
-      );
-      for (let index = 0; index < rootCommentIds.length; index += PREFETCH_CONCURRENCY) {
-        if (topicCommentThreadResource.scope.get() !== scope) return;
-        await Promise.all(
-          rootCommentIds
-            .slice(index, index + PREFETCH_CONCURRENCY)
-            .map((rootCommentId) =>
-              this.#replies.fetch({ pageSize: TOPIC_COMMENT_PAGE_SIZE, rootCommentId }, { scope }),
-            ),
-        );
-      }
-    } catch {
-      // Warmup is an optimization; the mounted feeds own error handling.
-    } finally {
-      this.#prefetching.delete(topicId);
-    }
-  };
 
   // ---- client-only state (drafts + optimistic overlays) ------------------
 

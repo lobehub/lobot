@@ -39,15 +39,3 @@ export interface CreateComposioServerParams {
   identifier: string;
   label: string;
 }
-
-export interface CallComposioToolParams {
-  identifier: string;
-  toolArgs?: Record<string, unknown>;
-  toolSlug: string;
-}
-
-export interface CallComposioToolResult {
-  data?: any;
-  error?: string;
-  success: boolean;
-}

@@ -5,5 +5,3 @@ const gatewayFeed = (s: ChatStoreState) => s.gatewayFeed;
 export const gatewayFeedSelectors = {
   gatewayFeed,
 };
-
-export const agentRunSelectors = {};

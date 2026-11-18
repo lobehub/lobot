@@ -34,27 +34,6 @@ interface UseFetchDocumentDetailResult {
   mutate: () => Promise<unknown>;
 }
 
-/**
- * Shape the resource explorer merges onto its list rows. Kept separate from
- * `LobeDocument`: a list row also needs the library it belongs to, which the
- * document row itself does not carry.
- */
-interface ResourceDocumentSnapshot {
-  content?: string | null;
-  createdAt?: Date | string;
-  editorData?: LobeDocument['editorData'] | string;
-  fileType?: string;
-  id: string;
-  knowledgeBaseId?: string;
-  metadata?: LobeDocument['metadata'] | null;
-  parentId?: string | null;
-  slug?: string | null;
-  source?: string | null;
-  title?: string | null;
-  totalCharCount?: number;
-  updatedAt?: Date | string;
-}
-
 export const createDocumentSlice = (set: Setter, get: () => FileStore, _api?: unknown) =>
   new DocumentActionImpl(set, get, _api);
 

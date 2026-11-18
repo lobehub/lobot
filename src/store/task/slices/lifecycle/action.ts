@@ -1,10 +1,6 @@
-import debug from 'debug';
-
 import type { StoreSetter } from '@/store/types';
 
 import type { TaskStore } from '../../store';
-
-const log = debug('lobe-store:task-lifecycle');
 
 type Setter = StoreSetter<TaskStore>;
 

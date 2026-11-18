@@ -93,17 +93,6 @@ class GlobalWorkspacePaneActionImpl {
     this.#get().updateSystemStatus({ showSystemRole }, n('toggleMobileTopic', newValue));
   };
 
-  setWorkingSidebarTab = (tab: WorkingSidebarTab): void => {
-    const previousNonce = this.#get().status.workingSidebarTabRequest?.nonce ?? 0;
-    this.#get().updateSystemStatus(
-      {
-        workingSidebarTab: tab,
-        workingSidebarTabRequest: { nonce: previousNonce + 1, tab },
-      },
-      n('setWorkingSidebarTab', tab),
-    );
-  };
-
   openWorkingSidebar = (tab?: WorkingSidebarTab): void => {
     const previousNonce = this.#get().status.workingSidebarTabRequest?.nonce ?? 0;
     this.#get().updateSystemStatus(

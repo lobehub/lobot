@@ -168,12 +168,6 @@ class BrowserWebviewRegistry {
     return ready;
   }
 
-  /** Keep a background guest out of LRU eviction while an agent is driving it. */
-  touch(sessionId: string): void {
-    const retained = this.retained.get(sessionId);
-    if (retained) retained.lastUsedAt = Date.now();
-  }
-
   private async activate(sessionId: string, webview: BrowserWebviewElement): Promise<void> {
     const result = await ensureElectronIpc().browserSidebar.registerWebview({
       sessionId,

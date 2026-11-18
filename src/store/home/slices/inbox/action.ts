@@ -6,7 +6,7 @@ import type { StoreSetter } from '@/store/types';
 import { type ChatTopicStatus } from '@/types/topic';
 import { setNamespace } from '@/utils/storeDebug';
 
-import { homeDailyBriefResource, type HomeFeedParams, homeInboxTopicsResource } from './projection';
+import { homeDailyBriefResource, homeInboxTopicsResource } from './projection';
 
 const n = setNamespace('homeInbox');
 
@@ -15,11 +15,6 @@ const n = setNamespace('homeInbox');
  * filters server-side by status, so widening this list costs nothing extra.
  */
 const INBOX_STATUSES: ChatTopicStatus[] = ['running', 'unread'];
-
-const FEED_PARAMS: HomeFeedParams = {};
-
-/** How long the server's own status write gets before the inbox reconciles with it. */
-const PROMOTE_RECONCILE_DELAY = 1000;
 
 type Setter = StoreSetter<HomeStore>;
 export const createHomeInboxSlice = (set: Setter, get: () => HomeStore, _api?: unknown) =>

@@ -44,22 +44,6 @@ export const defineUserMemoryPagedReplica: typeof definePagedReplica = (options)
   definePagedReplica({ ...options, scope: userMemoryIdentityScope });
 
 /**
- * Wipe a slice's replicas for "delete all memories": memory, every persisted
- * row of the user and reads in flight (`clear()`). A storage failure leaves a
- * row the next session would hydrate back, so a failed purge is retried once.
- * Resolves `false` when a persisted row survived both attempts; the caller
- * (`purgeAllMemories`) surfaces that after its in-memory reset.
- */
-export const clearReplicas = async (...clears: (() => Promise<boolean>)[]): Promise<boolean> => {
-  let cleared = false;
-  for (let attempt = 0; attempt < 2 && !cleared; attempt++) {
-    const results = await Promise.all(clears.map((clear) => clear()));
-    cleared = results.every(Boolean);
-  }
-  return cleared;
-};
-
-/**
  * Entry key of one memory list page set: the query (search, sort, filters)
  * without the page size. Every query is its own replica entry, so a query
  * switch never overwrites another query's pages and each query hydrates its
@@ -71,30 +55,3 @@ export const memoryListKey = <T extends { pageSize?: number; q?: string }>({
   q,
   ...filters
 }: T): string => stableQueryKey({ ...filters, q: q || undefined });
-
-/** The part of a replica slice the user-wide purge needs (structural). */
-interface PurgeableReplica {
-  clear: () => Promise<boolean>;
-  /**
-   * `clear()` for a scope that may not be active: purges its persisted rows
-   * behind the writes already queued for it (`engine.clearScope`).
-   */
-  clearScope: (scope: string) => Promise<boolean>;
-}
-
-/**
- * `clearReplicas` for the user `user` (a `userMemoryIdentityScope` value).
- * For the active user (or none given) it is the ordinary `clear()`. For
- * another user — an account switch while "delete all memories" ran — it
- * purges that user's persisted partition without touching the active view,
- * so their next session cannot hydrate the deleted memories back.
- */
-export const clearUserReplicas = (
-  user: string | undefined,
-  ...replicas: PurgeableReplica[]
-): Promise<boolean> => {
-  if (user === undefined || user === userMemoryIdentityScope.get())
-    return clearReplicas(...replicas.map((replica) => replica.clear));
-
-  return clearReplicas(...replicas.map((replica) => () => replica.clearScope(user)));
-};

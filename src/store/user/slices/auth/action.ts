@@ -1,15 +1,8 @@
-import { type SSOProvider } from '@lobot/types';
-
 import { clearActiveScopeKey } from '@/libs/swr/useCacheScope';
 import { type StoreSetter } from '@/store/types';
 
 import { clearUserDisplaySnapshot } from '../../displaySnapshot';
 import { type UserStore } from '../../store';
-
-interface AuthProvidersData {
-  hasPasswordAccount: boolean;
-  providers: SSOProvider[];
-}
 
 type Setter = StoreSetter<UserStore>;
 export const createAuthSlice = (set: Setter, get: () => UserStore, _api?: unknown) =>

@@ -5,26 +5,6 @@ import { lambdaClient } from '@/libs/trpc/client';
 
 type ExtendedDocumentType = DocumentType | typeof AGENT_PLAN_FILE_TYPE;
 
-interface CreateDocumentParams {
-  content: string;
-  description: string;
-  metadata?: Record<string, any>;
-  source?: string;
-  sourceType?: 'file' | 'web' | 'api' | 'topic';
-  title: string;
-  topicId: string;
-  type?: ExtendedDocumentType;
-}
-
-interface UpdateDocumentParams {
-  append?: boolean;
-  content?: string;
-  description?: string;
-  id: string;
-  metadata?: Record<string, any>;
-  title?: string;
-}
-
 interface ListDocumentsParams {
   topicId: string;
   type?: ExtendedDocumentType;

@@ -98,10 +98,6 @@ let pending: Promise<void> | undefined;
 const emit = () => {
   for (const listener of listeners) listener();
 };
-export const selectActivity = (id: string) => {
-  state = { ...state, selected: id };
-  emit();
-};
 export const refreshActivities = () => {
   pending ??= electronDevtoolsService
     .getManagedProcesses()

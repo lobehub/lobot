@@ -3,7 +3,6 @@ import {
   $createParagraphNode,
   $createTextNode,
   $getRoot,
-  $isElementNode,
   $isParagraphNode,
   type LexicalEditor,
 } from 'lexical';
@@ -63,31 +62,5 @@ export const focusEditorStartLine = (editor: IEditor | undefined, text?: string)
   if (!editor || !lexicalEditor) return;
 
   selectEditorStartLineOnLexical(lexicalEditor, text);
-  editor.focus();
-};
-
-/** Exported for tests, which drive a bare Lexical editor without the kernel. */
-export const selectEditorFirstLineOnLexical = (lexicalEditor: LexicalEditor): void => {
-  lexicalEditor.update(() => {
-    const first = $getRoot().getFirstChild();
-    // A text block (paragraph, heading, list, quote, table…) takes the caret at
-    // its start; a block image or divider has no line to stand on, so open one.
-    if ($isElementNode(first) && !first.isInline()) {
-      first.selectStart();
-      return;
-    }
-    $selectStartLine('');
-  });
-};
-
-/**
- * Move the caret to the start of the body's first line, opening a line only
- * when the body has none to stand on — ArrowDown out of the title.
- */
-export const focusEditorFirstLine = (editor: IEditor | undefined): void => {
-  const lexicalEditor = getWritableLexicalEditor(editor);
-  if (!editor || !lexicalEditor) return;
-
-  selectEditorFirstLineOnLexical(lexicalEditor);
   editor.focus();
 };

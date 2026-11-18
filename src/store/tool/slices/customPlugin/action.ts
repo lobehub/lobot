@@ -2,12 +2,9 @@ import { mcpService } from '@/services/mcp';
 import { pluginService } from '@/services/plugin';
 import { type StoreSetter } from '@/store/types';
 import { type PluginInstallError } from '@/types/tool/plugin';
-import { setNamespace } from '@/utils/storeDebug';
 
 import { type ToolStore } from '../../store';
 import { pluginSelectors } from '../plugin/selectors';
-
-const n = setNamespace('customPlugin');
 
 type Setter = StoreSetter<ToolStore>;
 export const createCustomPluginSlice = (set: Setter, get: () => ToolStore, _api?: unknown) =>

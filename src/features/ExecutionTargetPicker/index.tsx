@@ -132,67 +132,6 @@ const styles = createStaticStyles(({ css }) => ({
   `,
 }));
 
-const SHARED_EXECUTION_TARGETS = ['auto', 'device', 'none', 'sandbox'] as const;
-
-export const isSharedExecutionTarget = (
-  target: DeviceExecutionTarget | undefined,
-): target is Exclude<DeviceExecutionTarget, 'local'> =>
-  !!target &&
-  SHARED_EXECUTION_TARGETS.includes(target as (typeof SHARED_EXECUTION_TARGETS)[number]);
-
-export const executionTargetValue = (target: DeviceExecutionTarget, deviceId?: string) =>
-  target === 'device' && deviceId ? `device:${deviceId}` : `target:${target}`;
-
-export const parseExecutionTargetValue = (
-  value: string,
-): { deviceId?: string; target: DeviceExecutionTarget } | undefined => {
-  if (value.startsWith('device:')) {
-    const deviceId = value.slice('device:'.length);
-    return deviceId ? { deviceId, target: 'device' } : undefined;
-  }
-
-  if (!value.startsWith('target:')) return undefined;
-  const target = value.slice('target:'.length) as DeviceExecutionTarget;
-  return ['auto', 'local', 'none', 'sandbox'].includes(target) ? { target } : undefined;
-};
-
-interface ExecutionTargetSelection {
-  deviceId?: string;
-  target: DeviceExecutionTarget;
-}
-
-/**
- * Resolve the execution target an agent currently points at.
- *
- * Shared by the Agent Profile picker (which renders it) and the Permission page
- * (which can only fix a target that actually resolves) so the two surfaces
- * cannot disagree about what "no environment picked yet" means. A `device`
- * target whose bound device is gone — unshared, deleted, still loading —
- * resolves to `undefined` rather than a dangling selection.
- */
-export const resolveExecutionTargetSelection = ({
-  boundDeviceId,
-  configuredTarget,
-  devices,
-  isHeterogeneous,
-}: {
-  boundDeviceId?: string;
-  configuredTarget?: DeviceExecutionTarget;
-  devices: DeviceListItem[];
-  isHeterogeneous: boolean;
-}): ExecutionTargetSelection | undefined => {
-  if (configuredTarget === 'device') {
-    const boundDevice = devices.find((device) => device.deviceId === boundDeviceId);
-    return boundDevice ? { deviceId: boundDevice.deviceId, target: 'device' } : undefined;
-  }
-
-  if (isSharedExecutionTarget(configuredTarget)) return { target: configuredTarget };
-
-  // Built-in-runtime agents default to "no environment" when nothing is stored;
-  // heterogeneous ones genuinely have no selection until the author picks one.
-  return configuredTarget === undefined && !isHeterogeneous ? { target: 'none' } : undefined;
-};
-
 export const groupExecutionTargetDevices = (devices: DeviceListItem[] | undefined) => ({
   personal: (devices ?? []).filter((device) => device.scope === 'personal'),
   privateWorkspace: (devices ?? []).filter(

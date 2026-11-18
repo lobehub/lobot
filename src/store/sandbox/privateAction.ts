@@ -23,10 +23,6 @@ import {
 
 type Setter = StoreSetter<SandboxState>;
 
-export type InstanceListEdit = (
-  previous: SandboxPickerInstanceList | undefined,
-) => SandboxPickerInstanceList | undefined;
-
 /** A copy created on this client, and the last listing that started before it. */
 interface LocalCopy {
   instance: SandboxPickerInstance;

@@ -1,5 +1,3 @@
-import { type UserCredSummary } from '@lobot/types';
-
 import { type ContextCredSummary } from '@/helpers/claudeCodeTokenCred';
 import { useClientDataSWR } from '@/libs/swr';
 import { lambdaClient } from '@/libs/trpc/client';
@@ -11,18 +9,10 @@ import { lambdaClient } from '@/libs/trpc/client';
  * workspace dimension and keeps serving the previous workspace's list.
  */
 export const CREDS_FOR_CONTEXT_SWR_KEY = 'market/creds/listForContext';
-export const PERSONAL_CREDS_SWR_KEY = 'market/creds/list';
 
 /** The credentials a run in the active scope reads (`market.creds.listForContext`). */
 export const useCredsForContext = (enabled = true) =>
   useClientDataSWR<ContextCredSummary[]>(enabled ? [CREDS_FOR_CONTEXT_SWR_KEY] : null, async () => {
     const result = await lambdaClient.market.creds.listForContext.query();
     return result.data as ContextCredSummary[];
-  });
-
-/** The caller's personal vault, with `sharedToActiveWorkspace` for the active workspace. */
-export const usePersonalCreds = () =>
-  useClientDataSWR<UserCredSummary[]>([PERSONAL_CREDS_SWR_KEY], async () => {
-    const result = await lambdaClient.market.creds.list.query();
-    return (result.data ?? []) as UserCredSummary[];
   });

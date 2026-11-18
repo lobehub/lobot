@@ -1,11 +1,5 @@
-import { type CreateMessageParams } from '@lobot/types';
-
 import { lambdaClient } from '@/libs/trpc/client';
-import { type CreateThreadParams, type ThreadItem } from '@/types/topic';
-
-interface CreateThreadWithMessageParams extends CreateThreadParams {
-  message: CreateMessageParams;
-}
+import { type ThreadItem } from '@/types/topic';
 
 export class ThreadService {
   getThreads = (topicId: string): Promise<ThreadItem[]> => {

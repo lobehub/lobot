@@ -1,8 +1,3 @@
-interface AgentDeleteMenuVisibility {
-  canEdit: boolean;
-  canManage: boolean;
-}
-
 type AgentPublishErrorKey = 'agent.publishToWorkspaceErrorFixedPrivateDevice';
 
 export const getAgentPublishErrorKey = (error: unknown): AgentPublishErrorKey | undefined => {
@@ -13,6 +8,3 @@ export const getAgentPublishErrorKey = (error: unknown): AgentPublishErrorKey | 
     return 'agent.publishToWorkspaceErrorFixedPrivateDevice';
   }
 };
-
-export const shouldShowAgentDeleteMenuItem = ({ canEdit, canManage }: AgentDeleteMenuVisibility) =>
-  canEdit && canManage;

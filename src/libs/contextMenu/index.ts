@@ -1,8 +1,4 @@
-import {
-  closeContextMenu as closeWebContextMenu,
-  setContextMenuInterceptor,
-  showContextMenu as showWebContextMenu,
-} from '@lobehub/ui';
+import { setContextMenuInterceptor, showContextMenu as showWebContextMenu } from '@lobehub/ui';
 import debug from 'debug';
 
 import { electronSystemService } from '@/services/electron/system';
@@ -80,10 +76,6 @@ export const showContextMenu = (
   options?: ShowContextMenuOptions,
 ): void => {
   routeShow(items, options, () => showWebContextMenu(items, options));
-};
-
-export const closeContextMenu = (): void => {
-  routeClose(closeWebContextMenu);
 };
 
 export const registerNativeContextMenuInterceptor = (): void => {

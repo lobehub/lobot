@@ -1,8 +1,5 @@
 import { type SessionStore } from '@/store/session';
 import { type StoreSetter } from '@/store/types';
-import { setNamespace } from '@/utils/storeDebug';
-
-const n = setNamespace('session');
 
 type Setter = StoreSetter<SessionStore>;
 export const createSessionSlice = (set: Setter, get: () => SessionStore, _api?: unknown) =>

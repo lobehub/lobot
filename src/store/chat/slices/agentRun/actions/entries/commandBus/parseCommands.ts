@@ -21,12 +21,6 @@ interface SingleAgentMentionDirectRoute {
   agent: RuntimeMentionedAgent;
 }
 
-interface ParsedLocalFileReference {
-  isDirectory?: boolean;
-  name: string;
-  path: string;
-}
-
 /**
  * Walk the Lexical JSON tree to find all action-tag nodes.
  * Returns the extracted action tags in document order.

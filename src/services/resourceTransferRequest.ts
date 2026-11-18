@@ -71,18 +71,6 @@ class ResourceTransferRequestService {
     const result = await lambdaClient.resourceTransferRequest.listMine.query();
     return (result.data as PendingTransferRequest[]) ?? [];
   };
-
-  accept = async (requestId: string): Promise<void> => {
-    await lambdaClient.resourceTransferRequest.accept.mutate({ requestId });
-  };
-
-  decline = async (requestId: string): Promise<void> => {
-    await lambdaClient.resourceTransferRequest.decline.mutate({ requestId });
-  };
-
-  cancel = async (requestId: string): Promise<void> => {
-    await lambdaClient.resourceTransferRequest.cancel.mutate({ requestId });
-  };
 }
 
 export const resourceTransferRequestService = new ResourceTransferRequestService();

@@ -26,10 +26,6 @@ export class ChannelPrivateAction {
   // Only a recycle-bin restore, which keeps the thread ID, lifts the marker.
   private readonly deletedThreads = new Map<string, Map<string, string>>();
   resetThreadRemovals = () => this.deletedThreads.clear();
-  forgetThreadRemovals = (threadIds: Iterable<string>) => {
-    for (const threadId of threadIds)
-      for (const ids of this.deletedThreads.values()) ids.delete(threadId);
-  };
   removeThread = (channelId: string, threadId: string, scope: string) => {
     const id = channelThreadEntityId(channelId, threadId);
     const ids = this.deletedThreads.get(scope) ?? new Map<string, string>();

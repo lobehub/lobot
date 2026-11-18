@@ -7,7 +7,7 @@ import {
 import type { ElementNode, LexicalNode, SerializedEditorState } from 'lexical';
 import { $getRoot, $getSelection, $isElementNode, $isRangeSelection } from 'lexical';
 
-import { getFileIdForUrl, registerAttachment } from './attachmentRegistry';
+import { getFileIdForUrl } from './attachmentRegistry';
 
 interface ExistingEditorAttachment {
   fileId: string;
@@ -137,14 +137,6 @@ export const getAttachmentFileIdsFromEditor = (editor: IEditor | undefined): str
 };
 
 /**
- * An image or file still uploading (or whose upload failed) serializes with
- * its local `blob:` preview URL. Sending it would persist that URL, which no
- * one else (the agent included) can open, so composers must hold the send.
- */
-export const hasIncompleteEditorAttachments = (editor: IEditor | undefined): boolean =>
-  getEditorAttachmentStateFromJson(editor?.getDocument?.('json')).hasIncompleteAttachments;
-
-/**
  * Images → `INSERT_IMAGE_COMMAND`; everything else → `INSERT_FILE_COMMAND`.
  */
 const insertFilesIntoEditor = (editor: IEditor | undefined, files: File[]): void => {
@@ -160,30 +152,6 @@ const insertFilesIntoEditor = (editor: IEditor | undefined, files: File[]): void
   }
   // File picker / Upload dropdown steals focus; restore it so the cursor
   // remains visible and the user can keep typing.
-  editor.focus?.();
-};
-
-/**
- * Insert already-uploaded library files without downloading or uploading them again.
- * The editor's file plugin still receives a `File`, while the upload adapter resolves
- * that placeholder straight back to the existing resource URL and file id.
- */
-export const insertExistingAttachmentsIntoEditor = (
-  editor: IEditor | undefined,
-  attachments: ExistingEditorAttachment[],
-): void => {
-  if (!editor || attachments.length === 0) return;
-  const lexicalEditor = editor.getLexicalEditor?.();
-  if (!lexicalEditor) return;
-
-  for (const attachment of attachments) {
-    const file = new File([], attachment.name, { type: attachment.fileType });
-    Object.defineProperty(file, 'size', { value: attachment.size });
-    existingAttachmentByFile.set(file, attachment);
-    registerAttachment(attachment.url, attachment.fileId);
-    lexicalEditor.dispatchCommand(INSERT_FILE_COMMAND, { file });
-  }
-
   editor.focus?.();
 };
 

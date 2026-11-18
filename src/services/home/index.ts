@@ -1,5 +1,5 @@
 import { lambdaClient } from '@/libs/trpc/client';
-import { type SidebarAgentItem, type SidebarAgentListResponse } from '@/types/serverData';
+import { type SidebarAgentListResponse } from '@/types/serverData';
 
 interface HomeDailyBriefPair {
   hint: string;
@@ -24,13 +24,6 @@ class HomeService {
    */
   getDailyBrief = (): Promise<HomeDailyBriefResponse> => {
     return lambdaClient.home.getDailyBrief.query();
-  };
-
-  /**
-   * Search agents by keyword
-   */
-  searchAgents = (keyword: string): Promise<SidebarAgentItem[]> => {
-    return lambdaClient.home.searchAgents.query({ keyword });
   };
 
   /**

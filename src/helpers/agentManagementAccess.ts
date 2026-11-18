@@ -89,8 +89,3 @@ export const getRuntimeCanManageAgent = (params: {
   if (!currentUserId) return false;
   return resolvedAccess.get(cacheKey(currentUserId, agentId)) === true;
 };
-
-/** Test-only escape hatch so suites don't observe each other's entries. */
-export const clearAgentManagementAccessCache = () => {
-  resolvedAccess.clear();
-};

@@ -29,7 +29,6 @@ import { type GitStatusStore, useGitStatusStore } from './gitStatus/store';
 
 const UNSTAGED_REVIEW_REFRESH_INTERVAL = 10 * 1000;
 const BRANCH_REVIEW_REFRESH_INTERVAL = 30 * 1000;
-const PULL_REQUEST_DETAIL_REFRESH_INTERVAL = 30 * 1000;
 
 /**
  * Git read hooks for a working directory, transport-agnostic: the fetcher goes
@@ -45,13 +44,6 @@ const getReviewRefreshInterval = (mode: ReviewMode, active: boolean) => {
   if (!active) return 0;
   return mode === 'branch' ? BRANCH_REVIEW_REFRESH_INTERVAL : UNSTAGED_REVIEW_REFRESH_INTERVAL;
 };
-
-interface GitReviewCacheParams {
-  baseRef?: string;
-  deviceId?: string;
-  dirPath?: string;
-  mode: ReviewMode;
-}
 
 interface GitReplicaReadResult<T> {
   data: T | undefined;

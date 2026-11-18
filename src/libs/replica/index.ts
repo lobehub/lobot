@@ -67,12 +67,7 @@ const appScopeSource: ReplicaScopeSource = {
   use: useAppCacheScope,
 };
 
-let scopeSource: ReplicaScopeSource = appScopeSource;
-
-/** Install this runtime's scope source. Call once at boot, before any render. */
-export const setReplicaScopeSource = (source: ReplicaScopeSource): void => {
-  scopeSource = source;
-};
+const scopeSource: ReplicaScopeSource = appScopeSource;
 
 const useSourceScope = (): string => scopeSource.use();
 

@@ -1,4 +1,4 @@
-import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
+import { createReplicaSlice, recordLens } from '@/libs/replica';
 import { agentService } from '@/services/agent';
 import { messageService } from '@/services/message';
 import { topicService } from '@/services/topic';
@@ -36,18 +36,6 @@ import { useStatsStore } from './store';
 const n = setNamespace('stats');
 
 type Setter = StoreSetter<StatsState>;
-
-/**
- * Several cards read the same entry at once (the token heatmap feeds the total
- * card, the heatmap and its summary), so one request answers every mounted
- * reader. Explicit revalidations (retry) are not deduped.
- */
-const STATS_DEDUPE_MS = 10_000;
-
-const SYNC_OPTIONS = { dedupingInterval: STATS_DEDUPE_MS };
-
-const STATS_TOTAL_KINDS: StatsTotalKind[] = ['agents', 'topics', 'messages'];
-const STATS_RANK_KINDS: StatsRankKind[] = ['agents', 'models', 'topics'];
 
 const fetchTotal = async (kind: StatsTotalKind): Promise<StatsTotal> => {
   switch (kind) {
@@ -200,9 +188,6 @@ class StatsActionImpl {
       view: recordLens<StatsState, AgentUsageStats>('agentUsageMap'),
     });
   }
-
-  useFetchCount = (kind: StatsCountKind): ReplicaSyncResult =>
-    this.#count.useSync(kind, SYNC_OPTIONS);
 
   reset = (): void => {
     // `clear()` drops in-flight reads of the previous data context and this

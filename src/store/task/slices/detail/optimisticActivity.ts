@@ -83,41 +83,6 @@ export const buildOptimisticAssignmentActivities = ({
   return rows;
 };
 
-interface BuildOptimisticCommentInput {
-  actor?: TaskDetailActivityAuthor;
-  content: string;
-  editorData?: unknown;
-  now: string;
-  topicId?: string | null;
-}
-
-/**
- * The comment the server is about to persist, shown the moment it is sent.
- *
- * Attachments are deliberately absent: their metadata (urls, sizes) only
- * exists after the server has resolved the file ids, so they arrive with the
- * refetch. Agent-authored comments (client-first runtime) are not synthesized
- * — the store has no agent identity to attribute them to.
- */
-export const buildOptimisticCommentActivity = ({
-  actor,
-  content,
-  editorData,
-  now,
-  topicId,
-}: BuildOptimisticCommentInput): TaskDetailActivity | undefined => {
-  if (!actor) return undefined;
-  return {
-    author: actor,
-    content,
-    editorData,
-    id: `${OPTIMISTIC_ACTIVITY_ID_PREFIX}comment-${now}`,
-    time: now,
-    topicId: topicId ?? null,
-    type: 'comment',
-  };
-};
-
 interface BuildOptimisticPropertyInput {
   actor?: TaskDetailActivityAuthor;
   change: NonNullable<TaskDetailActivity['propertyChange']>;

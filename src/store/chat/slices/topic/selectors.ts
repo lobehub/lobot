@@ -1,5 +1,5 @@
 import { isDesktop } from '@lobechat/const';
-import type { AiModelReasoningConfig, HeterogeneousTopicPin } from '@lobot/types';
+import type { HeterogeneousTopicPin } from '@lobot/types';
 import { getWorkingDirEffectivePath } from '@lobot/types';
 
 import { MAIN_SIDEBAR_EXCLUDE_TRIGGERS, TopicTrigger } from '@/const/topic';
@@ -97,13 +97,6 @@ const currentActiveTopicSummary = (s: ChatStoreState): ChatTopicSummary | undefi
 };
 
 const currentTopicMetadata = (s: ChatStoreState) => currentActiveTopic(s)?.metadata;
-
-interface TopicReasoningPin {
-  model: string;
-  provider: string;
-  /** Absent on legacy topics and topics created before the config was loaded. */
-  reasoningConfig?: AiModelReasoningConfig;
-}
 
 /**
  * Everything a topic pins for a heterogeneous run — the model/provider columns

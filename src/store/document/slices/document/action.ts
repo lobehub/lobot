@@ -566,22 +566,6 @@ class DocumentActionImpl {
     );
 
   /**
-   * Warm the replica for a document the user is about to open (hover prefetch),
-   * so navigation paints the editor from the projection instead of a skeleton.
-   */
-  prefetchDocument = async (documentId: string): Promise<void> => {
-    // Goes through the replica's own fetcher (which keeps a newer adopted row)
-    // and settle pipeline: a response captured under another identity is
-    // dropped, and one older than a response a sync already applied — e.g. a
-    // not-found the page settled while this was in flight — cannot regress it.
-    try {
-      await this.#detail.fetch(documentId);
-    } catch (error) {
-      console.error('[DocumentStore] Failed to prefetch document:', error);
-    }
-  };
-
-  /**
    * Adopt a server row the caller already holds (e.g. the save pipeline
    * reconciling a CONFLICT) so the replica — not a stale fetch — is what the
    * editor hydrates from next.

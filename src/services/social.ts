@@ -16,14 +16,6 @@ export interface FavoriteStatus {
   isFavorited: boolean;
 }
 
-interface LikeStatus {
-  isLiked: boolean;
-}
-
-interface ToggleLikeResult {
-  liked: boolean;
-}
-
 interface PaginationParams {
   page?: number;
   pageSize?: number;
@@ -43,13 +35,6 @@ export interface FollowUserItem {
   id: number;
   namespace: string;
   userName: string | null;
-}
-
-interface FavoriteItem {
-  createdAt: string;
-  id: number;
-  targetId: number;
-  targetType: SocialTargetType;
 }
 
 export interface FavoriteAgentItem {

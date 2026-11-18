@@ -57,11 +57,3 @@ export const getRegisteredAttachment = (
 export const getFileIdForUrl = (url: string | undefined): string | undefined => {
   return getRegisteredAttachment(url)?.fileId;
 };
-
-export const seedAttachments = (
-  items: Array<{ downloadUrl?: string; id: string; url: string }>,
-): void => {
-  for (const item of items) {
-    if (item?.url && item?.id) registerAttachment(item.url, item.id, item.downloadUrl);
-  }
-};

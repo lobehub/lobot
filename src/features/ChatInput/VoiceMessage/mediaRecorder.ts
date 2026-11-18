@@ -34,11 +34,6 @@ export const resolveRecordingMimeType = (
   );
 };
 
-export const getAudioCodec = (mimeType: string): string | undefined => {
-  const codec = /codecs\s*=\s*"?([^";,]+)"?/i.exec(mimeType)?.[1]?.trim();
-  return codec || undefined;
-};
-
 export const getAudioFileExtension = (mimeType: string): string => {
   const container = mimeType.split(';')[0]?.trim().toLowerCase();
 

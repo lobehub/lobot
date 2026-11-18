@@ -29,14 +29,6 @@ interface MemoryListData<TItem, TSort extends string = string> extends ReplicaPa
   sort?: TSort;
 }
 
-/** The `SWRResponse`-shaped result the memory list pages already consume. */
-export interface MemoryListPageResult<TItem> {
-  items: TItem[];
-  page: number;
-  pageSize: number;
-  total: number;
-}
-
 type StoreField = keyof UserMemoryStore & string;
 
 interface MemoryQueryListOptions<TParams extends MemoryListParams, TItem, TData> {

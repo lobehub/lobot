@@ -1,5 +1,3 @@
-import { useSyncExternalStore } from 'react';
-
 export const CHAT_INPUT_DRAFTS_STORAGE_KEY = 'lobechat:chat-input-drafts:v1';
 
 const MAX_DRAFTS = 50;
@@ -77,36 +75,10 @@ const syncDraftKeys = (map: DraftMap) => {
   draftKeysListeners.forEach((listener) => listener());
 };
 
-const subscribeDraftKeys = (listener: () => void) => {
-  draftKeysListeners.add(listener);
-  return () => {
-    draftKeysListeners.delete(listener);
-  };
-};
-
-/**
- * Reactively report whether a draft currently exists for the given draft key.
- * Returns false for an empty key. Used by the topic list to show a "[draft]"
- * hint on topics that hold unsent input.
- */
-export const useHasDraft = (key: string | undefined): boolean =>
-  useSyncExternalStore(
-    subscribeDraftKeys,
-    () => {
-      if (!key) return false;
-      ensureDraftKeysInit();
-      return draftKeysSnapshot.has(key);
-    },
-    () => false,
-  );
-
 export const getDraftEntry = (key: string): ChatInputDraftEntry | undefined => {
   if (!key) return undefined;
   return readAll()[key];
 };
-
-export const getDraft = (key: string): Record<string, unknown> | undefined =>
-  getDraftEntry(key)?.json;
 
 export const saveDraft = (key: string, json: Record<string, unknown>): number | undefined => {
   if (!key) return;

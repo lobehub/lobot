@@ -21,12 +21,6 @@ const isInboxAgent = (s: AgentStoreState) => {
   return !!id && s.activeAgentId === id;
 };
 
-/** Every provisioned builtin slug, for classifying a hydrated agent row. */
-const BUILTIN_SLUG_SET: ReadonlySet<string> = new Set<string>([
-  ...Object.values(BUILTIN_AGENT_SLUGS),
-  INBOX_SESSION_ID,
-]);
-
 /**
  * Get web onboarding agent id (convenience selector)
  */

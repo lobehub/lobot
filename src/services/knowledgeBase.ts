@@ -24,16 +24,8 @@ class KnowledgeBaseService {
     return lambdaClient.knowledgeBase.updateKnowledgeBase.mutate({ id, value });
   };
 
-  deleteKnowledgeBase = async (id: string) => {
-    return lambdaClient.knowledgeBase.removeKnowledgeBase.mutate({ id });
-  };
-
   addFilesToKnowledgeBase = async (knowledgeBaseId: string, ids: string[]) => {
     return lambdaClient.knowledgeBase.addFilesToKnowledgeBase.mutate({ ids, knowledgeBaseId });
-  };
-
-  removeFilesFromKnowledgeBase = async (knowledgeBaseId: string, ids: string[]) => {
-    return lambdaClient.knowledgeBase.removeFilesFromKnowledgeBase.mutate({ ids, knowledgeBaseId });
   };
 }
 

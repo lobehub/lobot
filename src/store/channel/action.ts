@@ -258,8 +258,6 @@ class ChannelActionImpl {
     }
     await this.#refreshAfterWrite(() => this.refreshDetail({ channelId }));
   };
-  /** Threads restored from the recycle bin; call before revalidating their views. */
-  forgetThreadRemovals = (threadIds: string[]) => this.#private.forgetThreadRemovals(threadIds);
   /** The sidebar row and the open header show the new name before the server confirms. */
   rename = async (channelId: string, title: string) => {
     await this.#private.entity.optimistic(

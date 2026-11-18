@@ -117,8 +117,6 @@ class FileManageActionImpl {
    */
   readonly #fileDetail;
   readonly #folderBreadcrumb;
-  /** The same file lives in the list and in every loaded detail entry. */
-  readonly #fileEntity;
   readonly #set: Setter;
 
   constructor(set: Setter, get: () => FileStore, _api?: unknown) {
@@ -156,7 +154,7 @@ class FileManageActionImpl {
       stateKey: 'folderBreadcrumbReplica',
       view: recordLens<FileStore, FolderCrumb[]>('folderBreadcrumbMap'),
     });
-    this.#fileEntity = linkReplicaEntity<FileListItem>([this.#fileList, this.#fileDetail]);
+    linkReplicaEntity<FileListItem>([this.#fileList, this.#fileDetail]);
   }
 
   /**
@@ -299,18 +297,6 @@ class FileManageActionImpl {
 
     const { revalidateResources } = await import('../resource/hooks');
     await revalidateResources();
-  };
-
-  /**
-   * Drop cached knowledge items without calling the server, for a deletion that
-   * was already confirmed elsewhere (the resource explorer has its own delete
-   * paths). Both of this slice's replicas persist by id, so leaving a deleted
-   * row behind lets a later direct visit repaint it until a NOT_FOUND answer
-   * arrives — and offline that answer never comes. Evicts the list row and every
-   * loaded detail together, exactly like a local delete.
-   */
-  forgetKnowledgeItems = (ids: string[]): void => {
-    for (const id of ids) this.#fileEntity.remove(id);
   };
 
   /**

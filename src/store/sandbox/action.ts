@@ -11,9 +11,6 @@ const n = setNamespace('sandbox');
 
 type Setter = StoreSetter<SandboxState>;
 
-/** How often a building copy is re-listed while the picker can see it. */
-const BUILD_REFRESH_MS = 4000;
-
 interface UseFetchEntitlementOptions {
   /** Revalidate when the window regains focus. Defaults to `true`. */
   revalidateOnFocus?: boolean;

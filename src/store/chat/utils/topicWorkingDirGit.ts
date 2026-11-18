@@ -1,11 +1,5 @@
 import { isDesktop } from '@lobechat/const';
-import type {
-  ChatTopicMetadata,
-  DeviceGitUpstreamRef,
-  WorkingDirConfig,
-  WorkingDirGithubState,
-} from '@lobot/types';
-import { getWorkingDirEffectivePath } from '@lobot/types';
+import type { DeviceGitUpstreamRef, WorkingDirConfig, WorkingDirGithubState } from '@lobot/types';
 
 import { resolveTargetDeviceId } from '@/helpers/agentWorkingDirectory';
 import type { GitLinkedPRSummary } from '@/services/git';
@@ -17,13 +11,6 @@ interface TopicGitTransport {
   deviceId?: string;
   isLocalDevice: boolean;
   targetDeviceId?: string;
-}
-
-interface TopicLinkedPullRequestBase {
-  branch: string;
-  currentConfig?: WorkingDirConfig;
-  path: string;
-  pullRequestNumber?: number;
 }
 
 export const canReadTopicGitTransport = (transport: Pick<TopicGitTransport, 'deviceId'>) =>
@@ -42,33 +29,6 @@ export const resolveTopicGitTransport = (agentId: string): TopicGitTransport => 
     targetDeviceId,
   };
 };
-
-export const getTopicLinkedPullRequestBase = (
-  metadata?: ChatTopicMetadata,
-): TopicLinkedPullRequestBase | undefined => {
-  const currentConfig = metadata?.workingDirectoryConfig;
-  const git = currentConfig?.git;
-  const branch = git?.branch;
-  const path = getWorkingDirEffectivePath(currentConfig) ?? metadata?.workingDirectory;
-  const repoType =
-    currentConfig?.repoType ??
-    (git?.github ? 'github' : undefined) ??
-    (isDesktop ? undefined : 'github');
-
-  if (!path || !branch || git?.detached || repoType !== 'github') return undefined;
-
-  return {
-    branch,
-    currentConfig,
-    path,
-    pullRequestNumber: git?.github?.pullRequest?.number,
-  };
-};
-
-export const isSuccessfulLinkedPullRequestLookup = (
-  prData?: GitLinkedPRSummary,
-): prData is GitLinkedPRSummary =>
-  !!prData && !prData.ghMissing && (prData.pullRequestStatus ?? 'ok') === 'ok';
 
 export const toWorkingDirGithubState = (
   prData?: GitLinkedPRSummary,

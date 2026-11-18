@@ -28,10 +28,3 @@ export const releaseHintClock = (now = performance.now()) => {
   mounted = Math.max(0, mounted - 1);
   lastSeenAt = now;
 };
-
-/** Test-only: forget every previous wait. */
-export const resetHintClock = () => {
-  mounted = 0;
-  shownSince = 0;
-  lastSeenAt = -Infinity;
-};

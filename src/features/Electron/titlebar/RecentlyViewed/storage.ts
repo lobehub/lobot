@@ -1,7 +1,6 @@
 import { type TabScope, tabScopeKey } from '../TabBar/scope';
 import { type TabItem } from '../TabBar/types';
 
-export const PINNED_PAGES_STORAGE_KEY_V3 = 'lobechat:desktop:pinned-pages:v3';
 const PINNED_PAGES_STORAGE_KEY_PREFIX = 'lobechat:desktop:pinned-pages:v4';
 
 const pinnedPagesStorageKey = (scope: TabScope): string =>

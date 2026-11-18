@@ -1,5 +1,3 @@
-import type { AGENT_PLAN_FILE_TYPE } from '@lobechat/const';
-import { type NotebookDocumentType as DocumentType } from '@lobechat/const/builtinTools';
 import { type NotebookDocument } from '@lobot/types';
 
 import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
@@ -11,25 +9,6 @@ import { notebookDocumentsResource } from './projection';
 import { type NotebookStore } from './store';
 
 const n = setNamespace('notebook');
-
-type ExtendedDocumentType = DocumentType | typeof AGENT_PLAN_FILE_TYPE;
-
-interface CreateDocumentParams {
-  content: string;
-  description: string;
-  metadata?: Record<string, any>;
-  title: string;
-  topicId: string;
-  type?: ExtendedDocumentType;
-}
-
-interface UpdateDocumentParams {
-  content?: string;
-  description?: string;
-  id: string;
-  metadata?: Record<string, any>;
-  title?: string;
-}
 
 type Setter = StoreSetter<NotebookStore>;
 export const createNotebookAction = (set: Setter, get: () => NotebookStore, _api?: unknown) =>

@@ -1,26 +1,7 @@
-import {
-  ImageGenerationApiName,
-  ImageGenerationIdentifier,
-  WebOnboardingApiName,
-  WebOnboardingIdentifier,
-} from '@lobechat/const/builtinTools';
+import { ImageGenerationApiName, ImageGenerationIdentifier } from '@lobechat/const/builtinTools';
 import type { ChatToolPayloadWithResult } from '@lobot/types';
 
 import { getMcpAppFromState } from '@/libs/mcp/mcpApp';
-
-interface ToolRenderRuleTarget {
-  apiName: string;
-  identifier: string;
-}
-
-export const shouldRenderToolCall = ({ apiName, identifier }: ToolRenderRuleTarget) => {
-  // This call immediately ends onboarding and switches the UI to the completion state.
-  if (identifier === WebOnboardingIdentifier && apiName === WebOnboardingApiName.finishOnboarding) {
-    return false;
-  }
-
-  return true;
-};
 
 const hasUploadedImages = (state: unknown): boolean =>
   !!(state as { images?: { url?: string }[] } | undefined)?.images?.some((image) => !!image.url);

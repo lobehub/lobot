@@ -60,9 +60,6 @@ import { createTopicDetailSlice, RUN_WATCH_INTERVAL } from './topicDetail';
 
 const n = setNamespace('t');
 
-const STALE_RUNNING_TOPIC_TIMEOUT = 2 * 60 * 60 * 1000;
-const STALE_RUNNING_TOPIC_QUERY_PAGE_SIZE = 500;
-
 /**
  * Max message prefetches fired per topic-list fetch for freshly-unread topics.
  * Bounds the fan-out after a long-offline boot; see
@@ -81,24 +78,6 @@ const patchTopic =
     // TODO: updatedAt type needs to be changed to Date later
     return isEqual(topic, merged) ? topic : ({ ...merged, updatedAt: new Date() } as any);
   };
-
-type CronTopicsGroupWithJobInfo = {
-  cronJob: unknown;
-  cronJobId: string;
-  topics: ChatTopic[];
-};
-
-type RunningTopicForWatchdog = Omit<ChatTopic, 'updatedAt'> & {
-  agentId?: string | null;
-  groupId?: string | null;
-  updatedAt: Date | number | string;
-};
-
-type TopicPatchScope = {
-  agentId?: string;
-  groupId?: string;
-  scope?: TopicMapScope;
-};
 
 /**
  * Options for switchTopic action
@@ -155,11 +134,6 @@ interface SwitchTopicOptions {
    * @default false
    */
   skipRefreshMessage?: boolean;
-}
-
-interface RemoveUnstarredTopicOptions {
-  /** Restrict the bulk delete to topics created by the signed-in user. */
-  onlyOwn?: boolean;
 }
 
 type Setter = StoreSetter<ChatStore>;

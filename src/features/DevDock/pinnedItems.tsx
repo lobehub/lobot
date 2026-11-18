@@ -14,14 +14,6 @@ import BarButton, { barButtonStyles } from './widgets/BarButton';
 
 class WidgetBoundary extends Component<PropsWithChildren, { failed?: boolean }> {
   state = { failed: false };
-
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-
-  render() {
-    return this.state.failed ? null : this.props.children;
-  }
 }
 
 export const WidgetSlot = memo<{ item: DevDockLoadableItem }>(({ item }) => {

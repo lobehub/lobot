@@ -109,15 +109,6 @@ class WorkService {
   };
 
   /**
-   * Revalidate every mounted workspace Work list (the gallery filters and the
-   * project dashboards). Their replicas sync through `work:workspace` keys.
-   */
-  refreshWorkspaceLists = async () => {
-    await this.#collapseWorkspaceTails();
-    await mutate((key) => Array.isArray(key) && key[0] === workKeys.workspace.root);
-  };
-
-  /**
    * The gallery replica only re-requests its head page, so loaded tail pages
    * are dropped first rather than left stale. Imported on demand: the work
    * store depends on this service.

@@ -1,107 +1,9 @@
-import type {
-  VerifierType,
-  VerifyCheckDefinition,
-  VerifyCheckItem,
-  VerifyEvidence,
-  VerifyOnFailStrategy,
-  VerifyReport,
-  VerifyRubricConfig,
-} from '@lobot/types';
+import type { VerifyEvidence, VerifyReport } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
-import type {
-  VerifyAutoRepairOutcome,
-  VerifyCheckResultItem,
-  VerifyCriterionItem,
-  VerifyRunItem,
-  VerifyStatus,
-} from '@/types/serverData';
-
-/** Criterion row plus the judge instruction resolved from its linked document. */
-type GoalCriterionWithInstruction = VerifyCriterionItem & { instruction?: string };
+import type { VerifyCheckResultItem, VerifyRunItem } from '@/types/serverData';
 
 type AcceptanceBundle = Awaited<ReturnType<typeof lambdaClient.acceptance.getBundle.query>>;
-type AcceptanceListItem = Awaited<ReturnType<typeof lambdaClient.acceptance.list.query>>[number];
-
-type AcceptanceListPage = Awaited<ReturnType<typeof lambdaClient.acceptance.listPage.query>>;
-
-/** The list's status split, shared by the flat and paged reads. */
-type AcceptanceListFilter = 'active' | 'all' | 'completed';
-
-/** Whose acceptances: the active scope, only mine, or any I commented on. */
-type AcceptanceListScope = 'all' | 'created' | 'participated';
-
-/** Where the acceptance came from; `standalone` also covers documents. */
-type AcceptanceListSource = 'all' | 'goal' | 'standalone' | 'task' | 'topic';
-
-/** Every list narrowing beyond search. `projectId: null` = filed under no project. */
-interface AcceptanceListQuery {
-  filter?: AcceptanceListFilter;
-  projectId?: string | null;
-  scope?: AcceptanceListScope;
-  source?: AcceptanceListSource;
-}
-
-/** The lifecycle states a reviewer may set by hand from the acceptance list. */
-type AcceptanceStatusOverride = 'accepted' | 'closed' | 'delivered' | 'rejected';
-
-/** Editable fields of a single delivery-check criterion. */
-interface UpdateCriterionValue {
-  archivedAt?: Date | null;
-  definition?: VerifyCheckDefinition | null;
-  description?: string | null;
-  documentId?: string | null;
-  onFail?: VerifyOnFailStrategy;
-  required?: boolean;
-  tags?: string[];
-  title?: string;
-  verifierConfig?: Record<string, unknown>;
-  verifierType?: VerifierType;
-}
-
-/** Fields for authoring a new delivery-check criterion. */
-interface CreateCriterionInput {
-  definition?: VerifyCheckDefinition;
-  description?: string;
-  documentId?: string;
-  onFail?: VerifyOnFailStrategy;
-  required?: boolean;
-  tags?: string[];
-  title: string;
-  verifierConfig?: Record<string, unknown>;
-  verifierType: VerifierType;
-}
-
-/** Fields for authoring a new rubric (named criteria group). */
-interface CreateRubricInput {
-  config?: VerifyRubricConfig;
-  description?: string;
-  title: string;
-}
-
-/**
- * A proposed (or user-edited) acceptance criterion before it is persisted. The
- * shape returned by `generateCriteria` and the shape `createCriteria` accepts.
- */
-interface VerifyCriterionDraft {
-  description?: string;
-  /** Reuse an existing instruction doc (preserves the rubric on re-save). */
-  documentId?: string | null;
-  instruction?: string;
-  onFail?: VerifyOnFailStrategy;
-  required?: boolean;
-  title: string;
-  verifierConfig?: Record<string, unknown>;
-  verifierType?: VerifierType;
-}
-
-interface VerifyStateResponse {
-  /** The server's auto-repair decision for a failed round; absent until it decided. */
-  verifyAutoRepair?: VerifyAutoRepairOutcome | null;
-  verifyPlan: VerifyCheckItem[] | null;
-  verifyPlanConfirmedAt: Date | null;
-  verifyStatus: VerifyStatus | null;
-}
 
 /** One evidence artifact plus resolved display metadata, when file-backed. */
 type VerifyEvidenceWithUrl = VerifyEvidence & {
@@ -132,22 +34,6 @@ interface VerifyReportBundle {
   report: VerifyReport | null;
   results: VerifyResultWithEvidence[];
   run: VerifyRunItem;
-}
-
-/** The acceptance round a verify run belongs to — where its old `/verify/:runId` link lands. */
-interface VerifyRunAcceptanceRound {
-  acceptanceId: string;
-  roundIndex: number | null;
-}
-
-interface GenerateDraftPlanInput {
-  context?: string;
-  enableAiGeneration?: boolean;
-  goal: string;
-  maxAiCriteria?: number;
-  operationId: string;
-  verifyCriteriaIds?: string[];
-  verifyRubricId?: string | null;
 }
 
 /** Client wrapper around the `verify` lambda router. */

@@ -2,14 +2,6 @@ import { type LobeTool, type ToolManifest } from '@lobot/types';
 
 import { lambdaClient } from '@/libs/trpc/client';
 
-interface InstallPluginParams {
-  customParams?: Record<string, any>;
-  identifier: string;
-  manifest: ToolManifest;
-  settings?: Record<string, any>;
-  type: 'plugin' | 'customPlugin';
-}
-
 export class PluginService {
   getInstalledPlugins = (): Promise<LobeTool[]> => {
     return lambdaClient.plugin.getPlugins.query();

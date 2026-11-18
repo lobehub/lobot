@@ -27,8 +27,6 @@ import { genParentMessages } from './selectors';
 const n = setNamespace('thd');
 
 type Setter = StoreSetter<ChatStore>;
-/** Window in which mounts syncing the same topic share one request. */
-const THREAD_LIST_DEDUPING_INTERVAL = 10_000;
 
 export class ChatThreadActionImpl {
   readonly #get: () => ChatStore;

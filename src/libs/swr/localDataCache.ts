@@ -48,14 +48,6 @@ export const localDataCache = {
       ...deleteKeys.map((key) => ({ collection: CACHE_COLLECTION, key, type: 'delete' as const })),
     ]),
 
-  clearScope: async (scope: string): Promise<void> => {
-    try {
-      await localDatabase.deleteByPrefix(CACHE_COLLECTION, scopePrefix(scope));
-    } catch {
-      // Cache persistence is best-effort.
-    }
-  },
-
   delete: async (key: string): Promise<void> => {
     try {
       await localDatabase.delete(CACHE_COLLECTION, key);
@@ -74,15 +66,6 @@ export const localDataCache = {
       }));
     } catch {
       return [];
-    }
-  },
-
-  get: async <T>(key: string): Promise<T | undefined> => {
-    try {
-      const row = await localDatabase.get<CacheRow>(CACHE_COLLECTION, key);
-      return row?.data as T | undefined;
-    } catch {
-      return undefined;
     }
   },
 

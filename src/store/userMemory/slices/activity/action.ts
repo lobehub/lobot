@@ -5,13 +5,9 @@ import { setNamespace } from '@/utils/storeDebug';
 
 import { type UserMemoryStore, useUserMemoryStore } from '../../store';
 import { MemoryQueryList } from '../utils/memoryQueryList';
-import { type ActivityListData, type ActivityListParams, activityListResource } from './projection';
+import { type ActivityListData, activityListResource } from './projection';
 
 const n = setNamespace('userMemory/activity');
-
-interface ActivityQueryParams extends Partial<ActivityListParams> {
-  page?: number;
-}
 
 /** Flat mirrors of one page set (`undefined` = the active query has no view yet). */
 const mirrorsOf = (data: ActivityListData | undefined): Partial<UserMemoryStore> =>

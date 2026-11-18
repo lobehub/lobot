@@ -11,8 +11,7 @@ interface MarketAuthErrorHandoffPayload {
 }
 
 export type MarketAuthHandoffPayload =
-  | MarketAuthErrorHandoffPayload
-  | MarketAuthSuccessHandoffPayload;
+  MarketAuthErrorHandoffPayload | MarketAuthSuccessHandoffPayload;
 
 const MARKET_AUTH_RESULT_STORAGE_PREFIX = 'market_auth_result:';
 
@@ -49,18 +48,6 @@ export const resolveMarketAuthHandoffPayload = (
   }
 
   return null;
-};
-
-export const persistMarketAuthResult = (payload: MarketAuthHandoffPayload): boolean => {
-  if (!isBrowser() || !payload.state) return false;
-
-  try {
-    localStorage.setItem(getMarketAuthResultStorageKey(payload.state), JSON.stringify(payload));
-    return true;
-  } catch (error) {
-    console.error('[MarketAuthHandoff] Failed to persist auth result:', error);
-    return false;
-  }
 };
 
 export const readMarketAuthResult = (state: string): MarketAuthHandoffPayload | null => {

@@ -84,12 +84,6 @@ class UploadService {
     return { data, success: true };
   };
 
-  uploadDataToS3 = async (data: object, options: UploadFileToS3Options = {}) => {
-    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-    const file = new File([blob], options.filename || 'data.json', { type: 'application/json' });
-    return await this.uploadFileToS3(file, options);
-  };
-
   uploadToServerS3 = async (
     file: File,
     {

@@ -459,19 +459,6 @@ export function createCacheProvider(options: CacheProviderOptions = {}): ScopedS
 }
 
 /**
- * Clear the localStorage cache tier for a scope (or the legacy key).
- */
-export function clearSWRCache(cacheKey = 'lobechat-swr-cache'): void {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.removeItem(cacheKey);
-    console.info('[SWR Cache] Cache cleared');
-  } catch (error) {
-    console.error('[SWR Cache] Failed to clear cache:', error);
-  }
-}
-
-/**
  * Central tiering config — the single place that decides where each kind of
  * data is persisted, keyed by the `domain:` namespace of the SWR key (see the
  * key registry in `@/libs/swr/keys`). Matching is substring-based; the colon in

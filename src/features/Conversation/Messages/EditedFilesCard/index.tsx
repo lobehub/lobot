@@ -273,12 +273,6 @@ interface EditedFilesCardProps {
   entries: OperationEditedFile[];
 }
 
-export const getEditedFilesCardMode = (fileCount: number) => {
-  if (fileCount === 0) return 'hidden';
-  if (fileCount === 1) return 'single';
-  return 'aggregate';
-};
-
 export const getEditedFileIconName = (filePath: string) => getFileName(filePath);
 
 const SingleEditedFileCard = memo<{ entry: EditedFileEntry; onOpen?: () => void }>(

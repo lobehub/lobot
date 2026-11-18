@@ -32,7 +32,6 @@ import type { TaskDetailDispatch } from './reducer';
 import { findSubtaskParentId, taskDetailReducer } from './reducer';
 
 type CreatedTask = NonNullable<Awaited<ReturnType<typeof taskService.create>>['data']>;
-type DeletedTask = NonNullable<Awaited<ReturnType<typeof taskService.delete>>['data']>;
 
 // config / heartbeatInterval / heartbeatTimeout are not exposed here:
 // - model/provider goes through configSlice.updateTaskModelConfig

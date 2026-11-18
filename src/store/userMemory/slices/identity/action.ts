@@ -16,8 +16,6 @@ import {
 
 const n = setNamespace('userMemory/identity');
 
-const GLOBAL_IDENTITIES_PARAMS = {} as Record<string, never>;
-
 const identityEntries = recordLens<UserMemoryStore, IdentityListView>('identityListEntries');
 
 /**

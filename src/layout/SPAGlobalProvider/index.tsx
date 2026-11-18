@@ -43,14 +43,6 @@ const devDockLayoutStyle: CSSProperties = {
 
 class DevDockBoundary extends Component<PropsWithChildren, { failed: boolean }> {
   state = { failed: false };
-
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-
-  render() {
-    return this.state.failed ? null : this.props.children;
-  }
 }
 
 export const DevDockLayout = memo<PropsWithChildren>(({ children }) => {

@@ -9,13 +9,9 @@ import { setNamespace } from '@/utils/storeDebug';
 
 import { type UserMemoryStore, useUserMemoryStore } from '../../store';
 import { MemoryQueryList } from '../utils/memoryQueryList';
-import { type ContextListData, type ContextListParams, contextListResource } from './projection';
+import { type ContextListData, contextListResource } from './projection';
 
 const n = setNamespace('userMemory/context');
-
-interface ContextQueryParams extends Partial<ContextListParams> {
-  page?: number;
-}
 
 /** Flat mirrors of one page set (`undefined` = the active query has no view yet). */
 const mirrorsOf = (data: ContextListData | undefined): Partial<UserMemoryStore> =>

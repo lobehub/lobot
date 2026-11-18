@@ -51,25 +51,9 @@ export class FileService {
     await lambdaClient.file.removeUnreferencedFile.mutate({ id });
   };
 
-  removeFiles = async (ids: string[]): Promise<void> => {
-    await lambdaClient.file.removeFiles.mutate({ ids });
-  };
-
   // V2.0 Migrate from getFiles to getKnowledgeItems
   getKnowledgeItems = async (params: QueryFileListParams) => {
     return lambdaClient.file.getKnowledgeItems.query(params as QueryFileListSchemaType);
-  };
-
-  resolveKnowledgeItemIds = async (params: QueryFileListParams) => {
-    return lambdaClient.file.resolveKnowledgeItemIds.query(params as QueryFileListSchemaType);
-  };
-
-  deleteKnowledgeItemsByQuery = async (
-    params: QueryFileListParams & { excludedIds?: string[] },
-  ) => {
-    return lambdaClient.file.deleteKnowledgeItemsByQuery.mutate(
-      params as QueryFileListSchemaType & { excludedIds?: string[] },
-    );
   };
 
   // V2.0 Migrate from getFileItem to getKnowledgeItem

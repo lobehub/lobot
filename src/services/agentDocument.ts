@@ -1,7 +1,5 @@
 import { lambdaClient } from '@/libs/trpc/client';
 import { invalidateDocumentMutation } from '@/services/document/invalidation';
-import { type AgentContextDocument } from '@/types/agentContext';
-import { toAgentContextDocuments } from '@/utils/agentDocumentContextMapping';
 
 interface AgentDocumentToolContext {
   messageId: string;
@@ -20,10 +18,6 @@ interface AgentDocumentToolTriggerInput {
 }
 
 class AgentDocumentService {
-  getContextDocuments = async (params: { agentId: string }) => {
-    return lambdaClient.agentDocument.getContextDocuments.query(params);
-  };
-
   listDocuments = async (params: {
     agentId: string;
     excludeWeb?: boolean;
@@ -73,20 +67,6 @@ class AgentDocumentService {
     return result;
   };
 }
-
-export const resolveAgentDocumentsContext = async (params: {
-  agentId?: string;
-  cachedDocuments?: AgentContextDocument[];
-}) => {
-  const { agentId, cachedDocuments } = params;
-
-  if (cachedDocuments !== undefined) return cachedDocuments;
-  if (!agentId) return undefined;
-
-  const documents = await agentDocumentService.getContextDocuments({ agentId });
-
-  return toAgentContextDocuments(documents);
-};
 
 export const agentDocumentService = new AgentDocumentService();
 

@@ -1,5 +1,4 @@
 import type {
-  AgentDocumentSort,
   ChannelListSort,
   ContactListSortBy,
   GlobalState,
@@ -99,10 +98,6 @@ const privateAgentPageSize = (s: GlobalState): number => s.status.privateAgentPa
 
 const recentPageSize = (s: GlobalState): number => s.status.recentPageSize || 5;
 
-const EMPTY_TASK_LIST_FILTERS: NonNullable<GlobalState['status']['taskListFilters']> = [];
-
-const DEFAULT_KANBAN_HIDDEN_COLUMNS: string[] = ['done', 'canceled'];
-
 export const DEFAULT_HIDDEN_SECTIONS: string[] = [];
 
 /** Sections hidden by default in workspace mode until the user customizes
@@ -110,12 +105,6 @@ export const DEFAULT_HIDDEN_SECTIONS: string[] = [];
  * stream is useful, but in a workspace the agent/project lists are the
  * primary entry points — surfacing recents on top adds noise. */
 const WORKSPACE_DEFAULT_HIDDEN_SECTIONS: string[] = ['recents'];
-
-/** Sections hidden by default for the given mode. The customize-sidebar
- * "Reset to default" path uses this so resetting in a workspace restores
- * the workspace defaults, not the empty personal-mode defaults. */
-export const getDefaultHiddenSections = (isWorkspaceMode: boolean): string[] =>
-  isWorkspaceMode ? [...WORKSPACE_DEFAULT_HIDDEN_SECTIONS] : DEFAULT_HIDDEN_SECTIONS;
 
 const hiddenSidebarSections =
   (workspaceId: string | null) =>
@@ -171,13 +160,6 @@ export const SIDEBAR_ACCORDION_KEYS = new Set(['favorites', 'recents', 'private'
 const DEFAULT_BOTTOM_KEYS = new Set(
   DEFAULT_SIDEBAR_ITEMS.slice(DEFAULT_SIDEBAR_ITEMS.indexOf(SIDEBAR_SPACER_ID) + 1),
 );
-
-const arraysEqual = (a: string[], b: string[]): boolean => {
-  if (a === b) return true;
-  if (a.length !== b.length) return false;
-  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
-  return true;
-};
 
 // Invariant: spacer always sits immediately after the recents+agent block. Any
 // stored position is ignored — the spacer is re-anchored on every read so legacy
@@ -267,77 +249,6 @@ const withAllKnownKeys = (order: string[]): string[] => {
   ];
 };
 
-const accordionIndices = (items: string[]): number[] => {
-  const out: number[] = [];
-  for (let i = 0; i < items.length; i++) {
-    if (SIDEBAR_ACCORDION_KEYS.has(items[i])) out.push(i);
-  }
-  return out;
-};
-
-const reorderInner = (items: string[], from: number, to: number): string[] => {
-  const key = items[from];
-  const accIdx = accordionIndices(items);
-
-  // Moving an accordion item across the block's outer boundary → move whole block together.
-  if (SIDEBAR_ACCORDION_KEYS.has(key) && accIdx.length >= 2) {
-    const first = accIdx[0];
-    const last = accIdx.at(-1)!;
-    const crossesBoundary = (from === first && to < first) || (from === last && to > last);
-    if (crossesBoundary) {
-      const block = items.slice(first, last + 1);
-      const without = [...items.slice(0, first), ...items.slice(last + 1)];
-      // After removing the block, adjust target index for upward/downward movement
-      const targetIdx = to < first ? to : to - (last - first + 1) + 1;
-      const clamped = Math.max(0, Math.min(without.length, targetIdx));
-      return [...without.slice(0, clamped), ...block, ...without.slice(clamped)];
-    }
-  }
-
-  // Standard reorder
-  const moved = [...items];
-  const [removed] = moved.splice(from, 1);
-  moved.splice(to, 0, removed);
-
-  // Non-accordion item that landed between accordion items → snap to the side matching drag direction.
-  if (!SIDEBAR_ACCORDION_KEYS.has(key)) {
-    const nextAcc = accordionIndices(moved);
-    if (nextAcc.length >= 2) {
-      const first = nextAcc[0];
-      const last = nextAcc.at(-1)!;
-      const contiguous = last - first === nextAcc.length - 1;
-      if (!contiguous) {
-        const pos = moved.indexOf(key);
-        if (pos > first && pos < last) {
-          const cleaned = [...moved];
-          cleaned.splice(pos, 1);
-          const cAcc = accordionIndices(cleaned);
-          const insertAt = from < to ? cAcc.at(-1)! + 1 : cAcc[0];
-          cleaned.splice(insertAt, 0, key);
-          return cleaned;
-        }
-      }
-    }
-  }
-
-  return moved;
-};
-
-/**
- * Reorder sidebar items while keeping the accordion block (recents + agent) contiguous
- * and the spacer immediately after the accordion block. Returns the original `items`
- * reference when the move resolves to a no-op (e.g. dragging the accordion past the
- * spacer, which the invariant snaps right back), so callers can short-circuit on
- * reference equality.
- */
-export const reorderSidebarItems = (items: string[], from: number, to: number): string[] => {
-  if (from === to || from < 0 || to < 0 || from >= items.length || to >= items.length) {
-    return items;
-  }
-  const normalized = normalizeSpacerPosition(reorderInner(items, from, to));
-  return arraysEqual(normalized, items) ? items : normalized;
-};
-
 const sidebarItems =
   (workspaceId: string | null) =>
   (s: GlobalState): string[] => {
@@ -384,11 +295,6 @@ const leftPanelWidth = (s: GlobalState): number => {
   return normalizeNavPanelWidth(s.status.leftPanelWidth);
 };
 const agentListViewMode = (s: GlobalState) => s.status.agentListViewMode || 'card';
-const DEFAULT_AGENT_DOCUMENT_SORT: AgentDocumentSort = {
-  by: 'name',
-  foldersFirst: true,
-  order: 'asc',
-};
 const EMPTY_CONTACT_LIST_SECTIONS: string[] = [];
 const contactListCollapsedSections = (s: GlobalState) =>
   s.status.contactListCollapsedSections ?? EMPTY_CONTACT_LIST_SECTIONS;

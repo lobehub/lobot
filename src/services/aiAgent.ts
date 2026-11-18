@@ -65,45 +65,6 @@ export interface ResumeToolResultParam {
   toolCallId: string;
 }
 
-export type AgentInterventionSourceAction =
-  | { optionId: string; type: 'select_provider_option' }
-  | {
-      edits?: Record<string, Record<string, unknown>>;
-      scope: 'once' | 'remember';
-      type: 'approve_tool';
-    }
-  | { reason?: string; type: 'reject_continue' }
-  | { scope: 'operation'; type: 'stop' }
-  | { result: Record<string, string | string[]>; type: 'submit_answers' }
-  | {
-      result: { kind: 'agent_marketplace'; selectedTemplateIds: string[] };
-      type: 'submit_custom';
-    }
-  | { type: 'skip_interaction' }
-  | { type: 'cancel_interaction' };
-
-export interface ResolveAgentInterventionBySourceParams {
-  action: AgentInterventionSourceAction;
-  batchId: string;
-  operationId: string;
-  resolutionRequestId: string;
-  targets: Array<{ toolCallId: string; toolMessageId: string }>;
-}
-
-export type ResolveAgentInterventionBySourceResult =
-  | { execution?: never; handled: false; state?: never }
-  | {
-      execution?: ExecAgentResult;
-      handled: true;
-      state: 'already_resolved' | 'claimed';
-    };
-
-interface GetAgentInterventionReviewBySourceParams {
-  batchId: string;
-  operationId: string;
-  targets: Array<{ toolCallId: string; toolMessageId: string }>;
-}
-
 /** Must not exceed the server's `ExecAgentSchema.clientOperations` bound. */
 export const MAX_CLIENT_OPERATION_SNAPSHOT = 10;
 
@@ -245,60 +206,6 @@ interface InterruptTaskParams {
   topicId?: string;
 }
 
-/**
- * Parameters for createClientTaskThread
- * Creates a Thread for client-side task execution (desktop only, single agent mode)
- */
-interface CreateClientTaskThreadParams {
-  agentId: string;
-  /**
-   * Seed an assistant placeholder for transports that stream into an existing
-   * message (for example a local heterogeneous CLI).
-   */
-  assistantMessage?: { provider: string };
-  groupId?: string;
-  /** Initial user message content (task instruction) */
-  instruction: string;
-  parentMessageId: string;
-  title?: string;
-  topicId: string;
-}
-
-/**
- * Parameters for createClientGroupAgentTaskThread
- * Creates a Thread for client-side task execution in Group mode
- */
-interface CreateClientGroupAgentTaskThreadParams {
-  /** The Group ID (required for Group mode) */
-  groupId: string;
-  /** Initial user message content (task instruction) */
-  instruction: string;
-  parentMessageId: string;
-  /** The Sub-Agent ID that will execute the task (worker agent in group) */
-  subAgentId: string;
-  title?: string;
-  topicId: string;
-}
-
-/**
- * Parameters for updateClientTaskThreadStatus
- * Updates Thread status after client-side execution completes
- */
-interface UpdateClientTaskThreadStatusParams {
-  completionReason: 'done' | 'error' | 'interrupted';
-  error?: string;
-  metadata?: {
-    totalCost?: number;
-    totalLlmCalls?: number;
-    totalMessages?: number;
-    totalSteps?: number;
-    totalTokens?: number;
-    totalToolCalls?: number;
-  };
-  resultContent?: string;
-  threadId: string;
-}
-
 class AiAgentService {
   async getServerDefaultHeterogeneousCapability() {
     return await lambdaClient.aiAgent.getServerDefaultHeterogeneousCapability.query();
@@ -405,22 +312,6 @@ class AiAgentService {
    */
   async getSubAgentTaskStatus(params: GetSubAgentTaskStatusParams) {
     return await lambdaClient.aiAgent.getSubAgentTaskStatus.query(params);
-  }
-
-  /**
-   * Authoritative terminal outcome of a server run, by its operation id.
-   *
-   * The leaked-run sweep needs it to tell a run that COMPLETED from one that
-   * failed / was interrupted: only a completion may drain the follow-up the user
-   * queued behind it (a failed run keeps its queue, like every terminal path).
-   * The terminal frame that would have carried this outcome is exactly what the
-   * leak lost.
-   *
-   * Resolves `null` when the server no longer holds the run (its state expired).
-   * Callers must treat that as UNKNOWN, never as a completion.
-   */
-  async getOperationStatus(params: { operationId: string }) {
-    return await lambdaClient.aiAgent.getOperationStatus.query(params);
   }
 
   /**

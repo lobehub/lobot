@@ -1,6 +1,5 @@
 import {
   type ChatToolPayloadWithResult,
-  classifyToolInterventionPresentation,
   isHeterogeneousInterventionExpired,
   readHeterogeneousInterventionDeadline,
   type ToolIntervention,
@@ -77,72 +76,6 @@ export const getPendingInterventions = (
   }
 
   return pending;
-};
-
-/**
- * Narrow a whole-conversation pending list down to ONE parallel batch — the
- * calls emitted by the same assistant turn as `active`.
- *
- * `getPendingInterventions` walks every message, so its length says nothing
- * about batch membership: an abandoned approval from an earlier turn sits in
- * the same list as this turn's calls. Any bulk action must group first —
- * resolving across turns hands the server a set it executes under one assistant
- * anchor and continues the model once with unrelated results, running a tool the
- * user never meant to release into this turn.
- *
- * An entry whose owner cannot be resolved is its own batch: unknown owners must
- * not collapse into one pseudo-group.
- */
-export const getInterventionBatch = (
-  interventions: PendingIntervention[],
-  active: PendingIntervention | undefined,
-): PendingIntervention[] => {
-  if (!active) return [];
-
-  if (active.operationId && active.batchId) {
-    return interventions.filter(
-      (item) => item.operationId === active.operationId && item.batchId === active.batchId,
-    );
-  }
-
-  // A partially stamped row is neither a trustworthy durable identity nor a
-  // legacy row. Keep it isolated so a rollout mismatch cannot broaden a bulk
-  // action to cards the server will reject as a different sealed batch.
-  if (active.operationId || active.batchId) return [active];
-
-  const owner = active.assistantGroupId;
-  if (!owner) return [active];
-  return interventions.filter(
-    (item) => !item.operationId && !item.batchId && item.assistantGroupId === owner,
-  );
-};
-
-/**
- * Approve-all is meaningful only for a fully binary same-turn batch. AskUser,
- * marketplace, provider forms, and mixed batches each carry action-specific
- * payloads and must be resolved card by card.
- */
-export const canApproveInterventionBatch = (batch: PendingIntervention[]): boolean => {
-  if (batch.length <= 1) return false;
-
-  const hasDurableMember = batch.some(({ batchId, operationId }) => batchId || operationId);
-  if (
-    hasDurableMember &&
-    !batch.every(
-      ({ batchId, operationId }) =>
-        Boolean(batchId) &&
-        Boolean(operationId) &&
-        batchId === batch[0].batchId &&
-        operationId === batch[0].operationId,
-    )
-  ) {
-    return false;
-  }
-
-  return batch.every(
-    ({ apiName, identifier }) =>
-      classifyToolInterventionPresentation(identifier, apiName).surface === 'binary',
-  );
 };
 
 const collectPendingTools = (

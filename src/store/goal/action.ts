@@ -65,7 +65,6 @@ const goalStatusPolled = (status: GoalStatus) =>
 
 /** Kept coarse on purpose — this is liveness, not a progress bar. */
 const GOAL_GRAPH_POLL_INTERVAL = 5000;
-const PENDING_CLARIFICATIONS_POLL_INTERVAL = 30_000;
 
 /**
  * Acceptance states in which the Goal's own delivery has nothing left in

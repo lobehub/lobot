@@ -1,9 +1,6 @@
-import type { DiscoverSkillItem, SkillCategoryItem, SkillListResponse } from '@/types/discover';
+import type { SkillListResponse } from '@/types/discover';
 
 import type { DiscoverStore } from '../store';
-
-const EMPTY_CATEGORIES: SkillCategoryItem[] = [];
-const EMPTY_RELATED: DiscoverSkillItem[] = [];
 
 /**
  * Readers of the skill market replicas. Every helper takes the `queryKey` the

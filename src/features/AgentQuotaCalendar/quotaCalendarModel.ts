@@ -506,15 +506,6 @@ export const buildSessionGrid = (
   };
 };
 
-/** Utilization ramp for a window cell — absolute, since 0–100 already means something. */
-export const utilizationLevelOf = (utilization: number): 0 | 1 | 2 | 3 | 4 => {
-  if (utilization <= 0) return 0;
-  if (utilization < 25) return 1;
-  if (utilization < 50) return 2;
-  if (utilization < 80) return 3;
-  return 4;
-};
-
 /** Semantic quota pressure: comfortable, nearly full, or exhausted. */
 export const utilizationStatusOf = (utilization: number): 'error' | 'safe' | 'warning' => {
   if (utilization >= 100) return 'error';

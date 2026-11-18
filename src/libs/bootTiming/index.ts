@@ -6,22 +6,13 @@ interface BootSpan {
 
 const now = (): number => (typeof performance === 'undefined' ? 0 : performance.now());
 
-let spans: BootSpan[] = [];
-let marks: Record<string, number> = {};
+const spans: BootSpan[] = [];
+const marks: Record<string, number> = {};
 
 export const bootTiming = {
   mark(name: string): void {
     try {
       marks[name] = now();
-    } catch (_) {
-      void _;
-    }
-  },
-
-  measure(name: string, fromMark: string, toMark: string): void {
-    try {
-      if (!(fromMark in marks) || !(toMark in marks)) return;
-      spans.push({ durMs: marks[toMark] - marks[fromMark], name, startMs: marks[fromMark] });
     } catch (_) {
       void _;
     }
@@ -60,10 +51,5 @@ export const bootTiming = {
     } finally {
       spans.push({ durMs: now() - start, name, startMs: start });
     }
-  },
-
-  _reset(): void {
-    spans = [];
-    marks = {};
   },
 };

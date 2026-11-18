@@ -1,7 +1,6 @@
 import { type FileListItem } from '@/types/files';
 import { type ResourceItem, type ResourceQueryParams } from '@/types/resource';
 
-import { documentService } from '../document';
 import { fileService } from '../file';
 
 /**
@@ -106,68 +105,6 @@ export class ResourceService {
       items: response.items.map(mapToResourceItem),
       total: 'total' in response ? (response.total as number) : undefined,
     };
-  }
-
-  async resolveSelectionIds(
-    params: ResourceQueryParams,
-  ): Promise<{ ids: string[]; total: number }> {
-    const backendParams = {
-      ...params,
-      knowledgeBaseId: params.libraryId,
-      libraryId: undefined,
-    };
-
-    return fileService.resolveKnowledgeItemIds(backendParams);
-  }
-
-  async deleteResourcesByQuery(
-    params: ResourceQueryParams,
-    excludedIds?: string[],
-  ): Promise<{ count: number }> {
-    const backendParams = {
-      ...params,
-      excludedIds,
-      knowledgeBaseId: params.libraryId,
-      libraryId: undefined,
-    };
-
-    return fileService.deleteKnowledgeItemsByQuery(backendParams);
-  }
-
-  /**
-   * Get a single resource by ID
-   */
-  async getResource(id: string): Promise<ResourceItem | undefined> {
-    const item = await fileService.getKnowledgeItem(id);
-    return item ? mapToResourceItem(item) : undefined;
-  }
-
-  /**
-   * Batch delete resources
-   */
-  async deleteResources(ids: string[]): Promise<void> {
-    // Separate files and documents
-    const fileIds: string[] = [];
-    const documentIds: string[] = [];
-
-    await Promise.all(
-      ids.map(async (id) => {
-        const item = await this.getResource(id);
-        if (item) {
-          if (item.sourceType === 'file') {
-            fileIds.push(id);
-          } else {
-            documentIds.push(id);
-          }
-        }
-      }),
-    );
-
-    // Batch delete
-    await Promise.all([
-      fileIds.length > 0 ? fileService.removeFiles(fileIds) : Promise.resolve(),
-      documentIds.length > 0 ? documentService.deleteDocuments(documentIds) : Promise.resolve(),
-    ]);
   }
 }
 

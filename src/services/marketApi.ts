@@ -18,11 +18,6 @@ export interface MarketSkillPackageFile {
   path: string;
 }
 
-interface GetOwnAgentsParams {
-  page?: number;
-  pageSize?: number;
-}
-
 class MarketApiService {
   // Get agent detail by identifier
   async getAgentDetail(

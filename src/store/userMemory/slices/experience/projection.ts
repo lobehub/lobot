@@ -11,9 +11,6 @@ import {
 
 export type { ExperienceListSort };
 
-/** Page size the memory experience list asks for when the caller does not name one. */
-export const EXPERIENCE_LIST_PAGE_SIZE = 12;
-
 /**
  * Query of one page set. `page` is NOT here — it is the paging cursor, owned by
  * the replica. Everything but `pageSize` is the entry key (`memoryListKey`).

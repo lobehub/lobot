@@ -71,70 +71,12 @@ interface OnboardingStepPayload extends Record<string, unknown> {
   stepIndex?: number;
 }
 
-interface OnboardingStartedPayload extends Record<string, unknown> {
-  flow: Exclude<OnboardingFlow, 'common'>;
-  onboarding_session_id: string;
-  onboarding_version: number;
-}
-
 interface OnboardingCompletedPayload extends Record<string, unknown> {
   flow: Exclude<OnboardingFlow, 'common'>;
   onboarding_session_id?: string;
   onboarding_version?: number;
   skipped?: boolean;
   targetUrl?: string;
-}
-
-type OnboardingUnderstandingProgressPhase =
-  | 'collecting-sources'
-  | 'generating-understanding'
-  | 'generating-detailed-persona'
-  | 'recommending-tasks'
-  | 'completed'
-  | 'partial'
-  | 'failed';
-
-type OnboardingUnderstandingStepStatus = 'pending' | 'running' | 'completed' | 'failed';
-
-type OnboardingUnderstandingTerminalStatus = 'completed' | 'partial' | 'failed';
-
-interface OnboardingUnderstandingStartedPayload extends Record<string, unknown> {
-  flow: Exclude<OnboardingFlow, 'common'>;
-  onboarding_session_id: string;
-  onboarding_version: number;
-  understanding_session_id: string;
-}
-
-interface OnboardingUnderstandingProgressPayload extends Record<string, unknown> {
-  collect_sources_status: OnboardingUnderstandingStepStatus;
-  detailed_persona_status: OnboardingUnderstandingStepStatus;
-  flow: Exclude<OnboardingFlow, 'common'>;
-  onboarding_session_id: string;
-  onboarding_version: number;
-  phase: OnboardingUnderstandingProgressPhase;
-  task_recommendations_status: OnboardingUnderstandingStepStatus;
-  understanding_session_id: string;
-  understanding_status: OnboardingUnderstandingStepStatus;
-}
-
-interface OnboardingUnderstandingCompletedPayload extends Record<string, unknown> {
-  duration_ms?: number;
-  flow: Exclude<OnboardingFlow, 'common'>;
-  onboarding_session_id: string;
-  onboarding_version: number;
-  profile_available?: boolean;
-  source_count?: number;
-  source_failed_count?: number;
-  source_succeeded_count?: number;
-  status: OnboardingUnderstandingTerminalStatus;
-  understanding_session_id: string;
-}
-
-interface OnboardingProfilePayload extends Record<string, unknown> {
-  flow: Exclude<OnboardingFlow, 'common'>;
-  onboarding_session_id: string;
-  onboarding_version: number;
-  understanding_session_id: string;
 }
 
 export const trackOnboardingStepViewed = (payload: OnboardingStepPayload): void => {

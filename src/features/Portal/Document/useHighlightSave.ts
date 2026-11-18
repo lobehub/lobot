@@ -58,9 +58,6 @@ const guardRefusedDraftsOnExit = () => {
   });
 };
 
-/** Test-only: forgets every kept refused draft. */
-export const resetRefusedDraftsForTests = () => refusedDrafts.clear();
-
 /**
  * The refused draft to reopen with, if it was written against the version the
  * editor now shows. A draft over an older version is dropped: the remote body

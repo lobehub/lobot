@@ -1,4 +1,3 @@
-import { useFileStore } from '@/store/file';
 import { type KnowledgeBaseStore } from '@/store/library/store';
 import { type StoreSetter } from '@/store/types';
 
@@ -12,11 +11,6 @@ class KnowledgeBaseContentActionImpl {
     void set;
     void get;
   }
-
-  removeFilesFromKnowledgeBase = async (knowledgeBaseId: string, ids: string[]): Promise<void> => {
-    const fileStore = useFileStore.getState();
-    await fileStore.removeResourcesFromKnowledgeBase(knowledgeBaseId, ids);
-  };
 }
 
 export type KnowledgeBaseContentAction = Pick<

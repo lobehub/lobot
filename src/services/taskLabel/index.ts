@@ -10,14 +10,6 @@ export interface TaskLabelInput {
   parentId?: string | null;
 }
 
-export interface TaskLabelPatch {
-  color?: string | null;
-  description?: string | null;
-  name?: string;
-  parentId?: string | null;
-  sortOrder?: number;
-}
-
 class TaskLabelService {
   list = (): Promise<TaskLabelWithUsage[]> => lambdaClient.taskLabel.list.query();
 

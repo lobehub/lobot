@@ -13,20 +13,6 @@ interface WorkspaceFileDragPayload {
   path: string;
 }
 
-/**
- * Write only our custom MIME — no `text/plain` fallback. The Lexical chat input
- * reacts to `text/plain` drops and would race with the drop handler. Mark the
- * drag as `copy` so the input can accept it even though the source tree is not a
- * reorder target (the working files panel has no `onMove`).
- */
-export const writeWorkspaceFileDragData = (
-  dataTransfer: DataTransfer,
-  payload: WorkspaceFileDragPayload,
-): void => {
-  dataTransfer.setData(WORKSPACE_FILE_DRAG_MIME, JSON.stringify(payload));
-  dataTransfer.effectAllowed = 'copy';
-};
-
 export const readWorkspaceFileDragData = (
   dataTransfer: DataTransfer,
 ): WorkspaceFileDragPayload | undefined => {

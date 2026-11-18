@@ -1,6 +1,5 @@
 import type { SidebarAgentItem, SidebarAgentListResponse, SidebarGroup } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
-import { type SWRResponse } from 'swr';
 
 import {
   createReplicaSlice,
@@ -9,8 +8,6 @@ import {
   type ReplicaLens,
   type ReplicaSyncResult,
 } from '@/libs/replica';
-import { useClientDataSWR } from '@/libs/swr';
-import { agentConfigKeys } from '@/libs/swr/keys';
 import { homeService } from '@/services/home';
 import { getAgentStoreState } from '@/store/agent';
 import { type HomeStore } from '@/store/home/store';
@@ -111,10 +108,6 @@ class AgentListActionImpl {
     this.#agents = linkReplicaEntity<SidebarAgentItem>([this.#agentList]);
   }
 
-  closeAllAgentsDrawer = (): void => {
-    this.#set({ allAgentsDrawerOpen: false }, false, n('closeAllAgentsDrawer'));
-  };
-
   openAllAgentsDrawer = (): void => {
     this.#set({ allAgentsDrawerOpen: true }, false, n('openAllAgentsDrawer'));
   };
@@ -136,14 +129,6 @@ class AgentListActionImpl {
   /** Fetch orchestration only; read the list through `homeAgentListSelectors`. */
   useFetchAgentList = (isLogin: boolean | undefined): ReplicaSyncResult =>
     this.#agentList.useSync(LIST_PARAMS, { enabled: isLogin === true });
-
-  useSearchAgents = (keyword?: string): SWRResponse<SidebarAgentItem[]> => {
-    return useClientDataSWR<SidebarAgentItem[]>(agentConfigKeys.search(keyword), async () => {
-      if (!keyword) return [];
-
-      return homeService.searchAgents(keyword);
-    });
-  };
 }
 
 export type AgentListAction = Pick<AgentListActionImpl, keyof AgentListActionImpl>;

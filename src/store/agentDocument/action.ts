@@ -11,15 +11,6 @@ const n = setNamespace('agentDocument');
 
 type Setter = StoreSetter<AgentDocumentState>;
 
-type DocumentListEdit =
-  | AgentDocumentListItem[]
-  | ((prev: AgentDocumentListItem[] | undefined) => AgentDocumentListItem[] | undefined);
-
-interface MutateDocumentListOptions {
-  /** Re-sync from the server after the local edit. Defaults to `true`. */
-  revalidate?: boolean;
-}
-
 interface UseFetchDocumentListOptions {
   /** Pause the sync (e.g. a panel hidden behind `<Activity>`). Defaults to `true`. */
   enabled?: boolean;

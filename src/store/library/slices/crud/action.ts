@@ -126,21 +126,6 @@ class KnowledgeBaseCrudActionImpl {
     ]);
   };
 
-  removeKnowledgeBase = async (id: string): Promise<void> => {
-    // One optimistic removal across every loaded list surface; a failed delete
-    // rolls them all back together.
-    await this.#kbEntity.optimistic(id, 'remove', () =>
-      knowledgeBaseService.deleteKnowledgeBase(id),
-    );
-
-    // The library sidebar persists its tree per library: a revisit of the old
-    // URL must not repaint the deleted library's rows.
-    const { useTreeStore } = await import('@/store/tree');
-    useTreeStore.getState().forgetLibrary(id);
-
-    await this.#get().refreshKnowledgeBaseList();
-  };
-
   updateKnowledgeBase = async (id: string, value: CreateKnowledgeBaseParams): Promise<void> => {
     this.#get().internal_toggleKnowledgeBaseLoading(id, true);
     try {

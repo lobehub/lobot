@@ -104,9 +104,3 @@ export const groupChildrenByParent = <T extends BreadcrumbEntry>(
 
   return byParent;
 };
-
-/** Immediate children of a directory, in the same order as the grouping above. */
-export const listDirectoryChildren = <T extends BreadcrumbEntry>(
-  entries: T[],
-  directoryRelativePath: string,
-): T[] => groupChildrenByParent(entries).get(withoutTrailingSlash(directoryRelativePath)) ?? [];

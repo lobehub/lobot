@@ -39,30 +39,10 @@ export const overlayCaptureUploadPool = {
     pool.set(captureId, entry);
     return entry;
   },
-  get(captureId: string): Entry | undefined {
-    return pool.get(captureId);
-  },
   resolve(captureId: string, value: OverlayCaptureUploadResult): void {
     const entry = pool.get(captureId) ?? this.ensureEntry(captureId);
     if (entry.settled) return;
     entry.settled = true;
     entry.resolve(value);
-  },
-  remove(captureId: string): void {
-    const entry = pool.get(captureId);
-    if (entry && !entry.settled) {
-      entry.settled = true;
-      entry.resolve(null);
-    }
-    pool.delete(captureId);
-  },
-  clear(): void {
-    for (const [id, entry] of pool) {
-      if (!entry.settled) {
-        entry.settled = true;
-        entry.resolve(null);
-      }
-      pool.delete(id);
-    }
   },
 };

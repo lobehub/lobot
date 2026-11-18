@@ -9,17 +9,9 @@ import { setNamespace } from '@/utils/storeDebug';
 
 import { type UserMemoryStore, useUserMemoryStore } from '../../store';
 import { MemoryQueryList } from '../utils/memoryQueryList';
-import {
-  type PreferenceListData,
-  type PreferenceListParams,
-  preferenceListResource,
-} from './projection';
+import { type PreferenceListData, preferenceListResource } from './projection';
 
 const n = setNamespace('userMemory/preference');
-
-interface PreferenceQueryParams extends Partial<PreferenceListParams> {
-  page?: number;
-}
 
 /** Flat mirrors of one page set (`undefined` = the active query has no view yet). */
 const mirrorsOf = (data: PreferenceListData | undefined): Partial<UserMemoryStore> =>

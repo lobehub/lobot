@@ -41,16 +41,3 @@ export const useAgentMeta = (messageAgentId?: string | null): MetaData => {
     return agentMeta;
   }, [agentId, agentMeta, builtinAgentIdMap]);
 };
-
-/**
- * Hook to check if the current agent is a builtin agent
- */
-export const useIsBuiltinAgent = (): boolean => {
-  const agentId = useConversationStore(contextSelectors.agentId);
-  const builtinAgentIdMap = useAgentStore((s) => s.builtinAgentIdMap);
-
-  return useMemo(() => {
-    const builtinAgentIds = Object.values(builtinAgentIdMap);
-    return builtinAgentIds.includes(agentId);
-  }, [agentId, builtinAgentIdMap]);
-};

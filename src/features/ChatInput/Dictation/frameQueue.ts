@@ -34,10 +34,6 @@ export class BoundedWebSocketFrameQueue {
       options.maxBufferedBytes ?? REALTIME_ASR_AUDIO.frameBytes * this.#maxFrames;
   }
 
-  get pendingFrames() {
-    return this.#frames.length;
-  }
-
   enqueue(frame: ArrayBuffer): boolean {
     if (
       this.#disposed ||

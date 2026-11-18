@@ -1,10 +1,6 @@
-import type { CategoryItem } from '@lobehub/market-sdk';
-
 import type { AssistantListResponse } from '@/types/discover';
 
 import type { DiscoverStore } from '../store';
-
-const EMPTY_CATEGORIES: CategoryItem[] = [];
 
 /**
  * Readers of the assistant market replicas. Every helper takes the `queryKey`

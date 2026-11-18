@@ -1,6 +1,6 @@
 import { definePagedReplica, type ReplicaPagedData } from '@/libs/replica';
 import { type FilesTabs, type ResourceSourceFilter, type SortType } from '@/types/files';
-import type { ResourceItem, ResourceQueryParams, ResourceSorter } from '@/types/resource';
+import type { ResourceItem, ResourceSorter } from '@/types/resource';
 
 /**
  * The resource explorer shows one list at a time, so the replica keeps a single
@@ -46,32 +46,6 @@ export interface ResourceListValue extends ReplicaPagedData<ResourceItem, number
   /** Absent only for a view seeded by a legacy caller outside a known query. */
   queryParams?: ResourceListParams;
 }
-
-/**
- * Trim the caller's `ResourceQueryParams` down to the list query identity:
- * drops the paging cursor, defaults the page size and normalizes an empty
- * keyword to "no keyword" so it never splits one query into two entries.
- */
-export const normalizeResourceListParams = (
-  input: ResourceQueryParams | null | undefined,
-): ResourceListParams | null => {
-  if (!input) return null;
-
-  return {
-    category: input.category,
-    filesOnly: input.filesOnly || undefined,
-    includeContentPreview: input.includeContentPreview || undefined,
-    libraryId: input.libraryId,
-    pageSize: input.limit ?? DEFAULT_RESOURCE_PAGE_SIZE,
-    parentId: input.parentId ?? null,
-    q: input.q?.trim() || undefined,
-    showFilesInKnowledgeBase: input.showFilesInKnowledgeBase ?? false,
-    sorter: input.sorter,
-    sortType: input.sortType,
-    sourceFilter: input.sourceFilter,
-    visibility: input.visibility,
-  };
-};
 
 /**
  * The resource explorer list (`resourceService.queryResources`): a local-first

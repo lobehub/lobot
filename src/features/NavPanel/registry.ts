@@ -40,8 +40,3 @@ export const unregisterNavPanelContent = (key: string, owner: NavPanelOwner) => 
   nextSnapshot.delete(key);
   publish(nextSnapshot);
 };
-
-export const clearNavPanelRegistry = () => {
-  if (snapshot.size === 0) return;
-  publish(new Map());
-};

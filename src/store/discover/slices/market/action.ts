@@ -25,13 +25,6 @@ import {
 
 const n = setNamespace('discover/market');
 
-/**
- * Several tags of one header (status, fork, review) and every mounted copy of
- * a community header read the same entry. Collapse their mounts into one
- * request; an explicit refresh still goes out.
- */
-const SHARED_READ_DEDUPING_INTERVAL = 10_000;
-
 /** Sync flags of a market read, plus the entry key to read it by. */
 interface MarketSyncResult extends ReplicaSyncResult {
   /** A request is in flight and this entry has no value to show yet. */
@@ -39,9 +32,6 @@ interface MarketSyncResult extends ReplicaSyncResult {
   /** Read the value with `marketSelectors.*(queryKey)`; undefined while disabled. */
   queryKey?: string;
 }
-
-/** Page size of the "agents using this plugin" grids. */
-const PLUGIN_AGENTS_PAGE_SIZE = 12;
 
 type Setter = StoreSetter<DiscoverStore>;
 

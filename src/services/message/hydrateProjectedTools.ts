@@ -59,24 +59,3 @@ export const mergeStoredToolPayloads = (
     missing: ids.filter((id) => typeof restored[id]?.content !== 'string'),
   };
 };
-
-export const hydrateProjectedToolMessages = async (
-  messages: UIChatMessage[] | undefined,
-  fetchStoredPayloads: (messageIds: string[]) => Promise<Record<string, StoredToolPayload>>,
-): Promise<HydratedToolMessages> => {
-  if (!messages?.length) return { messages: messages ?? [], missing: [] };
-
-  const ids = selectProjectedToolIds(messages);
-  if (ids.length === 0) return { messages, missing: [] };
-
-  try {
-    return mergeStoredToolPayloads(messages, await fetchStoredPayloads(ids));
-  } catch (error) {
-    console.error(
-      '[hydrateProjectedTools] failed to restore %d tool payloads: %O',
-      ids.length,
-      error,
-    );
-    return { messages, missing: ids };
-  }
-};

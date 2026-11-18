@@ -5,17 +5,9 @@ import { setNamespace } from '@/utils/storeDebug';
 
 import { type UserMemoryStore, useUserMemoryStore } from '../../store';
 import { MemoryQueryList } from '../utils/memoryQueryList';
-import {
-  type ExperienceListData,
-  type ExperienceListParams,
-  experienceListResource,
-} from './projection';
+import { type ExperienceListData, experienceListResource } from './projection';
 
 const n = setNamespace('userMemory/experience');
-
-interface ExperienceQueryParams extends Partial<ExperienceListParams> {
-  page?: number;
-}
 
 /** Flat mirrors of one page set (`undefined` = the active query has no view yet). */
 const mirrorsOf = (data: ExperienceListData | undefined): Partial<UserMemoryStore> =>

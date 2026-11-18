@@ -173,19 +173,6 @@ export const useTopicCommentDetail = (
   };
 };
 
-export const usePrefetchTopicCommentsOnTopicLoad = (topicId: string | null | undefined) => {
-  const workspaceId = useActiveWorkspaceId();
-  const prefetchTopicComments = useTopicCommentStore((s) => s.prefetchTopicComments);
-
-  useEffect(() => {
-    if (!topicId || !workspaceId) return;
-    // Let the initial topic/message queries flush their tRPC batch first so this
-    // background warmup starts immediately without delaying the primary payload.
-    const timer = setTimeout(() => void prefetchTopicComments(topicId), 0);
-    return () => clearTimeout(timer);
-  }, [prefetchTopicComments, topicId, workspaceId]);
-};
-
 export const useTopicCommentReplyCount = (
   rootCommentId: string | null | undefined,
   remoteCount: number,

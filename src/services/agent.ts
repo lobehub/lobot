@@ -89,26 +89,6 @@ export interface CreateAgentResult {
   agentId: string;
 }
 
-interface CreateAgentOnlyParams {
-  config?: PartialDeep<AgentItem>;
-  groupId: string;
-}
-
-interface CreateAgentOnlyResult {
-  agentId: string;
-}
-
-interface AgentGroupMembershipImpactRef {
-  agentId: string;
-  groupAvatar: string | null;
-  groupBackgroundColor: string | null;
-  /** `null` when the caller may not see the group; identity is withheld. */
-  groupId: string | null;
-  groupTitle: string | null;
-  /** `false` when the caller may not see the group; its identity is withheld. */
-  groupVisible: boolean;
-}
-
 class AgentService {
   /**
    * Get an agent by forkedFromIdentifier stored in params

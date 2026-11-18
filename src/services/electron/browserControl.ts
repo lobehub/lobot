@@ -1,22 +1,6 @@
-import type {
-  BrowserControlClickParams,
-  BrowserControlClickResult,
-  BrowserControlFillParams,
-  BrowserControlParams,
-  BrowserControlPressParams,
-  BrowserControlReadPageResult,
-  BrowserControlResult,
-  BrowserControlScreenshotResult,
-  BrowserControlScrollParams,
-  BrowserControlSetViewportParams,
-  BrowserControlSetViewportResult,
-  BrowserControlSnapshotResult,
-  BrowserGatewayToolResultParams,
-} from '@lobechat/electron-client-ipc';
+import type { BrowserGatewayToolResultParams } from '@lobechat/electron-client-ipc';
 
 import { ensureElectronIpc } from '@/utils/electron/ipc';
-
-import { browserWebviewRegistry } from './browserWebviewRegistry';
 
 class ElectronBrowserControlService {
   private get ipc() {
@@ -25,46 +9,6 @@ class ElectronBrowserControlService {
 
   reportGatewayToolResult(params: BrowserGatewayToolResultParams): Promise<void> {
     return this.ipc.browserControl.reportGatewayToolResult(params);
-  }
-
-  click(params: BrowserControlClickParams): Promise<BrowserControlClickResult> {
-    browserWebviewRegistry.touch(params.sessionId);
-    return this.ipc.browserControl.click(params);
-  }
-
-  fill(params: BrowserControlFillParams): Promise<BrowserControlResult> {
-    browserWebviewRegistry.touch(params.sessionId);
-    return this.ipc.browserControl.fill(params);
-  }
-
-  press(params: BrowserControlPressParams): Promise<BrowserControlResult> {
-    browserWebviewRegistry.touch(params.sessionId);
-    return this.ipc.browserControl.press(params);
-  }
-
-  readPage(params: BrowserControlParams): Promise<BrowserControlReadPageResult> {
-    browserWebviewRegistry.touch(params.sessionId);
-    return this.ipc.browserControl.readPage(params);
-  }
-
-  screenshot(params: BrowserControlParams): Promise<BrowserControlScreenshotResult> {
-    browserWebviewRegistry.touch(params.sessionId);
-    return this.ipc.browserControl.screenshot(params);
-  }
-
-  scroll(params: BrowserControlScrollParams): Promise<BrowserControlResult> {
-    browserWebviewRegistry.touch(params.sessionId);
-    return this.ipc.browserControl.scroll(params);
-  }
-
-  setViewport(params: BrowserControlSetViewportParams): Promise<BrowserControlSetViewportResult> {
-    browserWebviewRegistry.touch(params.sessionId);
-    return this.ipc.browserControl.setViewport(params);
-  }
-
-  snapshot(params: BrowserControlParams): Promise<BrowserControlSnapshotResult> {
-    browserWebviewRegistry.touch(params.sessionId);
-    return this.ipc.browserControl.snapshot(params);
   }
 }
 

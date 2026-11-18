@@ -81,19 +81,3 @@ export function parseSearchQuery(query: string): ParsedQuery {
     typeFilter,
   };
 }
-
-/**
- * Build a search query string with a type filter
- *
- * @param query - The search query
- * @param type - The type filter to apply
- * @returns Query string with type filter
- *
- * @example
- * buildQueryWithType('my search', 'agent')
- * // => 'type:agent my search'
- */
-export function buildQueryWithType(query: string, type: ValidSearchType): string {
-  const cleanQuery = query.trim();
-  return cleanQuery ? `type:${type} ${cleanQuery}` : `type:${type}`;
-}

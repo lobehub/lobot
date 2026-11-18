@@ -6,11 +6,9 @@ import {
   linkReplicaEntity,
   recordLens,
   type ReplicaLens,
-  type ReplicaSyncResult,
 } from '@/libs/replica';
 import { toolsClient } from '@/libs/trpc/client';
 import { type StoreSetter } from '@/store/types';
-import { setNamespace } from '@/utils/storeDebug';
 
 import { type ToolStore } from '../../store';
 import {
@@ -26,15 +24,6 @@ import {
 import { type LobehubSkillServer, type LobehubSkillTool } from './types';
 import { LobehubSkillStatus } from './types';
 
-const n = setNamespace('lobehubSkillStore');
-
-/**
- * LobeHub Skill Store Actions
- */
-
-/** The connections list is one entry, so every sync shares these params. */
-const SERVERS_PARAMS = {} as Record<string, never>;
-
 /**
  * The connections list keeps its long-standing flat `lobehubSkillServers` field
  * as the replica view, so every selector reads what it did. `undefined` means
@@ -47,19 +36,6 @@ const serversLens: ReplicaLens<ToolStore, LobehubSkillServer[]> = {
   keys: (state) => (state.lobehubSkillServers ? [LOBEHUB_SKILL_SERVERS_KEY] : []),
   set: (_state, _key, data) => ({ lobehubSkillServers: data }),
 };
-
-/** The connections sync, plus the `mutate` alias the skills surfaces call. */
-interface LobehubSkillConnectionsSyncResult extends ReplicaSyncResult {
-  /**
-   * Nothing has been painted yet (no persisted row, no response) and a sync is
-   * in flight. This is the `isLoading` the callers gated on before the replica
-   * — it must stay on the public surface: a caller that reads "un-loaded" as
-   * "empty" would flash a false state on a cold start (see `ToolAuthAlert`).
-   */
-  isLoading: boolean;
-  /** Alias of `revalidate`, kept for the existing "reload skills" control. */
-  mutate: () => Promise<unknown>;
-}
 
 type Setter = StoreSetter<ToolStore>;
 export const createLobehubSkillStoreSlice = (set: Setter, get: () => ToolStore, _api?: unknown) =>

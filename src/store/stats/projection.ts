@@ -1,6 +1,5 @@
-import type { AgentRankItem, ModelRankItem, TopicRankItem } from '@lobot/types';
 import type { HeatmapsProps } from '@lobehub/charts';
-import dayjs from 'dayjs';
+import type { AgentRankItem, ModelRankItem, TopicRankItem } from '@lobot/types';
 
 import { defineReplica } from '@/libs/replica';
 import type { usageService } from '@/services/usage';
@@ -102,13 +101,6 @@ export const statsMaxTaskDurationResource = defineReplica<typeof SINGLE_KEY, num
   storage: 'indexedDB',
   version: 1,
 });
-
-/**
- * Month key (`YYYY-MM`). No picked month means this calendar month, read by
- * its own key: a fixed "current" key would paint last month's persisted usage
- * under this month's picker after a month rolls over.
- */
-export const usageMonthKey = (month?: string): string => month || dayjs().format('YYYY-MM');
 
 /** Daily usage of one month — the usage cards and trend chart. */
 export const usageByDayResource = defineReplica<string, UsageByDay>({

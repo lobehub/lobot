@@ -1,6 +1,5 @@
 import type { WorkspaceMemberItem } from '@/types/serverData';
 
-import { useWorkspaceStore } from '../workspace/store';
 import { useFetchWorkspaceMembers } from './useFetchWorkspaceMembers';
 
 export interface WorkspaceMemberUserProfile {
@@ -28,9 +27,3 @@ export const useWorkspaceMembers = (): WorkspaceMemberWithProfile[] =>
  * roster to wait for.
  */
 export const useWorkspaceMembersReady = (): boolean => !useFetchWorkspaceMembers().isLoading;
-
-/** Non-hook snapshot of the same list, for imperative callers such as tool executors. */
-export const getWorkspaceMembers = (): WorkspaceMemberWithProfile[] => {
-  const { activeWorkspaceId, membersMap } = useWorkspaceStore.getState();
-  return (activeWorkspaceId && membersMap[activeWorkspaceId]) || [];
-};

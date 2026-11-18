@@ -2,11 +2,7 @@ import { type ServerConfigStore } from './store';
 
 export const featureFlagsSelectors = (s: ServerConfigStore) => s.featureFlags;
 
-const EMPTY_PROVIDERS: string[] = [];
-
 export const serverConfigSelectors = {
-  agentIdentityProviders: (s: ServerConfigStore) =>
-    s.serverConfig.agentIdentityProviders ?? EMPTY_PROVIDERS,
   disableEmailPassword: (s: ServerConfigStore) => s.serverConfig.disableEmailPassword || false,
   enableBusinessFeatures: (s: ServerConfigStore) => s.serverConfig.enableBusinessFeatures || false,
   enableComposio: (s: ServerConfigStore) => s.serverConfig.enableComposio || false,

@@ -1,10 +1,3 @@
-export const API_ENDPOINTS = {
-  oauth: '/api/auth',
-
-  // trace
-  trace: '/webapi/trace',
-};
-
 export const MARKET_OIDC_ENDPOINTS = {
   // NOTE: `auth` is used to open a page in the system browser (desktop) / popup (web),
   // so it must always be an HTTP(S) path joined with `NEXT_PUBLIC_MARKET_BASE_URL`.

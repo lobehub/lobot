@@ -24,12 +24,6 @@ export interface ScopedConnectorActionError extends ConnectorActionError {
   scope: string;
 }
 
-/** The stored error, only when it belongs to the scope being viewed. */
-export const errorInScope = (
-  error: ScopedConnectorActionError | undefined,
-  scope: string,
-): ConnectorActionError | undefined => (error?.scope === scope ? error : undefined);
-
 const NETWORK_MESSAGE_PATTERN = /failed to fetch|network|load failed/i;
 
 const getConnectorActionErrorCode = (error: unknown): string | undefined => {

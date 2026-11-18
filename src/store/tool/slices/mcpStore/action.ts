@@ -1,28 +1,12 @@
 import { type PluginItem } from '@lobehub/market-sdk';
-import { type ToolManifest } from '@lobot/types';
-import debug from 'debug';
 
 import { createReplicaSlice, type ReplicaLens, type ReplicaPageResult } from '@/libs/replica';
 import { discoverService } from '@/services/discover';
 import { type StoreSetter } from '@/store/types';
-import { setNamespace } from '@/utils/storeDebug';
 
 import { type ToolStore } from '../../store';
 import { type MCPPluginListData } from './initialState';
 import { type MCPPluginListParams, mcpPluginListResource } from './projection';
-
-const log = debug('lobe-mcp:store:action');
-
-const n = setNamespace('mcpStore');
-
-// Test connection result type
-interface TestMcpConnectionResult {
-  error?: string;
-  /** STDIO process output logs for debugging */
-  errorLog?: string;
-  manifest?: ToolManifest;
-  success: boolean;
-}
 
 /**
  * The marketplace list keeps a dedicated `mcpPluginList` field as the replica

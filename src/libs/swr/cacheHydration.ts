@@ -1,14 +1,3 @@
-/**
- * Tracks which identity scopes have finished hydrating the IndexedDB SWR tier.
- */
-interface CacheHydrationBlockState {
-  isAuthLoaded: boolean;
-  ready: boolean;
-  released: boolean;
-  scope: string;
-  timedOutScope: string | null;
-}
-
 const readyScopes = new Set<string>();
 const listeners = new Set<() => void>();
 
@@ -20,18 +9,6 @@ const markPending = (scope: string): void => {
   if (!readyScopes.delete(scope)) return;
 
   emit();
-};
-
-export const isCacheHydrationBlocked = ({
-  isAuthLoaded,
-  ready,
-  released,
-  scope,
-  timedOutScope,
-}: CacheHydrationBlockState) => {
-  if (!released) return true;
-
-  return !(isAuthLoaded && ready) && timedOutScope !== scope;
 };
 
 export const cacheHydration = {

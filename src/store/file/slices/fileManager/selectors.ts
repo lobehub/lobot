@@ -1,8 +1,6 @@
 import { type FilesStoreState } from '@/store/file/initialState';
 import { type FileListItem } from '@/types/files';
 
-const uploadStatusArray = new Set(['uploading', 'pending', 'processing']);
-
 const dockFileList = (s: FilesStoreState) => s.dockUploadFileList;
 const getFileById = (id?: string | null) => (s: FilesStoreState) => {
   if (!id) return;

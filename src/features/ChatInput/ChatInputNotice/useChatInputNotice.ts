@@ -19,6 +19,3 @@ export const useChatInputNotices = (): ChatInputNotice[] => {
 
   return [{ key: isGroupContext ? 'input.viewOnlyGroup' : 'input.viewOnlyAgent', type: 'warning' }];
 };
-
-/** Returns the highest-priority persistent notice, or undefined when none applies. */
-export const useChatInputNotice = (): ChatInputNotice | undefined => useChatInputNotices()[0];

@@ -11,9 +11,6 @@ export interface FolderCrumb {
 /** The knowledge-item list is not partitioned: one entry per scope. */
 export const FILE_LIST_KEY = 'all';
 
-/** Page size when the caller does not name one. */
-export const DEFAULT_FILE_LIST_PAGE_SIZE = 50;
-
 /**
  * Params of one knowledge-item list page: the server-side filters plus the page
  * size. The window start (`offset`) is NOT here — it is the replica's paging

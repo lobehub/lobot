@@ -107,21 +107,6 @@ const MODEL_DETAIL_PANEL_EXPANDED_KEYS = [
 
 export type ModelDetailPanelExpandedKey = (typeof MODEL_DETAIL_PANEL_EXPANDED_KEYS)[number];
 
-/**
- * Expandable sections of the ModelDetailPanel Accordion, all expanded by default.
- *
- * Persistence stores the COLLAPSED keys (`modelDetailPanelCollapsedKeys`) instead of the
- * expanded ones: an expanded-keys array persisted before a section shipped would keep that
- * section collapsed forever (this happened to `rating`), while a collapsed-keys array lets
- * newly added sections default to expanded automatically.
- */
-export const MODEL_DETAIL_PANEL_EXPANDABLE_KEYS = [
-  'rating',
-  'abilities',
-  'pricing',
-  'config',
-] as const satisfies readonly ModelDetailPanelExpandedKey[];
-
 type TaskViewMode = 'kanban' | 'list';
 
 /** How topics inside one byProject sidebar group are sectioned. */
@@ -149,13 +134,6 @@ export interface DocsPageSectionView {
   /** `artifact` keeps HTML pages only, `page` keeps rich-text pages only. */
   type: 'all' | 'artifact' | 'page';
 }
-
-export const DEFAULT_DOCS_PAGE_SECTION_VIEW: DocsPageSectionView = {
-  groupBy: 'none',
-  pageSize: 20,
-  sortBy: 'updatedAt',
-  type: 'all',
-};
 
 /** How the Contacts list is ordered: by name, or most recently updated first. */
 export type ContactListSortBy = 'title' | 'updatedAt';

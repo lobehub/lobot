@@ -11,12 +11,6 @@ interface TabRestore {
 
 const pendingRestores = new Map<string, TabRestore>();
 
-// Undoing a navigation on a tab that is still on screen would flash the old page
-// before the replacement tab paints, so the restore waits until TabHost hides it.
-export const restoreTabWhenHidden = (tabId: string, restore: TabRestore): void => {
-  pendingRestores.set(tabId, restore);
-};
-
 export const flushHiddenTabRestores = (displayedTabIds: readonly string[]): void => {
   for (const [tabId, { from, to }] of pendingRestores) {
     if (displayedTabIds.includes(tabId)) continue;

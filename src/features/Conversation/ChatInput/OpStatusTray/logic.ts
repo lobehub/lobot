@@ -23,11 +23,6 @@ const hashString = (input: string): number => {
   return hash;
 };
 
-export const pickStableStatusPhrase = (phrases: string[], seed: string): string | undefined => {
-  if (phrases.length === 0) return undefined;
-  return phrases[hashString(seed) % phrases.length];
-};
-
 /**
  * Cycle through phrases over time so the status text reads like a carousel.
  * `step` advances once per rotation tick; the seed keeps the starting phrase

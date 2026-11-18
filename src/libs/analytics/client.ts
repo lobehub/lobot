@@ -77,8 +77,6 @@ export const analyticsClient = {
   },
 };
 
-export const useAnalytics = () => ({ analytics: analyticsClient });
-
 export const __testing = {
   reset: () => {
     manager = null;

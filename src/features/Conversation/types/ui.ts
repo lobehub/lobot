@@ -1,11 +1,4 @@
-import { type LLMRoleType, type UIChatMessage } from '@lobot/types';
 import { type ActionIconGroupItemType } from '@lobehub/ui';
-import { type ChatItemProps } from '@lobehub/ui/chat';
-import { type FC } from 'react';
-
-type RenderRole = LLMRoleType | 'default' | 'history' | string;
-
-type RenderItem = FC<{ key: string } & UIChatMessage & ListItemProps>;
 
 /**
  * Action item with click handler
@@ -63,18 +56,4 @@ export interface ActionsBarConfig {
    * Actions configuration for user messages
    */
   user?: MessageActionsConfig;
-}
-
-interface ListItemProps {
-  groupNav?: ChatItemProps['avatarAddon'];
-
-  renderItems?: {
-    [role: RenderRole]: RenderItem;
-  };
-
-  /**
-   * @description Whether to show the chat item title
-   * @default false
-   */
-  showTitle?: boolean;
 }

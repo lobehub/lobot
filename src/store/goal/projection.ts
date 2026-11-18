@@ -64,15 +64,6 @@ export const goalListScopeId = ({
     ? `${PROJECT_SCOPE_PREFIX}${projectId}`
     : (agentId ?? globalGoalListScopeId(globalScope!));
 
-/** Rebuild the list params of one scope id (the inverse of `goalListScopeId`). */
-export const goalListScopeParams = (scopeId: string, filter: GoalListFilter): GoalListParams => {
-  if (scopeId.startsWith(PROJECT_SCOPE_PREFIX))
-    return { filter, projectId: scopeId.slice(PROJECT_SCOPE_PREFIX.length) };
-  if (scopeId.startsWith(GLOBAL_SCOPE_PREFIX))
-    return { filter, globalScope: scopeId.slice(GLOBAL_SCOPE_PREFIX.length) };
-  return { agentId: scopeId, filter };
-};
-
 /**
  * Entry key of one tab's list. `all` keys the scope itself; a narrow tab keys a
  * sibling entry so switching tabs never resets the page-level window.
@@ -81,15 +72,6 @@ export const goalListKey = (params: GoalListParams): string => {
   const scopeId = goalListScopeId(params);
   return params.filter === 'all' ? scopeId : `${scopeId}:goals-page:${params.filter}`;
 };
-
-/** Every tab of one scope, for a refresh that has to cover them all. */
-export const GOAL_LIST_FILTERS: GoalListFilter[] = [
-  'all',
-  'review',
-  'running',
-  'achieved',
-  'archived',
-];
 
 /** One scope's goal list, one entry per tab (`goalListByAgentId`). */
 export const goalListResource = defineReplica<GoalListParams, GoalListValue, GoalListResponse>({

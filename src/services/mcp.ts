@@ -8,18 +8,6 @@ import { serverConfigSelectors } from '@/store/serverConfig/selectors';
 import { getServerConfigStoreState } from '@/store/serverConfig/store';
 import { ensureElectronIpc } from '@/utils/electron/ipc';
 
-/** A tool a local MCP server lists, as the desktop main process reports it. */
-export interface LocalMcpTool {
-  description?: string;
-  inputSchema?: Record<string, unknown>;
-  name: string;
-  /** The tool's MCP Apps `_meta.ui.visibility`, when it declares one. */
-  visibility?: string[];
-}
-
-const VIEW_SERVER_MOVED = 'This view came from another server than the tool reaches now';
-const VIEW_SITE_MISMATCH = "This view's server runs elsewhere than this call would";
-
 /** The user's `mcp_apps` flag: whether sessions on this machine announce MCP Apps. */
 const isMcpAppsOn = () => {
   const state = getServerConfigStoreState();

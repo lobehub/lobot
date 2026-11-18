@@ -27,8 +27,6 @@ export const localDatabase = {
   batch: (operations: LocalDatabaseBatchOperation[]): Promise<void> =>
     activeAdapter.batch(operations),
   delete: (collection: string, key: string): Promise<void> => activeAdapter.delete(collection, key),
-  deleteByPrefix: (collection: string, prefix: string): Promise<void> =>
-    activeAdapter.deleteByPrefix(collection, prefix),
   entriesByPrefix: <T>(collection: string, prefix: string) =>
     activeAdapter.entriesByPrefix<T>(collection, prefix),
   get: <T>(collection: string, key: string): Promise<T | undefined> =>

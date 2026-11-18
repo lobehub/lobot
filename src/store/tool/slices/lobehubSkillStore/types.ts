@@ -56,31 +56,3 @@ export interface LobehubSkillServer {
   /** Tool list (available after connection) */
   tools?: LobehubSkillTool[];
 }
-
-/**
- * Parameters for calling LobeHub Skill tool
- */
-export interface CallLobehubSkillToolParams {
-  /** Tool arguments */
-  args?: Record<string, unknown>;
-  /** Provider ID (e.g., 'linear') */
-  provider: string;
-  /** Tool name */
-  toolName: string;
-  /** Topic ID from message context (not global active state) */
-  topicId?: string;
-}
-
-/**
- * Result of calling LobeHub Skill tool
- */
-export interface CallLobehubSkillToolResult {
-  /** Return data */
-  data?: any;
-  /** Error message */
-  error?: string;
-  /** Error code */
-  errorCode?: string;
-  /** Whether successful */
-  success: boolean;
-}

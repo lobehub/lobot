@@ -9,18 +9,7 @@ interface SPARuntimeInstrumentation {
   rootOptions?: RootOptions;
 }
 
-let runtimeInstrumentation: SPARuntimeInstrumentation = {};
-
-export const configureSPARuntimeInstrumentation = (instrumentation: SPARuntimeInstrumentation) => {
-  runtimeInstrumentation = {
-    ...runtimeInstrumentation,
-    ...instrumentation,
-    rootOptions: {
-      ...runtimeInstrumentation.rootOptions,
-      ...instrumentation.rootOptions,
-    },
-  };
-};
+const runtimeInstrumentation: SPARuntimeInstrumentation = {};
 
 export const createSPABrowserRouter = (...args: Parameters<BrowserRouterFactory>) =>
   (runtimeInstrumentation.createBrowserRouter ?? createBrowserRouter)(...args);

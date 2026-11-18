@@ -1,5 +1,5 @@
 import type { ToolStore } from '../../store';
-import type { ConnectorTool, ConnectorWithTools } from './types';
+import type { ConnectorWithTools } from './types';
 
 // By-id lookups span both pools: base connectors (`s.connectors`) and the
 // agent-bound aggregate (`s.agentBoundConnectors`). The unified settings page
@@ -24,13 +24,6 @@ const connectorByIdentifier =
 /** User-added custom connectors (sourceType 'custom'), e.g. OAuth MCP servers. */
 const customConnectors = (s: ToolStore): ConnectorWithTools[] =>
   (s.connectors ?? []).filter((c) => c.sourceType === 'custom');
-
-interface GroupedTools {
-  createTools: ConnectorTool[];
-  deleteTools: ConnectorTool[];
-  readTools: ConnectorTool[];
-  updateTools: ConnectorTool[];
-}
 
 /**
  * The connector a conversation of `agentId` resolves `identifier` to, mirroring
@@ -62,15 +55,6 @@ const connectorByIdentifierForAgent =
       )
     );
   };
-
-/**
- * The badge kind of an agent tool, derived from its scope + whether a same-named
- * user connector exists:
- * - `agentOnly` — agent-owned, no user connector of the same identifier;
- * - `copy` — agent-owned, and the user also has one of the same identifier;
- * - `linked` — a user-owned row this agent has mounted (referenced + locked).
- */
-type AgentToolBadge = 'agentOnly' | 'copy' | 'linked';
 
 export const connectorSelectors = {
   connectorById,

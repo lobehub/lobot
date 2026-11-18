@@ -50,8 +50,3 @@ export const broadcastCacheScope = (scope: string): void => {
   // simply skipped, which is what the unsubscribe contract promises.
   for (const listener of listeners) listener(scope);
 };
-
-/** Forget the last broadcast value (tests: keeps cases independent). */
-export const resetCacheScopeBroadcast = (): void => {
-  lastBroadcast = undefined;
-};

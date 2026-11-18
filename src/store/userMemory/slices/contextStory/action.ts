@@ -1,9 +1,6 @@
 import { type StoreSetter } from '@/store/types';
-import { setNamespace } from '@/utils/storeDebug';
 
 import { type UserMemoryStore } from '../../store';
-
-const n = setNamespace('userMemory/contextStory');
 
 type Setter = StoreSetter<UserMemoryStore>;
 export const createContextStorySlice = (set: Setter, get: () => UserMemoryStore, _api?: unknown) =>

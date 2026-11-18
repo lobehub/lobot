@@ -1,6 +1,4 @@
-import { type TaskListFilter } from '@lobot/types';
-
-import { createReplicaSlice, recordLens, type ReplicaSyncResult } from '@/libs/replica';
+import { createReplicaSlice, recordLens } from '@/libs/replica';
 import { taskService } from '@/services/task';
 import type { StoreSetter } from '@/store/types';
 
@@ -52,60 +50,7 @@ const filterToServerVisibility = (
  * `total` so the list can say it is showing a subset.
  */
 export const COMPLETE_TASK_LIST_PAGE_SIZE = 500;
-
-/** Page size of the Tasks page's paginated collections (scheduled, "My tasks"). */
-export const TASK_COLLECTION_PAGE_SIZE = 50;
-
-export interface ScheduledTaskListOptions {
-  agentId?: string;
-  /** The Tasks page filter; Home's roll-up sends none. */
-  filter?: TaskListFilter;
-  limit?: number;
-  offset?: number;
-  projectId?: string;
-}
 export const COMPLETE_TASK_LIST_MAX_ITEMS = 1000;
-
-/**
- * A paginated collection (scheduled roll-up, "My tasks"): the task-list sync
- * plus the page in the `{ data, total }` shape of the list endpoint, undefined
- * until the entry is in the store (persisted or fetched) and while disabled.
- */
-export interface TaskCollectionPageResult extends TaskCollectionSyncResult {
-  data?: { data: TaskListValue['items']; total: number };
-}
-
-/** Sync result of a task list / board fetch: replica flags plus the SWR-era aliases. */
-export interface TaskCollectionSyncResult extends ReplicaSyncResult {
-  /** A request is in flight and there is nothing to show for this query yet. */
-  isLoading: boolean;
-  /** Alias of `revalidate`. */
-  mutate: () => Promise<unknown>;
-  /** Read the collection with `taskListSelectors.*(queryKey)`; undefined while disabled. */
-  queryKey?: string;
-}
-
-/** What a batch overlay needs to know about the collection it patches. */
-export interface CollectionQueryShape {
-  /** The collection is one agent's tasks (assignee filter). */
-  agentId?: string;
-  /** The collection lists archived rows ("Show archived"); undefined when unknown. */
-  includeArchived?: boolean;
-  /** "My tasks" narrowing. */
-  scope?: 'assigned' | 'created';
-}
-
-/** A batch overlay's patch of one task; `undefined` takes the row out of the collection. */
-export type CollectionTasksPatch = (
-  task: CollectionTask,
-  query: CollectionQueryShape,
-) => CollectionTask | undefined;
-
-export interface CollectionTasksOptimistic {
-  /** Keep the rows in `keep` (id → final patch; default: every id, original patch). */
-  commit: (keep?: ReadonlyMap<string, CollectionTasksPatch>) => void;
-  rollback: () => void;
-}
 
 type Setter = StoreSetter<TaskStore>;
 

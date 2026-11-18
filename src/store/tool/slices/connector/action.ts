@@ -100,17 +100,13 @@ export const createConnectorSlice = (set: Setter, get: () => ToolStore, _api?: u
 class ConnectorActionImpl {
   readonly #agentBoundConnectors;
   readonly #agentConnectors;
-  /** One connector lives in the base list, the aggregate and per-agent buckets. */
-  readonly #connectorRows;
   readonly #connectors;
   /** `${scope}|${list}` entries the server answered in this session (not painted from storage) */
   readonly #confirmed = new Set<string>();
   readonly #get: () => ToolStore;
-  readonly #set: Setter;
 
   constructor(set: Setter, get: () => ToolStore, _api?: unknown) {
     void _api;
-    this.#set = set;
     this.#get = get;
     this.#connectors = createReplicaSlice(connectorsResource, {
       actionPrefix: 'connectors',
@@ -142,7 +138,7 @@ class ConnectorActionImpl {
       toPersisted: withoutConnectorSecrets,
       view: agentConnectorsLens,
     });
-    this.#connectorRows = linkReplicaEntity<ConnectorWithTools>([
+    linkReplicaEntity<ConnectorWithTools>([
       this.#connectors,
       this.#agentBoundConnectors,
       this.#agentConnectors,
@@ -220,104 +216,6 @@ class ConnectorActionImpl {
       pending,
     ]);
     if (result.applied) this.#confirmed.add(`${scope}|${BASE_LIST_KEY}`);
-  };
-
-  /**
-   * Refresh the connector lists after a mutation. Always refreshes the base
-   * list; also refreshes the agent-bound aggregate when it has been loaded (the
-   * unified settings page), so a connector-detail action on an agent connector
-   * (delete / sync / permission reset) updates that list too. On base-only
-   * pages `isAgentBoundInit` is false, so this stays a single query.
-   */
-  /** Agents whose own connectors are loaded, so every write keeps them current. */
-  #loadedAgentIds = (): string[] => {
-    const init = this.#get().agentConnectorsInit;
-    return Object.keys(init).filter((agentId) => init[agentId]);
-  };
-
-  #refreshConnectorLists = async (): Promise<void> => {
-    const tasks = [this.fetchConnectors()];
-    if (this.#get().isAgentBoundInit) tasks.push(this.fetchAgentBoundConnectors());
-    // The per-agent lists decide what a view's tool call needs (approval,
-    // availability), so they must not keep a connector's old state either
-    for (const agentId of this.#loadedAgentIds()) tasks.push(this.fetchAgentConnectors(agentId));
-    await Promise.all(tasks);
-  };
-
-  /**
-   * Fetch every agent-owned connector across all agents (the flat aggregate for
-   * the unified connector-settings page). Each row is enriched
-   * server-side with the owning agent's title/avatar. Scope-correct: a workspace
-   * context only returns that workspace's agent connectors. See
-   * {@link ConnectorActionImpl.fetchConnectors} for the captured-scope rule.
-   */
-  fetchAgentBoundConnectors = async (): Promise<void> => {
-    const scope = cacheScope.get();
-    const pending = this.#agentBoundConnectors.fetch(LIST_PARAMS, { fresh: true });
-    if (!this.#get().isAgentBoundInit) await this.#agentBoundConnectors.hydrate(LIST_PARAMS, scope);
-    await pending;
-  };
-
-  /**
-   * Fetch an agent's own tools (agent-owned + mounted) for the "Agent Tools"
-   * tab. Stored keyed by agentId. See
-   * {@link ConnectorActionImpl.fetchConnectors} for the captured-scope rule.
-   */
-  fetchAgentConnectors = async (agentId: string): Promise<void> => {
-    const scope = cacheScope.get();
-    const params = { agentId };
-    const pending = this.#agentConnectors.fetch(params, { fresh: true });
-    // Awaited together, so a request that fails while storage paints is still handled
-    const [, result] = await Promise.all([
-      this.#get().agentConnectorsInit[agentId]
-        ? undefined
-        : this.#agentConnectors.hydrate(params, scope),
-      pending,
-    ]);
-    if (result.applied) this.#confirmed.add(`${scope}|${agentId}`);
-  };
-
-  /**
-   * Create (or idempotently update) a connector. `isNew` is the server's
-   * knowledge of whether the row was freshly created — callers that roll back
-   * on a later sync failure must use it instead of a client-side cache check,
-   * which is unreliable before `fetchConnectors` has completed.
-   */
-  createConnector = async (
-    params: Parameters<typeof lambdaClient.connector.create.mutate>[0],
-  ): Promise<{ id: string; isNew: boolean }> => {
-    this.#set({ connectorCreating: true }, false, 'createConnector/start');
-    try {
-      const created = await lambdaClient.connector.create.mutate(params);
-      await this.fetchConnectors();
-      return { id: created.id, isNew: created.isNew };
-    } finally {
-      this.#set({ connectorCreating: false }, false, 'createConnector/end');
-    }
-  };
-
-  /**
-   * Begin the OAuth authorization-code flow for a custom connector and return
-   * the authorize URL for the caller to open in a popup. Resolves the client
-   * on the server: pre-registration, a Client ID Metadata Document, or DCR.
-   */
-  startConnectorOAuth = async (id: string): Promise<string> => {
-    const { authorizationUrl } = await lambdaClient.connector.startOAuth.mutate({ id });
-    return authorizationUrl;
-  };
-
-  /**
-   * Delete a connector. The row leaves every list that holds it (base,
-   * agent-bound and per-agent buckets) in one fan-out — but only once the
-   * server has confirmed the delete. The row must stay mounted while the
-   * request is in flight: a detail pane bound to it would otherwise blank for
-   * every deletion (and blink back if the delete is rejected), which is why the
-   * removal is confirmed rather than optimistic.
-   */
-  deleteConnector = async (id: string): Promise<void> => {
-    await lambdaClient.connector.delete.mutate({ id });
-    this.#connectorRows.remove(id);
-    await this.#refreshConnectorLists();
   };
 }
 

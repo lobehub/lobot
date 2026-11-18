@@ -1,5 +1,4 @@
 import type { ReplicaState } from '@/libs/replica';
-import type { StoreHandle } from '@/store/utils/optimisticEngine';
 import type { SortType } from '@/types/files';
 import type { ResourceSorter } from '@/types/resource';
 
@@ -47,8 +46,6 @@ export interface TreeDataState {
   children: Record<string, TreeItem[]>;
   status: Record<string, 'idle' | 'loading' | 'revalidating' | 'error'>;
 }
-
-export type TreeStoreHandle = StoreHandle<TreeDataState>;
 
 export interface TreeState extends TreeDataState {
   /**
