@@ -11,6 +11,7 @@ import { delayed } from '@/components/Skeleton/Delayed';
 import { createStore, Provider } from '@/features/Conversation/store';
 import { directCounterpart } from '@/features/MessageList/conversations';
 import WideScreenContainer from '@/features/WideScreenContainer';
+import { useEventCallback } from '@/hooks/useEventCallback';
 import { cacheScope } from '@/libs/replica';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 import { useUserStore } from '@/store/user';
@@ -114,12 +115,16 @@ const Timeline = ({
   const feedTail = timelineTail(detail?.messages, outgoing);
   const sequence = detail?.channel.sequence;
   useChannelEvents(params);
-  const jumpToMessage = (target: JumpTarget) => {
+  // Messages are memoized, so every handler they get keeps its identity across renders.
+  const jumpToMessage = useEventCallback((target: JumpTarget) => {
     followLatest.current = false;
     setJumpTarget(target);
     if (!feedRef.current?.querySelector(`[data-message-id="${target.id}"]`))
       setBefore(target.sequence + 1);
-  };
+  });
+  const openThread = useEventCallback((id: string, toggle?: boolean) => onOpenThread?.(id, toggle));
+  const openTopic = useEventCallback((topic: ReplyTopic) => onOpenTopic?.(topic));
+  const startThread = useEventCallback((draft: ChannelThreadDraft) => onStartThread?.(draft));
   useEffect(() => {
     if (!jumpTarget) return;
     const node = feedRef.current?.querySelector(`[data-message-id="${jumpTarget.id}"]`);
@@ -158,7 +163,7 @@ const Timeline = ({
 
   const activeMembers = detail?.members.filter((member) => member.status === 'active') ?? [];
   const thread = threadId ? detail?.threads.find((entry) => entry.id === threadId) : undefined;
-  const selectReply = (message: ChannelPublicMessage) => reply.select(message);
+  const selectReply = useEventCallback((message: ChannelPublicMessage) => reply.select(message));
   const channelArchived = channel?.status === 'archived';
   const oneToOne = !!(channel?.agentId || channel?.peerUserId);
   const messages = detail ? visibleChannelMessages(detail.messages, detail.threads) : [];
@@ -312,9 +317,11 @@ const Timeline = ({
                             message={item.message}
                             threadId={threadId}
                             onJumpToMessage={jumpToMessage}
-                            onOpenThread={onOpenThread}
-                            onOpenTopic={onOpenTopic}
-                            onStartThread={channelArchived ? undefined : onStartThread}
+                            onOpenThread={onOpenThread && openThread}
+                            onOpenTopic={onOpenTopic && openTopic}
+                            onStartThread={
+                              channelArchived || !onStartThread ? undefined : startThread
+                            }
                             onReply={
                               channelArchived || thread?.status === 'archived'
                                 ? undefined

@@ -24,7 +24,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
@@ -94,7 +94,7 @@ const MessageText = ({ content, members }: { content: string; members: ChannelPu
   );
 };
 
-export const ChannelMessage = ({
+const ChannelMessageView = ({
   delivery,
   detail,
   continuation = false,
@@ -512,6 +512,12 @@ export const ChannelMessage = ({
     </div>
   );
 };
+
+/**
+ * The feed renders every message, so opening a thread or any other page-level change would
+ * redraw all of them; with stable props from the conversation, only the changed ones redraw.
+ */
+export const ChannelMessage = memo(ChannelMessageView);
 
 export function ThreadRootMessage({
   detail,

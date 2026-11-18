@@ -1,8 +1,8 @@
-import type { ChannelDetail } from '@lobot/types';
 import { ActionIcon, DropdownMenu, Flexbox, Icon, Text } from '@lobehub/ui';
+import type { ChannelDetail } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { GitBranch, Maximize2, MoreHorizontal, X } from 'lucide-react';
-import { Activity, type ComponentProps, useState } from 'react';
+import { Activity, type ComponentProps, useDeferredValue, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NavHeader from '@/features/NavHeader';
@@ -87,6 +87,9 @@ export function ThreadPanel({
   const [lastTarget, setLastTarget] = useState(target);
   const [preferredWidth, setPreferredWidth] = useState(520);
   if (target && target !== lastTarget) setLastTarget(target);
+  // The panel and its header open first; the conversation, the heavy part, mounts in a
+  // background render right after, so the click is answered without waiting for it.
+  const shownTarget = useDeferredValue(lastTarget);
   const narrow = availableWidth < THREAD_FLOAT_BREAKPOINT;
   const maxWidth = narrow ? availableWidth : availableWidth - 360;
   const width = Math.min(preferredWidth, maxWidth);
@@ -178,17 +181,17 @@ export function ThreadPanel({
             }
             {...stylex.props(styles.threadHeader)}
           />
-          {typeof lastTarget === 'string' ? (
+          {typeof shownTarget === 'string' ? (
             <ChannelConversation
               channelId={detail.channel.id}
-              key={lastTarget}
-              threadId={lastTarget}
+              key={shownTarget}
+              threadId={shownTarget}
             />
-          ) : lastTarget ? (
+          ) : shownTarget ? (
             <DraftThreadConversation
               detail={detail}
-              draft={lastTarget}
-              key={lastTarget.root.id}
+              draft={shownTarget}
+              key={shownTarget.root.id}
               onSend={onSendDraft}
             />
           ) : null}
