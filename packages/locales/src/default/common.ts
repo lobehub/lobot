@@ -458,6 +458,7 @@ export default {
   'contacts.presence.idle': 'Idle',
   'contacts.presence.idle.tip': 'Its device is connected and nothing is running — ready for work',
   'contacts.presence.offDuty': 'Off duty',
+  'contacts.presence.offDuty.backAt': 'Off duty, back at {{time}}',
   'contacts.presence.offDuty.resetsAt': 'Quota used up — back around {{time}}',
   'contacts.presence.offDuty.tip': 'Quota used up — it can work again once the quota resets',
   'contacts.presence.offline': 'Offline',

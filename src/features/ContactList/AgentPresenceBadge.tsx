@@ -107,11 +107,26 @@ export const presenceDotStyles = (status: AgentPresenceStatus) => [
   isPulsing(status) && styles.working,
 ];
 
-/** The status chip beside an Agent's role: a dot and what it is doing, explained on hover. */
+/** When an off-duty Agent is back: just the time today, with the date once it is a later day. */
+const formatBack = (resetsAt: number) => {
+  const at = new Date(resetsAt);
+  const sameDay = at.toDateString() === new Date().toDateString();
+  return at.toLocaleString(undefined, {
+    hour: '2-digit',
+    minute: '2-digit',
+    ...(sameDay ? {} : { day: 'numeric', month: 'numeric' }),
+  });
+};
+
+/** The status chip under an Agent's role: a dot and what it is doing, explained on hover. */
 export const AgentPresenceLabel = memo<{ presence: AgentPresence }>(({ presence }) => {
   const { t } = useTranslation('common');
   const tip = usePresenceTip(presence);
   const status: AgentPresenceStatus = presence.status;
+  const text =
+    status === 'offDuty' && presence.resetsAt
+      ? t('contacts.presence.offDuty.backAt', { time: formatBack(presence.resetsAt) })
+      : t(`contacts.presence.${status}`);
 
   return (
     <Tooltip title={tip}>
@@ -124,7 +139,7 @@ export const AgentPresenceLabel = memo<{ presence: AgentPresence }>(({ presence 
             isPulsing(status) && styles.working,
           )}
         />
-        {t(`contacts.presence.${status}`)}
+        {text}
       </span>
     </Tooltip>
   );

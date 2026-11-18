@@ -41,6 +41,12 @@ export const styles = stylex.create({
     position: 'relative',
     display: 'inline-flex',
   },
+  // The presence chip's line under the role, kept at the chip's height while it is empty.
+  presenceRow: {
+    display: 'flex',
+    justifyContent: 'center',
+    minHeight: '22px',
+  },
   // Tiles keep a button's width rather than stretching, so a lone "Message" is not a bar.
   actions: {
     display: 'grid',

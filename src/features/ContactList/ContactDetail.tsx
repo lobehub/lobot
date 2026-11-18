@@ -115,15 +115,16 @@ const ContactCard = memo<Extract<ContactCardState, { status: 'ready' }>>(
           >
             {title}
           </Text>
-          {(role || presenceLabel) && (
-            <Flexbox horizontal align={'center'} gap={6} justify={'center'} wrap={'wrap'}>
-              {role && (
-                <span className={cardStyles.role} title={role}>
-                  {role}
-                </span>
-              )}
+          {role && (
+            <span className={cardStyles.role} title={role}>
+              {role}
+            </span>
+          )}
+          {agentId && (
+            // Holds the chip's height even when there is none, so the actions do not jump.
+            <div {...stylex.props(styles.presenceRow)}>
               {presenceLabel && <AgentPresenceLabel presence={presenceLabel} />}
-            </Flexbox>
+            </div>
           )}
           <div {...stylex.props(styles.actions)}>
             <WorkspaceLink
