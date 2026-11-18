@@ -96,6 +96,16 @@ html.desktop[data-window-fullscreen] body {
   -webkit-app-region: no-drag;
 }
 
+/* Image preview chrome from @lobehub/ui: the close button sits 16px from the window's
+   top-right corner and the gallery counter on the same row. On Windows the native
+   minimize / maximize / close buttons (titleBarOverlay) cover that corner, so both move
+   below the title bar. Electron sets `titlebar-area-*` only on a window with an overlay,
+   so macOS, Linux and web keep the 16px. Unlayered, so it beats lobe-ui's layer. */
+.lobe-image-viewer-close,
+.lobe-image-viewer-counter {
+  inset-block-start: calc(env(titlebar-area-y, 0px) + env(titlebar-area-height, 0px) + 16px);
+}
+
 /* CLASSNAMES.ContextTrigger / CLASSNAMES.DropdownMenuTrigger from @lobehub/ui */
 .lobe-context-trigger[data-popup-open]:not([data-no-highlight]),
 .lobe-dropdown-menu-trigger[data-popup-open]:not([data-no-highlight]) {
