@@ -50,6 +50,14 @@ describe('diffChannelActivity', () => {
     );
   });
 
+  it('stays quiet about an Agent’s acknowledgement, then announces its answer', () => {
+    const ack = channel('a', { lastMessage: { ...later(1), opening: true }, unreadCount: 1 });
+    expect(diff([channel('a')], [ack])).toEqual([]);
+    expect(diff([ack], [channel('a', { lastMessage: later(2), unreadCount: 2 })])).toEqual([
+      'a:message',
+    ]);
+  });
+
   it('announces an @mention as a mention, not a plain message', () => {
     expect(
       diff(

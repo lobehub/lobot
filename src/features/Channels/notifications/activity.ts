@@ -72,7 +72,9 @@ export const diffChannelActivity = ({
     const mentions = channel.mentionCount ?? 0;
     // A Channel new to the list (someone just added the user) counts from zero.
     const mentioned = mentions > (before?.mentions ?? 0);
+    // An Agent's acknowledgement is not news: announced, it reads as the work being done.
     const newMessage =
+      !channel.lastMessage?.opening &&
       unread > (before?.unread ?? 0) &&
       time(channel.lastMessage?.createdAt ?? channel.updatedAt) > (before?.lastAt ?? 0);
 
