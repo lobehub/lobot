@@ -11,7 +11,6 @@ import { useWatchThemeUpdate } from '../system/useWatchThemeUpdate';
 import { UpdateNotification } from '../updater/UpdateNotification';
 import { getTitleBarLayoutConfig } from './layout';
 import NavigationBar from './NavigationBar';
-import ScopeTitle from './ScopeTitle';
 import { useMenuPageCommands } from './useMenuPageCommands';
 import WinControl from './WinControl';
 
@@ -34,7 +33,6 @@ const TitleBar = memo(() => {
       width={'100%'}
     >
       <NavigationBar />
-      <ScopeTitle />
 
       <Flexbox horizontal align={'center'} gap={4}>
         <Flexbox horizontal className={electronStylish.nodrag} gap={8}>

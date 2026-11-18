@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   leftPanelVisible: false,
   leftPanelWidth: 0,
   navPanelResizing: false,
+  platform: 'Linux',
   navigate: vi.fn(),
   openAllAgentsDrawer: vi.fn(),
   railShown: false,
@@ -53,10 +54,9 @@ vi.mock('@/store/electron', () => ({
 }));
 vi.mock('@/styles/electron', () => ({ electronStylish: { nodrag: 'nodrag' } }));
 vi.mock('@/utils/platform', () => ({
-  getPlatform: () => 'Linux',
+  getPlatform: () => mocks.platform,
   isMacOS: () => mocks.isMac,
 }));
-vi.mock('./WindowsAppMenu', () => ({ default: () => null }));
 vi.mock('../navigation/useNavigationHistory', () => ({
   useNavigationHistory: () => ({
     canGoBack: false,
@@ -76,6 +76,7 @@ describe('NavigationBar tray broadcasts', () => {
     mocks.leftPanelVisible = false;
     mocks.leftPanelWidth = 0;
     mocks.navPanelResizing = false;
+    mocks.platform = 'Linux';
     mocks.railShown = false;
     vi.clearAllMocks();
   });
@@ -95,6 +96,15 @@ describe('NavigationBar tray broadcasts', () => {
 
     expect(mocks.navigate).toHaveBeenCalledWith('/acme', { escape: true });
     expect(mocks.openAllAgentsDrawer).toHaveBeenCalled();
+  });
+
+  it('shows no app menu button on Windows', async () => {
+    mocks.platform = 'Windows';
+    vi.resetModules();
+    const { default: WindowsNavigationBar } = await import('./NavigationBar');
+    render(<WindowsNavigationBar />);
+
+    expect(screen.queryByRole('button', { name: 'navigation.appMenu' })).not.toBeInTheDocument();
   });
 
   it('keeps titlebar navigation width animatable when the sidebar is collapsed', () => {
