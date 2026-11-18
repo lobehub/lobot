@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { quotaExhaustion, resolveAgentPresence } from './agentPresence';
+import { hasPresenceLabel, quotaExhaustion, resolveAgentPresence } from './agentPresence';
 
 const now = 1_000_000;
 const fresh = { enabled: true, sessionUtil: 20, weeklyUtil: 40 };
@@ -86,5 +86,51 @@ describe('resolveAgentPresence', () => {
         .status,
     ).toBe('idle');
     expect(resolveAgentPresence({ loads: [fresh], now, running: false }).status).toBe('online');
+  });
+});
+
+describe('a managed cloud device that is not connected', () => {
+  const base = { deviceId: 'cloud-1', loads: [], now, running: false };
+
+  // Regression: an Agent on a sleeping cloud device read "Offline", as if a
+  // message would never reach it, while a message actually wakes the device.
+  it('is asleep, not offline, while its device sleeps', () => {
+    for (const managedStatus of ['sleeping', 'stopping'] as const)
+      expect(
+        resolveAgentPresence({ ...base, device: { managedStatus, online: false } }).status,
+      ).toBe('sleeping');
+  });
+
+  it('is waking while its device starts, even with a run waiting on it', () => {
+    expect(
+      resolveAgentPresence({
+        ...base,
+        device: { managedStatus: 'starting', online: false },
+        running: true,
+      }).status,
+    ).toBe('waking');
+  });
+
+  it('is offline when its device failed or is being deleted', () => {
+    for (const managedStatus of ['failed', 'deleting', null] as const)
+      expect(
+        resolveAgentPresence({ ...base, device: { managedStatus, online: false } }).status,
+      ).toBe('offline');
+  });
+
+  it('follows the connection once the device is up again', () => {
+    expect(
+      resolveAgentPresence({ ...base, device: { managedStatus: null, online: true } }).status,
+    ).toBe('idle');
+  });
+});
+
+describe('hasPresenceLabel', () => {
+  // The card shows no chip for "ready" states: it popped in after load and shifted the layout.
+  it('leaves the chip out for ready states and keeps it for the rest', () => {
+    expect(hasPresenceLabel('online')).toBe(false);
+    expect(hasPresenceLabel('idle')).toBe(false);
+    for (const status of ['offline', 'sleeping', 'waking', 'working', 'offDuty'] as const)
+      expect(hasPresenceLabel(status)).toBe(true);
   });
 });

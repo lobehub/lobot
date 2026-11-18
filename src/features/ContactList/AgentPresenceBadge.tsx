@@ -46,6 +46,16 @@ const styles = stylex.create({
     borderRadius: '50%',
     backgroundColor: 'currentcolor',
   },
+  // Asleep: a ring, not a filled dot. It can still take work, so it reads apart
+  // from both a grey "offline" and the solid blue of "working".
+  hollow: {
+    backgroundColor: 'transparent',
+    boxShadow: 'inset 0 0 0 1.5px currentcolor',
+  },
+  avatarDotHollow: {
+    backgroundColor: cssVar.colorBgContainer,
+    boxShadow: 'inset 0 0 0 2.5px currentcolor',
+  },
   working: {
     animationName: pulse,
     animationDuration: '1.6s',
@@ -58,8 +68,13 @@ const tones = stylex.create({
   offDuty: { color: cssVar.colorError },
   offline: { color: cssVar.colorTextQuaternary },
   online: { color: cssVar.colorSuccess },
+  sleeping: { color: cssVar.colorInfo },
+  waking: { color: cssVar.colorWarning },
   working: { color: cssVar.colorInfo },
 });
+
+/** Statuses whose dot breathes: something is under way. */
+const isPulsing = (status: AgentPresenceStatus) => status === 'working' || status === 'waking';
 
 const formatReset = (resetsAt: number) =>
   new Date(resetsAt).toLocaleString(undefined, {
@@ -85,7 +100,14 @@ export const AgentPresenceLabel = memo<{ presence: AgentPresence }>(({ presence 
   return (
     <Tooltip title={tip}>
       <span data-status={status} {...stylex.props(styles.label, tones[status])}>
-        <span aria-hidden {...stylex.props(styles.dot, status === 'working' && styles.working)} />
+        <span
+          aria-hidden
+          {...stylex.props(
+            styles.dot,
+            status === 'sleeping' && styles.hollow,
+            isPulsing(status) && styles.working,
+          )}
+        />
         {t(`contacts.presence.${status}`)}
       </span>
     </Tooltip>
@@ -103,7 +125,12 @@ export const AgentPresenceDot = memo<{ presence: AgentPresence }>(({ presence })
     <span
       aria-label={t(`contacts.presence.${status}`)}
       role={'img'}
-      {...stylex.props(styles.avatarDot, tones[status], status === 'working' && styles.working)}
+      {...stylex.props(
+        styles.avatarDot,
+        tones[status],
+        status === 'sleeping' && styles.avatarDotHollow,
+        isPulsing(status) && styles.working,
+      )}
     />
   );
 });

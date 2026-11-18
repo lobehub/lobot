@@ -28,6 +28,7 @@ import WorkspaceLink from '@/features/Workspace/WorkspaceLink';
 import { useCopyAgentIdMenuItem } from '@/hooks/useCopyAgentIdMenuItem';
 import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
 
+import { hasPresenceLabel } from './agentPresence';
 import { AgentPresenceDot, AgentPresenceLabel } from './AgentPresenceBadge';
 import { AVATAR_SIZE, COVER_HEIGHT, MenuTile, styles, TileContent } from './cardParts';
 import { ContactInfo } from './ContactInfo';
@@ -50,6 +51,8 @@ const ContactCard = memo<Extract<ContactCardState, { status: 'ready' }>>(
     const message = useAgentConversationLink(agentId, chatUrl);
     const copyIdItem = useCopyAgentIdMenuItem(agentId);
     const presence = useAgentPresence(agentId);
+    // "Online" / "Idle" stay on the avatar dot only, so the chip row does not jump once presence loads.
+    const presenceLabel = presence && hasPresenceLabel(presence.status) ? presence : undefined;
     const moreItems = [
       // Only someone who may edit the Agent can open it to visitors; the server checks again.
       ...(agentId && canEdit
@@ -111,14 +114,14 @@ const ContactCard = memo<Extract<ContactCardState, { status: 'ready' }>>(
           >
             {title}
           </Text>
-          {(role || presence) && (
+          {(role || presenceLabel) && (
             <Flexbox horizontal align={'center'} gap={6} justify={'center'} wrap={'wrap'}>
               {role && (
                 <span className={cardStyles.role} title={role}>
                   {role}
                 </span>
               )}
-              {presence && <AgentPresenceLabel presence={presence} />}
+              {presenceLabel && <AgentPresenceLabel presence={presenceLabel} />}
             </Flexbox>
           )}
           <div {...stylex.props(styles.actions)}>

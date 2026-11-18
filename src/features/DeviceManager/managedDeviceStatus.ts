@@ -1,13 +1,13 @@
+import { cssVar } from '@lobehub/ui';
 import type { DeviceListItem } from '@lobot/types';
 import { isManagedCloudDevice } from '@lobot/types';
-import { cssVar } from '@lobehub/ui';
 
 /**
  * What a managed cloud device is doing when its connection alone does not say
  * it. An offline managed device is usually asleep, not broken, so it shows its
  * provider phase instead of a bare "Offline".
  */
-type ManagedDeviceStatus = 'deleting' | 'failed' | 'sleeping' | 'starting' | 'stopping';
+export type ManagedDeviceStatus = 'deleting' | 'failed' | 'sleeping' | 'starting' | 'stopping';
 
 type ManagedStatusInput = Pick<
   DeviceListItem,
@@ -75,7 +75,22 @@ const managedStatusColor: Record<ManagedDeviceStatus, string> = {
  * Color of a device's presence dot: its managed status color when it has one,
  * else green when online and grey when offline.
  */
-export const presenceDotColor = (managedStatus: ManagedDeviceStatus | null, online: boolean) => {
+const presenceDotColor = (managedStatus: ManagedDeviceStatus | null, online: boolean) => {
   if (managedStatus) return managedStatusColor[managedStatus];
   return online ? cssVar.colorSuccess : cssVar.colorTextQuaternary;
+};
+
+/**
+ * Paint of a device's presence dot. A sleeping device gets a ring instead of a
+ * filled dot, the same as its Agent's contact card and the device picker: it is
+ * not offline, a run wakes it.
+ */
+export const presenceDotPaint = (
+  managedStatus: ManagedDeviceStatus | null,
+  online: boolean,
+): { background?: string; boxShadow?: string } => {
+  const color = presenceDotColor(managedStatus, online);
+  return managedStatus === 'sleeping'
+    ? { boxShadow: `inset 0 0 0 1.5px ${color}` }
+    : { background: color };
 };

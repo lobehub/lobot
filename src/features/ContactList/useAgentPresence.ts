@@ -1,3 +1,4 @@
+import { getManagedDeviceStatus } from '@/features/DeviceManager/managedDeviceStatus';
 import { useClientDataSWR } from '@/libs/swr';
 import { agentQuotaService } from '@/services/agentQuota';
 import { deviceService } from '@/services/device';
@@ -73,7 +74,8 @@ export const useAgentPresence = (agentId?: string): AgentPresence | undefined =>
   }
 
   return resolveAgentPresence({
-    device,
+    // A managed cloud device that is not connected is usually asleep, not gone.
+    device: device && { managedStatus: getManagedDeviceStatus(device), online: device.online },
     deviceId,
     loads: quota.data ?? [],
     now: Date.now(),

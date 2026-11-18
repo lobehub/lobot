@@ -1,7 +1,7 @@
 'use client';
 
-import type { DeviceListItem } from '@lobot/types';
 import { createStaticStyles, cssVar, Flexbox, Icon, Text } from '@lobehub/ui';
+import type { DeviceListItem } from '@lobot/types';
 import dayjs from 'dayjs';
 import {
   CableIcon,
@@ -33,7 +33,7 @@ import { getDeviceIcon } from './getDeviceIcon';
 import {
   getManagedDeviceStatus,
   managedStatusLabelKey,
-  presenceDotColor,
+  presenceDotPaint,
 } from './managedDeviceStatus';
 
 const styles = createStaticStyles(({ css }) => ({
@@ -135,7 +135,7 @@ const DeviceHoverPanel = ({ device }: DeviceHoverPanelProps) => {
       <InfoRow icon={PowerIcon} label={t('devices.detail.status')}>
         <span
           style={{
-            background: presenceDotColor(managedStatus, online),
+            ...presenceDotPaint(managedStatus, online),
             borderRadius: '50%',
             flex: 'none',
             height: 6,
