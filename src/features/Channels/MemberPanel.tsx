@@ -12,6 +12,7 @@ import RightPanel from '@/features/RightPanel';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
 
+import { InviteMembersButton } from './InviteMembersButton';
 import { MemberList, useMemberEntries } from './MemberList';
 import { styles } from './styles';
 
@@ -152,6 +153,7 @@ export function MemberPanel({
 
   return (
     <ChannelSidePanel
+      actions={<InviteMembersButton detail={detail} />}
       availableWidth={availableWidth}
       closeLabel={t('members.hide')}
       id={id}

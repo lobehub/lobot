@@ -2,15 +2,7 @@ import { CHANNEL_URL } from '@lobechat/const';
 import { ActionIcon, Button, DropdownMenu, Flexbox, Popover, Text } from '@lobehub/ui';
 import type { ChannelDetail } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
-import {
-  Bot,
-  CircleUserRound,
-  FolderCog,
-  MoreHorizontal,
-  Settings,
-  UserPlus,
-  Users,
-} from 'lucide-react';
+import { Bot, CircleUserRound, FolderCog, MoreHorizontal, Settings, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,11 +11,9 @@ import { useCloseOnNavigate } from '@/hooks/useCloseOnNavigate';
 import { sx } from '@/styles/sx';
 
 import { openChannelAgentEnvironment } from './AgentEnvironment';
-import { useCanInviteMembers } from './channelAccess';
-import { openInviteMembers } from './CreateChannel';
 import { FailureIndicator } from './FailureIndicator';
+import { InviteMembersButton } from './InviteMembersButton';
 import { MemberList, StatusAvatar, useMemberEntries } from './MemberList';
-import { peerName } from './peerName';
 import { statusStyles, styles } from './styles';
 import { useChannelMenu } from './useChannelMenu';
 import { useOpenDirectAgent } from './useOpenDirectAgent';
@@ -38,32 +28,19 @@ const MAX_VISIBLE = 5;
 const DIRECT_MENU_KEYS = new Set(['copyId', 'unarchive']);
 
 /**
- * Members as avatars with live status dots. One click lists everyone by name, because
- * Agents often share the default avatar and a long roster would not fit the header.
+ * The Channel's own actions, beside its title: in a direct conversation the Agent's, in a group
+ * its settings.
  */
-export function MemberStatus({
-  detail,
-  memberPanel,
-  onOpenThread,
-}: {
-  detail: ChannelDetail;
-  memberPanel?: { id: string; open: boolean; onToggle: () => void };
-  onOpenThread?: (threadId: string) => void;
-}) {
+export function ChannelMenu({ detail }: { detail: ChannelDetail }) {
   const { t } = useTranslation('channel');
-  const [open, setOpen] = useState(false);
-  const popoverKey = useCloseOnNavigate(open, () => setOpen(false));
   const navigate = useWorkspaceAwareNavigate();
-  const { channel, members: allMembers = [] } = detail;
-  const canInvite = useCanInviteMembers(channel);
+  const { channel } = detail;
   const entries = useMemberEntries(detail);
   const directAgent = channel.agentId
     ? entries.find((entry) => entry.member.agentId === channel.agentId)
     : undefined;
   const openAgent = useOpenDirectAgent(channel.id, channel.agentId ?? '');
   const channelMenu = useChannelMenu();
-  const overflow = entries.length - MAX_VISIBLE;
-  const title = t('membersCount', { count: entries.length });
   const direct = !!channel.agentId;
   // A direct conversation is a chat with one Agent: no roster to show, only its actions, like an
   // IM header. Its title is the Agent's name, so it cannot be renamed here.
@@ -122,6 +99,40 @@ export function MemberStatus({
   ];
 
   return (
+    <DropdownMenu items={direct ? directMenu() : channel.peerUserId ? peerMenu() : groupMenu()}>
+      <ActionIcon
+        aria-label={t('more', { ns: 'common' })}
+        icon={MoreHorizontal}
+        size="small"
+        title={t('more', { ns: 'common' })}
+      />
+    </DropdownMenu>
+  );
+}
+
+/**
+ * Members as avatars with live status dots. One click lists everyone by name, because
+ * Agents often share the default avatar and a long roster would not fit the header.
+ */
+export function MemberStatus({
+  detail,
+  memberPanel,
+  onOpenThread,
+}: {
+  detail: ChannelDetail;
+  memberPanel?: { id: string; open: boolean; onToggle: () => void };
+  onOpenThread?: (threadId: string) => void;
+}) {
+  const { t } = useTranslation('channel');
+  const [open, setOpen] = useState(false);
+  const popoverKey = useCloseOnNavigate(open, () => setOpen(false));
+  const { channel } = detail;
+  const entries = useMemberEntries(detail);
+  const overflow = entries.length - MAX_VISIBLE;
+  const title = t('membersCount', { count: entries.length });
+  const direct = !!channel.agentId;
+
+  return (
     <Flexbox horizontal align="center" gap={4}>
       <FailureIndicator detail={detail} />
       {direct ? (
@@ -156,9 +167,12 @@ export function MemberStatus({
           trigger="click"
           content={
             <Flexbox gap={4} {...stylex.props(statusStyles.popover, statusStyles.memberList)}>
-              <Text fontSize={12} type="secondary" weight={500}>
-                {title}
-              </Text>
+              <Flexbox horizontal align="center" justify="space-between">
+                <Text fontSize={12} type="secondary" weight={500}>
+                  {title}
+                </Text>
+                <InviteMembersButton detail={detail} />
+              </Flexbox>
               <MemberList
                 detail={detail}
                 onAction={() => setOpen(false)}
@@ -189,42 +203,8 @@ export function MemberStatus({
           </Button>
         </Popover>
       )}
-      {canInvite && (
-        <ActionIcon
-          aria-label={t('invite.title')}
-          icon={UserPlus}
-          size="small"
-          title={t('invite.title')}
-          onClick={() =>
-            openInviteMembers(
-              {
-                agentIds: allMembers.flatMap((member) =>
-                  member.status === 'active' && member.agentId ? [member.agentId] : [],
-                ),
-                directAgentName: channel.agentId ? (directAgent?.name ?? '') : undefined,
-                id: channel.id,
-                peer: channel.peerUserId
-                  ? { name: peerName(channel), userId: channel.peerUserId }
-                  : undefined,
-                peopleCount: allMembers.filter(
-                  (member) => member.status === 'active' && member.actorType === 'user',
-                ).length,
-                workspaceId: channel.workspaceId,
-              },
-              // Inviting from a one-to-one conversation opens the group it starts.
-              (id) => navigate(CHANNEL_URL(id)),
-            )
-          }
-        />
-      )}
-      <DropdownMenu items={direct ? directMenu() : channel.peerUserId ? peerMenu() : groupMenu()}>
-        <ActionIcon
-          aria-label={t('more', { ns: 'common' })}
-          icon={MoreHorizontal}
-          size="small"
-          title={t('more', { ns: 'common' })}
-        />
-      </DropdownMenu>
+      {/* A direct conversation has no roster, so starting a group with its Agent stays here. */}
+      {direct && <InviteMembersButton detail={detail} />}
     </Flexbox>
   );
 }

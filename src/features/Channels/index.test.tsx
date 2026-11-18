@@ -55,7 +55,7 @@ vi.mock('./ReplyTopicPanel', () => ({ ReplyTopicPanel: () => null }));
 vi.mock('./ThreadPanel', () => ({ THREAD_FLOAT_BREAKPOINT: 760, ThreadPanel: () => null }));
 vi.mock('./MemberPanel', () => ({ MEMBER_FLOAT_BREAKPOINT: 640, MemberPanel: () => null }));
 vi.mock('./AgentProfilePanel', () => ({ AgentProfilePanel: () => null }));
-vi.mock('./MemberStatus', () => ({ MemberStatus: () => null }));
+vi.mock('./MemberStatus', () => ({ ChannelMenu: () => null, MemberStatus: () => null }));
 vi.mock('@/features/EntityLink/host', () => ({
   EntityLinkHostProvider: ({ children }: { children: unknown }) => children,
 }));
