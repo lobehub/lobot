@@ -35,7 +35,7 @@ const TitleBar = memo(() => {
       <NavigationBar />
 
       <Flexbox horizontal align={'center'} gap={4}>
-        <Flexbox horizontal className={electronStylish.nodrag} gap={8}>
+        <Flexbox horizontal align={'center'} className={electronStylish.nodrag} gap={8}>
           <UpdateNotification />
           <DeviceGateway />
           <Connection />

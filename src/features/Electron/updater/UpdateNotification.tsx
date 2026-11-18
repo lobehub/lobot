@@ -55,27 +55,24 @@ const styles = createStaticStyles(({ css, cssVar }) => ({
     }
   `,
 
+  // Sits inline in the title bar's right cluster so it never covers page content
   installLaterToast: css`
-    position: fixed;
-    z-index: 1000;
-    inset-block-end: 20px;
-    inset-inline-start: 16px;
-
     display: flex;
-    gap: 8px;
+    flex-shrink: 0;
+    gap: 4px;
     align-items: center;
 
-    max-inline-size: calc(100vw - 32px);
-    padding-block: 8px;
-    padding-inline: 12px 8px;
+    block-size: 28px;
+    padding-inline: 10px 4px;
+    border: 1px solid ${cssVar.colorBorderSecondary};
     border-radius: ${cssVar.borderRadiusLG};
 
     font-size: ${cssVar.fontSizeSM};
-    line-height: 1.25;
+    line-height: 1;
     color: ${cssVar.colorText};
+    white-space: nowrap;
 
-    background: ${cssVar.colorBgElevated};
-    box-shadow: ${cssVar.boxShadow};
+    background: ${cssVar.colorFillQuaternary};
   `,
 
   releaseNote: css`
