@@ -1,7 +1,6 @@
 import { type MouseEventHandler } from 'react';
 import { useCallback } from 'react';
 
-import { useCanEditCodexMessage } from '@/hooks/useCanEditCodexMessage';
 import { usePermission } from '@/hooks/usePermission';
 import { useAgentStore } from '@/store/agent';
 import { agentByIdSelectors } from '@/store/agent/selectors';
@@ -35,8 +34,7 @@ export const useDoubleClickEdit = ({
 }: UseDoubleClickEditProps) => {
   const { allowed: canEdit } = usePermission('edit_own_content');
   const toggleMessageEditing = useConversationStore((s) => s.toggleMessageEditing);
-  const [agentId, topicId] = useConversationStore((s) => [s.context.agentId, s.context.topicId]);
-  const canEditCodex = useCanEditCodexMessage(agentId ?? undefined, topicId);
+  const agentId = useConversationStore((s) => s.context.agentId);
   const isCodex = useAgentStore((s) =>
     agentId
       ? agentByIdSelectors.getAgencyConfigById(agentId)(s)?.heterogeneousProvider?.type === 'codex'
@@ -47,7 +45,8 @@ export const useDoubleClickEdit = ({
     (e) => {
       if (
         !canEdit ||
-        (role === 'user' && isCodex && !canEditCodex) ||
+        // Codex cannot rewind its native thread, so its user messages are not editable.
+        (role === 'user' && isCodex) ||
         disableEditing ||
         error ||
         id === 'default' ||
@@ -58,6 +57,6 @@ export const useDoubleClickEdit = ({
 
       toggleMessageEditing(id, true);
     },
-    [role, canEdit, canEditCodex, isCodex, disableEditing, error, toggleMessageEditing, id],
+    [role, canEdit, isCodex, disableEditing, error, toggleMessageEditing, id],
   );
 };

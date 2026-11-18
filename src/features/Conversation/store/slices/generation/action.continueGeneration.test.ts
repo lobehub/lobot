@@ -5,7 +5,7 @@ import { type ConversationContext, type ConversationHooks } from '../../../types
 import { createStore } from '../../index';
 
 vi.mock('@/services/topic', () => ({
-  topicService: { branchTopicAtMessage: vi.fn(), cancelRateLimitContinuation: vi.fn() },
+  topicService: { cancelRateLimitContinuation: vi.fn() },
 }));
 
 // Mock useChatStore

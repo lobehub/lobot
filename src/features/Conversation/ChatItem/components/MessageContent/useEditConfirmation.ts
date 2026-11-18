@@ -1,5 +1,5 @@
 import { toast } from '@lobehub/ui';
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -7,8 +7,6 @@ import {
   messageStateSelectors,
   useConversationStore,
 } from '@/features/Conversation/store';
-import type { CodexMessageEdit } from '@/features/Conversation/store/slices/generation/action';
-import { useCanEditCodexMessage } from '@/hooks/useCanEditCodexMessage';
 import { useAgentStore } from '@/store/agent';
 import { agentByIdSelectors } from '@/store/agent/selectors';
 
@@ -36,13 +34,14 @@ interface EditConfirmationOptions {
  * - The owning conversation provider and current content permissions.
  *
  * Returns:
- * - A submit callback, whether the editor should offer Send, and a notice for Codex resends.
+ * - A submit callback and whether the editor should offer Send. A Codex user message cannot be
+ *   edited: Codex cannot rewind its native thread.
  *
  * Call stack:
  * MessageContent
  *   -> useEditConfirmation
- *     -> regenerateUserMessage (Codex edit)
- *     -> updateMessageContent (ordinary edit)
+ *     -> updateMessageContent
+ *     -> regenerateUserMessage (last user message)
  */
 export const useEditConfirmation = ({
   canCreate,
@@ -56,8 +55,7 @@ export const useEditConfirmation = ({
     s.updateMessageContent,
     s.regenerateUserMessage,
   ]);
-  const [agentId, topicId] = useConversationStore((s) => [s.context.agentId, s.context.topicId]);
-  const canEditCodex = useCanEditCodexMessage(agentId ?? undefined, topicId);
+  const agentId = useConversationStore((s) => s.context.agentId);
   const isCodex = useAgentStore((s) =>
     agentId
       ? agentByIdSelectors.getAgencyConfigById(agentId)(s)?.heterogeneousProvider?.type === 'codex'
@@ -74,47 +72,18 @@ export const useEditConfirmation = ({
   // under an optimistic tmp_* op — would flip to Send and kick off a duplicate
   // regenerate for the same prompt.
   const shouldSendOnConfirm = useConversationStore((s) => {
-    if (!editing || !isUserMessage || (isCodex && !canEditCodex)) return false;
-    if (!isCodex && s.displayMessages.findLast((m) => m.role === 'user')?.id !== id) return false;
+    if (!editing || !isUserMessage || isCodex) return false;
+    if (s.displayMessages.findLast((m) => m.role === 'user')?.id !== id) return false;
     return !messageStateSelectors.isInputLoading(s);
   });
 
-  const submitting = useRef(false);
-  // Keep the unsent destination with this editor so a failed preparation can
-  // retry without creating another topic. Closing the editor ends that attempt.
-  const pendingEdit = useRef<CodexMessageEdit | undefined>(undefined);
-  if (!editing) pendingEdit.current = undefined;
   const onConfirm = useCallback(
     async (content: string, editorData?: Record<string, unknown>) => {
       if (!canEdit) return;
       if (isCodex && isUserMessage) {
-        if (!canEditCodex || !canCreate || !shouldSendOnConfirm) {
-          const error = new Error(t('messageAction.codexEdit.cannotSubmit'));
-          toast.error(error.message);
-          throw error;
-        }
-        if (submitting.current) {
-          const error = new Error(t('messageAction.codexEdit.alreadySubmitting'));
-          toast.error(error.message);
-          throw error;
-        }
-        submitting.current = true;
-        try {
-          const edit = pendingEdit.current ?? { content };
-          Object.assign(edit, {
-            content,
-            editorData,
-            onAccepted: () => onEditingChange(false),
-          });
-          pendingEdit.current = edit;
-          await regenerateUserMessage(id, edit);
-        } catch (error) {
-          toast.error(error instanceof Error ? error.message : String(error));
-          throw error;
-        } finally {
-          submitting.current = false;
-        }
-        return;
+        const error = new Error(t('messageAction.codexEdit.cannotSubmit'));
+        toast.error(error.message);
+        throw error;
       }
       onEditingChange(false);
       // updateMessageContent does an optimistic state update synchronously before
@@ -127,7 +96,6 @@ export const useEditConfirmation = ({
     [
       canCreate,
       canEdit,
-      canEditCodex,
       id,
       isCodex,
       isUserMessage,
@@ -139,9 +107,5 @@ export const useEditConfirmation = ({
     ],
   );
 
-  // Codex resends into a new topic and cannot rewind the files it already changed.
-  const notice =
-    isCodex && shouldSendOnConfirm ? t('messageAction.codexEdit.branchNotice') : undefined;
-
-  return { notice, onConfirm, shouldSendOnConfirm };
+  return { onConfirm, shouldSendOnConfirm };
 };

@@ -69,7 +69,7 @@ const MessageEditorModal = ({
   const editorData = useConversationStore(
     (s) => dataSelectors.getDisplayMessageById(id)(s)?.editorData,
   );
-  const { notice, onConfirm, shouldSendOnConfirm } = useEditConfirmation({
+  const { onConfirm, shouldSendOnConfirm } = useEditConfirmation({
     canCreate,
     canEdit,
     editing: true,
@@ -84,7 +84,6 @@ const MessageEditorModal = ({
   openEditorRef.current = () =>
     openEditorModal({
       editorData,
-      notice,
       okText: shouldSendOnConfirm ? t('send') : t('save'),
       value: message ? String(message) : '',
       onClose: () => onEditingChange(false),

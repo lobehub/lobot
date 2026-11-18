@@ -11,11 +11,10 @@ import { messageMapKey } from '@/store/chat/utils/messageMapKey';
 
 import { type ConversationContext, type ConversationHooks } from '../../../types';
 import { createStore } from '../../index';
-import type { CodexMessageEdit } from './action';
 import { MAX_HETERO_AUTO_RETRIES } from './heteroRetryConfig';
 
 vi.mock('@/services/topic', () => ({
-  topicService: { branchTopicAtMessage: vi.fn(), cancelRateLimitContinuation: vi.fn() },
+  topicService: { cancelRateLimitContinuation: vi.fn() },
 }));
 
 // Mock useChatStore

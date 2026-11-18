@@ -1,4 +1,4 @@
-import { Button, createModal, ModalFooter, Text, useModalContext } from '@lobehub/ui';
+import { Button, createModal, ModalFooter, useModalContext } from '@lobehub/ui';
 import { lazy, memo, type ReactNode, Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,13 +11,12 @@ const EditorModalContent = lazy(() => import('./EditorModalContent'));
 
 interface EditorModalFooterProps {
   editorBridge: EditorBridge;
-  notice?: ReactNode;
   okText?: ReactNode;
   onConfirm?: (value: string, editorData?: unknown) => Promise<void>;
 }
 
 const EditorModalFooter = memo<EditorModalFooterProps>((props) => {
-  const { editorBridge, notice, okText, onConfirm } = props;
+  const { editorBridge, okText, onConfirm } = props;
   const { t } = useTranslation('common');
   const { close } = useModalContext();
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -43,11 +42,6 @@ const EditorModalFooter = memo<EditorModalFooterProps>((props) => {
 
   return (
     <ModalFooter>
-      {notice && (
-        <Text fontSize={12} style={{ marginInlineEnd: 'auto' }} type={'secondary'}>
-          {notice}
-        </Text>
-      )}
       <Button onClick={close}>{t('cancel')}</Button>
       <Button disabled={!ready} loading={confirmLoading} type={'primary'} onClick={handleConfirm}>
         {okText ?? t('ok', { defaultValue: 'OK' })}
@@ -60,8 +54,6 @@ EditorModalFooter.displayName = 'EditorModalFooter';
 
 interface OpenEditorModalOptions {
   editorData?: unknown;
-  /** Short consequence shown beside the actions (e.g. what a resend will not undo). */
-  notice?: ReactNode;
   okText?: ReactNode;
   /** Runs whenever the modal closes, including confirm — clear caller-side editing flags here. */
   onClose?: () => void;
@@ -71,7 +63,6 @@ interface OpenEditorModalOptions {
 
 export const openEditorModal = ({
   editorData,
-  notice,
   okText,
   onClose,
   onConfirm,
@@ -85,14 +76,7 @@ export const openEditorModal = ({
         <EditorModalContent editorBridge={editorBridge} editorData={editorData} value={value} />
       </Suspense>
     ),
-    footer: (
-      <EditorModalFooter
-        editorBridge={editorBridge}
-        notice={notice}
-        okText={okText}
-        onConfirm={onConfirm}
-      />
-    ),
+    footer: <EditorModalFooter editorBridge={editorBridge} okText={okText} onConfirm={onConfirm} />,
     // NOT `onOpenChange`: that only fires for user dismissal, while the footer's
     // Cancel goes through `instance.close()`. Cancelling would then leave the
     // caller's editing flag set and the editor could never be reopened.
