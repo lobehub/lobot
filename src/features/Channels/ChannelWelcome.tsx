@@ -1,4 +1,3 @@
-import { CHANNEL_URL } from '@lobechat/const';
 import { Button, Flexbox, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { ChannelDetail, ChannelPublicMember } from '@lobot/types';
@@ -6,7 +5,6 @@ import * as stylex from '@stylexjs/stylex';
 import { Hash, Settings, UserPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
@@ -15,6 +13,7 @@ import { openInviteMembers } from './CreateChannel';
 import { MemberAvatar } from './MemberAvatar';
 import { isCurrentUserMember } from './memberName';
 import { channelTitle } from './peerTitle';
+import { useOpenChannelSettings } from './Settings/tabs';
 import { useChannelProjectName } from './useChannelProjectName';
 
 const styles = stylex.create({
@@ -67,7 +66,7 @@ interface ChannelWelcomeProps {
  */
 export function ChannelWelcome({ detail, onGreet }: ChannelWelcomeProps) {
   const { t } = useTranslation('channel');
-  const navigate = useWorkspaceAwareNavigate();
+  const openSettings = useOpenChannelSettings();
   const userId = useUserStore(userProfileSelectors.userId);
   const { channel } = detail;
   const projectName = useChannelProjectName(channel.projectId);
@@ -122,7 +121,7 @@ export function ChannelWelcome({ detail, onGreet }: ChannelWelcomeProps) {
           >
             {t('welcome.addMembers')}
           </Button>
-          <Button icon={Settings} onClick={() => navigate(`${CHANNEL_URL(channel.id)}/settings`)}>
+          <Button icon={Settings} onClick={() => openSettings()}>
             {t('welcome.editChannel')}
           </Button>
         </Flexbox>

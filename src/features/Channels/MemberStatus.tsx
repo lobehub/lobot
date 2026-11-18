@@ -1,4 +1,3 @@
-import { CHANNEL_URL } from '@lobechat/const';
 import { ActionIcon, Button, DropdownMenu, Flexbox, Popover, Text } from '@lobehub/ui';
 import type { ChannelDetail } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
@@ -6,7 +5,6 @@ import { Bot, CircleUserRound, FolderCog, MoreHorizontal, Settings, Users } from
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { useCloseOnNavigate } from '@/hooks/useCloseOnNavigate';
 import { sx } from '@/styles/sx';
 
@@ -14,6 +12,7 @@ import { openChannelAgentEnvironment } from './AgentEnvironment';
 import { FailureIndicator } from './FailureIndicator';
 import { InviteMembersButton } from './InviteMembersButton';
 import { MemberList, StatusAvatar, useMemberEntries } from './MemberList';
+import { useOpenChannelSettings } from './Settings/tabs';
 import { statusStyles, styles } from './styles';
 import { useChannelMenu } from './useChannelMenu';
 import { useOpenDirectAgent } from './useOpenDirectAgent';
@@ -33,7 +32,7 @@ const DIRECT_MENU_KEYS = new Set(['copyId', 'unarchive']);
  */
 export function ChannelMenu({ detail }: { detail: ChannelDetail }) {
   const { t } = useTranslation('channel');
-  const navigate = useWorkspaceAwareNavigate();
+  const openSettings = useOpenChannelSettings();
   const { channel } = detail;
   const entries = useMemberEntries(detail);
   const directAgent = channel.agentId
@@ -82,7 +81,7 @@ export function ChannelMenu({ detail }: { detail: ChannelDetail }) {
   // A conversation between two people has no settings to manage, only the private chat's actions.
   const peerMenu = () => channelMenu(channel);
 
-  // Managing a group lives on its settings page; deleting it is not one click from the header.
+  // Managing a group lives in its settings panel; deleting it is not one click from the header.
   const groupMenu = () => [
     ...channelMenu(channel).filter((item) => 'key' in item && item.key === 'copyId'),
     ...(channel.canDelete
@@ -92,7 +91,7 @@ export function ChannelMenu({ detail }: { detail: ChannelDetail }) {
             icon: Settings,
             key: 'settings',
             label: t('settings.title'),
-            onClick: () => navigate(`${CHANNEL_URL(channel.id)}/settings`),
+            onClick: () => openSettings(),
           },
         ]
       : []),

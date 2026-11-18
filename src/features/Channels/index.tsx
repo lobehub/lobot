@@ -2,9 +2,9 @@ import { cssVar, Flexbox, Tag, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { useSize } from 'ahooks';
 import { Hash } from 'lucide-react';
-import { useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router';
+import { useParams, useSearchParams } from 'react-router';
 
 import NotFound from '@/components/404';
 import { RouteLoading } from '@/components/Skeleton/RouteSegment';
@@ -34,6 +34,8 @@ import { openTopic } from './openTopic';
 import { channelTitle } from './peerTitle';
 import { CHANNEL_ENTITY_PORTAL_SCOPE, PortalPanel } from './PortalPanel';
 import { type ReplyTopic, ReplyTopicPanel } from './ReplyTopicPanel';
+import { ChannelSettingsPanel } from './Settings/Panel';
+import { CHANNEL_SETTINGS_PARAM } from './Settings/tabs';
 import { styles } from './styles';
 import { ThreadsButton } from './ThreadBrowser';
 import { ThreadPageActions, ThreadPageTitle } from './ThreadPageTitle';
@@ -51,6 +53,9 @@ function EnabledChannelPage() {
   const [membersChannelId, setMembersChannelId] = useState<string | null>(null);
   const memberPanelId = useId();
   const searchPanelId = useId();
+  const settingsPanelId = useId();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const settingsTab = searchParams.get(CHANNEL_SETTINGS_PARAM);
   // The box keeps its text per Channel; the panel shows the query last submitted.
   const [searchInput, setSearchInput] = useState({ channelId: '', value: '' });
   const [search, setSearch] = useState<{ channelId: string; query: string } | null>(null);
@@ -100,6 +105,36 @@ function EnabledChannelPage() {
     !!directAgent || (!!detail?.channel.workspaceId && !detail.channel.agentId);
   const membersOpen =
     hasMemberPanel && membersChannelId === channelId && !threadId && !threadDraft && !portalOpen;
+  // Only a group its viewer manages has settings; a report covers them like a thread.
+  const settingsOpen =
+    !!settingsTab &&
+    !!detail?.channel.canDelete &&
+    !detail.channel.agentId &&
+    !detail.channel.peerUserId &&
+    !threadId &&
+    !threadDraft &&
+    !portalOpen;
+  const closeSettings = () =>
+    setSearchParams(
+      (current) => {
+        const next = new URLSearchParams(current);
+        next.delete(CHANNEL_SETTINGS_PARAM);
+        return next;
+      },
+      { replace: true },
+    );
+  // Settings open from the header menu and the welcome card through the URL; they replace
+  // whichever side panel was open.
+  const settingsRequested = !!settingsTab;
+  useEffect(() => {
+    if (!settingsRequested) return;
+    setMembersChannelId(null);
+    setSearch(null);
+    setTopic(null);
+    clearPortalStack();
+    if (!pageThreadId) panel.close();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when the settings open
+  }, [settingsRequested]);
   const visibleTopic = openTopic(topic, channelId, {
     portal: portalOpen,
     members: membersOpen,
@@ -120,6 +155,7 @@ function EnabledChannelPage() {
     setMembersChannelId(null);
     setTopic(null);
     clearPortalStack();
+    closeSettings();
     setSearch({ channelId, query });
   };
   // The threads button and a busy member's conversations open a Thread the same way.
@@ -212,6 +248,7 @@ function EnabledChannelPage() {
                             setSearch(null);
                             setTopic(null);
                             clearPortalStack();
+                            closeSettings();
                           }
                           setMembersChannelId(membersOpen ? null : channelId);
                         },
@@ -241,7 +278,7 @@ function EnabledChannelPage() {
               key={`${channelId}:${pageThreadId}`}
               threadId={pageThreadId}
               inert={
-                ((membersOpen || searchOpen) &&
+                ((membersOpen || searchOpen || settingsOpen) &&
                   (conversationWidth ?? 1000) < MEMBER_FLOAT_BREAKPOINT) ||
                 (portalOpen && (conversationWidth ?? 1000) < THREAD_FLOAT_BREAKPOINT)
               }
@@ -253,7 +290,7 @@ function EnabledChannelPage() {
               inert={
                 (!!(threadId || threadDraft || portalOpen) &&
                   (conversationWidth ?? 1000) < THREAD_FLOAT_BREAKPOINT) ||
-                ((membersOpen || searchOpen) &&
+                ((membersOpen || searchOpen || settingsOpen) &&
                   (conversationWidth ?? 1000) < MEMBER_FLOAT_BREAKPOINT) ||
                 (!!visibleTopic && (conversationWidth ?? 1000) < THREAD_FLOAT_BREAKPOINT)
               }
@@ -269,12 +306,14 @@ function EnabledChannelPage() {
                 setSearch(null);
                 setMembersChannelId(null);
                 clearPortalStack();
+                closeSettings();
                 setTopic({ ...next, channelId });
               }}
               onStartThread={(draft) => {
                 setSearch(null);
                 setTopic(null);
                 clearPortalStack();
+                closeSettings();
                 panel.openDraft(draft);
               }}
             />
@@ -300,6 +339,26 @@ function EnabledChannelPage() {
                 onOpenThread={openThread}
               />
             ))}
+          {detail && settingsOpen && (
+            <ChannelSettingsPanel
+              availableWidth={conversationWidth}
+              channel={detail.channel}
+              id={settingsPanelId}
+              key={detail.channel.id}
+              tab={settingsTab}
+              onClose={closeSettings}
+              onTabChange={(tab) =>
+                setSearchParams(
+                  (current) => {
+                    const next = new URLSearchParams(current);
+                    next.set(CHANNEL_SETTINGS_PARAM, tab);
+                    return next;
+                  },
+                  { replace: true },
+                )
+              }
+            />
+          )}
           {searchOpen && search && (
             <ChannelSearchPanel
               availableWidth={conversationWidth}

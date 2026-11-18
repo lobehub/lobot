@@ -7,8 +7,8 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { ChannelMenu, MemberStatus } from './MemberStatus';
 
-const { navigate, openAgent, openEnvironment } = vi.hoisted(() => ({
-  navigate: vi.fn(),
+const { openAgent, openEnvironment, openSettings } = vi.hoisted(() => ({
+  openSettings: vi.fn(),
   openAgent: { current: vi.fn() as ((path?: string) => void) | undefined },
   openEnvironment: vi.fn(),
 }));
@@ -30,9 +30,7 @@ vi.mock('@lobehub/ui', () => ({
   Popover: () => null,
   Text: () => null,
 }));
-vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
-  useWorkspaceAwareNavigate: () => navigate,
-}));
+vi.mock('./Settings/tabs', () => ({ useOpenChannelSettings: () => openSettings }));
 vi.mock('@/hooks/useCloseOnNavigate', () => ({ useCloseOnNavigate: () => 0 }));
 vi.mock('./AgentEnvironment', () => ({ openChannelAgentEnvironment: openEnvironment }));
 vi.mock('./InviteMembersButton', () => ({
@@ -88,7 +86,6 @@ describe('ChannelMenu in a direct conversation', () => {
 
     fireEvent.click(screen.getByText('openAgent'));
     expect(openAgent.current).toHaveBeenCalled();
-    expect(navigate).not.toHaveBeenCalled();
   });
 
   it('offers no Open Agent when the Agent cannot be opened', () => {
@@ -132,19 +129,18 @@ describe('MemberStatus profile toggle', () => {
 });
 
 describe('ChannelMenu in a group Channel', () => {
-  it('sends management to the settings page instead of offering delete', () => {
+  it('sends management to the settings instead of offering delete', () => {
     render(createElement(ChannelMenu, { detail: detail({ agentId: null }) }));
 
     expect(menuKeys()).toEqual(['copyId', 'settings']);
   });
 
-  // Lobot registers no `/project/*` routes, so a project-scoped path fell into the error page.
-  it('opens the settings of a project Channel at its own path', () => {
+  it('opens the settings beside the Channel', () => {
     render(createElement(ChannelMenu, { detail: detail({ agentId: null, projectId: 'prj_1' }) }));
 
     fireEvent.click(screen.getByText('settings'));
 
-    expect(navigate).toHaveBeenCalledWith('/channels/chn_cook/settings');
+    expect(openSettings).toHaveBeenCalled();
   });
 
   it('offers no settings to a member who cannot manage the Channel', () => {

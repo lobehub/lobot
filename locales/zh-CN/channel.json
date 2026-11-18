@@ -262,7 +262,7 @@
   "section.rename": "重命名分类",
   "send": "发送",
   "sendFailed": "发送失败，草稿已保留，请重试。",
-  "settings.back": "返回频道",
+  "settings.close": "关闭频道设置",
   "settings.danger.archiveHint": "进行中的回复会停止，频道不再接收新消息，历史消息仍可查看。",
   "settings.danger.deleteChatHint": "从这台设备上清空聊天记录，并从你的列表中移除。对方不受影响。",
   "settings.danger.trashHint": "你可以在回收站恢复频道和历史消息。",

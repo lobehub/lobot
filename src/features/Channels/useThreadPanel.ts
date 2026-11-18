@@ -5,6 +5,7 @@ import { useActiveLocation } from '@/hooks/useActiveLocation';
 import { cacheScope } from '@/libs/replica';
 import { channelActions } from '@/store/channel';
 
+import { CHANNEL_SETTINGS_PARAM } from './Settings/tabs';
 import type { ChannelThreadDraft } from './threadDraft';
 
 interface DraftSelection {
@@ -43,6 +44,8 @@ export const useThreadPanel = (channelId: string) => {
         if (id) next.set('thread', id);
         else next.delete('thread');
         next.delete('view');
+        // A thread beside the feed replaces the settings there.
+        if (id) next.delete(CHANNEL_SETTINGS_PARAM);
         return next;
       },
       { replace },

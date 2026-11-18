@@ -376,7 +376,7 @@ export default {
   'reply.viewOriginal': 'View original message',
   'reply.unavailable': 'Original message unavailable',
   'settings.title': 'Channel settings',
-  'settings.back': 'Back to channel',
+  'settings.close': 'Close channel settings',
   'settings.save': 'Save',
   'settings.saved': 'Saved',
   'settings.general.name': 'Channel name',

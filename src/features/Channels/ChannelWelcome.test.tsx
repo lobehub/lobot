@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { ChannelWelcome, welcomeCounterpart } from './ChannelWelcome';
 
-const navigate = vi.fn();
+const openSettings = vi.fn();
 const openInviteMembers = vi.fn();
 
 vi.mock('react-i18next', () => ({
@@ -22,9 +22,7 @@ vi.mock('@/store/user', () => ({
 vi.mock('@/store/user/selectors', () => ({
   userProfileSelectors: { userId: () => 'user-1' },
 }));
-vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
-  useWorkspaceAwareNavigate: () => navigate,
-}));
+vi.mock('./Settings/tabs', () => ({ useOpenChannelSettings: () => openSettings }));
 vi.mock('./CreateChannel', () => ({
   openInviteMembers: (...args: unknown[]) => openInviteMembers(...args),
 }));
@@ -112,7 +110,7 @@ describe('ChannelWelcome', () => {
       expect.objectContaining({ agentIds: ['agent-1'], id: 'ch-1', peopleCount: 1 }),
     );
     fireEvent.click(screen.getByText('welcome.editChannel'));
-    expect(navigate).toHaveBeenCalledWith(expect.stringContaining('/settings'));
+    expect(openSettings).toHaveBeenCalled();
   });
 
   it("welcomes to a project's default Channel by the project's name", () => {

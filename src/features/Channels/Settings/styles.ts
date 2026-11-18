@@ -9,10 +9,8 @@ export const settingsStyles = stylex.create({
   },
   content: {
     width: '100%',
-    maxWidth: 800,
-    marginInline: 'auto',
-    paddingBlock: 24,
-    paddingInline: 24,
+    paddingBlock: 12,
+    paddingInline: 12,
   },
   card: {
     overflow: 'hidden',
@@ -38,16 +36,17 @@ export const settingsStyles = stylex.create({
     display: 'flex',
     flexDirection: 'column',
     gap: 12,
-    padding: 24,
+    padding: 16,
   },
   footer: {
     display: 'flex',
-    gap: 16,
+    flexWrap: 'wrap',
+    gap: 12,
     alignItems: 'center',
     justifyContent: 'space-between',
-    minHeight: 56,
-    paddingBlock: 12,
-    paddingInline: 24,
+    minHeight: 48,
+    paddingBlock: 10,
+    paddingInline: 16,
     borderBlockStartWidth: 1,
     borderBlockStartStyle: 'solid',
     borderBlockStartColor: cssVar.colorBorderSecondary,
@@ -62,6 +61,6 @@ export const settingsStyles = stylex.create({
     marginInlineStart: 'auto',
   },
   field: {
-    maxWidth: 320,
+    width: '100%',
   },
 });

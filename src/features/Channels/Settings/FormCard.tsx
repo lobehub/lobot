@@ -33,10 +33,14 @@ export function FormCard({
       <div {...stylex.props(styles.body, plain && styles.plainBody)}>
         <Flexbox horizontal align="flex-start" gap={16} justify="space-between">
           <div>
-            <Text as="h3" fontSize={18} style={{ margin: 0 }} weight={600}>
+            <Text as="h3" fontSize={14} style={{ margin: 0 }} weight={600}>
               {title}
             </Text>
-            {description && <Text type="secondary">{description}</Text>}
+            {description && (
+              <Text fontSize={12} type="secondary">
+                {description}
+              </Text>
+            )}
           </div>
           {headerAction}
         </Flexbox>
@@ -45,7 +49,7 @@ export function FormCard({
       {(hint || action) && (
         <div {...stylex.props(styles.footer, danger && styles.dangerFooter)}>
           {hint && (
-            <Text fontSize={13} type="secondary">
+            <Text fontSize={12} type="secondary">
               {hint}
             </Text>
           )}

@@ -262,7 +262,7 @@
   "section.rename": "Rename section",
   "send": "Send",
   "sendFailed": "Message was not sent. Your draft is preserved; try again.",
-  "settings.back": "Back to channel",
+  "settings.close": "Close channel settings",
   "settings.danger.archiveHint": "Replies in progress stop and the channel stops taking messages. History stays readable.",
   "settings.danger.deleteChatHint": "Clears this chat’s history on this device and removes it from your list. The other person keeps theirs.",
   "settings.danger.trashHint": "You can restore the channel and its history from the trash.",

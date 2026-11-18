@@ -9,7 +9,10 @@ const mocks = vi.hoisted(() => ({
   list: [] as Array<{ agentId: string | null; id: string; title: string }>,
 }));
 
-vi.mock('react-router', () => ({ useParams: () => ({ channelId: 'chn_gone' }) }));
+vi.mock('react-router', () => ({
+  useParams: () => ({ channelId: 'chn_gone' }),
+  useSearchParams: () => [new URLSearchParams(), vi.fn()],
+}));
 vi.mock('@/store/serverConfig', () => ({
   serverConfigSelectors: { enableChannels: () => true },
   useServerConfigStore: (selector: (s: object) => unknown) => selector({ serverConfigInit: true }),
