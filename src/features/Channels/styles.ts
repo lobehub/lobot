@@ -465,11 +465,18 @@ export const statusStyles = stylex.create({
     backgroundColor: cssVar.colorFillQuaternary,
   },
   /** A muted Agent's line: a bell-off icon before why it stays quiet. */
+  /** A member's name, followed by its muted mark on the same line. */
+  memberNameLine: {
+    display: 'flex',
+    gap: 6,
+    alignItems: 'baseline',
+    minWidth: 0,
+  },
   memberMuted: {
-    display: 'inline-flex',
-    gap: 4,
-    alignItems: 'center',
+    flexShrink: 0,
+    fontSize: cssVar.fontSizeSM,
     color: cssVar.colorTextTertiary,
+    whiteSpace: 'nowrap',
   },
   memberAvatar: {
     position: 'relative',

@@ -95,6 +95,19 @@ describe('MemberList Agent mute', () => {
     expect(setMemberMuted).toHaveBeenCalledWith('chn_1', 'mem_cook', false);
   });
 
+  it('marks a muted Agent right after its name, also while it works', () => {
+    render(
+      createElement(MemberList, {
+        detail: {
+          ...detail({}, { muted: true }),
+          jobs: [{ id: 'job_1', memberId: 'mem_cook', status: 'running', threadId: null }],
+        },
+      }),
+    );
+
+    expect(screen.getByText('member.muted').parentElement?.textContent).toBe('Cookmember.muted');
+  });
+
   it('offers no mute to a member who cannot manage the Channel', () => {
     render(createElement(MemberList, { detail: detail({ canDelete: false }) }));
 
