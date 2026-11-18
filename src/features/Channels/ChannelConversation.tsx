@@ -20,6 +20,7 @@ import { userProfileSelectors } from '@/store/user/selectors';
 import { ArchivedNotice } from './ArchivedNotice';
 import { showsListedShell, visibleChannelDetail } from './channelAccess';
 import { ChannelMessage, ThreadRootMessage } from './ChannelMessage';
+import { groupChannelName } from './channelName';
 import { ChannelWelcome } from './ChannelWelcome';
 import { useAfterCleared } from './clearedChannels';
 import { Composer } from './Composer';
@@ -42,6 +43,7 @@ import { styles } from './styles';
 import type { ChannelThreadDraft } from './threadDraft';
 import { markThreadRead } from './threadReads';
 import { useChannelEvents } from './useChannelEvents';
+import { useChannelProjectName } from './useChannelProjectName';
 import { channelDraftKey } from './useComposerDraft';
 import { useFollowSent } from './useFollowSent';
 import { type ChannelReplyTarget, useReplyTarget } from './useReplyTarget';
@@ -100,6 +102,7 @@ const Timeline = ({
   const scope = cacheScope.use();
   useEffect(() => channelActions.restoreOutbox(scope), [scope]);
   const userId = useUserStore(userProfileSelectors.userId);
+  const projectName = useChannelProjectName(channel?.projectId);
   const queued = useChannelStore(channelSelectors.outgoing(channelId, threadId));
   // Sent from this tab and not on a loaded page yet; they follow the latest page only.
   const outgoing = useMemo(() => {
@@ -358,8 +361,9 @@ const Timeline = ({
                     ? t('threadComposer')
                     : t(oneToOne ? 'directComposer' : 'composer', {
                         name: detail
-                          ? channelTitle(detail, userId)
-                          : directCounterpart(channel)?.name || channel.title,
+                          ? channelTitle(detail, userId, projectName)
+                          : directCounterpart(channel)?.name ||
+                            groupChannelName(channel, projectName),
                       })
                 }
                 onCancelReply={() => reply.clear()}

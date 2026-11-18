@@ -15,6 +15,7 @@ import { projectListItemSelector, useProjectStore } from '@/store/project';
 import { getUserStoreState } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
+import { groupChannelName, isProjectDefaultChannel } from '../channelName';
 import { isCurrentUserAuthor } from '../memberName';
 import type { ChannelActivityEvent } from './activity';
 
@@ -71,27 +72,30 @@ export const buildChannelBanner = (
     return { body: text, title: sender || peer?.name || channel.title };
   }
 
+  // A project's default Channel goes by the project's name, so the project is not named twice.
+  const channelName = groupChannelName(channel, projectName);
   if (kind === 'mention')
     return {
       body: text,
       title: sender
-        ? t('notification.mentionedBy', { channel: channel.title, name: sender, ns: 'channel' })
-        : t('notification.mentioned', { channel: channel.title, ns: 'channel' }),
+        ? t('notification.mentionedBy', { channel: channelName, name: sender, ns: 'channel' })
+        : t('notification.mentioned', { channel: channelName, ns: 'channel' }),
     };
 
   const direct = !!channel.agentId && !channel.projectId;
-  if (direct || !sender) return { body: text, title: channel.title };
+  if (direct || !sender) return { body: text, title: channelName };
 
   return {
     body: text,
-    title: projectName
-      ? t('notification.groupTitleInProject', {
-          channel: channel.title,
-          name: sender,
-          ns: 'channel',
-          project: projectName,
-        })
-      : t('notification.groupTitle', { channel: channel.title, name: sender, ns: 'channel' }),
+    title:
+      projectName && !isProjectDefaultChannel(channel, projectName)
+        ? t('notification.groupTitleInProject', {
+            channel: channel.title,
+            name: sender,
+            ns: 'channel',
+            project: projectName,
+          })
+        : t('notification.groupTitle', { channel: channelName, name: sender, ns: 'channel' }),
   };
 };
 

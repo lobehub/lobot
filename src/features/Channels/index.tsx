@@ -22,6 +22,7 @@ import { AgentProfilePanel } from './AgentProfilePanel';
 import { isChannelGone, visibleChannelDetail } from './channelAccess';
 import { ChannelConversation } from './ChannelConversation';
 import { ChannelEmpty } from './ChannelEmpty';
+import { groupChannelName } from './channelName';
 import { ChannelSearchBox, ChannelSearchPanel } from './ChannelSearch';
 import { ChannelSyncing } from './ChannelSyncing';
 import { DirectAgentRole } from './DirectAgentRole';
@@ -37,6 +38,7 @@ import { styles } from './styles';
 import { ThreadsButton } from './ThreadBrowser';
 import { ThreadPageActions, ThreadPageTitle } from './ThreadPageTitle';
 import { THREAD_FLOAT_BREAKPOINT, ThreadPanel } from './ThreadPanel';
+import { useChannelProjectName } from './useChannelProjectName';
 import { channelBrowserSessionId, usePortalPanelOpen } from './usePortalPanel';
 import { useThreadPanel } from './useThreadPanel';
 
@@ -67,6 +69,7 @@ function EnabledChannelPage() {
   const isPeer = !!(detail?.channel ?? listItem)?.peerUserId;
   const isSharedAgent = !!(detail?.channel.sharedAgent || listItem?.sharedAgent);
   const viewerId = useUserStore(userProfileSelectors.userId);
+  const projectName = useChannelProjectName((detail?.channel ?? listItem)?.projectId);
   const directAgent = detail?.channel.agentId
     ? detail.members.find((member) => member.agentId === detail.channel.agentId)
     : undefined;
@@ -163,8 +166,9 @@ function EnabledChannelPage() {
               {!isDirect && !isPeer && <Hash color={cssVar.colorTextDescription} size={16} />}
               <Text ellipsis weight={500}>
                 {detail
-                  ? channelTitle(detail, viewerId)
-                  : listItem && (directCounterpart(listItem)?.name || listItem.title)}
+                  ? channelTitle(detail, viewerId, projectName)
+                  : listItem &&
+                    (directCounterpart(listItem)?.name || groupChannelName(listItem, projectName))}
               </Text>
               {isSharedAgent && (
                 <Text style={{ flex: 'none' }} type="secondary">

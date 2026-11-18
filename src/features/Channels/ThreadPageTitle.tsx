@@ -1,15 +1,17 @@
-import type { ChannelDetail } from '@lobot/types';
 import { ActionIcon, cssVar, DropdownMenu, Flexbox, Icon, Text } from '@lobehub/ui';
+import type { ChannelDetail } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { ChevronDown, ChevronRight, Hash, MessagesCircle, MoreHorizontal } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { channelSelectors, useChannelStore } from '@/store/channel';
 
+import { groupChannelName } from './channelName';
 import { styles } from './styles';
 import { ThreadFollowers } from './ThreadPanel';
 import { ThreadSwitchMenu } from './ThreadSwitcher';
 import { threadTitle } from './threadTitle';
+import { useChannelProjectName } from './useChannelProjectName';
 import { useThreadMenu } from './useThreadMenu';
 
 /**
@@ -37,7 +39,8 @@ export const ThreadPageTitle = ({
         detail.messages.find((message) => message.id === thread?.rootMessageId),
       thread,
     ) || t('thread');
-  const channelTitle = detail.channel.title || t('title');
+  const projectName = useChannelProjectName(detail.channel.projectId);
+  const channelTitle = groupChannelName(detail.channel, projectName) || t('title');
 
   return (
     <Flexbox horizontal align="center" gap={6} style={{ minWidth: 0 }}>

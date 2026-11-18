@@ -1,7 +1,7 @@
 import { CHANNEL_URL } from '@lobechat/const';
-import type { ChannelDetail, ChannelPublicMember } from '@lobot/types';
 import { Button, Flexbox, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ChannelDetail, ChannelPublicMember } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { Hash, Settings, UserPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ import { openInviteMembers } from './CreateChannel';
 import { MemberAvatar } from './MemberAvatar';
 import { isCurrentUserMember, memberName } from './memberName';
 import { channelTitle } from './peerTitle';
+import { useChannelProjectName } from './useChannelProjectName';
 import { getVisibleStatusMembers } from './visibleMembers';
 
 const styles = stylex.create({
@@ -77,7 +78,8 @@ export function ChannelWelcome({ detail, onGreet }: ChannelWelcomeProps) {
   const navigate = useWorkspaceAwareNavigate();
   const userId = useUserStore(userProfileSelectors.userId);
   const { channel } = detail;
-  const name = channelTitle(detail, userId);
+  const projectName = useChannelProjectName(channel.projectId);
+  const name = channelTitle(detail, userId, projectName);
   const counterpart = welcomeCounterpart(detail, userId);
 
   if (channel.agentId || channel.peerUserId) {

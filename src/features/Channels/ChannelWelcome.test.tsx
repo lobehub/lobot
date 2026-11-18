@@ -29,6 +29,10 @@ vi.mock('./CreateChannel', () => ({
   openInviteMembers: (...args: unknown[]) => openInviteMembers(...args),
 }));
 vi.mock('./MemberAvatar', () => ({ MemberAvatar: () => null }));
+vi.mock('./useChannelProjectName', () => ({
+  useChannelProjectName: (projectId?: string | null) =>
+    projectId === 'prj-1' ? 'lobe-editor' : undefined,
+}));
 
 const member = (overrides: Partial<ChannelPublicMember>) =>
   ({
@@ -109,5 +113,11 @@ describe('ChannelWelcome', () => {
     );
     fireEvent.click(screen.getByText('welcome.editChannel'));
     expect(navigate).toHaveBeenCalledWith(expect.stringContaining('/settings'));
+  });
+
+  it("welcomes to a project's default Channel by the project's name", () => {
+    render(<ChannelWelcome detail={detail({ projectId: 'prj-1', title: 'General' }, [self])} />);
+    expect(screen.getByText('welcome.groupTitle:lobe-editor')).toBeTruthy();
+    expect(screen.getByText('welcome.group:lobe-editor')).toBeTruthy();
   });
 });
