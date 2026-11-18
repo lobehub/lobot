@@ -1,10 +1,10 @@
-import type { ChannelDetail, ChannelPublicMessage, ChannelPublicThread } from '@lobot/types';
 import { Avatar, Icon } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ChannelDetail, ChannelPublicMessage, ChannelPublicThread } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { ChevronRight, CornerDownRight } from 'lucide-react';
+import { Archive, ChevronRight, CornerDownRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
@@ -171,9 +171,9 @@ export const ThreadPreviewCard = ({
   return (
     <button type="button" {...stylex.props(styles.entry)} onClick={onOpen}>
       <span {...stylex.props(styles.head)}>
-        {/* The sidebar's thread glyph: this continues the message above. */}
+        {/* The sidebar's thread glyph: this continues the message above; an archived one says so. */}
         <span {...stylex.props(styles.arrow)}>
-          <Icon icon={CornerDownRight} size={14} />
+          <Icon icon={archived ? Archive : CornerDownRight} size={14} />
         </span>
         <span {...stylex.props(styles.title, archived && styles.archivedTitle)}>{title}</span>
         <span {...stylex.props(styles.count, archived && styles.archivedCount)}>
@@ -204,6 +204,8 @@ export const ThreadPreviewCard = ({
           </span>
         </span>
       ) : (
+        // An archived thread is done: its title and count are enough, the last word is noise.
+        !archived &&
         lastReply && (
           <span {...stylex.props(styles.line)}>
             {isOwnReply ? (
