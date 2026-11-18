@@ -195,14 +195,22 @@ const styles = stylex.create({
     display: 'inline-flex',
   },
   // Sits on the button's top-right corner without taking part in the header's layout.
-  triggerDot: {
+  triggerBadge: {
     pointerEvents: 'none',
     position: 'absolute',
-    insetBlockStart: 2,
-    insetInlineEnd: 2,
-    width: 8,
-    height: 8,
-    borderRadius: '50%',
+    insetBlockStart: -4,
+    insetInlineEnd: -6,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 16,
+    height: 16,
+    paddingInline: 4,
+    borderRadius: 999,
+    fontSize: 10,
+    fontWeight: 600,
+    lineHeight: 1,
+    color: '#fff',
     backgroundColor: cssVar.colorError,
     boxShadow: `0 0 0 2px ${cssVar.colorBgLayout}`,
   },
@@ -428,8 +436,8 @@ export const ThreadBrowser = ({
 };
 
 /**
- * The header's threads button. A red dot on it says some thread other than the open one has
- * replies the person has not seen; a click opens the thread panel.
+ * The header's threads button. A count badge on it says how many threads other than the open one
+ * have replies the person has not seen; a click opens the thread panel.
  */
 export const ThreadsButton = ({
   activeId,
@@ -481,7 +489,11 @@ export const ThreadsButton = ({
           size="small"
           title={label}
         />
-        {unread > 0 && <span aria-hidden {...stylex.props(styles.triggerDot)} />}
+        {unread > 0 && (
+          <span aria-hidden {...stylex.props(styles.triggerBadge)}>
+            {unread > 99 ? '99+' : unread}
+          </span>
+        )}
       </span>
     </Popover>
   );

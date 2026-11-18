@@ -179,6 +179,14 @@ describe('ThreadsButton', () => {
     expect(screen.getByText('threadListUnread:1')).toBeTruthy();
   });
 
+  it('shows the unread count as a badge instead of a dot', () => {
+    const { container } = render(
+      createElement(ThreadsButton, { activeId: 'thr_1', detail, onOpen: vi.fn() }),
+    );
+
+    expect(container.querySelector('[aria-hidden]')?.textContent).toBe('1');
+  });
+
   it('stays out of a Channel without threads', () => {
     render(
       createElement(ThreadsButton, {
