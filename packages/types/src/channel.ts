@@ -350,6 +350,16 @@ export interface ChannelAvatarMember {
 
 /** A Channel's newest message as its list row previews it. */
 export interface ChannelLastMessage {
+  /**
+   * The first attachment's MIME type and how many there are, so a message of only an image
+   * still has a preview line; null without attachments. Absent from servers before it was added.
+   */
+  attachments?: { count: number; fileType: string } | null;
+  /**
+   * Who sent it, so a list can read "Me: …" or "Alice: …"; `id` is null after deletion. Absent
+   * from servers before it was added.
+   */
+  author?: { id: string | null; name: string | null; type: ChannelMemberActorType };
   content: string;
   createdAt: Date;
   /**

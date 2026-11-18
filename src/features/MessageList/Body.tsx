@@ -23,6 +23,8 @@ import { channelActions, channelSelectors, useChannelStore } from '@/store/chann
 import { useHomeStore } from '@/store/home';
 import { homeAgentListSelectors } from '@/store/home/selectors';
 import { useCurrentProjectList, useProjectStore } from '@/store/project';
+import { useUserStore } from '@/store/user';
+import { userProfileSelectors } from '@/store/user/selectors';
 
 import AgentConversation from './AgentConversation';
 import ChannelConversation from './ChannelConversation';
@@ -139,6 +141,7 @@ const Body = memo(() => {
   );
 
   const inboxChannel = inboxAgentId ? directChannels.get(inboxAgentId) : undefined;
+  const userId = useUserStore(userProfileSelectors.userId);
 
   // Opening a hidden conversation from elsewhere (contacts, a notification) brings its row back.
   useEffect(() => {
@@ -160,6 +163,7 @@ const Body = memo(() => {
           buildConversationSections(items, directChannels, {
             activeId: activeRouteId,
             includeIdle: !!query.trim(),
+            userId,
           }),
           {
             activeAt: inboxActivity(inboxUpdatedAt, inboxChannel),
@@ -187,6 +191,7 @@ const Body = memo(() => {
     channels,
     projectMap,
     hiddenAt,
+    userId,
   ]);
 
   // Pinned rows lead the list; they render as one block rather than a card each.

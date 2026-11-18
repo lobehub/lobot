@@ -1,9 +1,12 @@
-import type { ChannelListItem, SidebarAgentItem } from '@lobot/types';
-import { describe, expect, it } from 'vitest';
+import type { ChannelLastMessage, ChannelListItem, SidebarAgentItem } from '@lobot/types';
+import i18n from 'i18next';
+import { beforeAll, describe, expect, it } from 'vitest';
 
+import channelZh from '../../../locales/zh-CN/channel.json';
 import {
   buildConversationEntries,
   buildConversationSections,
+  channelPreview,
   directCounterpart,
   formatConversationTime,
   inboxActivity,
@@ -511,5 +514,50 @@ describe('reuseUnchangedEntries', () => {
     expect(byKey(reused, 'inbox')).toBe(byKey(first, 'inbox'));
     expect(byKey(reused, 'b')).not.toBe(byKey(first, 'b'));
     expect(reused[0]).toBe(byKey(reused, 'b'));
+  });
+});
+
+describe('channelPreview', () => {
+  beforeAll(() => {
+    i18n.addResourceBundle('zh-CN', 'channel', channelZh, true, true);
+  });
+
+  const withLast = (lastMessage: Partial<ChannelLastMessage>) => ({
+    lastMessage: { content: '', createdAt: new Date('2026-11-18'), thread: null, ...lastMessage },
+  });
+  const me = { id: 'user_me', name: 'Arvin', type: 'user' as const };
+  const alice = { id: 'user_alice', name: 'Alice', type: 'user' as const };
+  const image = { count: 1, fileType: 'image/png' };
+
+  // A message of only an image previewed as nothing, and the viewer's own message was unmarked.
+  it('reads the viewer’s own image-only message as "我: [图片]"', () => {
+    expect(channelPreview(withLast({ attachments: image, author: me }), { userId: me.id })).toBe(
+      '我: [图片]',
+    );
+  });
+
+  it('names a non-image attachment as a file', () => {
+    expect(
+      channelPreview(withLast({ attachments: { count: 2, fileType: 'application/pdf' } })),
+    ).toBe('[文件]');
+  });
+
+  it('prefers the text over the attachment', () => {
+    expect(
+      channelPreview(withLast({ attachments: image, author: me, content: '看下 **这个**' }), {
+        userId: me.id,
+      }),
+    ).toBe('我: 看下 这个');
+  });
+
+  it('names other senders only in a group', () => {
+    const message = withLast({ author: alice, content: 'hi' });
+    expect(channelPreview(message, { userId: me.id })).toBe('hi');
+    expect(channelPreview(message, { group: true, userId: me.id })).toBe('Alice: hi');
+  });
+
+  it('has no line for a message with neither text nor files, or from an older server', () => {
+    expect(channelPreview(withLast({ author: me }), { userId: me.id })).toBeUndefined();
+    expect(channelPreview(withLast({ content: 'old' }), { userId: me.id })).toBe('old');
   });
 });
