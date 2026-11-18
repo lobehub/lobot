@@ -8,7 +8,7 @@ Guidelines for using AI coding agents in this opensource LobeHub repository.
 - SPA inside Next.js with `react-router-dom`
 - `@lobehub/ui` for UI implementation (components plus `createStaticStyles` / `cssVar` for styles)
 - react-i18next for i18n; zustand for state management
-- SWR for data fetching; TRPC for type-safe backend
+- `local-replica` (`@/libs/replica`) for server data the UI paints; SWR (`@/libs/swr`) is legacy, do not add new call sites. TRPC for type-safe backend
 - Drizzle ORM with PostgreSQL; Vitest for testing
 
 ## Agent Skills
@@ -114,7 +114,9 @@ Before reviewing a PR / diff / branch change, read the **deep-review** skill. Or
 When designing or reviewing user-facing flows (empty/loading/error states, confirmations, async feedback, button hierarchy, lists at scale, pickers), follow LobeHub's design values — Natural / Meaningful / Certainty / Growth (自然 / 意义感 / 确定性 / 成长) — in the `ux` skill; [`DESIGN.md`](./DESIGN.md) covers visual tokens and voice.
 
 <!-- lobe-design:begin · managed by scripts/bootstrap.mjs · 不要手动编辑本块 -->
+
 <!-- lobe-design:mode=full lang=zh -->
+
 ## UI 设计工作指南（lobe-design）
 
 本项目在做界面相关工作（新增页面、改交互、调视觉、统一设计系统、还原设计稿、上线前审查）时，
@@ -136,7 +138,7 @@ export LOBE_DESIGN="./.agents/skills/lobe-design"
 - `.agents/ux/product.md`：产品画像：平台、产品类型、用户、核心任务、规则适用性、文案 profile（05-init Round 1）
 - `.agents/ux/components.md`：组件盘点：按平台分类（web：薄包装 / 与 lobe-ui 重复 / 业务组件；mobile：项目原子层 / 薄包装 / 业务组件）（05-init Round 2）
 - `.agents/ux/lobe-design-rules.md`：项目层规则：skill 没收录的编号（`C-` / `D-` / `K-` / `E-`）按 id 查，不要整份读
-- **装完或升级 skill 后**：跑 stage `05-init`（或说「初始化 / 升级后刷新」）完成两轮自迭代——Round 1 产品画像 → `.agents/ux/product.md`，Round 2 组件盘点 → `.agents/ux/components.md`。可用 `node "$LOBE_DESIGN/scripts/project-scan.mjs" --check` 检查是否缺失或过期。
+- **装完或升级 skill 后**：跑 stage `05-init`（或说「初始化 / 升级后刷新」）完成两轮自迭代 ——Round 1 产品画像 → `.agents/ux/product.md`，Round 2 组件盘点 → `.agents/ux/components.md`。可用 `node "$LOBE_DESIGN/scripts/project-scan.mjs" --check` 检查是否缺失或过期。
 - **日常任何 UI 任务**：先读 `.agents/ux/product.md` 与 `.agents/ux/components.md`，再按 stage 加载 skill 规则。
 - 宏观指令（「整体打磨」「重做这页」）和新页面从 stage `00-brief` 开始：先读 `.agents/ux/product.md`，写出后续 stage 消费的页面简报；纯视觉或文案修正跳过。
 
@@ -155,13 +157,13 @@ export LOBE_DESIGN="./.agents/skills/lobe-design"
 
 ### 2. 什么时候用
 
-| 触发 | 例子 |
-| --- | --- |
-| 新建界面 | 做一个控制台列表页、写一个官网落地页 |
-| 改已有界面 | 整体打磨一下、把层级理顺、把状态补齐 |
-| 统一设计系统 | 各页面风格不一致、token 收敛 |
-| 还原设计稿 | 照着这张截图做 |
-| 上线前审查 | 能不能上线、验收一下 |
+| 触发                | 例子                                                        |
+| ------------------- | ----------------------------------------------------------- |
+| 新建界面            | 做一个控制台列表页、写一个官网落地页                        |
+| 改已有界面          | 整体打磨一下、把层级理顺、把状态补齐                        |
+| 统一设计系统        | 各页面风格不一致、token 收敛                                |
+| 还原设计稿          | 照着这张截图做                                              |
+| 上线前审查          | 能不能上线、验收一下                                        |
 | 初始化 / 升级后刷新 | 把项目接上 lobe-design；升级 skill 后重跑产品画像与组件盘点 |
 
 指令太抽象时（「体验不好」「丑」「难用」），先跑 `node "$LOBE_DESIGN/scripts/intent.mjs" "<原话>"`
@@ -181,7 +183,7 @@ export LOBE_DESIGN="./.agents/skills/lobe-design"
 - **回流落地后（在 skill 仓库里，由维护者执行）**：先写失败用例 → 再写反例 → 加规则（默认 WARN）→ 登记 reference
   → bump 版本 + CHANGELOG → 记账（`learnings/LOG.md`）→ `node tests/run.mjs` 全绿才算完成。
   lint 落地必须有真实规则 id 和回归样例；landed 必须带版本且 CHANGELOG 有该版本。
-- **版本语义**：patch 修误报 · minor 加规则或 WARN 升 FAIL · major 改 stage 或路由、删除编号。删除的编号不复用。
+- **版本语义**：patch 修误报・minor 加规则或 WARN 升 FAIL・major 改 stage 或路由、删除编号。删除的编号不复用。
 
 ### 4. 把经验回流到上游
 
@@ -193,4 +195,5 @@ export LOBE_DESIGN="./.agents/skills/lobe-design"
 
 > 本节由 `$LOBE_DESIGN/scripts/bootstrap.mjs` 维护。块外内容属于项目自己，不会被本脚本改写。
 > 重新运行 `node "$LOBE_DESIGN/scripts/bootstrap.mjs"` 可把本块更新到最新版本。
+
 <!-- lobe-design:end -->

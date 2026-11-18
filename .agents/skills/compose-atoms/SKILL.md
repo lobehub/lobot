@@ -77,7 +77,7 @@ const Page = () => (
 );
 ```
 
-Do not lift "to fetch once" or "so siblings share data". Two atoms calling the same SWR hook share the cache by key. Sibling writes go through that cache (or a store slice the write atom imports), not through page `useState`.
+Do not lift "to fetch once" or "so siblings share data". Two atoms calling the same store read hook (a replica `useFetchXxx`) share one store entry. Sibling writes go through that cache (or a store slice the write atom imports), not through page `useState`.
 
 Lift only when the state **is** the assembler's job: which workflow is on screen, whether a rail is open. If a value is used to render or mutate one capability, it belongs in that capability.
 
@@ -111,7 +111,7 @@ State and imports live in the atom that needs them.
 - Assemblers do not fetch in order to push props down. Chrome unique to that host (a title in a shell header) may read the hook.
 - Scope context carries **identity** (`id`, `embedded`). It does not carry actions, stores, or modal openers.
 
-Several atoms calling the same SWR hook is expected. SWR dedupes on key. Do not lift data to the assembler "to fetch once".
+Several atoms calling the same store read hook is expected. The replica dedupes on params. Do not lift data to the assembler "to fetch once".
 
 The shared read hook is **its own file**. A light host imports that file, never a `hooks.ts` / store barrel that also exports list, document, or send-message.
 

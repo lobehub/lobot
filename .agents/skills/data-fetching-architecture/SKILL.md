@@ -1,6 +1,6 @@
 ---
 name: data-fetching-architecture
-description: 'Use for client APIs, SWR hooks, cache invalidation, async errors, useEffect migration, home first paint and persistent caches.'
+description: 'Use for client APIs, server data reads (local-replica; SWR is legacy), cache invalidation, async errors, useEffect migration, home first paint and persistent caches.'
 user-invocable: false
 ---
 
@@ -25,6 +25,12 @@ fails on any added key, and its legacy list only shrinks.
 - `useClientDataSWR` + `onSuccess` syncing into the store is the legacy layout. Keep
   it only inside an existing hook whose key is already in `src/libs/swr/keys.ts`; do
   not add keys or new SWR-backed store hooks for server data.
+- Do not add a `useClientDataSWR` / `useClientPollingSWR` / `useOnlyFetchOnceSWR` /
+  `useSWR` call anywhere, including an inline key in a component or feature hook
+  (`useClientDataSWR(['foo', id], …)`). An inline key does not go through `keys.ts`,
+  so it slips past the key freeze but is the same legacy layout.
+  `src/libs/swr/callSites.frozen.test.ts` lists the files that still call them; the
+  list only shrinks. A "small" read inside a component is still a replica read.
 - Components call these hooks and read store data through selectors. Do not fetch in
   `useEffect` or duplicate server data in component `useState`.
 - Use `useFetchXxx` for read hooks and `refreshXxx` for cache invalidation.

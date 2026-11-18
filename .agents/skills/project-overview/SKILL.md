@@ -36,7 +36,7 @@ This repo is the **open-source root** (`github.com/lobehub/lobehub`, package `@l
 | i18n          | react-i18next                              |
 | State         | zustand                                    |
 | URL Params    | nuqs                                       |
-| Data Fetching | SWR                                        |
+| Data Fetching | `local-replica` (SWR is legacy)            |
 | React Hooks   | aHooks                                     |
 | Date/Time     | dayjs                                      |
 | Utilities     | es-toolkit                                 |

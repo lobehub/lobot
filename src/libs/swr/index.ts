@@ -11,13 +11,12 @@ export { augmentKey };
 const CLIENT_POLLING_SWR_DEDUPING_INTERVAL = 30_000;
 
 /**
- * This type of request method is for relatively flexible data, which will be triggered on the first time.
+ * @deprecated Legacy. Server data the UI paints goes through `local-replica`
+ * (`@/libs/replica`, a store `useFetchXxx` over `slice.useSync`); see the
+ * `data-fetching-architecture` skill. Do not add call sites:
+ * `callSites.frozen.test.ts` lists the remaining ones and only shrinks.
  *
- * Refresh rules have two types:
- * - When the user refocuses, it will be refreshed outside the 5mins interval.
- * - Can be combined with refreshXXX methods to refresh data.
- *
- * Suitable for messages, topics, sessions, and other data that users will interact with on the client.
+ * Refreshes on focus outside a 5-minute window, and through refreshXXX methods.
  */
 // @ts-ignore
 export const useClientDataSWR: SWRHook = (key, fetch, config) => {
@@ -53,6 +52,8 @@ export const useClientDataSWR: SWRHook = (key, fetch, config) => {
 };
 
 /**
+ * @deprecated Legacy, like `useClientDataSWR`; poll a replica instead.
+ *
  * Polling-friendly variant of useClientDataSWR.
  *
  * Keeps the global zero-deduping behavior untouched for interactive data while
@@ -68,6 +69,8 @@ export const useClientPollingSWR: SWRHook = (key, fetch, config) =>
   });
 
 /**
+ * @deprecated Legacy, like `useClientDataSWR`.
+ *
  * This type of request method is a relatively "static" request mode, which will only be triggered on the first request.
  * Suitable for first time requests like `initUserState`.
  */
