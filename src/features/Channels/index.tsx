@@ -27,7 +27,7 @@ import { ChannelSyncing } from './ChannelSyncing';
 import { DirectAgentRole } from './DirectAgentRole';
 import { workingConversationCount, workingJob } from './jobStatus';
 import { MEMBER_FLOAT_BREAKPOINT, MemberPanel } from './MemberPanel';
-import { MemberStatus } from './MemberStatus';
+import { ChannelMenu, MemberStatus } from './MemberStatus';
 import { requestChannelJump } from './messageJump';
 import { openTopic } from './openTopic';
 import { channelTitle } from './peerTitle';
@@ -179,6 +179,8 @@ function EnabledChannelPage() {
                 />
               )}
               {detail?.channel.status === 'archived' && <Tag size="small">{t('archived')}</Tag>}
+              {/* The Channel's own actions sit by its name; the right holds the panels it opens. */}
+              {detail && <ChannelMenu detail={detail} />}
               <ChannelSyncing failed={!!sync.error} params={view} />
             </Flexbox>
           )

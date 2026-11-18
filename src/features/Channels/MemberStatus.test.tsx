@@ -5,7 +5,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
-import { MemberStatus } from './MemberStatus';
+import { ChannelMenu, MemberStatus } from './MemberStatus';
 
 const { navigate, openAgent, openEnvironment } = vi.hoisted(() => ({
   navigate: vi.fn(),
@@ -35,7 +35,9 @@ vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
 }));
 vi.mock('@/hooks/useCloseOnNavigate', () => ({ useCloseOnNavigate: () => 0 }));
 vi.mock('./AgentEnvironment', () => ({ openChannelAgentEnvironment: openEnvironment }));
-vi.mock('./CreateChannel', () => ({ openInviteMembers: () => {} }));
+vi.mock('./InviteMembersButton', () => ({
+  InviteMembersButton: () => createElement('button', {}, 'invite.title'),
+}));
 vi.mock('./FailureIndicator', () => ({ FailureIndicator: () => null }));
 vi.mock('./MemberList', () => ({
   MemberList: () => null,
@@ -70,11 +72,11 @@ const detail = (channel: Record<string, unknown> = {}, member: Record<string, un
 
 const menuKeys = () => screen.getAllByRole('listitem').map((item) => item.textContent);
 
-describe('MemberStatus in a direct conversation', () => {
+describe('ChannelMenu in a direct conversation', () => {
   // The roster is hidden in a direct conversation, and it held the only way to set up a coding
   // Agent's device and working directory for the Channel.
   it('keeps the Agent environment setup in the menu', () => {
-    render(createElement(MemberStatus, { detail: detail() }));
+    render(createElement(ChannelMenu, { detail: detail() }));
 
     expect(menuKeys()).toEqual(['openAgent', 'environment', 'copyId']);
     fireEvent.click(screen.getByText('environment'));
@@ -82,7 +84,7 @@ describe('MemberStatus in a direct conversation', () => {
   });
 
   it('opens the Agent through its opener', () => {
-    render(createElement(MemberStatus, { detail: detail() }));
+    render(createElement(ChannelMenu, { detail: detail() }));
 
     fireEvent.click(screen.getByText('openAgent'));
     expect(openAgent.current).toHaveBeenCalled();
@@ -92,20 +94,20 @@ describe('MemberStatus in a direct conversation', () => {
   it('offers no Open Agent when the Agent cannot be opened', () => {
     const opener = openAgent.current;
     openAgent.current = undefined;
-    render(createElement(MemberStatus, { detail: detail() }));
+    render(createElement(ChannelMenu, { detail: detail() }));
     openAgent.current = opener;
 
     expect(menuKeys()).toEqual(['environment', 'copyId']);
   });
 
   it('offers no environment setup once the conversation is archived', () => {
-    render(createElement(MemberStatus, { detail: detail({ status: 'archived' }) }));
+    render(createElement(ChannelMenu, { detail: detail({ status: 'archived' }) }));
 
     expect(menuKeys()).not.toContain('environment');
   });
 
   it('offers no environment setup when the Agent has left', () => {
-    render(createElement(MemberStatus, { detail: detail({}, { status: 'removed' }) }));
+    render(createElement(ChannelMenu, { detail: detail({}, { status: 'removed' }) }));
 
     expect(menuKeys()).not.toContain('environment');
   });
@@ -129,16 +131,16 @@ describe('MemberStatus profile toggle', () => {
   });
 });
 
-describe('MemberStatus in a group Channel', () => {
+describe('ChannelMenu in a group Channel', () => {
   it('sends management to the settings page instead of offering delete', () => {
-    render(createElement(MemberStatus, { detail: detail({ agentId: null }) }));
+    render(createElement(ChannelMenu, { detail: detail({ agentId: null }) }));
 
     expect(menuKeys()).toEqual(['copyId', 'settings']);
   });
 
   // Lobot registers no `/project/*` routes, so a project-scoped path fell into the error page.
   it('opens the settings of a project Channel at its own path', () => {
-    render(createElement(MemberStatus, { detail: detail({ agentId: null, projectId: 'prj_1' }) }));
+    render(createElement(ChannelMenu, { detail: detail({ agentId: null, projectId: 'prj_1' }) }));
 
     fireEvent.click(screen.getByText('settings'));
 
@@ -146,8 +148,26 @@ describe('MemberStatus in a group Channel', () => {
   });
 
   it('offers no settings to a member who cannot manage the Channel', () => {
-    render(createElement(MemberStatus, { detail: detail({ agentId: null, canDelete: false }) }));
+    render(createElement(ChannelMenu, { detail: detail({ agentId: null, canDelete: false }) }));
 
     expect(menuKeys()).toEqual(['copyId']);
+  });
+});
+
+// The roster's own header adds members; the Channel header keeps only the roster toggle.
+describe('MemberStatus invite', () => {
+  const memberPanel = { id: 'panel', onToggle: () => {}, open: false };
+
+  it('leaves inviting to the roster in a group Channel', () => {
+    render(createElement(MemberStatus, { detail: detail({ agentId: null }), memberPanel }));
+
+    expect(screen.queryByText('invite.title')).toBeNull();
+    expect(screen.queryByText('more')).toBeNull();
+  });
+
+  it('keeps starting a group in a direct conversation, which has no roster', () => {
+    render(createElement(MemberStatus, { detail: detail(), memberPanel }));
+
+    expect(screen.getByText('invite.title')).toBeTruthy();
   });
 });
