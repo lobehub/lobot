@@ -4,18 +4,20 @@ import * as stylex from '@stylexjs/stylex';
 import { useDebounce } from 'ahooks';
 import { X } from 'lucide-react';
 import type { Dispatch, SetStateAction } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useWorkspaceMembers } from '@/business/client/hooks/useWorkspaceMembers';
 import AsyncBoundary from '@/components/AsyncBoundary';
 import Avatar from '@/components/Avatar';
 import type { ChannelPersonOption } from '@/services/channel';
-import { channelActions } from '@/store/channel';
+import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
+import { useUserStore } from '@/store/user';
+import { userProfileSelectors } from '@/store/user/selectors';
 
+import { activeUserIds, CANDIDATE_LIMIT, localUserCandidates } from './localCandidates';
 import { PickerSection } from './PickerSection';
 import { pickerStyles } from './pickerStyles';
-
-/** The server returns at most this many candidates; searching narrows the rest. */
-const CANDIDATE_LIMIT = 50;
 
 export interface PeopleSelection {
   /** Unset while creating a Channel: every workspace member except the creator. */
@@ -33,15 +35,35 @@ const PersonAvatar = ({ name, person }: { name: string; person: ChannelPersonOpt
   <Avatar avatar={person.avatar || DEFAULT_USER_AVATAR} shape={'circle'} size={28} title={name} />
 );
 
+/**
+ * The same candidates from the workspace roster replica, so the list paints from disk while the
+ * server answers. Undefined until both the roster and, for an existing Channel, its member list
+ * are local: a guess without them could offer someone already in.
+ */
+const useLocalUserCandidates = (channelId: string | undefined, query: string) => {
+  const roster = useWorkspaceMembers();
+  const selfId = useUserStore(userProfileSelectors.userId);
+  const members = useChannelStore((s) =>
+    channelId ? channelSelectors.detail({ channelId })(s)?.members : undefined,
+  );
+  return useMemo(() => {
+    if (roster.length === 0 || (channelId ? !members : !selfId)) return;
+    const exclude = new Set(members ? activeUserIds(members) : [selfId!]);
+    return localUserCandidates(roster, exclude, query);
+  }, [channelId, members, query, roster, selfId]);
+};
+
 /** Workspace members who are not in the Channel yet, searched on the server. */
 export const PeopleOptions = ({ people, search }: { people: PeopleSelection; search: string }) => {
   const { t } = useTranslation('channel');
   const nameOf = usePersonName();
   const query = useDebounce(search.trim(), { wait: 200 });
-  const { data, error, isLoading, mutate } = channelActions.useFetchUserCandidates(
-    people.channelId,
-    query,
-  );
+  const fetched = channelActions.useFetchUserCandidates(people.channelId, query);
+  const local = useLocalUserCandidates(people.channelId, query);
+  // The server stays the authority; the local copy only fills the wait for it.
+  const data = fetched.data ?? local;
+  const { error, mutate } = fetched;
+  const isLoading = fetched.isLoading && !local;
   const toggle = (person: ChannelPersonOption) =>
     people.onChange((current) =>
       current.some((item) => item.userId === person.userId)
