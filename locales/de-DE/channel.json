@@ -153,7 +153,6 @@
   "reply.to": "Antwort an {{name}}",
   "reply.unavailable": "Ursprüngliche Nachricht nicht verfügbar",
   "reply.viewOriginal": "Ursprüngliche Nachricht anzeigen",
-  "routing.receiving": "Agenten empfangen Ihre Nachricht…",
   "routing.unassigned": "Keine Antwort zugewiesen. Erwähnen Sie einen Agenten, um fortzufahren.",
   "searchAgents": "Agenten suchen",
   "send": "Senden",

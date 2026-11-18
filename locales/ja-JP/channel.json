@@ -154,7 +154,6 @@
   "reply.to": "{{name}} に返信中",
   "reply.unavailable": "元のメッセージは利用できません",
   "reply.viewOriginal": "元のメッセージを表示",
-  "routing.receiving": "エージェントがメッセージを受信中…",
   "routing.unassigned": "返信が割り当てられていません。続行するにはエージェントに言及してください。",
   "searchAgents": "エージェントを検索",
   "send": "送信",

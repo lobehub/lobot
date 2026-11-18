@@ -153,7 +153,6 @@
   "reply.to": "{{name}} kişisine yanıt veriliyor",
   "reply.unavailable": "Özgün mesaj kullanılamıyor",
   "reply.viewOriginal": "Özgün mesajı görüntüle",
-  "routing.receiving": "Ajanlar mesajınızı alıyor…",
   "routing.unassigned": "Yanıt atanmadı. Devam etmek için bir Ajanı etiketleyin.",
   "searchAgents": "Ajanları ara",
   "send": "Gönder",

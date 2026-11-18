@@ -1,5 +1,5 @@
-import type { ChannelDetail } from '@lobot/types';
 import { Button, Popover } from '@lobehub/ui';
+import type { ChannelDetail } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +14,7 @@ import {
   workingConversationCount,
 } from './jobStatus';
 import { replyEntries, ReplyList } from './MessageReceipts';
-import { activityStyles, styles } from './styles';
+import { activityStyles } from './styles';
 import { TypingDots } from './TypingDots';
 
 const MAX_AVATARS = 3;
@@ -31,14 +31,8 @@ export function ReplyActivity({
   threadId: string | null;
 }) {
   const { t, i18n } = useTranslation('channel');
-  const { jobs, receiving } = conversationReplies(detail, threadId);
-  if (!jobs.length)
-    return receiving ? (
-      <span role="status" {...stylex.props(activityStyles.line, styles.muted)}>
-        <TypingDots />
-        {activityLabel(t('routing.receiving'))}
-      </span>
-    ) : null;
+  const jobs = conversationReplies(detail, threadId);
+  if (!jobs.length) return null;
 
   const entries = replyEntries(detail, jobs, t('unnamedAgent'));
   // One Agent may have several requests queued; describe each Agent once.

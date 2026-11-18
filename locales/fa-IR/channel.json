@@ -153,7 +153,6 @@
   "reply.to": "در پاسخ به {{name}}",
   "reply.unavailable": "پیام اصلی در دسترس نیست",
   "reply.viewOriginal": "مشاهده پیام اصلی",
-  "routing.receiving": "عوامل در حال دریافت پیام شما…",
   "routing.unassigned": "هیچ پاسخی اختصاص داده نشده است. یک عامل را ذکر کنید تا ادامه دهید.",
   "searchAgents": "جستجوی عوامل",
   "send": "ارسال",

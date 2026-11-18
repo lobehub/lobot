@@ -153,7 +153,6 @@
   "reply.to": "Đang trả lời {{name}}",
   "reply.unavailable": "Tin nhắn gốc không khả dụng",
   "reply.viewOriginal": "Xem tin nhắn gốc",
-  "routing.receiving": "Các Ajan đang nhận tin nhắn của bạn…",
   "routing.unassigned": "Không có trả lời nào được gán. Nhắc đến một Ajan để tiếp tục.",
   "searchAgents": "Tìm kiếm Ajan",
   "send": "Gửi",

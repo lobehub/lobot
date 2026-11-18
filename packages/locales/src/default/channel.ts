@@ -219,7 +219,6 @@ export default {
   'attachments.remove': 'Remove {{name}}',
   'attachments.retry': 'Retry',
   'attachments.uploading': 'Uploading',
-  'routing.receiving': 'Agents receiving your message…',
   'routing.unassigned': 'No Agent picked this up. Mention one to get a reply.',
   'receipt.failedHint': 'Mention it again to retry.',
   'receipt.openTopic': 'Open its topic on LobeHub',

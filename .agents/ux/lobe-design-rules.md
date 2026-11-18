@@ -54,11 +54,11 @@ Source: user correction of empty threads created merely by opening the branch pa
 
 ## LOBE-UX-008 — Channel reply progress follows live state, above the composer
 
-Present pre-reply receipt as “Agent 接收消息中…” rather than exposing responder selection. Once a job starts, show the named Agent's reply status instead of retaining the receipt label until completion. Progress lives on one line above the composer (“锦妍・正在回复…”, “A 和 B 正在回复…”, “3 位成员正在回复…”), like a chat app's typing line, not as chips under each message; one click lists each reply with its state and a stop action. Publish claimed/blocked states independently of slow runtime startup and other members. The mounted view must reactively accelerate refresh for pending receipt, queued/running jobs and unconfirmed stops even without gateway notifications, then slow down after settlement. Keep refresh scoped to the displayed branch.
+Show no pre-reply receipt line (“Agent 接收消息中…”) while a sent message is being routed; the line appears only once a named Agent's reply job exists, and never exposes responder selection. Progress lives on one line above the composer (“锦妍・正在回复…”, “A 和 B 正在回复…”, “3 位成员正在回复…”), like a chat app's typing line, not as chips under each message; one click lists each reply with its state and a stop action. Publish claimed/blocked states independently of slow runtime startup and other members. The mounted view must reactively accelerate refresh for pending receipt, queued/running jobs and unconfirmed stops even without gateway notifications, then slow down after settlement. Keep refresh scoped to the displayed branch.
 
 Enforcement: the reactive Channel selector and replica sync schedule are covered by `src/store/channel/action.polling.test.ts`, including an idle view becoming active after send. `ChannelCoordinator.advance.test.ts` guards notification before runtime startup settles. `jobStatus.test.ts` covers which jobs count as activity.
 
-Source: user correction of hidden Pi reply progress and implementation-facing receipt copy (2026-10-26); moved above the composer after acceptance round 4 review (2026-10-26).
+Source: user correction of hidden Pi reply progress and implementation-facing receipt copy (2026-10-26); moved above the composer after acceptance round 4 review (2026-10-26); receipt line dropped as noise (2026-11-18).
 
 ## LOBE-UX-009 — Channel self identity uses the personal avatar
 

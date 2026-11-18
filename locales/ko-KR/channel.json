@@ -153,7 +153,6 @@
   "reply.to": "{{name}}에게 답장 중",
   "reply.unavailable": "원본 메시지를 사용할 수 없음",
   "reply.viewOriginal": "원본 메시지 보기",
-  "routing.receiving": "에이전트가 메시지를 수신 중입니다…",
   "routing.unassigned": "할당된 응답이 없습니다. 계속하려면 에이전트를 언급하세요.",
   "searchAgents": "에이전트 검색",
   "send": "보내기",

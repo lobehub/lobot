@@ -271,14 +271,16 @@ describe('hasReplyActivity', () => {
     ).toBe(false);
   });
 
-  it('is true while a reply runs or a sent message awaits routing', () => {
+  it('is true while a reply runs, but not while a sent message only awaits routing', () => {
     expect(
       hasReplyActivity(
         detail({ jobs: [{ publicationRevoked: false, status: 'running', threadId: null }] }),
         null,
       ),
     ).toBe(true);
-    expect(hasReplyActivity(detail({ messages: [{ routingStatus: 'pending' }] }), null)).toBe(true);
+    expect(hasReplyActivity(detail({ messages: [{ routingStatus: 'pending' }] }), null)).toBe(
+      false,
+    );
   });
 
   it('only counts replies in the given thread', () => {

@@ -1,5 +1,5 @@
-import type { ChannelDetail, ChannelPublicJob, ChannelReplyJob } from '@lobot/types';
 import type { AgentAvatarState } from '@lobehub/ui';
+import type { ChannelDetail, ChannelPublicJob, ChannelReplyJob } from '@lobot/types';
 
 export const channelJobStatus = (job: ChannelReplyJob) =>
   job.publicationRevoked && job.writerHeld
@@ -86,20 +86,16 @@ export const memberCurrentJob = <T extends ChannelReplyJob>(jobs: T[], memberId:
   );
 };
 
-/** Replies a conversation still waits on, and whether a sent message awaits routing. */
-export const conversationReplies = (detail: ChannelDetail, threadId: string | null) => {
-  const { jobs = [], messages = [] } = detail;
-  return {
-    jobs: replyActivityJobs(jobs.filter((job) => (job.threadId ?? null) === threadId)),
-    receiving: messages.some((message) => message.routingStatus === 'pending'),
-  };
-};
+/**
+ * Replies a conversation still waits on. A sent message still being routed shows nothing here:
+ * the line appears once a named Agent takes the message up.
+ */
+export const conversationReplies = (detail: ChannelDetail, threadId: string | null) =>
+  replyActivityJobs((detail.jobs ?? []).filter((job) => (job.threadId ?? null) === threadId));
 
-/** Whether the conversation has a reply or routing in progress to show above the composer. */
-export const hasReplyActivity = (detail: ChannelDetail, threadId: string | null) => {
-  const { jobs, receiving } = conversationReplies(detail, threadId);
-  return jobs.length > 0 || receiving;
-};
+/** Whether the conversation has a reply in progress to show above the composer. */
+export const hasReplyActivity = (detail: ChannelDetail, threadId: string | null) =>
+  conversationReplies(detail, threadId).length > 0;
 
 /**
  * How a direct conversation's Agent avatar acts out its pending replies, in the main conversation

@@ -153,7 +153,6 @@
   "reply.to": "الرد على {{name}}",
   "reply.unavailable": "الرسالة الأصلية غير متاحة",
   "reply.viewOriginal": "عرض الرسالة الأصلية",
-  "routing.receiving": "الوكلاء يتلقون رسالتك…",
   "routing.unassigned": "لم يتم تعيين رد. اذكر وكيلًا للمتابعة.",
   "searchAgents": "بحث عن الوكلاء",
   "send": "إرسال",

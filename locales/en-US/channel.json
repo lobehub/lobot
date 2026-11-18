@@ -242,7 +242,6 @@
   "reply.to": "Replying to {{name}}",
   "reply.unavailable": "Original message unavailable",
   "reply.viewOriginal": "View original message",
-  "routing.receiving": "Agents receiving your message…",
   "routing.unassigned": "No Agent picked this up. Mention one to get a reply.",
   "scope.general": "General",
   "scope.generalHint": "Not part of any project. It lists with your other conversations.",

@@ -154,7 +154,6 @@
   "reply.to": "回覆 {{name}}",
   "reply.unavailable": "原始訊息不可用",
   "reply.viewOriginal": "查看原始訊息",
-  "routing.receiving": "代理正在接收您的訊息…",
   "routing.unassigned": "未分配回覆。提及代理以繼續。",
   "searchAgents": "搜尋代理",
   "send": "發送",
