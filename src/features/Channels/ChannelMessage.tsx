@@ -453,7 +453,6 @@ const ChannelMessageView = ({
       {...rowProps}
       {...stylex.props(
         styles.messageRow,
-        compact && hasToolbar && styles.continuationWithAction,
         mentionsMe && styles.mentionedMessage,
         highlighted && styles.highlightedMessage,
         pending && styles.pendingMessage,

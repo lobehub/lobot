@@ -108,10 +108,6 @@ export const styles = stylex.create({
     insetBlockStart: 8,
     insetInlineStart: 0,
   },
-  // A continuation has no header for its toolbar; reserve room for both actions.
-  continuationWithAction: {
-    paddingInlineEnd: 88,
-  },
   /** "(edited)" under a message's text: a quiet note, like its time. */
   messageEdited: {
     alignSelf: 'flex-start',
