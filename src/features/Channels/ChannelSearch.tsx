@@ -1,7 +1,7 @@
 import { Avatar, Button, SearchBar } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { type ChannelSearchHit, channelService } from '@/services/channel';
@@ -88,6 +88,7 @@ const styles = stylex.create({
     backgroundColor: cssVar.colorWarningBg,
   },
   more: { display: 'flex', justifyContent: 'center', paddingBlock: 8 },
+  sentinel: { flexShrink: 0, height: 1 },
 });
 
 const escapeRegExp = (value: string) => value.replaceAll(/[$()*+.?[\\\]^{|}]/g, '\\$&');
@@ -263,6 +264,25 @@ export function ChannelSearchPanel({
   const { t } = useTranslation('channel');
   const search = useChannelSearch(channelId, query);
   const { error, hasMore, hits, loading } = search;
+  const listRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const loadMoreRef = useRef(search.loadMore);
+  loadMoreRef.current = search.loadMore;
+  const canLoadMore = hasMore && !loading && !error;
+  // Loads the next page as the end of the list nears; the sentinel remounts after each
+  // page, so a page too short to fill the panel pulls the next one by itself.
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!canLoadMore || !sentinel) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) loadMoreRef.current();
+      },
+      { root: listRef.current, rootMargin: '0px 0px 240px 0px' },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [canLoadMore]);
   return (
     <ChannelSidePanel
       availableWidth={availableWidth}
@@ -272,7 +292,7 @@ export function ChannelSearchPanel({
       title={t('search.title')}
       onClose={onClose}
     >
-      <div {...stylex.props(styles.list)}>
+      <div ref={listRef} {...stylex.props(styles.list)}>
         {hits.map((hit) => (
           <SearchHit hit={hit} key={hit.id} query={query} onOpen={onOpen} />
         ))}
@@ -288,11 +308,7 @@ export function ChannelSearchPanel({
             <Button loading size="small" type="text" />
           </div>
         ) : hasMore ? (
-          <div {...stylex.props(styles.more)}>
-            <Button size="small" onClick={search.loadMore}>
-              {t('search.loadMore')}
-            </Button>
-          </div>
+          <div aria-hidden ref={sentinelRef} {...stylex.props(styles.sentinel)} />
         ) : (
           !hits.length && <div {...stylex.props(styles.status)}>{t('search.empty', { query })}</div>
         )}

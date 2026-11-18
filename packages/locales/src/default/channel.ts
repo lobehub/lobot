@@ -213,7 +213,6 @@ export default {
   'search.close': 'Close search',
   'search.empty': 'No messages match “{{query}}”',
   'search.error': 'Search failed. Try again.',
-  'search.loadMore': 'Load more',
   'search.inThread': 'Thread · {{title}}',
   'search.inThreadUntitled': 'In a thread',
   'search.shortcut': 'Search messages (⌘F)',

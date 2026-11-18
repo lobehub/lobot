@@ -249,7 +249,6 @@
   "search.error": "搜索失败，请重试",
   "search.inThread": "子区 · {{title}}",
   "search.inThreadUntitled": "子区中的消息",
-  "search.loadMore": "加载更多",
   "search.placeholder": "搜索",
   "search.shortcut": "搜索消息（⌘F）",
   "search.title": "搜索结果",

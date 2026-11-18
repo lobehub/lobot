@@ -249,7 +249,6 @@
   "search.error": "Search failed. Try again.",
   "search.inThread": "Thread · {{title}}",
   "search.inThreadUntitled": "In a thread",
-  "search.loadMore": "Load more",
   "search.placeholder": "Search",
   "search.shortcut": "Search messages (⌘F)",
   "search.title": "Search results",
