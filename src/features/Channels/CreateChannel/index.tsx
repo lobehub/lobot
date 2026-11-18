@@ -49,33 +49,19 @@ interface ExistingChannel {
   workspaceId: string | null;
 }
 
-type Step = 'basics' | 'members';
-
 interface CreateChannelProps {
   /** Set when inviting members into a Channel that already exists. */
   existing?: ExistingChannel;
   onCreated?: (id: string) => void;
-  /** Resizes the dialog to what is being shown. */
-  onLayoutChange?: (step: Step) => void;
 }
 
-/** The basics are a short form; only the member pickers need the room of two columns. */
-const LAYOUT_WIDTH: Record<Step, string> = {
-  basics: 'min(90vw, 480px)',
-  members: 'min(90vw, 800px)',
-};
-
-const openMemberDialog = (props: Omit<CreateChannelProps, 'onLayoutChange'>) => {
-  const resize: { current?: (step: Step) => void } = {};
-  const modal = createModal({
-    content: <CreateChannel {...props} onLayoutChange={(layout) => resize.current?.(layout)} />,
+const openMemberDialog = (props: CreateChannelProps) =>
+  createModal({
+    content: <CreateChannel {...props} />,
     footer: null,
     title: t(props.existing ? 'invite.title' : 'create', { ns: 'channel' }),
-    width: LAYOUT_WIDTH[props.existing ? 'members' : 'basics'],
+    width: 'min(90vw, 800px)',
   });
-  resize.current = (layout) => modal.update({ width: LAYOUT_WIDTH[layout] });
-  return modal;
-};
 
 export const openCreateChannel = (onCreated?: (id: string) => void) =>
   openMemberDialog({ onCreated });
@@ -85,12 +71,11 @@ export const openInviteMembers = (existing: ExistingChannel, onCreated?: (id: st
   openMemberDialog({ existing, onCreated });
 
 /**
- * Creating asks what the Channel is first, like Discord: its name and whether it is private;
- * members come in a second step. The name is optional and defaults to the members' names.
- * Inviting into an existing Channel is only the member step. Workspace Channels, new or
- * existing, also list workspace members.
+ * One step: the name and, for a new workspace Channel, whether it is private, above the member
+ * pickers. The name is optional and defaults to the members' names. Inviting into an existing
+ * Channel shows only the pickers. Workspace Channels, new or existing, also list workspace members.
  */
-function CreateChannel({ existing, onCreated, onLayoutChange }: CreateChannelProps) {
+function CreateChannel({ existing, onCreated }: CreateChannelProps) {
   const { t } = useTranslation('channel');
   const { close, setCanDismissByClickOutside } = useModalContext();
   const [title, setTitle] = useState('');
@@ -98,12 +83,6 @@ function CreateChannel({ existing, onCreated, onLayoutChange }: CreateChannelPro
   const [people, setPeople] = useState<ChannelPersonOption[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>();
-  const [step, setStep] = useState<Step>(existing ? 'members' : 'basics');
-  // The dialog opens at the first step's width; only a change resizes it.
-  const [shownStep] = useState(step);
-  useEffect(() => {
-    if (step !== shownStep) onLayoutChange?.(step);
-  }, [onLayoutChange, shownStep, step]);
   // Like Discord, a new workspace Channel is open to the workspace unless made private.
   const [isPrivate, setIsPrivate] = useState(false);
   const options = useChannelAgentOptions();
@@ -217,12 +196,15 @@ function CreateChannel({ existing, onCreated, onLayoutChange }: CreateChannelPro
     }
   };
 
-  const goToMembers = () => setStep('members');
-
-  if (step === 'basics') {
-    return (
-      <Flexbox gap={20}>
-        <Flexbox gap={6}>
+  return (
+    <Flexbox gap={16}>
+      {startsGroup && (
+        <Text fontSize={12} type="secondary">
+          {t('invite.directHint', { name: counterpartName })}
+        </Text>
+      )}
+      {(!existing || startsGroup) && (
+        <Flexbox gap={6} inert={busy}>
           <label htmlFor="channel-title" style={{ fontWeight: 500 }}>
             {t('nameOptional')}
           </label>
@@ -230,43 +212,27 @@ function CreateChannel({ existing, onCreated, onLayoutChange }: CreateChannelPro
             autoFocus
             id="channel-title"
             maxLength={CHANNEL_LIMITS.titleLength}
-            placeholder={t('create.namePlaceholder')}
+            placeholder={autoTitle}
             prefix={<Icon icon={Hash} size={14} />}
             value={title}
             onChange={(event) => setTitle(event.target.value)}
-            onPressEnter={goToMembers}
+            onPressEnter={() => void submit()}
           />
         </Flexbox>
-        {activeWorkspaceId && (
-          <Flexbox horizontal align={'center'} gap={16} justify={'space-between'}>
-            <Flexbox gap={2}>
-              <Flexbox horizontal align={'center'} gap={6}>
-                <Icon icon={Lock} size={14} />
-                <Text weight={500}>{t('create.private')}</Text>
-              </Flexbox>
-              <Text fontSize={12} type={'secondary'}>
-                {t('create.privateHint')}
-              </Text>
+      )}
+      {!existing && activeWorkspaceId && (
+        <Flexbox horizontal align={'center'} gap={16} inert={busy} justify={'space-between'}>
+          <Flexbox gap={2}>
+            <Flexbox horizontal align={'center'} gap={6}>
+              <Icon icon={Lock} size={14} />
+              <Text weight={500}>{t('create.private')}</Text>
             </Flexbox>
-            <Switch checked={isPrivate} onChange={setIsPrivate} />
+            <Text fontSize={12} type={'secondary'}>
+              {t('create.privateHint')}
+            </Text>
           </Flexbox>
-        )}
-        <Flexbox horizontal align="center" gap={8} justify="flex-end">
-          <Button onClick={close}>{t('cancel')}</Button>
-          <Button type="primary" onClick={goToMembers}>
-            {t('create.next')}
-          </Button>
+          <Switch checked={isPrivate} onChange={setIsPrivate} />
         </Flexbox>
-      </Flexbox>
-    );
-  }
-
-  return (
-    <Flexbox gap={16}>
-      {startsGroup && (
-        <Text fontSize={12} type="secondary">
-          {t('invite.directHint', { name: counterpartName })}
-        </Text>
       )}
       <Flexbox gap={8} inert={busy}>
         <MemberSelection
@@ -282,22 +248,6 @@ function CreateChannel({ existing, onCreated, onLayoutChange }: CreateChannelPro
           onChange={setAgents}
         />
       </Flexbox>
-      {startsGroup && (
-        <Flexbox gap={6} inert={busy}>
-          <label htmlFor="channel-title" style={{ fontWeight: 500 }}>
-            {t('nameOptional')}
-          </label>
-          <Input
-            id="channel-title"
-            maxLength={CHANNEL_LIMITS.titleLength}
-            placeholder={autoTitle}
-            prefix={<Icon icon={Hash} size={14} />}
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            onPressEnter={() => void submit()}
-          />
-        </Flexbox>
-      )}
       {error !== undefined && (
         <AsyncError error={error} title={t(getChannelSaveErrorKey(error))} variant="inline" />
       )}
@@ -307,15 +257,9 @@ function CreateChannel({ existing, onCreated, onLayoutChange }: CreateChannelPro
             {t('environment.resolveRequired')}
           </Text>
         )}
-        {existing ? (
-          <Button disabled={busy} onClick={close}>
-            {t('cancel')}
-          </Button>
-        ) : (
-          <Button disabled={busy} onClick={() => setStep('basics')}>
-            {t('create.back')}
-          </Button>
-        )}
+        <Button disabled={busy} onClick={close}>
+          {t('cancel')}
+        </Button>
         <Button disabled={!canSubmit} loading={busy} type="primary" onClick={() => void submit()}>
           {t(existing && !startsGroup ? 'invite.submit' : 'submit')}
         </Button>

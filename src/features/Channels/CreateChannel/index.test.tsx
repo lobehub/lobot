@@ -6,8 +6,7 @@ import { openCreateChannel, openInviteMembers } from '.';
 
 const mocks = vi.hoisted(() => ({
   create: vi.fn(async () => 'chn_new'),
-  createModal: vi.fn(() => ({ update: mocks.updateModal })),
-  updateModal: vi.fn(),
+  createModal: vi.fn(() => ({})),
   updateVisibility: vi.fn(async () => ({})),
   workspaceId: null as string | null,
 }));
@@ -31,7 +30,7 @@ vi.mock('@lobehub/ui', () => ({
   createModal: mocks.createModal,
   Flexbox: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   Icon: () => null,
-  Input: () => null,
+  Input: ({ id }: { id?: string }) => <input data-testid={id} />,
   Switch: ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
     <input
       aria-label={'private'}
@@ -81,7 +80,6 @@ const renderDialog = (open: () => void) => {
   render(mocks.createModal.mock.calls.at(-1)![0].content);
 };
 
-const next = () => fireEvent.click(screen.getByRole('button', { name: 'create.next' }));
 const submit = async () => {
   fireEvent.click(screen.getByRole('button', { name: 'submit' }));
   await waitFor(() => expect(mocks.create).toHaveBeenCalledOnce());
@@ -94,13 +92,10 @@ describe('CreateChannel', () => {
     mocks.workspaceId = null;
   });
 
-  it('asks the name first, then members, and creates a general Channel', async () => {
+  it('asks the name and members in one step, and creates a general Channel', async () => {
     renderDialog(() => openCreateChannel());
-    expect(screen.queryByTestId('members')).toBeNull();
-
-    next();
+    expect(screen.getByTestId('channel-title')).toBeInTheDocument();
     expect(screen.getByTestId('members')).toBeInTheDocument();
-    expect(mocks.updateModal).toHaveBeenLastCalledWith({ width: 'min(90vw, 800px)' });
     const payload = await submit();
     expect(payload).not.toHaveProperty('projectId');
     expect(payload).not.toHaveProperty('joinProject');
@@ -110,7 +105,6 @@ describe('CreateChannel', () => {
     mocks.workspaceId = 'ws_1';
     renderDialog(() => openCreateChannel());
     expect(screen.getByRole('checkbox', { name: 'private' })).not.toBeChecked();
-    next();
     await submit();
     await waitFor(() => expect(mocks.updateVisibility).toHaveBeenCalledWith('chn_new', 'public'));
   });
@@ -119,7 +113,6 @@ describe('CreateChannel', () => {
     mocks.workspaceId = 'ws_1';
     renderDialog(() => openCreateChannel());
     fireEvent.click(screen.getByRole('checkbox', { name: 'private' }));
-    next();
     await submit();
     expect(mocks.updateVisibility).not.toHaveBeenCalled();
   });
@@ -133,7 +126,7 @@ describe('CreateChannel', () => {
     renderDialog(() =>
       openInviteMembers({ agentIds: [], id: 'chn_1', peopleCount: 1, workspaceId: null }),
     );
-    expect(screen.queryByRole('button', { name: 'create.next' })).toBeNull();
+    expect(screen.queryByTestId('channel-title')).toBeNull();
     expect(screen.getByTestId('members')).toBeInTheDocument();
   });
 
