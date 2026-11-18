@@ -13,7 +13,6 @@ const sendMessageMock = vi.hoisted(() => vi.fn());
 const refreshAgentListMock = vi.hoisted(() => vi.fn());
 const toggleAgentBuilderPanelMock = vi.hoisted(() => vi.fn());
 const toggleRightPanelMock = vi.hoisted(() => vi.fn());
-const setChatPanelExpandedMock = vi.hoisted(() => vi.fn());
 const createGroupMock = vi.hoisted(() => vi.fn());
 const loadGroupsMock = vi.hoisted(() => vi.fn());
 const createDocumentMock = vi.hoisted(() => vi.fn());
@@ -108,14 +107,6 @@ vi.mock('@/store/global', () => ({
     getState: () => ({
       toggleAgentBuilderPanel: toggleAgentBuilderPanelMock,
       toggleRightPanel: toggleRightPanelMock,
-    }),
-  },
-}));
-
-vi.mock('@/store/groupProfile', () => ({
-  useGroupProfileStore: {
-    getState: () => ({
-      setChatPanelExpanded: setChatPanelExpandedMock,
     }),
   },
 }));
@@ -266,8 +257,6 @@ describe('HomeInputActionImpl', () => {
       const action = createAction();
 
       await action.sendAsGroup({ message: 'build a research group' });
-
-      expect(setChatPanelExpandedMock).toHaveBeenCalledWith(true);
       expect(navigateMock).toHaveBeenCalledWith('/group/group-new/profile');
       expect(sendMessageMock).toHaveBeenCalledWith(
         expect.objectContaining({

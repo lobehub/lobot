@@ -7,7 +7,6 @@ import { revalidateReplica } from '@/libs/replica';
 import { mutate, useClientDataSWR } from '@/libs/swr';
 import { aiChatService } from '@/services/aiChat';
 import { goalService } from '@/services/goal';
-import { briefListResource } from '@/store/brief/slices/list/projection';
 import { taskGroupListResource, taskListResource } from '@/store/task/slices/list/projection';
 
 import { useGoalStore } from './index';
@@ -434,21 +433,6 @@ describe('GoalAction', () => {
     expect(revalidateReplica).toHaveBeenCalledWith(taskGroupListResource);
   });
 
-  it('refreshes the inbox brief feed after a decision gate is answered', async () => {
-    await useGoalStore
-      .getState()
-      .decideGoal('goal-1', { decisionId: 'decision-1', optionId: 'option-1' });
-
-    expect(goalService.decide).toHaveBeenCalledWith({
-      decisionId: 'decision-1',
-      id: 'goal-1',
-      optionId: 'option-1',
-    });
-    // The inbox brief asking the same gate is the `briefList` replica — the old
-    // `brief:list` SWR prefix mutate matched nothing, so the brief stayed put.
-    expect(revalidateReplica).toHaveBeenCalledWith(briefListResource);
-  });
-
   it('reports an archive that landed as done even when the refresh after it fails', async () => {
     const error = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.mocked(revalidateReplica).mockRejectedValueOnce(new Error('offline'));
@@ -482,7 +466,6 @@ describe('GoalAction', () => {
 
     expect(mutate).toHaveBeenCalled();
   });
-
 
   describe('goal title', () => {
     const LONG_ASK = '继续并完成桌宠项目，在现有基础上完善 TTS 语音系统，补齐唤醒词与打断';

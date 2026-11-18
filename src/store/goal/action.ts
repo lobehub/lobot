@@ -31,7 +31,6 @@ import { aiChatService } from '@/services/aiChat';
 import { type GoalListItem, goalService } from '@/services/goal';
 import { type MetricSeriesWithPoints, metricService } from '@/services/metric';
 import { userService } from '@/services/user';
-import { briefListResource } from '@/store/brief/slices/list/projection';
 import { taskGroupListResource, taskListResource } from '@/store/task/slices/list/projection';
 import type { StoreSetter } from '@/store/types';
 import { useUserStore } from '@/store/user';

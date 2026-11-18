@@ -11,7 +11,6 @@ import { agentByIdSelectors, agentSelectors, builtinAgentSelectors } from '@/sto
 import { getChatGroupStoreState } from '@/store/agentGroup';
 import { useChatStore } from '@/store/chat';
 import { useGlobalStore } from '@/store/global';
-import { useGroupProfileStore } from '@/store/groupProfile';
 import { type HomeStore } from '@/store/home/store';
 import { type StoreSetter } from '@/store/types';
 import { markdownToTxt } from '@/utils/markdownToTxt';
@@ -231,10 +230,6 @@ export class HomeInputActionImpl {
 
       // 4. Refresh sidebar agent list
       this.#get().refreshAgentList();
-
-      if (message.trim()) {
-        useGroupProfileStore.getState().setChatPanelExpanded(true);
-      }
 
       // 5. Navigate to Group profile page
       stableWorkspaceAwareNavigate(`/group/${group.id}/profile`);
