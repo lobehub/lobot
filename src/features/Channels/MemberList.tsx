@@ -6,6 +6,8 @@ import { AtSign, BellRing, ExternalLink, FolderCog, MoreHorizontal, UserMinus } 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { presenceDotStyles } from '@/features/ContactList/AgentPresenceBadge';
+import { useAgentPresence } from '@/features/ContactList/useAgentPresence';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 import { useUserStore } from '@/store/user';
@@ -39,34 +41,40 @@ interface MemberEntry {
   tone: ChannelStatusTone;
 }
 
-export const StatusAvatar = ({
-  entry,
-  showIdle,
-  size,
-}: {
-  entry: MemberEntry;
-  /** The roster gives every Agent a dot, idle ones grey; the compact header keeps idle bare. */
-  showIdle?: boolean;
-  size: number;
-}) => (
-  <span {...stylex.props(statusStyles.memberAvatar)}>
-    <MemberAvatar member={entry.member} size={size} />
-    {entry.member.actorType === 'agent' && (showIdle || entry.tone !== 'quiet') && (
+/**
+ * An Agent's dot: its presence, as its contact card shows it (online, idle, asleep, waking,
+ * working, offline, off duty). A reply running in this Channel says working at once, ahead of
+ * the presence poll; until presence loads, only a busy or failed reply earns a dot.
+ */
+const AgentStatusDot = ({ entry }: { entry: MemberEntry }) => {
+  const { t } = useTranslation('common');
+  const presence = useAgentPresence(entry.member.agentId ?? undefined);
+  const status = entry.tone === 'working' ? 'working' : presence?.status;
+  if (!status)
+    return entry.tone === 'quiet' ? null : (
       <span
         aria-hidden
-        {...stylex.props(
-          statusStyles.state,
-          statusStyles.memberDot,
-          entry.tone === 'working'
-            ? statusStyles.memberWorking
-            : entry.tone === 'quiet'
-              ? statusStyles.memberIdle
-              : toneStyles[entry.tone],
-        )}
+        {...stylex.props(statusStyles.state, statusStyles.memberDot, toneStyles[entry.tone])}
       >
         <span {...stylex.props(statusStyles.dot)} />
       </span>
-    )}
+    );
+  return (
+    <span
+      aria-label={t(`contacts.presence.${status}`)}
+      role={'img'}
+      title={t(`contacts.presence.${status}`)}
+      {...stylex.props(statusStyles.state, statusStyles.memberDot, ...presenceDotStyles(status))}
+    >
+      <span {...stylex.props(statusStyles.dot, status === 'sleeping' && statusStyles.dotHollow)} />
+    </span>
+  );
+};
+
+export const StatusAvatar = ({ entry, size }: { entry: MemberEntry; size: number }) => (
+  <span {...stylex.props(statusStyles.memberAvatar)}>
+    <MemberAvatar member={entry.member} size={size} />
+    {entry.member.actorType === 'agent' && <AgentStatusDot entry={entry} />}
   </span>
 );
 
@@ -294,7 +302,7 @@ const MemberRow = ({
         {/* Hovering the avatar shows the member's card, like an avatar in the conversation. */}
         <MemberProfilePopup member={entry.member} placement={'left'}>
           <span {...stylex.props(styles.memberAvatarTrigger)}>
-            <StatusAvatar showIdle entry={entry} size={28} />
+            <StatusAvatar entry={entry} size={28} />
           </span>
         </MemberProfilePopup>
         <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>

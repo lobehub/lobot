@@ -365,6 +365,11 @@ export const statusStyles = stylex.create({
     borderRadius: '50%',
     backgroundColor: 'currentcolor',
   },
+  /** An asleep Agent's dot: a ring, since its first reply waits for the device to wake. */
+  dotHollow: {
+    backgroundColor: 'transparent',
+    boxShadow: 'inset 0 0 0 1.5px currentcolor',
+  },
   /** A bare red dot beside a message whose reply failed. */
   failureMark: {
     display: 'inline-flex',
@@ -423,10 +428,6 @@ export const statusStyles = stylex.create({
   },
   memberWorking: {
     color: cssVar.colorWarning,
-  },
-  /** An idle Agent's dot: present, so every Agent shows its state, but quiet. */
-  memberIdle: {
-    color: cssVar.colorTextQuaternary,
   },
   /** A member's status line under its name: secondary text, one line. */
   memberState: {

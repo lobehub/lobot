@@ -91,6 +91,15 @@ const usePresenceTip = ({ resetsAt, status }: AgentPresence) => {
   return t(`contacts.presence.${status}.tip`);
 };
 
+/**
+ * The presence dot's colour and pulse, for a dot drawn and placed by its caller (a Channel's
+ * member list, say), so every Agent avatar reads its status the same way. Asleep is a ring.
+ */
+export const presenceDotStyles = (status: AgentPresenceStatus) => [
+  tones[status],
+  isPulsing(status) && styles.working,
+];
+
 /** The status chip beside an Agent's role: a dot and what it is doing, explained on hover. */
 export const AgentPresenceLabel = memo<{ presence: AgentPresence }>(({ presence }) => {
   const { t } = useTranslation('common');

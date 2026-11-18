@@ -55,6 +55,8 @@ vi.mock('./MemberProfilePopup', () => ({
   MemberProfilePopup: ({ children }: { children?: unknown }) => children,
 }));
 vi.mock('./useMemberActions', () => ({ useRemoveMember: () => vi.fn() }));
+vi.mock('@/features/ContactList/useAgentPresence', () => ({ useAgentPresence: () => undefined }));
+vi.mock('@/features/ContactList/AgentPresenceBadge', () => ({ presenceDotStyles: () => [] }));
 
 const cook = {
   actorType: 'agent',
