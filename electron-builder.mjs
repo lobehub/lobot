@@ -214,6 +214,10 @@ const getIconFileName = () => {
   return 'Icon-nightly';
 };
 
+// Asset name inside the copied Assets.car; macOS looks it up via CFBundleIconName.
+// The stable/canary catalog is compiled from lobot.icon, the nightly one from AppIcon.icon.
+const getIconAssetName = () => (isStable || isCanary ? 'lobot' : 'AppIcon');
+
 /**
  * @type {import('electron-builder').Configuration}
  * @see https://www.electron.build/configuration
@@ -457,7 +461,7 @@ const config = {
             SUPublicEDKey: sparklePublicKey,
           }
         : {}),
-      CFBundleIconName: 'AppIcon',
+      CFBundleIconName: getIconAssetName(),
       CFBundleURLTypes: [
         {
           CFBundleURLName: `${brandName} Protocol`,
