@@ -23,10 +23,10 @@ const task = (id: string, patch: Record<string, unknown> = {}) => ({
   ...patch,
 });
 
-const renderList = () =>
+const renderList = (variant?: 'contact' | 'panel') =>
   render(
     <SWRConfig value={{ provider: () => new Map() }}>
-      <AgentSchedules agentId="agt_1" />
+      <AgentSchedules agentId="agt_1" variant={variant} />
     </SWRConfig>,
   );
 
@@ -97,5 +97,19 @@ describe('AgentSchedules', () => {
     fireEvent.click(toggle);
     await waitFor(() => expect(taskService.update).toHaveBeenCalled());
     await waitFor(() => expect(toggle).toHaveAttribute('aria-checked', 'true'));
+  });
+
+  it('keeps the title inside the box on a contact card', async () => {
+    vi.mocked(taskService.list).mockResolvedValue({
+      data: [task('a')] as any,
+      success: true,
+      total: 1,
+    });
+    renderList('contact');
+
+    const row = await screen.findByText('Task a');
+    const title = screen.getByText('profile.schedules');
+    const box = title.parentElement!.parentElement!;
+    expect(box).toContainElement(row);
   });
 });

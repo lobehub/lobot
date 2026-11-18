@@ -36,6 +36,21 @@ const styles = stylex.create({
     borderRadius: '10px',
     backgroundColor: cssVar.colorFillQuaternary,
   },
+  // On a contact card the list is one more box under the info list, with its title inside.
+  contactCard: {
+    marginBlockStart: '8px',
+    borderRadius: '12px',
+    width: '100%',
+    textAlign: 'start',
+  },
+  contactLabel: {
+    paddingBlockStart: '12px',
+    paddingBlockEnd: '4px',
+    paddingInline: '16px',
+  },
+  contactRow: {
+    paddingInline: '16px',
+  },
   label: {
     fontSize: '12px',
     color: cssVar.colorTextTertiary,
@@ -58,18 +73,27 @@ const styles = stylex.create({
   },
 });
 
+type AgentSchedulesVariant = 'contact' | 'panel';
+
 const ScheduleRow = ({
   item,
   onToggle,
+  variant,
 }: {
   item: AgentSchedule;
   onToggle: (item: AgentSchedule, enabled: boolean) => void;
+  variant: AgentSchedulesVariant;
 }) => {
   const { t } = useTranslation('chat');
   const time = agentScheduleTime(item, t);
 
   return (
-    <Flexbox horizontal align="center" gap={10} {...stylex.props(styles.row)}>
+    <Flexbox
+      horizontal
+      align="center"
+      gap={10}
+      {...stylex.props(styles.row, variant === 'contact' && styles.contactRow)}
+    >
       <Icon color={cssVar.colorTextTertiary} icon={ClockIcon} size={16} />
       <Flexbox flex={1} style={{ minWidth: 0 }}>
         <Text ellipsis fontSize={13} weight={500}>
@@ -87,8 +111,17 @@ const ScheduleRow = ({
   );
 };
 
-/** An Agent's recurring tasks on its profile: what runs, when, and a switch for each. */
-export function AgentSchedules({ agentId }: { agentId: string }) {
+/**
+ * An Agent's recurring tasks on its profile: what runs, when, and a switch for each.
+ * `contact` lays it out as a box matching the info list on a contact card.
+ */
+export function AgentSchedules({
+  agentId,
+  variant = 'panel',
+}: {
+  agentId: string;
+  variant?: AgentSchedulesVariant;
+}) {
   const { t } = useTranslation('channel');
   const [expanded, setExpanded] = useState(false);
   // The mode each row was switched off from, so switching it back on restores it.
@@ -122,25 +155,38 @@ export function AgentSchedules({ agentId }: { agentId: string }) {
   const visible = expanded ? schedules : schedules.slice(0, AGENT_SCHEDULES_COLLAPSED);
   const hasMore = schedules.length > AGENT_SCHEDULES_COLLAPSED;
 
+  const label = <span {...stylex.props(styles.label)}>{t('profile.schedules')}</span>;
+  const list = (
+    <>
+      {visible.map((item) => (
+        <ScheduleRow item={item} key={item.id} variant={variant} onToggle={handleToggle} />
+      ))}
+      {hasMore && (
+        <Button
+          block
+          size="small"
+          type="text"
+          {...stylex.props(styles.more)}
+          onClick={() => setExpanded((value) => !value)}
+        >
+          {expanded ? t('profile.schedules.collapse') : t('profile.schedules.expand')}
+        </Button>
+      )}
+    </>
+  );
+
+  if (variant === 'contact')
+    return (
+      <Flexbox {...stylex.props(styles.card, styles.contactCard)}>
+        <div {...stylex.props(styles.contactLabel)}>{label}</div>
+        {list}
+      </Flexbox>
+    );
+
   return (
     <Flexbox gap={6}>
-      <span {...stylex.props(styles.label)}>{t('profile.schedules')}</span>
-      <Flexbox {...stylex.props(styles.card)}>
-        {visible.map((item) => (
-          <ScheduleRow item={item} key={item.id} onToggle={handleToggle} />
-        ))}
-        {hasMore && (
-          <Button
-            block
-            size="small"
-            type="text"
-            {...stylex.props(styles.more)}
-            onClick={() => setExpanded((value) => !value)}
-          >
-            {expanded ? t('profile.schedules.collapse') : t('profile.schedules.expand')}
-          </Button>
-        )}
-      </Flexbox>
+      {label}
+      <Flexbox {...stylex.props(styles.card)}>{list}</Flexbox>
     </Flexbox>
   );
 }

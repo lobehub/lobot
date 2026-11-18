@@ -20,6 +20,7 @@ import { coverPattern } from '@/features/AgentViewAll/coverColor';
 import { resolveAgentBadge } from '@/features/AgentViewAll/resolveAgentBadge';
 import SidebarItemAvatar from '@/features/AgentViewAll/SidebarItemAvatar';
 import { useAgentCoverColor } from '@/features/AgentViewAll/useAgentCoverColor';
+import { AgentSchedules } from '@/features/Channels/AgentSchedules';
 import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { useAgentConversationLink } from '@/features/MessageList/useAgentConversationLink';
 import NavHeader from '@/features/NavHeader';
@@ -147,6 +148,7 @@ const ContactCard = memo<Extract<ContactCardState, { status: 'ready' }>>(
             </DropdownMenu>
           </div>
           <ContactInfo agentId={agentId} description={item.description} slug={slug} />
+          {agentId && <AgentSchedules agentId={agentId} variant="contact" />}
         </Flexbox>
       </>
     );
