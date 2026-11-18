@@ -1,4 +1,4 @@
-import { Flexbox, Switch, Text, TextArea, toast } from '@lobehub/ui';
+import { Flexbox, Switch, Text, toast } from '@lobehub/ui';
 import { Form } from '@lobehub/ui/form';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
@@ -10,11 +10,10 @@ import { ModuleSaveBar } from '@/features/AgentChannel/PlatformDetail/ModuleSave
 import type { ChannelWakeConfig } from '@/services/channel';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 
-import { applyWakeForm, toWakeForm, WAKE_TEXT_MAX_LENGTH, type WakeFormValues } from './wakeForm';
+import { applyWakeForm, toWakeForm, type WakeFormValues } from './wakeForm';
 
 /** The blocks with a Save of their own, as on an IM bot's reply settings. */
 const MODULES = {
-  judgement: ['duties', 'customInstructionsEnabled', 'customInstructions'],
   pace: ['pace'],
 } satisfies Record<string, (keyof WakeFormValues)[]>;
 type ModuleId = keyof typeof MODULES;
@@ -140,70 +139,23 @@ function ReplyForm({ channelId, stored }: { channelId: string; stored: ChannelWa
         </Field>
       </Form.Group>
       {form.enabled && (
-        <>
-          <Form.Group
-            collapsible={false}
-            desc={t('settings.reply.section.paceDesc')}
-            extra={saveBar('pace')}
-            keyValue="channel-reply-pace"
-            title={t('settings.reply.section.pace')}
-            variant="filled"
-          >
-            <Flexbox paddingBlock={8}>
-              <ChoiceList
-                aria-label={t('settings.reply.section.pace')}
-                options={options}
-                value={form.pace}
-                onChange={(pace) => update({ pace })}
-              />
-            </Flexbox>
-          </Form.Group>
-          <Form.Group
-            collapsible={false}
-            desc={t('settings.reply.section.judgementDesc')}
-            extra={saveBar('judgement')}
-            keyValue="channel-reply-judgement"
-            title={t('settings.reply.section.judgement')}
-            variant="filled"
-          >
-            <Field desc={t('settings.reply.dutiesHint')} label={t('settings.reply.duties')}>
-              <TextArea
-                aria-label={t('settings.reply.duties')}
-                autoSize={{ maxRows: 10, minRows: 4 }}
-                maxLength={WAKE_TEXT_MAX_LENGTH}
-                placeholder={t('settings.reply.dutiesPlaceholder')}
-                value={form.duties}
-                onChange={(event) => update({ duties: event.target.value })}
-              />
-            </Field>
-            <Field
-              horizontal
-              desc={t('settings.reply.instructionsHint')}
-              label={t('settings.reply.instructions')}
-            >
-              <Switch
-                aria-label={t('settings.reply.instructions')}
-                checked={form.customInstructionsEnabled}
-                onChange={(customInstructionsEnabled) => update({ customInstructionsEnabled })}
-              />
-            </Field>
-            {form.customInstructionsEnabled && (
-              <Field
-                desc={t('settings.reply.instructionsLimit', { count: WAKE_TEXT_MAX_LENGTH })}
-                label={t('settings.reply.instructionsContent')}
-              >
-                <TextArea
-                  aria-label={t('settings.reply.instructionsContent')}
-                  autoSize={{ maxRows: 10, minRows: 4 }}
-                  maxLength={WAKE_TEXT_MAX_LENGTH}
-                  placeholder={t('settings.reply.instructionsPlaceholder')}
-                  value={form.customInstructions}
-                  onChange={(event) => update({ customInstructions: event.target.value })}
-                />
-              </Field>
-            )}
-          </Form.Group>
-        </>
+        <Form.Group
+          collapsible={false}
+          desc={t('settings.reply.section.paceDesc')}
+          extra={saveBar('pace')}
+          keyValue="channel-reply-pace"
+          title={t('settings.reply.section.pace')}
+          variant="filled"
+        >
+          <Flexbox paddingBlock={8}>
+            <ChoiceList
+              aria-label={t('settings.reply.section.pace')}
+              options={options}
+              value={form.pace}
+              onChange={(pace) => update({ pace })}
+            />
+          </Flexbox>
+        </Form.Group>
       )}
     </Flexbox>
   );
