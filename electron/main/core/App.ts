@@ -516,6 +516,8 @@ export class App {
     app.commandLine.appendSwitch('gtk-version', '3');
 
     app.commandLine.appendSwitch('enable-precise-memory-info');
+    // chrome://flags/#smooth-scrolling; #overlay-scrollbars is covered by chromeFlags below
+    app.commandLine.appendSwitch('enable-smooth-scrolling');
     app.commandLine.appendSwitch('enable-features', this.chromeFlags.join(','));
     applyRemoteDebuggingSwitch(this.storeManager.get('remoteDebuggingEnabled', false));
 
