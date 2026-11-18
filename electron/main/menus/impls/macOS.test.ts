@@ -225,11 +225,11 @@ describe('MacOSMenu', () => {
       expect(template.some((item: any) => item.label === 'Quit')).toBe(true);
     });
 
-    it('should include the mini toolbar action in the dock menu', () => {
+    it('should leave Quick Composer and new chat out of the dock menu', () => {
       macOSMenu.buildAndSetAppMenu();
 
       const dockMenu = (app.dock.setMenu as any).mock.calls[0][0];
-      expect(dockMenu.template.some((item: any) => item.label === 'Quick Composer')).toBe(true);
+      expect(dockMenu.template).toEqual([]);
     });
 
     it('should rebuild the dock menu with active topics and leave out system-provided items', () => {

@@ -49,7 +49,7 @@ describe('buildTrayMenuTemplate', () => {
 });
 
 describe('buildDockMenuTemplate', () => {
-  it('keeps static actions when navigation data is empty', () => {
+  it('is empty when navigation data is empty', () => {
     const { app } = createApp();
 
     const template = buildDockMenuTemplate(
@@ -57,13 +57,20 @@ describe('buildDockMenuTemplate', () => {
       { agents: [], pinned: [], recent: [] },
       { includeAgents: true },
     );
+
+    expect(template).toEqual([]);
+  });
+
+  it('leaves out recent items, Quick Composer and new chat', () => {
+    const { app } = createApp();
+    const template = buildDockMenuTemplate(app, {
+      agents: [],
+      pinned: [{ title: 'Pinned task', url: '/tasks/pinned' }],
+      recent: [{ title: 'Recent topic', url: '/agent/a/t' }],
+    });
     const labels = template.map((item) => item.label);
 
-    expect(labels).toContain('tray.openMiniToolbar');
-    expect(labels).toContain('tray.newChat');
-    expect(labels).not.toContain('tray.pinned');
-    expect(labels).not.toContain('tray.recentAgents');
-    expect(labels).not.toContain('tray.recent');
+    expect(labels).toEqual(['tray.pinned', 'Pinned task']);
   });
 
   it('limits dynamic sections and offers More only for agents', () => {
@@ -91,7 +98,6 @@ describe('buildDockMenuTemplate', () => {
 
     expect(labels.filter((label) => String(label).startsWith('Pinned '))).toHaveLength(3);
     expect(labels.filter((label) => String(label).startsWith('Agent '))).toHaveLength(3);
-    expect(labels.filter((label) => String(label).startsWith('Recent '))).toHaveLength(5);
     expect(labels).toContain('tray.moreAgents');
     expect(labels).not.toContain('tray.more');
   });
@@ -147,30 +153,7 @@ describe('buildDockMenuTemplate', () => {
     });
   });
 
-  it('renders recent topics and pages as two-line native items', () => {
-    const { app } = createApp();
-    const template = buildDockMenuTemplate(
-      app,
-      {
-        agents: [],
-        pinned: [],
-        recent: [
-          { subtitle: 'Researcher', title: 'Topic title', url: '/agent/agent-1/topic-1' },
-          { subtitle: 'Page', title: 'Page title', url: '/page/page-1' },
-        ],
-      },
-      { includeAgents: true },
-    );
-
-    expect(template.find(({ label }) => label === 'Topic title')).toMatchObject({
-      sublabel: 'Researcher',
-    });
-    expect(template.find(({ label }) => label === 'Page title')).toMatchObject({
-      sublabel: 'Page',
-    });
-  });
-
-  it('keeps restoration and creation as separate actions', () => {
+  it('opens agents without creating a new topic', () => {
     const { app, mainWindow } = createApp();
     const template = buildDockMenuTemplate(
       app,
@@ -190,10 +173,5 @@ describe('buildDockMenuTemplate', () => {
       path: '/agent/agent-1',
     });
     expect(mainWindow.broadcast).not.toHaveBeenCalledWith('createNewTopic');
-
-    template
-      .find(({ label }) => label === 'tray.newChat')
-      ?.click?.(null as never, null as never, null as never);
-    expect(mainWindow.broadcast).toHaveBeenCalledWith('createNewTopic');
   });
 });

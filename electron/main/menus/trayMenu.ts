@@ -7,7 +7,6 @@ import type { App } from '@/core/App';
 const ACTIVE_LIMIT = 5;
 const PINNED_LIMIT = 3;
 const RECENT_AGENT_LIMIT = 3;
-const RECENT_LIMIT = 5;
 
 const openRoute = (app: App, path: string) => {
   const mainWindow = app.browserManager.getMainWindow();
@@ -43,13 +42,6 @@ export const buildDockMenuTemplate = (
   const agentItems: MenuItemConstructorOptions[] = snapshot.agents
     .slice(0, RECENT_AGENT_LIMIT)
     .map(({ title, url }) => ({ click: () => openRoute(app, url), label: title }));
-  const recentItems: MenuItemConstructorOptions[] = snapshot.recent
-    .slice(0, RECENT_LIMIT)
-    .map(({ subtitle, title, url }) => ({
-      click: () => openRoute(app, url),
-      label: title,
-      sublabel: subtitle,
-    }));
 
   if (snapshot.agents.length > RECENT_AGENT_LIMIT) {
     agentItems.push({
@@ -61,26 +53,17 @@ export const buildDockMenuTemplate = (
     });
   }
 
-  return [
+  const template = [
     ...createSection(t('tray.waitingForHuman'), activeItems('waitingForHuman')),
     ...createSection(t('tray.running'), activeItems('running')),
     ...createSection(t('tray.pinned'), pinnedItems),
     ...(includeAgents ? createSection(t('tray.recentAgents'), agentItems) : []),
-    ...createSection(t('tray.recent'), recentItems),
-    {
-      accelerator: 'Alt+Shift+Space',
-      click: () => app.screenCaptureManager.startSession(),
-      label: t('tray.openMiniToolbar'),
-    },
-    {
-      click: () => {
-        const mainWindow = app.browserManager.getMainWindow();
-        mainWindow.show();
-        mainWindow.broadcast('createNewTopic');
-      },
-      label: t('tray.newChat'),
-    },
   ];
+
+  // macOS appends its own window list and app items, so drop the separator closing our last section
+  if (template.at(-1)?.type === 'separator') template.pop();
+
+  return template;
 };
 
 /**
