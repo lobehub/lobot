@@ -60,7 +60,7 @@ export default class NotificationCtr extends ControllerModule {
       }
 
       if (electronIs.windows()) {
-        app.setAppUserModelId(getDesktopEnv().DESKTOP_APP_ID || 'com.lobehub.chat');
+        app.setAppUserModelId(getDesktopEnv().DESKTOP_APP_ID || 'com.lobehub.lobot');
         logger.debug('Set Windows App User Model ID for notifications');
       }
 

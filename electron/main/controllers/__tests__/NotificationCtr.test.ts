@@ -114,7 +114,9 @@ describe('NotificationCtr', () => {
       expect(Notification.isSupported).toHaveBeenCalled();
     });
 
-    it('should set app user model ID on Windows', async () => {
+    // Must match electron-builder's default appId, which the installer stamps on
+    // the Start menu shortcut; LobeHub desktop owns com.lobehub.chat.
+    it("should set Lobot's own app user model ID on Windows", async () => {
       const { windows } = await import('@/utils/platform');
       const { app, Notification } = await import('electron');
       vi.mocked(windows).mockReturnValue(true);
@@ -122,7 +124,7 @@ describe('NotificationCtr', () => {
 
       controller.afterAppReady();
 
-      expect(app.setAppUserModelId).toHaveBeenCalledWith('com.lobehub.chat');
+      expect(app.setAppUserModelId).toHaveBeenCalledWith('com.lobehub.lobot');
 
       vi.mocked(windows).mockReturnValue(false);
     });
