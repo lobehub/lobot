@@ -578,6 +578,8 @@ export type ChannelReplyJob = Pick<
 >;
 
 export interface ChannelPublicThread {
+  /** When the Thread was opened. Absent in views cached before it was sent. */
+  createdAt?: Date;
   followerMemberIds: string[];
   id: string;
   /**

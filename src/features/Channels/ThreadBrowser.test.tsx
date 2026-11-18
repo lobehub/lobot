@@ -31,6 +31,7 @@ vi.mock('@lobehub/ui', () => ({
     createElement('div', {}, children as never, content as never),
   SearchBar: ({ onChange, placeholder, value }: any) =>
     createElement('input', { onChange, placeholder, value }),
+  Segmented: () => createElement('div'),
 }));
 
 const replied = (iso: string, content = '') => ({
@@ -50,6 +51,7 @@ const detail = {
   threads: [
     {
       followerMemberIds: ['mem_cook', 'mem_me'],
+      createdAt: new Date('2026-11-17T12:00:00Z'),
       id: 'thr_1',
       lastReply: replied('2026-11-18T09:00:00Z', 'Members are unified'),
       rootMessageId: 'msg_1',
@@ -57,6 +59,7 @@ const detail = {
     },
     {
       followerMemberIds: ['mem_me'],
+      createdAt: new Date('2026-11-16T12:00:00Z'),
       id: 'thr_2',
       lastReply: replied('2026-11-18T11:00:00Z', 'Release **fixed**'),
       rootMessageId: 'msg_2',
@@ -94,6 +97,18 @@ describe('browseThreads', () => {
       ['Unify Channel members', false],
       ['thread 3', true],
     ]);
+  });
+
+  it('orders by when threads were opened when asked to', () => {
+    const entries = browseThreads(detail, {
+      activeId: null,
+      fallbackTitle: (index) => `thread ${index + 1}`,
+      query: '',
+      sort: 'created',
+      unreadIds: new Set(),
+    });
+
+    expect(entries.map((entry) => entry.thread.id)).toEqual(['thr_1', 'thr_2', 'thr_3']);
   });
 
   it('never marks an archived thread unread', () => {

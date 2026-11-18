@@ -1,4 +1,4 @@
-import { ActionIcon, Avatar, Icon, Popover, SearchBar } from '@lobehub/ui';
+import { ActionIcon, Avatar, Icon, Popover, SearchBar, Segmented } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { ChannelDetail, ChannelPublicThread } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
@@ -7,6 +7,8 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { MessagesCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { useCloseOnNavigate } from '@/hooks/useCloseOnNavigate';
 import { channelSelectors, useChannelStore } from '@/store/channel';
@@ -51,7 +53,11 @@ const styles = stylex.create({
   },
   search: { flex: '1', minWidth: 0 },
   count: {
+    display: 'flex',
     flexShrink: 0,
+    gap: 8,
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingBlock: 10,
     fontSize: 12,
     fontWeight: 500,
@@ -218,8 +224,23 @@ const styles = stylex.create({
 
 const oneLine = (text: string) => text.replaceAll(/\s+/g, ' ').trim();
 
-const lastActive = (thread: ChannelPublicThread) =>
-  thread.lastReply ? new Date(thread.lastReply.createdAt).getTime() : 0;
+const time = (value?: Date | string | null) => (value ? new Date(value).getTime() : 0);
+
+/** How the panel orders threads: by their newest reply, or by when they were opened. */
+export type ThreadSort = 'activity' | 'created';
+
+const sortKey = (thread: ChannelPublicThread, sort: ThreadSort) =>
+  sort === 'created'
+    ? time(thread.createdAt)
+    : time(thread.lastReply?.createdAt) || time(thread.createdAt);
+
+/** The person's chosen thread order, kept on this device across Channels. */
+const useThreadSortStore = create<{ sort: ThreadSort }>()(
+  persist(() => ({ sort: 'activity' as ThreadSort }), {
+    name: 'LOBE_CHANNEL_THREAD_SORT',
+    storage: createJSONStorage(() => localStorage),
+  }),
+);
 
 export interface BrowsedThread {
   active: boolean;
@@ -232,8 +253,8 @@ export interface BrowsedThread {
 }
 
 /**
- * The Channel's threads as the panel lists them: live ones newest activity first, then the
- * archived ones the same way, filtered by a search on the title and the last reply.
+ * The Channel's threads as the panel lists them: live ones first, then the archived ones, each
+ * newest first by the chosen order, filtered by a search on the title and the last reply.
  */
 export const browseThreads = (
   detail: Pick<ChannelDetail, 'messages' | 'threads'>,
@@ -242,12 +263,14 @@ export const browseThreads = (
     fallbackTitle,
     mentionedIds = new Set(),
     query,
+    sort = 'activity',
     unreadIds,
   }: {
     activeId: string | null;
     fallbackTitle: (index: number) => string;
     mentionedIds?: Set<string>;
     query: string;
+    sort?: ThreadSort;
     unreadIds: Set<string>;
   },
 ): BrowsedThread[] => {
@@ -279,7 +302,8 @@ export const browseThreads = (
     )
     .sort(
       (a, b) =>
-        Number(a.archived) - Number(b.archived) || lastActive(b.thread) - lastActive(a.thread),
+        Number(a.archived) - Number(b.archived) ||
+        sortKey(b.thread, sort) - sortKey(a.thread, sort),
     );
 };
 
@@ -369,6 +393,7 @@ export const ThreadBrowser = ({
 }) => {
   const { t } = useTranslation('channel');
   const [query, setQuery] = useState('');
+  const sort = useThreadSortStore((state) => state.sort);
   const unreadIds = useUnreadThreadIds(detail.threads, detail.members);
   const mentionedIds = useMentionedThreadIds(
     useChannelStore(channelSelectors.listed(detail.channel.id))?.threadMentions,
@@ -378,6 +403,7 @@ export const ThreadBrowser = ({
     fallbackTitle: (index) => `${t('thread')} ${index + 1}`,
     mentionedIds,
     query,
+    sort,
     unreadIds,
   });
   const archivedCount = entries.filter((entry) => entry.archived).length;
@@ -410,9 +436,20 @@ export const ThreadBrowser = ({
         </div>
       </div>
       <div {...stylex.props(styles.count)}>
-        {query.trim()
-          ? t('threadBrowser.matches', { count: entries.length })
-          : t('threadBrowser.count', { count: entries.length })}
+        <span>
+          {query.trim()
+            ? t('threadBrowser.matches', { count: entries.length })
+            : t('threadBrowser.count', { count: entries.length })}
+        </span>
+        <Segmented<ThreadSort>
+          size="small"
+          value={sort}
+          options={[
+            { label: t('threadBrowser.sortActivity'), value: 'activity' },
+            { label: t('threadBrowser.sortCreated'), value: 'created' },
+          ]}
+          onChange={(value) => useThreadSortStore.setState({ sort: value })}
+        />
       </div>
       <div {...stylex.props(styles.list)}>
         {entries.length ? (
