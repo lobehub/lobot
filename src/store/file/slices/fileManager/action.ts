@@ -1,14 +1,5 @@
-import {
-  buildFolderTree,
-  createNanoId,
-  sanitizeFolderName,
-  topologicalSortFolders,
-} from '@lobechat/utils';
-import { toast, type ToastInstance } from '@lobehub/ui';
 import { t } from 'i18next';
-import pMap from 'p-map';
 
-import { FILE_UPLOAD_BLACKLIST, MAX_UPLOAD_FILE_COUNT } from '@/const/file';
 import {
   createReplicaSlice,
   linkReplicaEntity,
@@ -16,24 +7,18 @@ import {
   type ReplicaEntityAdapter,
   type ReplicaLens,
   type ReplicaPageResult,
-  type ReplicaSyncResult,
 } from '@/libs/replica';
-import { documentService } from '@/services/document';
-import { FileService, fileService } from '@/services/file';
-import { ragService } from '@/services/rag';
-import { type UploadFileListDispatch } from '@/store/file/reducers/uploadFileList';
-import { uploadFileListReducer } from '@/store/file/reducers/uploadFileList';
+import { FileService } from '@/services/file';
+import {
+  type UploadFileListDispatch,
+  uploadFileListReducer,
+} from '@/store/file/reducers/uploadFileList';
 import { type StoreSetter } from '@/store/types';
-import { type FileListItem, type QueryFileListParams } from '@/types/files';
-import { type ResourceItem } from '@/types/resource';
-import { isChunkingSupported } from '@/utils/isChunkingSupported';
+import { type FileListItem } from '@/types/files';
 import { isTrpcErrorCode } from '@/utils/trpcError';
-import { unzipFile } from '@/utils/unzipFile';
 
 import { type FileStore, useFileStore } from '../../store';
 import {
-  DEFAULT_FILE_LIST_PAGE_SIZE,
-  FILE_LIST_KEY,
   fileDetailResource,
   type FileDetailValue,
   type FileListData,
@@ -42,7 +27,6 @@ import {
   folderBreadcrumbResource,
   type FolderCrumb,
 } from './projection';
-import { fileManagerSelectors } from './selectors';
 
 const serverFileService = new FileService();
 
@@ -175,24 +159,6 @@ class FileManageActionImpl {
     this.#fileEntity = linkReplicaEntity<FileListItem>([this.#fileList, this.#fileDetail]);
   }
 
-  #resolveChunkTargetId = async (id: string): Promise<string> => {
-    // Reuse the selector so local resolution consults every store list
-    // (fileList → resourceMap → resourceMap-by-fileId → resourceList).
-    const localResource = fileManagerSelectors.getFileByChunkTargetId(id)(this.#get());
-    if (localResource?.fileId) return localResource.fileId;
-    if (!id.startsWith('docs_')) return id;
-
-    try {
-      const resource = await fileService.getKnowledgeItem(id);
-      return resource?.fileId ?? id;
-    } catch {
-      return id;
-    }
-  };
-
-  #resolveChunkTargetIds = async (ids: string[]): Promise<string[]> =>
-    Promise.all(ids.map((id) => this.#resolveChunkTargetId(id)));
-
   /**
    * One knowledge item, with the server's "not found" mapped to a confirmed
    * absence (`{ file: null }`) instead of a rejection. `getKnowledgeItem` throws
@@ -309,10 +275,6 @@ class FileManageActionImpl {
 
       if (!result) return;
       await this.#get().refreshFileList({ revalidateResources: true });
-
-      if (isChunkingSupported({ fileType: item.file.type, name: item.file.name })) {
-        await this.#get().parseFilesToChunks([result.id], { skipExist: false });
-      }
     } catch (error) {
       console.error(error);
       dispatchDockFileList({
@@ -328,25 +290,6 @@ class FileManageActionImpl {
     if (nextValue === this.#get().dockUploadFileList) return;
 
     this.#set({ dockUploadFileList: nextValue }, false, `dispatchDockFileList/${payload.type}`);
-  };
-
-  parseFilesToChunks = async (ids: string[], params?: { skipExist?: boolean }): Promise<void> => {
-    const chunkTargetIds = await this.#resolveChunkTargetIds(ids);
-    // toggle file ids
-    this.#get().toggleParsingIds(chunkTargetIds);
-
-    // parse files
-    const pools = chunkTargetIds.map(async (id) => {
-      try {
-        await ragService.createParseFileTask(id, params?.skipExist);
-      } catch (e) {
-        console.error(e);
-      }
-    });
-
-    await Promise.all(pools);
-    await this.#get().refreshFileList();
-    this.#get().toggleParsingIds(chunkTargetIds, false);
   };
 
   refreshFileList = async (options?: RefreshFileListOptions): Promise<void> => {
@@ -368,24 +311,6 @@ class FileManageActionImpl {
    */
   forgetKnowledgeItems = (ids: string[]): void => {
     for (const id of ids) this.#fileEntity.remove(id);
-  };
-
-  toggleParsingIds = (ids: string[], loading?: boolean): void => {
-    this.#set((state) => {
-      const nextValue = new Set(state.creatingChunkingTaskIds);
-
-      ids.forEach((id: string) => {
-        if (typeof loading === 'undefined') {
-          if (nextValue.has(id)) nextValue.delete(id);
-          else nextValue.add(id);
-        } else {
-          if (loading) nextValue.add(id);
-          else nextValue.delete(id);
-        }
-      });
-
-      return { creatingChunkingTaskIds: Array.from(nextValue.values()) };
-    });
   };
 
   /**

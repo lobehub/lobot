@@ -34,14 +34,6 @@ import { getDefaultLibrarySort, getExplorerSearchParams } from './selectors';
 
 const n = setNamespace('resourceManager');
 
-type MultiSelectActionType =
-  | 'addToKnowledgeBase'
-  | 'moveToOtherKnowledgeBase'
-  | 'batchChunking'
-  | 'delete'
-  | 'deleteLibrary'
-  | 'removeFromKnowledgeBase';
-
 export type Store = Action & State;
 
 type Setter = StoreSetter<Store>;
@@ -368,144 +360,8 @@ class ResourceManagerStoreActionImpl {
     return useFileStore.getState().queryParams;
   };
 
-  #findSearchHit = (id: string): ResourceItem | undefined => {
-    for (const entry of Object.values(this.#get().explorerSearchEntries)) {
-      const hit = entry?.items.find((item) => item.id === id);
-      if (hit) return hit;
-    }
-  };
-
-  clearSelectAllState = (): void => {
-    this.#set({ selectAllState: 'none', selectedFileIds: [], selectionTotal: undefined });
-  };
-
   handleBackToList = (): void => {
     this.#set({ currentViewItemId: undefined, mode: 'explorer' });
-  };
-
-  onActionClick = async (type: MultiSelectActionType): Promise<void> => {
-    const { libraryId, resolveSelectedResourceIds, selectAllState, selectedFileIds } = this.#get();
-    const { useFileStore } = await import('@/store/file');
-    const { useKnowledgeBaseStore } = await import('@/store/library');
-    const { isChunkingSupported } = await import('@/utils/isChunkingSupported');
-
-    const fileStore = useFileStore.getState();
-    const kbStore = useKnowledgeBaseStore.getState();
-
-    switch (type) {
-      case 'delete': {
-        // The explorer's own list is optimistic, but the sidebar tree keeps a
-        // separate per-folder cache: without this it holds deleted folders
-        // until the next full load.
-        const { useTreeStore } = await import('@/store/tree');
-        const currentFolderKey = fileStore.queryParams?.parentId ?? '';
-
-        // Delete-by-query stands for whichever list the user acted on: the
-        // folder list, or the search overlay's query while a keyword is typed.
-        // Resolving a select-all into ids first would run one detail lookup per
-        // hit inside `deleteResources` before the batch delete starts, so a
-        // large search paid a lookup for every row it was about to delete.
-        const deleteQuery = selectAllState === 'all' ? this.#selectionQuery() : undefined;
-
-        if (deleteQuery) {
-          const { resourceService } = await import('@/services/resource');
-
-          await resourceService.deleteResourcesByQuery(deleteQuery, selectedFileIds);
-          // The deleted set is only known to the server, so the cached searches
-          // cannot drop those rows by id: invalidate the surfaces instead and
-          // let the refetch paint whatever survived.
-          void this.#invalidateExplorerSearch();
-          // Same for the explorer list: evict every cached variant (memory and
-          // persisted rows), so a failed refetch cannot leave deleted rows for a
-          // reload or an offline visit to repaint. The server applies the
-          // caller's workspace role — members delete only their own rows, owners
-          // the full query scope — so the revalidation repaints the survivors.
-          await fileStore.evictResourceLists();
-          // The deleted set is only known to the server here, so the persisted
-          // tree cannot drop those rows by id either: drop the snapshot and
-          // refetch every loaded folder — a library-wide search hits rows in
-          // folders the sidebar has expanded, and refreshing only the folder
-          // behind the explorer would leave those painting the deleted rows.
-          // Dropping it first means a refetch that never lands still cannot
-          // repaint the deleted rows on reload.
-          useTreeStore.getState().forgetSnapshot();
-          void useTreeStore.getState().revalidateLoaded(currentFolderKey);
-
-          this.clearSelectAllState();
-          return;
-        }
-
-        const resourceIds =
-          selectAllState === 'all' ? await resolveSelectedResourceIds() : selectedFileIds;
-
-        await fileStore.deleteResources(resourceIds);
-        void useTreeStore.getState().dropNodes(resourceIds, currentFolderKey);
-        // The explorer's own list drops the rows optimistically; the search
-        // surfaces mirror cached replica pages, so drop them there too.
-        this.removeSearchHits(resourceIds);
-
-        this.clearSelectAllState();
-        return;
-      }
-
-      case 'removeFromKnowledgeBase': {
-        const resourceIds = await resolveSelectedResourceIds();
-        if (!libraryId) return;
-
-        await kbStore.removeFilesFromKnowledgeBase(libraryId, resourceIds);
-        // The rows still exist, so they cannot be dropped from every cached
-        // search by id; but they no longer match this library's searches.
-        // Refetch the search surfaces so the hits and counts follow the server.
-        void this.#invalidateExplorerSearch();
-        void this.collapseHierarchySearch();
-        this.clearSelectAllState();
-        return;
-      }
-
-      case 'addToKnowledgeBase':
-      case 'moveToOtherKnowledgeBase': {
-        return;
-      }
-
-      case 'batchChunking': {
-        const resourceIds = await resolveSelectedResourceIds();
-        const chunkableFileIds = resourceIds.filter((id) => {
-          // Search hits from other folders are not in the folder list's map.
-          const resource = fileStore.resourceMap?.get(id) ?? this.#findSearchHit(id);
-          // For server-resolved IDs not yet in the local map, include them
-          // and let the server handle unsupported type filtering
-          if (!resource) return selectAllState === 'all';
-          return isChunkingSupported(resource);
-        });
-
-        await fileStore.parseFilesToChunks(chunkableFileIds, { skipExist: true });
-        this.clearSelectAllState();
-        return;
-      }
-
-      case 'deleteLibrary': {
-        if (!libraryId) return;
-
-        await kbStore.removeKnowledgeBase(libraryId);
-
-        if (typeof window !== 'undefined') {
-          window.location.href = '/knowledge';
-        }
-      }
-    }
-  };
-
-  resolveSelectedResourceIds = async (): Promise<string[]> => {
-    const { selectAllState, selectedFileIds } = this.#get();
-    if (selectAllState !== 'all') return selectedFileIds;
-
-    const { resourceService } = await import('@/services/resource');
-    const queryParams = this.#selectionQuery();
-
-    if (!queryParams) return selectedFileIds;
-
-    const result = await resourceService.resolveSelectionIds(queryParams);
-    return result.ids.filter((id) => !selectedFileIds.includes(id));
   };
 
   selectAllLoadedResources = (selectedFileIds: string[]): void => {

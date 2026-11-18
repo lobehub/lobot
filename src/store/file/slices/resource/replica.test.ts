@@ -865,33 +865,6 @@ describe('resourceList replica', () => {
     await waitFor(async () => expect(await storedIds(sorted)).toEqual(['keep']));
   });
 
-  it('evicts every persisted list variant after a select-all deletion by query', async () => {
-    const sorted = normalizeResourceListParams({ ...BASE_INPUT, sorter: 'name', sortType: 'asc' })!;
-    await seedPersisted(sorted, [row('gone')]);
-
-    // The head answers once; the revalidation after the deletion fails.
-    querySpy.mockResolvedValueOnce(page([row('gone')], 1)).mockRejectedValue(new Error('offline'));
-    vi.spyOn(resourceService, 'deleteResourcesByQuery').mockResolvedValue({ count: 1 } as never);
-    const { useTreeStore } = await import('@/store/tree');
-    vi.spyOn(useTreeStore.getState(), 'revalidate').mockResolvedValue(undefined as never);
-    const { useResourceManagerStore } = await import('@/features/ResourceManager/store');
-
-    renderHook(() => useFileStore((s) => s.useFetchResources)(BASE_INPUT), { wrapper });
-    await waitFor(() => expect(ids()).toEqual(['gone']));
-    await waitFor(async () => expect(await storedIds(BASE_PARAMS)).toEqual(['gone']));
-
-    useResourceManagerStore.setState({ selectAllState: 'all', selectedFileIds: [] });
-    await act(async () => {
-      await useResourceManagerStore.getState().onActionClick('delete');
-    });
-
-    // Neither the mounted query's row nor another variant's survives to be
-    // hydrated by a reload or an offline visit.
-    expect(ids()).toEqual([]);
-    await waitFor(async () => expect(await storedIds(BASE_PARAMS)).toBeUndefined());
-    expect(await storedIds(sorted)).toBeUndefined();
-  });
-
   it('does not collapse the folder the user navigated to while a move was in flight', async () => {
     querySpy.mockImplementation(async (params) => {
       if (params.parentId === 'folder-b') {

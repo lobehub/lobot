@@ -10,8 +10,6 @@ import {
 } from './projection';
 
 export interface FileManagerState {
-  creatingChunkingTaskIds: string[];
-  creatingEmbeddingTaskIds: string[];
   currentFolderId?: string | null;
   dockUploadFileList: UploadFileItem[];
   /**
@@ -39,8 +37,6 @@ export interface FileManagerState {
 }
 
 export const initialFileManagerState: FileManagerState = {
-  creatingChunkingTaskIds: [],
-  creatingEmbeddingTaskIds: [],
   currentFolderId: undefined,
   dockUploadFileList: [],
   fileDetailMap: {},
