@@ -4,8 +4,8 @@ import { Center, Flexbox, Icon } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 import { FileImage, FileText, FileUpIcon, FolderIcon } from 'lucide-react';
-import { type CSSProperties, type ReactNode } from 'react';
-import { memo, useMemo } from 'react';
+import { type CSSProperties, type DragEvent, type ReactNode } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { sx } from '@/styles/sx';
@@ -122,6 +122,11 @@ interface DragUploadZoneProps {
    */
   overlayMinHeight?: number;
   /**
+   * Show the overlay only while the drag is over this zone instead of anywhere on the page,
+   * so side-by-side zones don't all light up at once.
+   */
+  overlayOnHover?: boolean;
+  /**
    * Custom style for the container
    */
   style?: CSSProperties;
@@ -136,6 +141,7 @@ const DragUploadZone = memo<DragUploadZoneProps>(
     enableLocalPathReference = false,
     onLocalPaths,
     overlayMinHeight = 160,
+    overlayOnHover = false,
     onUploadFiles,
     style,
   }) => {
@@ -152,8 +158,26 @@ const DragUploadZone = memo<DragUploadZoneProps>(
       onUploadFiles,
     });
 
-    // Show overlay when files are being dragged anywhere on the page
-    const showOverlay = isDraggingGlobally && !disabled;
+    const [isDragOver, setIsDragOver] = useState(false);
+    useEffect(() => {
+      if (!isDraggingGlobally) setIsDragOver(false);
+    }, [isDraggingGlobally]);
+
+    const containerProps = getContainerProps();
+    const hoverProps = overlayOnHover
+      ? {
+          onDragLeave: (e: DragEvent) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setIsDragOver(false);
+          },
+          onDragOver: (e: DragEvent) => {
+            containerProps.onDragOver(e);
+            if (!isDragOver) setIsDragOver(true);
+          },
+        }
+      : undefined;
+
+    // Show overlay when files are being dragged anywhere on the page, or only over this zone
+    const showOverlay = isDraggingGlobally && !disabled && (!overlayOnHover || isDragOver);
     const isLocalPathReferenceOverlay = enableLocalPathReference && dragContentKind !== 'none';
 
     // Local path reference mode has distinct copy and tone so users can tell it
@@ -197,7 +221,7 @@ const DragUploadZone = memo<DragUploadZoneProps>(
     const tone = isLocalPathReferenceOverlay ? LOCAL_PATH_TONE : DEFAULT_TONE;
 
     return (
-      <div {...sx(styles.container, className, style)} {...getContainerProps()}>
+      <div {...sx(styles.container, className, style)} {...containerProps} {...hoverProps}>
         {children}
         {showOverlay && (
           <div {...stylex.props(styles.overlay)}>

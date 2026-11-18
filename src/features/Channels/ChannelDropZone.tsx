@@ -16,7 +16,8 @@ const zoneStyle = {
 
 /**
  * Files dropped anywhere on a conversation, not only on its input, land in that composer's
- * attachments. A conversation covered by another panel takes no drops.
+ * attachments. A conversation covered by another panel takes no drops; with the thread panel
+ * open beside the main conversation, only the one under the cursor shows the overlay.
  */
 export function ChannelDropZone({
   children,
@@ -32,6 +33,7 @@ export function ChannelDropZone({
   const { canUpload } = useCanUploadAttachments();
   return (
     <DragUploadZone
+      overlayOnHover
       disabled={disabled || !canUpload}
       style={zoneStyle}
       onUploadFiles={attachments.upload}
