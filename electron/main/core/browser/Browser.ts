@@ -8,6 +8,7 @@ import { app, BrowserWindow, ipcMain, screen, session as electronSession, shell 
 
 import { preloadDir, resourcesDir } from '@/const/dir';
 import { DESKTOP_EXTERNAL_NAVIGATION_HOSTS, isMac } from '@/const/env';
+import AuthCtr from '@/controllers/AuthCtr';
 import RemoteServerConfigCtr from '@/controllers/RemoteServerConfigCtr';
 import { backendProxyProtocolManager } from '@/core/infrastructure/BackendProxyProtocolManager';
 import { getRemoteDebuggingRendererArgs } from '@/modules/remoteDebugging';
@@ -813,12 +814,15 @@ export default class Browser {
   private setupRemoteServerRequestHook(browserWindow: BrowserWindow): void {
     const session = browserWindow.webContents.session;
     const remoteServerConfigCtr = this.app.getController(RemoteServerConfigCtr);
+    const authCtr = this.app.getController(AuthCtr);
 
     const targetSession = session || electronSession.defaultSession;
     if (!targetSession) return;
 
     backendProxyProtocolManager.registerWithRemoteBaseUrl(targetSession, {
-      getAccessToken: () => remoteServerConfigCtr.getAccessToken(),
+      // Waits out a launch or wake refresh, so a lapsed token is not sent and read as signed out.
+      getAccessToken: () =>
+        authCtr ? authCtr.getRequestAccessToken() : remoteServerConfigCtr.getAccessToken(),
       getRemoteBaseUrl: async () => {
         const config = await remoteServerConfigCtr.getRemoteServerConfig();
         const remoteServerUrl = await remoteServerConfigCtr.getRemoteServerUrl(config);

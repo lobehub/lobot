@@ -745,6 +745,95 @@ describe('AuthCtr', () => {
       });
     });
 
+    describe('getRequestAccessToken', () => {
+      const deferred = <T>() => {
+        let resolve!: (value: T) => void;
+        const promise = new Promise<T>((r) => {
+          resolve = r;
+        });
+        return { promise, resolve };
+      };
+
+      it('holds a request made before app ready until the launch refresh replaces a lapsed token', async () => {
+        let token = 'expired-token';
+        vi.mocked(mockRemoteServerConfigCtr.getAccessToken).mockImplementation(async () => token);
+        vi.mocked(mockRemoteServerConfigCtr.isTokenExpiringSoon).mockReturnValue(true);
+        const refresh = deferred<{ success: boolean }>();
+        vi.mocked(mockRemoteServerConfigCtr.refreshAccessToken).mockReturnValue(refresh.promise);
+
+        let sent: string | null | undefined;
+        void authCtr.getRequestAccessToken().then((value) => {
+          sent = value;
+        });
+        await vi.advanceTimersByTimeAsync(100);
+        expect(sent).toBeUndefined();
+
+        token = 'fresh-token';
+        refresh.resolve({ success: true });
+        await vi.advanceTimersByTimeAsync(0);
+        expect(sent).toBe('fresh-token');
+
+        // App ready joins the check the request started instead of refreshing again.
+        authCtr.afterAppReady();
+        await vi.advanceTimersByTimeAsync(100);
+        expect(mockRemoteServerConfigCtr.refreshAccessToken).toHaveBeenCalledTimes(1);
+      });
+
+      it('waits for a refresh already in flight', async () => {
+        let token = 'expired-token';
+        vi.mocked(mockRemoteServerConfigCtr.getAccessToken).mockImplementation(async () => token);
+        authCtr.afterAppReady();
+        await vi.advanceTimersByTimeAsync(100);
+
+        const refresh = deferred<{ success: boolean }>();
+        Object.defineProperty(mockRemoteServerConfigCtr, 'pendingRefresh', {
+          configurable: true,
+          get: () => refresh.promise,
+        });
+        try {
+          let sent: string | null | undefined;
+          void authCtr.getRequestAccessToken().then((value) => {
+            sent = value;
+          });
+          await vi.advanceTimersByTimeAsync(100);
+          expect(sent).toBeUndefined();
+
+          token = 'fresh-token';
+          refresh.resolve({ success: true });
+          await vi.advanceTimersByTimeAsync(0);
+          expect(sent).toBe('fresh-token');
+        } finally {
+          delete (mockRemoteServerConfigCtr as { pendingRefresh?: unknown }).pendingRefresh;
+        }
+      });
+
+      it('lets a request go with the current token once a stuck refresh has held it 10s', async () => {
+        vi.mocked(mockRemoteServerConfigCtr.getAccessToken).mockResolvedValue('expired-token');
+        vi.mocked(mockRemoteServerConfigCtr.isTokenExpiringSoon).mockReturnValue(true);
+        vi.mocked(mockRemoteServerConfigCtr.refreshAccessToken).mockReturnValue(
+          new Promise(() => {}),
+        );
+
+        let sent: string | null | undefined;
+        void authCtr.getRequestAccessToken().then((value) => {
+          sent = value;
+        });
+        await vi.advanceTimersByTimeAsync(9000);
+        expect(sent).toBeUndefined();
+        await vi.advanceTimersByTimeAsync(1000);
+        expect(sent).toBe('expired-token');
+      });
+
+      it('does not hold a request once the launch check found the token valid', async () => {
+        vi.mocked(mockRemoteServerConfigCtr.getAccessToken).mockResolvedValue('valid-token');
+        authCtr.afterAppReady();
+        await vi.advanceTimersByTimeAsync(100);
+
+        await expect(authCtr.getRequestAccessToken()).resolves.toBe('valid-token');
+        expect(mockRemoteServerConfigCtr.refreshAccessToken).not.toHaveBeenCalled();
+      });
+    });
+
     describe('afterAppReady (initializeAutoRefresh)', () => {
       it('should proactively refresh on startup when token is expiring soon', async () => {
         vi.mocked(mockRemoteServerConfigCtr.isTokenExpiringSoon).mockReturnValue(true);

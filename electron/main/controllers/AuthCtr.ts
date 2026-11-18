@@ -30,6 +30,8 @@ const POLL_INTERVAL = 3000; // 3 seconds
 // access-token lifetime makes the token look "expiring soon" right after login,
 // refreshing on every launch/activation and churning refresh-token rotations.
 const TOKEN_REFRESH_BUFFER = 10 * 60 * 1000; // 10 minutes
+/** The longest a proxied request waits for a token check before it goes out with what it has. */
+const REQUEST_TOKEN_WAIT = 10 * 1000;
 
 /**
  * Authentication Controller
@@ -62,6 +64,12 @@ export default class AuthCtr extends ControllerModule {
    */
 
   private autoRefreshTimer: NodeJS.Timeout | null = null;
+
+  /** The launch check, started by whichever comes first: app ready or the first request. */
+  private startupTokenCheck: Promise<void> | null = null;
+
+  /** The launch or wake check in progress, which may be replacing a lapsed token. */
+  private tokenCheck: Promise<void> | null = null;
 
   /**
    * Construct redirect_uri, ensuring the same URI is used for authorization and token exchange
@@ -686,7 +694,47 @@ export default class AuthCtr extends ControllerModule {
    */
   afterAppReady() {
     logger.debug('AuthCtr initialized, checking for existing tokens');
-    this.initializeAutoRefresh();
+    void this.ensureStartupTokenCheck();
+  }
+
+  private trackTokenCheck(check: () => Promise<void>): Promise<void> {
+    const run = check().finally(() => {
+      if (this.tokenCheck === run) this.tokenCheck = null;
+    });
+    this.tokenCheck = run;
+    return run;
+  }
+
+  /**
+   * The window loads before `afterAppReady`, so its first requests can arrive before the launch
+   * check began; they start it themselves rather than go out with a token it is about to replace.
+   */
+  private ensureStartupTokenCheck(): Promise<void> {
+    this.startupTokenCheck ??= this.trackTokenCheck(() => this.initializeAutoRefresh());
+    return this.startupTokenCheck;
+  }
+
+  /**
+   * The token a proxied renderer request carries. After a launch or wake with a lapsed token,
+   * requests wait for the refresh instead of going out with the old token, failing UNAUTHORIZED,
+   * and making the app read as signed out. A stuck check holds them at most `REQUEST_TOKEN_WAIT`.
+   */
+  async getRequestAccessToken(): Promise<string | null> {
+    void this.ensureStartupTokenCheck();
+    const pending = [this.tokenCheck, this.remoteServerConfigCtr.pendingRefresh].filter(
+      (check): check is Promise<any> => !!check,
+    );
+    if (pending.length > 0) {
+      let timer: NodeJS.Timeout | undefined;
+      await Promise.race([
+        Promise.allSettled(pending),
+        new Promise<void>((resolve) => {
+          timer = setTimeout(resolve, REQUEST_TOKEN_WAIT);
+        }),
+      ]);
+      clearTimeout(timer);
+    }
+    return this.remoteServerConfigCtr.getAccessToken();
   }
 
   /**
@@ -780,7 +828,11 @@ export default class AuthCtr extends ControllerModule {
    * Handle app activation event (e.g., Mac dock click, window focus)
    * Proactively refresh token if it is expired or near expiry
    */
-  async onAppActivate(): Promise<void> {
+  onAppActivate(): Promise<void> {
+    return this.trackTokenCheck(() => this.checkTokenOnActivate());
+  }
+
+  private async checkTokenOnActivate(): Promise<void> {
     logger.debug('App activated, checking if token refresh is needed');
 
     try {

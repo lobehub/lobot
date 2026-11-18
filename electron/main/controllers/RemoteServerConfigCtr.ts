@@ -434,6 +434,11 @@ export default class RemoteServerConfigCtr extends ControllerModule {
     return false;
   }
 
+  /** The refresh in flight, if any; a request about to carry the token waits on it. */
+  get pendingRefresh(): Promise<{ error?: string; success: boolean }> | null {
+    return this.refreshPromise;
+  }
+
   /**
    * Refresh the access token using the stored refresh token (single attempt).
    * Concurrent callers share the in-progress refresh promise.

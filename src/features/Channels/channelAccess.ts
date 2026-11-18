@@ -7,8 +7,7 @@ import { isTrpcErrorCode } from '@/utils/trpcError';
 export const isChannelGone = (error: unknown) =>
   isTrpcErrorCode(error, 'BAD_REQUEST') ||
   isTrpcErrorCode(error, 'NOT_FOUND') ||
-  isTrpcErrorCode(error, 'FORBIDDEN') ||
-  isTrpcErrorCode(error, 'UNAUTHORIZED');
+  isTrpcErrorCode(error, 'FORBIDDEN');
 
 /** Retain content during transport failures, but hide it once access is revoked. */
 export const visibleChannelDetail = (cached: ChannelDetail | undefined, error: unknown) =>

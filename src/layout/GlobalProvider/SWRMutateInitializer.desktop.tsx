@@ -30,6 +30,16 @@ const SWRMutateInitializer = ({ children }: PropsWithChildren) => {
     }
   });
 
+  // A request that beat the token refresh failed UNAUTHORIZED and would wait for its next poll;
+  // refetch what is on screen now that the new token is in place. Revalidate only: keep the data.
+  useWatchBroadcast('tokenRefreshed', () => {
+    try {
+      void mutate(() => true)?.catch?.(() => {});
+    } catch {
+      // Ignore: SWR cache may not be ready yet in early boot.
+    }
+  });
+
   return <>{children}</>;
 };
 

@@ -13,12 +13,14 @@ import {
 
 describe('Channel access after revalidation', () => {
   const cached = { channel: { title: 'Previously accessible' } } as ChannelDetail;
-  it.each(['BAD_REQUEST', 'NOT_FOUND', 'FORBIDDEN', 'UNAUTHORIZED'])(
-    'hides retained content after %s',
-    (code) => {
-      expect(visibleChannelDetail(cached, { data: { code } })).toBeUndefined();
-    },
-  );
+  it.each(['BAD_REQUEST', 'NOT_FOUND', 'FORBIDDEN'])('hides retained content after %s', (code) => {
+    expect(visibleChannelDetail(cached, { data: { code } })).toBeUndefined();
+  });
+  // A lapsed session says nothing about this Channel: a launch whose first request beat the
+  // token refresh must keep the stored conversation, not show the blank page.
+  it('retains content when the session is not authorized yet', () => {
+    expect(visibleChannelDetail(cached, { data: { code: 'UNAUTHORIZED' } })).toBe(cached);
+  });
   it('retains content on transient transport failures', () => {
     expect(visibleChannelDetail(cached, new Error('network unavailable'))).toBe(cached);
     expect(visibleChannelDetail(cached, undefined)).toBe(cached);

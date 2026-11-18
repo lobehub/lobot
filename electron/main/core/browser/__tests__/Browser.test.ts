@@ -227,6 +227,7 @@ describe('Browser', () => {
       getController: vi.fn((ctr: any) => {
         // Only the remote server config controller is required in these unit tests
         if (ctr?.name === 'RemoteServerConfigCtr') return mockRemoteServerConfigCtr;
+        if (ctr?.name === 'AuthCtr') return undefined;
         throw new Error(`Unexpected controller requested in Browser tests: ${ctr?.name ?? ctr}`);
       }),
       isQuiting: false,
