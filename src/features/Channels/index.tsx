@@ -119,6 +119,18 @@ function EnabledChannelPage() {
     clearPortalStack();
     setSearch({ channelId, query });
   };
+  // The threads button and a busy member's conversations open a Thread the same way.
+  const openThread = (nextThreadId: string) => {
+    // The open thread stays open rather than toggling off.
+    if (nextThreadId === (pageThreadId ?? threadId)) return;
+    // A thread page switches in place; the feed opens the thread beside it.
+    if (pageThreadId) return panel.openPage(nextThreadId);
+    setSearch(null);
+    setTopic(null);
+    clearPortalStack();
+    // Under a report the thread only looks closed, so bring it back, don't toggle it off.
+    panel.openThread(nextThreadId, !portalOpen);
+  };
   // A main-feed hit scrolls the feed; a Thread hit opens that Thread over the results.
   const openSearchHit = (hit: { id: string; sequence: number; threadId: string | null }) => {
     requestChannelJump({ channelId, id: hit.id, sequence: hit.sequence, threadId: hit.threadId });
@@ -178,15 +190,7 @@ function EnabledChannelPage() {
               <ThreadsButton
                 activeId={pageThreadId ?? threadId}
                 detail={detail}
-                onOpen={(nextThreadId) => {
-                  // A thread page switches in place; the feed opens the thread beside it.
-                  if (pageThreadId) return panel.openPage(nextThreadId);
-                  setSearch(null);
-                  setTopic(null);
-                  clearPortalStack();
-                  // Under a report the thread only looks closed, so bring it back, don't toggle it off.
-                  panel.openThread(nextThreadId, !portalOpen);
-                }}
+                onOpen={openThread}
               />
               <MemberStatus
                 detail={detail}
@@ -208,6 +212,7 @@ function EnabledChannelPage() {
                       }
                     : undefined
                 }
+                onOpenThread={openThread}
               />
               {/* Last in the row, like Discord's search. */}
               <ChannelSearchBox
@@ -286,6 +291,7 @@ function EnabledChannelPage() {
                 detail={detail}
                 id={memberPanelId}
                 onClose={() => setMembersChannelId(null)}
+                onOpenThread={openThread}
               />
             ))}
           {searchOpen && search && (

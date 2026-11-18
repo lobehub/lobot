@@ -435,6 +435,33 @@ export const statusStyles = stylex.create({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
+  /** A busy member's conversations on hover, as the thread browser's cards. */
+  workingPopover: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 6,
+    width: 360,
+    maxWidth: 'calc(100vw - 48px)',
+    maxHeight: 'min(420px, calc(100vh - 120px))',
+    overflowY: 'auto',
+    color: cssVar.colorText,
+  },
+  workingHeading: {
+    paddingInline: 4,
+    paddingBlockEnd: 2,
+    fontSize: 12,
+    fontWeight: 500,
+    color: cssVar.colorTextSecondary,
+  },
+  workingMain: {
+    paddingBlock: 10,
+    paddingInline: 12,
+    borderRadius: cssVar.borderRadiusLG,
+    fontSize: 14,
+    fontWeight: 500,
+    color: cssVar.colorTextSecondary,
+    backgroundColor: cssVar.colorFillQuaternary,
+  },
   /** A muted Agent's line: a bell-off icon before why it stays quiet. */
   memberMuted: {
     display: 'inline-flex',

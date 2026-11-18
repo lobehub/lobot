@@ -25,12 +25,28 @@ vi.mock('@lobehub/ui', () => ({
   Icon: () => null,
   Text: ({ children }: { children?: unknown }) => createElement('span', {}, children as never),
   toast: { error: vi.fn() },
-  Tooltip: ({ children }: { children?: unknown }) => children,
+  // Shows the hover content inline so its cards can be read and clicked.
+  Popover: ({ children, content }: { children?: unknown; content?: unknown }) =>
+    createElement('div', {}, children as never, content as never),
 }));
 vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
   useWorkspaceAwareNavigate: () => vi.fn(),
 }));
-vi.mock('@/store/channel', () => ({ channelActions: { setMemberMuted } }));
+vi.mock('@/store/channel', () => ({
+  channelActions: { setMemberMuted },
+  channelSelectors: { listed: () => () => undefined },
+  useChannelStore: (selector: (state: unknown) => unknown) => selector({}),
+}));
+vi.mock('./threadReads', () => ({
+  useMentionedThreadIds: () => new Set(),
+  useUnreadThreadIds: () => new Set(),
+}));
+vi.mock('./ThreadBrowser', () => ({
+  browseThreads: (detail: { threads: { id: string; title: string }[] }) =>
+    detail.threads.map((thread) => ({ thread, title: thread.title })),
+  ThreadCard: ({ entry, onOpen }: { entry: { title: string }; onOpen: () => void }) =>
+    createElement('button', { onClick: onOpen }, entry.title),
+}));
 vi.mock('@/store/user', () => ({ useUserStore: () => 'usr_me' }));
 vi.mock('@/store/user/selectors', () => ({ userProfileSelectors: { userId: () => 'usr_me' } }));
 vi.mock('./AgentEnvironment', () => ({ openChannelAgentEnvironment: vi.fn() }));
@@ -93,5 +109,34 @@ describe('MemberList Agent mute', () => {
     render(createElement(MemberList, { detail: detail({ status: 'archived' }) }));
 
     expect(menuLabels()).not.toContain('member.mute');
+  });
+});
+
+describe('MemberList busy member', () => {
+  const running = (id: string, threadId: string | null) => ({
+    id,
+    memberId: 'mem_cook',
+    status: 'running',
+    threadId,
+  });
+  const busy = {
+    ...detail(),
+    jobs: [running('job_1', 'thr_a'), running('job_2', 'thr_b'), running('job_3', null)],
+    threads: [
+      { id: 'thr_a', title: 'Quota' },
+      { id: 'thr_b', title: 'Import' },
+      { id: 'thr_c', title: 'Idle' },
+    ],
+  } as never;
+
+  it('lists the Threads it works in as cards that open them', () => {
+    const onOpenThread = vi.fn();
+    render(createElement(MemberList, { detail: busy, onOpenThread }));
+
+    expect(screen.getByText('main')).toBeTruthy();
+    expect(screen.queryByText('Idle')).toBeNull();
+    fireEvent.click(screen.getByText('Import'));
+
+    expect(onOpenThread).toHaveBeenCalledWith('thr_b');
   });
 });

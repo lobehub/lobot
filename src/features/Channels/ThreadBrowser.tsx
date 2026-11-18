@@ -1,6 +1,6 @@
-import type { ChannelDetail, ChannelPublicThread } from '@lobot/types';
 import { ActionIcon, Avatar, Icon, Popover, SearchBar } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ChannelDetail, ChannelPublicThread } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -275,7 +275,7 @@ export const browseThreads = (
     );
 };
 
-const ThreadCard = ({
+export const ThreadCard = ({
   detail,
   entry,
   onOpen,

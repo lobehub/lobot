@@ -1,6 +1,6 @@
-import type { ChannelDetail } from '@lobot/types';
 import { ActionIcon, Flexbox, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ChannelDetail } from '@lobot/types';
 import type { StyleXStyles } from '@stylexjs/stylex';
 import * as stylex from '@stylexjs/stylex';
 import { X } from 'lucide-react';
@@ -139,11 +139,13 @@ export function MemberPanel({
   detail,
   id,
   onClose,
+  onOpenThread,
 }: {
   availableWidth?: number;
   detail: ChannelDetail;
   id: string;
   onClose: () => void;
+  onOpenThread?: (threadId: string) => void;
 }) {
   const { t } = useTranslation('channel');
   const entries = useMemberEntries(detail);
@@ -159,7 +161,7 @@ export function MemberPanel({
       onClose={onClose}
     >
       <Flexbox flex={1} padding={12} paddingBlock={4} style={{ minHeight: 0, overflowY: 'auto' }}>
-        <MemberList detail={detail} />
+        <MemberList detail={detail} onOpenThread={onOpenThread} />
       </Flexbox>
     </ChannelSidePanel>
   );

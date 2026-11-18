@@ -1,6 +1,6 @@
 import { CHANNEL_URL } from '@lobechat/const';
-import type { ChannelDetail } from '@lobot/types';
 import { ActionIcon, Button, DropdownMenu, Flexbox, Popover, Text } from '@lobehub/ui';
+import type { ChannelDetail } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import {
   Bot,
@@ -44,9 +44,11 @@ const DIRECT_MENU_KEYS = new Set(['copyId', 'unarchive']);
 export function MemberStatus({
   detail,
   memberPanel,
+  onOpenThread,
 }: {
   detail: ChannelDetail;
   memberPanel?: { id: string; open: boolean; onToggle: () => void };
+  onOpenThread?: (threadId: string) => void;
 }) {
   const { t } = useTranslation('channel');
   const [open, setOpen] = useState(false);
@@ -156,7 +158,11 @@ export function MemberStatus({
               <Text fontSize={12} type="secondary" weight={500}>
                 {title}
               </Text>
-              <MemberList detail={detail} onAction={() => setOpen(false)} />
+              <MemberList
+                detail={detail}
+                onAction={() => setOpen(false)}
+                onOpenThread={onOpenThread}
+              />
             </Flexbox>
           }
           onOpenChange={setOpen}
