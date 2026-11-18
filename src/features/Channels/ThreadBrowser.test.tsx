@@ -31,7 +31,7 @@ vi.mock('@lobehub/ui', () => ({
     createElement('div', {}, children as never, content as never),
   SearchBar: ({ onChange, placeholder, value }: any) =>
     createElement('input', { onChange, placeholder, value }),
-  Segmented: () => createElement('div'),
+  Select: () => createElement('div'),
 }));
 
 const replied = (iso: string, content = '') => ({

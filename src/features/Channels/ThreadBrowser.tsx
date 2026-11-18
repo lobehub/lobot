@@ -1,4 +1,4 @@
-import { ActionIcon, Avatar, Icon, Popover, SearchBar, Segmented } from '@lobehub/ui';
+import { ActionIcon, Avatar, Icon, Popover, SearchBar, Select } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { ChannelDetail, ChannelPublicThread } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
@@ -441,14 +441,20 @@ export const ThreadBrowser = ({
             ? t('threadBrowser.matches', { count: entries.length })
             : t('threadBrowser.count', { count: entries.length })}
         </span>
-        <Segmented<ThreadSort>
+        <Select
+          aria-label={t('threadBrowser.sort')}
+          popupMatchSelectWidth={false}
           size="small"
           value={sort}
+          variant="borderless"
           options={[
             { label: t('threadBrowser.sortActivity'), value: 'activity' },
             { label: t('threadBrowser.sortCreated'), value: 'created' },
           ]}
-          onChange={(value) => useThreadSortStore.setState({ sort: value })}
+          onChange={(value) => {
+            if (value === 'activity' || value === 'created')
+              useThreadSortStore.setState({ sort: value });
+          }}
         />
       </div>
       <div {...stylex.props(styles.list)}>

@@ -189,6 +189,7 @@ export default {
   'threadBrowser.matches_one': '{{count}} match',
   'threadBrowser.matches_other': '{{count}} matches',
   'threadBrowser.search': 'Search threads',
+  'threadBrowser.sort': 'Sort',
   'threadBrowser.sortActivity': 'Latest activity',
   'threadBrowser.sortCreated': 'Newest',
   'threadCard.replies_one': '{{count}} reply',

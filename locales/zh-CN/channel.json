@@ -331,6 +331,7 @@
   "threadBrowser.matches_one": "找到 {{count}} 个",
   "threadBrowser.matches_other": "找到 {{count}} 个",
   "threadBrowser.search": "搜索子区",
+  "threadBrowser.sort": "排序",
   "threadBrowser.sortActivity": "最新消息",
   "threadBrowser.sortCreated": "最近创建",
   "threadCard.replies_one": "{{count}} 条回复",
