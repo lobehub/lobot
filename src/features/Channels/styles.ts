@@ -107,8 +107,8 @@ export const styles = stylex.create({
     borderBlockEndColor: cssVar.colorBorderSecondary,
   },
   /**
-   * The title's "more" button. It leaves the row until the header is hovered or focused, and
-   * stays while its menu is open. A touch screen has no hover, so the button stays in the row.
+   * A header action shown on hover: the title's "more" button, the thread's "open as page". It
+   * leaves the row until the header is hovered or focused, and stays while its menu is open. A touch screen has no hover, so the button stays in the row.
    */
   headerMenu: {
     display: 'flex',
