@@ -1,6 +1,6 @@
-import { CHANNEL_LIMITS, type UploadFileItem } from '@lobot/types';
 import { COMPRESSIBLE_IMAGE_TYPES, compressImageFile } from '@lobechat/utils/compressImage';
 import { toast } from '@lobehub/ui';
+import { CHANNEL_LIMITS, type UploadFileItem } from '@lobot/types';
 import { useCallback, useEffect, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,19 +20,126 @@ interface AttachmentDraft {
   items: DraftFile[];
   listeners: Set<() => void>;
   mounts: number;
+  /** The uploaded files last written to storage, so progress ticks never touch it. */
+  stored: string;
 }
 
+/** An uploaded attachment as kept across reloads; the local file itself is gone by then. */
+interface StoredAttachment {
+  fileId: string;
+  fileUrl: string;
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+}
+
+export const ATTACHMENT_DRAFTS_STORAGE_KEY = 'lobot:channel-attachment-drafts:v1';
+
+/** Conversations whose unsent attachments stay in memory; the least recently used go first. */
+const MAX_DRAFTS = 20;
+/** The same bound as the text drafts these sit next to. */
+const MAX_STORED_DRAFTS = 50;
+
+const readStored = (): Record<string, StoredAttachment[]> => {
+  if (typeof window === 'undefined') return {};
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(ATTACHMENT_DRAFTS_STORAGE_KEY) || '{}');
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+};
+
+/** Keeps a draft's uploaded files next to its text draft, so a reload brings both back. */
+const writeStored = (key: string, draft: AttachmentDraft) => {
+  if (typeof window === 'undefined') return;
+  const uploaded = draft.items.flatMap((item): StoredAttachment[] =>
+    item.status === 'success' && item.fileId && item.fileUrl
+      ? [
+          {
+            fileId: item.fileId,
+            fileUrl: item.fileUrl,
+            id: item.id,
+            name: item.file.name,
+            size: item.file.size,
+            type: item.file.type,
+          },
+        ]
+      : [],
+  );
+  const next = JSON.stringify(uploaded);
+  if (next === draft.stored) return;
+  draft.stored = next;
+  const stored = readStored();
+  // Re-added last, so key order is recency order and the cap drops the oldest drafts.
+  delete stored[key];
+  if (uploaded.length) stored[key] = uploaded;
+  const keys = Object.keys(stored);
+  for (const stale of keys.slice(0, Math.max(0, keys.length - MAX_STORED_DRAFTS)))
+    delete stored[stale];
+  try {
+    window.localStorage.setItem(ATTACHMENT_DRAFTS_STORAGE_KEY, JSON.stringify(stored));
+  } catch {
+    // Storage full or unavailable: the attachments still live in memory for this session.
+  }
+};
+
+/** A placeholder for a restored upload: only its name, type and size are ever read. */
+const restoredFile = ({ name, size, type }: StoredAttachment) => {
+  const file = new File([], name, { type });
+  Object.defineProperty(file, 'size', { value: size });
+  return file;
+};
+
+const restore = (key: string): AttachmentDraft => {
+  const stored = readStored()[key] ?? [];
+  return {
+    items: stored.map((item) => ({
+      file: restoredFile(item),
+      fileId: item.fileId,
+      fileUrl: item.fileUrl,
+      id: item.id,
+      status: 'success',
+    })),
+    listeners: new Set(),
+    mounts: 0,
+    stored: JSON.stringify(stored),
+  };
+};
+
+const release = (draft: AttachmentDraft) => {
+  for (const item of draft.items) {
+    item.abortController?.abort();
+    releasePreview(item);
+  }
+};
+
 /**
- * Attachments belong to the conversation a composer writes to, not to one mounted composer, so
- * a thread moving between the side panel and the page keeps its files and running uploads.
+ * Attachments belong to the conversation a composer writes to, not to one mounted composer: they
+ * survive switching to another Thread and back, and keep uploading meanwhile. Uploaded ones are
+ * also stored, so a reload restores them with the text draft.
  */
 const drafts = new Map<string, AttachmentDraft>();
 
 const draftFor = (key: string) => {
   let draft = drafts.get(key);
-  if (!draft) {
-    draft = { items: [], listeners: new Set(), mounts: 0 };
+  if (draft) {
+    // Map order is recency order: touching a draft moves it to the end.
+    drafts.delete(key);
     drafts.set(key, draft);
+    return draft;
+  }
+  draft = restore(key);
+  drafts.set(key, draft);
+  for (const [staleKey, stale] of drafts) {
+    if (drafts.size <= MAX_DRAFTS) break;
+    // An evicted draft's uploaded files are still stored; only unfinished uploads are lost.
+    if (stale.mounts > 0) continue;
+    drafts.delete(staleKey);
+    release(stale);
+    // Should its composer still mount, it starts from what was stored, not the aborted uploads.
+    stale.items = restore(staleKey).items;
   }
   return draft;
 };
@@ -52,27 +159,18 @@ export function useAttachments(draftKey: string) {
   const items = useSyncExternalStore(subscribe, () => draft.items);
   const update = (next: DraftFile[]) => {
     draft.items = next;
+    writeStored(draftKey, draft);
     for (const listener of draft.listeners) listener();
   };
   const patch = (id: string, value: Partial<DraftFile>) =>
     update(draft.items.map((item) => (item.id === id ? { ...item, ...value, id } : item)));
 
   useEffect(() => {
-    // A composer shown again after its draft was released starts it afresh.
-    if (!drafts.has(draftKey)) drafts.set(draftKey, draft);
+    // An evicted draft that is shown again comes back from storage.
+    if (drafts.get(draftKey) !== draft) drafts.set(draftKey, draft);
     draft.mounts += 1;
     return () => {
       draft.mounts -= 1;
-      // Wait a tick: the composer taking over this conversation mounts in the same commit.
-      setTimeout(() => {
-        if (draft.mounts > 0 || drafts.get(draftKey) !== draft) return;
-        drafts.delete(draftKey);
-        for (const item of draft.items) {
-          item.abortController?.abort();
-          releasePreview(item);
-        }
-        update([]);
-      });
     };
   }, [draft, draftKey]);
 

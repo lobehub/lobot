@@ -4,7 +4,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { useAttachments } from './useAttachments';
+import { ATTACHMENT_DRAFTS_STORAGE_KEY, useAttachments } from './useAttachments';
 
 const upload = vi.hoisted(() => vi.fn());
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
@@ -67,17 +67,12 @@ describe('useAttachments across composers of one conversation', () => {
     expect(page.result.current.items).toHaveLength(1);
     await act(async () => finish({ id: 'file-1', url: 'https://cdn/notes.txt' }));
     expect(page.result.current.items[0]).toMatchObject({ fileId: 'file-1', status: 'success' });
-
-    // Nobody writes to the thread any more: its uploads stop and the draft is released.
-    page.unmount();
-    await act(() => vi.runAllTimersAsync());
-    const again = renderHook(() => useAttachments('channel:ch-1:thread-1'));
-    expect(again.result.current.items).toHaveLength(0);
   });
 
-  it('aborts a running upload once its last composer is gone', async () => {
+  it('keeps files and running uploads while the user is on another thread', async () => {
     vi.useFakeTimers();
-    upload.mockReturnValue(new Promise(() => {}));
+    let finish: (value: { id: string; url: string }) => void = () => {};
+    upload.mockReturnValue(new Promise((resolve) => (finish = resolve)));
     const composer = renderHook(() => useAttachments('channel:ch-1:thread-2'));
     act(() => {
       void composer.result.current.upload([new File(['x'], 'a.txt', { type: 'text/plain' })]);
@@ -87,6 +82,38 @@ describe('useAttachments across composers of one conversation', () => {
 
     composer.unmount();
     await act(() => vi.runAllTimersAsync());
-    expect(signal.aborted).toBe(true);
+    expect(signal.aborted).toBe(false);
+    await act(async () => finish({ id: 'file-2', url: 'https://cdn/a.txt' }));
+
+    const back = renderHook(() => useAttachments('channel:ch-1:thread-2'));
+    expect(back.result.current.items[0]).toMatchObject({ fileId: 'file-2', status: 'success' });
+  });
+});
+
+describe('useAttachments after a reload', () => {
+  it('restores uploaded files from storage, and forgets them once sent', async () => {
+    upload.mockResolvedValue({ id: 'file-3', url: 'https://cdn/report.pdf' });
+    const key = 'channel:ch-2:main';
+    const { result } = renderHook(() => useAttachments(key));
+    await act(() =>
+      result.current.upload([new File(['12345'], 'report.pdf', { type: 'application/pdf' })]),
+    );
+
+    const stored = JSON.parse(localStorage.getItem(ATTACHMENT_DRAFTS_STORAGE_KEY)!)[key];
+    expect(stored).toEqual([
+      expect.objectContaining({ fileId: 'file-3', name: 'report.pdf', size: 5 }),
+    ]);
+
+    // A fresh module stands in for the reloaded page: nothing is in memory any more.
+    vi.resetModules();
+    const { useAttachments: reloaded } = await import('./useAttachments');
+    const after = renderHook(() => reloaded(key));
+    const [item] = after.result.current.items;
+    expect(item).toMatchObject({ fileId: 'file-3', fileUrl: 'https://cdn/report.pdf' });
+    expect(item.file).toMatchObject({ name: 'report.pdf', size: 5, type: 'application/pdf' });
+    expect(after.result.current.readyFileIds()).toEqual(['file-3']);
+
+    act(() => after.result.current.clear());
+    expect(JSON.parse(localStorage.getItem(ATTACHMENT_DRAFTS_STORAGE_KEY)!)[key]).toBeUndefined();
   });
 });
