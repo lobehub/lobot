@@ -29,16 +29,16 @@ const keys = (item: ChannelListItem) => {
 };
 
 describe('useChannelMenu', () => {
-  it('manages a group Channel', () => {
-    expect(keys(channel)).toEqual([
-      'pin',
-      'mute',
-      'rename',
-      'copyId',
-      'archive',
-      'divider',
-      'delete',
-    ]);
+  it('keeps a group Channel\'s rare actions under More', () => {
+    const { result } = renderHook(useChannelMenu);
+    const items = result.current(channel);
+    expect(keys(channel)).toEqual(['pin', 'mute', 'divider', 'more']);
+    const more = items.find((entry) => 'key' in entry && entry.key === 'more');
+    expect(
+      (more as { children: { key?: string; type?: string }[] }).children.map(
+        (entry) => entry.key ?? entry.type,
+      ),
+    ).toEqual(['rename', 'copyId', 'archive', 'divider', 'delete']);
   });
 
   // Both people own the conversation: renaming, archiving or trashing it would change it for the

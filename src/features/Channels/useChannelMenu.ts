@@ -7,6 +7,7 @@ import {
   Bell,
   BellOff,
   Copy,
+  Ellipsis,
   PencilLine,
   Pin,
   PinOff,
@@ -24,8 +25,8 @@ import { useDeletePeerChat } from './useDeletePeerChat';
 import { useRemoveChannel } from './useRemoveChannel';
 
 /**
- * A Channel's menu wherever it is listed: pin, mute, file under a section, rename, copy id,
- * archive, and move to the trash. A conversation between two people is a private chat instead:
+ * A Channel's menu wherever it is listed: pin, mute, file under a section, and under More the rare
+ * ones — rename, copy id, archive, and move to the trash. A conversation between two people is a private chat instead:
  * pin, mute, file under a section, and delete it for me only.
  */
 export const useChannelMenu = () => {
@@ -110,12 +111,7 @@ export const useChannelMenu = () => {
     },
   ];
 
-  const channelItems = (channel: ChannelListItem) => [
-    pinItem(channel),
-    muteItem(channel),
-    ...sectionItems(channel),
-    // The person's own list settings above, the Channel itself below.
-    { type: 'divider' as const },
+  const manageItems = (channel: ChannelListItem) => [
     ...(channel.canDelete && channel.status !== 'archived'
       ? [
           {
@@ -170,6 +166,22 @@ export const useChannelMenu = () => {
           },
         ]
       : []),
+  ];
+
+  const channelItems = (channel: ChannelListItem) => [
+    pinItem(channel),
+    muteItem(channel),
+    ...sectionItems(channel),
+    // The person's own list settings up front; managing the Channel itself is rare, so it waits
+    // one level down under More.
+    { type: 'divider' as const },
+    {
+      children: manageItems(channel),
+      icon: Ellipsis,
+      key: 'more',
+      label: t('more', { ns: 'common' }),
+      sfSymbol: 'ellipsis',
+    },
   ];
 
   return (channel: ChannelListItem) =>

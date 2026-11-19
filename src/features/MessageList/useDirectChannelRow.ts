@@ -7,6 +7,7 @@ import {
   replyAvatarState,
   workingConversationCount,
 } from '@/features/Channels/jobStatus';
+import { flattenChannelMenu } from '@/features/Channels/flattenChannelMenu';
 import { useChannelMenu } from '@/features/Channels/useChannelMenu';
 import { channelSelectors, useChannelStore } from '@/store/channel';
 
@@ -50,7 +51,7 @@ export const useDirectChannelRow = (channel: ChannelListItem | undefined, active
     return workingConversationCount(detail ? (detail.jobs ?? []) : (channel.replyJobs ?? []));
   });
   const channelActions = useCallback(
-    () => (channel ? conversationActions(channelMenu(channel)) : []),
+    () => (channel ? conversationActions(flattenChannelMenu(channelMenu(channel))) : []),
     [channel, channelMenu],
   );
 

@@ -14,6 +14,7 @@ import { InviteMembersButton } from './InviteMembersButton';
 import { MemberList, StatusAvatar, useMemberEntries } from './MemberList';
 import { useOpenChannelSettings } from './Settings/tabs';
 import { statusStyles, styles } from './styles';
+import { flattenChannelMenu } from './flattenChannelMenu';
 import { useChannelMenu } from './useChannelMenu';
 import { useOpenDirectAgent } from './useOpenDirectAgent';
 
@@ -73,8 +74,8 @@ export function ChannelMenu({ detail }: { detail: ChannelDetail }) {
         ]
       : []),
     // Keyed items only: the menu's own dividers separate actions a direct conversation does not have.
-    ...channelMenu(channel).filter(
-      (item) => 'key' in item && DIRECT_MENU_KEYS.has(String(item.key)),
+    ...flattenChannelMenu(channelMenu(channel)).filter(
+      (item) => !!item && 'key' in item && DIRECT_MENU_KEYS.has(String(item.key)),
     ),
   ];
 
@@ -83,7 +84,9 @@ export function ChannelMenu({ detail }: { detail: ChannelDetail }) {
 
   // Managing a group lives in its settings panel; deleting it is not one click from the header.
   const groupMenu = () => [
-    ...channelMenu(channel).filter((item) => 'key' in item && item.key === 'copyId'),
+    ...flattenChannelMenu(channelMenu(channel)).filter(
+      (item) => !!item && 'key' in item && item.key === 'copyId',
+    ),
     ...(channel.canDelete
       ? [
           { type: 'divider' as const },
