@@ -66,6 +66,7 @@ export const useChannelMenu = () => {
     key: channel.pinnedAt ? 'unpin' : 'pin',
     label: t(channel.pinnedAt ? 'pinOff' : 'pin', { ns: 'common' }),
     onClick: () => void togglePin(channel),
+    sfSymbol: channel.pinnedAt ? 'pin.slash' : 'pin',
   });
 
   const toggleMute = async (channel: ChannelListItem) => {
@@ -83,6 +84,7 @@ export const useChannelMenu = () => {
     key: channel.mutedAt ? 'unmute' : 'mute',
     label: t(channel.mutedAt ? 'unmuteNotifications' : 'muteNotifications'),
     onClick: () => void toggleMute(channel),
+    sfSymbol: channel.mutedAt ? 'bell' : 'bell.slash',
   });
 
   // Both people own the conversation, so renaming, archiving or trashing it would change it for
@@ -136,6 +138,7 @@ export const useChannelMenu = () => {
                 key: 'unarchive',
                 label: t('unarchive'),
                 onClick: () => void unarchive(channel.id),
+                sfSymbol: 'archivebox',
               }
             : {
                 icon: Archive,

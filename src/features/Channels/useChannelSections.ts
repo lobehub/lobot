@@ -101,6 +101,7 @@ export const useChannelSections = () => {
           key: 'moveToSection-new',
           label: t('section.new'),
           onClick: () => create(channel.id),
+          sfSymbol: 'folder.badge.plus',
         },
         ...(current
           ? [
@@ -109,6 +110,7 @@ export const useChannelSections = () => {
                 key: 'moveToSection-out',
                 label: t('section.moveOut'),
                 onClick: () => void moveTo(channel.id, null),
+                sfSymbol: 'folder.badge.minus',
               },
             ]
           : []),
@@ -116,6 +118,7 @@ export const useChannelSections = () => {
       icon: FolderInput,
       key: 'moveToSection',
       label: t('section.moveTo'),
+      sfSymbol: 'folder',
     };
   };
 

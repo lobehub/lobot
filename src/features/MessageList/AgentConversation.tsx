@@ -18,6 +18,9 @@ import { AVATAR_SIZE, PINNED_AVATAR_SIZE } from './style';
 import { useAgentConversationLink } from './useAgentConversationLink';
 import { useDirectChannelRow } from './useDirectChannelRow';
 
+/** Agent-list actions the Messages list leaves out. */
+const AGENT_ONLY_KEYS = new Set(['duplicate', 'moveGroup', 'pin']);
+
 interface AgentConversationProps {
   active: boolean;
   conversation: Conversation;
@@ -68,9 +71,11 @@ const AgentConversation = memo<AgentConversationProps>(({ active, conversation, 
   const menuItems = useMemo(
     () => () => {
       // The Agent's own pin orders the workspace's Agent list for everyone; this list pins the
-      // person's own conversation, through its direct Channel.
+      // person's own conversation, through its direct Channel. Its sidebar category is the same
+      // story — the conversation's own section replaces it — and duplicating belongs to the Agent
+      // list, not a chat.
       const agentItems = contextMenuItems().filter(
-        (entry) => !(entry && 'key' in entry && entry.key === 'pin'),
+        (entry) => !(entry && 'key' in entry && AGENT_ONLY_KEYS.has(String(entry.key))),
       );
       const items = channelActions();
       if (items.length === 0) return agentItems;

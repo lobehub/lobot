@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { activityLabel } from '@/features/Channels/activityLabel';
 import { TypingDots } from '@/features/Channels/TypingDots';
 import WorkspaceLink, { type WorkspaceLinkProps } from '@/features/Workspace/WorkspaceLink';
+import type { NativeContextMenuItem } from '@/libs/contextMenu/types';
 
 import {
   type ChannelPreviewThread,
@@ -103,12 +104,14 @@ const ConversationRow = memo<ConversationRowProps>(
     const { t } = useTranslation('channel');
     const menuItems = withHideItem(
       contextMenuItems,
-      hideKey && {
-        icon: <Icon icon={EyeOffIcon} />,
-        key: 'hideConversation',
-        label: t('messageList.hide', { ns: 'common' }),
-        onClick: () => hideConversation(hideKey),
-      },
+      hideKey &&
+        ({
+          icon: <Icon icon={EyeOffIcon} />,
+          key: 'hideConversation',
+          label: t('messageList.hide', { ns: 'common' }),
+          onClick: () => hideConversation(hideKey),
+          sfSymbol: 'eye.slash',
+        } as NativeContextMenuItem as ContextMenuItem),
     );
     const link: WorkspaceLinkProps = {
       'aria-current': active ? 'page' : undefined,
