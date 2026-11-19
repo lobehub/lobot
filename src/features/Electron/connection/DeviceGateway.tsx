@@ -6,6 +6,7 @@ import { HardDrive, SettingsIcon } from 'lucide-react';
 import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { openSettingsFromUrl } from '@/features/NavRail/settingsPopupStore';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { useElectronStore } from '@/store/electron';
 import { electronSyncSelectors } from '@/store/electron/selectors';
@@ -97,7 +98,7 @@ const DeviceGatewayOffline = memo(() => {
 
   const openDeviceSettings = () => {
     setOpen(false);
-    navigate('/settings/devices');
+    if (!openSettingsFromUrl('/settings/devices')) navigate('/settings/devices');
   };
 
   const content = (

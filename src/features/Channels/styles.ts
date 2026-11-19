@@ -42,6 +42,15 @@ export const styles = stylex.create({
     minWidth: 0,
     minHeight: 0,
   },
+  /** The channel column. Its header sits beside a docked thread, not above it. */
+  channelColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+    flex: '1',
+    minWidth: 0,
+    minHeight: 0,
+  },
   threadPanel: {
     zIndex: 10,
     flexShrink: 0,
@@ -123,6 +132,79 @@ export const styles = stylex.create({
     insetBlockStart: 8,
     insetInlineStart: 0,
   },
+  /**
+   * The message this one answers, sitting above the avatar. The curve drops from its
+   * middle to the top of the avatar, which is 8px into the row below.
+   */
+  replyQuote: {
+    'position': 'relative',
+    'display': 'flex',
+    'alignItems': 'center',
+    'maxWidth': 'calc(100% - 48px)',
+    'marginBlockStart': 12,
+    'marginInlineStart': 48,
+    'padding': 0,
+    'borderWidth': 0,
+    'backgroundColor': 'transparent',
+    'font': 'inherit',
+    'gap': 6,
+    'fontSize': 13,
+    'lineHeight': '20px',
+    'color': {
+      'default': cssVar.colorTextSecondary,
+      ':disabled': cssVar.colorTextSecondary,
+      [HOVER]: { 'default': cssVar.colorTextSecondary, ':hover': cssVar.colorText },
+    },
+    'textAlign': 'start',
+    'cursor': { 'default': 'pointer', ':disabled': 'default' },
+    '::before': {
+      pointerEvents: 'none',
+      content: '""',
+      position: 'absolute',
+      // Avatar center (18) sits 48px left of this text.
+      insetInlineStart: -30,
+      insetBlockStart: '50%',
+      insetBlockEnd: -8,
+      width: 22,
+      boxSizing: 'border-box',
+      borderInlineStartWidth: 2,
+      borderInlineStartStyle: 'solid',
+      borderInlineStartColor: cssVar.colorBorderSecondary,
+      borderBlockStartWidth: 2,
+      borderBlockStartStyle: 'solid',
+      borderBlockStartColor: cssVar.colorBorderSecondary,
+      borderStartStartRadius: 8,
+    },
+  },
+  replyQuoteFace: {
+    display: 'inline-flex',
+    flexShrink: 0,
+  },
+  replyQuoteText: {
+    overflow: 'hidden',
+    minWidth: 0,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  /** A continuation has no avatar; the curve still drops into the gutter beside the text. */
+  replyQuoteCompact: {
+    '::before': { insetBlockEnd: -16 },
+  },
+  /** The elbow drawn inside the measured box: down the gutter, then across to the card. */
+  threadSpine: {
+    display: 'block',
+    width: '100%',
+    height: '100%',
+    boxSizing: 'border-box',
+    pointerEvents: 'none',
+    borderInlineStartWidth: 2,
+    borderInlineStartStyle: 'solid',
+    borderInlineStartColor: cssVar.colorBorderSecondary,
+    borderBlockEndWidth: 2,
+    borderBlockEndStyle: 'solid',
+    borderBlockEndColor: cssVar.colorBorderSecondary,
+    borderEndStartRadius: 8,
+  },
   /** "(edited)" under a message's text: a quiet note, like its time. */
   messageEdited: {
     alignSelf: 'flex-start',
@@ -172,6 +254,27 @@ export const styles = stylex.create({
     alignItems: 'center',
     minWidth: 0,
     cursor: 'default',
+  },
+  /** The selectable part of a roster row: the whole line except its menu button. */
+  memberSelect: {
+    cursor: 'pointer',
+    borderRadius: cssVar.borderRadius,
+  },
+  /** Hover and selection fill the row, inset from the panel padding like a chat roster. */
+  memberRow: {
+    marginInline: -8,
+    paddingInline: 8,
+    borderRadius: cssVar.borderRadius,
+    backgroundColor: {
+      'default': 'transparent',
+      ':hover': cssVar.colorFillTertiary,
+    },
+  },
+  memberRowSelected: {
+    backgroundColor: {
+      'default': cssVar.colorFillSecondary,
+      ':hover': cssVar.colorFillSecondary,
+    },
   },
   memberAvatarTrigger: {
     display: 'inline-flex',
@@ -473,6 +576,20 @@ export const statusStyles = stylex.create({
     lineHeight: 1.5,
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
+  },
+  /** The same list, set into the profile card instead of a second popup. */
+  workingInCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 6,
+    maxHeight: 280,
+    paddingBlock: 12,
+    paddingInline: 16,
+    overflowY: 'auto',
+    borderBlockStartWidth: 1,
+    borderBlockStartStyle: 'solid',
+    borderBlockStartColor: cssVar.colorBorderSecondary,
+    color: cssVar.colorText,
   },
   /** A busy member's conversations on hover, as the thread browser's cards. */
   workingPopover: {

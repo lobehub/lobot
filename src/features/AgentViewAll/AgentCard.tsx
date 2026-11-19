@@ -1,17 +1,17 @@
 'use client';
 
 import { DEFAULT_USER_AVATAR_URL } from '@lobechat/const';
-import type { SidebarAgentItem } from '@lobot/types';
-import { agentDisplayName, agentSecondaryDisplayName } from '@lobot/types';
 import {
   Avatar,
-  Block,
   ContextMenuTrigger,
   createStaticStyles,
   cx,
   type DropdownItem,
   Text,
 } from '@lobehub/ui';
+import { Surface } from '@lobehub/ui/dashboard';
+import type { SidebarAgentItem } from '@lobot/types';
+import { agentDisplayName, agentSecondaryDisplayName } from '@lobot/types';
 import { type CSSProperties, memo, type ReactNode, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -43,6 +43,7 @@ export const cardStyles = createStaticStyles(({ css, cssVar }) => ({
     flex-direction: column;
     align-items: center;
 
+    height: 100%;
     padding-block: ${COVER_HEIGHT - AVATAR_SIZE / 2}px 16px;
     padding-inline: 12px;
 
@@ -50,8 +51,7 @@ export const cardStyles = createStaticStyles(({ css, cssVar }) => ({
 
     transition:
       transform 0.18s,
-      box-shadow 0.18s,
-      border-color 0.18s;
+      box-shadow 0.18s;
 
     &:hover {
       transform: translateY(-1px);
@@ -161,7 +161,7 @@ export const cardStyles = createStaticStyles(({ css, cssVar }) => ({
     overflow: hidden;
     display: inline-flex;
 
-    border: 3px solid ${cssVar.colorBgContainer};
+    border: 3px solid ${cssVar.colorBgElevated};
     border-radius: 50%;
 
     /* Neutral face plate for emoji avatars without a background color;
@@ -257,7 +257,10 @@ export const cardStyles = createStaticStyles(({ css, cssVar }) => ({
   // the two grids line up.
   grid: css`
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(${AGENT_GRID_MIN_COLUMN}px, 100%), 1fr));
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(min(var(--agent-grid-min-column, ${AGENT_GRID_MIN_COLUMN}px), 100%), 1fr)
+    );
     gap: 12px;
 
     width: 100%;
@@ -302,9 +305,18 @@ export const cardStyles = createStaticStyles(({ css, cssVar }) => ({
 }));
 
 /** Badge-wall grid wrapper. */
-export const AgentCardGrid = memo<{ children: ReactNode }>(({ children }) => (
-  <div className={cardStyles.grid}>{children}</div>
-));
+export const AgentCardGrid = memo<{ children: ReactNode; minColumn?: number }>(
+  ({ children, minColumn }) => (
+    <div
+      className={cardStyles.grid}
+      style={
+        minColumn ? ({ '--agent-grid-min-column': `${minColumn}px` } as CSSProperties) : undefined
+      }
+    >
+      {children}
+    </div>
+  ),
+);
 
 AgentCardGrid.displayName = 'AgentCardGrid';
 
@@ -348,7 +360,7 @@ const AgentCard = memo<AgentCardProps>(({ item, onToggleSidebar, owner, sidebarH
           to={CONTACT_URL(id)}
           onPointerEnter={activateMenu}
         >
-          <Block clickable className={cardStyles.card} height={'100%'} variant={'outlined'}>
+          <Surface className={cardStyles.card} padded={false}>
             <div
               className={cardStyles.cover}
               data-cover-image={badge.coverImage ? '' : undefined}
@@ -396,7 +408,7 @@ const AgentCard = memo<AgentCardProps>(({ item, onToggleSidebar, owner, sidebarH
                 </span>
               </div>
             ) : null}
-          </Block>
+          </Surface>
         </WorkspaceLink>
         <span data-card-actions className={cardStyles.actions}>
           {/* Visible "…" trigger AND right-click open the same menu — the

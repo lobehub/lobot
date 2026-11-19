@@ -1,31 +1,23 @@
 'use client';
 
-import { Flexbox } from '@lobehub/ui';
+import { ActionIcon, DropdownMenu, type DropdownMenuProps, Flexbox, Icon, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
-import { memo, useMemo } from 'react';
+import { LogOut, PieChart, Settings, UsersCollaboration } from 'lucide-react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
 import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
-import { messagesUnreadCount } from '@/features/MessageList/conversations';
-import { requestUnreadJump } from '@/features/MessageList/unreadJump';
 import UserAvatar from '@/features/User/UserAvatar';
-import { useActiveLocation } from '@/hooks/useActiveLocation';
-import { channelSelectors, useChannelStore } from '@/store/channel';
+import { useSignOut } from '@/hooks/useSignOut';
 import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
+import { useUserStore } from '@/store/user';
+import { userProfileSelectors } from '@/store/user/selectors';
+import { electronStylish } from '@/styles/electron';
 
-import { ActiveChannelSync, useMessagesUrl } from './messagesTarget';
-import { resolveRailTab } from './railTab';
+import ContactsPopup from './ContactsPopup';
+import SettingsPopup from './SettingsPopup';
+import { useSettingsPopupStore } from './settingsPopupStore';
 import { styles } from './style';
-import TabItem from './TabItem';
-import { railTabs } from './tabs';
-import { useCompactLayout } from './useCompactLayout';
-
-/** The badge sums the Messages list rows, so it always matches what the list shows. */
-const useMessagesUnread = (channelsEnabled: boolean) => {
-  const channels = useChannelStore(channelSelectors.list);
-  return messagesUnreadCount(channelsEnabled ? channels : undefined);
-};
 
 /** Contacts' badge counts the friend requests waiting in its Requests group. */
 const useContactRequestsCount = (channelsEnabled: boolean) => {
@@ -36,50 +28,110 @@ const useContactRequestsCount = (channelsEnabled: boolean) => {
 };
 
 /**
- * Telegram-style tab bar at the foot of the list column. It replaces the old
- * left icon rail, so the window is just the list column and the content.
+ * Footer of the list column: the signed-in user on the left opens a dropdown
+ * (usage, settings, sign out), and a contacts ActionIcon on the right opens
+ * the address book.
  */
 const NavTabBar = memo(() => {
-  const { t } = useTranslation('common');
-  const { pathname } = useActiveLocation();
-  const activeWorkspaceSlug = useActiveWorkspaceSlug();
+  const { t } = useTranslation(['common', 'auth']);
+  const signOut = useSignOut();
   const channelsEnabled = useChannelsEnabled();
-  const unread = useMessagesUnread(channelsEnabled);
   const contactRequests = useContactRequestsCount(channelsEnabled);
-  const badges = { contacts: contactRequests, messages: unread };
+  const [nickname, username] = useUserStore((s) => [
+    userProfileSelectors.nickName(s),
+    userProfileSelectors.displayUserName(s),
+  ]);
+  const name = nickname || username;
+  const [contactsOpen, setContactsOpen] = useState(false);
+  const settingsOpen = useSettingsPopupStore((s) => s.open);
+  const openSettings = useSettingsPopupStore((s) => s.openSettings);
+  const closeSettings = useSettingsPopupStore((s) => s.closeSettings);
 
-  const activeTab = resolveRailTab(pathname, activeWorkspaceSlug);
+  useEffect(() => {
+    if (settingsOpen) setContactsOpen(false);
+  }, [settingsOpen]);
 
-  // Messages returns to the active Channel, or home where the conversation list lives.
-  const { activeChannelId, url: messagesUrl } = useMessagesUrl(pathname, activeWorkspaceSlug);
+  const toggleContacts = useCallback(() => {
+    setContactsOpen((current) => {
+      if (!current) closeSettings();
+      return !current;
+    });
+  }, [closeSettings]);
+  const closeContacts = useCallback(() => setContactsOpen(false), []);
+  const openSettingsMenu = useCallback(() => {
+    setContactsOpen(false);
+    openSettings();
+  }, [openSettings]);
 
-  // A compact window shows one column: the Messages tab is the conversation list, like a phone.
-  const compact = useCompactLayout();
-  const tabUrl = compact ? '/' : messagesUrl;
-  const tabs = useMemo(() => railTabs(t, tabUrl), [tabUrl, t]);
+  const menuItems = useMemo<DropdownMenuProps['items']>(
+    () => [
+      {
+        icon: <Icon icon={PieChart} />,
+        key: 'usage',
+        label: t('userPanel.usages'),
+        onClick: openSettingsMenu,
+      },
+      {
+        icon: <Icon icon={Settings} />,
+        key: 'settings',
+        label: t('tab.setting'),
+        onClick: openSettingsMenu,
+      },
+      { type: 'divider' },
+      {
+        danger: true,
+        icon: <Icon icon={LogOut} />,
+        key: 'signout',
+        label: t('signout', { ns: 'auth' }),
+        onClick: () => {
+          void signOut();
+        },
+      },
+    ],
+    [openSettingsMenu, signOut, t],
+  );
 
   return (
     <Flexbox horizontal {...stylex.props(styles.bar)}>
-      {/* The badge counts Channel rows, so the list stays fresh whenever Channels are on. */}
-      {(activeChannelId || channelsEnabled) && <ActiveChannelSync />}
-      {tabs.map((tab) => (
-        <TabItem
-          active={activeTab === tab.key}
-          badge={badges[tab.key]}
-          icon={tab.icon}
-          key={tab.key}
-          title={tab.title}
-          url={tab.url}
-          // Clicking Messages again while it has unread jumps to the next unread conversation.
-          onReselect={tab.key === 'messages' && unread > 0 ? requestUnreadJump : undefined}
+      <DropdownMenu
+        items={menuItems}
+        placement={'topLeft'}
+        popupProps={{ className: electronStylish.nodrag }}
+      >
+        <button aria-label={t('tab.setting')} type="button" {...stylex.props(styles.user)}>
+          <span {...stylex.props(styles.avatar)}>
+            <UserAvatar shape={'circle'} size={36} />
+          </span>
+          {name && (
+            <Text ellipsis fontSize={13} weight={500}>
+              {name}
+            </Text>
+          )}
+        </button>
+      </DropdownMenu>
+      <span
+        data-badge={contactRequests || ''}
+        data-testid="tab-tab.contacts"
+        {...stylex.props(styles.contacts)}
+      >
+        <ActionIcon
+          active={contactsOpen}
+          aria-label={t('tab.contacts')}
+          icon={UsersCollaboration}
+          size={{ blockSize: 36, size: 20, borderRadius: '50%' }}
+          title={t('tab.contacts')}
+          variant={'outlined'}
+          {...stylex.props(styles.contactsIcon)}
+          onClick={toggleContacts}
         />
-      ))}
-      {/* Like Telegram's last tab, the avatar opens Settings in the list column and content. */}
-      <TabItem active={activeTab === 'settings'} title={t('tab.setting')} url={'/settings'}>
-        <span {...stylex.props(styles.avatar, activeTab === 'settings' && styles.avatarActive)}>
-          <UserAvatar shape={'circle'} size={26} />
-        </span>
-      </TabItem>
+        {contactRequests > 0 && (
+          <span {...stylex.props(styles.badge)}>
+            {contactRequests > 99 ? '99+' : contactRequests}
+          </span>
+        )}
+      </span>
+      <SettingsPopup />
+      <ContactsPopup open={contactsOpen} onClose={closeContacts} />
     </Flexbox>
   );
 });

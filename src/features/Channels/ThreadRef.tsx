@@ -1,13 +1,13 @@
 import { Icon } from '@lobehub/ui';
 import type { ChannelDetail, ChannelThreadStatus } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
-import { MessagesSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { shallow } from 'zustand/shallow';
 
 import { channelSelectors, useChannelStore } from '@/store/channel';
 
 import { styles } from './styles';
+import { threadIcon } from './threadIcon';
 import { threadTitle } from './threadTitle';
 
 export interface ThreadRefInfo {
@@ -65,7 +65,7 @@ export const ThreadRef = ({
     : title || (state === 'found' ? t('thread') : t('threadRef.unknown'));
   const content = (
     <>
-      <Icon icon={MessagesSquare} size={14} />
+      <Icon icon={threadIcon} size={14} />
       <span {...stylex.props(styles.threadRefTitle)}>{label}</span>
     </>
   );

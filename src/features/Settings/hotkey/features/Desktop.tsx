@@ -1,7 +1,7 @@
 'use client';
 
 import { HotkeyInput, Spin, toast } from '@lobehub/ui';
-import { Form, type FormGroupItem, useForm } from '@lobehub/ui/form';
+import { type FormGroupItem, useForm } from '@lobehub/ui/form';
 import isEqual from 'fast-deep-equal';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { DesktopHotkeysSkeleton } from '@/components/Skeleton/Settings/tabs/Hotkey';
 import { DESKTOP_HOTKEYS_REGISTRATION } from '@/const/desktopGlobalShortcuts';
 import { FORM_STYLE } from '@/const/layoutTokens';
+import SettingsForm from '@/features/Settings/features/SettingsForm';
 import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
 import { useElectronStore } from '@/store/electron';
 import { desktopHotkeysSelectors } from '@/store/electron/selectors';
@@ -88,12 +89,12 @@ const HotkeySetting = memo(() => {
   };
 
   return (
-    <Form
+    <SettingsForm
       collapsible={false}
       form={form}
       items={[desktop]}
       itemsType={'group'}
-      variant={'filled'}
+      variant={'borderless'}
       {...FORM_STYLE}
     />
   );

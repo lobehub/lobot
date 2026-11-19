@@ -1,15 +1,17 @@
 'use client';
 
 import { Flexbox, Icon, Select, Text } from '@lobehub/ui';
+import { type FormGroupItem, useForm } from '@lobehub/ui/form';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 import { CheckIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import InsetGroup from '@/features/Settings/features/inset/InsetGroup';
-import InsetRow from '@/features/Settings/features/inset/InsetRow';
+import { FORM_STYLE } from '@/const/layoutTokens';
 import SettingHeader from '@/features/Settings/features/SettingHeader';
+import SettingsForm from '@/features/Settings/features/SettingsForm';
+import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
 import { localeOptions } from '@/locales/resources';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
@@ -27,7 +29,7 @@ const styles = stylex.create({
     width: '100%',
     minHeight: '56px',
     paddingBlock: '8px',
-    paddingInline: '16px',
+    paddingInline: 0,
     borderWidth: 0,
     color: 'inherit',
     textAlign: 'start',
@@ -82,9 +84,8 @@ interface PageProps {
 }
 
 /**
- * Language, Telegram style: the reply language the Agents use, then the
- * interface languages as a checked list, each named in the current language
- * with its own name underneath.
+ * Language: Agent reply language as a Form field, then the interface language
+ * list inside a Form.Group so the page matches the other settings forms.
  */
 const Page = ({ showSettingHeader = true }: PageProps) => {
   const { t, i18n } = useTranslation('setting');
@@ -92,6 +93,7 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
   const switchLocale = useGlobalStore((s) => s.switchLocale);
   const responseLanguage = useUserStore(userGeneralSettingsSelectors.responseLanguage);
   const setSettings = useUserStore((s) => s.setSettings);
+  const form = useForm();
 
   const displayNames = useMemo(() => {
     try {
@@ -105,15 +107,11 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
   const nameOf = (code: string, fallback: string) =>
     displayNames?.of(SCRIPT_TAGS[code] ?? code.split('-')[0]) ?? fallback;
 
-  return (
-    <>
-      {showSettingHeader && <SettingHeader title={t('tab.language')} />}
-      <Flexbox gap={24}>
-        <InsetGroup footer={t('settingCommon.responseLanguage.desc')}>
-          <InsetRow
-            anchor={'language-response-language'}
-            label={t('settingCommon.responseLanguage.title')}
-          >
+  const items: FormGroupItem[] = [
+    {
+      children: [
+        {
+          children: (
             <Select
               allowClear
               aria-label={t('settingCommon.responseLanguage.title')}
@@ -123,10 +121,21 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
               value={responseLanguage || undefined}
               onChange={(value) => setSettings({ general: { responseLanguage: value ?? '' } })}
             />
-          </InsetRow>
-        </InsetGroup>
-
-        <InsetGroup anchor={'language-interface'} title={t('settingCommon.lang.interfaceTitle')}>
+          ),
+          desc: t('settingCommon.responseLanguage.desc'),
+          label: (
+            <SettingsSearchAnchor id={'language-response-language'}>
+              {t('settingCommon.responseLanguage.title')}
+            </SettingsSearchAnchor>
+          ),
+          minWidth: undefined,
+        },
+      ],
+      title: null,
+    },
+    {
+      children: (
+        <Flexbox>
           <LanguageOption
             active={language === 'auto'}
             nativeName={t('settingCommon.lang.autoMode')}
@@ -143,8 +152,27 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
               onSelect={() => switchLocale(value as LocaleMode)}
             />
           ))}
-        </InsetGroup>
-      </Flexbox>
+        </Flexbox>
+      ),
+      title: (
+        <SettingsSearchAnchor id={'language-interface'}>
+          {t('settingCommon.lang.interfaceTitle')}
+        </SettingsSearchAnchor>
+      ),
+    },
+  ];
+
+  return (
+    <>
+      {showSettingHeader && <SettingHeader title={t('tab.language')} />}
+      <SettingsForm
+        collapsible={false}
+        form={form}
+        items={items}
+        itemsType={'group'}
+        variant={'borderless'}
+        {...FORM_STYLE}
+      />
     </>
   );
 };

@@ -42,7 +42,7 @@ import { userProfileSelectors } from '@/store/user/selectors';
 
 import { useOpenCreateWorkspace } from './CreateWorkspace';
 import { writeWorkspaceRailHint } from './railHint';
-import { RAIL_AVATAR_SIZE, RAIL_TILE_RADIUS, styles } from './style';
+import { RAIL_AVATAR_SIZE, styles } from './style';
 import { useOrderedWorkspaces } from './useOrderedWorkspaces';
 import { usePersonalRequestCount } from './usePersonalRequestCount';
 import { useRailColumnShown } from './useRailColumnShown';
@@ -133,8 +133,8 @@ const SortableWorkspaceItem = memo<SortableWorkspaceItemProps>(
           <WorkspaceAvatar
             avatar={workspace.avatar}
             name={workspace.name}
+            shape={'square'}
             size={RAIL_AVATAR_SIZE}
-            style={{ borderRadius: RAIL_TILE_RADIUS }}
           />
         </RailItem>
       </div>
@@ -255,7 +255,7 @@ const WorkspaceRail = memo(() => {
         unread={personalUnread}
         onClick={openPersonal}
       >
-        <Avatar avatar={userAvatar} name={userName} shape={'circle'} size={RAIL_AVATAR_SIZE} />
+        <Avatar avatar={userAvatar} name={userName} shape={'square'} size={RAIL_AVATAR_SIZE} />
       </RailItem>
       <span {...stylex.props(styles.divider)} />
       {/* Only the workspaces reorder: the personal space and the create button stay put. */}

@@ -19,10 +19,10 @@ import type { GlobalState } from '@/store/global/initialState';
 import { systemStatusSelectors } from '@/store/global/selectors';
 import { getHomeStoreState } from '@/store/home';
 import { electronStylish } from '@/styles/electron';
-import { isMacOS } from '@/utils/platform';
+import { getPlatform, isMacOS } from '@/utils/platform';
 
 import { useNavigationHistory } from '../navigation/useNavigationHistory';
-import { getMacTrafficLightPadding } from './layout';
+import { getMacTrafficLightPadding, TITLE_BAR_HORIZONTAL_PADDING } from './layout';
 import RecentlyViewed from './RecentlyViewed';
 import { useTrayMenuSync } from './TrayMenu/useTrayMenuSync';
 
@@ -143,7 +143,13 @@ const NavigationBar = memo(() => {
   const tooltipContent = t('navigation.recentView');
 
   const isLeftPanelVisible = leftPanelWidth > 0;
+  const railShown = useRailColumnShown();
   const macTrafficLightPadding = getMacTrafficLightPadding(isMac, isWindowFullScreen);
+  // The list column starts after the rail. The title bar already insets Windows by its own
+  // padding, so the buttons only need the remainder to meet that column's left edge.
+  const listColumnLeft = railShown ? RAIL_WIDTH : WRAP_INSET;
+  const titleBarLeftPadding = getPlatform() === 'Linux' ? 0 : TITLE_BAR_HORIZONTAL_PADDING;
+  const listAlignInset = Math.max(0, listColumnLeft - titleBarLeftPadding);
   const collapsedWidth =
     (isMac ? MAC_COLLAPSED_NAVIGATION_BAR_WIDTH : COLLAPSED_NAVIGATION_BAR_WIDTH) +
     macTrafficLightPadding;
@@ -159,11 +165,12 @@ const NavigationBar = memo(() => {
       data-resizing={navPanelResizing || undefined}
       data-width={leftPanelWidth}
       gap={8}
-      justify={isMac ? 'space-between' : 'end'}
+      justify={isMac ? 'space-between' : 'flex-start'}
       style={{
-        paddingLeft: macTrafficLightPadding,
+        paddingLeft: isMac ? macTrafficLightPadding : listAlignInset,
         paddingRight: 8,
-        // Expanded: span the sidebar width so the right group hugs its right edge.
+        // macOS keeps the history group on the right edge of the sidebar.
+        // Windows and Linux put it on the list column's left edge.
         // Collapsed: keep a concrete width so the titlebar controls can animate.
         width: navigationWidth,
       }}

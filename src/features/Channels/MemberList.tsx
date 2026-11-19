@@ -1,15 +1,24 @@
 import type { DropdownItem } from '@lobehub/ui';
-import { ActionIcon, DropdownMenu, Flexbox, Icon, Popover, Text, toast } from '@lobehub/ui';
+import {
+  ActionIcon,
+  DropdownMenu,
+  Flexbox,
+  Icon,
+  Popover,
+  showContextMenu,
+  Text,
+  toast,
+} from '@lobehub/ui';
 import type { ChannelDetail, ChannelPublicMember } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { AtSign, BellRing, ExternalLink, FolderCog, MoreHorizontal, UserMinus } from 'lucide-react';
-import { useState } from 'react';
+import { type KeyboardEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { presenceDotStyles } from '@/features/ContactList/AgentPresenceBadge';
 import { useAgentPresence } from '@/features/ContactList/useAgentPresence';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
-import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
+import { channelActions } from '@/store/channel';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
@@ -26,9 +35,8 @@ import { MemberAvatar } from './MemberAvatar';
 import { callerMemberRole, canRemoveMember } from './memberManagement';
 import { isCurrentUserMember, memberName } from './memberName';
 import { MemberProfilePopup } from './MemberProfilePopup';
+import { WorkingConversations } from './memberWork';
 import { statusStyles, styles, toneStyles } from './styles';
-import { browseThreads, ThreadCard } from './ThreadBrowser';
-import { useMentionedThreadIds, useUnreadThreadIds } from './threadReads';
 import { useRemoveMember } from './useMemberActions';
 import { getVisibleStatusMembers, groupMembersByActor } from './visibleMembers';
 
@@ -106,48 +114,6 @@ export function useMemberEntries(detail: ChannelDetail) {
 }
 
 /**
- * The conversations a member works in at once, as the thread browser's cards: a click on a
- * Thread opens it. The main conversation, when among them, leads as a plain card.
- */
-const WorkingConversations = ({
-  detail,
-  entry,
-  onOpenThread,
-}: {
-  detail: ChannelDetail;
-  entry: MemberEntry;
-  onOpenThread?: (threadId: string) => void;
-}) => {
-  const { t } = useTranslation('channel');
-  const ids = entry.conversations ?? [];
-  const unreadIds = useUnreadThreadIds(detail.threads, detail.members);
-  const mentionedIds = useMentionedThreadIds(
-    useChannelStore(channelSelectors.listed(detail.channel.id))?.threadMentions,
-  );
-  const threads = browseThreads(detail, {
-    activeId: null,
-    fallbackTitle: () => t('thread'),
-    mentionedIds,
-    query: '',
-    unreadIds,
-  }).filter((item) => ids.includes(item.thread.id));
-  return (
-    <div {...stylex.props(statusStyles.workingPopover)}>
-      <div {...stylex.props(statusStyles.workingHeading)}>{entry.label}</div>
-      {ids.includes(null) && <div {...stylex.props(statusStyles.workingMain)}>{t('main')}</div>}
-      {threads.map((item) => (
-        <ThreadCard
-          detail={detail}
-          entry={item}
-          key={item.thread.id}
-          onOpen={() => onOpenThread?.(item.thread.id)}
-        />
-      ))}
-    </div>
-  );
-};
-
-/**
  * A working member's line reads as plain secondary text, like a description. The avatar's dot
  * already shows the state, so the line carries no icon of its own.
  */
@@ -155,10 +121,13 @@ const MemberState = ({
   detail,
   entry,
   onOpenThread,
+  plain,
 }: {
   detail: ChannelDetail;
   entry: MemberEntry;
   onOpenThread?: (threadId: string) => void;
+  /** The roster card already lists the work, so the line stays text. */
+  plain?: boolean;
 }) => {
   const [open, setOpen] = useState(false);
   if (!entry.label) return null;
@@ -172,7 +141,8 @@ const MemberState = ({
     </span>
   );
   // A working line lists where the work is on hover as Thread cards, each one a way into its Thread.
-  return entry.conversations ? (
+  // The roster puts that list in the profile card, so the line is not a second click target.
+  return !plain && entry.conversations ? (
     <Popover
       open={open}
       placement="left"
@@ -206,9 +176,16 @@ interface MemberRowProps {
   /** A group Channel's admin can mute its Agents; a direct conversation's Agent never is. */
   mutable: boolean;
   onAction?: () => void;
+  /** Clears the roster selection, for example when a right-click menu takes over. */
+  onDismiss?: () => void;
   onOpenThread?: (threadId: string) => void;
   onRemove: () => void;
+  /** `open` selects this row; `false` clears it only when it is the one selected. */
+  onSelect?: (open: boolean) => void;
   removable: boolean;
+  /** The roster: a click selects the row and opens its card. A feed list stays hover-only. */
+  selectable?: boolean;
+  selected?: boolean;
   showDescription?: boolean;
 }
 
@@ -218,9 +195,13 @@ const MemberRow = ({
   manageable,
   mutable,
   onAction,
+  onDismiss,
   onOpenThread,
   onRemove,
+  onSelect,
   removable,
+  selectable,
+  selected,
   showDescription,
 }: MemberRowProps) => {
   const { t } = useTranslation('channel');
@@ -282,60 +263,131 @@ const MemberRow = ({
       },
     });
 
-  return (
+  const openCard = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) return;
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    event.currentTarget.click();
+  };
+  const avatar = (
+    <span {...stylex.props(styles.memberAvatarTrigger)}>
+      <StatusAvatar entry={entry} size={28} />
+    </span>
+  );
+  const details = (
+    <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
+      {/* Muted is a standing setting, not a passing state: it sits right after the name. */}
+      <span {...stylex.props(statusStyles.memberNameLine)}>
+        <Text ellipsis weight={500}>
+          {entry.name}
+        </Text>
+        {isAgent && entry.member.muted && (
+          <span {...stylex.props(statusStyles.memberMuted)}>{t('member.muted')}</span>
+        )}
+      </span>
+      {isAgent &&
+        (showDescription ? (
+          entry.member.description && (
+            <Text ellipsis fontSize={12} type="secondary">
+              {entry.member.description}
+            </Text>
+          )
+        ) : (
+          <MemberState detail={detail} entry={entry} plain={selectable} onOpenThread={openThread} />
+        ))}
+    </Flexbox>
+  );
+  // The menu button stays outside the selection hit target, so opening it does not toggle the card.
+  const actions = menuItems.length > 0 && (
+    <span
+      {...stylex.props(styles.memberActions)}
+      onClick={(event) => event.stopPropagation()}
+      onPointerDown={(event) => event.stopPropagation()}
+    >
+      <DropdownMenu items={menuItems}>
+        <ActionIcon
+          aria-label={t('memberActionsNamed', { name: entry.name })}
+          icon={MoreHorizontal}
+          size="small"
+          title={t('more', { ns: 'common' })}
+        />
+      </DropdownMenu>
+    </span>
+  );
+  const row = (
     <Flexbox
       horizontal
       align="center"
       gap={8}
       paddingBlock={6}
-      {...stylex.props(stylex.defaultMarker())}
+      {...stylex.props(
+        stylex.defaultMarker(),
+        selectable && styles.memberRow,
+        selected && styles.memberRowSelected,
+      )}
+      onContextMenu={
+        selectable && menuItems.length > 0
+          ? (event) => {
+              event.preventDefault();
+              // The card and the action menu occupy the same side of the row; the menu wins.
+              onDismiss?.();
+              showContextMenu(menuItems);
+            }
+          : undefined
+      }
     >
-      <div {...stylex.props(styles.memberIdentity)}>
-        {/* Hovering the avatar shows the member's card, like an avatar in the conversation. */}
-        <MemberProfilePopup member={entry.member} placement={'left'}>
-          <span {...stylex.props(styles.memberAvatarTrigger)}>
-            <StatusAvatar entry={entry} size={28} />
-          </span>
+      {selectable ? (
+        <MemberProfilePopup
+          highlightTrigger={false}
+          member={entry.member}
+          open={selected}
+          placement={'left'}
+          trigger={'click'}
+          extra={
+            entry.conversations && (
+              <WorkingConversations
+                embedded
+                detail={detail}
+                entry={entry}
+                onOpenThread={
+                  openThread &&
+                  ((threadId) => {
+                    onSelect?.(false);
+                    openThread(threadId);
+                  })
+                }
+              />
+            )
+          }
+          onOpenChange={(open) => onSelect?.(open)}
+        >
+          <div
+            aria-pressed={selected}
+            role={'button'}
+            tabIndex={0}
+            {...stylex.props(styles.memberIdentity, styles.memberSelect)}
+            onKeyDown={openCard}
+          >
+            {avatar}
+            {details}
+          </div>
         </MemberProfilePopup>
-        <Flexbox flex={1} gap={2} style={{ minWidth: 0 }}>
-          {/* Muted is a standing setting, not a passing state: it sits right after the name. */}
-          <span {...stylex.props(statusStyles.memberNameLine)}>
-            <Text ellipsis weight={500}>
-              {entry.name}
-            </Text>
-            {isAgent && entry.member.muted && (
-              <span {...stylex.props(statusStyles.memberMuted)}>{t('member.muted')}</span>
-            )}
-          </span>
-          {isAgent &&
-            (showDescription ? (
-              entry.member.description && (
-                <Text ellipsis fontSize={12} type="secondary">
-                  {entry.member.description}
-                </Text>
-              )
-            ) : (
-              <MemberState detail={detail} entry={entry} onOpenThread={openThread} />
-            ))}
-        </Flexbox>
-      </div>
+      ) : (
+        // Hovering the avatar shows the member's card, like an avatar in the conversation.
+        <div {...stylex.props(styles.memberIdentity)}>
+          <MemberProfilePopup member={entry.member} placement={'left'}>
+            {avatar}
+          </MemberProfilePopup>
+          {details}
+        </div>
+      )}
       {showDescription && isAgent && (
-        <MemberState detail={detail} entry={entry} onOpenThread={openThread} />
+        <MemberState detail={detail} entry={entry} plain={selectable} onOpenThread={openThread} />
       )}
-      {menuItems.length > 0 && (
-        <span {...stylex.props(styles.memberActions)}>
-          <DropdownMenu items={menuItems}>
-            <ActionIcon
-              aria-label={t('memberActionsNamed', { name: entry.name })}
-              icon={MoreHorizontal}
-              size="small"
-              title={t('more', { ns: 'common' })}
-            />
-          </DropdownMenu>
-        </span>
-      )}
+      {actions}
     </Flexbox>
   );
+  return row;
 };
 
 /**
@@ -346,12 +398,15 @@ export function MemberList({
   detail,
   onAction,
   onOpenThread,
+  selectable,
   showDescription,
 }: {
   detail: ChannelDetail;
   onAction?: () => void;
   /** Opens a Thread from a busy member's list of the conversations it works in. */
   onOpenThread?: (threadId: string) => void;
+  /** Click a row to select it and open its card; right-click opens the row menu. */
+  selectable?: boolean;
   /** Roomy layouts: who each member is under the name, with the status moved to the row's end. */
   showDescription?: boolean;
 }) {
@@ -363,6 +418,8 @@ export function MemberList({
   const selfRole = callerMemberRole(detail.members, userId);
   const removeMember = useRemoveMember();
   const { agents, people } = groupMembersByActor(entries);
+  // One card at a time. Closing a row leaves a newer selection alone when the two updates meet.
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const renderRow = (entry: MemberEntry) => (
     <MemberRow
       detail={detail}
@@ -370,14 +427,22 @@ export function MemberList({
       key={entry.member.id}
       manageable={manageable}
       mutable={manageable && !channel.agentId}
+      selectable={selectable}
+      selected={selectable && selectedId === entry.member.id}
       showDescription={showDescription}
       removable={canRemoveMember(channel, entry.member, {
         isSelf: isCurrentUserMember(entry.member, userId),
         selfRole,
       })}
       onAction={onAction}
+      onDismiss={() => setSelectedId(null)}
       onOpenThread={onOpenThread}
       onRemove={() => removeMember(channel, entry.member, entry.name)}
+      onSelect={(open) =>
+        setSelectedId((current) =>
+          open ? entry.member.id : current === entry.member.id ? null : current,
+        )
+      }
     />
   );
 

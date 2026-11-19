@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import RepositoryAvatar from '@/components/RepositoryAvatar';
 import { openCreateEnvironmentModal } from '@/features/EnvironmentManager/CreateEnvironmentModal';
+import { openSettingsFromUrl } from '@/features/NavRail/settingsPopupStore';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { refreshProjectFiles } from '@/services/projectFile';
 import { useAgentStore } from '@/store/agent';
@@ -291,7 +292,8 @@ const SandboxDrivePicker = memo<SandboxDrivePickerProps>(
               onRetry={() => void refreshEnvironments()}
               onManage={() => {
                 setOpen(false);
-                navigate('/settings/environments');
+                if (!openSettingsFromUrl('/settings/environments'))
+                  navigate('/settings/environments');
               }}
             />
           }

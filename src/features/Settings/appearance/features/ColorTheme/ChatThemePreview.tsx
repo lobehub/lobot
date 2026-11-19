@@ -20,14 +20,13 @@ const styles = stylex.create({
     alignSelf: 'flex-start',
     borderEndStartRadius: '4px',
     color: cssVar.colorText,
-    backgroundColor: cssVar.colorBgContainer,
+    backgroundColor: cssVar.colorFillTertiary,
     backgroundImage: 'none',
   },
   name: {
     fontWeight: 500,
     color: cssVar.colorPrimary,
   },
-  // A tint of the accent with regular text: readable whether the accent is light or dark.
   outgoing: {
     alignSelf: 'flex-end',
     borderEndEndRadius: '4px',
@@ -39,16 +38,14 @@ const styles = stylex.create({
   stage: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px',
-    padding: '20px',
-    backgroundColor: cssVar.colorBgLayout,
-    backgroundImage: 'none',
+    gap: '10px',
+    paddingBlock: '8px',
   },
 });
 
 /**
- * A short conversation drawn with the live theme, accent color and text size,
- * so every change on the page shows here first, the way Telegram previews it.
+ * A short conversation drawn with the live accent and text size, shown next to
+ * the typography controls so size changes are visible immediately.
  */
 const ChatThemePreview = () => {
   const { t } = useTranslation('setting');

@@ -3,7 +3,7 @@ import {
   type CompletionSoundSettings,
 } from '@lobechat/electron-client-ipc';
 import { Alert, Button, Flexbox, Segmented, Select, Slider, Switch } from '@lobehub/ui';
-import { Form, useForm } from '@lobehub/ui/form';
+import { useForm } from '@lobehub/ui/form';
 import { Play } from 'lucide-react';
 import { useCallback, useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { SettingsSectionSkeleton } from '@/components/Skeleton';
 import { FORM_STYLE } from '@/const/layoutTokens';
 import type { ChannelNotificationLevel } from '@/features/Channels/notifications/activity';
+import SettingsForm from '@/features/Settings/features/SettingsForm';
 import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
 import { completionSoundService } from '@/services/electron/completionSound';
 import { desktopNotificationService } from '@/services/electron/desktopNotification';
@@ -20,10 +21,14 @@ import { systemStatusSelectors } from '@/store/global/selectors';
 const IMPORTED = 'imported';
 const IMPORT = 'import';
 
+// Keep the last successful load so switching away from this tab and back
+// does not flash the skeleton while getSettings resolves again.
+let cachedSettings: CompletionSoundSettings | undefined;
+
 export const DesktopNotificationSettings = () => {
   const { t } = useTranslation('setting');
   const soundToggleId = useId();
-  const [settings, setSettings] = useState<CompletionSoundSettings>();
+  const [settings, setSettings] = useState<CompletionSoundSettings | undefined>(cachedSettings);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
   const form = useForm();
@@ -34,7 +39,10 @@ export const DesktopNotificationSettings = () => {
     setError(false);
     try {
       const next = await action();
-      if (next) setSettings(next);
+      if (next) {
+        cachedSettings = next;
+        setSettings(next);
+      }
     } catch (error) {
       console.error('Completion sound setting failed:', error);
       setError(true);
@@ -93,13 +101,13 @@ export const DesktopNotificationSettings = () => {
           />
         )
       ) : (
-        <Form
+        <SettingsForm
           collapsible={false}
           form={form}
           itemMinWidth={FORM_STYLE.itemMinWidth}
           itemsType={'group'}
           style={FORM_STYLE.style}
-          variant={'filled'}
+          variant={'borderless'}
           items={[
             {
               children: [
@@ -181,19 +189,21 @@ export const DesktopNotificationSettings = () => {
                 },
                 {
                   children: (
-                    <Slider
-                      aria-label={t('completionSound.volume')}
-                      disabled={busy}
-                      max={1}
-                      min={0}
-                      step={0.1}
-                      style={{ width: '100%' }}
-                      value={settings.volume}
-                      onChange={(volume) => setSettings({ ...settings, volume })}
-                      onChangeComplete={(volume) =>
-                        run(() => completionSoundService.setSettings({ volume }))
-                      }
-                    />
+                    <div style={{ minWidth: 120, width: '100%' }}>
+                      <Slider
+                        aria-label={t('completionSound.volume')}
+                        disabled={busy}
+                        max={1}
+                        min={0}
+                        step={0.1}
+                        style={{ width: '100%' }}
+                        value={settings.volume}
+                        onChange={(volume) => setSettings({ ...settings, volume })}
+                        onChangeComplete={(volume) =>
+                          run(() => completionSoundService.setSettings({ volume }))
+                        }
+                      />
+                    </div>
                   ),
                   label: t('completionSound.volume'),
                 },

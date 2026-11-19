@@ -27,6 +27,7 @@ import { useWorkspaceMembers } from '@/business/client/hooks/useWorkspaceMembers
 import AsyncError from '@/components/AsyncError';
 import { DESKTOP_HEADER_ICON_SMALL_SIZE } from '@/const/layoutTokens';
 import { openAddContactModal } from '@/features/AddContactModal';
+import { personName } from '@/features/AddContactModal/result';
 import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { AVATAR_SIZE, ConversationRow, ListHeader } from '@/features/MessageList';
 import SkeletonList from '@/features/NavPanel/components/SkeletonList';
@@ -46,13 +47,16 @@ import { userProfileSelectors } from '@/store/user/selectors';
 import { CONTACT_URL } from './const';
 import ContactAvatar from './ContactAvatar';
 import { MemberRow, PersonRow, RequestRow, SharedAgentRow } from './ExternalRows';
+import { contactPreviewPath, useContactPreview } from './previewContext';
 import { CONTACT_SORT_BYS, groupContacts } from './sortContacts';
 import { styles } from './style';
 
 const useActiveRouteId = () => {
+  const previewCtx = useContactPreview();
   const { pathname } = useActiveLocation();
   const slug = useActiveWorkspaceSlug();
-  const segments = pathname.split('/').filter(Boolean);
+  const path = previewCtx ? contactPreviewPath(previewCtx.preview) : pathname;
+  const segments = path.split('/').filter(Boolean);
   const [root, id, personId] = slug && segments[0] === slug ? segments.slice(1) : segments;
   // A person's card lives under `/agents/people/:userId`.
   if (root === 'agents' && id === 'people') return personId;
@@ -92,7 +96,7 @@ const Contact = memo<{ active: boolean; item: SidebarAgentItem }>(({ active, ite
 
 Contact.displayName = 'Contact';
 
-const Body = memo(() => {
+const Body = memo<{ query?: string }>(({ query = '' }) => {
   const { t } = useTranslation('common');
   const { t: tChat } = useTranslation('chat');
   const { error, mutate } = useFetchAgentList();
@@ -132,6 +136,32 @@ const Body = memo(() => {
     [items, sortBy, tChat],
   );
 
+  const untitled = tChat('untitledAgent');
+  const q = query.trim().toLowerCase();
+  const match = (name: string) => !q || name.toLowerCase().includes(q);
+  const agentName = (item: SidebarAgentItem) =>
+    item.type === 'group' ? item.title || untitled : agentDisplayName(item, untitled);
+
+  const visiblePinned = q ? pinned.filter((item) => match(agentName(item))) : pinned;
+  const visibleGroups = q ? groups.filter((item) => match(agentName(item))) : groups;
+  const visibleAgents = q ? agents.filter((item) => match(agentName(item))) : agents;
+  const visiblePeople = q ? people.filter((item) => match(personName(item.user))) : people;
+  const visibleExternals = q ? externals.filter((item) => match(personName(item.user))) : externals;
+  const visibleShared = q
+    ? sharedAgents.filter((item) => match(item.agent.title || untitled))
+    : sharedAgents;
+  const visibleRequests = q ? requests.filter((item) => match(personName(item.user))) : requests;
+  const visibleMembers = q
+    ? members.filter((member) =>
+        match(
+          personName({
+            fullName: member.user?.fullName ?? null,
+            username: member.user?.username ?? null,
+          }),
+        ),
+      )
+    : members;
+
   const sortMenuItems = CONTACT_SORT_BYS.map((by) => ({
     checked: sortBy === by,
     key: by,
@@ -151,13 +181,13 @@ const Body = memo(() => {
     list.map((item) => <Contact active={item.id === activeRouteId} item={item} key={item.id} />);
   const sections = [
     // Requests waiting for an answer lead; the section is left out when there are none.
-    ...(requests.length > 0
+    ...(visibleRequests.length > 0
       ? [
           {
-            count: requests.length,
+            count: visibleRequests.length,
             key: 'requests',
             render: () =>
-              requests.map((request) => (
+              visibleRequests.map((request) => (
                 <RequestRow
                   active={request.user.id === activeRouteId}
                   key={request.id}
@@ -169,12 +199,12 @@ const Body = memo(() => {
         ]
       : []),
     // Pinned contacts lead, like the Messages list; the section is left out until one is pinned.
-    ...(pinned.length > 0
+    ...(visiblePinned.length > 0
       ? [
           {
-            count: pinned.length,
+            count: visiblePinned.length,
             key: 'pinned',
-            render: () => renderAgents(pinned),
+            render: () => renderAgents(visiblePinned),
             title: t('contacts.pinned'),
           },
         ]
@@ -183,13 +213,13 @@ const Body = memo(() => {
     ...(channelsEnabled
       ? [
           {
-            count: people.length + sharedAgents.length,
+            count: visiblePeople.length + visibleShared.length,
             key: 'people',
             render: () => [
-              ...people.map((item) => (
+              ...visiblePeople.map((item) => (
                 <PersonRow active={item.user.id === activeRouteId} item={item} key={item.user.id} />
               )),
-              ...sharedAgents.map((item) => (
+              ...visibleShared.map((item) => (
                 <SharedAgentRow
                   active={item.agent.agentId === activeRouteId}
                   item={item}
@@ -204,10 +234,10 @@ const Body = memo(() => {
     ...(channelsEnabled && inWorkspace
       ? [
           {
-            count: members.length,
+            count: visibleMembers.length,
             key: 'members',
             render: () =>
-              members.map((member) => (
+              visibleMembers.map((member) => (
                 <MemberRow
                   active={member.userId === activeRouteId}
                   key={member.userId}
@@ -219,13 +249,13 @@ const Body = memo(() => {
         ]
       : []),
     // People outside the workspace whom a member invited; left out until there is one.
-    ...(channelsEnabled && inWorkspace && externals.length > 0
+    ...(channelsEnabled && inWorkspace && visibleExternals.length > 0
       ? [
           {
-            count: externals.length,
+            count: visibleExternals.length,
             key: 'externals',
             render: () =>
-              externals.map((item) => (
+              visibleExternals.map((item) => (
                 <PersonRow
                   active={item.user.id === activeRouteId}
                   item={item}
@@ -239,15 +269,15 @@ const Body = memo(() => {
       : []),
     // Groups next: there are few, and they would sink below every agent.
     {
-      count: groups.length,
+      count: visibleGroups.length,
       key: 'groups',
-      render: () => renderAgents(groups),
+      render: () => renderAgents(visibleGroups),
       title: t('contacts.groups'),
     },
     {
-      count: agents.length,
+      count: visibleAgents.length,
       key: 'agents',
-      render: () => renderAgents(agents),
+      render: () => renderAgents(visibleAgents),
       title: t('navPanel.agent'),
     },
   ];
@@ -276,7 +306,11 @@ const Body = memo(() => {
   // The standard sidebar accordion (same as the home sidebar sections), so
   // each section collapses independently with the shared header styling.
   return (
-    <Flexbox paddingBlock={'4px 12px'} paddingInline={4}>
+    <Flexbox
+      paddingBlock={'4px 12px'}
+      paddingInline={4}
+      style={{ minWidth: 0, overflowX: 'hidden' }}
+    >
       <AccordionRoot
         indicatorPlacement={'inline'}
         style={{ gap: 8 }}
@@ -359,6 +393,11 @@ const Header = memo(() => {
 
 Header.displayName = 'ContactListHeader';
 
+export { Header as ContactListHeader };
+
+/** The Contacts list column (header + body), used by the shell panel and the Contacts popup. */
+export const ContactListPanel = () => <SideBarLayout body={<Body />} header={<Header />} />;
+
 /**
  * Contacts tab list column: every agent and group, by name or most recently updated. A row opens
  * the contact card (`/agents/:id`) and keeps the list in place; the card is
@@ -366,7 +405,7 @@ Header.displayName = 'ContactListHeader';
  */
 const ContactListPortal = () => (
   <NavPanelPortal navKey={NAV_PANEL_CONTACTS_KEY}>
-    <SideBarLayout body={<Body />} header={<Header />} />
+    <ContactListPanel />
   </NavPanelPortal>
 );
 

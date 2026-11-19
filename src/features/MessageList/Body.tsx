@@ -283,7 +283,7 @@ const Body = memo(() => {
   const agentsLoading = !isInit && items.length === 0;
 
   return (
-    <Flexbox gap={1} paddingBlock={'0 12px'} paddingInline={6} ref={listRef}>
+    <Flexbox gap={4} paddingBlock={'0 12px'} paddingInline={6} ref={listRef}>
       {groups.pinned.length > 0 && (
         <div aria-label={t('navPanel.pinned')} role="group" {...stylex.props(styles.pinnedGroup)}>
           {groups.pinned.map((entry) => renderEntry(entry, 'tile'))}
@@ -310,7 +310,7 @@ const Body = memo(() => {
       {groups.rest.length > 0 && groups.sections.length > 0 && !query.trim() && (
         <div {...stylex.props(styles.restDivider)} />
       )}
-      {groups.rest.map(renderEntry)}
+      {groups.rest.map((entry) => renderEntry(entry))}
       {agentsLoading ? (
         agentsError ? (
           <AsyncError error={agentsError} variant="inline" onRetry={() => void retryAgents()} />

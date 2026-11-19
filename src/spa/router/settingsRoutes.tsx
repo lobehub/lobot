@@ -1,31 +1,20 @@
 import type { RouteObject } from 'react-router';
 
 import { settingsRouteMeta } from '@/features/Settings/features/routeMeta';
-import { dynamicElement, dynamicLayout, ErrorBoundary } from '@/utils/router';
+import { ErrorBoundary } from '@/utils/router';
 
-const settingsElement = dynamicElement(
-  () => import('@/routes/(main)/settings'),
-  'Desktop > Settings',
-  {
-    preloadId: 'settings',
-  },
-);
+import SettingsRouteRedirect from './SettingsRouteRedirect';
 
 /**
- * Settings, opened from the avatar tab. The list column is the shell-owned
- * settings list; this route fills the content beside it with one section.
+ * Personal settings open in the Settings popup. These routes exist so deep
+ * links and email callbacks still resolve, then redirect to the main shell.
  */
 export const settingsRoute: RouteObject = {
   children: [
-    { element: settingsElement, handle: { meta: settingsRouteMeta }, index: true },
-    { element: settingsElement, handle: { meta: settingsRouteMeta }, path: ':tab' },
-    // Second-level pages inside a tab, e.g. /settings/profile/username.
-    { element: settingsElement, handle: { meta: settingsRouteMeta }, path: ':tab/:sub' },
+    { element: <SettingsRouteRedirect />, handle: { meta: settingsRouteMeta }, index: true },
+    { element: <SettingsRouteRedirect />, handle: { meta: settingsRouteMeta }, path: ':tab' },
+    { element: <SettingsRouteRedirect />, handle: { meta: settingsRouteMeta }, path: ':tab/:sub' },
   ],
-  element: dynamicLayout(
-    () => import('@/routes/(main)/settings/_layout'),
-    'Desktop > Settings > Layout',
-  ),
-  errorElement: <ErrorBoundary resetPath="/settings" />,
+  errorElement: <ErrorBoundary resetPath="/" />,
   path: 'settings',
 };

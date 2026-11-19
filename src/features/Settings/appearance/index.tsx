@@ -1,44 +1,56 @@
 'use client';
 
 import { isDesktop } from '@lobechat/const';
-import { Flexbox, Segmented } from '@lobehub/ui';
-import * as stylex from '@stylexjs/stylex';
+import { Segmented, Select } from '@lobehub/ui';
+import { Form, type FormGroupItem, useForm } from '@lobehub/ui/form';
+import { useTheme as useNextThemesTheme } from 'next-themes';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AppearanceSkeleton from '@/components/Skeleton/Settings/tabs/Appearance';
-import InsetGroup from '@/features/Settings/features/inset/InsetGroup';
-import InsetRow from '@/features/Settings/features/inset/InsetRow';
+import { FORM_STYLE } from '@/const/layoutTokens';
+import FormNavField from '@/features/Settings/features/FormNavField';
 import SettingHeader from '@/features/Settings/features/SettingHeader';
+import SettingsForm, { SettingsSurfaceGroup } from '@/features/Settings/features/SettingsForm';
 import { getSettingsSubPageUrl } from '@/features/Settings/features/subPageUrl';
+import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
+import { localeOptions } from '@/locales/resources';
+import { useGlobalStore } from '@/store/global';
 import { SettingsTabs } from '@/store/global/initialState';
+import { systemStatusSelectors } from '@/store/global/selectors';
 import { useUserStore } from '@/store/user';
 import { userGeneralSettingsSelectors } from '@/store/user/selectors';
+import { type LocaleMode } from '@/types/locale';
 
 import AccentSwatches from './features/ColorTheme/AccentSwatches';
 import ChatThemePreview from './features/ColorTheme/ChatThemePreview';
-import ThemeModeCards from './features/ColorTheme/ThemeModeCards';
-import AppTrayRow from './features/Desktop';
+import AppTraySwitch from './features/Desktop';
 import { FontSizeControl } from './features/Font/FontSize';
-
-const styles = stylex.create({
-  textSize: { paddingBlock: '12px', paddingInline: '16px' },
-});
 
 interface PageProps {
   showSettingHeader?: boolean;
 }
 
-/**
- * Appearance, laid out like Telegram's: the color theme first (a live chat
- * preview, theme cards and accent dots), then text size, then rows that open
- * the font and chat-display pages.
- */
+const SELECT_STYLE = { minWidth: 140 };
+
 const Page = ({ showSettingHeader = true }: PageProps) => {
   const { t } = useTranslation('setting');
   const isUserStateInit = useUserStore((s) => s.isUserStateInit);
   const fontSize = useUserStore(userGeneralSettingsSelectors.fontSize);
   const animationMode = useUserStore(userGeneralSettingsSelectors.animationMode);
+  const responseLanguage = useUserStore(userGeneralSettingsSelectors.responseLanguage);
   const setSettings = useUserStore((s) => s.setSettings);
+  const language = useGlobalStore(systemStatusSelectors.language);
+  const switchLocale = useGlobalStore((s) => s.switchLocale);
+  const { theme, setTheme } = useNextThemesTheme();
+  const form = useForm();
+
+  const themeMode = theme === 'light' || theme === 'dark' ? theme : 'system';
+
+  const languageOptions = useMemo(
+    () => [{ label: t('settingCommon.lang.autoMode'), value: 'auto' }, ...localeOptions],
+    [t],
+  );
 
   const header = showSettingHeader && <SettingHeader title={t('tab.appearance')} />;
 
@@ -50,41 +62,129 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
       </>
     );
 
-  return (
-    <>
-      {header}
-      <Flexbox gap={24}>
-        <InsetGroup title={t('settingAppearance.colorTheme.title')}>
+  const items: FormGroupItem[] = [
+    {
+      children: [
+        {
+          children: (
+            <Select
+              style={SELECT_STYLE}
+              value={themeMode}
+              options={[
+                { label: t('settingCommon.themeMode.auto'), value: 'system' },
+                { label: t('settingCommon.themeMode.light'), value: 'light' },
+                { label: t('settingCommon.themeMode.dark'), value: 'dark' },
+              ]}
+              onChange={(value) => setTheme(value)}
+            />
+          ),
+          label: (
+            <SettingsSearchAnchor id={'appearance-theme-mode'}>
+              {t('settingCommon.themeMode.title')}
+            </SettingsSearchAnchor>
+          ),
+          minWidth: undefined,
+        },
+        {
+          children: <AccentSwatches />,
+          divider: true,
+          label: (
+            <SettingsSearchAnchor id={'appearance-primary-color'}>
+              {t('settingAppearance.primaryColor.title')}
+            </SettingsSearchAnchor>
+          ),
+          minWidth: undefined,
+        },
+        {
+          children: (
+            <Select
+              options={languageOptions}
+              style={SELECT_STYLE}
+              value={language}
+              onChange={(value) => switchLocale((value ?? 'auto') as LocaleMode)}
+            />
+          ),
+          divider: true,
+          label: (
+            <SettingsSearchAnchor id={'language-interface'}>
+              {t('settingCommon.lang.interfaceTitle')}
+            </SettingsSearchAnchor>
+          ),
+          minWidth: undefined,
+        },
+        {
+          children: (
+            <Select
+              allowClear
+              aria-label={t('settingCommon.responseLanguage.title')}
+              options={localeOptions}
+              placeholder={t('settingCommon.responseLanguage.placeholder')}
+              style={SELECT_STYLE}
+              value={responseLanguage || undefined}
+              onChange={(value) => setSettings({ general: { responseLanguage: value ?? '' } })}
+            />
+          ),
+          desc: t('settingCommon.responseLanguage.desc'),
+          divider: true,
+          label: (
+            <SettingsSearchAnchor id={'language-response-language'}>
+              {t('settingCommon.responseLanguage.title')}
+            </SettingsSearchAnchor>
+          ),
+          minWidth: undefined,
+        },
+      ],
+      title: t('group.common'),
+    },
+    {
+      children: (
+        <>
           <ChatThemePreview />
-          <ThemeModeCards />
-          <AccentSwatches />
-        </InsetGroup>
-
-        <InsetGroup
-          anchor={'appearance-font-size'}
-          footer={t('settingChatAppearance.fontSize.desc')}
-          title={t('settingChatAppearance.fontSize.title')}
-        >
-          <div {...stylex.props(styles.textSize)}>
+          <div style={{ minWidth: 0, paddingBlockStart: 8, width: '100%' }}>
             <FontSizeControl
               value={fontSize}
               onChange={(value) => setSettings({ general: { fontSize: value } })}
             />
           </div>
-        </InsetGroup>
+        </>
+      ),
+      title: (
+        <SettingsSearchAnchor id={'appearance-font-size'}>
+          {t('settingChatAppearance.fontSize.title')}
+        </SettingsSearchAnchor>
+      ),
+    },
+  ];
 
-        <InsetGroup>
-          <InsetRow
+  return (
+    <>
+      {header}
+      <SettingsForm
+        collapsible={false}
+        form={form}
+        items={items}
+        itemsType={'group'}
+        variant={'borderless'}
+        {...FORM_STYLE}
+      >
+        <SettingsSurfaceGroup title={t('settingAppearance.display.title')}>
+          <FormNavField
             label={t('settingAppearance.font.title')}
             to={getSettingsSubPageUrl(SettingsTabs.Appearance, 'font')}
           />
-          <InsetRow
+          <FormNavField
+            divider
             label={t('settingAppearance.chatDisplay.title')}
             to={getSettingsSubPageUrl(SettingsTabs.Appearance, 'chat')}
           />
-          <InsetRow
-            anchor={'appearance-animation'}
-            label={t('settingAppearance.animationMode.title')}
+          <Form.Field
+            divider
+            minWidth={undefined}
+            label={
+              <SettingsSearchAnchor id={'appearance-animation'}>
+                {t('settingAppearance.animationMode.title')}
+              </SettingsSearchAnchor>
+            }
           >
             <Segmented
               value={animationMode}
@@ -95,10 +195,22 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
               ]}
               onChange={(value) => setSettings({ general: { animationMode: value } })}
             />
-          </InsetRow>
-          {isDesktop && <AppTrayRow />}
-        </InsetGroup>
-      </Flexbox>
+          </Form.Field>
+          {isDesktop && (
+            <Form.Field
+              divider
+              minWidth={undefined}
+              label={
+                <SettingsSearchAnchor id={'appearance-app-tray'}>
+                  {t('settingAppearance.appTray.title')}
+                </SettingsSearchAnchor>
+              }
+            >
+              <AppTraySwitch />
+            </Form.Field>
+          )}
+        </SettingsSurfaceGroup>
+      </SettingsForm>
     </>
   );
 };

@@ -1,7 +1,7 @@
-import { ActionIcon, DropdownMenu, Flexbox, Icon, Text } from '@lobehub/ui';
+import { ActionIcon, cssVar, DropdownMenu, Flexbox, Icon, Text } from '@lobehub/ui';
 import type { ChannelDetail } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
-import { GitBranch, Maximize2, MoreHorizontal, X } from 'lucide-react';
+import { Maximize2, MoreHorizontal, X } from 'lucide-react';
 import { Activity, type ComponentProps, useDeferredValue, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,6 +15,7 @@ import { MemberAvatar } from './MemberAvatar';
 import { memberName } from './memberName';
 import { styles } from './styles';
 import { type ChannelThreadDraft, draftThreadFollowerIds } from './threadDraft';
+import { threadIcon } from './threadIcon';
 import { threadTitle } from './threadTitle';
 import { useThreadMenu } from './useThreadMenu';
 
@@ -132,6 +133,7 @@ export function ThreadPanel({
       <Activity mode={target ? 'visible' : 'hidden'}>
         <Flexbox aria-label={t('thread')} role="region" {...stylex.props(styles.body)}>
           <NavHeader
+            {...stylex.props(styles.threadHeader)}
             paddingBlock={6}
             paddingInline={8}
             showTogglePanelButton={false}
@@ -142,7 +144,7 @@ export function ThreadPanel({
                 gap={8}
                 style={{ marginInlineStart: 4, minWidth: 0 }}
               >
-                <Icon icon={GitBranch} size={18} />
+                <Icon color={cssVar.colorTextDescription} icon={threadIcon} size={18} />
                 <Text ellipsis fontSize={14} title={title}>
                   {title}
                 </Text>

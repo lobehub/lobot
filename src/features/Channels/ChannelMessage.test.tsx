@@ -109,7 +109,11 @@ vi.mock('./MemberProfilePopup', () => ({
 }));
 const editMessage = vi.hoisted(() => vi.fn());
 const deleteMessage = vi.hoisted(() => vi.fn());
-vi.mock('@/store/channel', () => ({ channelActions: { deleteMessage, editMessage } }));
+vi.mock('@/store/channel', () => ({
+  channelActions: { deleteMessage, editMessage },
+  channelSelectors: { listed: () => () => undefined },
+  useChannelStore: (selector: (state: unknown) => unknown) => selector({}),
+}));
 vi.mock('./MessageAttachments', () => ({ MessageAttachments: () => null }));
 vi.mock('./ThreadRef', () => ({
   ThreadRef: ({

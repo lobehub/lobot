@@ -2,11 +2,12 @@
 
 import { BRANDING_NAME } from '@lobechat/business-const';
 import { Switch } from '@lobehub/ui';
-import { Form, type FormGroupItem, useForm } from '@lobehub/ui/form';
+import { type FormGroupItem, useForm } from '@lobehub/ui/form';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FORM_STYLE } from '@/const/layoutTokens';
+import SettingsForm from '@/features/Settings/features/SettingsForm';
 import { useUserStore } from '@/store/user';
 import { userGeneralSettingsSelectors } from '@/store/user/selectors';
 
@@ -36,12 +37,12 @@ const Analytics = memo(() => {
   };
 
   return (
-    <Form
+    <SettingsForm
       collapsible={false}
       form={form}
       items={[items]}
       itemsType={'group'}
-      variant={'filled'}
+      variant={'borderless'}
       {...FORM_STYLE}
     />
   );

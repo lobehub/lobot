@@ -1,11 +1,12 @@
 'use client';
 
 import { Select } from '@lobehub/ui';
-import { Form, type FormGroupItem, useForm } from '@lobehub/ui/form';
+import { type FormGroupItem, useForm } from '@lobehub/ui/form';
 import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FORM_STYLE } from '@/const/layoutTokens';
+import SettingsForm from '@/features/Settings/features/SettingsForm';
 import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
 import { autoUpdateService } from '@/services/electron/autoUpdate';
 
@@ -54,12 +55,12 @@ const UpdateChannel = memo(() => {
   };
 
   return (
-    <Form
+    <SettingsForm
       collapsible={false}
       form={form}
       items={[group]}
       itemsType={'group'}
-      variant={'filled'}
+      variant={'borderless'}
       {...FORM_STYLE}
     />
   );

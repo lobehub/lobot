@@ -1,6 +1,5 @@
 import {
   ActionIcon,
-  Button,
   confirmModal,
   copyToClipboard,
   Divider,
@@ -16,15 +15,14 @@ import {
   ChevronsDownUp,
   ChevronsUpDown,
   Copy,
-  GitBranch,
   MessagesSquare,
   MoreHorizontal,
   PencilLine,
   Reply,
   Trash2,
 } from 'lucide-react';
-import type { FC, ReactNode } from 'react';
-import { memo, useMemo, useState } from 'react';
+import type { FC, ReactNode, RefObject } from 'react';
+import { memo, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
@@ -42,10 +40,13 @@ import { channelActions } from '@/store/channel';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
+import { AuthorAvatar } from './AuthorAvatar';
 import { DeferredHoverCard } from './DeferredHoverCard';
+import { groupAvatar } from './groupAvatar';
 import { callerMemberRole } from './memberManagement';
 import { authorAvatar, isCurrentUserAuthor, isCurrentUserMember, memberName } from './memberName';
 import { MemberProfilePopup } from './MemberProfilePopup';
+import { MemberWorkList } from './memberWork';
 import { CHANNEL_MENTION_TAG, remarkChannelMentions } from './mentionMarkdown';
 import { MessageAttachments } from './MessageAttachments';
 import { MessageEditor } from './MessageEditor';
@@ -57,6 +58,7 @@ import type { ReplyTopic } from './ReplyTopicPanel';
 import { ReplyWorks } from './ReplyWorks';
 import { styles } from './styles';
 import type { ChannelThreadDraft } from './threadDraft';
+import { threadIcon } from './threadIcon';
 import { ThreadPreviewCard } from './ThreadPreviewCard';
 import { ThreadRef } from './ThreadRef';
 import { CHANNEL_THREAD_REF_TAG, remarkChannelThreadRefs } from './threadRefMarkdown';
@@ -88,6 +90,82 @@ const HISTORIC_FOLD_OVERFLOW = 240;
 const canHover = () =>
   typeof window !== 'undefined' && !!window.matchMedia?.('(hover: hover)').matches;
 const AVATAR_SIZE = 36;
+
+/** The gutter line from under a message's avatar to the middle of its thread card. */
+const ThreadConnector = ({
+  avatarRef,
+  cardRef,
+  rowRef,
+}: {
+  avatarRef: RefObject<HTMLElement | null>;
+  cardRef: RefObject<HTMLElement | null>;
+  rowRef: RefObject<HTMLElement | null>;
+}) => {
+  const [box, setBox] = useState<{
+    height: number;
+    left: number;
+    top: number;
+    width: number;
+  } | null>(null);
+
+  useLayoutEffect(() => {
+    const row = rowRef.current;
+    const card = cardRef.current;
+    if (!row || !card) return;
+    const measure = () => {
+      const rowBox = row.getBoundingClientRect();
+      const cardBox = card.getBoundingClientRect();
+      // A later message in the same group has no face of its own. Its line still
+      // starts under the avatar that heads the group, which sits on an earlier row.
+      const face = avatarRef.current ?? groupAvatar(row);
+      const avatar = face?.getBoundingClientRect();
+      const left = avatar ? avatar.left + avatar.width / 2 - rowBox.left : 16 + AVATAR_SIZE / 2;
+      const top = avatar ? avatar.bottom - rowBox.top : 4;
+      const width = Math.round(cardBox.left - rowBox.left - left);
+      const height = Math.round(cardBox.top + cardBox.height / 2 - rowBox.top - top);
+      const next =
+        width >= 8 && height >= 8
+          ? { height, left: Math.round(left), top: Math.round(top), width }
+          : null;
+      setBox((prev) =>
+        prev &&
+        next &&
+        prev.left === next.left &&
+        prev.top === next.top &&
+        prev.width === next.width &&
+        prev.height === next.height
+          ? prev
+          : next,
+      );
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(row);
+    observer.observe(card);
+    // An earlier row in the group growing moves this card without resizing it.
+    if (row.parentElement) observer.observe(row.parentElement);
+    const face = avatarRef.current ?? groupAvatar(row);
+    if (face) observer.observe(face);
+    return () => observer.disconnect();
+  }, [avatarRef, cardRef, rowRef]);
+
+  if (!box) return null;
+  return (
+    <span
+      aria-hidden
+      style={{
+        height: box.height,
+        left: box.left,
+        pointerEvents: 'none',
+        position: 'absolute',
+        top: box.top,
+        width: box.width,
+      }}
+    >
+      <span {...stylex.props(styles.threadSpine)} />
+    </span>
+  );
+};
 
 /**
  * Message text with the members it mentioned shown as chips that show who they are on hover, and
@@ -193,6 +271,9 @@ const ChannelMessageView = ({
   threadId?: string | null;
 }) => {
   const { t, i18n } = useTranslation('channel');
+  const rowRef = useRef<HTMLDivElement>(null);
+  const avatarRef = useRef<HTMLSpanElement>(null);
+  const cardRef = useRef<HTMLElement>(null);
   const timeFormats = channelTimeFormatters(i18n.language);
   const date = new Date(message.createdAt);
   // Failed/unassigned requests keep their identity row and recovery affordance.
@@ -360,35 +441,29 @@ const ChannelMessageView = ({
   // A deleted message keeps only its place (and its Thread card); there is nothing to act on.
   const hasToolbar = !editing && !deleted && (!!onReply || canBranch || moreItems.length > 0);
   const mentionedMembers = detail.members.filter((member) => message.mentions.includes(member.id));
-  const replyQuote =
-    !isRoot &&
-    showsReplyQuote(message) &&
-    (message.replyTo ? (
-      <Button
-        aria-label={t('reply.viewOriginal')}
-        icon={Reply}
-        size="small"
-        style={{ alignSelf: 'flex-start', maxWidth: '100%', minWidth: 0 }}
-        type="text"
-        onClick={() => onJumpToMessage?.(message.replyTo!)}
-      >
-        <Text ellipsis as="span" fontSize={12} type="secondary">
-          {message.replyTo.deletedAt ? (
-            t('reply.deleted')
-          ) : (
-            <>
-              {message.replyTo.author.name || t('deletedMember')}
-              {': '}
-              {message.replyTo.content || t('reply.attachment')}
-            </>
-          )}
-        </Text>
-      </Button>
-    ) : (
-      <Text fontSize={12} type="secondary">
-        {t('reply.unavailable')}
-      </Text>
-    ));
+  const quoted = message.replyTo;
+  const quoteAuthor = quoted && !quoted.deletedAt ? quoted.author : null;
+  const replyQuoteText = !quoted
+    ? t('reply.unavailable')
+    : quoted.deletedAt
+      ? t('reply.deleted')
+      : `${quoteAuthor?.name || t('deletedMember')}: ${(quoted.content || t('reply.attachment')).replaceAll(/\s+/g, ' ').trim()}`;
+  const replyQuote = !isRoot && showsReplyQuote(message) && (
+    <button
+      aria-label={t('reply.viewOriginal')}
+      disabled={!quoted}
+      type="button"
+      {...stylex.props(styles.replyQuote, compact && styles.replyQuoteCompact)}
+      onClick={() => quoted && onJumpToMessage?.(quoted)}
+    >
+      {quoteAuthor && (
+        <span {...stylex.props(styles.replyQuoteFace)}>
+          <AuthorAvatar author={quoteAuthor} size={16} />
+        </span>
+      )}
+      <span {...stylex.props(styles.replyQuoteText)}>{replyQuoteText}</span>
+    </button>
+  );
   const attachments = message.fileIds.length > 0 && (
     <MessageAttachments attachments={detail.attachments} fileIds={message.fileIds} />
   );
@@ -444,6 +519,7 @@ const ChannelMessageView = ({
   );
   const threadCard = thread && (
     <ThreadPreviewCard
+      anchorRef={cardRef}
       detail={detail}
       root={message}
       thread={thread}
@@ -471,7 +547,7 @@ const ChannelMessageView = ({
       {canBranch && (
         <ActionIcon
           aria-label={t('startThread')}
-          icon={GitBranch}
+          icon={threadIcon}
           size="small"
           title={t('startThread')}
           onClick={startThread}
@@ -501,6 +577,7 @@ const ChannelMessageView = ({
   return (
     <div
       {...rowProps}
+      ref={rowRef}
       onFocus={toolbarMounted ? undefined : mountToolbar}
       onPointerEnter={toolbarMounted ? undefined : mountToolbar}
       {...stylex.props(
@@ -511,6 +588,8 @@ const ChannelMessageView = ({
         stylex.defaultMarker(),
       )}
     >
+      {replyQuote}
+      {thread && <ThreadConnector avatarRef={avatarRef} cardRef={cardRef} rowRef={rowRef} />}
       {compact && <span {...stylex.props(styles.continuationTime)}>{timestamp}</span>}
       <ChatItem
         quietHeader
@@ -530,7 +609,7 @@ const ChannelMessageView = ({
           title: message.author.name || t('deletedMember'),
         }}
         customAvatarRender={(_, avatar) => (
-          <Flexbox {...stylex.props(styles.messageAvatar)}>
+          <span data-message-avatar="" ref={avatarRef} {...stylex.props(styles.messageAvatar)}>
             {!agentAuthorId ? (
               // A person shows who they are on hover, the way an Agent shows its profile.
               <MemberProfilePopup member={userMember}>
@@ -569,6 +648,13 @@ const ChannelMessageView = ({
                       description: agentMember?.description,
                       title: message.author.name,
                     }}
+                    extra={
+                      <MemberWorkList
+                        detail={detail}
+                        member={agentMember}
+                        onOpenThread={onOpenThread}
+                      />
+                    }
                   >
                     {trigger}
                   </AgentProfilePopup>
@@ -585,11 +671,10 @@ const ChannelMessageView = ({
                 </span>
               </DeferredHoverCard>
             )}
-          </Flexbox>
+          </span>
         )}
         message={
           <Flexbox gap={8}>
-            {replyQuote}
             {attachments}
             {editing ? editor : content}
             {edited}
@@ -638,7 +723,7 @@ export function ThreadRootMessage({
       />
       <Divider>
         <Flexbox horizontal align="center" gap={6} {...stylex.props(styles.muted)}>
-          <Icon icon={GitBranch} size={12} />
+          <Icon icon={threadIcon} size={12} />
           {t('threadDivider')}
         </Flexbox>
       </Divider>

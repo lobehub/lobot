@@ -7,13 +7,13 @@ import SiX from '@icons-pack/react-simple-icons/icons/SiX';
 import SiYoutube from '@icons-pack/react-simple-icons/icons/SiYoutube';
 import { BRANDING_EMAIL, BRANDING_NAME, SOCIAL_URL } from '@lobechat/business-const';
 import { Divider, Flexbox } from '@lobehub/ui';
-import { Form } from '@lobehub/ui/form';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { BLOG, mailTo, OFFICIAL_SITE, PRIVACY_URL, TERMS_URL } from '@/const/url';
+import { SettingsSurfaceGroup } from '@/features/Settings/features/SettingsForm';
 
 import AboutList from './AboutList';
 import ItemCard from './ItemCard';
@@ -28,11 +28,9 @@ const About = memo<{ mobile?: boolean }>(({ mobile }) => {
   const { t } = useTranslation('common');
 
   return (
-    <Form.Group
-      collapsible={false}
+    <SettingsSurfaceGroup
       style={{ maxWidth: '1024px', width: '100%' }}
       title={`${t('about')} ${BRANDING_NAME}`}
-      variant={'filled'}
     >
       <Flexbox gap={20} paddingBlock={20} width={'100%'}>
         <Version mobile={mobile} />
@@ -114,7 +112,7 @@ const About = memo<{ mobile?: boolean }>(({ mobile }) => {
           ]}
         />
       </Flexbox>
-    </Form.Group>
+    </SettingsSurfaceGroup>
   );
 });
 

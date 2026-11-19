@@ -74,7 +74,7 @@ SettingsSearchAnchor.displayName = 'SettingsSearchAnchor';
  * Returns a cancel function that stops the poll (the highlight timer is left
  * to finish — removing a CSS class on a detached node is harmless).
  */
-const scrollToSettingsAnchor = (anchor: string) => {
+export const scrollToSettingsAnchor = (anchor: string) => {
   const startAt = Date.now();
   let timer: ReturnType<typeof setTimeout> | undefined;
 

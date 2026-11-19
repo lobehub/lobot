@@ -1,8 +1,7 @@
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 
-// Telegram-style tab bar at the foot of the list column: solid glyphs as large as the avatar
-// tab beside them, each in a 36px hit area.
+// Compact footer: avatar + name on the left, contacts ActionIcon on the right.
 export const TAB_ICON_SIZE = 24;
 
 export const styles = stylex.create({
@@ -28,14 +27,39 @@ export const styles = stylex.create({
   },
   bar: {
     userSelect: 'none',
+    overflow: 'visible',
     flex: 'none',
     alignItems: 'center',
-    justifyContent: 'space-around',
-    height: '52px',
-    paddingInline: '8px',
-    borderBlockStartWidth: '1px',
-    borderBlockStartStyle: 'solid',
-    borderBlockStartColor: cssVar.colorBorderSecondary,
+    justifyContent: 'space-between',
+    gap: '8px',
+    minHeight: '52px',
+    paddingBlockStart: 0,
+    paddingBlockEnd: '8px',
+    paddingInline: '12px',
+  },
+  user: {
+    cursor: 'pointer',
+    appearance: 'none',
+    overflow: 'visible',
+    display: 'flex',
+    flex: '1',
+    alignItems: 'center',
+    minWidth: '0',
+    gap: '8px',
+    margin: '0',
+    padding: '0',
+    borderWidth: '0',
+    borderStyle: 'none',
+    backgroundColor: 'transparent',
+    color: cssVar.colorText,
+    textAlign: 'start',
+  },
+  contacts: {
+    position: 'relative',
+    flex: 'none',
+  },
+  contactsIcon: {
+    backgroundColor: `color-mix(in srgb, ${cssVar.colorFillQuaternary} 50%, ${cssVar.colorFillTertiary})`,
   },
   item: {
     cursor: 'pointer',
@@ -53,12 +77,8 @@ export const styles = stylex.create({
   },
   avatar: {
     display: 'flex',
+    flex: 'none',
     borderRadius: '50%',
-    transition: 'box-shadow 0.15s',
-  },
-  // Telegram rings the avatar of the active Settings tab instead of tinting a glyph.
-  avatarActive: {
-    boxShadow: `0 0 0 2px ${cssVar.colorPrimary}`,
   },
   // Like Telegram, the active tab is told apart by the primary color, not a filled chip.
   itemActive: {

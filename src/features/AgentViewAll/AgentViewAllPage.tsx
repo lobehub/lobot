@@ -2,6 +2,7 @@
 
 import { DEFAULT_USER_AVATAR_URL } from '@lobechat/const';
 import {
+  ActionIcon,
   Avatar,
   Button,
   Center,
@@ -31,6 +32,8 @@ import {
   useWorkspaceMembersReady,
 } from '@/business/client/hooks/useWorkspaceMembers';
 import { AgentViewAllRowsSkeleton } from '@/components/Skeleton/AgentViewAll';
+import { DESKTOP_HEADER_ICON_SMALL_SIZE } from '@/const/layoutTokens';
+import { useContactPreview } from '@/features/ContactList/previewContext';
 import { AgentModalProvider } from '@/features/HomeSidebar/Body/Agent/ModalProvider';
 import { useSidebarItemVisibility } from '@/features/HomeSidebar/Body/Agent/useSidebarItemVisibility';
 import { useCreateMenuItems } from '@/features/HomeSidebar/hooks';
@@ -470,29 +473,35 @@ const AgentViewAllPage = memo(() => {
     createOptions,
   ]);
 
+  const inContactsPopup = !!useContactPreview();
+
+  const viewAllHeader = (
+    <ListConfig
+      options={effectiveViewOptions}
+      setOptions={setViewOptions}
+      setViewMode={handleViewModeChange}
+      showAuthor={showAuthor}
+      viewMode={viewMode}
+    />
+  );
+
   return (
     <Flexbox flex={1} height={'100%'}>
-      <NavHeader
-        left={
-          <Text style={{ paddingInlineStart: 4 }} weight={500}>
-            {t('agentViewAll.title')}
-          </Text>
-        }
-        right={
-          <ListConfig
-            options={effectiveViewOptions}
-            setOptions={setViewOptions}
-            setViewMode={handleViewModeChange}
-            showAuthor={showAuthor}
-            viewMode={viewMode}
-          />
-        }
-      />
+      {!inContactsPopup && (
+        <NavHeader
+          right={viewAllHeader}
+          left={
+            <Text style={{ paddingInlineStart: 4 }} weight={500}>
+              {t('agentViewAll.title')}
+            </Text>
+          }
+        />
+      )}
       <WideScreenContainer
         fullWidth
         gap={16}
-        paddingBlock={16}
-        paddingInline={16}
+        paddingBlock={inContactsPopup ? 0 : 16}
+        paddingInline={inContactsPopup ? 0 : 16}
         wrapperStyle={{ flex: 1, overflowY: 'auto' }}
       >
         <Flexbox horizontal align={'center'} gap={12} justify={'space-between'}>
@@ -523,6 +532,8 @@ const AgentViewAllPage = memo(() => {
               ]}
               onChange={(value) => handleSegmentChange(value as SegmentValue)}
             />
+          ) : inContactsPopup ? (
+            <div />
           ) : (
             <SearchBar
               allowClear
@@ -533,7 +544,7 @@ const AgentViewAllPage = memo(() => {
             />
           )}
           <Flexbox horizontal align={'center'} gap={8}>
-            {activeWorkspaceId && (
+            {activeWorkspaceId && !inContactsPopup && (
               <SearchBar
                 allowClear
                 placeholder={t('navPanel.searchAgent')}
@@ -542,17 +553,26 @@ const AgentViewAllPage = memo(() => {
                 onChange={(e) => setKeyword(e.target.value)}
               />
             )}
+            {inContactsPopup && viewAllHeader}
             {canCreate ? (
               <DropdownMenu items={createMenuItems}>
-                <Button icon={PlusIcon}>
-                  <Icon icon={ChevronDownIcon} size={14} />
-                </Button>
+                {inContactsPopup ? (
+                  <ActionIcon icon={PlusIcon} size={DESKTOP_HEADER_ICON_SMALL_SIZE} />
+                ) : (
+                  <Button icon={PlusIcon}>
+                    <Icon icon={ChevronDownIcon} size={14} />
+                  </Button>
+                )}
               </DropdownMenu>
             ) : (
               <Tooltip title={createBlockedReason}>
-                <Button disabled icon={PlusIcon}>
-                  <Icon icon={ChevronDownIcon} size={14} />
-                </Button>
+                {inContactsPopup ? (
+                  <ActionIcon disabled icon={PlusIcon} size={DESKTOP_HEADER_ICON_SMALL_SIZE} />
+                ) : (
+                  <Button disabled icon={PlusIcon}>
+                    <Icon icon={ChevronDownIcon} size={14} />
+                  </Button>
+                )}
               </Tooltip>
             )}
           </Flexbox>
@@ -583,13 +603,19 @@ const AgentViewAllPage = memo(() => {
                       label={group.label}
                       onToggle={() => toggleGroupCollapsed(group.key)}
                     />
-                    {!collapsed && <AgentCardGrid>{group.items.map(renderCard)}</AgentCardGrid>}
+                    {!collapsed && (
+                      <AgentCardGrid minColumn={inContactsPopup ? 200 : undefined}>
+                        {group.items.map(renderCard)}
+                      </AgentCardGrid>
+                    )}
                   </Flexbox>
                 );
               })}
             </Flexbox>
           ) : (
-            <AgentCardGrid>{filteredItems.map(renderCard)}</AgentCardGrid>
+            <AgentCardGrid minColumn={inContactsPopup ? 200 : undefined}>
+              {filteredItems.map(renderCard)}
+            </AgentCardGrid>
           )
         ) : (
           // Grouped list shares the card branch's wrapper rhythm (outer gap 8,

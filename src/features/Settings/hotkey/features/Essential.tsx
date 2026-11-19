@@ -2,7 +2,7 @@
 
 import { HotkeyGroupEnum } from '@lobechat/const/hotkeys';
 import { HotkeyInput } from '@lobehub/ui';
-import { Form, type FormGroupItem, useForm } from '@lobehub/ui/form';
+import { type FormGroupItem, useForm } from '@lobehub/ui/form';
 import isEqual from 'fast-deep-equal';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import AutoSaveHint from '@/components/Editor/AutoSaveHint';
 import { EssentialHotkeysSkeleton } from '@/components/Skeleton/Settings/tabs/Hotkey';
 import { HOTKEYS_REGISTRATION } from '@/const/hotkeys';
 import { FORM_STYLE } from '@/const/layoutTokens';
+import SettingsForm from '@/features/Settings/features/SettingsForm';
 import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
 import { useSaveState } from '@/hooks/useSaveState';
 import { useUserStore } from '@/store/user';
@@ -79,12 +80,12 @@ const HotkeySetting = memo(() => {
   };
 
   return (
-    <Form
+    <SettingsForm
       collapsible={false}
       form={form}
       items={[essential]}
       itemsType={'group'}
-      variant={'filled'}
+      variant={'borderless'}
       {...FORM_STYLE}
     />
   );

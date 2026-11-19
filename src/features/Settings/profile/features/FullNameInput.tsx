@@ -8,7 +8,7 @@ import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 import { saveToast } from '@/store/utils/saveToast';
 
-/** The hero's name field: borderless like Telegram's, saved on blur or Enter. */
+/** The profile name field: saved on blur or Enter. */
 const FullNameInput = () => {
   const { t } = useTranslation('auth');
   const fullName = useUserStore(userProfileSelectors.fullName);
@@ -39,10 +39,9 @@ const FullNameInput = () => {
       key={fullName}
       placeholder={t('profile.fullName')}
       ref={inputRef}
-      style={{ fontSize: 15, paddingInline: 0 }}
       // Always pass a suffix: antd remounts the input when one appears later.
       suffix={saving ? <Spin size="small" style={{ opacity: 0.5 }} /> : <span />}
-      variant="borderless"
+      variant="filled"
       onBlur={handleSave}
       onPressEnter={handleSave}
     />

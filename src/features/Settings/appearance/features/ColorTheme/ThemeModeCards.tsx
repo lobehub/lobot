@@ -57,8 +57,8 @@ const styles = stylex.create({
     display: 'flex',
     flexWrap: 'wrap',
     gap: '16px',
-    paddingBlock: '16px',
-    paddingInline: '16px',
+    paddingBlock: '8px',
+    paddingInline: 0,
   },
   scope: { display: 'flex', flex: '1', minWidth: 0 },
   surface: {

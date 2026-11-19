@@ -4,6 +4,7 @@ import { Block, Flexbox, Text } from '@lobehub/ui';
 import { memo } from 'react';
 import { Link } from 'react-router';
 
+import { openSettingsFromUrl } from '@/features/NavRail/settingsPopupStore';
 import UserAvatar from '@/features/User/UserAvatar';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { SettingsTabs } from '@/store/global/initialState';
@@ -28,7 +29,7 @@ const ProfileCard = memo<{ active: boolean }>(({ active }) => {
       onClick={(e) => {
         if (isModifierClick(e)) return;
         e.preventDefault();
-        navigate(PROFILE_URL);
+        if (!openSettingsFromUrl(PROFILE_URL)) navigate(PROFILE_URL);
       }}
     >
       <Block

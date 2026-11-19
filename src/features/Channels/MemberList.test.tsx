@@ -7,7 +7,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { MemberList } from './MemberList';
 
-const { setMemberMuted } = vi.hoisted(() => ({ setMemberMuted: vi.fn() }));
+const { setMemberMuted, showContextMenu } = vi.hoisted(() => ({
+  setMemberMuted: vi.fn(),
+  showContextMenu: vi.fn(),
+}));
 
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 vi.mock('@lobehub/ui', () => ({
@@ -21,7 +24,14 @@ vi.mock('@lobehub/ui', () => ({
         createElement('li', { key: item.key, onClick: item.onClick }, item.label),
       ),
     ),
-  Flexbox: ({ children }: { children?: unknown }) => createElement('div', {}, children as never),
+  Flexbox: ({
+    children,
+    onContextMenu,
+  }: {
+    children?: unknown;
+    onContextMenu?: (event: { preventDefault: () => void }) => void;
+  }) => createElement('div', { onContextMenu }, children as never),
+  showContextMenu,
   Icon: () => null,
   Text: ({ children }: { children?: unknown }) => createElement('span', {}, children as never),
   toast: { error: vi.fn() },
@@ -52,7 +62,29 @@ vi.mock('@/store/user/selectors', () => ({ userProfileSelectors: { userId: () =>
 vi.mock('./AgentEnvironment', () => ({ openChannelAgentEnvironment: vi.fn() }));
 vi.mock('./MemberAvatar', () => ({ MemberAvatar: () => null }));
 vi.mock('./MemberProfilePopup', () => ({
-  MemberProfilePopup: ({ children }: { children?: unknown }) => children,
+  MemberProfilePopup: ({
+    children,
+    extra,
+    onOpenChange,
+    open,
+    trigger,
+  }: {
+    children?: unknown;
+    extra?: unknown;
+    onOpenChange?: (open: boolean) => void;
+    open?: boolean;
+    trigger?: string;
+  }) =>
+    createElement(
+      'div',
+      {
+        'data-open': String(!!open),
+        'data-trigger': trigger ?? 'hover',
+        'onClick': () => onOpenChange?.(!open),
+      },
+      children as never,
+      extra as never,
+    ),
 }));
 vi.mock('./useMemberActions', () => ({ useRemoveMember: () => vi.fn() }));
 vi.mock('@/features/ContactList/useAgentPresence', () => ({ useAgentPresence: () => undefined }));
@@ -75,6 +107,7 @@ const menuLabels = () => screen.queryAllByRole('listitem').map((item) => item.te
 
 beforeEach(() => {
   setMemberMuted.mockReset().mockResolvedValue(undefined);
+  showContextMenu.mockReset();
 });
 
 describe('MemberList Agent mute', () => {
@@ -155,6 +188,18 @@ describe('MemberList busy member', () => {
     expect(onOpenThread).toHaveBeenCalledWith('thr_b');
   });
 
+  it('puts that work in the profile card instead of a second popup', () => {
+    const onOpenThread = vi.fn();
+    render(createElement(MemberList, { detail: busy, onOpenThread, selectable: true }));
+
+    const card = screen.getByRole('button', { name: /Cook/ }).closest('[data-trigger="click"]');
+    expect(card?.textContent).toContain('Import');
+    expect(screen.getAllByText('Import')).toHaveLength(1);
+    fireEvent.click(screen.getByText('Quota'));
+
+    expect(onOpenThread).toHaveBeenCalledWith('thr_a');
+  });
+
   it('shows the one Thread it works in on hover too', () => {
     const onOpenThread = vi.fn();
     const single = { ...busy, jobs: [running('job_1', 'thr_a')] } as never;
@@ -164,5 +209,33 @@ describe('MemberList busy member', () => {
     fireEvent.click(screen.getByText('Quota'));
 
     expect(onOpenThread).toHaveBeenCalledWith('thr_a');
+  });
+});
+
+describe('MemberList selection', () => {
+  it('opens the card when a row is selected and closes it when selected again', () => {
+    render(createElement(MemberList, { detail: detail(), selectable: true }));
+
+    const row = screen.getByRole('button', { name: /Cook/ });
+    expect(row.closest('[data-trigger="click"]')?.getAttribute('data-open')).toBe('false');
+
+    fireEvent.click(row);
+    expect(row.closest('[data-open="true"]')).toBeTruthy();
+
+    fireEvent.click(row);
+    expect(row.closest('[data-open="false"]')).toBeTruthy();
+  });
+
+  it('opens the more actions from a right click and closes the card', () => {
+    render(createElement(MemberList, { detail: detail(), selectable: true }));
+
+    const row = screen.getByRole('button', { name: /Cook/ });
+    fireEvent.click(row);
+    fireEvent.contextMenu(row);
+
+    expect(row.closest('[data-open="false"]')).toBeTruthy();
+    const items = showContextMenu.mock.calls[0][0].map((item: { key: string }) => item.key);
+    expect(items).toContain('mute');
+    expect(items).toContain('open');
   });
 });

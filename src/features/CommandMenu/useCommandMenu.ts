@@ -7,6 +7,7 @@ import { createTaskModal } from '@/features/AgentTasks/CreateTaskModal';
 import { taskDetailPath } from '@/features/AgentTasks/shared/taskDetailPath';
 import { useCreateMenuItems } from '@/features/HomeSidebar/hooks';
 import { useCreateNewModal } from '@/features/LibraryModal';
+import { openSettingsFromUrl } from '@/features/NavRail/settingsPopupStore';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { usePermission } from '@/hooks/usePermission';
 import { useGroupWizard } from '@/layout/GlobalProvider/GroupWizardProvider';
@@ -92,7 +93,7 @@ export const useCommandMenu = () => {
 
   const handleNavigate = useCallback(
     (path: string) => {
-      navigate(path);
+      if (!openSettingsFromUrl(path)) navigate(path);
       onClose();
     },
     [navigate, onClose],

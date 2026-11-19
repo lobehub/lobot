@@ -3,12 +3,12 @@
 import { Button, Flexbox } from '@lobehub/ui';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
 
 import { useBusinessInputCompletionErrorAlert } from '@/business/client/hooks/useBusinessInputCompletionErrorAlert';
 import { NoticeAlert } from '@/components/NoticeAlert';
 import { selectors, useChatInputStore } from '@/features/ChatInput/store';
 import type { InputCompletionError } from '@/features/ChatInput/store/initialState';
+import { openSettingsFromUrl } from '@/features/NavRail/settingsPopupStore';
 
 const InputCompletionErrorAlertContent = memo<{
   inputCompletionError: InputCompletionError;
@@ -28,9 +28,9 @@ const InputCompletionErrorAlertContent = memo<{
       <Button size={'small'} type={'primary'} onClick={clearInputCompletionError}>
         {t('input.inputCompletionError.retry')}
       </Button>
-      <Link to={'/settings/agent'}>
-        <Button size={'small'}>{t('input.inputCompletionError.settings')}</Button>
-      </Link>
+      <Button size={'small'} onClick={() => openSettingsFromUrl('/settings/agent')}>
+        {t('input.inputCompletionError.settings')}
+      </Button>
     </Flexbox>
   );
 

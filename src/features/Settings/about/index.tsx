@@ -1,4 +1,5 @@
 import { isDesktop } from '@lobechat/const';
+import { Flexbox } from '@lobehub/ui';
 import { useTranslation } from 'react-i18next';
 
 import SettingHeader from '@/features/Settings/features/SettingHeader';
@@ -18,10 +19,12 @@ const Page = ({ mobile, showSettingHeader = true }: PageProps) => {
   return (
     <>
       {showSettingHeader && <SettingHeader title={t('tab.about')} />}
-      <About mobile={mobile} />
-      {isDesktop && <UpdateChannel />}
-      <Analytics />
-      <DebugLogs />
+      <Flexbox gap={20}>
+        <About mobile={mobile} />
+        {isDesktop && <UpdateChannel />}
+        <Analytics />
+        <DebugLogs />
+      </Flexbox>
     </>
   );
 };

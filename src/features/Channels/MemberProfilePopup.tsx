@@ -127,52 +127,69 @@ export const PersonProfileCard = ({ member }: { member: ChannelPublicMember }) =
 };
 
 /**
- * Hovering a Channel member — avatar, mention or join line — shows who they are: an Agent's
- * profile card, or a person's card with their handle and when they joined.
+ * A Channel member's card: an Agent's profile card, or a person's card with their handle and when
+ * they joined. A feed opens it on hover, deferred until the trigger is reached. A roster opens it
+ * on click and can hold it open while that row is selected.
  */
 export const MemberProfilePopup = ({
   children,
+  extra,
+  highlightTrigger,
   member,
+  onOpenChange,
+  open,
   placement = 'top',
+  trigger = 'hover',
 }: {
   children: ReactElement;
+  /** Drawn inside the card, under the profile. The roster uses it for work in progress. */
+  extra?: ReactNode;
+  /** Off when the roster row already shows the selection, so the trigger does not paint a second fill. */
+  highlightTrigger?: boolean;
   member: ChannelPublicMember | undefined;
+  onOpenChange?: (open: boolean) => void;
+  open?: boolean;
   /** Where the card opens; the member panel sits at the right edge, so it opens to the left. */
   placement?: 'left' | 'top';
+  /** Hover in the timeline. Click in the roster, where the row itself is the selection. */
+  trigger?: 'click' | 'hover';
 }) => {
   const { t } = useTranslation('channel');
   if (!member) return children;
-  return (
-    <DeferredHoverCard
-      render={(trigger) =>
-        member.agentId ? (
-          <AgentProfilePopup
-            agentId={member.agentId}
-            environment={member.environment}
-            placement={placement}
-            trigger={'hover'}
-            agent={{
-              avatar: member.avatar,
-              description: member.description,
-              title: memberName(member, t('deletedMember')),
-            }}
-          >
-            {trigger}
-          </AgentProfilePopup>
-        ) : (
-          <Popover
-            {...cardPopoverProps}
-            content={<PersonProfileCard member={member} />}
-            nativeButton={false}
-            placement={placement}
-            trigger={'hover'}
-          >
-            {trigger}
-          </Popover>
-        )
-      }
-    >
-      {children}
-    </DeferredHoverCard>
-  );
+  const popup = (triggerNode: ReactElement) =>
+    member.agentId ? (
+      <AgentProfilePopup
+        agentId={member.agentId}
+        environment={member.environment}
+        extra={extra}
+        highlightTrigger={highlightTrigger}
+        open={open}
+        placement={placement}
+        trigger={trigger}
+        agent={{
+          avatar: member.avatar,
+          description: member.description,
+          title: memberName(member, t('deletedMember')),
+        }}
+        onOpenChange={onOpenChange}
+      >
+        {triggerNode}
+      </AgentProfilePopup>
+    ) : (
+      <Popover
+        {...cardPopoverProps}
+        content={<PersonProfileCard member={member} />}
+        nativeButton={false}
+        open={open}
+        placement={placement}
+        trigger={trigger}
+        onOpenChange={onOpenChange}
+      >
+        {triggerNode}
+      </Popover>
+    );
+  // A roster click has to land on a popup that is already mounted. A feed defers each card until
+  // someone reaches its trigger, so a long timeline does not mount one per message.
+  if (trigger === 'click') return popup(children);
+  return <DeferredHoverCard render={popup}>{children}</DeferredHoverCard>;
 };

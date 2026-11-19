@@ -13,8 +13,8 @@ const scopedSegments = (pathname: string, activeWorkspaceSlug: string | null) =>
   return activeWorkspaceSlug && segments[0] === activeWorkspaceSlug ? segments.slice(1) : segments;
 };
 
-/** Tab roots whose own page is the list column itself: Messages, Contacts and Settings. */
-const LIST_ROOTS = new Set(['agents', 'channels', 'settings']);
+/** Tab roots whose own page is the list column itself: Messages and Contacts. */
+const LIST_ROOTS = new Set(['agents', 'channels']);
 
 /** Whether the compact window shows the list column (a tab root) rather than the content. */
 export const isCompactListRoute = (
@@ -28,7 +28,7 @@ export const isCompactListRoute = (
 
 /**
  * Where the compact back button leads from a content page: the list it was opened from. Pages
- * that draw their own back button (Channel settings, Settings sub-pages) get none.
+ * that draw their own back button (Channel settings) get none.
  */
 export const compactBackTarget = (
   pathname: string,
@@ -43,9 +43,6 @@ export const compactBackTarget = (
     }
     case 'channels': {
       return rest.length === 1 ? '/' : null;
-    }
-    case 'settings': {
-      return rest.length === 1 ? '/settings' : null;
     }
     default: {
       return null;

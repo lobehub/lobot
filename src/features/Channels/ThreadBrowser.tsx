@@ -4,7 +4,6 @@ import type { ChannelDetail, ChannelPublicThread } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { MessagesCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { create } from 'zustand';
@@ -16,6 +15,7 @@ import { markdownToTxt } from '@/utils/markdownToTxt';
 
 import { AuthorAvatar } from './AuthorAvatar';
 import { MemberAvatar } from './MemberAvatar';
+import { threadIcon } from './threadIcon';
 import { useMentionedThreadIds, useUnreadThreadIds } from './threadReads';
 import { threadTitle } from './threadTitle';
 
@@ -217,7 +217,7 @@ const styles = stylex.create({
     fontSize: 8,
     fontWeight: 600,
     lineHeight: 1,
-    color: '#fff',
+    color: cssVar.colorTextLightSolid,
     backgroundColor: cssVar.colorError,
     boxShadow: `0 0 0 1.5px ${cssVar.colorBgLayout}`,
   },
@@ -312,19 +312,26 @@ export const ThreadCard = ({
   detail,
   entry,
   onOpen,
+  showFaces = true,
 }: {
   detail: ChannelDetail;
   entry: BrowsedThread;
   onOpen: () => void;
+  /** Follower faces at the end of the card. Off where the card is already inside a person's profile. */
+  showFaces?: boolean;
 }) => {
   const { t } = useTranslation('channel');
   const { active, archived, mentioned, preview, thread, title, unread } = entry;
   // A mention is unread news even when the reply after it was read elsewhere.
   const bright = unread || mentioned;
-  const faces = thread.followerMemberIds
-    .map((id) => detail.members.find((member) => member.id === id && member.status === 'active'))
-    .filter((member) => !!member)
-    .slice(0, MAX_FACES);
+  const faces = showFaces
+    ? thread.followerMemberIds
+        .map((id) =>
+          detail.members.find((member) => member.id === id && member.status === 'active'),
+        )
+        .filter((member) => !!member)
+        .slice(0, MAX_FACES)
+    : [];
   const { lastReply } = thread;
   return (
     <button
@@ -417,7 +424,7 @@ export const ThreadBrowser = ({
     <div {...stylex.props(styles.panel)}>
       <div {...stylex.props(styles.header)}>
         <span {...stylex.props(styles.heading)}>
-          <Icon icon={MessagesCircle} size={18} />
+          <Icon icon={threadIcon} size={18} />
           {t('threadList')}
         </span>
         <div {...stylex.props(styles.search)}>
@@ -524,13 +531,7 @@ export const ThreadsButton = ({
       onOpenChange={setOpen}
     >
       <span {...stylex.props(styles.trigger)}>
-        <ActionIcon
-          active={open}
-          aria-label={label}
-          icon={MessagesCircle}
-          size="small"
-          title={label}
-        />
+        <ActionIcon active={open} aria-label={label} icon={threadIcon} size="small" title={label} />
         {unread > 0 && (
           <span aria-hidden {...stylex.props(styles.triggerBadge)}>
             {unread > 99 ? '99+' : unread}

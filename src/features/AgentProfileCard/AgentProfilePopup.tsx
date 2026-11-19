@@ -12,7 +12,7 @@ import {
 import { SkillsIcon } from '@lobehub/ui/icons';
 import { agentDisplayName, type ChannelMemberEnvironmentPreview } from '@lobot/types';
 import { BookOpen, FileText, Folder, Laptop, Settings, SquareTerminal } from 'lucide-react';
-import { memo, type PropsWithChildren, useState } from 'react';
+import { memo, type PropsWithChildren, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ModelIcon } from '@/components/LobeIcons';
@@ -69,18 +69,46 @@ interface AgentProfilePopupProps extends PropsWithChildren {
   agentId: string;
   /** Where the Agent runs in the Channel the card is opened from. */
   environment?: ChannelMemberEnvironmentPreview | null;
+  /** Channel-specific block under the profile, such as the conversations it is working in. */
+  extra?: ReactNode;
   /** When set, enables group-specific actions (settings nav + model change). */
   groupId?: string;
+  /**
+   * Paint the trigger while the card is open. Off when the trigger already sits in a selected row.
+   * @default true
+   */
+  highlightTrigger?: boolean;
+  /** Tells the owner when a controlled popup opens or closes. */
+  onOpenChange?: (open: boolean) => void;
+  /** Controlled open state. Omit it and the popup keeps its own. */
+  open?: boolean;
   /** Overrides the default: above the trigger on hover, beside it on click. */
   placement?: 'left' | 'right' | 'top';
   trigger?: 'click' | 'hover';
 }
 
 const AgentProfilePopup = memo<AgentProfilePopupProps>(
-  ({ agent, agentId, environment, groupId, children, placement, trigger = 'click' }) => {
+  ({
+    agent,
+    agentId,
+    environment,
+    extra,
+    groupId,
+    highlightTrigger = true,
+    children,
+    onOpenChange,
+    open: openProp,
+    placement,
+    trigger = 'click',
+  }) => {
     const { t } = useTranslation('chat');
     const navigate = useWorkspaceAwareNavigate();
-    const [open, setOpen] = useState(false);
+    const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+    const open = openProp ?? uncontrolledOpen;
+    const setOpen = (next: boolean) => {
+      onOpenChange?.(next);
+      if (openProp === undefined) setUncontrolledOpen(next);
+    };
     const { allowed: canEditContent } = usePermission('edit_own_content');
     const { canEditResource: canEditAgent, isAccessResolved: isAgentAccessResolved } =
       useResourceAccess('agent', open ? agentId : undefined);
@@ -255,6 +283,7 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
       >
         {modelSection}
         {environmentSection}
+        {extra}
         {/* Only an Agent the server opens a conversation with: one's own, or a contact. */}
         {contactUrl && channelsEnabled && (
           <AgentCardActions
@@ -269,12 +298,14 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
     return (
       <Popover
         {...cardPopoverProps}
-        classNames={trigger === 'click' ? { trigger: styles.trigger } : undefined}
         content={content}
         nativeButton={false}
         open={open}
         placement={placement ?? (trigger === 'hover' ? 'top' : 'right')}
         trigger={trigger}
+        classNames={
+          trigger === 'click' && highlightTrigger ? { trigger: styles.trigger } : undefined
+        }
         onOpenChange={setOpen}
       >
         {children}

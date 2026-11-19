@@ -2,19 +2,19 @@
 
 import { isDesktop } from '@lobechat/const';
 import { Button, Flexbox, Icon, Input, Text, toast } from '@lobehub/ui';
+import { Form } from '@lobehub/ui/form';
 import { ExternalLinkIcon } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import urlJoin from 'url-join';
 
+import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
 import { useAppOrigin } from '@/hooks/useAppOrigin';
 import { changeEmail } from '@/libs/better-auth/auth-client';
 import { electronSystemService } from '@/services/electron/system';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 import { saveToast } from '@/store/utils/saveToast';
-
-import InsetRow from '../../features/inset/InsetRow';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
 
@@ -62,14 +62,19 @@ const EmailRow = () => {
     }
   }, [editValue, t]);
 
+  const label = (
+    <SettingsSearchAnchor id={'profile-email'}>{t('profile.email')}</SettingsSearchAnchor>
+  );
+
   // Desktop OIDC and Better Auth sessions are not bridged, so change-email can only
   // be completed on the web app.
   if (isDesktop)
     return (
-      <InsetRow
-        anchor={'profile-email'}
-        label={t('profile.email')}
-        action={
+      <Form.Field
+        divider
+        label={label}
+        minWidth={undefined}
+        extra={
           <Text
             style={{ cursor: 'pointer', fontSize: 13 }}
             onClick={() => {
@@ -87,14 +92,15 @@ const EmailRow = () => {
         <Text ellipsis type={'secondary'}>
           {email || '--'}
         </Text>
-      </InsetRow>
+      </Form.Field>
     );
 
   return (
-    <InsetRow
-      anchor={'profile-email'}
-      label={t('profile.email')}
-      action={
+    <Form.Field
+      divider
+      label={label}
+      minWidth={undefined}
+      extra={
         isEditing ? (
           <Flexbox horizontal gap={8}>
             <Button disabled={saving} size="small" onClick={handleCancel}>
@@ -118,7 +124,7 @@ const EmailRow = () => {
           inputMode="email"
           placeholder={t('profile.emailPlaceholder')}
           size="small"
-          style={{ flex: 1, minWidth: 0, textAlign: 'right', width: '100%' }}
+          style={{ minWidth: 0, width: '100%' }}
           type="email"
           value={editValue}
           variant="filled"
@@ -130,7 +136,7 @@ const EmailRow = () => {
           {email || '--'}
         </Text>
       )}
-    </InsetRow>
+    </Form.Field>
   );
 };
 

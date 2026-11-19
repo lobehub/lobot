@@ -2,13 +2,14 @@
 
 import { isDesktop } from '@lobechat/const';
 import { Select, Switch } from '@lobehub/ui';
-import { Form, type FormGroupItem, useForm } from '@lobehub/ui/form';
+import { type FormGroupItem, useForm } from '@lobehub/ui/form';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoSaveHint from '@/components/Editor/AutoSaveHint';
 import { FontSectionSkeleton } from '@/components/Skeleton/Settings/tabs/Appearance';
 import { FORM_STYLE } from '@/const/layoutTokens';
+import SettingsForm from '@/features/Settings/features/SettingsForm';
 import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
 import { useSaveState } from '@/hooks/useSaveState';
 import { useUserStore } from '@/store/user';
@@ -175,12 +176,12 @@ const FontSettings = memo(() => {
   };
 
   return (
-    <Form
+    <SettingsForm
       collapsible={false}
       form={form}
       items={[font]}
       itemsType={'group'}
-      variant={'filled'}
+      variant={'borderless'}
       {...FORM_STYLE}
     />
   );

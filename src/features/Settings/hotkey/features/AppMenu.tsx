@@ -1,12 +1,13 @@
 'use client';
 
 import { HotkeyInput } from '@lobehub/ui';
-import { Form, type FormGroupItem, useForm } from '@lobehub/ui/form';
+import { type FormGroupItem, useForm } from '@lobehub/ui/form';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { AppMenuHotkeysSkeleton } from '@/components/Skeleton/Settings/tabs/Hotkey';
 import { FORM_STYLE } from '@/const/layoutTokens';
+import SettingsForm from '@/features/Settings/features/SettingsForm';
 import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
 import { useElectronStore } from '@/store/electron';
 import { electronSettingsSelectors } from '@/store/electron/selectors';
@@ -46,12 +47,12 @@ const AppMenuHotkeys = memo(() => {
   };
 
   return (
-    <Form
+    <SettingsForm
       collapsible={false}
       form={form}
       items={[appMenu]}
       itemsType={'group'}
-      variant={'filled'}
+      variant={'borderless'}
       {...FORM_STYLE}
     />
   );

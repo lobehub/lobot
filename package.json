@@ -1,6 +1,6 @@
 {
   "name": "lobot",
-  "version": "2.3.3",
+  "version": "0.0.67",
   "description": "Lobot desktop — IM-only channel client",
   "keywords": [
     "framework",
@@ -71,7 +71,7 @@
     "package:mac": "npm run build:main && electron-builder --mac --config electron-builder.mjs  --publish never",
     "package:mac:local": "npm run build:main && cross-env UPDATE_CHANNEL=nightly electron-builder --mac --config electron-builder.mjs --publish never --c.mac.notarize=false -c.mac.identity=null",
     "package:win": "npm run build:main && electron-builder --win --config electron-builder.mjs  --publish never",
-    "prepare": "git rev-parse --git-dir > /dev/null 2>&1 && git config core.hooksPath .githooks || true",
+    "prepare": "node scripts/prepare.mjs",
     "prettier": "prettier -c --write \"**/**\"",
     "react-devtools": "bunx react-devtools@7",
     "reinstall": "rm -rf node_modules && pnpm -r exec rm -rf node_modules && pnpm install",

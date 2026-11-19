@@ -7,6 +7,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NavItem from '@/features/NavPanel/components/NavItem';
+import { openSettingsFromUrl } from '@/features/NavRail/settingsPopupStore';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { isModifierClick } from '@/utils/navigation';
 
@@ -80,7 +81,8 @@ const SearchResults = memo<SearchResultsProps>(({ isIndexing, query, results }) 
             // Modifier clicks (cmd/ctrl) open a new tab via the href; don't also
             // navigate the current tab.
             if (isModifierClick(e)) return;
-            navigate(result.url);
+            e.preventDefault();
+            if (!openSettingsFromUrl(result.url)) navigate(result.url);
           }}
         />
       ))}

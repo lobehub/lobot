@@ -27,30 +27,36 @@ describe('GlobalService', () => {
   describe('getLatestVersion', () => {
     it('should return the latest version when fetch is successful', async () => {
       // Arrange
-      const mockVersion = '1.0.0';
+      const mockVersion = '0.0.67';
       (fetch as Mock).mockResolvedValue({
-        json: () => Promise.resolve({ version: mockVersion }),
+        json: () => Promise.resolve({ tag_name: 'v' + mockVersion }),
+        ok: true,
       });
 
       // Act
       const version = await globalService.getLatestVersion();
 
       // Assert
-      expect(fetch).toHaveBeenCalledWith('https://registry.npmmirror.com/@lobehub/chat/latest');
+      expect(fetch).toHaveBeenCalledWith(
+        'https://api.github.com/repos/lobehub/lobot/releases/latest',
+        {
+          headers: { Accept: 'application/vnd.github+json' },
+        },
+      );
       expect(version).toBe(mockVersion);
     });
 
-    it('should return undefined if the latest version is not found in the response', async () => {
+    it('should throw if the latest release tag is missing', async () => {
       // Arrange
       (fetch as Mock).mockResolvedValue({
         json: () => Promise.resolve({}),
+        ok: true,
       });
 
-      // Act
-      const version = await globalService.getLatestVersion();
-
-      // Assert
-      expect(version).toBeUndefined();
+      // Act & Assert
+      await expect(globalService.getLatestVersion()).rejects.toThrow(
+        'Latest release tag is missing',
+      );
     });
 
     it('should throw an error when the fetch call fails', async () => {

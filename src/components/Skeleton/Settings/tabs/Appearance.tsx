@@ -2,12 +2,10 @@
 
 import { isDesktop } from '@lobechat/const';
 import { Flexbox } from '@lobehub/ui';
-import { Form } from '@lobehub/ui/form';
 
-import InsetGroup from '@/features/Settings/features/inset/InsetGroup';
+import { SettingsSurfaceGroup } from '@/features/Settings/features/SettingsForm';
 
 import SkeletonBar from '../../Bar';
-import { SettingsProfileRowSkeleton } from '../Profile';
 import { SettingsFormSkeleton, SWITCH_CONTROL } from '../Section';
 import { useSkeletonText } from '../useSkeletonText';
 import type { SettingsTabSkeleton } from './types';
@@ -55,15 +53,13 @@ export const ChatAppearanceSectionSkeleton = () => {
   const text = useSkeletonText('setting');
 
   return (
-    <>
-      <Form.Group
-        collapsible={false}
+    <Flexbox gap={20} width={'100%'}>
+      <SettingsSurfaceGroup
         extra={<SkeletonBar height={38} radius={8} width={151} />}
         title={text('settingChatAppearance.transitionMode.title', 64)}
-        variant={'filled'}
       >
         <SkeletonBar height={182} radius={8} />
-      </Form.Group>
+      </SettingsSurfaceGroup>
       <SettingsFormSkeleton
         groups={[
           {
@@ -101,37 +97,34 @@ export const ChatAppearanceSectionSkeleton = () => {
           },
         ]}
       />
-      <Form.Group
-        collapsible={false}
+      <SettingsSurfaceGroup
         extra={<SkeletonBar height={32} width={240} />}
         title={text('settingChatAppearance.highlighterTheme.title', 96)}
-        variant={'filled'}
       >
         <SkeletonBar height={167} radius={8} />
-      </Form.Group>
-      <Form.Group
+      </SettingsSurfaceGroup>
+      <SettingsSurfaceGroup
         extra={<SkeletonBar height={32} width={240} />}
         title={text('settingChatAppearance.mermaidTheme.title', 96)}
-        variant={'filled'}
       >
         <SkeletonBar height={295} radius={8} />
-      </Form.Group>
-    </>
+      </SettingsSurfaceGroup>
+    </Flexbox>
   );
 };
 
 /**
- * The appearance tab's inset groups: color theme (preview, theme cards, accent
+ * The appearance tab's form groups: color theme (preview, theme cards, accent
  * dots), text size, then the rows that open the font and chat pages.
  */
 const Body = () => {
   const text = useSkeletonText('setting');
 
   return (
-    <Flexbox aria-busy gap={24}>
-      <InsetGroup title={text('settingAppearance.colorTheme.title', 56, 18)}>
-        <SkeletonBar height={176} radius={0} />
-        <Flexbox horizontal gap={16} padding={16}>
+    <Flexbox aria-busy gap={20}>
+      <SettingsSurfaceGroup title={text('settingAppearance.colorTheme.title', 56, 18)}>
+        <SkeletonBar height={176} radius={8} />
+        <Flexbox horizontal gap={16} paddingBlock={8}>
           {[0, 1, 2].map((key) => (
             <Flexbox align={'center'} gap={8} key={key}>
               <SkeletonBar height={64} radius={12} width={96} />
@@ -139,40 +132,53 @@ const Body = () => {
             </Flexbox>
           ))}
         </Flexbox>
-        <Flexbox horizontal gap={8} padding={16}>
+        <Flexbox horizontal gap={8} paddingBlock={8}>
           {Array.from({ length: 13 }, (_, key) => (
             <SkeletonBar height={24} key={key} radius={'50%'} width={24} />
           ))}
         </Flexbox>
-      </InsetGroup>
-      <InsetGroup
-        footer={text('settingChatAppearance.fontSize.desc', 96, 12)}
+      </SettingsSurfaceGroup>
+      <SettingsSurfaceGroup
+        desc={text('settingChatAppearance.fontSize.desc', 96, 12)}
         title={text('settingChatAppearance.fontSize.title', 56, 18)}
       >
-        <Flexbox gap={24} paddingBlock={20} paddingInline={16}>
+        <Flexbox gap={24} paddingBlock={8}>
           <SkeletonBar height={4} />
         </Flexbox>
-      </InsetGroup>
-      <InsetGroup>
-        <SettingsProfileRowSkeleton
-          label={text('settingAppearance.font.title', 32, 22)}
-          valueWidth={16}
-        />
-        <SettingsProfileRowSkeleton
-          label={text('settingAppearance.chatDisplay.title', 64, 22)}
-          valueWidth={16}
-        />
-        <SettingsProfileRowSkeleton
-          label={text('settingAppearance.animationMode.title', 64, 22)}
-          valueWidth={200}
-        />
-        {isDesktop && (
-          <SettingsProfileRowSkeleton
-            label={text('settingAppearance.appTray.title', 96, 22)}
-            valueWidth={44}
-          />
-        )}
-      </InsetGroup>
+      </SettingsSurfaceGroup>
+      <SettingsFormSkeleton
+        groups={[
+          {
+            items: [
+              {
+                control: { height: 16, width: 16 },
+                label: text('settingAppearance.font.title', 32, 14),
+                minWidth: undefined,
+              },
+              {
+                control: { height: 16, width: 16 },
+                label: text('settingAppearance.chatDisplay.title', 64, 14),
+                minWidth: undefined,
+              },
+              {
+                control: { height: 32, width: 200 },
+                label: text('settingAppearance.animationMode.title', 64, 14),
+                minWidth: undefined,
+              },
+              ...(isDesktop
+                ? [
+                    {
+                      control: SWITCH_CONTROL,
+                      label: text('settingAppearance.appTray.title', 96, 14),
+                      minWidth: undefined,
+                    },
+                  ]
+                : []),
+            ],
+            title: null,
+          },
+        ]}
+      />
     </Flexbox>
   );
 };

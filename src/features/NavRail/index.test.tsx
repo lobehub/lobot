@@ -16,35 +16,40 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-vi.mock('@/business/client/hooks/useActiveWorkspaceSlug', () => ({
-  useActiveWorkspaceSlug: () => null,
+vi.mock('@lobehub/ui', () => ({
+  ActionIcon: ({ 'aria-label': ariaLabel, title }: { 'aria-label'?: string; 'title'?: string }) => (
+    <button aria-label={ariaLabel || title} type="button" />
+  ),
+  DropdownMenu: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
+  Flexbox: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
+  Icon: () => null,
+  Text: ({ children }: { children?: ReactNode }) => <span>{children}</span>,
+}));
+
+vi.mock('@/hooks/useSignOut', () => ({
+  useSignOut: () => vi.fn(),
+}));
+
+vi.mock('@/styles/electron', () => ({
+  electronStylish: { nodrag: '' },
 }));
 
 vi.mock('@/features/Channels/useChannelsEnabled', () => ({
   useChannelsEnabled: () => channelsEnabled,
 }));
 
-vi.mock('@/features/MessageList/conversations', () => ({
-  messagesUnreadCount: () => 0,
-}));
-
 vi.mock('@/features/User/UserAvatar', () => ({ default: () => null }));
 
-vi.mock('@/hooks/useActiveLocation', () => ({
-  useActiveLocation: () => ({ pathname: '/' }),
+vi.mock('@/store/user', () => ({
+  useUserStore: (selector: (s: object) => unknown) =>
+    selector({ nickName: 'Test User', username: 'testuser' }),
 }));
 
-vi.mock('@/store/channel', () => ({
-  channelSelectors: { list: () => [] },
-  useChannelStore: (selector: (s: object) => unknown) => selector({}),
-}));
-
-vi.mock('@/store/home', () => ({
-  useHomeStore: (selector: (s: object) => unknown) => selector({}),
-}));
-
-vi.mock('@/store/home/selectors', () => ({
-  homeAgentListSelectors: { allAgents: () => [] },
+vi.mock('@/store/user/selectors', () => ({
+  userProfileSelectors: {
+    displayUserName: (s: { username?: string }) => s.username,
+    nickName: (s: { nickName?: string }) => s.nickName,
+  },
 }));
 
 vi.mock('@/store/contact', async (importOriginal) => {
@@ -56,28 +61,8 @@ vi.mock('@/store/contact', async (importOriginal) => {
   };
 });
 
-vi.mock('./messagesTarget', () => ({
-  ActiveChannelSync: () => null,
-  useMessagesUrl: () => ({ activeChannelId: undefined, url: '/' }),
-}));
-
-vi.mock('./useCompactLayout', () => ({ useCompactLayout: () => false }));
-
-vi.mock('./TabItem', () => ({
-  default: ({
-    badge,
-    children,
-    title,
-  }: {
-    badge?: number;
-    children?: ReactNode;
-    title: string;
-  }) => (
-    <div data-badge={badge ?? ''} data-testid={`tab-${title}`}>
-      {children}
-    </div>
-  ),
-}));
+vi.mock('./ContactsPopup', () => ({ default: () => null }));
+vi.mock('./SettingsPopup', () => ({ default: () => null }));
 
 const request = (id: string, direction: 'incoming' | 'outgoing') => ({
   direction,
@@ -92,7 +77,7 @@ describe('NavTabBar', () => {
     useFetchRequests.mockClear();
   });
 
-  it('shows the number of incoming friend requests on the Contacts tab', () => {
+  it('shows the number of incoming friend requests on the Contacts button', () => {
     contactState.requestsMap = {
       all: [request('a', 'incoming'), request('b', 'outgoing'), request('c', 'incoming')],
     };
@@ -119,5 +104,13 @@ describe('NavTabBar', () => {
 
     expect(screen.getByTestId('tab-tab.contacts')).toHaveAttribute('data-badge', '0');
     expect(useFetchRequests).toHaveBeenCalledWith(false);
+  });
+
+  it('shows the user name beside the avatar and has no Messages button', () => {
+    render(<NavTabBar />);
+
+    expect(screen.getByLabelText('tab.setting')).toHaveTextContent('Test User');
+    expect(screen.getByLabelText('tab.contacts')).toBeInTheDocument();
+    expect(screen.queryByLabelText('tab.messages')).not.toBeInTheDocument();
   });
 });

@@ -67,6 +67,10 @@ export const TAB_SEARCH_EN_KEYWORDS: Partial<Record<string, string[]>> = {
     'font',
     'color',
     'background',
+    'language',
+    'locale',
+    'i18n',
+    'translation',
   ],
   [SettingsTabs.Billing]: ['billing', 'payment', 'invoice', 'card', 'transaction'],
   [SettingsTabs.Connector]: ['connectors', 'integrations', 'mcp', 'oauth'],
@@ -298,14 +302,14 @@ export const SETTINGS_SEARCH_ITEMS: SettingsSearchItem[] = [
     anchor: 'language-interface',
     keywords: ['language', 'locale', 'i18n'],
     labelKey: 'settingCommon.lang.interfaceTitle',
-    tab: SettingsTabs.Language,
+    tab: SettingsTabs.Appearance,
   },
   {
     anchor: 'language-response-language',
     descKey: 'settingCommon.responseLanguage.desc',
     keywords: ['response language', 'reply'],
     labelKey: 'settingCommon.responseLanguage.title',
-    tab: SettingsTabs.Language,
+    tab: SettingsTabs.Appearance,
   },
   // Appearance
   {

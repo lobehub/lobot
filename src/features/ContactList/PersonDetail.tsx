@@ -345,6 +345,8 @@ const PersonCard = memo<{ userId: string }>(({ userId }) => {
 
 PersonCard.displayName = 'PersonCard';
 
+export { PersonCard };
+
 /** `/agents/people/:userId`: a person's card in the content column of the Contacts tab. */
 const PersonDetailPage = () => {
   const { t } = useTranslation('common');

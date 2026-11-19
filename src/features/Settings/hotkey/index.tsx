@@ -1,3 +1,4 @@
+import { Flexbox } from '@lobehub/ui';
 import { useTranslation } from 'react-i18next';
 
 import { isDesktop } from '@/const/version';
@@ -17,10 +18,12 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
   return (
     <>
       {showSettingHeader && <SettingHeader title={t('tab.hotkey')} />}
-      {isDesktop && <Desktop />}
-      <Essential />
-      <Conversation />
-      {isDesktop && <AppMenu />}
+      <Flexbox gap={20}>
+        {isDesktop && <Desktop />}
+        <Essential />
+        <Conversation />
+        {isDesktop && <AppMenu />}
+      </Flexbox>
     </>
   );
 };

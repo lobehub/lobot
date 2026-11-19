@@ -29,6 +29,7 @@ import {
   ExecutionTargetIcon,
   groupExecutionTargetDevices,
 } from '@/features/ExecutionTargetPicker';
+import { openSettingsFromUrl } from '@/features/NavRail/settingsPopupStore';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import {
   isHeterogeneousSandboxExecutionAvailable,
@@ -569,7 +570,7 @@ const HeteroDeviceSwitcher = memo<HeteroDeviceSwitcherProps>(({ agentId }) => {
             type="button"
             onClick={() => {
               setOpen(false);
-              navigate('/settings/devices');
+              if (!openSettingsFromUrl('/settings/devices')) navigate('/settings/devices');
             }}
           >
             <Icon icon={SettingsIcon} size={11} />

@@ -131,7 +131,18 @@ describe('NavigationBar tray broadcasts', () => {
     expect(container.querySelector('.root')).toHaveStyle({ width: '276px' });
   });
 
-  it('spans the workspace rail too, so the history button lines up with the list column', () => {
+  it('aligns the history buttons with the list column on Windows', () => {
+    mocks.platform = 'Windows';
+    mocks.railShown = true;
+    mocks.leftPanelVisible = true;
+    mocks.leftPanelWidth = 280;
+    const { container } = render(<NavigationBar />);
+
+    // Rail (48) minus the title bar's own left padding (12).
+    expect(container.querySelector('.root')).toHaveStyle({ paddingLeft: '36px' });
+  });
+
+  it('spans the workspace rail as well as the list column', () => {
     mocks.imLayout = true;
     mocks.railShown = true;
     mocks.leftPanelVisible = true;

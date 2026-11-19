@@ -2,12 +2,13 @@
 
 import { type NetworkProxySettings } from '@lobechat/electron-client-ipc';
 import { Button, Flexbox, Input, InputPassword, RadioGroup, Switch, toast } from '@lobehub/ui';
-import { Form, type FormGroupItem, useForm, useWatch } from '@lobehub/ui/form';
+import { type FormGroupItem, useForm, useWatch } from '@lobehub/ui/form';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ProxySkeleton from '@/components/Skeleton/Settings/tabs/Proxy';
 import { FORM_STYLE } from '@/const/layoutTokens';
+import SettingsForm from '@/features/Settings/features/SettingsForm';
 import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
 import { desktopSettingsService } from '@/services/electron/settings';
 import { useElectronStore } from '@/store/electron';
@@ -305,12 +306,12 @@ const ProxyForm = () => {
 
   return (
     <>
-      <Form
+      <SettingsForm
         collapsible={false}
         form={form}
         items={[enableProxyGroup, basicSettingsGroup, authGroup, testGroup]}
         itemsType={'group'}
-        variant={'filled'}
+        variant={'borderless'}
         {...FORM_STYLE}
       />
       <SaveBar isDirty={isDirty} isSaving={isSaving} onReset={handleReset} onSave={handleSave} />

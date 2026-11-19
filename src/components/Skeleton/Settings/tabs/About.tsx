@@ -2,9 +2,10 @@
 
 import { BRANDING_NAME } from '@lobechat/business-const';
 import { Divider, Flexbox, Grid } from '@lobehub/ui';
-import { Form } from '@lobehub/ui/form';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import { useTranslation } from 'react-i18next';
+
+import { SettingsSurfaceGroup } from '@/features/Settings/features/SettingsForm';
 
 import SkeletonBar from '../../Bar';
 import { SettingsFormSkeleton, SWITCH_CONTROL } from '../Section';
@@ -44,12 +45,10 @@ const Body = () => {
   const { t: tSetting, ready: settingReady } = useTranslation('setting');
 
   return (
-    <>
-      <Form.Group
-        collapsible={false}
+    <Flexbox gap={20} width={'100%'}>
+      <SettingsSurfaceGroup
         style={{ maxWidth: '1024px', width: '100%' }}
         title={ready ? `${t('about')} ${BRANDING_NAME}` : <SkeletonBar height={18} width={104} />}
-        variant={'filled'}
       >
         <Flexbox gap={20} paddingBlock={20} width={'100%'}>
           <Flexbox horizontal align={'center'} gap={16} justify={'space-between'} width={'100%'}>
@@ -79,7 +78,7 @@ const Body = () => {
           </div>
           <LinkRow keys={['terms', 'privacy']} />
         </Flexbox>
-      </Form.Group>
+      </SettingsSurfaceGroup>
       <SettingsFormSkeleton
         groups={[
           {
@@ -99,7 +98,7 @@ const Body = () => {
           },
         ]}
       />
-    </>
+    </Flexbox>
   );
 };
 

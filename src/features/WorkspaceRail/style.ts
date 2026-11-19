@@ -2,8 +2,8 @@ import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 
 export const RAIL_AVATAR_SIZE = 32;
-/** Discord's rounded tile: a fixed radius reads tighter than the avatar's default size / 6. */
-export const RAIL_TILE_RADIUS = 10;
+/** The square avatar's own corner, `size / 6`, so the create button matches the tiles. */
+export const RAIL_TILE_RADIUS = RAIL_AVATAR_SIZE / 6;
 
 // Discord-style server rail: a column of scope avatars left of the wrap, on the
 // window background, with a pill on the left edge marking the active scope.

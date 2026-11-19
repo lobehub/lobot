@@ -1,15 +1,15 @@
 'use client';
 
 import { Flexbox } from '@lobehub/ui';
-import { Form, type FormGroupItem, useForm } from '@lobehub/ui/form';
+import { type FormGroupItem, useForm } from '@lobehub/ui/form';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 import { type ReactNode } from 'react';
 
 import { FORM_STYLE } from '@/const/layoutTokens';
+import SettingsForm, { SettingsSurfaceGroup } from '@/features/Settings/features/SettingsForm';
 
 import SkeletonBar from '../Bar';
-import { sectionGroupStyles } from './sectionGroupStyles';
 
 const styles = stylex.create({
   divider: {
@@ -107,11 +107,8 @@ const Group = ({
   titleWidth = 120,
   withDesc = true,
 }: SettingsSectionSkeletonGroup) => (
-  <Form.Group
-    className={sectionGroupStyles.group}
-    collapsible={false}
+  <SettingsSurfaceGroup
     extra={extra}
-    variant={'filled'}
     desc={
       desc === true ? (
         <Flexbox height={19} justify={'center'}>
@@ -143,26 +140,24 @@ const Group = ({
         </Flexbox>
       ))}
     </Flexbox>
-  </Form.Group>
+  </SettingsSurfaceGroup>
 );
 
 interface SettingsSectionSkeletonProps {
   /**
-   * Gap between groups. Groups of one `<Form itemsType="group">` sit 16px apart;
-   * separate forms stacked in the settings container sit 36px apart.
+   * Gap between groups. Surface groups in SettingsForm sit 20px apart.
    */
   gap?: number;
-  /** One entry per `Form.Group` in the loaded form. Defaults to a 2-row + 3-row pair. */
+  /** One entry per settings group in the loaded form. Defaults to a 2-row + 3-row pair. */
   groups?: SettingsSectionSkeletonGroup[];
 }
 
 /**
- * Loading stand-in for a settings `Form` rendered with `itemsType="group"` and
- * `variant="filled"`: same filled group chrome, one label/description/control row
- * per field, so the real form swaps in without relayout.
+ * Loading stand-in for a settings form rendered as Surface groups:
+ * caption above the card, one label/description/control row per field.
  */
 const SettingsSectionSkeleton = ({
-  gap = 36,
+  gap = 20,
   groups = DEFAULT_GROUPS,
 }: SettingsSectionSkeletonProps) => (
   <Flexbox aria-busy data-testid={'settings-section-skeleton'} gap={gap}>
@@ -229,12 +224,12 @@ export const SettingsFormSkeleton = ({ groups }: { groups: SettingsFormSkeletonG
 
   return (
     <div aria-busy data-testid={'settings-form-skeleton'}>
-      <Form
+      <SettingsForm
         collapsible={false}
         form={form}
         items={items}
         itemsType={'group'}
-        variant={'filled'}
+        variant={'borderless'}
         {...FORM_STYLE}
       />
     </div>

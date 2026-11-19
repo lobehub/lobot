@@ -16,16 +16,12 @@ export const OWN_FRAME_TABS = new Set<string>([
 const FULL_WIDTH_TABS = new Set<string>([SettingsTabs.Devices]);
 
 /**
- * Tabs laid out as Telegram-style inset groups: rounded cards straight on the
- * window background (Settings is a detached section, see `isDetachedNavKey`),
- * in a narrower column so label and value stay within one glance. Other tabs
- * keep a white page, drawn as a card by the settings layout.
+ * Previously used for Telegram-style inset pages (Appearance, Language,
+ * Profile). Those tabs now use `@lobehub/ui/form` like the rest of settings,
+ * so they share the default 1024px card container. Kept as an empty set so
+ * existing container / layout lookups stay valid.
  */
-export const INSET_TABS = new Set<string>([
-  SettingsTabs.Appearance,
-  SettingsTabs.Language,
-  SettingsTabs.Profile,
-]);
+export const INSET_TABS = new Set<string>();
 
 export const getSettingsContainerMaxWidth = (tab: string | undefined) => {
   if (tab && FULL_WIDTH_TABS.has(tab)) return '100%';

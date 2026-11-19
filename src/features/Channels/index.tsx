@@ -183,92 +183,101 @@ function EnabledChannelPage() {
   // A removed or out-of-reach Channel (e.g. a link from another workspace) leaves nothing open.
   if (isChannelGone(sync.error)) return <ChannelEmpty />;
 
+  // A docked thread is a second column. Its header lines up with the channel header,
+  // so the channel header stops at the column edge instead of spanning over the thread.
+  const threadDocked =
+    !pageThreadId &&
+    !!(threadId || threadDraft) &&
+    (conversationWidth ?? 1000) >= THREAD_FLOAT_BREAKPOINT;
+  const header = (
+    <NavHeader
+      // A rule separates the header from the feed scrolling under it.
+      {...stylex.props(styles.threadHeader)}
+      // A thread page leads back to its Channel itself; a second back to the list would compete.
+      showTogglePanelButton={!(compact && pageThreadId)}
+      left={
+        pageThreadId && detail ? (
+          <ThreadPageTitle
+            detail={detail}
+            threadId={pageThreadId}
+            onBack={panel.close}
+            onSwitch={panel.openPage}
+          />
+        ) : (
+          <Flexbox horizontal align="center" gap={8}>
+            {/* A direct conversation is titled by its Agent's name alone, like an IM chat. */}
+            {!isDirect && !isPeer && <Hash color={cssVar.colorTextDescription} size={16} />}
+            <Text ellipsis weight={500}>
+              {detail
+                ? channelTitle(detail, viewerId, projectName)
+                : listItem &&
+                  (directCounterpart(listItem)?.name || groupChannelName(listItem, projectName))}
+            </Text>
+            {isSharedAgent && (
+              <Text style={{ flex: 'none' }} type="secondary">
+                {t('sharedAgent.tag')}
+              </Text>
+            )}
+            {directAgentId && (
+              <DirectAgentRole
+                agentId={directAgentId}
+                count={directWorkingCount}
+                job={directWorkingJob}
+              />
+            )}
+            {detail?.channel.status === 'archived' && <Tag size="small">{t('archived')}</Tag>}
+            {/* The Channel's own actions sit by its name; the right holds the panels it opens. */}
+            {detail && <ChannelMenu detail={detail} />}
+            <ChannelSyncing failed={!!sync.error} params={view} />
+          </Flexbox>
+        )
+      }
+      right={
+        detail && (
+          <Flexbox horizontal align="center" gap={8}>
+            {pageThreadId && <ThreadPageActions detail={detail} threadId={pageThreadId} />}
+            <ThreadsButton
+              activeId={pageThreadId ?? threadId}
+              detail={detail}
+              onOpen={openThread}
+            />
+            <MemberStatus
+              detail={detail}
+              memberPanel={
+                hasMemberPanel
+                  ? {
+                      id: memberPanelId,
+                      open: membersOpen,
+                      onToggle: () => {
+                        if (!membersOpen) {
+                          // The roster sits beside a thread page; it only replaces a side panel.
+                          if (!pageThreadId) panel.close();
+                          setSearch(null);
+                          setTopic(null);
+                          clearPortalStack();
+                          closeSettings();
+                        }
+                        setMembersChannelId(membersOpen ? null : channelId);
+                      },
+                    }
+                  : undefined
+              }
+              onOpenThread={openThread}
+            />
+            {/* Last in the row, like Discord's search. */}
+            <ChannelSearchBox
+              value={searchValue}
+              onChange={(value) => setSearchInput({ channelId, value })}
+              onSearch={openSearch}
+            />
+          </Flexbox>
+        )
+      }
+    />
+  );
   return (
     <Flexbox {...stylex.props(styles.layout)}>
-      <NavHeader
-        // A rule separates the header from the feed scrolling under it.
-        {...stylex.props(styles.threadHeader)}
-        // A thread page leads back to its Channel itself; a second back to the list would compete.
-        showTogglePanelButton={!(compact && pageThreadId)}
-        left={
-          pageThreadId && detail ? (
-            <ThreadPageTitle
-              detail={detail}
-              threadId={pageThreadId}
-              onBack={panel.close}
-              onSwitch={panel.openPage}
-            />
-          ) : (
-            <Flexbox horizontal align="center" gap={8}>
-              {/* A direct conversation is titled by its Agent's name alone, like an IM chat. */}
-              {!isDirect && !isPeer && <Hash color={cssVar.colorTextDescription} size={16} />}
-              <Text ellipsis weight={500}>
-                {detail
-                  ? channelTitle(detail, viewerId, projectName)
-                  : listItem &&
-                    (directCounterpart(listItem)?.name || groupChannelName(listItem, projectName))}
-              </Text>
-              {isSharedAgent && (
-                <Text style={{ flex: 'none' }} type="secondary">
-                  {t('sharedAgent.tag')}
-                </Text>
-              )}
-              {directAgentId && (
-                <DirectAgentRole
-                  agentId={directAgentId}
-                  count={directWorkingCount}
-                  job={directWorkingJob}
-                />
-              )}
-              {detail?.channel.status === 'archived' && <Tag size="small">{t('archived')}</Tag>}
-              {/* The Channel's own actions sit by its name; the right holds the panels it opens. */}
-              {detail && <ChannelMenu detail={detail} />}
-              <ChannelSyncing failed={!!sync.error} params={view} />
-            </Flexbox>
-          )
-        }
-        right={
-          detail && (
-            <Flexbox horizontal align="center" gap={8}>
-              {pageThreadId && <ThreadPageActions detail={detail} threadId={pageThreadId} />}
-              <ThreadsButton
-                activeId={pageThreadId ?? threadId}
-                detail={detail}
-                onOpen={openThread}
-              />
-              <MemberStatus
-                detail={detail}
-                memberPanel={
-                  hasMemberPanel
-                    ? {
-                        id: memberPanelId,
-                        open: membersOpen,
-                        onToggle: () => {
-                          if (!membersOpen) {
-                            // The roster sits beside a thread page; it only replaces a side panel.
-                            if (!pageThreadId) panel.close();
-                            setSearch(null);
-                            setTopic(null);
-                            clearPortalStack();
-                            closeSettings();
-                          }
-                          setMembersChannelId(membersOpen ? null : channelId);
-                        },
-                      }
-                    : undefined
-                }
-                onOpenThread={openThread}
-              />
-              {/* Last in the row, like Discord's search. */}
-              <ChannelSearchBox
-                value={searchValue}
-                onChange={(value) => setSearchInput({ channelId, value })}
-                onSearch={openSearch}
-              />
-            </Flexbox>
-          )
-        }
-      />
+      {!threadDocked && header}
       <EntityLinkHostProvider
         portal={CHANNEL_ENTITY_PORTAL_SCOPE}
         onOpenSideBrowser={(url) => openBrowser(channelBrowserSessionId(channelId), url)}
@@ -281,52 +290,55 @@ function EnabledChannelPage() {
           ref={conversationRef}
           {...stylex.props(styles.conversations)}
         >
-          {pageThreadId ? (
-            <ChannelConversation
-              channelId={channelId}
-              key={`${channelId}:${pageThreadId}`}
-              threadId={pageThreadId}
-              inert={
-                ((membersOpen || searchOpen || settingsOpen) &&
-                  (conversationWidth ?? 1000) < MEMBER_FLOAT_BREAKPOINT) ||
-                (portalOpen && (conversationWidth ?? 1000) < THREAD_FLOAT_BREAKPOINT)
-              }
-            />
-          ) : (
-            <ChannelConversation
-              channelId={channelId}
-              key={channelId}
-              inert={
-                (!!(threadId || threadDraft || portalOpen) &&
-                  (conversationWidth ?? 1000) < THREAD_FLOAT_BREAKPOINT) ||
-                ((membersOpen || searchOpen || settingsOpen) &&
-                  (conversationWidth ?? 1000) < MEMBER_FLOAT_BREAKPOINT) ||
-                (!!visibleTopic && (conversationWidth ?? 1000) < THREAD_FLOAT_BREAKPOINT)
-              }
-              onOpenThread={(nextThreadId, toggle) => {
-                setTopic(null);
-                // A send that finishes behind an open report (toggle: false) must not close it.
-                if (toggle !== false) clearPortalStack();
-                // Under a report the thread only looks closed, so bring it back, don't toggle it off.
-                panel.openThread(nextThreadId, portalOpen ? false : toggle);
-              }}
-              onOpenTopic={(next) => {
-                panel.close();
-                setSearch(null);
-                setMembersChannelId(null);
-                clearPortalStack();
-                closeSettings();
-                setTopic({ ...next, channelId });
-              }}
-              onStartThread={(draft) => {
-                setSearch(null);
-                setTopic(null);
-                clearPortalStack();
-                closeSettings();
-                panel.openDraft(draft);
-              }}
-            />
-          )}
+          <Flexbox {...stylex.props(styles.channelColumn)}>
+            {threadDocked && header}
+            {pageThreadId ? (
+              <ChannelConversation
+                channelId={channelId}
+                key={`${channelId}:${pageThreadId}`}
+                threadId={pageThreadId}
+                inert={
+                  ((membersOpen || searchOpen || settingsOpen) &&
+                    (conversationWidth ?? 1000) < MEMBER_FLOAT_BREAKPOINT) ||
+                  (portalOpen && (conversationWidth ?? 1000) < THREAD_FLOAT_BREAKPOINT)
+                }
+              />
+            ) : (
+              <ChannelConversation
+                channelId={channelId}
+                key={channelId}
+                inert={
+                  (!!(threadId || threadDraft || portalOpen) &&
+                    (conversationWidth ?? 1000) < THREAD_FLOAT_BREAKPOINT) ||
+                  ((membersOpen || searchOpen || settingsOpen) &&
+                    (conversationWidth ?? 1000) < MEMBER_FLOAT_BREAKPOINT) ||
+                  (!!visibleTopic && (conversationWidth ?? 1000) < THREAD_FLOAT_BREAKPOINT)
+                }
+                onOpenThread={(nextThreadId, toggle) => {
+                  setTopic(null);
+                  // A send that finishes behind an open report (toggle: false) must not close it.
+                  if (toggle !== false) clearPortalStack();
+                  // Under a report the thread only looks closed, so bring it back, don't toggle it off.
+                  panel.openThread(nextThreadId, portalOpen ? false : toggle);
+                }}
+                onOpenTopic={(next) => {
+                  panel.close();
+                  setSearch(null);
+                  setMembersChannelId(null);
+                  clearPortalStack();
+                  closeSettings();
+                  setTopic({ ...next, channelId });
+                }}
+                onStartThread={(draft) => {
+                  setSearch(null);
+                  setTopic(null);
+                  clearPortalStack();
+                  closeSettings();
+                  panel.openDraft(draft);
+                }}
+              />
+            )}
+          </Flexbox>
           {detail &&
             membersOpen &&
             (directAgent?.agentId ? (

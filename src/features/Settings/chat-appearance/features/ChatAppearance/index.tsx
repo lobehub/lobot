@@ -1,7 +1,7 @@
 'use client';
 
 import { Flexbox, highlighterThemes, mermaidThemes, Select, Switch, Tabs } from '@lobehub/ui';
-import { Form, useForm } from '@lobehub/ui/form';
+import { useForm } from '@lobehub/ui/form';
 import isEqual from 'fast-deep-equal';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import AutoSaveHint from '@/components/Editor/AutoSaveHint';
 import { ChatAppearanceSectionSkeleton } from '@/components/Skeleton/Settings/tabs/Appearance';
 import { FORM_STYLE } from '@/const/layoutTokens';
+import SettingsForm, { SettingsSurfaceGroup } from '@/features/Settings/features/SettingsForm';
 import { useSaveState } from '@/hooks/useSaveState';
 import { useUserStore } from '@/store/user';
 import { settingsSelectors, userGeneralSettingsSelectors } from '@/store/user/selectors';
@@ -41,11 +42,9 @@ const ChatAppearance = memo(() => {
     );
 
   return (
-    <>
-      <Form.Group
-        collapsible={false}
+    <Flexbox gap={20} width={'100%'}>
+      <SettingsSurfaceGroup
         title={t('settingChatAppearance.transitionMode.title')}
-        variant={'filled'}
         extra={
           <Flexbox horizontal align={'center'} gap={8}>
             {renderSaveHint('transitionMode')}
@@ -71,13 +70,13 @@ const ChatAppearance = memo(() => {
         }
       >
         <ChatTransitionPreview key={general.transitionMode} mode={general.transitionMode} />
-      </Form.Group>
+      </SettingsSurfaceGroup>
 
-      <Form
+      <SettingsForm
         collapsible={false}
         form={form}
         itemsType={'group'}
-        variant={'filled'}
+        variant={'borderless'}
         items={[
           {
             children: [
@@ -142,10 +141,8 @@ const ChatAppearance = memo(() => {
         {...FORM_STYLE}
       />
 
-      <Form.Group
-        collapsible={false}
+      <SettingsSurfaceGroup
         title={t('settingChatAppearance.highlighterTheme.title')}
-        variant={'filled'}
         extra={
           <Flexbox horizontal align={'center'} gap={8}>
             {renderSaveHint('highlighterTheme')}
@@ -164,11 +161,10 @@ const ChatAppearance = memo(() => {
         }
       >
         <HighlighterPreview key={general.highlighterTheme} theme={general.highlighterTheme} />
-      </Form.Group>
+      </SettingsSurfaceGroup>
 
-      <Form.Group
+      <SettingsSurfaceGroup
         title={t('settingChatAppearance.mermaidTheme.title')}
-        variant={'filled'}
         extra={
           <Flexbox horizontal align={'center'} gap={8}>
             {renderSaveHint('mermaidTheme')}
@@ -187,8 +183,8 @@ const ChatAppearance = memo(() => {
         }
       >
         <MermaidPreview key={general.mermaidTheme} theme={general.mermaidTheme} />
-      </Form.Group>
-    </>
+      </SettingsSurfaceGroup>
+    </Flexbox>
   );
 });
 

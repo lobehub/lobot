@@ -211,6 +211,8 @@ const ContactDetail = memo<{ id: string }>(({ id }) => {
 
 ContactDetail.displayName = 'ContactDetail';
 
+export { ContactDetail };
+
 /** `/agents/:id`: the contact card in the content column of the Contacts tab. */
 const ContactDetailPage = () => {
   const { id } = useParams<{ id: string }>();

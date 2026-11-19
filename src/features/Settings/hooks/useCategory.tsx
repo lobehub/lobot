@@ -1,12 +1,5 @@
 import { isDesktop } from '@lobechat/const';
-import {
-  BellIcon,
-  EthernetPort,
-  Info,
-  KeyboardIcon,
-  LanguagesIcon,
-  PaletteIcon,
-} from 'lucide-react';
+import { BellIcon, EthernetPort, Info, KeyboardIcon, PaletteIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -45,7 +38,6 @@ export const useCategory = () => {
   return useMemo<CategoryGroup[]>(() => {
     const generalItems = [
       { icon: PaletteIcon, key: SettingsTabs.Appearance, label: t('tab.appearance') },
-      { icon: LanguagesIcon, key: SettingsTabs.Language, label: t('tab.language') },
       { icon: BellIcon, key: SettingsTabs.Notification, label: t('tab.notification') },
       { icon: KeyboardIcon, key: SettingsTabs.Hotkey, label: t('tab.hotkey') },
       isDesktop && { icon: EthernetPort, key: SettingsTabs.Proxy, label: t('tab.proxy') },

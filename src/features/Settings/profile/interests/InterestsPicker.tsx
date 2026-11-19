@@ -77,7 +77,7 @@ const InterestsPicker = () => {
   }, [customInput, normalizedInterests, saveInterests]);
 
   return (
-    <Flexbox gap={12} padding={16}>
+    <Flexbox gap={12}>
       <Flexbox horizontal align="center" gap={8} wrap="wrap">
         {areas.map((item) => {
           const isSelected = normalizedInterests.includes(item.key);

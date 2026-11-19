@@ -1,7 +1,7 @@
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 
-export const AVATAR_SIZE = 28;
+export const AVATAR_SIZE = 32;
 /** Pinned tiles use a card-sized avatar over the compact row one. */
 export const PINNED_AVATAR_SIZE = 56;
 
@@ -39,8 +39,8 @@ export const styles = stylex.create({
     flex: 'none',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '28px',
-    height: '28px',
+    width: '32px',
+    height: '32px',
     borderRadius: cssVar.borderRadius,
     color: cssVar.colorTextLightSolid,
     backgroundColor: cssVar.colorPrimary,
@@ -54,12 +54,15 @@ export const styles = stylex.create({
     flexDirection: 'column',
     justifyContent: 'center',
   },
-  /** Pinned conversations read as a card grid, like OpenBot's pinned assistants. */
+  /** Pinned conversations sit as a centered row of square tiles. */
   pinnedGroup: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(96px, 1fr))',
-    columnGap: '4px',
-    rowGap: '2px',
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    columnGap: '8px',
+    rowGap: '8px',
+    paddingBlock: '16px',
   },
   /** "[@me]" before the preview; the unread badge's red, so the two read as one signal. */
   mentioned: {
@@ -88,7 +91,7 @@ export const styles = stylex.create({
     cursor: 'pointer',
     userSelect: 'none',
     display: 'flex',
-    gap: '10px',
+    gap: '12px',
     alignItems: 'center',
     paddingBlock: '8px',
     paddingInline: '8px',
@@ -122,7 +125,7 @@ export const styles = stylex.create({
     position: 'relative',
     display: 'flex',
     flexDirection: 'column',
-    gap: '1px',
+    gap: '4px',
     marginBlockStart: '6px',
   },
   sectionChevron: {
@@ -175,8 +178,9 @@ export const styles = stylex.create({
     fontWeight: 400,
     color: cssVar.colorTextQuaternary,
   },
-  /** A pinned conversation as a large-avatar tile instead of a row. */
+  /** A pinned conversation: a square that holds the avatar and the name. */
   tile: {
+    boxSizing: 'border-box',
     cursor: 'pointer',
     userSelect: 'none',
 
@@ -184,10 +188,12 @@ export const styles = stylex.create({
     flexDirection: 'column',
     gap: '6px',
     alignItems: 'center',
+    justifyContent: 'center',
 
-    paddingBlockStart: '8px',
-    paddingBlockEnd: '6px',
-    paddingInline: '4px',
+    width: 96,
+    height: 96,
+    paddingBlock: '8px',
+    paddingInline: '8px',
     borderRadius: cssVar.borderRadiusLG,
 
     color: cssVar.colorText,
@@ -220,6 +226,7 @@ export const styles = stylex.create({
     fontSize: '11px',
     lineHeight: '18px',
     color: cssVar.colorTextQuaternary,
+    opacity: 0.65,
   },
   title: {
     overflow: 'hidden',

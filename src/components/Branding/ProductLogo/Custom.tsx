@@ -11,6 +11,9 @@ import { memo } from 'react';
 import Image from '@/libs/next/Image';
 import { type ImageProps } from '@/libs/next/Image';
 
+const DEFAULT_LOGO_SRC = '/app-icons/icon-192x192.png';
+const logoSrc = BRANDING_LOGO_URL || DEFAULT_LOGO_SRC;
+
 const styles = stylex.create({ extraTitle: { fontWeight: 300, whiteSpace: 'nowrap' } });
 
 const CustomTextLogo = memo<FlexboxProps & { size: number }>(({ size, style, ...rest }) => {
@@ -36,7 +39,7 @@ const CustomImageLogo = memo<Omit<ImageProps, 'alt' | 'src'> & { size: number }>
       <Image
         alt={BRANDING_NAME}
         height={size}
-        src={BRANDING_LOGO_URL}
+        src={logoSrc}
         unoptimized={true}
         width={size}
         {...rest}

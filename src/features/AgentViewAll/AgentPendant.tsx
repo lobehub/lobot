@@ -16,7 +16,7 @@ const styles = stylex.create({
     position: 'relative',
   },
   chip: {
-    borderColor: cssVar.colorBgContainer,
+    borderColor: cssVar.colorBgElevated,
     borderStyle: 'solid',
     borderWidth: 1.5,
     boxShadow: cssVar.boxShadowTertiary,

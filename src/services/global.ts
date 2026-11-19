@@ -7,18 +7,28 @@ import { electronSyncSelectors } from '@/store/electron/selectors';
 import { type VersionResponseData } from '@/types/apiResponse';
 import { type GlobalRuntimeConfig } from '@/types/serverConfig';
 
-const VERSION_URL = 'https://registry.npmmirror.com/@lobehub/chat/latest';
+const VERSION_URL = 'https://api.github.com/repos/lobehub/lobot/releases/latest';
 const SERVER_VERSION_URL = '/api/version';
 
 class GlobalService extends BusinessGlobalService {
   /**
-   * get latest version from npm
+   * Latest published Lobot desktop release (GitHub), not the leftover LobeChat npm package.
    */
   getLatestVersion = async (): Promise<string> => {
-    const res = await fetch(VERSION_URL);
-    const data = await res.json();
+    const res = await fetch(VERSION_URL, {
+      headers: { Accept: 'application/vnd.github+json' },
+    });
+    if (!res.ok) {
+      throw new Error(`Failed to fetch latest version: ${res.status}`);
+    }
 
-    return data['version'];
+    const data = await res.json();
+    const tag = typeof data?.tag_name === 'string' ? data.tag_name : '';
+    if (!tag) {
+      throw new Error('Latest release tag is missing');
+    }
+
+    return tag.replace(/^v/i, '');
   };
 
   /**

@@ -5,6 +5,7 @@ import { memo, useMemo } from 'react';
 import { Link } from 'react-router';
 
 import NavItem from '@/features/NavPanel/components/NavItem';
+import { openSettingsFromUrl } from '@/features/NavRail/settingsPopupStore';
 import { getTabUrl, SearchSection } from '@/features/SettingsSearch';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { useActiveLocation } from '@/hooks/useActiveLocation';
@@ -50,7 +51,7 @@ const Body = memo(() => {
                   onClick={(e) => {
                     if (isModifierClick(e)) return;
                     e.preventDefault();
-                    navigate(url);
+                    if (!openSettingsFromUrl(url)) navigate(url);
                   }}
                 >
                   <NavItem active={activeTab === item.key} icon={item.icon} title={item.label} />

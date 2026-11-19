@@ -4,7 +4,7 @@ import { compactBackTarget, isCompactListRoute } from './compactLayout';
 
 describe('isCompactListRoute', () => {
   it('shows the list on each tab root', () => {
-    for (const pathname of ['/', '/agents', '/settings', '/channels', '/?thread=t1']) {
+    for (const pathname of ['/', '/agents', '/channels', '/?thread=t1']) {
       expect(isCompactListRoute(pathname, null)).toBe(true);
     }
   });
@@ -37,7 +37,7 @@ describe('compactBackTarget', () => {
     expect(compactBackTarget('/agents/agt_1', null)).toBe('/agents');
     expect(compactBackTarget('/agents/people/u_1', null)).toBe('/agents');
     expect(compactBackTarget('/agents/shared/abc', null)).toBe('/agents');
-    expect(compactBackTarget('/settings/profile', null)).toBe('/settings');
+    expect(compactBackTarget('/settings/profile', null)).toBeNull();
     expect(compactBackTarget('/acme/channels/ch_1', 'acme')).toBe('/');
   });
 

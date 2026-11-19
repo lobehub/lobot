@@ -1,5 +1,4 @@
 import { ActionIcon, Flexbox, Text } from '@lobehub/ui';
-import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { ChannelDetail } from '@lobot/types';
 import type { StyleXStyles } from '@stylexjs/stylex';
 import * as stylex from '@stylexjs/stylex';
@@ -43,12 +42,6 @@ export function channelSidePanelSize(availableWidth: number, preferredWidth: num
     width: Math.min(Math.max(preferredWidth, MEMBER_PANEL_WIDTH), maxWidth),
   };
 }
-
-const panelStyles = stylex.create({
-  panel: {
-    backgroundColor: cssVar.colorFillQuaternary,
-  },
-});
 
 /** The Channel's right column: floats over a narrow conversation, sits beside a wide one. */
 export function ChannelSidePanel({
@@ -159,11 +152,10 @@ export function MemberPanel({
       id={id}
       label={t('membersTitle')}
       title={t('membersCount', { count: entries.length })}
-      xstyle={panelStyles.panel}
       onClose={onClose}
     >
       <Flexbox flex={1} padding={12} paddingBlock={4} style={{ minHeight: 0, overflowY: 'auto' }}>
-        <MemberList detail={detail} onOpenThread={onOpenThread} />
+        <MemberList selectable detail={detail} onOpenThread={onOpenThread} />
       </Flexbox>
     </ChannelSidePanel>
   );

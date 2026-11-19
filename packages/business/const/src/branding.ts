@@ -5,7 +5,7 @@
 export const LOBE_CHAT_CLOUD = 'LobeHub Cloud';
 
 export const BRANDING_NAME = 'Lobot';
-export const BRANDING_LOGO_URL = '';
+export const BRANDING_LOGO_URL = '/app-icons/icon-192x192.png';
 
 /**
  * Display name of the built-in default assistant (the inbox agent).

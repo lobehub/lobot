@@ -36,11 +36,10 @@ const SideBarLayout = memo<SidebarLayoutProps>(({ header, body, contentStyle }) 
     <Flexbox gap={1} style={{ height: '100%', overflow: 'hidden' }}>
       <Suspense fallback={<SideBarHeaderSkeleton />}>{header}</Suspense>
       <ScrollArea
-        // No scrollFade: right under the header its top mask read as a shadow that dimmed the
-        // first row, and Base UI could leave it on after the list shrank below the viewport.
         disableContentFit
         // Preserve the height chain for sidebar bodies containing virtual lists.
         contentProps={{ style: { height: '100%', ...contentStyle } }}
+        scrollFade="vertical"
         style={{ flex: 1, minHeight: 0 }}
         viewportProps={{ onScroll: handleScroll, ref: scrollerRef }}
       >

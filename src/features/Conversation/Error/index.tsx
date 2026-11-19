@@ -31,6 +31,7 @@ import type {
   HeterogeneousAgentScheduleState,
   HeterogeneousAgentStatusGuideProps,
 } from '@/features/Electron/HeterogeneousAgent/StatusGuide/types';
+import { openSettingsFromUrl } from '@/features/NavRail/settingsPopupStore';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { usePermission } from '@/hooks/usePermission';
 import dynamic from '@/libs/next/dynamic';
@@ -483,14 +484,14 @@ const ErrorMessageExtra = memo<ErrorExtraProps>(
                   topicTitle: conversationTopic?.title || '',
                 })
             : undefined,
-        onOpenSystemTools: () =>
-          navigate(
-            isDesktop
-              ? '/settings/system-tools'
-              : activeAgentId
-                ? `/agent/${activeAgentId}/profile`
-                : '/settings/credential',
-          ),
+        onOpenSystemTools: () => {
+          const path = isDesktop
+            ? '/settings/system-tools'
+            : activeAgentId
+              ? `/agent/${activeAgentId}/profile`
+              : '/settings/credential';
+          if (!openSettingsFromUrl(path)) navigate(path);
+        },
         onRetry: () => void handleHeterogeneousRetry(),
         schedule,
       };
