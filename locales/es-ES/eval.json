@@ -154,6 +154,7 @@
   "connections.headerAuth": "Cabeceras personalizadas",
   "connections.hideDetails": "Ocultar conexiones",
   "connections.hint": "Elige una conexión para cada servicio. Cada conexión gestiona su propia dirección y autenticación. Una misma conexión",
+  "connections.importLater": "Algunos servicios no incluyen ninguna conex",
   "dataset.actions.addDataset": "Agregar Conjunto de Datos",
   "dataset.actions.import": "Importar Datos",
   "dataset.actions.importDataset": "Importar Conjunto de Datos",

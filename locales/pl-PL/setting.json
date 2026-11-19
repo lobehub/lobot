@@ -1622,6 +1622,8 @@
   "settingAppearance.primaryColor.desc": "Dostosuj kolor motywu",
   "settingAppearance.primaryColor.title": "Kolor motywu",
   "settingAppearance.title": "Wygląd aplikacji",
+  "settingAppearance.workspaceRail.desc": "Pokazuj kolumnę po lewej stronie dla Twojej przestrzeni osobistej i przestrzeni roboczych.",
+  "settingAppearance.workspaceRail.title": "Pasek przestrzeni roboczych",
   "settingChat.chatStyleType.title": "Styl okna czatu",
   "settingChat.chatStyleType.type.chat": "Tryb konwersacji",
   "settingChat.chatStyleType.type.docs": "Tryb strony",

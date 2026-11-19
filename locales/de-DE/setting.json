@@ -1622,6 +1622,8 @@
   "settingAppearance.primaryColor.desc": "Benutzerdefinierte Themenfarbe",
   "settingAppearance.primaryColor.title": "Themenfarbe",
   "settingAppearance.title": "Anwendungsdarstellung",
+  "settingAppearance.workspaceRail.desc": "Zeigen Sie die Spalte links für Ihren persönlichen Bereich und Ihre Arbeitsbereiche an.",
+  "settingAppearance.workspaceRail.title": "Arbeitsbereichsleiste",
   "settingChat.chatStyleType.title": "Chatfenster-Stil",
   "settingChat.chatStyleType.type.chat": "Konversationsmodus",
   "settingChat.chatStyleType.type.docs": "Seitenmodus",

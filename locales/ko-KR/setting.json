@@ -1622,6 +1622,8 @@
   "settingAppearance.primaryColor.desc": "테마 색상 사용자 정의",
   "settingAppearance.primaryColor.title": "테마 색상",
   "settingAppearance.title": "응용 프로그램 외관",
+  "settingAppearance.workspaceRail.desc": "개인 공간 및 워크스페이스의 왼쪽 열을 표시합니다.",
+  "settingAppearance.workspaceRail.title": "워크스페이스 바",
   "settingChat.chatStyleType.title": "채팅 창 스타일",
   "settingChat.chatStyleType.type.chat": "대화 모드",
   "settingChat.chatStyleType.type.docs": "문서 모드",

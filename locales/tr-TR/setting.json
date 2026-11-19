@@ -1622,6 +1622,8 @@
   "settingAppearance.primaryColor.desc": "Özel tema rengi",
   "settingAppearance.primaryColor.title": "Tema Rengi",
   "settingAppearance.title": "Uygulama Görünümü",
+  "settingAppearance.workspaceRail.desc": "Kişisel alanınız ve çalışma alanlarınız için soldaki sütunu gösterin.",
+  "settingAppearance.workspaceRail.title": "Çalışma alanı çubuğu",
   "settingChat.chatStyleType.title": "Sohbet Penceresi Stili",
   "settingChat.chatStyleType.type.chat": "Konuşma Modu",
   "settingChat.chatStyleType.type.docs": "Sayfa Modu",

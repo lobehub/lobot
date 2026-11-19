@@ -1622,6 +1622,8 @@
   "settingAppearance.primaryColor.desc": "Tùy chỉnh màu chủ đề",
   "settingAppearance.primaryColor.title": "Màu chủ đề",
   "settingAppearance.title": "Giao diện ứng dụng",
+  "settingAppearance.workspaceRail.desc": "Hiển thị cột bên trái cho không gian cá nhân và các không gian làm việc của bạn.",
+  "settingAppearance.workspaceRail.title": "Thanh không gian làm việc",
   "settingChat.chatStyleType.title": "Kiểu cửa sổ trò chuyện",
   "settingChat.chatStyleType.type.chat": "Chế độ hội thoại",
   "settingChat.chatStyleType.type.docs": "Chế độ trang",

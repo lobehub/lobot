@@ -1622,6 +1622,8 @@
   "settingAppearance.primaryColor.desc": "Aangepaste themakleur",
   "settingAppearance.primaryColor.title": "Themakleur",
   "settingAppearance.title": "Uiterlijk van de applicatie",
+  "settingAppearance.workspaceRail.desc": "Toon de kolom aan de linkerkant voor je persoonlijke ruimte en werkruimtes.",
+  "settingAppearance.workspaceRail.title": "Werkruimtebalk",
   "settingChat.chatStyleType.title": "Stijl van chatvenster",
   "settingChat.chatStyleType.type.chat": "Gespreksmodus",
   "settingChat.chatStyleType.type.docs": "Paginamodus",

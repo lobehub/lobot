@@ -1622,6 +1622,8 @@
   "settingAppearance.primaryColor.desc": "Colore tema personalizzato",
   "settingAppearance.primaryColor.title": "Colore Tema",
   "settingAppearance.title": "Aspetto Applicazione",
+  "settingAppearance.workspaceRail.desc": "Mostra la colonna a sinistra per il tuo spazio personale e i tuoi spazi di lavoro.",
+  "settingAppearance.workspaceRail.title": "Barra degli spazi di lavoro",
   "settingChat.chatStyleType.title": "Stile Finestra Chat",
   "settingChat.chatStyleType.type.chat": "Modalità Conversazione",
   "settingChat.chatStyleType.type.docs": "Modalità Pagina",

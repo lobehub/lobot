@@ -1622,6 +1622,8 @@
   "settingAppearance.primaryColor.desc": "Cor do tema personalizada",
   "settingAppearance.primaryColor.title": "Cor do Tema",
   "settingAppearance.title": "Aparência do Aplicativo",
+  "settingAppearance.workspaceRail.desc": "Exiba a coluna à esquerda para o seu espaço pessoal e seus espaços de trabalho.",
+  "settingAppearance.workspaceRail.title": "Barra de espaços de trabalho",
   "settingChat.chatStyleType.title": "Estilo da Janela de Chat",
   "settingChat.chatStyleType.type.chat": "Modo Conversa",
   "settingChat.chatStyleType.type.docs": "Modo Página",
