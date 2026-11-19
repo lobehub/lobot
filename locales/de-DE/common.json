@@ -209,6 +209,7 @@
   "contacts.external.remove": "Aus Arbeitsbereich entfernen",
   "contacts.external.remove.confirm": "{{name}} aus diesem Arbeitsbereich entfernen? Kein Mitglied ist dann mehr für diese Person geöffnet, und ausstehende Einladungen werden zurückgezogen. Der Chatverlauf bleibt erhalten.",
   "contacts.externals": "Externe Kontakte",
+  "contacts.groups": "Gruppen",
   "contacts.info.bio": "Bio",
   "contacts.info.handle": "Handle",
   "contacts.info.mail": "E-Mail",

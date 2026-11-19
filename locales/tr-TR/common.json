@@ -209,6 +209,7 @@
   "contacts.external.remove": "Çalışma alanından kaldır",
   "contacts.external.remove.confirm": "{{name}} bu çalışma alanından kaldırılsın mı? Tüm üyeler ona açılmayı durdurur ve onun bekleyen davetleri geri çekilir. Sohbet geçmişi korunur.",
   "contacts.externals": "Harici kişiler",
+  "contacts.groups": "Gruplar",
   "contacts.info.bio": "Biyografi",
   "contacts.info.handle": "Kullanıcı adı",
   "contacts.info.mail": "E-posta",

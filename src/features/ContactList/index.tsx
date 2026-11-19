@@ -50,6 +50,7 @@ import { MemberRow, PersonRow, RequestRow, SharedAgentRow } from './ExternalRows
 import { contactPreviewPath, useContactPreview } from './previewContext';
 import { CONTACT_SORT_BYS, groupContacts } from './sortContacts';
 import { styles } from './style';
+import { useContactsTitle } from './useContactsTitle';
 
 const useActiveRouteId = () => {
   const previewCtx = useContactPreview();
@@ -113,6 +114,7 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
   contactActions.useFetchList(channelsEnabled);
   contactActions.useFetchRequests(channelsEnabled);
   const externals = useContactStore((s) => contactSelectors.externals(s) ?? [], isEqual);
+  const people = useContactStore((s) => contactSelectors.people(s) ?? [], isEqual);
   const sharedAgents = useContactStore((s) => contactSelectors.agents(s) ?? [], isEqual);
   const requests = useContactStore(contactSelectors.incomingRequests, isEqual);
   // In a workspace, its members can be messaged there without being contacts.
@@ -125,8 +127,7 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
   );
   const updateSystemStatus = useGlobalStore((s) => s.updateSystemStatus);
 
-  // Groups have no place in the member list: it lists people and assistants.
-  const { agents, pinned } = useMemo(
+  const { agents, groups, pinned } = useMemo(
     () =>
       groupContacts(
         [...new Map(items.map((item) => [item.id, item])).values()],
@@ -142,8 +143,11 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
   const agentName = (item: SidebarAgentItem) =>
     item.type === 'group' ? item.title || untitled : agentDisplayName(item, untitled);
 
-  const pinnedAgents = pinned.filter((item) => item.type !== 'group');
-  const visiblePinned = q ? pinnedAgents.filter((item) => match(agentName(item))) : pinnedAgents;
+  // A workspace's member list holds people and assistants only: no groups, pinned or not.
+  const pinnedItems = inWorkspace ? pinned.filter((item) => item.type !== 'group') : pinned;
+  const visiblePinned = q ? pinnedItems.filter((item) => match(agentName(item))) : pinnedItems;
+  const visibleGroups = q ? groups.filter((item) => match(agentName(item))) : groups;
+  const visiblePeople = q ? people.filter((item) => match(personName(item.user))) : people;
   const visibleAgents = q ? agents.filter((item) => match(agentName(item))) : agents;
   const visibleExternals = q ? externals.filter((item) => match(personName(item.user))) : externals;
   // Other people's Agents belong to the Channel experience, like the people around them.
@@ -178,6 +182,15 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
 
   const renderAgents = (list: SidebarAgentItem[]) =>
     list.map((item) => <Contact active={item.id === activeRouteId} item={item} key={item.id} />);
+  const renderShared = (external?: boolean) =>
+    visibleShared.map((item) => (
+      <SharedAgentRow
+        active={item.agent.agentId === activeRouteId}
+        external={external}
+        item={item}
+        key={item.agent.agentId}
+      />
+    ));
   const sections = [
     // Requests waiting for an answer lead; the section is left out when there are none.
     ...(visibleRequests.length > 0
@@ -205,6 +218,22 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
             key: 'pinned',
             render: () => renderAgents(visiblePinned),
             title: t('contacts.pinned'),
+          },
+        ]
+      : []),
+    // In the personal space, other people's Agents follow the people in the same section.
+    ...(channelsEnabled && !inWorkspace
+      ? [
+          {
+            count: visiblePeople.length + visibleShared.length,
+            key: 'people',
+            render: () => [
+              ...visiblePeople.map((item) => (
+                <PersonRow active={item.user.id === activeRouteId} item={item} key={item.user.id} />
+              )),
+              ...renderShared(),
+            ],
+            title: t('contacts.people'),
           },
         ]
       : []),
@@ -244,20 +273,22 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
           },
         ]
       : []),
-    // Other people's Agents follow my own, tagged as external assistants.
+    // Groups next in the personal space: there are few, and they would sink below every agent.
+    ...(inWorkspace
+      ? []
+      : [
+          {
+            count: visibleGroups.length,
+            key: 'groups',
+            render: () => renderAgents(visibleGroups),
+            title: t('contacts.groups'),
+          },
+        ]),
+    // In a workspace, other people's Agents follow my own, tagged as external assistants.
     {
-      count: visibleAgents.length + visibleShared.length,
+      count: visibleAgents.length + (inWorkspace ? visibleShared.length : 0),
       key: 'agents',
-      render: () => [
-        ...renderAgents(visibleAgents),
-        ...visibleShared.map((item) => (
-          <SharedAgentRow
-            active={item.agent.agentId === activeRouteId}
-            item={item}
-            key={item.agent.agentId}
-          />
-        )),
-      ],
+      render: () => [...renderAgents(visibleAgents), ...(inWorkspace ? renderShared(true) : [])],
       title: t('navPanel.agent'),
     },
   ];
@@ -351,12 +382,13 @@ export { Body as ContactListBody };
 
 const Header = memo(() => {
   const { t } = useTranslation('common');
+  const title = useContactsTitle();
   // Creating agents and groups lives in the home sidebar; here the header only finds new contacts.
   const channelsEnabled = useChannelsEnabled();
 
   return (
     <ListHeader
-      title={t('tab.contacts')}
+      title={title}
       actions={
         channelsEnabled && (
           <ActionIcon

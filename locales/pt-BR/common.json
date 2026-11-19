@@ -209,6 +209,7 @@
   "contacts.external.remove": "Remover do espaço de trabalho",
   "contacts.external.remove.confirm": "Remover {{name}} deste espaço de trabalho? Todos os membros deixarão de estar abertos para essa pessoa, e os convites pendentes serão retirados. O histórico de chat é mantido.",
   "contacts.externals": "Contatos externos",
+  "contacts.groups": "Grupos",
   "contacts.info.bio": "Bio",
   "contacts.info.handle": "Handle",
   "contacts.info.mail": "E-mail",

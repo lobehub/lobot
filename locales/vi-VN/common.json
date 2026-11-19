@@ -209,6 +209,7 @@
   "contacts.external.remove": "Xóa khỏi không gian làm việc",
   "contacts.external.remove.confirm": "Xóa {{name}} khỏi không gian làm việc này? Mọi thành viên sẽ ngừng mở cho họ và các lời mời đang chờ của họ sẽ bị thu hồi. Lịch sử trò chuyện vẫn được giữ lại.",
   "contacts.externals": "Liên hệ bên ngoài",
+  "contacts.groups": "Nhóm",
   "contacts.info.bio": "Tiểu sử",
   "contacts.info.handle": "Tên định danh",
   "contacts.info.mail": "Email",

@@ -69,16 +69,20 @@ export const MemberRow = memo<{ active: boolean; member: WorkspaceMemberWithProf
 
 MemberRow.displayName = 'ContactMemberRow';
 
-/** Another person's Agent added through its share, tagged as external; dimmed while the share is paused. */
-export const SharedAgentRow = memo<{ active: boolean; item: ContactAgentItem }>(
-  ({ active, item }) => {
+/**
+ * Another person's Agent added through its share, dimmed while the share is paused. Tagged with
+ * its owner, or as an external assistant where it sits among a workspace's assistants.
+ */
+export const SharedAgentRow = memo<{ active: boolean; external?: boolean; item: ContactAgentItem }>(
+  ({ active, external, item }) => {
     const { t } = useTranslation('common');
     const title = item.agent.title || t('untitledAgent', { ns: 'chat' });
+    const label = external ? t('contacts.agent.external') : personName(item.agent.owner);
     return (
       <ConversationRow
         singleLine
         active={active}
-        tag={item.available ? t('contacts.agent.external') : t('contacts.agent.unavailable')}
+        tag={item.available ? label : t('contacts.agent.unavailable')}
         title={title}
         url={AGENT_CONTACT_URL(item.agent.agentId)}
         avatar={

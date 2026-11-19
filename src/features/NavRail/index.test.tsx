@@ -61,6 +61,9 @@ vi.mock('@/store/contact', async (importOriginal) => {
   };
 });
 
+vi.mock('@/business/client/hooks/useActiveWorkspaceId', () => ({
+  useActiveWorkspaceId: () => null,
+}));
 vi.mock('./ContactsPopup', () => ({ default: () => null }));
 vi.mock('./SettingsPopup', () => ({ default: () => null }));
 vi.mock('./useScopeMenuItem', () => ({ useScopeMenuItem: () => null }));
