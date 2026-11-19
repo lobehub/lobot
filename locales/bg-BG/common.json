@@ -209,7 +209,6 @@
   "contacts.external.remove": "Премахване от работното пространство",
   "contacts.external.remove.confirm": "Да премахнете ли {{name}} от това работно пространство? Всеки член спира да е достъпен за тях и чакащите им покани се оттеглят. Историята на чата се запазва.",
   "contacts.externals": "Външни контакти",
-  "contacts.groups": "Групи",
   "contacts.info.bio": "Биография",
   "contacts.info.handle": "Идентификатор",
   "contacts.info.mail": "Имейл",

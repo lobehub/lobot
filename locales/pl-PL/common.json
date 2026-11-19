@@ -209,7 +209,6 @@
   "contacts.external.remove": "Usuń z przestrzeni roboczej",
   "contacts.external.remove.confirm": "Usunąć {{name}} z tej przestrzeni roboczej? Żaden członek nie będzie już dla nich otwarty, a oczekujące zaproszenia zostaną wycofane. Historia czatu zostanie zachowana.",
   "contacts.externals": "Kontakty zewnętrzne",
-  "contacts.groups": "Grupy",
   "contacts.info.bio": "Bio",
   "contacts.info.handle": "Identyfikator",
   "contacts.info.mail": "E-mail",

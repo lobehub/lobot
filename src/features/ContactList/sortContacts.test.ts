@@ -34,7 +34,7 @@ describe('sortContacts', () => {
 });
 
 describe('groupContacts', () => {
-  it('leads with pinned contacts of either kind and leaves them out of their own section', () => {
+  it('leads with pinned agents, leaves them out of the agents, and drops agent groups', () => {
     const group = (id: string, title: string, pinned: boolean) =>
       ({ ...item(id, title, '2026-11-01T00:00:00Z'), pinned, type: 'group' }) as SidebarAgentItem;
     const sections = groupContacts(
@@ -48,8 +48,8 @@ describe('groupContacts', () => {
       'Untitled',
     );
 
-    expect(sections.pinned.map((i) => i.id)).toEqual(['b', 'g']);
-    expect(sections.groups.map((i) => i.id)).toEqual(['h']);
+    expect(sections.pinned.map((i) => i.id)).toEqual(['b']);
     expect(sections.agents.map((i) => i.id)).toEqual(['a']);
+    expect(sections).not.toHaveProperty('groups');
   });
 });

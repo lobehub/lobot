@@ -209,7 +209,6 @@
   "contacts.external.remove": "إزالة من مساحة العمل",
   "contacts.external.remove.confirm": "هل تريد إزالة {{name}} من مساحة العمل هذه؟ سيتوقف كل عضو عن الفتح لهم، وستُسحب دعواتهم المعلقة. سيُحتفظ بسجل الدردشة.",
   "contacts.externals": "جهات الاتصال الخارجية",
-  "contacts.groups": "المجموعات",
   "contacts.info.bio": "نبذة تعريفية",
   "contacts.info.handle": "المعرف",
   "contacts.info.mail": "البريد الإلكتروني",

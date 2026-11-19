@@ -209,7 +209,6 @@
   "contacts.external.remove": "Удалить из рабочего пространства",
   "contacts.external.remove.confirm": "Удалить {{name}} из этого рабочего пространства? Все участники закроют для них доступ, а ожидающие приглашения будут отозваны. История чата сохранится.",
   "contacts.externals": "Внешние контакты",
-  "contacts.groups": "Группы",
   "contacts.info.bio": "О себе",
   "contacts.info.handle": "Никнейм",
   "contacts.info.mail": "Эл. почта",

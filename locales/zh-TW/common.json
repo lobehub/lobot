@@ -210,7 +210,6 @@
   "contacts.external.remove": "從工作區移除",
   "contacts.external.remove.confirm": "將 {{name}} 從此工作區移除？所有成員都會停止對其開放，其待處理的邀請也會被撤回。聊天記錄會保留。",
   "contacts.externals": "外部聯絡人",
-  "contacts.groups": "群組",
   "contacts.info.bio": "簡介",
   "contacts.info.handle": "代號",
   "contacts.info.mail": "電子郵件",

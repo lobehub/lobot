@@ -434,7 +434,6 @@ export default {
   'more': 'More',
   'contacts.editProfile': 'Edit profile',
   'contacts.empty': 'None yet',
-  'contacts.groups': 'Groups',
   'contacts.info.bio': 'Bio',
   'contacts.info.handle': 'Handle',
   'contacts.info.mail': 'Email',
