@@ -88,6 +88,7 @@ export function Composer({
   channel,
   draftKey,
   members,
+  mentionRequest,
   onQueue,
   onSend,
   placeholder,
@@ -101,6 +102,8 @@ export function Composer({
   /** Where unsent input is kept; see {@link useComposerDraft}. */
   draftKey: string;
   members: ChannelPublicMember[];
+  /** Bumped to open the mention picker from outside, as a handoff to another Agent does. */
+  mentionRequest?: number;
   placeholder: string;
   replyTarget?: ChannelReplyTarget | null;
   onCancelReply?: () => void;
@@ -161,6 +164,11 @@ export function Composer({
       { defaultSelection: 'rootEnd' },
     );
   };
+  useEffect(() => {
+    if (mentionRequest && canMention) startMention();
+    // Only a new request opens the picker, not members changing meanwhile.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mentionRequest]);
   const send = async () => {
     const value = String(editor.getDocument('markdown', { format: false }) || '').trim();
     const fileIds = attachments.readyFileIds();

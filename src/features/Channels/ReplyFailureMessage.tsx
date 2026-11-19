@@ -10,7 +10,7 @@ import { ChatItem } from '@/features/Conversation/ChatItem';
 import { channelActions } from '@/store/channel';
 
 import { ChannelStatus } from './ChannelStatus';
-import { isDeviceFailure } from './jobStatus';
+import { isDeviceFailure, isQuotaFailure } from './jobStatus';
 import type { ReplyEntry } from './MessageReceipts';
 import { styles } from './styles';
 
@@ -19,13 +19,17 @@ const AVATAR_SIZE = 36;
 /**
  * A reply that failed, posted in the feed by the Agent that owed it, after what it already said
  * about the request: the reason on one line, with a retry. It leaves once a newer reply settles it.
+ * A spent subscription offers no retry, which would only hit the limit again, but a handoff to
+ * another Agent.
  */
 export function ReplyFailureMessage({
   detail,
   entry: { agentId, avatar, job, name },
+  onHandoff,
 }: {
   detail: ChannelDetail;
   entry: ReplyEntry;
+  onHandoff?: () => void;
 }) {
   const { t } = useTranslation('channel');
   const [retrying, setRetrying] = useState(false);
@@ -34,6 +38,7 @@ export function ReplyFailureMessage({
   const reason = isDeviceFailure(job)
     ? t('receipt.deviceUnreachable')
     : job.errorMessage?.trim() || t('receipt.errorUnavailable');
+  const quotaFailure = isQuotaFailure(job);
   const retry = async () => {
     setRetrying(true);
     setError(undefined);
@@ -84,18 +89,25 @@ export function ReplyFailureMessage({
               <span title={reason} {...stylex.props(styles.replyFailureReason)}>
                 {reason}
               </span>
-              {/* Whoever may stop a reply may retry it. A failed run still being released cannot. */}
-              {job.canStop && !job.writerHeld && (
-                <Button
-                  loading={retrying}
-                  size="small"
-                  style={{ flexShrink: 0 }}
-                  type="link"
-                  onClick={() => void retry()}
-                >
-                  {t('receipt.retry')}
-                </Button>
-              )}
+              {quotaFailure
+                ? onHandoff && (
+                    <Button size="small" style={{ flexShrink: 0 }} type="link" onClick={onHandoff}>
+                      {t('receipt.handoff')}
+                    </Button>
+                  )
+                : /* Whoever may stop a reply may retry it. A failed run still being released cannot. */
+                  job.canStop &&
+                  !job.writerHeld && (
+                    <Button
+                      loading={retrying}
+                      size="small"
+                      style={{ flexShrink: 0 }}
+                      type="link"
+                      onClick={() => void retry()}
+                    >
+                      {t('receipt.retry')}
+                    </Button>
+                  )}
             </div>
             {error !== undefined && <AsyncError error={error} variant="inline" />}
           </>

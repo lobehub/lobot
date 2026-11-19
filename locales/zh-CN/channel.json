@@ -226,6 +226,7 @@
   "receipt.errorReason": "失败原因",
   "receipt.errorUnavailable": "未记录具体原因，请检查 Agent 的模型与设备设置后重新发送。",
   "receipt.failedHint": "再次 @ 它即可重试。",
+  "receipt.handoff": "换一个接力",
   "receipt.openTopic": "在 LobeHub 中查看话题",
   "receipt.retry": "重试",
   "receipt.worktree": "在独立 worktree 中工作 · {{branch}}",

@@ -19,7 +19,13 @@ import { channelActions } from '@/store/channel';
 import { BlockedDevice } from './BlockedDevice';
 import { canManageAgents } from './channelAccess';
 import { ChannelStatus } from './ChannelStatus';
-import { channelJobStatus, channelJobTone, isChannelJobActive, isDeviceFailure } from './jobStatus';
+import {
+  channelJobStatus,
+  channelJobTone,
+  isChannelJobActive,
+  isDeviceFailure,
+  isQuotaFailure,
+} from './jobStatus';
 import { memberAvatar, memberName } from './memberName';
 import { statusStyles, styles } from './styles';
 import { useOpenReplyAgent } from './useOpenReplyAgent';
@@ -114,8 +120,9 @@ export function ReplyDetail({
       setRetrying(false);
     }
   };
-  // Whoever may stop a reply may retry it. A failed run still being released cannot start again.
-  const retryButton = job.canStop && !job.writerHeld && (
+  // Whoever may stop a reply may retry it. A failed run still being released cannot start again,
+  // nor can one whose subscription is spent: it would only hit the same limit.
+  const retryButton = job.canStop && !job.writerHeld && !isQuotaFailure(job) && (
     <Button
       loading={retrying}
       size="small"

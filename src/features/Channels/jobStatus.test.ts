@@ -7,6 +7,7 @@ import {
   directAvatarState,
   hasReplyActivity,
   isDeviceFailure,
+  isQuotaFailure,
   mainTimelineFailures,
   memberCurrentJob,
   memberJobStatus,
@@ -337,6 +338,26 @@ describe('isDeviceFailure', () => {
     expect(isDeviceFailure({ errorType: 'DeviceGatewayNotConfigured', status: 'queued' })).toBe(
       false,
     );
+  });
+});
+
+describe('isQuotaFailure', () => {
+  const limit = "You've hit your 5-hour limit · resets 4pm (Asia/Shanghai)";
+
+  it('recognizes a reply stopped by a spent subscription', () => {
+    expect(isQuotaFailure({ errorMessage: limit, status: 'failed' })).toBe(true);
+  });
+
+  it('leaves transient throttles, other failures and unfinished replies retryable', () => {
+    expect(
+      isQuotaFailure({
+        errorMessage: 'Server is temporarily limiting requests (not your usage limit)',
+        status: 'failed',
+      }),
+    ).toBe(false);
+    expect(isQuotaFailure({ errorMessage: 'Invalid API key', status: 'failed' })).toBe(false);
+    expect(isQuotaFailure({ errorMessage: null, status: 'failed' })).toBe(false);
+    expect(isQuotaFailure({ errorMessage: limit, status: 'running' })).toBe(false);
   });
 });
 

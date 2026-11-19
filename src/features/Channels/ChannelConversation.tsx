@@ -170,6 +170,13 @@ const Timeline = ({
   const activeMembers = detail?.members.filter((member) => member.status === 'active') ?? [];
   const thread = threadId ? detail?.threads.find((entry) => entry.id === threadId) : undefined;
   const selectReply = useEventCallback((message: ChannelPublicMessage) => reply.select(message));
+  const [mentionRequest, setMentionRequest] = useState(0);
+  // A reply that cannot run again passes the request on: answer it and @ someone else.
+  const handOff = useEventCallback((job: ReplyEntry['job']) => {
+    const request = detail?.messages.find((message) => message.id === job.messageId);
+    if (request) reply.select(request);
+    setMentionRequest((count) => count + 1);
+  });
   const channelArchived = channel?.status === 'archived';
   const oneToOne = !!(channel?.agentId || channel?.peerUserId);
   const messages = detail ? visibleChannelMessages(detail.messages, detail.threads) : [];
@@ -365,6 +372,11 @@ const Timeline = ({
                                   detail={detail}
                                   entry={entry}
                                   key={entry.job.id}
+                                  onHandoff={
+                                    channelArchived || thread?.status === 'archived'
+                                      ? undefined
+                                      : () => handOff(entry.job)
+                                  }
                                 />
                               ))}
                         </Fragment>
@@ -385,6 +397,7 @@ const Timeline = ({
                   draftKey={channelDraftKey(channelId, threadId)}
                   key={channelDraftKey(channelId, threadId)}
                   members={activeMembers}
+                  mentionRequest={mentionRequest}
                   replyTarget={reply.target}
                   activity={
                     detail && hasReplyActivity(detail, threadId) ? (

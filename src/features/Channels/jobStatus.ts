@@ -1,3 +1,4 @@
+import { classifyCliQuotaMessage } from '@lobechat/heterogeneous-agents/errors';
 import type { AgentAvatarState } from '@lobehub/ui';
 import type { ChannelDetail, ChannelPublicJob, ChannelReplyJob } from '@lobot/types';
 
@@ -42,6 +43,13 @@ export const channelJobTone = (job: ChannelReplyJob): ChannelStatusTone => {
  */
 export const isDeviceFailure = (job: Pick<ChannelPublicJob, 'errorType' | 'status'>) =>
   job.status === 'failed' && job.errorType === 'DeviceGatewayNotConfigured';
+
+/**
+ * A reply that failed because the Agent's own CLI subscription is spent (`You've hit your 5-hour
+ * limit · resets 4pm`). Running it again only hits the same limit until the window resets.
+ */
+export const isQuotaFailure = (job: Pick<ChannelPublicJob, 'errorMessage' | 'status'>) =>
+  job.status === 'failed' && !!classifyCliQuotaMessage(job.errorMessage ?? undefined);
 
 /** Still able to publish a reply, so the user can stop it. */
 export const isChannelJobActive = (job: ChannelReplyJob) =>
