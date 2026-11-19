@@ -52,15 +52,19 @@ export const markThreadRead = (threadId: string, createdAt: Date | string | numb
 };
 
 /**
- * A thread is unread when its newest reply came after the last one the person saw, and after
- * tracking began. Only the main view's threads carry `lastReply`; without it nothing is known.
+ * A thread is unread when its newest news came after the last reply the person saw, and after
+ * tracking began. An Agent's acknowledgement before its run is not news (`lastNewsAt` skips it);
+ * a server that predates `lastNewsAt` only has the newest reply. Only the main view's threads
+ * carry these; without them nothing is known.
  */
 export const isThreadUnread = (
-  thread: Pick<ChannelPublicThread, 'id' | 'lastReply'>,
+  thread: Pick<ChannelPublicThread, 'id' | 'lastNewsAt' | 'lastReply'>,
   state: ThreadReadsState,
   scope: string,
 ) => {
-  const last = toTime(thread.lastReply?.createdAt);
+  const last = toTime(
+    thread.lastNewsAt === undefined ? thread.lastReply?.createdAt : thread.lastNewsAt,
+  );
   if (last === undefined) return false;
   return last > Math.max(state.since, state.readAt[scopedKey(scope, thread.id)] ?? 0);
 };
@@ -71,7 +75,7 @@ export const isThreadUnread = (
  * @mention there still shows through `useMentionedThreadIds`.
  */
 export const useUnreadThreadIds = (
-  threads: Pick<ChannelPublicThread, 'followerMemberIds' | 'id' | 'lastReply'>[],
+  threads: Pick<ChannelPublicThread, 'followerMemberIds' | 'id' | 'lastNewsAt' | 'lastReply'>[],
   members: Pick<ChannelPublicMember, 'actorType' | 'id' | 'userId'>[] | undefined,
 ): Set<string> => {
   const scope = cacheScope.use();

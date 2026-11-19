@@ -89,6 +89,26 @@ describe('useUnreadThreadIds', () => {
 
     expect([...result.current]).toEqual(['thr_mine']);
   });
+
+  it("does not count an Agent's acknowledgement before its run as unread", () => {
+    const acked = (news: string | null) =>
+      ({
+        followerMemberIds: ['mem_me'],
+        lastNewsAt: news && at(news),
+        lastReply: { createdAt: at('2026-11-18T12:00:00Z') },
+      }) as never;
+    const list = [
+      // Only the acknowledgement since tracking began.
+      { id: 'thr_ack_only', ...acked(null) },
+      { id: 'thr_ack_after_read', ...acked('2026-11-01T00:00:00Z') },
+      // A reply the person has not seen, followed by an acknowledgement, stays unread.
+      { id: 'thr_ack_after_news', ...acked('2026-11-18T11:00:00Z') },
+    ] as never[];
+
+    const { result } = renderHook(() => useUnreadThreadIds(list, members));
+
+    expect([...result.current]).toEqual(['thr_ack_after_news']);
+  });
 });
 
 describe('useHasUnreadThreadMention', () => {
