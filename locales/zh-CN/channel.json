@@ -358,6 +358,7 @@
   "threadBrowser.empty": "没有匹配的子区",
   "threadBrowser.matches_one": "找到 {{count}} 个",
   "threadBrowser.matches_other": "找到 {{count}} 个",
+  "threadBrowser.relatedOnly": "与我有关",
   "threadBrowser.search": "搜索子区",
   "threadBrowser.sort": "排序",
   "threadBrowser.sortActivity": "最新消息",

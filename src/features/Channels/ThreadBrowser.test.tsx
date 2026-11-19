@@ -8,7 +8,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useChannelStore } from '@/store/channel';
 import { userProfileSelectors } from '@/store/user/selectors';
 
-import { browseThreads, ThreadBrowser, ThreadsButton } from './ThreadBrowser';
+import {
+  browseThreads,
+  relatedThreadIds,
+  ThreadBrowser,
+  ThreadsButton,
+  useThreadSortStore,
+} from './ThreadBrowser';
 import { useThreadReadStore } from './threadReads';
 
 vi.mock('./MemberAvatar', () => ({
@@ -25,6 +31,17 @@ vi.mock('react-i18next', () => ({
 }));
 vi.mock('@lobehub/ui', () => ({
   ActionIcon: ({ title }: { title?: string }) => createElement('button', {}, title),
+  Checkbox: ({ checked, children, onChange }: any) =>
+    createElement(
+      'label',
+      {},
+      createElement('input', {
+        checked,
+        type: 'checkbox',
+        onChange: (event: any) => onChange(event.target.checked),
+      }),
+      children,
+    ),
   Icon: () => createElement('i'),
   // Shows the trigger and the panel at once so both can be read.
   Popover: ({ children, content }: { children?: unknown; content?: unknown }) =>
@@ -88,6 +105,8 @@ beforeEach(() => {
   vi.spyOn(userProfileSelectors, 'userId').mockReturnValue('user_me');
   useThreadReadStore.setState({ readAt: {}, since: 0 });
   useChannelStore.setState({ listMap: {} } as never);
+  // The tests below are about listing every thread; the filter has its own.
+  useThreadSortStore.setState({ relatedOnly: false, sort: 'activity' });
 });
 
 describe('browseThreads', () => {
@@ -142,7 +161,74 @@ describe('browseThreads', () => {
   });
 });
 
+describe('relatedThreadIds', () => {
+  const author = (id: string, type = 'user') => ({ avatar: null, id, name: null, type });
+  const related = {
+    members: [
+      { actorType: 'user', id: 'mem_me', userId: 'user_me' },
+      { actorType: 'user', id: 'mem_bob', userId: 'user_bob' },
+    ],
+    messages: [
+      { author: author('user_me'), id: 'msg_mine' },
+      { author: author('user_bob'), id: 'msg_bob' },
+    ],
+    threads: [
+      { followerMemberIds: ['mem_me'], id: 'thr_follow', rootMessageId: 'msg_bob' },
+      { followerMemberIds: [], id: 'thr_root', rootMessageId: 'msg_mine' },
+      {
+        followerMemberIds: [],
+        id: 'thr_reply',
+        lastReply: { author: author('user_me') },
+        rootMessageId: 'msg_bob',
+      },
+      { followerMemberIds: [], id: 'thr_mention', rootMessageId: 'msg_bob' },
+      { followerMemberIds: ['mem_bob'], id: 'thr_other', rootMessageId: 'msg_bob' },
+      {
+        followerMemberIds: [],
+        id: 'thr_agent',
+        // An Agent whose id happens to equal the person's user id is not them.
+        lastReply: { author: author('user_me', 'agent') },
+        rootMessageId: 'msg_bob',
+      },
+    ],
+  } as never;
+
+  it('keeps threads the person follows, started, last replied in or was @mentioned in', () => {
+    const ids = relatedThreadIds(related, 'user_me', [
+      { createdAt: new Date(), threadId: 'thr_mention' },
+    ]);
+
+    expect([...ids].sort()).toEqual(['thr_follow', 'thr_mention', 'thr_reply', 'thr_root']);
+  });
+
+  it('keeps nothing before the person is known', () => {
+    expect(relatedThreadIds(related, undefined).size).toBe(0);
+  });
+});
+
 describe('ThreadBrowser', () => {
+  it('lists only the threads involving the person by default, and all of them once unticked', () => {
+    useThreadSortStore.setState({ relatedOnly: true });
+    render(createElement(ThreadBrowser, { activeId: null, detail, onOpen: vi.fn() }));
+
+    const filter = screen.getByLabelText('threadBrowser.relatedOnly') as HTMLInputElement;
+    expect(filter.checked).toBe(true);
+    expect(screen.getByText('threadBrowser.count:2')).toBeTruthy();
+    expect(screen.queryByText('thread 3')).toBeNull();
+
+    fireEvent.click(filter);
+    expect(useThreadSortStore.getState().relatedOnly).toBe(false);
+    expect(screen.getByText('threadBrowser.count:3')).toBeTruthy();
+    expect(screen.getByText('thread 3')).toBeTruthy();
+  });
+
+  it('keeps the open thread listed even when it does not involve the person', () => {
+    useThreadSortStore.setState({ relatedOnly: true });
+    render(createElement(ThreadBrowser, { activeId: 'thr_3', detail, onOpen: vi.fn() }));
+
+    expect(screen.getByText('thread 3')).toBeTruthy();
+  });
+
   it('shows a count, the last reply, and a red dot on unread threads', () => {
     render(createElement(ThreadBrowser, { activeId: null, detail, onOpen: vi.fn() }));
 

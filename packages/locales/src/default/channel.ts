@@ -196,6 +196,7 @@ export default {
   'threadBrowser.empty': 'No matching threads',
   'threadBrowser.matches_one': '{{count}} match',
   'threadBrowser.matches_other': '{{count}} matches',
+  'threadBrowser.relatedOnly': 'Involving me',
   'threadBrowser.search': 'Search threads',
   'threadBrowser.sort': 'Sort',
   'threadBrowser.sortActivity': 'Latest activity',
