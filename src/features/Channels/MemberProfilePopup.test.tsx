@@ -103,6 +103,23 @@ describe('MemberProfilePopup', () => {
     expect(screen.getByTestId('agent-profile-popup')).toBeTruthy();
   });
 
+  it('opens an Agent card on click instead of hover', () => {
+    render(
+      <MemberProfilePopup
+        member={{ ...person, actorType: 'agent', agentId: 'agt_1' }}
+        trigger={'click'}
+      >
+        <span>Coco</span>
+      </MemberProfilePopup>,
+    );
+
+    fireEvent.pointerEnter(screen.getByText('Coco'));
+    expect(screen.queryByTestId('agent-profile-popup')).toBeNull();
+
+    fireEvent.click(screen.getByText('Coco'));
+    expect(screen.getByTestId('agent-profile-popup').dataset.agentId).toBe('agt_1');
+  });
+
   it('leaves the trigger alone without a member', () => {
     const { container } = render(
       <MemberProfilePopup member={undefined}>

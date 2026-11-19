@@ -27,4 +27,24 @@ describe('channelSidePanelSize', () => {
       width: 500,
     });
   });
+
+  it('applies a settings-only minimum to an older remembered width', () => {
+    expect(channelSidePanelSize(1200, 256, 320)).toMatchObject({ minWidth: 320, width: 320 });
+    expect(channelSidePanelSize(640, 256, 320)).toMatchObject({
+      minWidth: 320,
+      maxWidth: 320,
+      width: 320,
+    });
+    // A panel that does not opt in retains the original minimum.
+    expect(channelSidePanelSize(1200, 256).width).toBe(256);
+  });
+
+  it('keeps settings inside a narrow viewport instead of enforcing the fixed minimum', () => {
+    expect(channelSidePanelSize(280, 256, 320)).toEqual({
+      maxWidth: 280,
+      minWidth: 280,
+      mode: 'float',
+      width: 280,
+    });
+  });
 });

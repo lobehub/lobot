@@ -373,9 +373,8 @@ const MemberRow = ({
           </div>
         </MemberProfilePopup>
       ) : (
-        // Hovering the avatar shows the member's card, like an avatar in the conversation.
         <div {...stylex.props(styles.memberIdentity)}>
-          <MemberProfilePopup member={entry.member} placement={'left'}>
+          <MemberProfilePopup member={entry.member} placement={'left'} trigger={'click'}>
             {avatar}
           </MemberProfilePopup>
           {details}

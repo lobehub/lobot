@@ -1,37 +1,59 @@
 import {
   cloneElement,
   type FocusEvent,
+  type MouseEvent,
   type PointerEvent,
   type ReactElement,
   useState,
 } from 'react';
 
 type TriggerProps = {
+  onClick?: (event: MouseEvent<HTMLElement>) => void;
   onFocus?: (event: FocusEvent<HTMLElement>) => void;
   onPointerEnter?: (event: PointerEvent<HTMLElement>) => void;
 };
 
+export interface DeferredCardControl {
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
+}
+
 /**
- * Mounts a hover card only once its trigger is first pointed at or focused. A feed shows an avatar
- * and mention chips on every message, and each profile card brings its own popover, permission
- * checks and fetch hooks; until someone reaches for one, the bare trigger is all that renders.
+ * Mounts a profile card only once its trigger is reached. A feed shows an avatar on every
+ * message, and each card brings its own popover and fetch hooks; until someone reaches for one,
+ * the bare trigger is all that renders.
  *
- * One-way: once mounted the card stays, so it opens on the next pointer move and later hovers
- * cost nothing extra.
+ * Hover mounts on the first pointer or focus, and the card opens on the next move. Click mounts
+ * and opens on the first click, then stays mounted so later clicks toggle it.
  */
 export const DeferredHoverCard = ({
   children,
+  openOn = 'hover',
   render,
 }: {
-  /** The trigger: a DOM element, so it can take the pointer and focus handlers. */
+  /** The trigger: a DOM element, so it can take the pointer, focus, or click handlers. */
   children: ReactElement;
-  render: (trigger: ReactElement) => ReactElement;
+  /** `click` opens the card on the first click instead of on hover. */
+  openOn?: 'click' | 'hover';
+  render: (trigger: ReactElement, control?: DeferredCardControl) => ReactElement;
 }) => {
   const [mounted, setMounted] = useState(false);
-  if (mounted) return render(children);
+  const [open, setOpen] = useState(false);
+  if (mounted) {
+    return render(children, openOn === 'click' ? { onOpenChange: setOpen, open } : undefined);
+  }
 
   const trigger = children as ReactElement<TriggerProps>;
-  const { onFocus, onPointerEnter } = trigger.props;
+  const { onClick, onFocus, onPointerEnter } = trigger.props;
+  if (openOn === 'click') {
+    return cloneElement(trigger, {
+      onClick: (event: MouseEvent<HTMLElement>) => {
+        onClick?.(event);
+        setMounted(true);
+        setOpen(true);
+      },
+    });
+  }
   return cloneElement(trigger, {
     onFocus: (event: FocusEvent<HTMLElement>) => {
       setMounted(true);

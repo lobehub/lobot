@@ -15,6 +15,7 @@ import { SettingsTabs } from '@/store/global/initialState';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
+import { resetSettingsPopupViewport } from './settingsPopupScroll';
 import { isPersonalSettingsPath, useSettingsPopupStore } from './settingsPopupStore';
 
 const ProfileEntry = memo<{ active: boolean; onSelect: () => void }>(({ active, onSelect }) => {
@@ -70,7 +71,7 @@ const SettingsPopup = memo(() => {
   const flushPending = useSettingsPopupStore((s) => s.flushPending);
   const { pathname } = useActiveLocation();
   const pathWhenOpened = useRef<string | null>(null);
-  const contentPaneRef = useRef<HTMLDivElement>(null);
+  const contentViewportRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     if (pending && !isPersonalSettingsPath(pathname)) flushPending();
@@ -91,14 +92,7 @@ const SettingsPopup = memo(() => {
   // Tab / sub-page changes should start at the top, but a search hash must
   // still win — resetting here would scroll the anchor back out of view.
   useLayoutEffect(() => {
-    if (!open || hash) return;
-    const root = contentPaneRef.current;
-    if (!root) return;
-    const viewport =
-      root.querySelector<HTMLElement>('[data-radix-scroll-area-viewport]') ??
-      root.querySelector<HTMLElement>('[data-scroll-area-viewport]') ??
-      root;
-    viewport.scrollTop = 0;
+    resetSettingsPopupViewport(contentViewportRef.current, { hash, open });
   }, [activeTab, hash, open, subPage]);
 
   const Content = componentMap[activeTab as keyof typeof componentMap];
@@ -161,11 +155,14 @@ const SettingsPopup = memo(() => {
             ))}
           </Flexbox>
         </ScrollArea>
-        <div ref={contentPaneRef} style={{ flex: 1, height: '100%', minWidth: 0 }}>
-          <ScrollArea disableContentFit scrollFade="vertical" style={{ height: '100%' }}>
-            <div style={subPage ? undefined : { padding: 24 }}>{body}</div>
-          </ScrollArea>
-        </div>
+        <ScrollArea
+          disableContentFit
+          scrollFade="vertical"
+          style={{ flex: 1, height: '100%', minWidth: 0 }}
+          viewportProps={{ ref: contentViewportRef }}
+        >
+          <div style={subPage ? undefined : { padding: 24 }}>{body}</div>
+        </ScrollArea>
       </Flexbox>
     </Modal>
   );

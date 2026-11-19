@@ -1,7 +1,6 @@
-import { Flexbox, Text } from '@lobehub/ui';
+import { Flexbox } from '@lobehub/ui';
 import type { ChannelListItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
-import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ChannelSidePanel } from '../MemberPanel';
@@ -11,16 +10,7 @@ import { ProjectSection } from './ProjectSection';
 import { ReplySection } from './ReplySection';
 import { settingsStyles } from './styles';
 
-function Group({ children, title }: { children: ReactNode; title: string }) {
-  return (
-    <Flexbox gap={8}>
-      <Text fontSize={12} type="secondary" weight={500}>
-        {title}
-      </Text>
-      {children}
-    </Flexbox>
-  );
-}
+const CHANNEL_SETTINGS_MIN_WIDTH = 320;
 
 /**
  * Everything an admin manages about a group Channel, beside its feed like the roster, laid out
@@ -42,31 +32,23 @@ export function ChannelSettingsPanel({
 
   return (
     <ChannelSidePanel
+      centeredTitle
       availableWidth={availableWidth}
       closeLabel={t('settings.close')}
       id={id}
       label={t('settings.title')}
+      minWidth={CHANNEL_SETTINGS_MIN_WIDTH}
       title={t('settings.title')}
       onClose={onClose}
     >
       <div {...stylex.props(settingsStyles.scroll)}>
         <Flexbox gap={24} {...stylex.props(settingsStyles.content)}>
-          <Group title={t('settings.tab.general')}>
-            <GeneralSection channel={channel} />
-          </Group>
-          {channel.projectId && (
-            <Group title={t('settings.tab.project')}>
-              <ProjectSection projectId={channel.projectId} />
-            </Group>
-          )}
+          <GeneralSection channel={channel} key={channel.id} />
+          {channel.projectId && <ProjectSection projectId={channel.projectId} />}
           {channel.status !== 'archived' && (
-            <Group title={t('settings.tab.reply')}>
-              <ReplySection channelId={channel.id} />
-            </Group>
+            <ReplySection channelId={channel.id} key={channel.id} />
           )}
-          <Group title={t('settings.tab.advanced')}>
-            <DangerSection channel={channel} />
-          </Group>
+          <DangerSection channel={channel} />
         </Flexbox>
       </div>
     </ChannelSidePanel>

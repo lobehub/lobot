@@ -132,7 +132,7 @@ export function AgentProfilePanel({
           {roleLine && <span {...stylex.props(styles.role)}>{roleLine}</span>}
           {presence && <AgentPresenceLabel presence={presence} />}
         </Flexbox>
-        <Flexbox gap={16} {...stylex.props(styles.detail)}>
+        <Flexbox gap={20} {...stylex.props(styles.detail)}>
           {owner && (
             <Flexbox gap={6}>
               <span {...stylex.props(styles.label)}>{t('profile.owner')}</span>

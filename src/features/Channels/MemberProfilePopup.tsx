@@ -7,24 +7,17 @@ import { useTranslation } from 'react-i18next';
 
 import PersonAvatar from '@/components/UserAvatar';
 import AgentProfilePopup from '@/features/AgentProfileCard/AgentProfilePopup';
+import { cardStyles } from '@/features/AgentViewAll/AgentCard';
 import { cardPopoverProps } from '@/styles/cardPopover';
 
-import { DeferredHoverCard } from './DeferredHoverCard';
+import { type DeferredCardControl, DeferredHoverCard } from './DeferredHoverCard';
 import { MemberAvatar } from './MemberAvatar';
 import { memberAvatar, memberName } from './memberName';
 import { PersonAction } from './PersonAction';
 
-// Same shape as the Agent profile card (`AgentProfileCard`), so hovering a person or an Agent
-// shows one kind of card: a blurred banner of the avatar, the avatar over its edge, then text.
+// Same shape as the Agent profile card (`AgentProfileCard`): a banner, a round avatar with a
+// ring over its edge, then text. A person has no banner of their own, so theirs blurs the avatar.
 const styles = stylex.create({
-  avatar: {
-    display: 'inline-flex',
-    alignSelf: 'flex-start',
-    borderWidth: 2,
-    borderStyle: 'solid',
-    borderColor: cssVar.colorBgElevated,
-    borderRadius: '50%',
-  },
   banner: {
     position: 'relative',
     overflow: 'hidden',
@@ -62,7 +55,7 @@ export const PersonCardFrame = ({
   image,
   name,
 }: {
-  /** The avatar drawn over the banner's edge, 48px. */
+  /** The avatar drawn over the banner's edge. Pass size 42; the ring makes the disc 48px. */
   avatar: ReactNode;
   children?: ReactNode;
   /** The avatar image the banner blurs. */
@@ -77,7 +70,12 @@ export const PersonCardFrame = ({
       </span>
     </div>
     <Flexbox gap={8} {...stylex.props(styles.body)}>
-      <span {...stylex.props(styles.avatar)}>{avatar}</span>
+      <span
+        className={cardStyles.avatarRing}
+        style={{ alignSelf: 'flex-start', boxSizing: 'border-box', height: 48, width: 48 }}
+      >
+        {avatar}
+      </span>
       <Flexbox gap={2} style={{ minWidth: 0 }}>
         <Text ellipsis {...stylex.props(styles.name)}>
           {name}
@@ -107,7 +105,7 @@ export const PersonProfileCard = ({ member }: { member: ChannelPublicMember }) =
 
   return (
     <PersonCardFrame
-      avatar={<MemberAvatar member={member} size={48} />}
+      avatar={<MemberAvatar member={member} size={42} />}
       image={memberAvatar(member)}
       name={name}
     >
@@ -128,8 +126,8 @@ export const PersonProfileCard = ({ member }: { member: ChannelPublicMember }) =
 
 /**
  * A Channel member's card: an Agent's profile card, or a person's card with their handle and when
- * they joined. A feed opens it on hover, deferred until the trigger is reached. A roster opens it
- * on click and can hold it open while that row is selected.
+ * they joined. An avatar opens it on click. A mention opens it on hover. A roster click can hold
+ * it open while that row is selected.
  */
 export const MemberProfilePopup = ({
   children,
@@ -151,19 +149,24 @@ export const MemberProfilePopup = ({
   open?: boolean;
   /** Where the card opens; the member panel sits at the right edge, so it opens to the left. */
   placement?: 'left' | 'top';
-  /** Hover in the timeline. Click in the roster, where the row itself is the selection. */
+  /** Hover for a mention. Click for an avatar, and for the roster, where the row is the selection. */
   trigger?: 'click' | 'hover';
 }) => {
   const { t } = useTranslation('channel');
   if (!member) return children;
-  const popup = (triggerNode: ReactElement) =>
-    member.agentId ? (
+  const popup = (triggerNode: ReactElement, control?: DeferredCardControl) => {
+    const cardOpen = control?.open ?? open;
+    const cardChange = (next: boolean) => {
+      control?.onOpenChange(next);
+      onOpenChange?.(next);
+    };
+    return member.agentId ? (
       <AgentProfilePopup
         agentId={member.agentId}
         environment={member.environment}
         extra={extra}
         highlightTrigger={highlightTrigger}
-        open={open}
+        open={cardOpen}
         placement={placement}
         trigger={trigger}
         agent={{
@@ -171,7 +174,7 @@ export const MemberProfilePopup = ({
           description: member.description,
           title: memberName(member, t('deletedMember')),
         }}
-        onOpenChange={onOpenChange}
+        onOpenChange={cardChange}
       >
         {triggerNode}
       </AgentProfilePopup>
@@ -180,16 +183,24 @@ export const MemberProfilePopup = ({
         {...cardPopoverProps}
         content={<PersonProfileCard member={member} />}
         nativeButton={false}
-        open={open}
+        open={cardOpen}
         placement={placement}
         trigger={trigger}
-        onOpenChange={onOpenChange}
+        onOpenChange={cardChange}
       >
         {triggerNode}
       </Popover>
     );
-  // A roster click has to land on a popup that is already mounted. A feed defers each card until
-  // someone reaches its trigger, so a long timeline does not mount one per message.
+  };
+  // A roster click has to land on a popup that is already mounted. An avatar click mounts the
+  // card on the first press and opens it then. A mention waits for hover.
+  if (trigger === 'click' && open === undefined) {
+    return (
+      <DeferredHoverCard openOn={'click'} render={popup}>
+        {children}
+      </DeferredHoverCard>
+    );
+  }
   if (trigger === 'click') return popup(children);
   return <DeferredHoverCard render={popup}>{children}</DeferredHoverCard>;
 };

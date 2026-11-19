@@ -11,8 +11,16 @@ import {
 } from '@lobehub/ui';
 import { SkillsIcon } from '@lobehub/ui/icons';
 import { agentDisplayName, type ChannelMemberEnvironmentPreview } from '@lobot/types';
-import { BookOpen, FileText, Folder, Laptop, Settings, SquareTerminal } from 'lucide-react';
-import { memo, type PropsWithChildren, type ReactNode, useState } from 'react';
+import {
+  BookOpen,
+  FileText,
+  Folder,
+  Laptop,
+  type LucideIcon,
+  Settings,
+  SquareTerminal,
+} from 'lucide-react';
+import { Fragment, memo, type PropsWithChildren, type ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ModelIcon } from '@/components/LobeIcons';
@@ -42,14 +50,31 @@ const shortDirectory = (path: string) => {
 };
 
 const styles = createStaticStyles(({ css, cssVar }) => ({
-  environment: css`
-    padding-block-end: 12px;
-    padding-inline: 16px;
-  `,
   footer: css`
-    padding-block: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    padding-block: 12px 16px;
     padding-inline: 16px;
     border-block-start: 1px solid ${cssVar.colorBorderSecondary};
+
+    color: ${cssVar.colorTextSecondary};
+  `,
+  // Runtime, device and directory share one grid so the icons, the labels and the
+  // values each sit on a single column, with the same gap between every row.
+  meta: css`
+    display: grid;
+    grid-template-columns: 16px max-content minmax(0, 1fr);
+    gap: 8px;
+    align-items: center;
+  `,
+  metaIcon: css`
+    display: flex;
+    justify-content: center;
+  `,
+  metaValue: css`
+    min-width: 0;
   `,
   statItem: css`
     color: ${cssVar.colorTextSecondary};
@@ -126,8 +151,8 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
     const channelsEnabled = useChannelsEnabled();
     contactActions.useFetchList(open && channelsEnabled);
     // An Agent in my Contacts, mine or one shared with me, opens its contact card.
-    const isContact = useContactStore((s) => !!contactSelectors.agentById(agentId)(s));
-    const contactUrl = listEntry || isContact ? CONTACT_URL(agentId) : undefined;
+    const contactAgent = useContactStore(contactSelectors.agentById(agentId));
+    const contactUrl = listEntry || contactAgent ? CONTACT_URL(agentId) : undefined;
 
     const { detail: fetched, isLoading } = useAgentProfileDetail(agentId, open && !!canConfigure);
 
@@ -139,7 +164,13 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
 
     const merged: Partial<AgentPreview> = {
       avatar: fetched?.avatar ?? agent?.avatar,
-      backgroundColor: fetched?.backgroundColor ?? agent?.backgroundColor,
+      // The contacts wall already has this banner. A channel card often arrives without it,
+      // so fall through to the agent's own list entry and then to a shared contact.
+      backgroundColor:
+        fetched?.backgroundColor ??
+        agent?.backgroundColor ??
+        listEntry?.backgroundColor ??
+        contactAgent?.agent.backgroundColor,
       description: fetched?.description ?? agent?.description,
       model: fetched?.model ?? agent?.model,
       name: fetched?.name ?? agent?.name,
@@ -169,90 +200,106 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
 
     const footerLoading = canConfigure && !groupId && isLoading && !fetched;
 
+    const deviceName = environment?.deviceName;
+    const directory = environment?.workingDirectory;
     // An external agent picks its own model inside its CLI, so the LobeHub model
     // on its config is not what runs it: name the runtime instead, and never
     // offer a model switch that would not take effect.
-    const modelSection =
-      footerLoading && !isExternal ? (
-        <Flexbox horizontal align={'center'} className={styles.footer} gap={14}>
-          <Skeleton height={16} width={90} />
-          <Skeleton height={16} width={60} />
-        </Flexbox>
-      ) : isExternal || (canConfigure && (merged.model || hasStats)) ? (
-        <Flexbox horizontal align={'center'} className={styles.footer} gap={14} wrap={'wrap'}>
-          {isExternal ? (
-            <Flexbox horizontal align={'center'} className={styles.statItem} gap={6}>
-              <Icon icon={SquareTerminal} size={14} />
-              <Text fontSize={12} type={'secondary'}>
-                {t('agentProfile.runtime', { name: runtimeLabel })}
-              </Text>
+    const metaRow = (
+      key: string,
+      icon: LucideIcon,
+      label: string,
+      value: string,
+      title?: string,
+    ) => (
+      <Fragment key={key}>
+        <span className={styles.metaIcon}>
+          <Icon icon={icon} size={14} />
+        </span>
+        <Text fontSize={12} type={'secondary'}>
+          {label}
+        </Text>
+        <Text
+          ellipsis
+          className={styles.metaValue}
+          fontSize={12}
+          title={title ?? value}
+          type={'secondary'}
+        >
+          {value}
+        </Text>
+      </Fragment>
+    );
+    const metaRows = [
+      isExternal && runtimeLabel
+        ? metaRow('runtime', SquareTerminal, t('agentProfile.runtimeLabel'), runtimeLabel)
+        : null,
+      deviceName ? metaRow('device', Laptop, t('agentProfile.deviceLabel'), deviceName) : null,
+      directory
+        ? metaRow(
+            'directory',
+            Folder,
+            t('agentProfile.directoryLabel'),
+            shortDirectory(directory),
+            directory,
+          )
+        : null,
+    ].filter(Boolean);
+    const showModel = !isExternal && canConfigure && !!merged.model;
+    const showChips = showModel || (canConfigure && hasStats);
+    const showSkeletonChips = footerLoading && !isExternal;
+    const facts =
+      showSkeletonChips || showChips || metaRows.length > 0 ? (
+        <div className={styles.footer}>
+          {showSkeletonChips ? (
+            <Flexbox horizontal align={'center'} gap={8}>
+              <Skeleton height={16} width={90} />
+              <Skeleton height={16} width={60} />
             </Flexbox>
           ) : (
-            merged.model && (
-              <Flexbox horizontal align={'center'} className={styles.statItem} gap={6}>
-                <ModelIcon model={merged.model} size={14} />
-                <Text fontSize={12} type={'secondary'}>
-                  {merged.model}
-                </Text>
+            showChips && (
+              <Flexbox horizontal align={'center'} gap={8} wrap={'wrap'}>
+                {showModel && (
+                  <Flexbox horizontal align={'center'} className={styles.statItem} gap={8}>
+                    <ModelIcon model={merged.model ?? undefined} size={14} />
+                    <Text fontSize={12} type={'secondary'}>
+                      {merged.model}
+                    </Text>
+                  </Flexbox>
+                )}
+                {pluginCount > 0 && (
+                  <Flexbox horizontal align={'center'} className={styles.statItem} gap={8}>
+                    <Icon icon={SkillsIcon} size={14} />
+                    <Text fontSize={12} type={'secondary'}>
+                      {t('agentProfile.skills', { count: pluginCount })}
+                    </Text>
+                  </Flexbox>
+                )}
+                {knowledgeCount > 0 && (
+                  <Flexbox horizontal align={'center'} className={styles.statItem} gap={8}>
+                    <Icon icon={BookOpen} size={14} />
+                    <Text fontSize={12} type={'secondary'}>
+                      {t('agentProfile.knowledgeBases', { count: knowledgeCount })}
+                    </Text>
+                  </Flexbox>
+                )}
+                {fileCount > 0 && (
+                  <Flexbox horizontal align={'center'} className={styles.statItem} gap={8}>
+                    <Icon icon={FileText} size={14} />
+                    <Text fontSize={12} type={'secondary'}>
+                      {t('agentProfile.files', { count: fileCount })}
+                    </Text>
+                  </Flexbox>
+                )}
               </Flexbox>
             )
           )}
-          {canConfigure && pluginCount > 0 && (
-            <Flexbox horizontal align={'center'} className={styles.statItem} gap={4}>
-              <Icon icon={SkillsIcon} size={13} />
-              <Text fontSize={12} type={'secondary'}>
-                {t('agentProfile.skills', { count: pluginCount })}
-              </Text>
-            </Flexbox>
+          {metaRows.length > 0 && (
+            <div className={styles.meta} data-testid={'agent-meta'}>
+              {metaRows}
+            </div>
           )}
-          {canConfigure && knowledgeCount > 0 && (
-            <Flexbox horizontal align={'center'} className={styles.statItem} gap={4}>
-              <Icon icon={BookOpen} size={13} />
-              <Text fontSize={12} type={'secondary'}>
-                {t('agentProfile.knowledgeBases', { count: knowledgeCount })}
-              </Text>
-            </Flexbox>
-          )}
-          {canConfigure && fileCount > 0 && (
-            <Flexbox horizontal align={'center'} className={styles.statItem} gap={4}>
-              <Icon icon={FileText} size={13} />
-              <Text fontSize={12} type={'secondary'}>
-                {t('agentProfile.files', { count: fileCount })}
-              </Text>
-            </Flexbox>
-          )}
-        </Flexbox>
-      ) : null;
-
-    const deviceName = environment?.deviceName;
-    const directory = environment?.workingDirectory;
-    // Sits under the runtime line when there is one, else opens its own footer.
-    const environmentSection =
-      deviceName || directory ? (
-        <Flexbox className={modelSection ? styles.environment : styles.footer} gap={6}>
-          {deviceName && (
-            <Flexbox horizontal align={'center'} className={styles.statItem} gap={6}>
-              <Icon icon={Laptop} size={14} />
-              <Text ellipsis fontSize={12} type={'secondary'}>
-                {t('agentProfile.channelDevice', { name: deviceName })}
-              </Text>
-            </Flexbox>
-          )}
-          {directory && (
-            <Flexbox
-              horizontal
-              align={'center'}
-              className={styles.statItem}
-              gap={6}
-              title={directory}
-            >
-              <Icon icon={Folder} size={14} />
-              <Text ellipsis fontSize={12} type={'secondary'}>
-                {t('agentProfile.channelDirectory', { path: shortDirectory(directory) })}
-              </Text>
-            </Flexbox>
-          )}
-        </Flexbox>
+        </div>
       ) : null;
 
     const content = showSkeleton ? (
@@ -281,8 +328,7 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
         }
         onHeaderClick={contactUrl || canConfigure ? handleHeaderClick : undefined}
       >
-        {modelSection}
-        {environmentSection}
+        {facts}
         {extra}
         {/* Only an Agent the server opens a conversation with: one's own, or a contact. */}
         {contactUrl && channelsEnabled && (

@@ -13,7 +13,7 @@ import { MIN_IMAGE_SIZE } from './style';
 
 const styles = stylex.create({
   deleteButton: {
-    color: '#fff',
+    color: cssVar.colorTextLightSolid,
     backgroundColor: { 'default': cssVar.colorBgMask, ':hover': cssVar.colorError },
     backgroundImage: { 'default': 'none', ':hover': 'none' },
   },
@@ -36,6 +36,11 @@ interface ImageItemProps {
   onRemove?: () => void;
   preview?: ImageProps['preview'];
   ratio?: number;
+  /**
+   * Multi-image tiles share one square. Cover it, otherwise a wide image sits
+   * on the gray fill and leaves a band underneath.
+   */
+  square?: boolean;
   style?: CSSProperties;
   url?: string;
   width?: number;
@@ -53,13 +58,15 @@ const ImageItem = memo<ImageItemProps>(
     alwaysShowClose,
     preview,
     ratio,
+    square,
     width,
     height,
   }) => {
     const IMAGE_SIZE = editable ? MIN_IMAGE_SIZE : '100%';
     const { isSafari } = usePlatform();
-    const aspectRatio =
-      ratio && ratio > 0
+    const aspectRatio = square
+      ? 1
+      : ratio && ratio > 0
         ? ratio
         : width && width > 0 && height && height > 0
           ? width / height
@@ -69,8 +76,9 @@ const ImageItem = memo<ImageItemProps>(
       <Image
         alt={alt || ''}
         alwaysShowActions={alwaysShowClose}
-        height={isSafari ? 'auto' : '100%'}
+        height={square || !isSafari ? '100%' : 'auto'}
         isLoading={loading}
+        objectFit={square ? 'cover' : undefined}
         preview={preview}
         size={IMAGE_SIZE}
         src={url}
@@ -100,6 +108,16 @@ const ImageItem = memo<ImageItemProps>(
           width: '100%',
           ...style,
         }}
+        styles={
+          square
+            ? {
+                // The bitmap is taken out of flow so the square comes from aspect-ratio,
+                // and cover fills that square instead of leaving the fill color below.
+                image: { height: '100%', objectFit: 'cover', width: '100%' },
+                wrapper: { height: '100%', inset: 0, position: 'absolute', width: '100%' },
+              }
+            : undefined
+        }
       />
     );
   },

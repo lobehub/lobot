@@ -40,17 +40,21 @@ const GalleyGrid = memo<GalleyGridProps>(({ items, renderItem: Render }) => {
     };
   }, [mobile, items]);
 
+  // One image keeps its own ratio. Several images share square tiles, so each
+  // bitmap covers the tile instead of sitting on the gray fill.
+  const square = items.length > 1;
+
   return (
     <Flexbox gap={gap}>
       <Grid col={firstRow.length} gap={gap} max={max}>
         {firstRow.map((i, index) => (
-          <Render {...i} index={index} key={index} />
+          <Render {...i} index={index} key={index} square={square} />
         ))}
       </Grid>
       {lastRow.length > 0 && (
         <Grid col={firstRow.length} gap={gap} max={max}>
           {lastRow.map((i, index) => (
-            <Render {...i} index={index} key={index} />
+            <Render {...i} index={index} key={index} square={square} />
           ))}
         </Grid>
       )}

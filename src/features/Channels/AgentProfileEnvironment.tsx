@@ -170,9 +170,9 @@ export function AgentProfileEnvironment({
   const { t } = useTranslation('channel');
   const editLabel = t('environment.editNamed', { name: memberName(member, t('deletedMember')) });
   return (
-    <Flexbox gap={12}>
-      <Flexbox horizontal align="center" justify="space-between" style={{ minHeight: 22 }}>
-        <span {...stylex.props(styles.label)}>{t('environment.title')}</span>
+    <Flexbox gap={12} style={{ minWidth: 0 }}>
+      <Flexbox horizontal align="center" gap={12} justify="space-between">
+        <Text weight={500}>{t('environment.title')}</Text>
         {manageable && (
           <ActionIcon
             aria-label={editLabel}
@@ -183,11 +183,13 @@ export function AgentProfileEnvironment({
           />
         )}
       </Flexbox>
-      {manageable ? (
-        <ChannelEnvironmentRows agentId={agentId} channelId={channelId} memberId={member.id} />
-      ) : (
-        <EnvironmentRows agentId={agentId} />
-      )}
+      <Flexbox gap={12} style={{ minWidth: 0, overflow: 'visible', paddingBlock: 8 }}>
+        {manageable ? (
+          <ChannelEnvironmentRows agentId={agentId} channelId={channelId} memberId={member.id} />
+        ) : (
+          <EnvironmentRows agentId={agentId} />
+        )}
+      </Flexbox>
     </Flexbox>
   );
 }

@@ -6,7 +6,7 @@ import * as stylex from '@stylexjs/stylex';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { Archive, ChevronRight } from 'lucide-react';
-import type { KeyboardEvent, Ref } from 'react';
+import { type KeyboardEvent, type Ref, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
@@ -27,13 +27,15 @@ dayjs.extend(relativeTime);
 const oneLine = (text: string) => text.replaceAll(/\s+/g, ' ').trim();
 
 const styles = stylex.create({
-  /** Sits under the message; the connector measures this box, Surface fills it. */
+  /** Sits under the message; the connector measures this box, Surface fills it.
+   * The list already gaps 8 above the card, so the frame only adds the matching 8 below.
+   */
   frame: {
     alignSelf: 'flex-start',
     width: '100%',
     maxWidth: 520,
-    marginBlockStart: 8,
-    marginBlockEnd: 0,
+    marginBlockStart: 0,
+    marginBlockEnd: 8,
   },
   entry: {
     display: 'flex',
@@ -128,6 +130,14 @@ const styles = stylex.create({
   time: { flexShrink: 0, whiteSpace: 'nowrap', opacity: 1 },
 });
 
+const assignRef = (ref: Ref<HTMLElement> | undefined, node: HTMLDivElement | null) => {
+  if (typeof ref === 'function') {
+    ref(node);
+    return;
+  }
+  if (ref) ref.current = node;
+};
+
 /**
  * A message's thread under it: a filled card with its title and reply count, then the latest
  * reply with who wrote it and when, or the Agent working in it right now.
@@ -164,17 +174,16 @@ export const ThreadPreviewCard = ({
     event.preventDefault();
     onOpen?.();
   };
+  // A fresh inline ref would detach and reattach on every poll, and a resize in
+  // that gap reads a missing card and drops the connector.
+  const setFrameRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      assignRef(anchorRef, node);
+    },
+    [anchorRef],
+  );
   return (
-    <div
-      ref={(node) => {
-        if (typeof anchorRef === 'function') {
-          anchorRef(node);
-          return;
-        }
-        if (anchorRef) anchorRef.current = node;
-      }}
-      {...stylex.props(styles.frame)}
-    >
+    <div ref={setFrameRef} {...stylex.props(styles.frame)}>
       <Surface
         className={stylex.props(styles.entry).className}
         padded={false}

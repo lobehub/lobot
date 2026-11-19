@@ -1,6 +1,6 @@
 'use client';
 
-import { HotkeyInput, Spin, toast } from '@lobehub/ui';
+import { Spin, toast } from '@lobehub/ui';
 import { type FormGroupItem, useForm } from '@lobehub/ui/form';
 import isEqual from 'fast-deep-equal';
 import { memo, useMemo, useState } from 'react';
@@ -16,6 +16,7 @@ import { desktopHotkeysSelectors } from '@/store/electron/selectors';
 import { type DesktopHotkeyConfig, type DesktopHotkeyItem } from '@/types/hotkey';
 
 import { acceleratorToHotkey } from './appMenuHotkeys';
+import SettingsHotkeyInput from './SettingsHotkeyInput';
 
 const HotkeySetting = memo(() => {
   const { t } = useTranslation(['setting', 'hotkey']);
@@ -65,7 +66,7 @@ const HotkeySetting = memo(() => {
 
   const mapHotkeyItem = (item: DesktopHotkeyItem) => ({
     children: (
-      <HotkeyInput
+      <SettingsHotkeyInput
         allowClear={!item.nonEditable}
         disabled={item.nonEditable}
         placeholder={t('hotkey.record')}

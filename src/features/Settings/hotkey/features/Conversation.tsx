@@ -1,7 +1,6 @@
 'use client';
 
 import { HotkeyGroupEnum } from '@lobechat/const/hotkeys';
-import { HotkeyInput } from '@lobehub/ui';
 import { type FormGroupItem, useForm } from '@lobehub/ui/form';
 import isEqual from 'fast-deep-equal';
 import { memo } from 'react';
@@ -18,6 +17,8 @@ import { useUserStore } from '@/store/user';
 import { settingsSelectors } from '@/store/user/selectors';
 import { type HotkeyItem } from '@/types/hotkey';
 import { type UserHotkeyConfig } from '@/types/user/settings';
+
+import SettingsHotkeyInput from './SettingsHotkeyInput';
 
 const HotkeySetting = memo(() => {
   const { t } = useTranslation(['setting', 'hotkey']);
@@ -49,7 +50,7 @@ const HotkeySetting = memo(() => {
 
     return {
       children: (
-        <HotkeyInput
+        <SettingsHotkeyInput
           allowClear={!item.nonEditable}
           disabled={item.nonEditable}
           hotkeyConflicts={hotkeyConflicts}

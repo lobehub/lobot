@@ -31,13 +31,10 @@ const schedulesQuery = (agentId: string): TaskListQuery => ({
 });
 
 const styles = stylex.create({
-  card: {
-    overflow: 'hidden',
-    borderRadius: '10px',
-    backgroundColor: cssVar.colorFillQuaternary,
-  },
   // On a contact card the list is one more box under the info list, with its title inside.
   contactCard: {
+    overflow: 'hidden',
+    backgroundColor: cssVar.colorFillQuaternary,
     marginBlockStart: '8px',
     borderRadius: '12px',
     width: '100%',
@@ -63,8 +60,9 @@ const styles = stylex.create({
     color: cssVar.colorTextSecondary,
   },
   row: {
+    overflow: 'visible',
+    minWidth: 0,
     paddingBlock: '8px',
-    paddingInline: '12px',
   },
   time: {
     overflow: 'hidden',
@@ -180,16 +178,16 @@ export function AgentSchedules({
 
   if (variant === 'contact')
     return (
-      <Flexbox {...stylex.props(styles.card, styles.contactCard)}>
+      <Flexbox {...stylex.props(styles.contactCard)}>
         <div {...stylex.props(styles.contactLabel)}>{label}</div>
         {list}
       </Flexbox>
     );
 
   return (
-    <Flexbox gap={6}>
-      {label}
-      <Flexbox {...stylex.props(styles.card)}>{list}</Flexbox>
+    <Flexbox gap={8} style={{ minWidth: 0 }}>
+      <Text weight={500}>{t('profile.schedules')}</Text>
+      <div style={{ minWidth: 0, overflow: 'visible' }}>{list}</div>
     </Flexbox>
   );
 }

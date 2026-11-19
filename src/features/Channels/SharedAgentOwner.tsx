@@ -68,7 +68,7 @@ export const SharedAgentOwnerCard = ({ owner }: { owner: ContactUserProfile }) =
 
   return (
     <PersonCardFrame
-      avatar={<UserAvatar avatar={owner.avatar} name={name} shape={'circle'} size={48} />}
+      avatar={<UserAvatar avatar={owner.avatar} name={name} shape={'circle'} size={42} />}
       image={owner.avatar}
       name={name}
     >

@@ -91,6 +91,8 @@ export const EnvironmentFields = ({
         aria-describedby={draft.issue ? `channel-agent-${draft.agentId}-issue` : undefined}
         aria-label={t('environment.deviceLabel', { name })}
         placeholder={t('environment.followAgent')}
+        popupMatchSelectWidth={false}
+        style={{ minWidth: 0, width: '100%' }}
         value={draft.deviceId ?? ''}
         options={[
           // No device is the default: the Agent runs where its own settings say.

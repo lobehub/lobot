@@ -8,7 +8,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import AgentProfilePopup from './AgentProfilePopup';
 
-const { navigate, useFetchList } = vi.hoisted(() => ({
+const { detail, navigate, useFetchList } = vi.hoisted(() => ({
+  detail: {
+    current: undefined as
+      { agencyConfig?: { heterogeneousProvider?: { type?: string } } } | undefined,
+  },
   navigate: vi.fn(),
   useFetchList: vi.fn(),
 }));
@@ -45,7 +49,7 @@ vi.mock('./AgentCardActions', () => ({
   AgentCardActions: ({ profileUrl }: { profileUrl: string }) => <span>actions:{profileUrl}</span>,
 }));
 vi.mock('./useAgentProfileDetail', () => ({
-  useAgentProfileDetail: () => ({ detail: undefined, isLoading: false }),
+  useAgentProfileDetail: () => ({ detail: detail.current, isLoading: false }),
 }));
 vi.mock('@/features/Channels/useChannelsEnabled', () => ({ useChannelsEnabled: () => true }));
 vi.mock('@/features/ResourcePermission/useResourceAccess', () => ({
@@ -70,6 +74,7 @@ vi.mock('@/store/contact', () => ({
 }));
 
 beforeEach(() => {
+  detail.current = undefined;
   navigate.mockClear();
   useFetchList.mockClear();
 });
@@ -110,6 +115,34 @@ describe('AgentProfilePopup', () => {
     );
 
     expect(screen.getByText('actions:/agents/agt_shared')).toBeTruthy();
+  });
+
+  it('lines runtime, device and directory up in one list', () => {
+    detail.current = { agencyConfig: { heterogeneousProvider: { type: 'desk-runtime' } } };
+
+    render(
+      <AgentProfilePopup
+        agentId={'agt_stranger'}
+        trigger={'hover'}
+        environment={{
+          deviceId: 'dev_1',
+          deviceName: 'JP node',
+          workingDirectory: '/work/develop/lobehub',
+        }}
+      >
+        <span />
+      </AgentProfilePopup>,
+    );
+
+    const meta = screen.getByTestId('agent-meta');
+    expect(meta.contains(screen.getByText('desk-runtime'))).toBe(true);
+    expect(meta.contains(screen.getByText('JP node'))).toBe(true);
+    expect(meta.contains(screen.getByText('…/develop/lobehub'))).toBe(true);
+    expect(meta.contains(screen.getByText('agentProfile.runtimeLabel'))).toBe(true);
+    expect(meta.contains(screen.getByText('agentProfile.deviceLabel'))).toBe(true);
+    expect(meta.contains(screen.getByText('agentProfile.directoryLabel'))).toBe(true);
+    // Icon, label and value for each of the three rows.
+    expect(meta.childElementCount).toBe(9);
   });
 
   it('offers no actions for an Agent the person cannot open a conversation with', () => {

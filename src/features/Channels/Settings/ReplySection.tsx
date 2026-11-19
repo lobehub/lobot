@@ -1,59 +1,19 @@
-import { Flexbox, Switch, Text, toast } from '@lobehub/ui';
-import { Form } from '@lobehub/ui/form';
-import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { Flexbox, Select, Switch, Text, toast } from '@lobehub/ui';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AsyncBoundary from '@/components/AsyncBoundary';
-import { ChoiceList } from '@/features/AgentChannel/PlatformDetail/ChoiceList';
-import { ModuleSaveBar } from '@/features/AgentChannel/PlatformDetail/ModuleSaveBar';
 import type { ChannelWakeConfig } from '@/services/channel';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 
 import { applyWakeForm, toWakeForm, type WakeFormValues } from './wakeForm';
 
-/** The blocks with a Save of their own, as on an IM bot's reply settings. */
-const MODULES = {
-  pace: ['pace'],
-} satisfies Record<string, (keyof WakeFormValues)[]>;
-type ModuleId = keyof typeof MODULES;
-
-const Field = ({
-  children,
-  desc,
-  horizontal,
-  label,
-}: {
-  children: ReactNode;
-  desc?: string;
-  horizontal?: boolean;
-  label: string;
-}) => (
-  <Flexbox
-    align={horizontal ? 'center' : undefined}
-    gap={horizontal ? 16 : 8}
-    horizontal={horizontal}
-    justify={horizontal ? 'space-between' : undefined}
-    paddingBlock={12}
-  >
-    <Flexbox gap={2}>
-      <Text weight={500}>{label}</Text>
-      {desc && (
-        <Text fontSize={12} type="secondary">
-          {desc}
-        </Text>
-      )}
-    </Flexbox>
-    {children}
-  </Flexbox>
-);
+const SELECT_STYLE = { flexShrink: 0, minWidth: 0, width: 104 };
 
 function ReplyForm({ channelId, stored }: { channelId: string; stored: ChannelWakeConfig | null }) {
-  const { t } = useTranslation(['channel', 'agent']);
+  const { t } = useTranslation('channel');
   const saved = toWakeForm(stored);
   const [form, setForm] = useState(saved);
-  const [saving, setSaving] = useState<ModuleId | null>(null);
-  const update = (patch: Partial<WakeFormValues>) => setForm((prev) => ({ ...prev, ...patch }));
 
   const write = (values: WakeFormValues) =>
     channelActions.updateWakeConfig(channelId, applyWakeForm(stored, values));
@@ -62,43 +22,32 @@ function ReplyForm({ channelId, stored }: { channelId: string; stored: ChannelWa
     toast.error(t('settings.reply.saveFailed'));
   };
 
-  /** The switch saves as it changes; every other block is committed by its own Save. */
-  const toggle = async (enabled: boolean) => {
-    update({ enabled });
+  const busyRef = useRef(false);
+  const [saving, setSaving] = useState(false);
+
+  const persist = async (patch: Partial<WakeFormValues>) => {
+    if (busyRef.current) return;
+    const previous = form;
+    const next = { ...previous, ...patch };
+    if (next.enabled === previous.enabled && next.pace === previous.pace) return;
+    busyRef.current = true;
+    setSaving(true);
+    setForm(next);
     try {
-      await write({ ...saved, enabled });
+      await write(next);
+      toast.success(t('settings.saved'));
     } catch (error) {
-      update({ enabled: saved.enabled });
+      setForm(previous);
       reportFailure(error);
+    } finally {
+      busyRef.current = false;
+      setSaving(false);
     }
   };
 
-  const pick = (id: ModuleId, source: WakeFormValues) =>
-    Object.fromEntries(MODULES[id].map((key) => [key, source[key]])) as Partial<WakeFormValues>;
-  const saveBar = (id: ModuleId) => (
-    <ModuleSaveBar
-      dirty={MODULES[id].some((key) => form[key] !== saved[key])}
-      saving={saving === id}
-      onDiscard={() => update(pick(id, saved))}
-      onSave={async () => {
-        setSaving(id);
-        try {
-          await write({ ...saved, ...pick(id, form) });
-          toast.success(t('settings.saved'));
-        } catch (error) {
-          reportFailure(error);
-        } finally {
-          setSaving(null);
-        }
-      }}
-    />
-  );
-
   const paces = (['calm', 'balanced', 'active'] as const).map((value) => ({
-    desc: t(`settings.reply.paceHint.${value}`),
     label: t(`settings.reply.pace.${value}`),
-    recommendedLabel:
-      value === 'balanced' ? t('channel.access.recommended', { ns: 'agent' }) : undefined,
+    title: t(`settings.reply.paceHint.${value}`),
     value,
   }));
   // Only a strategy tuned by hand can hold it; its numbers are not edited here.
@@ -107,55 +56,48 @@ function ReplyForm({ channelId, stored }: { channelId: string; stored: ChannelWa
       ? [
           ...paces,
           {
-            desc: t('settings.reply.paceHint.custom'),
             label: t('settings.reply.pace.custom'),
-            recommendedLabel: undefined,
+            title: t('settings.reply.paceHint.custom'),
             value: 'custom' as const,
           },
         ]
       : paces;
 
   return (
-    <Flexbox gap={24}>
-      <Text fontSize={12} type="secondary">
-        {t('settings.reply.intro')}
-      </Text>
-      <Form.Group
-        collapsible={false}
-        keyValue="channel-reply-switch"
-        title={t('settings.reply.section.switch')}
-        variant="filled"
-      >
-        <Field
-          horizontal
-          desc={t('settings.reply.enabledHint')}
-          label={t('settings.reply.enabled')}
-        >
-          <Switch
-            aria-label={t('settings.reply.enabled')}
-            checked={form.enabled}
-            onChange={toggle}
-          />
-        </Field>
-      </Form.Group>
+    <Flexbox gap={20} style={{ minWidth: 0 }}>
+      <Flexbox horizontal align="center" gap={16} justify="space-between">
+        <Flexbox flex={1} gap={4} style={{ minWidth: 0 }}>
+          <Text weight={400}>{t('settings.reply.enabled')}</Text>
+          <Text fontSize={12} type="secondary">
+            {t('settings.reply.enabledHint')}
+          </Text>
+        </Flexbox>
+        <Switch
+          aria-label={t('settings.reply.enabled')}
+          checked={form.enabled}
+          disabled={saving}
+          style={{ flexShrink: 0 }}
+          onChange={(enabled) => void persist({ enabled })}
+        />
+      </Flexbox>
       {form.enabled && (
-        <Form.Group
-          collapsible={false}
-          desc={t('settings.reply.section.paceDesc')}
-          extra={saveBar('pace')}
-          keyValue="channel-reply-pace"
-          title={t('settings.reply.section.pace')}
-          variant="filled"
-        >
-          <Flexbox paddingBlock={8}>
-            <ChoiceList
-              aria-label={t('settings.reply.section.pace')}
-              options={options}
-              value={form.pace}
-              onChange={(pace) => update({ pace })}
-            />
+        <Flexbox horizontal align="center" gap={12} style={{ minWidth: 0 }}>
+          <Flexbox flex={1} gap={4} style={{ minWidth: 0 }}>
+            <Text weight={400}>{t('settings.reply.section.pace')}</Text>
+            <Text fontSize={12} type="secondary">
+              {t('settings.reply.section.paceDesc')}
+            </Text>
           </Flexbox>
-        </Form.Group>
+          <Select
+            aria-label={t('settings.reply.section.pace')}
+            disabled={saving}
+            options={options}
+            popupMatchSelectWidth={false}
+            style={SELECT_STYLE}
+            value={form.pace}
+            onChange={(pace) => void persist({ pace })}
+          />
+        </Flexbox>
       )}
     </Flexbox>
   );

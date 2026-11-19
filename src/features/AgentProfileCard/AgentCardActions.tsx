@@ -14,7 +14,8 @@ import { channelActions, channelSelectors, useChannelStore } from '@/store/chann
 
 const styles = stylex.create({
   actions: {
-    paddingBlock: 12,
+    paddingBlockStart: 12,
+    paddingBlockEnd: 16,
     paddingInline: 16,
     borderBlockStartWidth: 1,
     borderBlockStartStyle: 'solid',
@@ -76,7 +77,7 @@ export const AgentCardActions = ({ agentId, onDone, profileUrl }: AgentCardActio
       <Button
         block
         icon={UserRoundIcon}
-        type={inDirect ? 'fill' : 'default'}
+        type={'fill'}
         onClick={() => {
           onDone();
           navigate(profileUrl);

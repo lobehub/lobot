@@ -22,7 +22,11 @@ const MEMBER_PANEL_MAX_WIDTH = 480;
 const MEMBER_PANEL_CONVERSATION_MIN = 360;
 
 /** Resize bounds for the side panel: floats full-width when narrow, otherwise drags within room left by the feed. */
-export function channelSidePanelSize(availableWidth: number, preferredWidth: number) {
+export function channelSidePanelSize(
+  availableWidth: number,
+  preferredWidth: number,
+  minimumWidth = MEMBER_PANEL_WIDTH,
+) {
   if (availableWidth < MEMBER_FLOAT_BREAKPOINT)
     return {
       maxWidth: availableWidth,
@@ -31,15 +35,16 @@ export function channelSidePanelSize(availableWidth: number, preferredWidth: num
       width: availableWidth,
     };
 
+  const minWidth = Math.min(availableWidth, Math.max(MEMBER_PANEL_WIDTH, minimumWidth));
   const maxWidth = Math.max(
-    MEMBER_PANEL_WIDTH,
+    minWidth,
     Math.min(MEMBER_PANEL_MAX_WIDTH, availableWidth - MEMBER_PANEL_CONVERSATION_MIN),
   );
   return {
     maxWidth,
-    minWidth: MEMBER_PANEL_WIDTH,
+    minWidth,
     mode: 'fixed' as const,
-    width: Math.min(Math.max(preferredWidth, MEMBER_PANEL_WIDTH), maxWidth),
+    width: Math.min(Math.max(preferredWidth, minWidth), maxWidth),
   };
 }
 
@@ -48,9 +53,11 @@ export function ChannelSidePanel({
   actions,
   availableWidth = 1000,
   children,
+  centeredTitle = false,
   closeLabel,
   id,
   label,
+  minWidth: minimumWidth,
   onClose,
   title,
   xstyle,
@@ -59,9 +66,12 @@ export function ChannelSidePanel({
   actions?: ReactNode;
   availableWidth?: number;
   children: ReactNode;
+  centeredTitle?: boolean;
   closeLabel: string;
   id: string;
   label: string;
+  /** Optional lower bound for this panel only; remembered widths are clamped to it. */
+  minWidth?: number;
   onClose: () => void;
   title: string;
   xstyle?: StyleXStyles;
@@ -70,7 +80,11 @@ export function ChannelSidePanel({
     systemStatusSelectors.channelSidePanelWidth(s),
     s.updateSystemStatus,
   ]);
-  const { maxWidth, minWidth, mode, width } = channelSidePanelSize(availableWidth, preferredWidth);
+  const { maxWidth, minWidth, mode, width } = channelSidePanelSize(
+    availableWidth,
+    preferredWidth,
+    minimumWidth,
+  );
 
   return (
     <RightPanel
@@ -104,9 +118,13 @@ export function ChannelSidePanel({
           paddingInline={12}
           showTogglePanelButton={false}
           left={
-            <Text fontSize={12} type="secondary" weight={500}>
-              {title}
-            </Text>
+            centeredTitle ? (
+              <span aria-hidden style={{ width: 24 }} />
+            ) : (
+              <Text fontSize={12} type="secondary" weight={500}>
+                {title}
+              </Text>
+            )
           }
           right={
             <Flexbox horizontal align="center" gap={4}>
@@ -120,7 +138,13 @@ export function ChannelSidePanel({
               />
             </Flexbox>
           }
-        />
+        >
+          {centeredTitle && (
+            <Text style={{ textAlign: 'center' }} weight={500}>
+              {title}
+            </Text>
+          )}
+        </NavHeader>
         {children}
       </Flexbox>
     </RightPanel>

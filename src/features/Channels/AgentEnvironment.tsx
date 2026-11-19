@@ -66,14 +66,14 @@ function EnvironmentForm({
   };
 
   return (
-    <Flexbox gap={16}>
-      <Flexbox horizontal align="center" gap={8}>
+    <Flexbox gap={16} style={{ minWidth: 0, overflow: 'visible' }}>
+      <Flexbox horizontal align="center" gap={8} style={{ minWidth: 0 }}>
         <MemberAvatar member={member} size={28} />
         <Text ellipsis weight={500}>
           {name}
         </Text>
       </Flexbox>
-      <Flexbox gap={8} inert={busy}>
+      <Flexbox gap={8} inert={busy} style={{ minWidth: 0, overflow: 'visible', width: '100%' }}>
         <EnvironmentFields controls={controls} devices={devices} name={name} />
         <EnvironmentIssue controls={controls} />
       </Flexbox>

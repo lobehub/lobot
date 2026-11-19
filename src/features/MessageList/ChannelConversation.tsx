@@ -93,7 +93,12 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, variant })
               size={avatarSize}
             />
           ) : (
-            <UserAvatar avatar={counterpart.avatar} name={counterpart.name} size={avatarSize} />
+            <UserAvatar
+              avatar={counterpart.avatar}
+              name={counterpart.name}
+              shape={'circle'}
+              size={avatarSize}
+            />
           )
         }
       />
@@ -129,6 +134,7 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, variant })
         ) : members.length ? (
           <>
             <GroupAvatar
+              avatarShape={'circle'}
               size={avatarSize}
               avatars={members.map((member) => ({
                 avatar: member.avatar || (member.actorType === 'user' ? member.name : null),

@@ -1,6 +1,5 @@
 'use client';
 
-import { HotkeyInput } from '@lobehub/ui';
 import { type FormGroupItem, useForm } from '@lobehub/ui/form';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +12,7 @@ import { useElectronStore } from '@/store/electron';
 import { electronSettingsSelectors } from '@/store/electron/selectors';
 
 import { collectAppMenuHotkeys } from './appMenuHotkeys';
+import SettingsHotkeyInput from './SettingsHotkeyInput';
 
 /**
  * Read-only list of the desktop app menu accelerators (New Agent, New Topic, Zoom, …).
@@ -33,7 +33,7 @@ const AppMenuHotkeys = memo(() => {
   const appMenu: FormGroupItem = {
     children: hotkeys.map((item) => ({
       children: (
-        <HotkeyInput disabled allowReset={false} resetValue={item.keys} value={item.keys} />
+        <SettingsHotkeyInput disabled allowReset={false} resetValue={item.keys} value={item.keys} />
       ),
       label: item.label,
       tag: item.menu,

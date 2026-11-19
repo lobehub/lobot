@@ -1,27 +1,43 @@
 'use client';
 
-import {
-  Center,
-  createStaticStyles,
-  cssVar,
-  cx,
-  Flexbox,
-  Skeleton,
-  Text,
-  Tooltip,
-} from '@lobehub/ui';
-import { memo, type ReactNode } from 'react';
+import { createStaticStyles, cx, Flexbox, Skeleton, Text, Tooltip } from '@lobehub/ui';
+import { type SidebarAgentItem } from '@lobot/types';
+import { type CSSProperties, memo, type ReactNode } from 'react';
 
-import AgentAvatar, { isDefaultAgentAvatar } from '@/components/AgentAvatar';
+import AgentAvatar from '@/components/AgentAvatar';
+import { cardStyles } from '@/features/AgentViewAll/AgentCard';
+import { coverPattern } from '@/features/AgentViewAll/coverColor';
+import { resolveAgentBadge } from '@/features/AgentViewAll/resolveAgentBadge';
+import { useAgentCoverColor } from '@/features/AgentViewAll/useAgentCoverColor';
 
 const styles = createStaticStyles(({ css, cssVar }) => ({
+  avatar: css`
+    align-self: flex-start;
+    align-items: center;
+    justify-content: center;
+
+    /* The ring's border sits inside this box, so the avatar stays 48px over the banner. */
+    box-sizing: border-box;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+
+    font: inherit;
+    color: inherit;
+  `,
   banner: css`
     position: relative;
+
     overflow: hidden;
+    display: block;
+
+    width: 100%;
     height: 60px;
-  `,
-  bannerInner: css`
-    filter: blur(44px);
+    margin: 0;
+    padding: 0;
+    border: none;
+
+    background: none;
   `,
   clickableAvatar: css`
     cursor: pointer;
@@ -75,6 +91,8 @@ interface AgentProfileCardProps {
   title: string;
 }
 
+const COVER_STUB = { pinned: false, type: 'agent' as const, updatedAt: new Date(0) };
+
 const AgentProfileCard = memo<AgentProfileCardProps>(
   ({
     agentId,
@@ -87,42 +105,74 @@ const AgentProfileCard = memo<AgentProfileCardProps>(
     title,
     children,
   }) => {
+    // The same cover the contacts wall paints: the uploaded banner, or the agent's own
+    // tint and texture. A blurred copy of the avatar is not a banner.
+    const coverItem: SidebarAgentItem = {
+      ...COVER_STUB,
+      avatar,
+      backgroundColor,
+      id: agentId || title,
+      title,
+    };
+    const badge = resolveAgentBadge(coverItem);
+    const coverColor = useAgentCoverColor(coverItem, badge.cover, !!badge.coverImage);
+
+    const cover = (
+      <div
+        className={cardStyles.cover}
+        data-cover-image={badge.coverImage ? '' : undefined}
+        data-pattern={badge.coverImage ? undefined : coverPattern(coverItem)}
+        style={
+          {
+            '--agent-cover': coverColor,
+            'backgroundImage': badge.coverImage
+              ? `url(${JSON.stringify(badge.coverImage)})`
+              : undefined,
+            'height': '100%',
+          } as CSSProperties
+        }
+      />
+    );
+    const portrait = (
+      <AgentAvatar
+        agentId={agentId}
+        avatar={avatar}
+        background={badge.cover}
+        name={title}
+        shape={'circle'}
+        size={42}
+      />
+    );
+    const ringClass = cx(
+      cardStyles.avatarRing,
+      !badge.cover && cardStyles.avatarPlain,
+      styles.avatar,
+      onHeaderClick && styles.clickableAvatar,
+    );
+
     return (
       <Flexbox className={styles.container}>
         {/* The whole header opens the Agent's page, not only its small avatar and name. */}
-        <Center
-          className={cx(styles.banner, onHeaderClick && styles.clickableAvatar)}
-          style={{ background: cssVar.colorFillTertiary }}
-          onClick={onHeaderClick}
-        >
-          <AgentAvatar
-            agentId={agentId}
-            avatar={avatar}
-            background={backgroundColor ?? undefined}
-            className={styles.bannerInner}
-            name={title}
-            shape={'square'}
-            size={400}
-          />
-        </Center>
+        {onHeaderClick ? (
+          <button
+            className={cx(styles.banner, styles.clickableAvatar)}
+            type={'button'}
+            onClick={onHeaderClick}
+          >
+            {cover}
+          </button>
+        ) : (
+          <div className={styles.banner}>{cover}</div>
+        )}
 
         <Flexbox className={styles.header} gap={8}>
-          <AgentAvatar
-            agentId={agentId}
-            avatar={avatar}
-            background={backgroundColor ?? undefined}
-            className={onHeaderClick ? styles.clickableAvatar : undefined}
-            name={title}
-            shape={'square'}
-            size={48}
-            // The generated character has no tile, so a frame would box empty space.
-            style={
-              isDefaultAgentAvatar(avatar)
-                ? undefined
-                : { border: `2px solid ${cssVar.colorBgElevated}` }
-            }
-            onClick={onHeaderClick}
-          />
+          {onHeaderClick ? (
+            <button className={ringClass} type={'button'} onClick={onHeaderClick}>
+              {portrait}
+            </button>
+          ) : (
+            <span className={ringClass}>{portrait}</span>
+          )}
           <Flexbox gap={2}>
             <Flexbox horizontal align={'center'} justify={'space-between'}>
               <Text

@@ -36,8 +36,7 @@ export function JoinEventLine({ event: { inviter, members } }: { event: ChannelJ
                 if (part.type === 'literal') return part.value;
                 const member = members[memberIndex++];
                 return (
-                  // Same profile card a member shows on hover on their messages.
-                  <MemberProfilePopup key={member.id} member={member}>
+                  <MemberProfilePopup key={member.id} member={member} trigger={'click'}>
                     <span {...stylex.props(styles.eventMember, styles.eventMemberHoverable)}>
                       <MemberAvatar member={member} size={18} />
                       <span {...stylex.props(styles.eventMemberName)}>{part.value}</span>

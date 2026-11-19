@@ -406,12 +406,11 @@ export default {
   'settings.reply.paceHint.custom':
     'Uses values that were tuned by hand. Choose a pace to replace them.',
   'settings.reply.saveFailed': 'Could not save the replies settings. Try again.',
-  'settings.danger.archiveHint':
-    'Replies in progress stop and the channel stops taking messages. History stays readable.',
+  'settings.danger.archiveHint': 'Stops replies and new messages. History stays readable.',
   'settings.danger.unarchiveHint': 'Members can send messages in this channel again.',
   'settings.danger.deleteChatHint':
     'Clears this chat’s history on this device and removes it from your list. The other person keeps theirs.',
-  'settings.danger.trashHint': 'You can restore the channel and its history from the trash.',
+  'settings.danger.trashHint': 'Restore the channel and its history from Trash.',
   'settings.tab.general': 'General',
   'settings.tab.project': 'Project',
   'settings.tab.reply': 'Replies',
@@ -424,10 +423,10 @@ export default {
   'settings.reply.section.pace': 'Pace',
   'settings.reply.section.paceDesc': 'How soon, and how often, Agents speak up on their own.',
   'settings.project.description': 'This channel belongs to this project.',
-  'settings.project.manage': 'Manage in LobeHub',
+  'settings.project.manage': 'Manage',
   'settings.project.manageHint': 'Edit the project, its members and its Agents in LobeHub.',
   'settings.project.missing': 'This project is not available to you, or it has been deleted.',
-  'settings.project.title': 'Project',
+  'settings.project.title': 'Linked project',
   'openDirect.failed': 'Could not open the conversation. Try again later.',
   'openDirect.unavailable': "This Agent's conversation can't be opened right now.",
 };

@@ -22,7 +22,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import type { FC, ReactNode, RefObject } from 'react';
-import { memo, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
@@ -57,6 +57,7 @@ import { showsReplyQuote } from './replyQuote';
 import type { ReplyTopic } from './ReplyTopicPanel';
 import { ReplyWorks } from './ReplyWorks';
 import { styles } from './styles';
+import { connectorBox, retainConnectorBox } from './threadConnector';
 import type { ChannelThreadDraft } from './threadDraft';
 import { threadIcon } from './threadIcon';
 import { ThreadPreviewCard } from './ThreadPreviewCard';
@@ -94,10 +95,13 @@ const AVATAR_SIZE = 36;
 /** The gutter line from under a message's avatar to the middle of its thread card. */
 const ThreadConnector = ({
   avatarRef,
+  cardNode,
   cardRef,
   rowRef,
 }: {
   avatarRef: RefObject<HTMLElement | null>;
+  /** Changes when the card element mounts, so the effect runs after the ref exists. */
+  cardNode: HTMLElement | null;
   cardRef: RefObject<HTMLElement | null>;
   rowRef: RefObject<HTMLElement | null>;
 }) => {
@@ -109,45 +113,61 @@ const ThreadConnector = ({
   } | null>(null);
 
   useLayoutEffect(() => {
-    const row = rowRef.current;
-    const card = cardRef.current;
-    if (!row || !card) return;
+    let observer: ResizeObserver | null = null;
+    let observedFace: Element | null = null;
+    let frame = 0;
+    let alive = true;
+
     const measure = () => {
-      const rowBox = row.getBoundingClientRect();
-      const cardBox = card.getBoundingClientRect();
+      const row = rowRef.current;
+      const card = cardRef.current;
+      if (!row || !card || !observer) return;
       // A later message in the same group has no face of its own. Its line still
       // starts under the avatar that heads the group, which sits on an earlier row.
       const face = avatarRef.current ?? groupAvatar(row);
-      const avatar = face?.getBoundingClientRect();
-      const left = avatar ? avatar.left + avatar.width / 2 - rowBox.left : 16 + AVATAR_SIZE / 2;
-      const top = avatar ? avatar.bottom - rowBox.top : 4;
-      const width = Math.round(cardBox.left - rowBox.left - left);
-      const height = Math.round(cardBox.top + cardBox.height / 2 - rowBox.top - top);
-      const next =
-        width >= 8 && height >= 8
-          ? { height, left: Math.round(left), top: Math.round(top), width }
-          : null;
-      setBox((prev) =>
-        prev &&
-        next &&
-        prev.left === next.left &&
-        prev.top === next.top &&
-        prev.width === next.width &&
-        prev.height === next.height
-          ? prev
-          : next,
-      );
+      if (face && face !== observedFace) {
+        if (observedFace) observer.unobserve(observedFace);
+        observer.observe(face);
+        observedFace = face;
+      }
+      const avatar = face?.getBoundingClientRect() ?? null;
+      const next = connectorBox(row.getBoundingClientRect(), card.getBoundingClientRect(), avatar);
+      // A zero-size read (the card's ref is attached after this effect, or a resize
+      // landed mid-layout) must not erase a line that was already on screen.
+      setBox((previous) => retainConnectorBox(previous, next));
     };
-    measure();
-    const observer = new ResizeObserver(measure);
-    observer.observe(row);
-    observer.observe(card);
-    // An earlier row in the group growing moves this card without resizing it.
-    if (row.parentElement) observer.observe(row.parentElement);
-    const face = avatarRef.current ?? groupAvatar(row);
-    if (face) observer.observe(face);
-    return () => observer.disconnect();
-  }, [avatarRef, cardRef, rowRef]);
+
+    const connect = () => {
+      const row = rowRef.current;
+      const card = cardRef.current;
+      if (!row || !card) return false;
+      observer?.disconnect();
+      observedFace = null;
+      observer = new ResizeObserver(measure);
+      observer.observe(row);
+      observer.observe(card);
+      // An earlier row in the group growing moves this card without resizing it.
+      if (row.parentElement) observer.observe(row.parentElement);
+      measure();
+      return true;
+    };
+
+    // This effect runs before the card div, a later sibling, receives its ref.
+    if (!connect()) {
+      queueMicrotask(() => {
+        if (alive) connect();
+      });
+      frame = requestAnimationFrame(() => {
+        if (alive) connect();
+      });
+    }
+
+    return () => {
+      alive = false;
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+    };
+  }, [avatarRef, cardNode, cardRef, rowRef]);
 
   if (!box) return null;
   return (
@@ -160,6 +180,7 @@ const ThreadConnector = ({
         position: 'absolute',
         top: box.top,
         width: box.width,
+        zIndex: 1,
       }}
     >
       <span {...stylex.props(styles.threadSpine)} />
@@ -274,6 +295,13 @@ const ChannelMessageView = ({
   const rowRef = useRef<HTMLDivElement>(null);
   const avatarRef = useRef<HTMLSpanElement>(null);
   const cardRef = useRef<HTMLElement>(null);
+  // The connector's layout effect runs before this ref is attached. Publishing the
+  // node makes that effect run again once the card is actually in the document.
+  const [cardNode, setCardNode] = useState<HTMLElement | null>(null);
+  const setCardRef = useCallback((node: HTMLElement | null) => {
+    cardRef.current = node;
+    setCardNode((current) => (current === node ? current : node));
+  }, []);
   const timeFormats = channelTimeFormatters(i18n.language);
   const date = new Date(message.createdAt);
   // Failed/unassigned requests keep their identity row and recovery affordance.
@@ -519,7 +547,7 @@ const ChannelMessageView = ({
   );
   const threadCard = thread && (
     <ThreadPreviewCard
-      anchorRef={cardRef}
+      anchorRef={setCardRef}
       detail={detail}
       root={message}
       thread={thread}
@@ -589,7 +617,6 @@ const ChannelMessageView = ({
       )}
     >
       {replyQuote}
-      {thread && <ThreadConnector avatarRef={avatarRef} cardRef={cardRef} rowRef={rowRef} />}
       {compact && <span {...stylex.props(styles.continuationTime)}>{timestamp}</span>}
       <ChatItem
         quietHeader
@@ -611,8 +638,7 @@ const ChannelMessageView = ({
         customAvatarRender={(_, avatar) => (
           <span data-message-avatar="" ref={avatarRef} {...stylex.props(styles.messageAvatar)}>
             {!agentAuthorId ? (
-              // A person shows who they are on hover, the way an Agent shows its profile.
-              <MemberProfilePopup member={userMember}>
+              <MemberProfilePopup member={userMember} trigger={'click'}>
                 <span
                   {...stylex.props(
                     styles.messageAvatarInline,
@@ -636,13 +662,14 @@ const ChannelMessageView = ({
                 </span>
               </MemberProfilePopup>
             ) : (
-              // Same profile card an Agent shows on hover in goals and tasks.
               <DeferredHoverCard
-                render={(trigger) => (
+                openOn={'click'}
+                render={(trigger, control) => (
                   <AgentProfilePopup
                     agentId={agentAuthorId}
                     environment={agentMember?.environment}
-                    trigger={'hover'}
+                    open={control?.open}
+                    trigger={'click'}
                     agent={{
                       avatar: message.author.avatar,
                       description: agentMember?.description,
@@ -655,6 +682,7 @@ const ChannelMessageView = ({
                         onOpenThread={onOpenThread}
                       />
                     }
+                    onOpenChange={control?.onOpenChange}
                   >
                     {trigger}
                   </AgentProfilePopup>
@@ -689,6 +717,14 @@ const ChannelMessageView = ({
           </>
         }
       />
+      {thread && (
+        <ThreadConnector
+          avatarRef={avatarRef}
+          cardNode={cardNode}
+          cardRef={cardRef}
+          rowRef={rowRef}
+        />
+      )}
       {toolbar}
     </div>
   );
