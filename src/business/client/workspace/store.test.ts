@@ -12,7 +12,12 @@ import { createReplicaState } from '@/libs/replica';
 
 import { getBusinessTrpcHeaders } from '../trpc-headers';
 import { useFetchWorkspaces } from './list';
-import { readLastWorkspaceId, useWorkspaceStore, writeLastWorkspaceId } from './store';
+import {
+  readLastWorkspaceId,
+  restoreLastWorkspace,
+  useWorkspaceStore,
+  writeLastWorkspaceId,
+} from './store';
 
 const mocks = vi.hoisted(() => ({ list: vi.fn() }));
 
@@ -41,6 +46,7 @@ describe('workspace store', () => {
       isWorkspaceAvailable: false,
       isWorkspaceListInit: false,
       isWorkspaceLoading: true,
+      restoredWorkspaceId: null,
       workspaces: [],
       workspacesReplica: createReplicaState(),
     });
@@ -71,6 +77,69 @@ describe('workspace store', () => {
 
     await waitFor(() => expect(useWorkspaceStore.getState().workspaces).toHaveLength(2));
     expect(useWorkspaceStore.getState().activeWorkspaceId).toBe('ws-b');
+  });
+
+  // Regression: a restart painted the personal space until the list answered, then
+  // jumped into the workspace. The boot restore opens it before any request.
+  it('reopens the last workspace at boot, before the list answers', async () => {
+    let answer: (value: unknown) => void = () => {};
+    mocks.list.mockImplementation(() => new Promise((resolve) => (answer = resolve)));
+    writeLastWorkspaceId('user-1', 'ws-b');
+
+    restoreLastWorkspace('user-1');
+    expect(useWorkspaceStore.getState().activeWorkspaceId).toBe('ws-b');
+    expect(await getBusinessTrpcHeaders()).toEqual({ 'X-Workspace-Id': 'ws-b' });
+
+    renderHook(() => useFetchWorkspaces(true, 'user-1'), { wrapper });
+    await waitFor(() => expect(mocks.list).toHaveBeenCalled());
+    expect(useWorkspaceStore.getState().activeWorkspaceId).toBe('ws-b');
+
+    await act(async () => answer([ws('ws-a'), ws('ws-b')]));
+    await waitFor(() => expect(useWorkspaceStore.getState().isWorkspaceAvailable).toBe(true));
+    expect(useWorkspaceStore.getState().activeWorkspaceId).toBe('ws-b');
+  });
+
+  it('restores the cached preference at boot over the local copy', () => {
+    writeLastWorkspaceId('user-1', 'ws-a');
+
+    restoreLastWorkspace('user-1', 'ws-b');
+    expect(useWorkspaceStore.getState().activeWorkspaceId).toBe('ws-b');
+  });
+
+  it('stays personal at boot when the personal space was picked last', () => {
+    writeLastWorkspaceId('user-1', 'ws-a');
+
+    restoreLastWorkspace('user-1', null);
+    expect(useWorkspaceStore.getState().activeWorkspaceId).toBeNull();
+
+    localStorage.clear();
+    restoreLastWorkspace('user-1');
+    expect(useWorkspaceStore.getState().activeWorkspaceId).toBeNull();
+  });
+
+  // The boot guess comes from a local copy; the server-side preference read with the
+  // user state is the durable record and still decides the first load.
+  it('lets the server preference override the boot guess on the first list', async () => {
+    mocks.list.mockResolvedValue([ws('ws-a'), ws('ws-b')]);
+    writeLastWorkspaceId('user-1', 'ws-a');
+    restoreLastWorkspace('user-1');
+
+    renderHook(() => useFetchWorkspaces(true, 'user-1', 'ws-b'), { wrapper });
+
+    await waitFor(() => expect(useWorkspaceStore.getState().isWorkspaceAvailable).toBe(true));
+    expect(useWorkspaceStore.getState().activeWorkspaceId).toBe('ws-b');
+    expect(useWorkspaceStore.getState().restoredWorkspaceId).toBeNull();
+  });
+
+  it('drops a boot-restored workspace the user lost access to', async () => {
+    mocks.list.mockResolvedValue([ws('ws-a')]);
+    writeLastWorkspaceId('user-1', 'ws-gone');
+    restoreLastWorkspace('user-1');
+
+    renderHook(() => useFetchWorkspaces(true, 'user-1'), { wrapper });
+
+    await waitFor(() => expect(useWorkspaceStore.getState().isWorkspaceAvailable).toBe(true));
+    expect(useWorkspaceStore.getState().activeWorkspaceId).toBeNull();
   });
 
   it('treats a null preference as an explicit pick of the personal space', async () => {

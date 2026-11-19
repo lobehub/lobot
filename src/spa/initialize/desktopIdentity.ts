@@ -1,5 +1,6 @@
 import type { DesktopBootstrapIdentity } from '@lobechat/electron-client-ipc';
 
+import { restoreLastWorkspace } from '@/business/client/workspace/store';
 import { useUserStore } from '@/store/user';
 import { readUserDisplaySnapshot, userFromDisplaySnapshot } from '@/store/user/displaySnapshot';
 import type { LobeUser } from '@/types/user';
@@ -31,4 +32,14 @@ export const applyDesktopBootstrapIdentity = (
     ...(snapshot?.preference && { preference: snapshot.preference }),
     ...(snapshot?.settings && { settings: snapshot.settings }),
   });
+
+  // Reopen the last workspace in the same synchronous step: the cache scope and the
+  // first paint read it, and waiting for the workspace list painted the personal
+  // space first, then jumped.
+  if (identity.userId) {
+    restoreLastWorkspace(
+      identity.userId,
+      (snapshot?.preference ?? (isKnownUser ? state.preference : undefined))?.lastWorkspaceId,
+    );
+  }
 };

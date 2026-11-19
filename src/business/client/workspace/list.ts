@@ -70,7 +70,8 @@ export const useFetchWorkspaces = (
 ): ReplicaSyncResult => {
   const sync = workspaceListSlice.useSync(enabled && userId ? { userId } : null, {
     onSuccess: (workspaces) => {
-      const { activeWorkspaceId, isWorkspaceAvailable } = useWorkspaceStore.getState();
+      const { activeWorkspaceId, isWorkspaceAvailable, restoredWorkspaceId } =
+        useWorkspaceStore.getState();
       // `null` in the preference is an explicit pick of the personal space.
       const remembered =
         lastWorkspaceId !== undefined
@@ -81,12 +82,17 @@ export const useFetchWorkspaces = (
       // The remembered scope only restores the first load. Afterwards the pick made
       // this session stands, personal included: a switch refetches the user state,
       // and one read before the preference write lands still names the old scope.
-      const candidate = isWorkspaceAvailable
-        ? activeWorkspaceId
-        : (activeWorkspaceId ?? remembered);
+      // The scope reopened at boot from the local copy is not such a pick: the
+      // server-side preference still decides the first load.
+      const picked = activeWorkspaceId === restoredWorkspaceId ? null : activeWorkspaceId;
+      const candidate = isWorkspaceAvailable ? activeWorkspaceId : (picked ?? remembered);
       // A workspace the user lost access to falls back to the personal space.
       const active = candidate && workspaces.some((ws) => ws.id === candidate) ? candidate : null;
-      useWorkspaceStore.setState({ activeWorkspaceId: active, isWorkspaceAvailable: true });
+      useWorkspaceStore.setState({
+        activeWorkspaceId: active,
+        isWorkspaceAvailable: true,
+        restoredWorkspaceId: null,
+      });
     },
   });
 
@@ -104,6 +110,7 @@ export const useFetchWorkspaces = (
         activeWorkspaceId: null,
         isWorkspaceAvailable: false,
         isWorkspaceLoading: false,
+        restoredWorkspaceId: null,
       });
       return;
     }
