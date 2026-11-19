@@ -56,6 +56,20 @@ describe('settingsSelectors', () => {
     });
   });
 
+  describe('pinnedConversationLayout', () => {
+    it('keeps the grid until the user picks rows', () => {
+      expect(userGeneralSettingsSelectors.pinnedConversationLayout(initialState as UserStore)).toBe(
+        'tiles',
+      );
+
+      const s: UserState = merge(initialState, {
+        settings: { general: { pinnedConversationLayout: 'rows' } },
+      });
+
+      expect(userGeneralSettingsSelectors.pinnedConversationLayout(s as UserStore)).toBe('rows');
+    });
+  });
+
   describe('fontAntialiasing', () => {
     it('should default to true when unset', () => {
       expect(userGeneralSettingsSelectors.fontAntialiasing(initialState as UserStore)).toBe(true);

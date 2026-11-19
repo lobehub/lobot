@@ -6,6 +6,12 @@ export type AnimationMode = 'disabled' | 'agile' | 'elegant';
 
 export type ContextMenuMode = 'disabled' | 'default';
 
+/**
+ * How pinned conversations sit atop the Messages list: `tiles` is the avatar grid; `rows` keeps
+ * the grid for up to six and lists more as one tinted block of rows.
+ */
+export type PinnedConversationLayout = 'tiles' | 'rows';
+
 export interface UserGeneralConfig {
   animationMode?: AnimationMode;
   contextMenuMode?: ContextMenuMode;
@@ -44,6 +50,12 @@ export interface UserGeneralConfig {
   isLiteMode: boolean;
   mermaidTheme?: MermaidProps['theme'];
   neutralColor?: NeutralColors;
+  /**
+   * Pinned conversations in the Messages list. `rows` lists them as rows once more than six are
+   * pinned, where the grid gets crowded.
+   * @default 'tiles'
+   */
+  pinnedConversationLayout?: PinnedConversationLayout;
   primaryColor?: LobePrimaryColor;
   responseLanguage?: string;
   /**
