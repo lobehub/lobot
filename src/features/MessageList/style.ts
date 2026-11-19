@@ -9,8 +9,20 @@ export const COLUMN_ACTION_ICON_SIZE = {
   borderRadius: '50%',
   size: 18,
 };
-/** Pinned tiles use a card-sized avatar over the compact row one. */
-export const PINNED_AVATAR_SIZE = 52;
+/**
+ * One pin is large, two sit between that and three, and four or more use the list avatar.
+ */
+export type PinnedTile = 'solo' | 'pair' | 'compact' | 'dense';
+
+export const pinnedTile = (count: number): PinnedTile =>
+  count <= 1 ? 'solo' : count === 2 ? 'pair' : count === 3 ? 'compact' : 'dense';
+
+export const pinnedAvatarSize = (tile: PinnedTile) =>
+  tile === 'solo' ? 60 : tile === 'pair' ? 52 : tile === 'compact' ? 44 : AVATAR_SIZE;
+
+/** Row avatars stay small; a pinned tile uses the size for how many are pinned. */
+export const conversationAvatarSize = (variant: 'row' | 'tile' | undefined, tile?: PinnedTile) =>
+  variant === 'tile' ? pinnedAvatarSize(tile ?? 'compact') : AVATAR_SIZE;
 
 export const styles = stylex.create({
   /** Elevated fill behind the column's outlined circle buttons. */
@@ -75,6 +87,10 @@ export const styles = stylex.create({
     rowGap: '4px',
     paddingBlockStart: '4px',
     paddingBlockEnd: '16px',
+  },
+  /** Four or more sit closer together, so each name can keep a little inset. */
+  pinnedGroupDense: {
+    columnGap: '2px',
   },
   /** "[@me]" before the preview; the unread badge's red, so the two read as one signal. */
   mentioned: {
@@ -190,7 +206,7 @@ export const styles = stylex.create({
     fontWeight: 400,
     color: cssVar.colorTextQuaternary,
   },
-  /** A pinned conversation: a compact tile that holds the avatar and the name. */
+  /** Three pinned conversations: a small tile, so they still fit on a row. */
   tile: {
     boxSizing: 'border-box',
     cursor: 'pointer',
@@ -202,8 +218,8 @@ export const styles = stylex.create({
     alignItems: 'center',
     justifyContent: 'center',
 
-    width: 72,
-    height: 88,
+    width: 68,
+    height: 80,
     paddingBlock: '6px',
     paddingInline: '4px',
     borderRadius: cssVar.borderRadiusLG,
@@ -213,6 +229,35 @@ export const styles = stylex.create({
 
     backgroundColor: { 'default': null, ':hover': cssVar.colorFillTertiary },
     transition: 'background-color 0.15s',
+  },
+  /**
+   * Four or more: the list avatar, narrow enough that four fit the panel's minimum width
+   * (240, minus the list's 6px inset on each side).
+   */
+  tileDense: {
+    width: 54,
+    height: 60,
+    gap: '4px',
+    paddingBlock: '4px',
+    paddingInline: '4px',
+  },
+  /** Two pinned conversations: halfway between the single square and the small tile. */
+  tilePair: {
+    width: 80,
+    height: 86,
+    gap: '4px',
+    paddingBlockStart: '8px',
+    paddingBlockEnd: '6px',
+    paddingInline: '6px',
+  },
+  /** The only pinned conversation: a square, with a short gap under the name. */
+  tileSolo: {
+    width: 92,
+    height: 92,
+    gap: '4px',
+    paddingBlockStart: '8px',
+    paddingBlockEnd: '4px',
+    paddingInline: '8px',
   },
   tileActive: {
     backgroundColor: { 'default': cssVar.colorFillSecondary, ':hover': cssVar.colorFillSecondary },
@@ -224,14 +269,10 @@ export const styles = stylex.create({
     fontSize: '12px',
     fontWeight: 500,
     lineHeight: '16px',
-    color: cssVar.colorTextSecondary,
+    color: cssVar.colorText,
     textAlign: 'center',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
-  },
-  tileTitleActive: {
-    color: cssVar.colorText,
-    fontWeight: 600,
   },
   time: {
     flex: 'none',

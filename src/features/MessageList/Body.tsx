@@ -61,7 +61,7 @@ import InboxConversation from './InboxConversation';
 import NetworkSearchRow from './NetworkSearchRow';
 import { useMessageSearch } from './SearchContext';
 import SectionGroup from './SectionGroup';
-import { styles } from './style';
+import { pinnedTile, styles } from './style';
 import { useUnreadJump } from './unreadJump';
 
 /**
@@ -88,12 +88,13 @@ const useActiveRouteId = () => {
 const ConversationItem = memo<{
   active: boolean;
   conversation: Conversation;
+  tile?: 'solo' | 'pair' | 'compact' | 'dense';
   variant?: 'row' | 'tile';
-}>(({ active, conversation, variant }) =>
+}>(({ active, conversation, tile, variant }) =>
   conversation.item.type === 'group' ? (
-    <GroupConversation active={active} conversation={conversation} variant={variant} />
+    <GroupConversation active={active} conversation={conversation} tile={tile} variant={variant} />
   ) : (
-    <AgentConversation active={active} conversation={conversation} variant={variant} />
+    <AgentConversation active={active} conversation={conversation} tile={tile} variant={variant} />
   ),
 );
 
@@ -252,13 +253,18 @@ const Body = memo(() => {
       .catch((error) => console.error('Failed to reorder sections', error));
   };
 
-  const renderEntry = (entry: ConversationEntry, variant?: 'row' | 'tile') =>
+  const renderEntry = (
+    entry: ConversationEntry,
+    variant?: 'row' | 'tile',
+    tile?: 'solo' | 'pair' | 'compact' | 'dense',
+  ) =>
     entry.type === 'inbox' ? (
       <InboxConversation
         activeAt={entry.activeAt}
         activeRouteId={activeRouteId}
         channel={entry.channel}
         key={'inbox'}
+        tile={tile}
         variant={variant}
       />
     ) : entry.type === 'channel' ? (
@@ -267,6 +273,7 @@ const Body = memo(() => {
         activeAt={entry.activeAt}
         channel={entry.channel}
         key={entry.channel.id}
+        tile={tile}
         variant={variant}
       />
     ) : (
@@ -274,6 +281,7 @@ const Body = memo(() => {
         active={entry.item.id === activeRouteId}
         conversation={entry}
         key={entry.item.id}
+        tile={tile}
         variant={variant}
       />
     );
@@ -285,8 +293,17 @@ const Body = memo(() => {
   return (
     <Flexbox gap={4} paddingBlock={'0 12px'} paddingInline={6} ref={listRef}>
       {groups.pinned.length > 0 && (
-        <div aria-label={t('navPanel.pinned')} role="group" {...stylex.props(styles.pinnedGroup)}>
-          {groups.pinned.map((entry) => renderEntry(entry, 'tile'))}
+        <div
+          aria-label={t('navPanel.pinned')}
+          role="group"
+          {...stylex.props(
+            styles.pinnedGroup,
+            groups.pinned.length >= 4 && styles.pinnedGroupDense,
+          )}
+        >
+          {groups.pinned.map((entry) =>
+            renderEntry(entry, 'tile', pinnedTile(groups.pinned.length)),
+          )}
         </div>
       )}
       {groups.sections.length > 0 && (

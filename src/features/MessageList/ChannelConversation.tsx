@@ -23,12 +23,14 @@ import { userProfileSelectors } from '@/store/user/selectors';
 
 import ConversationRow from './ConversationRow';
 import { channelPreview, channelPreviewThread, directCounterpart } from './conversations';
-import { AVATAR_SIZE, PINNED_AVATAR_SIZE, styles } from './style';
+import { conversationAvatarSize, styles } from './style';
 
 interface Props {
   active: boolean;
   activeAt: Date;
   channel: ChannelListItem;
+  /** Large when this is the only pin; compact when several are pinned. */
+  tile?: 'solo' | 'pair' | 'compact' | 'dense';
   variant?: 'row' | 'tile';
 }
 
@@ -36,9 +38,9 @@ interface Props {
  * A group Channel as one more conversation, ordered with the Agents by its latest message. A
  * conversation with another person, or with someone's shared Agent, wears that counterpart.
  */
-const ChannelConversation = memo<Props>(({ active, activeAt, channel, variant }) => {
+const ChannelConversation = memo<Props>(({ active, activeAt, channel, tile, variant }) => {
   const { t } = useTranslation('channel');
-  const avatarSize = variant === 'tile' ? PINNED_AVATAR_SIZE : AVATAR_SIZE;
+  const avatarSize = conversationAvatarSize(variant, tile);
   const menuItems = useChannelMenu();
   // A Channel grouped under a project wears that project's logo; a standalone one pictures
   // its members like a group chat, and keeps "#" until someone else joins.
@@ -79,6 +81,7 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, variant })
         previewThread={cleared ? undefined : channelPreviewThread(channel)}
         // Someone else's Agent looks like one's own otherwise; the tag says it is theirs.
         tag={channel.sharedAgent ? t('sharedAgent.tag') : undefined}
+        tile={tile}
         title={counterpart.name || channel.title}
         unread={cleared ? 0 : channel.unreadCount}
         url={CHANNEL_URL(channel.id)}
@@ -116,6 +119,7 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, variant })
       preview={channelPreview(channel, { group: true, userId })}
       previewThread={channelPreviewThread(channel)}
       tag={tag}
+      tile={tile}
       title={title}
       unread={channel.unreadCount}
       url={CHANNEL_URL(channel.id)}

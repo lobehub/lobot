@@ -57,10 +57,15 @@ interface ConversationRowProps {
   singleLine?: boolean;
   /** A muted label after the title, e.g. the project a Channel belongs to. */
   tag?: string;
+  /**
+   * `solo` is the large card used when this is the only pin; `compact` is the shared size.
+   * Only set for a pinned tile.
+   */
+  tile?: 'solo' | 'pair' | 'compact' | 'dense';
   title: string;
   unread?: number;
   url: string;
-  /** `tile` draws a pinned conversation as a large-avatar card; `row` is the regular list line. */
+  /** `tile` draws a pinned conversation as an avatar card; `row` is the regular list line. */
   variant?: 'row' | 'tile';
 }
 
@@ -93,6 +98,7 @@ const ConversationRow = memo<ConversationRowProps>(
     ref,
     singleLine,
     tag,
+    tile,
     title,
     activity,
     activityCount = 0,
@@ -119,6 +125,9 @@ const ConversationRow = memo<ConversationRowProps>(
       ref,
       ...stylex.props(
         isTile ? styles.tile : styles.row,
+        isTile && tile === 'dense' && styles.tileDense,
+        isTile && tile === 'pair' && styles.tilePair,
+        isTile && tile === 'solo' && styles.tileSolo,
         active && (isTile ? styles.tileActive : styles.rowActive),
       ),
       'to': url,
@@ -142,7 +151,7 @@ const ConversationRow = memo<ConversationRowProps>(
     const content = isTile ? (
       <>
         {avatarNode}
-        <span {...stylex.props(styles.tileTitle, active && styles.tileTitleActive)}>{title}</span>
+        <span {...stylex.props(styles.tileTitle)}>{title}</span>
       </>
     ) : (
       <>
