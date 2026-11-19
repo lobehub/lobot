@@ -136,6 +136,19 @@ describe('Composer focus', () => {
     expect(editor.focus).toHaveBeenCalledTimes(1);
   });
 
+  it('puts the caret back in the input once a queued send clears it', async () => {
+    renderComposer('queue');
+    const input = screen.getByLabelText('input');
+    editor.getLexicalEditor.mockReturnValue({ getRootElement: () => input } as never);
+    input.focus();
+
+    // Clearing the input drops its selection while focus stays on it, leaving no caret.
+    fireEvent.click(await screen.findByRole('button', { name: 'send' }));
+
+    await vi.waitFor(() => expect(editor.focus).toHaveBeenCalledTimes(1));
+    editor.getLexicalEditor.mockReturnValue(null);
+  });
+
   it('leaves focus on a control the user moved to while the send was busy', async () => {
     const finish = await startPendingSend();
     const other = document.createElement('input');

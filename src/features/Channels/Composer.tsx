@@ -124,8 +124,11 @@ export function Composer({
   useEffect(() => {
     // The input locks while a send is busy and drops focus; reclaim only that dropped focus,
     // never a control the user moved to meanwhile. Runs after the unlock reaches the DOM.
+    // Clearing the input also resets its selection, so a focused input loses its caret and
+    // the next keystrokes go nowhere; focusing it again puts the caret back.
     const active = document.activeElement;
-    if (settledSends && (!active || active === document.body)) editor.focus();
+    const input = editor.getLexicalEditor()?.getRootElement();
+    if (settledSends && (!active || active === document.body || active === input)) editor.focus();
   }, [editor, settledSends]);
   const sending = useRef(false);
   const previousDocument = useRef('');
