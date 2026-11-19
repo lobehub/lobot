@@ -450,6 +450,8 @@
   "pageList.transferWarning": "移动后如需恢复原位置，请手动移回。",
   "pageList.untitled": "无标题",
   "portal.openInPageEditor": "在文稿中编辑",
+  "preview.archive.desc": "压缩包无法在线预览，下载并解压后即可查看其中的文件。",
+  "preview.archive.label": "{{ext}} 压缩包",
   "preview.downloadFile": "下载文件",
   "preview.raw": "原文",
   "preview.render": "预览",
