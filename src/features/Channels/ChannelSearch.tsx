@@ -85,7 +85,7 @@ const styles = stylex.create({
   mark: {
     borderRadius: 2,
     color: cssVar.colorText,
-    backgroundColor: cssVar.colorWarningBg,
+    backgroundColor: cssVar.colorWarningBorder,
   },
   more: { display: 'flex', justifyContent: 'center', paddingBlock: 8 },
   sentinel: { flexShrink: 0, height: 1 },
