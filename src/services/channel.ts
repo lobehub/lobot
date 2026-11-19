@@ -1,4 +1,9 @@
-import type { ChannelDetail, ChannelListItem, ChannelSection } from '@lobot/types';
+import type {
+  ChannelDetail,
+  ChannelListItem,
+  ChannelSection,
+  ContactCardInput,
+} from '@lobot/types';
 
 import { createWorkspaceLambdaClient, lambdaClient } from '@/libs/trpc/client';
 
@@ -157,6 +162,8 @@ class ChannelService {
   resumeJob = (channelId: string, jobId: string) =>
     lambdaClient.channel.resumeJob.mutate({ channelId, jobId });
   send = (input: {
+    /** Shares a contact card; the server writes the content and the card snapshot. */
+    card?: ContactCardInput;
     channelId: string;
     content: string;
     fileIds?: string[];

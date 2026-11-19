@@ -6,6 +6,7 @@ import type {
 } from '@lobot/types';
 import { t } from 'i18next';
 
+import { contactCardPreview } from '@/features/ContactCardShare/cardText';
 import { markdownToTxt } from '@/utils/markdownToTxt';
 
 /** A plain left click; modified clicks keep the browser's own handling of the link. */
@@ -44,7 +45,9 @@ export interface PreviewViewer {
 }
 
 /** A message's text as one line, else what it carries ("[Image]") when it was only files. */
-const messageBody = ({ attachments, content }: ChannelLastMessage) => {
+const messageBody = ({ attachments, card, content }: ChannelLastMessage) => {
+  // A shared card reads in the viewer's language rather than as the stored English text.
+  if (card) return contactCardPreview(card);
   const text = oneLine(markdownToTxt(content));
   if (text || !attachments) return text;
   return t(attachments.fileType.startsWith('image/') ? 'preview.image' : 'preview.file', {

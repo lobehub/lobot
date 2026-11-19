@@ -84,3 +84,49 @@ export type ContactRelation =
 export type ContactSearchResult =
   | { relation: ContactRelation; type: 'user'; user: ContactUserProfile }
   | { agent: ContactAgentProfile; relation: 'self' | 'contact' | 'none'; type: 'agent' };
+
+// ── Contact cards ───────────────────────────────────────────────────────
+
+/**
+ * A contact shared into a Channel as a card (`card` of a message, `metadata.card` on the server).
+ * Only the reference is authoritative; the name and avatar are the server's snapshot at send time.
+ * Clients look the person or the share up again before acting on it.
+ */
+export type ContactCard =
+  | {
+      avatar: string | null;
+      name: string | null;
+      type: 'user';
+      userId: string;
+      username: string | null;
+    }
+  | {
+      agentId: string;
+      avatar: string | null;
+      backgroundColor: string | null;
+      name: string | null;
+      /** Owner's display name, so the card can say whose Agent it is. */
+      ownerName: string | null;
+      /** The link share the recipient adds it through. */
+      shareId: string;
+      type: 'agent';
+    };
+
+export type ContactCardType = ContactCard['type'];
+
+/** What a sender picks to share: the server resolves and snapshots the rest. */
+export type ContactCardInput =
+  { type: 'user'; userId: string } | { agentId: string; type: 'agent' };
+
+/** A message's card, or undefined when it carries none or a malformed one. */
+export const contactCardOf = (card: unknown): ContactCard | undefined => {
+  const value = card as Partial<Record<string, unknown>> | null | undefined;
+  if (value?.type === 'user' && typeof value.userId === 'string') return value as ContactCard;
+  if (
+    value?.type === 'agent' &&
+    typeof value.agentId === 'string' &&
+    typeof value.shareId === 'string'
+  )
+    return value as ContactCard;
+  return undefined;
+};
