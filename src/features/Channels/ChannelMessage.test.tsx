@@ -135,6 +135,10 @@ vi.mock('./ThreadRef', () => ({
 vi.mock('./MessageReceipts', () => ({
   MessageRoutingStatus: () => null,
 }));
+vi.mock('./ReplyErrorCard', () => ({
+  ReplyErrorCard: ({ replyError }: { replyError: { summary: string } }) =>
+    createElement('div', { 'data-testid': 'reply-error' }, replyError.summary),
+}));
 
 const detail = {
   attachments: [],
@@ -831,5 +835,32 @@ describe('ChannelMessage toolbar', () => {
 
     fireEvent.focus(screen.getByRole('article'));
     expect(screen.getByText('message.delete')).toBeTruthy();
+  });
+});
+
+describe('ChannelMessage reply error', () => {
+  it('renders the error card the server posted in the reply slot, marked failed', () => {
+    markdownProps.current = undefined;
+    render(
+      <ChannelMessage
+        detail={detail}
+        message={{
+          ...message({ avatar: null, id: 'agt_1', name: 'Sanjo', type: 'agent' }),
+          agentId: 'agt_1',
+          content: 'The device stopped responding.',
+          replyError: {
+            actions: ['retry'],
+            attempts: 1,
+            jobId: 'job_1',
+            occurredAt: '2026-11-20T00:00:00.000Z',
+            summary: 'The device stopped responding.',
+          },
+        }}
+      />,
+    );
+
+    expect(screen.getByTestId('reply-error').textContent).toBe('The device stopped responding.');
+    expect(markdownProps.current).toBeUndefined();
+    expect(screen.getByText('status.failed')).toBeTruthy();
   });
 });

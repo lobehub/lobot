@@ -41,6 +41,7 @@ import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
 import { AuthorAvatar } from './AuthorAvatar';
+import { ChannelStatus } from './ChannelStatus';
 import { DeferredHoverCard } from './DeferredHoverCard';
 import { groupAvatar } from './groupAvatar';
 import { callerMemberRole } from './memberManagement';
@@ -53,6 +54,8 @@ import { MessageEditor } from './MessageEditor';
 import { channelMessageTime, channelTimeFormatters, foldsByDefault } from './messagePresentation';
 import { MessageRoutingStatus } from './MessageReceipts';
 import { RelayLabel } from './RelayLabel';
+import { messageReplyError } from './replyError';
+import { ReplyErrorCard } from './ReplyErrorCard';
 import { showsReplyQuote } from './replyQuote';
 import type { ReplyTopic } from './ReplyTopicPanel';
 import { ReplyWorks } from './ReplyWorks';
@@ -504,10 +507,14 @@ const ChannelMessageView = ({
       onOpenThread={onOpenThread}
     />
   );
+  // A reply that failed for a system reason, posted by the server where the reply would be.
+  const replyError = !deleted && messageReplyError(message);
   const content = deleted ? (
     <Text italic type="secondary">
       {t('message.deleted')}
     </Text>
+  ) : replyError ? (
+    <ReplyErrorCard detail={detail} message={message} replyError={replyError} />
   ) : (
     message.content &&
     (collapsible ? (
@@ -558,6 +565,7 @@ const ChannelMessageView = ({
   const headerMarks = (
     <>
       <RelayLabel message={message} />
+      {replyError && <ChannelStatus label={t('status.failed')} tone="error" />}
     </>
   );
   const toolbar = hasToolbar && toolbarMounted && (

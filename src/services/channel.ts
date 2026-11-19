@@ -153,6 +153,9 @@ class ChannelService {
   /** Queues a reply that could not reach its device again; it waits for the device if offline. */
   retryJob = (channelId: string, jobId: string) =>
     lambdaClient.channel.retryJob.mutate({ channelId, jobId });
+  /** Continues a failed reply in the same Agent session, where `retryJob` starts a new topic. */
+  resumeJob = (channelId: string, jobId: string) =>
+    lambdaClient.channel.resumeJob.mutate({ channelId, jobId });
   send = (input: {
     channelId: string;
     content: string;

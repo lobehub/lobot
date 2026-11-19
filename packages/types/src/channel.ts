@@ -156,8 +156,34 @@ export type ChannelMemberGrantMetadata = Record<string, unknown>;
 /** Free-form Thread state that does not need its own column. */
 export type ChannelThreadMetadata = Record<string, unknown>;
 
+/**
+ * What the person who asked can do about a reply that failed for a system reason: `resume`
+ * continues the same Agent session, `retry` starts over in a new topic, `switch_device` runs the
+ * Agent on another device.
+ */
+export type ChannelReplyErrorAction = 'resume' | 'retry' | 'switch_device';
+
+/**
+ * A reply that failed for a system reason, posted by the server in the Agent's reply slot as a
+ * real message (`metadata.replyError`). Mirrors the server's `ChannelReplyError`.
+ */
+export interface ChannelReplyError {
+  /** Recommended first. */
+  actions: ChannelReplyErrorAction[];
+  attempts: number;
+  deviceId?: string | null;
+  /** Raw diagnostic, shown only under the collapsed details. */
+  errorMessage?: string | null;
+  errorType?: string | null;
+  /** The failed reply job. */
+  jobId: string;
+  occurredAt: string;
+  /** One sentence explaining what went wrong. */
+  summary: string;
+}
+
 /** Free-form public message state that does not need its own column. */
-export type ChannelMessageMetadata = Record<string, unknown>;
+export type ChannelMessageMetadata = Record<string, unknown> & { replyError?: ChannelReplyError };
 
 /**
  * The Agent that wrote a request on its requester's behalf, from another Channel. The person
@@ -517,9 +543,13 @@ export interface ChannelPublicMessage {
   fileIds: string[];
   id: string;
   mentions: string[];
+  /** Free-form state, when the server passes it through; `replyError` is the one read here. */
+  metadata?: ChannelMessageMetadata | null;
   /** Another Channel's reply this request brings back to the relaying Agent; null otherwise. */
   receipt?: ChannelMessageReceipt | null;
   recipientMemberIds: string[];
+  /** Set on the card the server posts for a reply that failed for a system reason. */
+  replyError?: ChannelReplyError | null;
   /** Bounded public quote, including when its original is outside the loaded page. */
   replyTo?: Pick<
     ChannelPublicMessage,

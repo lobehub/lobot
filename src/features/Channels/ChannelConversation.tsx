@@ -42,6 +42,7 @@ import { presentOutgoingMessage, timelineTail } from './outgoing';
 import { OutgoingStatus } from './OutgoingStatus';
 import { channelTitle } from './peerTitle';
 import { ReplyActivity } from './ReplyActivity';
+import { withoutReplyErrorCards } from './replyError';
 import { ReplyFailureMessage } from './ReplyFailureMessage';
 import type { ReplyTopic } from './ReplyTopicPanel';
 import { styles } from './styles';
@@ -159,16 +160,18 @@ const Timeline = ({
     const feed = feedRef.current;
     if (feed) earlierAnchor.current = feed.scrollHeight - feed.scrollTop;
     setEarlier({ cursors: [...earlierCursors, cursor], key: viewKey });
-    channelActions.refreshDetail({ before: cursor, channelId, threadId }).catch((error: unknown) => {
-      console.error('Failed to load earlier Channel messages', error);
-      earlierAnchor.current = null;
-      // Drop the page so scrolling up can ask again.
-      setEarlier((current) =>
-        current.key === viewKey
-          ? { ...current, cursors: current.cursors.filter((entry) => entry !== cursor) }
-          : current,
-      );
-    });
+    channelActions
+      .refreshDetail({ before: cursor, channelId, threadId })
+      .catch((error: unknown) => {
+        console.error('Failed to load earlier Channel messages', error);
+        earlierAnchor.current = null;
+        // Drop the page so scrolling up can ask again.
+        setEarlier((current) =>
+          current.key === viewKey
+            ? { ...current, cursors: current.cursors.filter((entry) => entry !== cursor) }
+            : current,
+        );
+      });
   };
   const oldestShown = detail?.messages[0]?.id;
   useLayoutEffect(() => {
@@ -264,14 +267,18 @@ const Timeline = ({
         !detail.hasMore && before === undefined,
       )
     : [];
-  // Failed replies this conversation still owes, each after what its Agent already said.
+  // Failed replies this conversation still owes, each after what its Agent already said. One the
+  // server already posted an error card for shows only that card.
   const failures = detail
     ? failureAnchors(
         messages,
         replyEntries(
           detail,
-          unresolvedFailures(
-            (detail.jobs ?? []).filter((job) => (job.threadId ?? null) === (threadId ?? null)),
+          withoutReplyErrorCards(
+            unresolvedFailures(
+              (detail.jobs ?? []).filter((job) => (job.threadId ?? null) === (threadId ?? null)),
+            ),
+            messages,
           ),
           t('unnamedAgent'),
         ),
