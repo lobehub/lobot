@@ -1,4 +1,8 @@
 export default {
+  'visibility.private.badge': 'Private',
+  'visibility.private.notice':
+    '{{name}} is your private device: only you can use Agents that run on it. To let other workspace members use them, publish it to the workspace in its device settings.',
+  'visibility.private.openSettings': 'Open device settings',
   'workingDirectory.newFolderCreated': 'Created folder: {{path}}',
   'workingDirectory.newFolderInvalidWindowsName':
     'Use a Windows folder name without reserved names (such as CON), special characters (< > : " / \\ | ? *), control characters, or a trailing space or period.',

@@ -83,7 +83,7 @@ function EnvironmentRows({ agentId, channel }: { agentId: string; channel?: Chan
         : state.kind === 'offline'
           ? t('blockedDevice.offline', { time: dayjs(state.device.lastSeen).fromNow() })
           : state.kind === 'missing'
-            ? t('blockedDevice.missing')
+            ? t('blockedDevice.notShared')
             : t('environment.checkingDevice');
     device = (
       <Flexbox gap={2} style={{ minWidth: 0 }}>

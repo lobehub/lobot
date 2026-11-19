@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "私人",
+  "visibility.private.notice": "「{{name}}」是你的私人设备，只有你能使用运行在它上面的 Agent。要让工作区其他成员也能使用，请在设备设置中把它发布到工作区。",
+  "visibility.private.openSettings": "打开设备设置",
   "workingDirectory.addFolder": "添加目录…",
   "workingDirectory.addFolderDesc": "输入目标设备上的绝对路径，如 /Users/name/projects",
   "workingDirectory.addFolderFailed": "无法添加此文件夹，请重试。",

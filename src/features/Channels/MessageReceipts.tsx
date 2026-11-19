@@ -201,6 +201,17 @@ export function ReplyDetail({
           member={member}
         />
       )}
+      {/* "Agent unavailable" alone does not say why: name the device when it is the cause. */}
+      {job.status === 'queued' && job.blockedCode === 'unavailable' && (
+        <BlockedDevice
+          restrictedOnly
+          waiting
+          channelId={channelId}
+          deviceId={job.deviceId}
+          manageable={manageable}
+          member={member}
+        />
+      )}
       {job.worktreeBranch && (
         <Text ellipsis fontSize={12} title={job.worktreeBranch} type="secondary">
           {t('receipt.worktree', { branch: job.worktreeBranch })}

@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "Private",
+  "visibility.private.notice": "{{name}} is your private device: only you can use Agents that run on it. To let other workspace members use them, publish it to the workspace in its device settings.",
+  "visibility.private.openSettings": "Open device settings",
   "workingDirectory.addFolder": "Add folder…",
   "workingDirectory.addFolderDesc": "Enter an absolute path on the target device, e.g. /Users/name/projects",
   "workingDirectory.addFolderFailed": "Could not add this folder. Please try again.",
