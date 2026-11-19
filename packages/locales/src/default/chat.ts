@@ -1516,6 +1516,7 @@ export default {
   'connectAgent.create.detectedInScan': 'detected in scan',
   'connectAgent.create.back': 'Back',
   'connectAgent.create.createFailed': 'Connect failed',
+  'connectAgent.discovery.description': 'Import them to chat with each one in its own channel.',
   'connectAgent.discovery.ignore': 'Ignore',
   'connectAgent.discovery.import': 'Import',
   'connectAgent.discovery.tip': 'Found {{names}}',

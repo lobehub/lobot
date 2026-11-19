@@ -276,6 +276,7 @@
   "connectAgent.create.stepDevicePick": "Step 2 of 3 · Pick the machine the agent runs on — it will be scanned automatically.",
   "connectAgent.create.thisDevice": "This device",
   "connectAgent.create.title": "Connect Agent",
+  "connectAgent.discovery.description": "Import them to chat with each one in its own channel.",
   "connectAgent.discovery.ignore": "Ignore",
   "connectAgent.discovery.import": "Import",
   "connectAgent.discovery.tip": "Found {{names}}",

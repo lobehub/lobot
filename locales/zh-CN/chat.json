@@ -276,6 +276,7 @@
   "connectAgent.create.stepDevicePick": "第 2 步,共 3 步 · 选择运行助理的设备,将自动扫描其上安装的 Agent。",
   "connectAgent.create.thisDevice": "本机",
   "connectAgent.create.title": "接入助理",
+  "connectAgent.discovery.description": "导入后每个 Agent 都有自己的私聊频道。",
   "connectAgent.discovery.ignore": "忽略",
   "connectAgent.discovery.import": "导入",
   "connectAgent.discovery.tip": "发现 {{names}}",
