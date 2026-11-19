@@ -1,4 +1,3 @@
-import { DEFAULT_USER_AVATAR } from '@lobechat/const';
 import { ActionIcon, Checkbox, Flexbox, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { useDebounce } from 'ahooks';
@@ -9,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useWorkspaceMembers } from '@/business/client/hooks/useWorkspaceMembers';
 import AsyncBoundary from '@/components/AsyncBoundary';
-import Avatar from '@/components/Avatar';
+import UserAvatar from '@/components/UserAvatar';
 import type { ChannelPersonOption } from '@/services/channel';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 import { useUserStore } from '@/store/user';
@@ -32,7 +31,7 @@ export const usePersonName = () => {
 };
 
 const PersonAvatar = ({ name, person }: { name: string; person: ChannelPersonOption }) => (
-  <Avatar avatar={person.avatar || DEFAULT_USER_AVATAR} shape={'circle'} size={28} title={name} />
+  <UserAvatar avatar={person.avatar} name={name} shape={'circle'} size={28} />
 );
 
 /**

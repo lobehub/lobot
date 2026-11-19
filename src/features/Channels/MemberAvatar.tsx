@@ -2,7 +2,7 @@ import type { ChannelPublicMember } from '@lobot/types';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
-import Avatar from '@/components/Avatar';
+import PersonAvatar from '@/components/UserAvatar';
 import UserAvatar from '@/features/User/UserAvatar';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
@@ -25,5 +25,7 @@ export function MemberAvatar({ member, size }: { member: ChannelPublicMember; si
         title={name}
       />
     );
-  return <Avatar avatar={memberAvatar(member)} shape={'circle'} size={size} title={name} />;
+  // A person without an image draws the pixel avatar generated from their name, as the
+  // message list does.
+  return <PersonAvatar avatar={memberAvatar(member)} name={name} shape={'circle'} size={size} />;
 }

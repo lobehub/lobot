@@ -1,4 +1,4 @@
-import { Avatar, Button, SearchBar } from '@lobehub/ui';
+import { Button, SearchBar } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { type ChannelSearchHit, channelService } from '@/services/channel';
 import { markdownToTxt } from '@/utils/markdownToTxt';
 
-import { authorAvatar } from './memberName';
+import { AuthorAvatar } from './AuthorAvatar';
 import { ChannelSidePanel } from './MemberPanel';
 import { channelMessageTime } from './messagePresentation';
 
@@ -221,7 +221,7 @@ const SearchHit = ({
   const name = hit.author.name || t('deletedMember');
   return (
     <button type="button" {...stylex.props(styles.hit)} onClick={() => onOpen(hit)}>
-      <Avatar avatar={authorAvatar(hit.author)} shape="circle" size={28} title={name} />
+      <AuthorAvatar author={hit.author} size={28} />
       <span {...stylex.props(styles.body)}>
         <span {...stylex.props(styles.meta)}>
           <span {...stylex.props(styles.name)}>{name}</span>

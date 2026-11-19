@@ -15,6 +15,7 @@ vi.mock('./MemberAvatar', () => ({
   MemberAvatar: ({ member }: { member: { id: string } }) =>
     createElement('img', { 'alt': '', 'data-member': member.id }),
 }));
+vi.mock('./AuthorAvatar', () => ({ AuthorAvatar: () => createElement('i') }));
 vi.mock('@/hooks/useCloseOnNavigate', () => ({ useCloseOnNavigate: () => 0 }));
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -24,7 +25,6 @@ vi.mock('react-i18next', () => ({
 }));
 vi.mock('@lobehub/ui', () => ({
   ActionIcon: ({ title }: { title?: string }) => createElement('button', {}, title),
-  Avatar: () => createElement('i'),
   Icon: () => createElement('i'),
   // Shows the trigger and the panel at once so both can be read.
   Popover: ({ children, content }: { children?: unknown; content?: unknown }) =>

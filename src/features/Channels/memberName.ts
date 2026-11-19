@@ -1,13 +1,14 @@
-import { DEFAULT_USER_AVATAR } from '@lobechat/const';
 import type { ChannelPublicMember, ChannelPublicMessage } from '@lobot/types';
 
 export const memberName = (member: ChannelPublicMember | undefined, fallback: string) =>
   member?.name || member?.userName || member?.username || fallback;
 
+/**
+ * The member's own image, if any. A person without one draws the pixel avatar generated from
+ * their name (`UserAvatar`), the face the message list shows, never a stock emoji.
+ */
 export const memberAvatar = (member: ChannelPublicMember | undefined) =>
-  member?.actorType === 'user'
-    ? member.userAvatar || DEFAULT_USER_AVATAR
-    : member?.avatar || undefined;
+  (member?.actorType === 'user' ? member.userAvatar : member?.avatar) || undefined;
 
 /** Only the viewer's own human messages may use their live personal avatar. */
 export const isCurrentUserAuthor = (
@@ -21,5 +22,4 @@ export const isCurrentUserMember = (
   currentUserId: string | undefined,
 ) => !!currentUserId && member.actorType === 'user' && member.userId === currentUserId;
 
-export const authorAvatar = (author: ChannelPublicMessage['author']) =>
-  author.avatar || (author.type === 'user' ? DEFAULT_USER_AVATAR : undefined);
+export const authorAvatar = (author: ChannelPublicMessage['author']) => author.avatar || undefined;

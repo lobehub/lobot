@@ -5,7 +5,7 @@ import * as stylex from '@stylexjs/stylex';
 import { type ReactElement, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import Avatar from '@/components/Avatar';
+import PersonAvatar from '@/components/UserAvatar';
 import AgentProfilePopup from '@/features/AgentProfileCard/AgentProfilePopup';
 import { cardPopoverProps } from '@/styles/cardPopover';
 
@@ -72,7 +72,8 @@ export const PersonCardFrame = ({
   <Flexbox {...stylex.props(styles.card)}>
     <div {...stylex.props(styles.banner)}>
       <span {...stylex.props(styles.bannerImage)}>
-        <Avatar avatar={image || undefined} name={name} shape={'square'} size={400} />
+        {/* Without an image, the banner blurs the person's generated pixel avatar. */}
+        <PersonAvatar avatar={image} name={name} shape={'square'} size={400} />
       </span>
     </div>
     <Flexbox gap={8} {...stylex.props(styles.body)}>

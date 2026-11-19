@@ -1,4 +1,4 @@
-import { Avatar, Icon } from '@lobehub/ui';
+import { Icon } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { ChannelDetail, ChannelPublicMessage, ChannelPublicThread } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
@@ -14,8 +14,9 @@ import { userProfileSelectors } from '@/store/user/selectors';
 import { markdownToTxt } from '@/utils/markdownToTxt';
 
 import { activityLabel } from './activityLabel';
+import { AuthorAvatar } from './AuthorAvatar';
 import { memberJobStatus, workingJob } from './jobStatus';
-import { authorAvatar, isCurrentUserAuthor, memberAvatar, memberName } from './memberName';
+import { isCurrentUserAuthor, memberAvatar, memberName } from './memberName';
 import { threadTitle } from './threadTitle';
 import { TypingDots } from './TypingDots';
 
@@ -210,23 +211,10 @@ export const ThreadPreviewCard = ({
           <span {...stylex.props(styles.line)}>
             {isOwnReply ? (
               <UserAvatar shape="circle" size={16} />
-            ) : lastReply.author.type === 'agent' ? (
-              // Without an image of its own, an Agent draws the character generated from its id,
-              // so the card shows the face the thread shows.
-              <AgentAvatar
-                agentId={lastReply.author.id}
-                avatar={lastReply.author.avatar}
-                name={lastReply.author.name}
-                shape="circle"
-                size={16}
-              />
             ) : (
-              <Avatar
-                avatar={authorAvatar(lastReply.author)}
-                shape="circle"
-                size={16}
-                title={lastReply.author.name ?? undefined}
-              />
+              // Without an image of their own, the face the thread shows: an Agent's generated
+              // character, a person's pixel avatar.
+              <AuthorAvatar author={lastReply.author} size={16} />
             )}
             <span {...stylex.props(styles.author)}>
               {lastReply.author.name || t('deletedMember')}
