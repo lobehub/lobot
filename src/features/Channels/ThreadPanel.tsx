@@ -1,8 +1,22 @@
-import { ActionIcon, cssVar, DropdownMenu, Flexbox, Icon, Text } from '@lobehub/ui';
+import {
+  ActionIcon,
+  ContextMenuTrigger,
+  cssVar,
+  DropdownMenu,
+  Flexbox,
+  Icon,
+  Text,
+} from '@lobehub/ui';
 import type { ChannelDetail } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { Maximize2, MoreHorizontal, X } from 'lucide-react';
-import { Activity, type ComponentProps, useDeferredValue, useState } from 'react';
+import {
+  Activity,
+  type ComponentProps,
+  type ReactElement,
+  useDeferredValue,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NavHeader from '@/features/NavHeader';
@@ -11,13 +25,14 @@ import { channelSelectors, useChannelStore } from '@/store/channel';
 
 import { ChannelConversation } from './ChannelConversation';
 import { DraftThreadConversation } from './DraftThreadConversation';
+import { headerHoverMarker } from './markers.stylex';
 import { MemberAvatar } from './MemberAvatar';
 import { memberName } from './memberName';
 import { styles } from './styles';
 import { type ChannelThreadDraft, draftThreadFollowerIds } from './threadDraft';
 import { threadIcon } from './threadIcon';
 import { threadTitle } from './threadTitle';
-import { useThreadMenu } from './useThreadMenu';
+import { threadPanelMenuItems, useThreadMenu } from './useThreadMenu';
 
 /** Below this width the thread floats over the channel instead of sitting beside it. */
 export const THREAD_FLOAT_BREAKPOINT = 760;
@@ -86,7 +101,14 @@ export function ThreadPanel({
   // Keep the last preview/conversation mounted while the panel animates closed.
   const target = threadId || draft;
   const [lastTarget, setLastTarget] = useState(target);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuFor, setMenuFor] = useState(threadId);
   const [preferredWidth, setPreferredWidth] = useState(520);
+  // Opening the menu belongs to one thread. Switching closes it on this render.
+  if (menuFor !== threadId) {
+    setMenuFor(threadId);
+    setMenuOpen(false);
+  }
   if (target && target !== lastTarget) setLastTarget(target);
   // The panel and its header open first; the conversation, the heavy part, mounts in a
   // background render right after, so the click is answered without waiting for it.
@@ -103,7 +125,20 @@ export function ThreadPanel({
   );
   const rootMessageId = threads.find((entry) => entry.id === lastThreadId)?.rootMessageId;
   const openThread = threadId ? threads.find((entry) => entry.id === threadId) : undefined;
-  const menuItems = openThread ? threadMenu(detail.channel, openThread) : [];
+  // "Open as page" lives in this menu, the same list a right-click on the title opens.
+  const menuItems = threadPanelMenuItems(
+    openThread ? threadMenu(detail.channel, openThread) : [],
+    threadId
+      ? {
+          icon: Maximize2,
+          key: 'openThreadPage',
+          label: t('openThreadPage'),
+          onClick: () => onOpenPage(threadId),
+        }
+      : null,
+  );
+  const withMenu = (node: ReactElement) =>
+    menuItems.length > 0 ? <ContextMenuTrigger items={menuItems}>{node}</ContextMenuTrigger> : node;
   const title =
     threadTitle(
       (lastTarget && typeof lastTarget !== 'string' ? lastTarget.root : threadView?.rootMessage) ??
@@ -133,7 +168,8 @@ export function ThreadPanel({
       <Activity mode={target ? 'visible' : 'hidden'}>
         <Flexbox aria-label={t('thread')} role="region" {...stylex.props(styles.body)}>
           <NavHeader
-            {...stylex.props(styles.threadHeader)}
+            // The marker reveals the title's "more" button while this bar is hovered or focused.
+            {...stylex.props(headerHoverMarker, styles.threadHeader)}
             paddingBlock={6}
             paddingInline={8}
             showTogglePanelButton={false}
@@ -144,34 +180,32 @@ export function ThreadPanel({
                 gap={8}
                 style={{ marginInlineStart: 4, minWidth: 0 }}
               >
-                <Icon color={cssVar.colorTextDescription} icon={threadIcon} size={18} />
-                <Text ellipsis fontSize={14} title={title}>
-                  {title}
-                </Text>
+                {withMenu(<Icon color={cssVar.colorTextDescription} icon={threadIcon} size={18} />)}
+                {withMenu(
+                  <Text ellipsis fontSize={14} title={title}>
+                    {title}
+                  </Text>,
+                )}
+                {menuItems.length > 0 && (
+                  <span
+                    data-menu-open={menuOpen ? '' : undefined}
+                    {...stylex.props(styles.headerMenu)}
+                  >
+                    <DropdownMenu items={menuItems} onOpenChange={setMenuOpen}>
+                      <ActionIcon
+                        aria-label={t('more', { ns: 'common' })}
+                        icon={MoreHorizontal}
+                        size="small"
+                        title={t('more', { ns: 'common' })}
+                      />
+                    </DropdownMenu>
+                  </span>
+                )}
               </Flexbox>
             }
             right={
               <Flexbox horizontal align="center" gap={8}>
                 {lastTarget && <ThreadFollowers detail={detail} target={lastTarget} />}
-                {menuItems.length > 0 && (
-                  <DropdownMenu items={menuItems}>
-                    <ActionIcon
-                      aria-label={t('more', { ns: 'common' })}
-                      icon={MoreHorizontal}
-                      size="small"
-                      title={t('more', { ns: 'common' })}
-                    />
-                  </DropdownMenu>
-                )}
-                {threadId && (
-                  <ActionIcon
-                    aria-label={t('openThreadPage')}
-                    icon={Maximize2}
-                    size="small"
-                    title={t('openThreadPage')}
-                    onClick={() => onOpenPage(threadId)}
-                  />
-                )}
                 <ActionIcon
                   aria-label={t('closeThread')}
                   icon={X}
@@ -181,7 +215,6 @@ export function ThreadPanel({
                 />
               </Flexbox>
             }
-            {...stylex.props(styles.threadHeader)}
           />
           {typeof shownTarget === 'string' ? (
             <ChannelConversation

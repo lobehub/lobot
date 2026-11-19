@@ -2,7 +2,7 @@ import type { ChannelListItem, ChannelPublicThread } from '@lobot/types';
 import { cleanup, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { useThreadMenu } from './useThreadMenu';
+import { threadPanelMenuItems, useThreadMenu } from './useThreadMenu';
 
 const { copyToClipboard, success, error } = vi.hoisted(() => ({
   copyToClipboard: vi.fn(),
@@ -53,6 +53,26 @@ describe('useThreadMenu', () => {
     await item(items, 'copyThreadId').onClick();
     expect(copyToClipboard).toHaveBeenLastCalledWith('cht_thread1');
     expect(success).toHaveBeenLastCalledWith('copyThreadIdSuccess');
+  });
+
+  it('leads the side panel menu with open as page', () => {
+    const onClick = vi.fn();
+    const openPage = { key: 'openThreadPage', label: 'openThreadPage', onClick };
+
+    expect(threadPanelMenuItems(menu(), openPage).map((entry) => entry.key ?? entry.type)).toEqual([
+      'openThreadPage',
+      'divider',
+      'copyThreadLink',
+      'copyThreadId',
+    ]);
+    expect(threadPanelMenuItems([], openPage).map((entry) => entry.key)).toEqual([
+      'openThreadPage',
+    ]);
+    const actions = menu();
+    expect(threadPanelMenuItems(actions, null)).toBe(actions);
+
+    openPage.onClick();
+    expect(onClick).toHaveBeenCalledOnce();
   });
 
   it('puts archive first and delete last for a manager', () => {

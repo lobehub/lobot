@@ -1,5 +1,5 @@
 import { CHANNEL_URL } from '@lobechat/const';
-import { copyToClipboard, toast } from '@lobehub/ui';
+import { copyToClipboard, type DropdownItem, toast } from '@lobehub/ui';
 import type { ChannelListItem, ChannelPublicThread } from '@lobot/types';
 import { Archive, ArchiveRestore, Copy, Link2, Trash } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,21 @@ import { useAppOrigin } from '@/hooks/useAppOrigin';
 import { useChannelArchive } from './useChannelArchive';
 import { useRemoveThread } from './useRemoveThread';
 
-/** Thread actions shared by the sidebar entry and the open thread's header. */
+/**
+ * The side panel's menu: "open as page" leads, then the actions the thread already has.
+ * An empty action list stays a single item, with no dangling divider.
+ */
+export const threadPanelMenuItems = (
+  actions: DropdownItem[],
+  openPage: DropdownItem | null,
+): DropdownItem[] =>
+  openPage
+    ? actions.length > 0
+      ? [openPage, { type: 'divider' }, ...actions]
+      : [openPage]
+    : actions;
+
+/** Thread actions shared by the open thread's header and its page. */
 export const useThreadMenu = () => {
   const { t } = useTranslation('channel');
   const removeThread = useRemoveThread();
