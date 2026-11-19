@@ -273,7 +273,14 @@ function EnabledChannelPage() {
         portal={CHANNEL_ENTITY_PORTAL_SCOPE}
         onOpenSideBrowser={(url) => openBrowser(channelBrowserSessionId(channelId), url)}
       >
-        <Flexbox horizontal ref={conversationRef} {...stylex.props(styles.conversations)}>
+        {/* Keyed by Channel: switching rebuilds the whole area, so nothing the last Channel left
+            in it (a conversation whose unmount did not take its DOM) stays beside the new one. */}
+        <Flexbox
+          horizontal
+          key={channelId}
+          ref={conversationRef}
+          {...stylex.props(styles.conversations)}
+        >
           {pageThreadId ? (
             <ChannelConversation
               channelId={channelId}

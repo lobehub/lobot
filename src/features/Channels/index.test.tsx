@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ChannelPage from './index';
 
 const mocks = vi.hoisted(() => ({
+  channelId: 'chn_gone',
   close: vi.fn(),
   detail: undefined as object | undefined,
   error: undefined as unknown,
@@ -14,7 +15,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('react-router', () => ({
-  useParams: () => ({ channelId: 'chn_gone' }),
+  useParams: () => ({ channelId: mocks.channelId }),
   useSearchParams: () => [new URLSearchParams(), mocks.setSearchParams],
 }));
 vi.mock('@/store/serverConfig', () => ({
@@ -58,7 +59,10 @@ vi.mock('./usePortalPanel', () => ({
 vi.mock('./ChannelEmpty', () => ({
   ChannelEmpty: () => createElement('div', { 'data-testid': 'channel-empty' }),
 }));
-vi.mock('./ChannelConversation', () => ({ ChannelConversation: () => null }));
+vi.mock('./ChannelConversation', () => ({
+  ChannelConversation: ({ channelId }: { channelId: string }) =>
+    createElement('div', { 'data-testid': `conversation:${channelId}` }),
+}));
 vi.mock('./PortalPanel', () => ({
   CHANNEL_ENTITY_PORTAL_SCOPE: 'channel',
   PortalPanel: () => null,
@@ -85,6 +89,7 @@ vi.mock('./ChannelSearch', () => ({
 
 describe('ChannelPage', () => {
   beforeEach(() => {
+    mocks.channelId = 'chn_gone';
     mocks.error = undefined;
     mocks.list = [];
     mocks.detail = undefined;
@@ -150,5 +155,22 @@ describe('ChannelPage', () => {
 
     expect(mocks.close).toHaveBeenCalled();
     expect(mocks.setSearchParams).not.toHaveBeenCalled();
+  });
+
+  // Switching from one Channel to another left the old conversation on screen, the new one
+  // squeezed beside it as if it had opened in a thread.
+  it('leaves nothing of the last Channel beside the next one', () => {
+    mocks.channelId = 'chn_a';
+    const { rerender } = render(createElement(ChannelPage));
+    const stale = document.createElement('div');
+    stale.dataset.testid = 'stale';
+    screen.getByTestId('conversation:chn_a').parentElement!.append(stale);
+
+    mocks.channelId = 'chn_b';
+    rerender(createElement(ChannelPage));
+
+    expect(screen.getByTestId('conversation:chn_b')).toBeTruthy();
+    expect(screen.queryByTestId('conversation:chn_a')).toBeNull();
+    expect(screen.queryByTestId('stale')).toBeNull();
   });
 });
