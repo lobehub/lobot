@@ -538,6 +538,9 @@ export default {
   'resourceList.viewTransferred': 'View',
   'portal.openInPageEditor': 'Edit in Page',
   'preview.tooLarge': 'This file is too large to preview. Download it to view its contents.',
+  'preview.archive.desc':
+    'Archives cannot be previewed online. Download and extract it to view the files inside.',
+  'preview.archive.label': '{{ext}} archive',
   'preview.downloadFile': 'Download File',
   'preview.raw': 'Raw',
   'preview.render': 'Preview',

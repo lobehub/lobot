@@ -10,7 +10,7 @@ import { isHtmlFile } from '@/components/HtmlPreview';
 import { type FileListItem } from '@/types/files';
 
 import { isPdfFile } from './fileType';
-import NotSupport from './NotSupport';
+import ArchiveViewer from './Renderer/Archive';
 import CodeViewer from './Renderer/Code';
 import HTMLViewer from './Renderer/HTML';
 import ImageViewer from './Renderer/Image';
@@ -152,7 +152,7 @@ const usePDFRenderer = (enabled: boolean) => {
  * Preview any file type.
  */
 const FileViewer = memo<FileViewerProps>((props) => {
-  const { id, style, fileType, url, name, imageTools, onClose, showChunkHighlights } = props;
+  const { id, fileType, url, name, imageTools, onClose, showChunkHighlights } = props;
   const isPDF = isPdfFile({ fileName: name, fileType, path: url });
   const { retry: retryPDFRenderer, state: pdfRendererState } = usePDFRenderer(isPDF);
 
@@ -198,10 +198,10 @@ const FileViewer = memo<FileViewerProps>((props) => {
     return <VideoViewer fileId={id} url={url} />;
   }
 
-  // Archive files (zip, rar, 7z, etc.) - not supported for preview
-  // Check before code files to avoid false matches
+  // Archive files (zip, rar, 7z, etc.) can't be previewed — show a dedicated
+  // archive card with the download. Check before code files to avoid false matches.
   if (matchesFileType(fileType, name, ARCHIVE_EXTENSIONS, ARCHIVE_MIME_TYPES)) {
-    return <NotSupport fileName={name} style={style} url={url} />;
+    return <ArchiveViewer fileName={name} size={props.size} url={url} />;
   }
 
   // Microsoft Office documents - check before code files to avoid false matches

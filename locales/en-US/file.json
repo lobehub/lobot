@@ -450,6 +450,8 @@
   "pageList.transferWarning": "This is a one-way move; reverting requires another move.",
   "pageList.untitled": "Untitled",
   "portal.openInPageEditor": "Edit in Page",
+  "preview.archive.desc": "Archives cannot be previewed online. Download and extract it to view the files inside.",
+  "preview.archive.label": "{{ext}} archive",
   "preview.downloadFile": "Download File",
   "preview.raw": "Raw",
   "preview.render": "Preview",
