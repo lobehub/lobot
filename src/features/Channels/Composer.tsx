@@ -122,10 +122,23 @@ export function Composer({
   /** Bumped as each send settles, so the input takes the caret back for the next message. */
   const [settledSends, setSettledSends] = useState(0);
   useEffect(() => {
-    // The input locks while a send is busy and drops focus; reclaim only that dropped focus,
-    // never a control the user moved to meanwhile. Runs after the unlock reaches the DOM.
-    const active = document.activeElement;
-    if (settledSends && (!active || active === document.body)) editor.focus();
+    if (!settledSends) return;
+    // The input locks while a send is busy, and clearing the document drops focus with it;
+    // reclaim only dropped focus, never a control the user moved to meanwhile. Lexical swaps
+    // the cleared document in after this commit, so the blur can land a frame later — check
+    // once now and once on the next frame, or the caret never comes back.
+    const reclaim = () => {
+      const active = document.activeElement;
+      if (!active || active === document.body) {
+        editor.focus();
+        return true;
+      }
+      return false;
+    };
+    // Already reclaimed synchronously: a second focus call would only move the caret.
+    if (reclaim()) return;
+    const frame = requestAnimationFrame(reclaim);
+    return () => cancelAnimationFrame(frame);
   }, [editor, settledSends]);
   const sending = useRef(false);
   const previousDocument = useRef('');
@@ -182,10 +195,17 @@ export function Composer({
     invites.clearError();
     const sentRevision = draft.snapshot();
     const clearInput = () => {
+      // Clearing replaces the editor's DOM and takes the caret with it. Put it back for the
+      // next message, but only if the caret was here: a send that settles after the user
+      // moved on must not pull it back. A blur that lands after this commit is caught by
+      // the settle effect.
+      const root = editor.getRootElement();
+      const hadCaret = !!root && root.contains(globalThis.document.activeElement);
       editor.cleanDocument();
       draft.clear(sentRevision);
       attachments.clear();
       setContent('');
+      if (hadCaret) editor.focus();
     };
     try {
       // Mentioned outsiders join first, so the message can address them as members.

@@ -13,6 +13,7 @@ const editor = vi.hoisted(() => ({
   focus: vi.fn(),
   getDocument: vi.fn((type: string) => (type === 'markdown' ? 'hello' : { root: {} })),
   getLexicalEditor: vi.fn(() => null),
+  getRootElement: vi.fn(() => null),
 }));
 
 vi.mock('@lobehub/editor/react', () => ({
@@ -132,6 +133,21 @@ describe('Composer focus', () => {
     expect(editor.focus).not.toHaveBeenCalled();
 
     await finish();
+
+    expect(editor.focus).toHaveBeenCalledTimes(1);
+  });
+
+  it('reclaims focus the cleared document drops a frame after a queued send', async () => {
+    renderComposer('queue');
+    const input = screen.getByLabelText('input');
+    input.focus();
+    fireEvent.click(await screen.findByRole('button', { name: 'send' }));
+    editor.focus.mockClear();
+
+    // Clearing the document swaps the editor's DOM after the settle commit, so the blur
+    // lands once the effect has already run.
+    (document.activeElement as HTMLElement | null)?.blur();
+    await act(async () => new Promise((resolve) => requestAnimationFrame(resolve)));
 
     expect(editor.focus).toHaveBeenCalledTimes(1);
   });
