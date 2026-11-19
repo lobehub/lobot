@@ -4,6 +4,7 @@ import { useCallback } from 'react';
 import { type NavigateFunction, type NavigateOptions, type To, useNavigate } from 'react-router';
 
 import { getActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
+import { openContactsFromUrl } from '@/features/NavRail/contactsPopupStore';
 
 import { buildWorkspaceAwarePath, type WorkspaceAwareNavigateOptions } from './workspaceAwarePath';
 
@@ -38,6 +39,9 @@ export const useWorkspaceAwareNavigate = (): WorkspaceAwareNavigateFunction => {
         // `Partial<Path>` object — pass through unchanged.
         return navigate(to, options as NavigateOptions | undefined);
       }
+      // Contacts live in the address-book popup. A contacts path opens it on
+      // that person or Agent and leaves the page the user is already on.
+      if (openContactsFromUrl(to)) return;
       const target = buildWorkspaceAwarePath(to, getActiveWorkspaceSlug(), options);
       const { escape: _escape, ...rest } = options ?? {};
       void _escape;

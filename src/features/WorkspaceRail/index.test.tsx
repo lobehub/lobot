@@ -2,6 +2,7 @@ import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useUnreadJumpStore } from '@/features/MessageList/unreadJump';
+import { useContactsPopupStore } from '@/features/NavRail/contactsPopupStore';
 
 import WorkspaceRail from './index';
 import { readWorkspaceRailHint, WORKSPACE_RAIL_HINT_KEY, writeWorkspaceRailHint } from './railHint';
@@ -89,6 +90,7 @@ describe('WorkspaceRail', () => {
     mocks.pathname = '/';
     mocks.unread = {};
     useUnreadJumpStore.setState({ lastKey: undefined, requestedAt: undefined });
+    useContactsPopupStore.setState({ open: false, preview: { kind: 'home' }, segment: null });
     mocks.workspaces = [
       { avatar: null, id: 'ws-1', name: 'LobeHub', slug: 'lobehub' },
       { avatar: null, id: 'ws-2', name: 'Acme', slug: 'acme' },
@@ -182,7 +184,7 @@ describe('WorkspaceRail', () => {
     expect(mocks.navigate).toHaveBeenCalledWith('/', { escape: true });
   });
 
-  it('stays on Contacts when switching from the Contacts tab', async () => {
+  it('opens the contacts popup and leaves the previous contact when switching scope', async () => {
     mocks.pathname = '/agents/agt-1';
     render(<WorkspaceRail />);
 
@@ -191,7 +193,8 @@ describe('WorkspaceRail', () => {
     });
 
     expect(mocks.switchWorkspace).toHaveBeenCalledWith('ws-2');
-    expect(mocks.navigate).toHaveBeenCalledWith('/agents', { escape: true });
+    expect(useContactsPopupStore.getState().open).toBe(true);
+    expect(mocks.navigate).toHaveBeenCalledWith('/', { escape: true });
   });
 
   it('switches back to the personal space', async () => {
@@ -256,7 +259,8 @@ describe('WorkspaceRail', () => {
       fireEvent.click(screen.getByRole('button', { name: 'workspaceRail.personal' }));
     });
 
-    expect(mocks.navigate).toHaveBeenCalledWith('/agents', { escape: true });
+    expect(useContactsPopupStore.getState().open).toBe(true);
+    expect(mocks.navigate).not.toHaveBeenCalled();
     expect(useUnreadJumpStore.getState().requestedAt).toBeUndefined();
   });
 

@@ -1,8 +1,8 @@
 'use client';
 
-import type { ContactAgentProfile, ContactSearchResult } from '@lobot/types';
 import { Empty, Flexbox, Skeleton, Text, toast } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ContactAgentProfile, ContactSearchResult } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import {
   MessageCircleIcon,
@@ -10,7 +10,7 @@ import {
   UserRoundPlusIcon,
   UserRoundXIcon,
 } from 'lucide-react';
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useParams } from 'react-router';
 
@@ -23,6 +23,7 @@ import { contactActions, contactSelectors, useContactStore } from '@/store/conta
 import { AVATAR_SIZE, COVER_HEIGHT, styles, TileContent } from './cardParts';
 import { CONTACT_URL } from './const';
 import { ContactInfo } from './ContactInfo';
+import { useContactPreview } from './previewContext';
 import { useMessageSharedAgent } from './useMessageSharedAgent';
 
 const localStyles = stylex.create({
@@ -116,10 +117,20 @@ const SharedAgentProfile = memo<{ share: string }>(({ share }) => {
   const { t } = useTranslation('common');
   const { error, revalidate } = contactActions.useFetchShare(share);
   const result = useContactStore(contactSelectors.sharedAgent(share));
+  const preview = useContactPreview();
+  const ownAgentId = result?.relation === 'self' ? result.agent.agentId : undefined;
 
-  // One's own Agent opens its own card.
-  if (result?.relation === 'self')
-    return <Navigate replace to={CONTACT_URL(result.agent.agentId)} />;
+  // One's own Agent opens its own card. Inside the popup that stays a preview,
+  // so the route change does not dismiss the address book.
+  useEffect(() => {
+    if (!ownAgentId || !preview) return;
+    preview.setPreview({ id: ownAgentId, kind: 'agent' });
+  }, [ownAgentId, preview]);
+
+  if (ownAgentId) {
+    if (preview) return null;
+    return <Navigate replace to={CONTACT_URL(ownAgentId)} />;
+  }
   if (result) return <SharedAgentProfileCard result={result} />;
 
   if (result === null)

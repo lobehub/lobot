@@ -5,6 +5,7 @@ import { CirclePlusIcon } from 'lucide-react';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
 import { openAddContactModal } from '@/features/AddContactModal';
 import { AgentViewAllPage } from '@/features/AgentViewAll';
 import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
@@ -14,6 +15,8 @@ import { PersonCard } from '@/features/ContactList/PersonDetail';
 import { type ContactPreview, ContactPreviewContext } from '@/features/ContactList/previewContext';
 import { SharedAgentProfile } from '@/features/ContactList/SharedAgentProfile';
 import { useActiveLocation } from '@/hooks/useActiveLocation';
+
+import { useContactsPopupStore } from './contactsPopupStore';
 
 interface ContactsPopupProps {
   onClose: () => void;
@@ -63,29 +66,46 @@ const previewPaneKey = (preview: ContactPreview) => {
  * Contacts in a modal with the list on the left and the page body on the
  * right, matching the Settings popup: local preview state, no nested router.
  */
+/** Messages home, personal or under a workspace slug. A contact page is not home. */
+const isMessagesHome = (pathname: string, slug: string | null) => {
+  const pathOnly = pathname.split('?')[0].split('#')[0];
+  const segments = pathOnly.split('/').filter(Boolean);
+  const rest = slug && segments[0] === slug ? segments.slice(1) : segments;
+  return rest.length === 0;
+};
+
 const ContactsPopup = memo<ContactsPopupProps>(({ open, onClose }) => {
   const { t } = useTranslation('common');
   const channelsEnabled = useChannelsEnabled();
-  const [preview, setPreview] = useState<ContactPreview>({ kind: 'home' });
+  const preview = useContactsPopupStore((s) => s.preview);
+  const setPreview = useContactsPopupStore((s) => s.setPreview);
   const [query, setQuery] = useState('');
+  // Each time the popup opens, start from an empty search. Adjusting state
+  // while rendering is how a prop change resets state without an effect.
+  const [queryEpoch, setQueryEpoch] = useState(open);
+  if (open !== queryEpoch) {
+    setQueryEpoch(open);
+    if (open) setQuery('');
+  }
   const { pathname } = useActiveLocation();
+  const slug = useActiveWorkspaceSlug();
   const pathWhenOpened = useRef<string | null>(null);
 
   if (open && pathWhenOpened.current === null) pathWhenOpened.current = pathname;
   if (!open) pathWhenOpened.current = null;
 
   useEffect(() => {
-    if (open && pathWhenOpened.current && pathname !== pathWhenOpened.current) onClose();
-  }, [open, pathname, onClose]);
-
-  useEffect(() => {
-    if (open) {
-      setPreview({ kind: 'home' });
-      setQuery('');
+    if (!open || !pathWhenOpened.current || pathname === pathWhenOpened.current) return;
+    // Switching workspace leaves the contact that belonged to the previous
+    // scope and lands on Messages. The address book stays open over that home.
+    if (isMessagesHome(pathname, slug)) {
+      pathWhenOpened.current = pathname;
+      return;
     }
-  }, [open]);
+    onClose();
+  }, [open, pathname, onClose, slug]);
 
-  const previewValue = useMemo(() => ({ preview, setPreview }), [preview]);
+  const previewValue = useMemo(() => ({ preview, setPreview }), [preview, setPreview]);
 
   return (
     <Modal

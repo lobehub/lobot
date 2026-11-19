@@ -4,7 +4,6 @@ import { use, useCallback } from 'react';
 import { type NavigateOptions, type To } from 'react-router';
 
 import { getActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
-import { parseContactPreview, useContactPreview } from '@/features/ContactList/previewContext';
 import {
   navigateActiveTab,
   navigateActiveTabByDelta,
@@ -13,6 +12,7 @@ import {
 } from '@/features/Electron/navigation/activeTabNavigate';
 import { appNavigate } from '@/features/Electron/navigation/appNavigate';
 import { TabIdContext } from '@/features/Electron/TabHost/TabIdContext';
+import { openContactsFromUrl } from '@/features/NavRail/contactsPopupStore';
 
 import type { WorkspaceAwareNavigateFunction } from './useWorkspaceAwareNavigate';
 import { buildWorkspaceAwarePath, type WorkspaceAwareNavigateOptions } from './workspaceAwarePath';
@@ -26,7 +26,6 @@ export type { WorkspaceAwareNavigateOptions } from './workspaceAwarePath';
 // navigate the tab it started in, not whichever tab is active when it fires.
 export const useWorkspaceAwareNavigate = (): WorkspaceAwareNavigateFunction => {
   const tabId = use(TabIdContext);
-  const contactPreview = useContactPreview();
 
   return useCallback(
     ((to: To | number, options?: WorkspaceAwareNavigateOptions) => {
@@ -38,21 +37,15 @@ export const useWorkspaceAwareNavigate = (): WorkspaceAwareNavigateFunction => {
           ? navigateTab(tabId, to, options as NavigateOptions)
           : navigateActiveTab(to, options as NavigateOptions);
       }
-      // Inside the Contacts popup, stay on local preview state for /agents
-      // routes instead of driving the tab (and nesting a second router).
-      if (contactPreview) {
-        const next = parseContactPreview(to, getActiveWorkspaceSlug());
-        if (next) {
-          contactPreview.setPreview(next);
-          return;
-        }
-      }
+      // Contacts live in the address-book popup, including links opened from
+      // outside it. A contacts path never drives the tab router.
+      if (openContactsFromUrl(to)) return;
       if (!tabId) return appNavigate(to, options);
 
       const { escape, ...navOptions } = options ?? {};
       const resolved = buildWorkspaceAwarePath(to, getActiveWorkspaceSlug(), { escape });
       return navigateTab(tabId, resolved, navOptions);
     }) as WorkspaceAwareNavigateFunction,
-    [contactPreview, tabId],
+    [tabId],
   );
 };

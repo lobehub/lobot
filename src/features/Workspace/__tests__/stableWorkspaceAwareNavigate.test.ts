@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import * as activeWorkspaceSlugModule from '@/business/client/hooks/useActiveWorkspaceSlug';
+import { useContactsPopupStore } from '@/features/NavRail/contactsPopupStore';
 import * as stableNavigateModule from '@/utils/stableNavigate';
 
 import { stableWorkspaceAwareNavigate } from '../stableWorkspaceAwareNavigate';
@@ -38,6 +39,21 @@ describe('stableWorkspaceAwareNavigate', () => {
     stableWorkspaceAwareNavigate('/group/group-1', { escape: true });
 
     expect(navigate).toHaveBeenCalledWith('/group/group-1');
+  });
+
+  it('opens the contacts popup instead of routing to a contacts path', () => {
+    const navigate = vi.fn();
+    vi.spyOn(stableNavigateModule, 'getStableNavigate').mockReturnValue(navigate);
+    vi.spyOn(activeWorkspaceSlugModule, 'getActiveWorkspaceSlug').mockReturnValue(null);
+    useContactsPopupStore.setState({ open: false, preview: { kind: 'home' }, segment: null });
+
+    stableWorkspaceAwareNavigate('/agents/agt_1');
+
+    expect(navigate).not.toHaveBeenCalled();
+    expect(useContactsPopupStore.getState()).toMatchObject({
+      open: true,
+      preview: { id: 'agt_1', kind: 'agent' },
+    });
   });
 
   it('no-ops when the navigate ref is not yet registered', () => {

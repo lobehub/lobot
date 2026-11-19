@@ -31,9 +31,9 @@ import { useSwitchWorkspace } from '@/business/client/hooks/useSwitchWorkspace';
 import { useWorkspaceStore } from '@/business/client/workspace/store';
 import Avatar from '@/components/Avatar';
 import WorkspaceAvatar from '@/components/WorkspaceAvatar';
-import { CONTACTS_URL } from '@/features/ContactList/const';
 import { suppressNextClick } from '@/features/HomeSidebar/Body/sortableRow';
 import { requestUnreadJump } from '@/features/MessageList/unreadJump';
+import { useContactsPopupStore } from '@/features/NavRail/contactsPopupStore';
 import { resolveRailTab } from '@/features/NavRail/railTab';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { useActiveLocation } from '@/hooks/useActiveLocation';
@@ -173,14 +173,15 @@ const WorkspaceRail = memo(() => {
   const activeWorkspaceSlug = useActiveWorkspaceSlug();
   const railTab = resolveRailTab(pathname, activeWorkspaceSlug);
   const stayOnContacts = railTab === 'contacts';
+  const openContacts = useContactsPopupStore((s) => s.openContacts);
 
-  // Lobot has no workspace routes: switching changes the request scope, then lands on the
-  // current tab's root — the Contacts list, or the Messages home — since the open
-  // conversation or contact belongs to the scope just left.
-  const openHome = useCallback(
-    () => navigate(stayOnContacts ? CONTACTS_URL : '/', { escape: true }),
-    [navigate, stayOnContacts],
-  );
+  // Lobot has no workspace routes: switching changes the request scope, then lands on
+  // Messages. A contact belongs to the scope just left, so the address book opens
+  // over that home instead of keeping the full-screen contacts page.
+  const openHome = useCallback(() => {
+    if (stayOnContacts) openContacts();
+    navigate('/', { escape: true });
+  }, [navigate, openContacts, stayOnContacts]);
   const openCreate = useOpenCreateWorkspace(openHome);
 
   // Clicking the open scope's badge goes to its next unread conversation in the Messages list.
@@ -193,7 +194,11 @@ const WorkspaceRail = memo(() => {
     if (activeId === null) {
       // Friend requests wait in Contacts; unread messages in the Messages list.
       if (personalMessagesUnread > 0) jumpToUnread();
-      else if (personalRequests > 0) navigate(CONTACTS_URL, { escape: true });
+      else if (personalRequests > 0) {
+        openContacts();
+        // Already on the full-screen contacts page: leave it. The popup is the list.
+        if (stayOnContacts) navigate('/', { escape: true });
+      }
       return;
     }
     await switchToPersonal();
@@ -202,9 +207,11 @@ const WorkspaceRail = memo(() => {
     activeId,
     jumpToUnread,
     navigate,
+    openContacts,
     openHome,
     personalMessagesUnread,
     personalRequests,
+    stayOnContacts,
     switchToPersonal,
   ]);
 

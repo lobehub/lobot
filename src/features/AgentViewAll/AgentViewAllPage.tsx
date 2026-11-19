@@ -38,6 +38,7 @@ import { AgentModalProvider } from '@/features/HomeSidebar/Body/Agent/ModalProvi
 import { useSidebarItemVisibility } from '@/features/HomeSidebar/Body/Agent/useSidebarItemVisibility';
 import { useCreateMenuItems } from '@/features/HomeSidebar/hooks';
 import NavHeader from '@/features/NavHeader';
+import { useContactsPopupStore } from '@/features/NavRail/contactsPopupStore';
 import WideScreenContainer from '@/features/WideScreenContainer';
 import { useFetchAgentLabels } from '@/hooks/useFetchAgentLabels';
 import { useFetchAgentList } from '@/hooks/useFetchAgentList';
@@ -158,17 +159,31 @@ SegmentLabel.displayName = 'AgentViewAllSegmentLabel';
 const AgentViewAllPage = memo(() => {
   const { t } = useTranslation('common');
   const activeWorkspaceId = useActiveWorkspaceId();
+  const inContactsPopup = !!useContactPreview();
+  const popupSegment = useContactsPopupStore((s) => s.segment);
+  const setPopupSegment = useContactsPopupStore((s) => s.setSegment);
   // `?tab=private` lands the page on the Private tab, so each sidebar
   // section's "View all" arrow opens its own bucket. The URL is the single
   // source of truth — the page stays mounted across same-route navigations
   // (Workspace-arrow while on the Private tab), so local state would go stale.
+  // Inside the address-book popup the page never changes route, so the popup
+  // store holds the tab instead.
   const [searchParams, setSearchParams] = useSearchParams();
-  const segment: SegmentValue = searchParams.get('tab') === 'private' ? 'private' : 'workspace';
+  const urlSegment: SegmentValue = searchParams.get('tab') === 'private' ? 'private' : 'workspace';
+  const segment: SegmentValue = inContactsPopup
+    ? popupSegment === 'private'
+      ? 'private'
+      : 'workspace'
+    : urlSegment;
   const handleSegmentChange = useCallback(
     (value: SegmentValue) => {
+      if (inContactsPopup) {
+        setPopupSegment(value === 'private' ? 'private' : null);
+        return;
+      }
       setSearchParams(value === 'private' ? { tab: 'private' } : {}, { replace: true });
     },
-    [setSearchParams],
+    [inContactsPopup, setPopupSegment, setSearchParams],
   );
   const [keyword, setKeyword] = useState('');
 
@@ -472,8 +487,6 @@ const AgentViewAllPage = memo(() => {
     createMarketAgentMenuItem,
     createOptions,
   ]);
-
-  const inContactsPopup = !!useContactPreview();
 
   const viewAllHeader = (
     <ListConfig

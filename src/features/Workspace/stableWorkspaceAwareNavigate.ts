@@ -1,4 +1,5 @@
 import { getActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
+import { openContactsFromUrl } from '@/features/NavRail/contactsPopupStore';
 import { getStableNavigate } from '@/utils/stableNavigate';
 
 import { buildWorkspaceAwarePath, type WorkspaceAwareNavigateOptions } from './workspaceAwarePath';
@@ -18,6 +19,9 @@ export const stableWorkspaceAwareNavigate = (
 ): void => {
   const navigate = getStableNavigate();
   if (!navigate) return;
+
+  // Same rule as the hook: a contacts path opens the popup and does not route.
+  if (openContactsFromUrl(to)) return;
 
   const activeSlug = getActiveWorkspaceSlug();
   const target = buildWorkspaceAwarePath(to, activeSlug, options);

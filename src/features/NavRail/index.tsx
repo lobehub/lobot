@@ -3,7 +3,7 @@
 import { ActionIcon, DropdownMenu, type DropdownMenuProps, Flexbox, Icon, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { LogOut, PieChart, Settings, UsersCollaboration } from 'lucide-react';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
@@ -20,6 +20,7 @@ import { userProfileSelectors } from '@/store/user/selectors';
 import { electronStylish } from '@/styles/electron';
 
 import ContactsPopup from './ContactsPopup';
+import { useContactsPopupStore } from './contactsPopupStore';
 import SettingsPopup from './SettingsPopup';
 import { useSettingsPopupStore } from './settingsPopupStore';
 import { styles } from './style';
@@ -47,26 +48,24 @@ const NavTabBar = memo(() => {
     userProfileSelectors.displayUserName(s),
   ]);
   const name = nickname || username;
-  const [contactsOpen, setContactsOpen] = useState(false);
+  const contactsOpen = useContactsPopupStore((s) => s.open);
+  const openContacts = useContactsPopupStore((s) => s.openContacts);
+  const closeContacts = useContactsPopupStore((s) => s.closeContacts);
   const settingsOpen = useSettingsPopupStore((s) => s.open);
   const openSettings = useSettingsPopupStore((s) => s.openSettings);
-  const closeSettings = useSettingsPopupStore((s) => s.closeSettings);
 
   useEffect(() => {
-    if (settingsOpen) setContactsOpen(false);
-  }, [settingsOpen]);
+    if (settingsOpen) closeContacts();
+  }, [closeContacts, settingsOpen]);
 
   const toggleContacts = useCallback(() => {
-    setContactsOpen((current) => {
-      if (!current) closeSettings();
-      return !current;
-    });
-  }, [closeSettings]);
-  const closeContacts = useCallback(() => setContactsOpen(false), []);
+    if (contactsOpen) closeContacts();
+    else openContacts();
+  }, [closeContacts, contactsOpen, openContacts]);
   const openSettingsMenu = useCallback(() => {
-    setContactsOpen(false);
+    closeContacts();
     openSettings();
-  }, [openSettings]);
+  }, [closeContacts, openSettings]);
 
   const menuItems = useMemo<DropdownMenuProps['items']>(
     () => [
