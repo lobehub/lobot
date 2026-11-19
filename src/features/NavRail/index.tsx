@@ -24,6 +24,7 @@ import { useContactsPopupStore } from './contactsPopupStore';
 import SettingsPopup from './SettingsPopup';
 import { useSettingsPopupStore } from './settingsPopupStore';
 import { styles } from './style';
+import { useScopeMenuItem } from './useScopeMenuItem';
 
 /** Contacts' badge counts the friend requests waiting in its Requests group. */
 const useContactRequestsCount = (channelsEnabled: boolean) => {
@@ -35,7 +36,7 @@ const useContactRequestsCount = (channelsEnabled: boolean) => {
 
 /**
  * Footer of the list column: the signed-in user on the left opens a dropdown
- * (usage, settings, sign out), and a contacts ActionIcon on the right opens
+ * (scope switch, usage, settings, sign out), and a contacts ActionIcon on the right opens
  * the address book.
  */
 const NavTabBar = memo(() => {
@@ -51,6 +52,7 @@ const NavTabBar = memo(() => {
   const contactsOpen = useContactsPopupStore((s) => s.open);
   const openContacts = useContactsPopupStore((s) => s.openContacts);
   const closeContacts = useContactsPopupStore((s) => s.closeContacts);
+  const scopeItem = useScopeMenuItem();
   const settingsOpen = useSettingsPopupStore((s) => s.open);
   const openSettings = useSettingsPopupStore((s) => s.openSettings);
 
@@ -69,6 +71,7 @@ const NavTabBar = memo(() => {
 
   const menuItems = useMemo<DropdownMenuProps['items']>(
     () => [
+      ...(scopeItem ? [scopeItem, { type: 'divider' as const }] : []),
       {
         icon: <Icon icon={PieChart} />,
         key: 'usage',
@@ -91,7 +94,7 @@ const NavTabBar = memo(() => {
         },
       },
     ],
-    [openSettingsMenu, signOut, t],
+    [openSettingsMenu, scopeItem, signOut, t],
   );
 
   return (
