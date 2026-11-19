@@ -3,7 +3,7 @@
  */
 import { render, screen } from '@testing-library/react';
 import { createElement } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { useChannelStore } from '@/store/channel';
 
@@ -27,6 +27,10 @@ vi.mock('@/components/AgentAvatar', () => ({
       { 'data-animated': String(!!animated), 'data-state': state, 'data-testid': 'agent-avatar' },
       `${agentId}:${avatar ?? 'generated'}`,
     ),
+}));
+const workspace = vi.hoisted(() => ({ id: null as string | null }));
+vi.mock('@/business/client/hooks/useActiveWorkspaceId', () => ({
+  useActiveWorkspaceId: () => workspace.id,
 }));
 vi.mock('@/features/HomeSidebar/Body/Agent/List/AgentItem/useDropdownMenu', () => ({
   // An Agent's own menu ends with its Delete; the row must not clash with it.
@@ -120,6 +124,33 @@ describe('AgentConversation avatar', () => {
     );
 
     expect(screen.getByTestId('menu')).toHaveTextContent('channel-unarchive');
+  });
+});
+
+// In a workspace the row carried the Agent's whole menu (open in new window, copy ID, rename,
+// permissions, make private, delete); it now keeps only the conversation's own actions.
+describe('AgentConversation menu in a workspace', () => {
+  afterEach(() => {
+    workspace.id = null;
+  });
+
+  it('keeps only the conversation actions', () => {
+    workspace.id = 'ws_1';
+    render(
+      createElement(AgentConversation, {
+        active: false,
+        conversation: conversation(undefined, { status: 'archived' }),
+      }),
+    );
+
+    expect(screen.getByTestId('menu').textContent).toBe('channel-unarchive');
+  });
+
+  it('leaves out the Agent menu even without a direct Channel', () => {
+    workspace.id = 'ws_1';
+    render(createElement(AgentConversation, { active: false, conversation: conversation() }));
+
+    expect(screen.getByTestId('menu').textContent).toBe('');
   });
 });
 
