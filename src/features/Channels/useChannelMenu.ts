@@ -21,18 +21,16 @@ import { isTrpcErrorCode } from '@/utils/trpcError';
 
 import { useChannelArchive } from './useChannelArchive';
 import { useChannelSections } from './useChannelSections';
-import { useDeletePeerChat } from './useDeletePeerChat';
 import { useRemoveChannel } from './useRemoveChannel';
 
 /**
  * A Channel's menu wherever it is listed: pin, mute, file under a section, and under More the rare
  * ones — rename, copy id, archive, and move to the trash. A conversation between two people is a private chat instead:
- * pin, mute, file under a section, and delete it for me only.
+ * pin, mute and file under a section only; deleting it for me lives in its settings.
  */
 export const useChannelMenu = () => {
   const { t } = useTranslation('channel');
   const remove = useRemoveChannel();
-  const deletePeerChat = useDeletePeerChat();
   const { archive, unarchive } = useChannelArchive();
   const sections = useChannelSections();
 
@@ -100,15 +98,6 @@ export const useChannelMenu = () => {
     pinItem(channel),
     muteItem(channel),
     ...sectionItems(channel),
-    { type: 'divider' as const },
-    {
-      danger: true,
-      icon: Trash,
-      key: 'deleteChat',
-      label: t('deleteChat'),
-      onClick: () => deletePeerChat(channel),
-      sfSymbol: 'trash',
-    },
   ];
 
   const manageItems = (channel: ChannelListItem) => [

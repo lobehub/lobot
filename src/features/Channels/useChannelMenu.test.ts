@@ -29,7 +29,7 @@ const keys = (item: ChannelListItem) => {
 };
 
 describe('useChannelMenu', () => {
-  it('keeps a group Channel\'s rare actions under More', () => {
+  it("keeps a group Channel's rare actions under More", () => {
     const { result } = renderHook(useChannelMenu);
     const items = result.current(channel);
     expect(keys(channel)).toEqual(['pin', 'mute', 'divider', 'more']);
@@ -44,11 +44,6 @@ describe('useChannelMenu', () => {
   // Both people own the conversation: renaming, archiving or trashing it would change it for the
   // other person too.
   it('offers a conversation between two people only what changes it for me', () => {
-    expect(keys({ ...channel, peerUserId: 'usr_lijian' })).toEqual([
-      'pin',
-      'mute',
-      'divider',
-      'deleteChat',
-    ]);
+    expect(keys({ ...channel, peerUserId: 'usr_lijian' })).toEqual(['pin', 'mute']);
   });
 });
