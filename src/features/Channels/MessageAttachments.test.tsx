@@ -115,4 +115,83 @@ describe('MessageAttachments', () => {
 
     expect(copyToClipboard).toHaveBeenCalledWith('https://app.lobehub.com/f/file_Z?download=1');
   });
+
+  it('plays an MP4 inline through the proxy, which re-signs the URL on every request', () => {
+    const { container } = render(
+      <MessageAttachments
+        fileIds={['file_V']}
+        attachments={[
+          {
+            fileType: 'video/mp4',
+            id: 'file_V',
+            name: 'demo.mp4',
+            size: 1,
+            url: 'https://s3.example.com/demo.mp4?X-Amz-Expires=300',
+          },
+        ]}
+      />,
+    );
+
+    expect(container.querySelector('video')?.getAttribute('src')).toBe(
+      'https://app.lobehub.com/f/file_V',
+    );
+    expect(screen.queryByRole('button', { name: 'attachments.download' })).toBeNull();
+  });
+
+  it('plays an upper-case .MP4 the browser uploaded without a video type', () => {
+    const { container } = render(
+      <MessageAttachments
+        fileIds={['file_V']}
+        attachments={[
+          { fileType: '', id: 'file_V', name: '2358.MP4', size: 1, url: 'https://cdn/2358.MP4' },
+        ]}
+      />,
+    );
+
+    expect(container.querySelector('video')).toBeTruthy();
+  });
+
+  it('keeps audio and unplayable video containers as file cards', () => {
+    const { container } = render(
+      <MessageAttachments
+        fileIds={['file_M', 'file_A']}
+        attachments={[
+          { fileType: 'audio/mp4', id: 'file_M', name: 'voice.m4a', size: 1, url: 'https://cdn/m' },
+          {
+            fileType: 'video/x-msvideo',
+            id: 'file_A',
+            name: 'old.avi',
+            size: 1,
+            url: 'https://cdn/a',
+          },
+        ]}
+      />,
+    );
+
+    expect(container.querySelector('video')).toBeNull();
+    expect(screen.getAllByRole('button', { name: 'attachments.download' })).toHaveLength(2);
+  });
+
+  it('falls back to the file card when the video cannot be decoded', () => {
+    const { container } = render(
+      <MessageAttachments
+        fileIds={['file_V']}
+        attachments={[
+          {
+            fileType: 'video/quicktime',
+            id: 'file_V',
+            name: 'hevc.mov',
+            size: 1,
+            url: 'https://cdn/v',
+          },
+        ]}
+      />,
+    );
+
+    fireEvent.error(container.querySelector('video')!);
+
+    expect(container.querySelector('video')).toBeNull();
+    expect(screen.getByText('hevc.mov')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'attachments.download' })).toBeTruthy();
+  });
 });

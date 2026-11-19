@@ -3,7 +3,7 @@
 import { Video } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { ExternalLink } from 'lucide-react';
-import { memo } from 'react';
+import { memo, type ReactEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // Mirrors the @lobehub/ui (6.15) Video control-bar button style, which the library does not export.
@@ -26,6 +26,8 @@ const styles = stylex.create({
 
 interface MessageVideoProps {
   maxHeight?: number;
+  /** The element could not load or decode the source. */
+  onError?: ReactEventHandler<HTMLVideoElement>;
   poster?: string;
   src: string;
 }
@@ -34,11 +36,11 @@ interface MessageVideoProps {
  * Inline video player for conversation messages and tool renders, built on the
  * @lobehub/ui Video player with an open-original-file action.
  */
-const MessageVideo = memo<MessageVideoProps>(({ maxHeight = 400, poster, src }) => {
+const MessageVideo = memo<MessageVideoProps>(({ maxHeight = 400, onError, poster, src }) => {
   const { t } = useTranslation('common');
 
   return (
-    <Video.Root maxHeight={maxHeight} poster={poster} src={src}>
+    <Video.Root maxHeight={maxHeight} poster={poster} src={src} onError={onError}>
       <Video.Frame>
         <Video.Caption />
         <Video.CenterPlay />
