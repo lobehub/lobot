@@ -209,7 +209,6 @@
   "contacts.external.remove": "Rimuovi dallo spazio di lavoro",
   "contacts.external.remove.confirm": "Rimuovere {{name}} da questo workspace? Nessun membro sarà più disponibile nei suoi confronti e i suoi inviti in sospeso verranno ritirati. La cronologia delle chat viene conservata.",
   "contacts.externals": "Contatti esterni",
-  "contacts.groups": "Gruppi",
   "contacts.info.bio": "Bio",
   "contacts.info.handle": "Handle",
   "contacts.info.mail": "Email",

@@ -210,7 +210,6 @@
   "contacts.external.remove": "Remove from workspace",
   "contacts.external.remove.confirm": "Remove {{name}} from this workspace? Every member stops being open to them, and their pending invitations are withdrawn. Chat history is kept.",
   "contacts.externals": "External contacts",
-  "contacts.groups": "Groups",
   "contacts.info.bio": "Bio",
   "contacts.info.handle": "Handle",
   "contacts.info.mail": "Email",

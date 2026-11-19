@@ -209,7 +209,6 @@
   "contacts.external.remove": "حذف از فضای کاری",
   "contacts.external.remove.confirm": "{{name}} از این فضای کاری حذف شود؟ همه اعضا دیگر برای او باز نخواهند بود و دعوت‌های در انتظار او لغو می‌شوند. تاریخچه چت حفظ می‌شود.",
   "contacts.externals": "مخاطبان خارجی",
-  "contacts.groups": "گروه‌ها",
   "contacts.info.bio": "بیوگرافی",
   "contacts.info.handle": "شناسه",
   "contacts.info.mail": "ایمیل",

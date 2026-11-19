@@ -210,7 +210,6 @@
   "contacts.external.remove": "移出工作区",
   "contacts.external.remove.confirm": "确定将 {{name}} 移出这个工作区？所有成员都不再对 TA 开放，未处理的邀请也会撤回。聊天记录会保留。",
   "contacts.externals": "外部联系人",
-  "contacts.groups": "群组",
   "contacts.info.bio": "简介",
   "contacts.info.handle": "标识",
   "contacts.info.mail": "邮箱",

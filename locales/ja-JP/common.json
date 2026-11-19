@@ -209,7 +209,6 @@
   "contacts.external.remove": "ワークスペースから削除",
   "contacts.external.remove.confirm": "{{name}} をこのワークスペースから削除しますか？すべてのメンバーが相手への公開を停止し、保留中の招待は取り消されます。チャット履歴は保持されます。",
   "contacts.externals": "外部連絡先",
-  "contacts.groups": "グループ",
   "contacts.info.bio": "自己紹介",
   "contacts.info.handle": "ハンドル",
   "contacts.info.mail": "メールアドレス",

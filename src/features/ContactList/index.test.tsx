@@ -115,10 +115,7 @@ describe('ContactListBody', () => {
 
   it('opens the contact card instead of the profile editor', () => {
     agentList.init = true;
-    agentList.items = [
-      { id: 'agt_1', title: 'Product Helper' },
-      { id: 'grp_1', title: 'Launch Crew', type: 'group' },
-    ];
+    agentList.items = [{ id: 'agt_1', title: 'Product Helper' }];
 
     render(createElement(ContactListBody));
 
@@ -126,10 +123,22 @@ describe('ContactListBody', () => {
       'href',
       '/agents/agt_1',
     );
-    expect(screen.getByRole('link', { name: 'Launch Crew' })).toHaveAttribute(
-      'href',
-      '/agents/grp_1',
-    );
+  });
+
+  it('leaves agent groups out of the personal contact list, pinned or not', () => {
+    agentList.init = true;
+    agentList.items = [
+      { id: 'agt_1', title: 'Product Helper' },
+      { id: 'grp_1', title: 'Launch Crew', type: 'group' },
+      { id: 'grp_2', pinned: true, title: 'Pinned Crew', type: 'group' },
+    ];
+
+    render(createElement(ContactListBody));
+
+    expect(screen.getByRole('link', { name: 'Product Helper' })).toBeInTheDocument();
+    expect(screen.queryByText('contacts.pinned')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Launch Crew' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Pinned Crew' })).not.toBeInTheDocument();
   });
 
   it('lists people, shared Agents and incoming requests once Channels are on', () => {
@@ -226,7 +235,6 @@ describe('ContactListBody', () => {
     render(createElement(ContactListBody));
 
     expect(screen.queryByText('contacts.people')).not.toBeInTheDocument();
-    expect(screen.queryByText('contacts.groups')).not.toBeInTheDocument();
     expect(screen.queryByText('contacts.pinned')).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Bob' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Launch Crew' })).not.toBeInTheDocument();

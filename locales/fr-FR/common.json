@@ -209,7 +209,6 @@
   "contacts.external.remove": "Retirer de l'espace de travail",
   "contacts.external.remove.confirm": "Retirer {{name}} de cet espace de travail ? Plus aucun membre ne lui ouvrira l'accès et ses invitations en attente seront annulées. L'historique des discussions est conservé.",
   "contacts.externals": "Contacts externes",
-  "contacts.groups": "Groupes",
   "contacts.info.bio": "Bio",
   "contacts.info.handle": "Identifiant",
   "contacts.info.mail": "E-mail",

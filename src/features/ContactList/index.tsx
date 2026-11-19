@@ -127,7 +127,7 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
   );
   const updateSystemStatus = useGlobalStore((s) => s.updateSystemStatus);
 
-  const { agents, groups, pinned } = useMemo(
+  const { agents, pinned } = useMemo(
     () =>
       groupContacts(
         [...new Map(items.map((item) => [item.id, item])).values()],
@@ -140,13 +140,9 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
   const untitled = tChat('untitledAgent');
   const q = query.trim().toLowerCase();
   const match = (name: string) => !q || name.toLowerCase().includes(q);
-  const agentName = (item: SidebarAgentItem) =>
-    item.type === 'group' ? item.title || untitled : agentDisplayName(item, untitled);
+  const agentName = (item: SidebarAgentItem) => agentDisplayName(item, untitled);
 
-  // A workspace's member list holds people and assistants only: no groups, pinned or not.
-  const pinnedItems = inWorkspace ? pinned.filter((item) => item.type !== 'group') : pinned;
-  const visiblePinned = q ? pinnedItems.filter((item) => match(agentName(item))) : pinnedItems;
-  const visibleGroups = q ? groups.filter((item) => match(agentName(item))) : groups;
+  const visiblePinned = q ? pinned.filter((item) => match(agentName(item))) : pinned;
   const visiblePeople = q ? people.filter((item) => match(personName(item.user))) : people;
   const visibleAgents = q ? agents.filter((item) => match(agentName(item))) : agents;
   const visibleExternals = q ? externals.filter((item) => match(personName(item.user))) : externals;
@@ -273,17 +269,6 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
           },
         ]
       : []),
-    // Groups next in the personal space: there are few, and they would sink below every agent.
-    ...(inWorkspace
-      ? []
-      : [
-          {
-            count: visibleGroups.length,
-            key: 'groups',
-            render: () => renderAgents(visibleGroups),
-            title: t('contacts.groups'),
-          },
-        ]),
     // In a workspace, other people's Agents follow my own, tagged as external assistants.
     {
       count: visibleAgents.length + (inWorkspace ? visibleShared.length : 0),
