@@ -158,6 +158,35 @@ describe('workspace store', () => {
     expect(mocks.list).not.toHaveBeenCalled();
   });
 
+  // Sign-in can flicker on boot. The sync key comes back unchanged after the clear, so
+  // SWR would neither refetch nor settle the request it still holds: the rail stayed hidden.
+  it.each([
+    ['while the list is loading', false],
+    ['after the list loaded', true],
+  ])('loads the list again when signed out and back in %s', async (_, settleFirst) => {
+    let answer: (value: unknown) => void = () => {};
+    mocks.list.mockImplementationOnce(() => new Promise((resolve) => (answer = resolve)));
+    mocks.list.mockResolvedValue([ws('ws-a')]);
+
+    const { rerender } = renderHook(({ enabled }) => useFetchWorkspaces(enabled, 'user-1'), {
+      initialProps: { enabled: true },
+      wrapper,
+    });
+    await waitFor(() => expect(mocks.list).toHaveBeenCalledTimes(1));
+    if (settleFirst) {
+      await act(async () => answer([ws('ws-a')]));
+      await waitFor(() => expect(useWorkspaceStore.getState().isWorkspaceAvailable).toBe(true));
+    }
+
+    rerender({ enabled: false });
+    rerender({ enabled: true });
+    await act(async () => answer([ws('ws-a')]));
+
+    await waitFor(() => expect(useWorkspaceStore.getState().isWorkspaceAvailable).toBe(true));
+    expect(useWorkspaceStore.getState().workspaces).toHaveLength(1);
+    expect(useWorkspaceStore.getState().isWorkspaceLoading).toBe(false);
+  });
+
   it('scopes requests to the active workspace through the X-Workspace-Id header', async () => {
     expect(await getBusinessTrpcHeaders()).toEqual({});
 

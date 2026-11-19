@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
 import {
   createReplicaSlice,
@@ -92,9 +92,13 @@ export const useFetchWorkspaces = (
 
   const { error } = sync;
   const isWorkspaceAvailable = useWorkspaceStore((s) => s.isWorkspaceAvailable);
+  const wasEnabled = useRef(false);
+  const signedOut = useRef(false);
   useLayoutEffect(() => {
     if (enabled === undefined) return;
     if (!enabled) {
+      signedOut.current = wasEnabled.current;
+      wasEnabled.current = false;
       void workspaceListSlice.clear();
       useWorkspaceStore.setState({
         activeWorkspaceId: null,
@@ -102,6 +106,14 @@ export const useFetchWorkspaces = (
         isWorkspaceLoading: false,
       });
       return;
+    }
+    // Signed back in (a sign-in state that flickers on boot): the sync key is the same
+    // as before the clear, so SWR neither refetches nor settles the request it still
+    // has in flight, and the cleared list never comes back. Ask again.
+    wasEnabled.current = true;
+    if (signedOut.current) {
+      signedOut.current = false;
+      void sync.revalidate();
     }
     // Loading until the first list answers. A server without workspaces
     // (self-hosted) errors here; stay personal.
