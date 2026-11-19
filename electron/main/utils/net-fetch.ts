@@ -1,5 +1,7 @@
 import { net } from 'electron';
 
+import { harmonyUpstreamFetch } from '@/core/infrastructure/harmonyUpstreamFetch';
+
 /**
  * Fetch using Electron's net module (Chromium networking stack).
  *
@@ -10,5 +12,12 @@ import { net } from 'electron';
  * This must be called only after `app.whenReady()` has resolved.
  */
 export const netFetch: typeof globalThis.fetch = (input, init?) => {
+  // HarmonyOS port: every Chromium-backed request from the main process is
+  // rejected as a CORS load without an initiator (net::ERR_INVALID_ARGUMENT).
+  // `node:https` reaches the same endpoints, so route upstream calls through it.
+  if (process.platform === 'openharmony') {
+    return harmonyUpstreamFetch(String(input), (init ?? {}) as any);
+  }
+
   return net.fetch(input as any, init as any);
 };
