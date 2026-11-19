@@ -8,15 +8,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ChannelHeaderTitle } from './ChannelHeaderTitle';
 import { ChannelMenu } from './MemberStatus';
 
-const { openAgent, openEnvironment, openSettings, showContextMenu } = vi.hoisted(() => ({
-  openSettings: vi.fn(),
-  openAgent: { current: vi.fn() as ((path?: string) => void) | undefined },
-  openEnvironment: vi.fn(),
-  showContextMenu: vi.fn(),
-}));
+const { listedShared, openAgent, openEnvironment, openSettings, showContextMenu } = vi.hoisted(
+  () => ({
+    listedShared: { current: false },
+    openSettings: vi.fn(),
+    openAgent: { current: vi.fn() as ((path?: string) => void) | undefined },
+    openEnvironment: vi.fn(),
+    showContextMenu: vi.fn(),
+  }),
+);
 
 vi.mock('lucide-react', () => ({
   Bot: () => null,
+  CircleUserRound: () => null,
   FolderCog: () => null,
   Hash: (props: object) => createElement('svg', { ...props, 'data-testid': 'title-hash' }),
   MoreHorizontal: () => null,
@@ -71,6 +75,10 @@ vi.mock('@stylexjs/stylex', () => ({
   props: () => ({}),
 }));
 vi.mock('@/styles/electron', () => ({ electronStylish: { nodrag: 'nodrag' } }));
+vi.mock('@/store/channel', () => ({
+  channelSelectors: { listed: (id: string) => () => ({ id, sharedAgent: listedShared.current }) },
+  useChannelStore: (selector: () => unknown) => selector(),
+}));
 vi.mock('./Settings/tabs', () => ({ useOpenChannelSettings: () => openSettings }));
 vi.mock('@/hooks/useCloseOnNavigate', () => ({ useCloseOnNavigate: () => 0 }));
 vi.mock('./AgentEnvironment', () => ({ openChannelAgentEnvironment: openEnvironment }));
@@ -122,6 +130,7 @@ describe('ChannelHeaderTitle', () => {
     onToggleChannelSettings.mockClear();
     openSettings.mockClear();
     showContextMenu.mockReset();
+    listedShared.current = false;
   });
 
   const renderTitle = (
@@ -197,6 +206,21 @@ describe('ChannelHeaderTitle', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Cook' }));
     expect(onToggleAgentPanel).toHaveBeenCalledTimes(1);
     expect(onToggleChannelSettings).not.toHaveBeenCalled();
+  });
+
+  it('offers a shared Agent its profile, not settings or where it runs', () => {
+    // Only the list row marks the share; the loaded detail does not.
+    listedShared.current = true;
+    renderTitle({}, { onToggleAgentPanel, title: 'Cook' });
+
+    const name = screen.getByRole('button', { name: 'Cook' });
+    expect(name.getAttribute('title')).toBe('profile.title');
+    fireEvent.contextMenu(name);
+    expect(contextKeys()).toEqual(['openAgent', 'copyId', 'agentSettings']);
+    const profile = (
+      showContextMenu.mock.calls[0][0] as Array<{ key?: string; label?: string }>
+    ).find((item) => item?.key === 'agentSettings');
+    expect(profile?.label).toBe('profile.title');
   });
 
   it('does not let a left click on a human private chat open Channel settings', () => {

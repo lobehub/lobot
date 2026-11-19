@@ -1,7 +1,9 @@
 import type { DropdownItem } from '@lobehub/ui';
 import type { ChannelDetail } from '@lobot/types';
-import { Bot, FolderCog, Settings } from 'lucide-react';
+import { Bot, CircleUserRound, FolderCog, Settings } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+import { channelSelectors, useChannelStore } from '@/store/channel';
 
 import { openChannelAgentEnvironment } from './AgentEnvironment';
 import { flattenChannelMenu } from './flattenChannelMenu';
@@ -34,6 +36,11 @@ export const useChannelHeaderMenuItems = (
   const openAgent = useOpenDirectAgent(channel.id, channel.agentId ?? '');
   const channelMenu = useChannelMenu();
   const direct = !!channel.agentId;
+  // Only the list row marks a conversation with another person's shared Agent, so the loaded
+  // detail borrows that mark. Its owner runs and configures it: this viewer can read its profile,
+  // not change its settings or where it runs.
+  const listedShared = useChannelStore(channelSelectors.listed(channel.id))?.sharedAgent;
+  const shared = !!(channel.sharedAgent || listedShared);
 
   if (direct) {
     return [
@@ -50,7 +57,8 @@ export const useChannelHeaderMenuItems = (
                 ]
               : []),
             // The member list is hidden here, so its device and directory setup lives in this menu.
-            ...(directAgent.member.status === 'active' &&
+            ...(!shared &&
+            directAgent.member.status === 'active' &&
             channel.canDelete &&
             channel.status !== 'archived'
               ? [
@@ -73,9 +81,9 @@ export const useChannelHeaderMenuItems = (
         ? [
             { type: 'divider' as const },
             {
-              icon: Settings,
+              icon: shared ? CircleUserRound : Settings,
               key: 'agentSettings',
-              label: t('agentSettings', { ns: 'channelHeader' }),
+              label: shared ? t('profile.title') : t('agentSettings', { ns: 'channelHeader' }),
               onClick: onToggleAgentPanel,
             },
           ]

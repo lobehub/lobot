@@ -3,7 +3,6 @@ import type { ChannelDetail } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { Hash } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import { electronStylish } from '@/styles/electron';
 
@@ -34,11 +33,10 @@ function ManagedChannelHeaderTitle({
   showHash,
   title,
 }: TitleProps & { detail: ChannelDetail }) {
-  const { t } = useTranslation(['channel', 'channelHeader']);
   const items = useChannelHeaderMenuItems(detail, onToggleAgentPanel);
   const settingsKey = detail.channel.agentId ? 'agentSettings' : 'settings';
-  const canOpen = items.some((item) => item && 'key' in item && item.key === settingsKey);
-  const onActivate = canOpen
+  const settingsItem = items.find((item) => item && 'key' in item && item.key === settingsKey);
+  const onActivate = settingsItem
     ? detail.channel.agentId
       ? onToggleAgentPanel
       : onToggleChannelSettings
@@ -49,11 +47,13 @@ function ManagedChannelHeaderTitle({
       items={hasChannelHeaderMenuActions(items) ? items : undefined}
       showHash={showHash}
       title={title}
+      // The item names what the click opens: a shared Agent's profile, not settings.
       label={
-        onActivate
-          ? settingsKey === 'agentSettings'
-            ? t('agentSettings', { ns: 'channelHeader' })
-            : t('settings.title')
+        onActivate &&
+        settingsItem &&
+        'label' in settingsItem &&
+        typeof settingsItem.label === 'string'
+          ? settingsItem.label
           : undefined
       }
       onActivate={onActivate}
