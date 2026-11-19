@@ -4,6 +4,7 @@ import { agentDisplayName } from '@lobot/types';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import AgentAvatar from '@/components/AgentAvatar';
 import { useAgentDropdownMenu } from '@/features/HomeSidebar/Body/Agent/List/AgentItem/useDropdownMenu';
 import { usePreservedAgentUrl } from '@/features/HomeSidebar/Body/Agent/List/usePreservedAgentUrl';
@@ -35,6 +36,7 @@ const AgentConversation = memo<AgentConversationProps>(
     const { id, avatar, backgroundColor, pinned, slug, userId, visibility } = item;
     const { t } = useTranslation('chat');
     const { openCreateGroupModal } = useAgentModal();
+    const inWorkspace = !!useActiveWorkspaceId();
     const prefetchAgent = usePrefetchAgent();
     const chatRunning = useChatStore(operationSelectors.isAgentVisiblyRunning(id));
     const agentUrl = usePreservedAgentUrl(id);
@@ -77,14 +79,18 @@ const AgentConversation = memo<AgentConversationProps>(
         // person's own conversation, through its direct Channel. Its sidebar category is the same
         // story — the conversation's own section replaces it — and duplicating belongs to the Agent
         // list, not a chat.
+        //
+        // In a workspace the row is only a chat: opening, copying, renaming, permissions,
+        // visibility and deletion belong to the Agent's own page, so its menu stays out.
+        const items = channelActions();
+        if (inWorkspace) return items;
         const agentItems = contextMenuItems().filter(
           (entry) => !(entry && 'key' in entry && AGENT_ONLY_KEYS.has(String(entry.key))),
         );
-        const items = channelActions();
         if (items.length === 0) return agentItems;
         return [...items, { type: 'divider' as const }, ...agentItems];
       },
-      [channelActions, contextMenuItems],
+      [channelActions, contextMenuItems, inWorkspace],
     );
 
     return (
