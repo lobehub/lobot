@@ -41,7 +41,7 @@ import { useHomeStore } from '@/store/home';
 import { homeAgentListSelectors } from '@/store/home/selectors';
 import { useCurrentProjectList, useProjectStore } from '@/store/project';
 import { useUserStore } from '@/store/user';
-import { userProfileSelectors } from '@/store/user/selectors';
+import { userGeneralSettingsSelectors, userProfileSelectors } from '@/store/user/selectors';
 
 import AgentConversation from './AgentConversation';
 import ChannelConversation from './ChannelConversation';
@@ -61,7 +61,7 @@ import InboxConversation from './InboxConversation';
 import NetworkSearchRow from './NetworkSearchRow';
 import { useMessageSearch } from './SearchContext';
 import SectionGroup from './SectionGroup';
-import { pinnedTile, styles } from './style';
+import { pinnedAsRows, pinnedTile, styles } from './style';
 import { useUnreadJump } from './unreadJump';
 
 /**
@@ -168,6 +168,7 @@ const Body = memo(() => {
 
   const inboxChannel = inboxAgentId ? directChannels.get(inboxAgentId) : undefined;
   const userId = useUserStore(userProfileSelectors.userId);
+  const pinnedLayout = useUserStore(userGeneralSettingsSelectors.pinnedConversationLayout);
 
   // Opening a hidden conversation from elsewhere (contacts, a notification) brings its row back.
   useEffect(() => {
@@ -220,8 +221,8 @@ const Body = memo(() => {
     userId,
   ]);
 
-  // Pinned conversations lead the list as a card grid, then the person's own sections, then
-  // the rest.
+  // Pinned conversations lead the list as a card grid (or rows, when the person lists many that
+  // way), then the person's own sections, then the rest.
   const groups = useMemo(
     () => groupBySection(entries, channelsEnabled ? sections : undefined),
     [channelsEnabled, entries, sections],
@@ -289,23 +290,29 @@ const Body = memo(() => {
   // Only the agent rows wait on the agent list: Lobe AI and Channels load on their own, so a slow
   // or failed request must not hide them.
   const agentsLoading = !isInit && items.length === 0;
+  const pinnedRows = pinnedAsRows(pinnedLayout, groups.pinned.length);
 
   return (
     <Flexbox gap={4} paddingBlock={'0 12px'} paddingInline={6} ref={listRef}>
-      {groups.pinned.length > 0 && (
-        <div
-          aria-label={t('navPanel.pinned')}
-          role="group"
-          {...stylex.props(
-            styles.pinnedGroup,
-            groups.pinned.length >= 4 && styles.pinnedGroupDense,
-          )}
-        >
-          {groups.pinned.map((entry) =>
-            renderEntry(entry, 'tile', pinnedTile(groups.pinned.length)),
-          )}
-        </div>
-      )}
+      {groups.pinned.length > 0 &&
+        (pinnedRows ? (
+          <div aria-label={t('navPanel.pinned')} role="group" {...stylex.props(styles.pinnedRows)}>
+            {groups.pinned.map((entry) => renderEntry(entry))}
+          </div>
+        ) : (
+          <div
+            aria-label={t('navPanel.pinned')}
+            role="group"
+            {...stylex.props(
+              styles.pinnedGroup,
+              groups.pinned.length >= 4 && styles.pinnedGroupDense,
+            )}
+          >
+            {groups.pinned.map((entry) =>
+              renderEntry(entry, 'tile', pinnedTile(groups.pinned.length)),
+            )}
+          </div>
+        ))}
       {groups.sections.length > 0 && (
         <DndContext
           collisionDetection={closestCenter}

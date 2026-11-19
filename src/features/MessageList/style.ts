@@ -20,6 +20,13 @@ export const pinnedTile = (count: number): PinnedTile =>
 export const pinnedAvatarSize = (tile: PinnedTile) =>
   tile === 'solo' ? 60 : tile === 'pair' ? 52 : tile === 'compact' ? 44 : AVATAR_SIZE;
 
+/** The most pinned conversations the grid holds when the person lists more as rows. */
+export const PINNED_TILE_LIMIT = 6;
+
+/** Whether the pinned conversations list as rows instead of the avatar grid. */
+export const pinnedAsRows = (layout: 'tiles' | 'rows', count: number) =>
+  layout === 'rows' && count > PINNED_TILE_LIMIT;
+
 /** Row avatars stay small; a pinned tile uses the size for how many are pinned. */
 export const conversationAvatarSize = (variant: 'row' | 'tile' | undefined, tile?: PinnedTile) =>
   variant === 'tile' ? pinnedAvatarSize(tile ?? 'compact') : AVATAR_SIZE;
@@ -87,6 +94,15 @@ export const styles = stylex.create({
     rowGap: '4px',
     paddingBlockStart: '4px',
     paddingBlockEnd: '16px',
+  },
+  /** Many pinned conversations as rows: one tinted block atop the list, like WeChat's. */
+  pinnedRows: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    marginBlockEnd: '8px',
+    borderRadius: cssVar.borderRadiusLG,
+    backgroundColor: cssVar.colorFillQuaternary,
   },
   /** Four or more sit closer together, so each name can keep a little inset. */
   pinnedGroupDense: {
@@ -312,7 +328,7 @@ export const styles = stylex.create({
     fontSize: '10px',
     fontWeight: 600,
     lineHeight: '13px',
-    color: '#fff',
+    color: cssVar.colorTextLightSolid,
     textAlign: 'center',
     backgroundColor: cssVar.colorError,
   },

@@ -335,6 +335,14 @@ export const SETTINGS_SEARCH_ITEMS: SettingsSearchItem[] = [
   },
 
   {
+    anchor: 'appearance-pinned-conversations',
+    descKey: 'settingAppearance.pinnedConversations.desc',
+    keywords: ['pinned', 'pin', 'grid', 'tiles', 'rows', 'messages'],
+    labelKey: 'settingAppearance.pinnedConversations.title',
+    tab: SettingsTabs.Appearance,
+  },
+
+  {
     anchor: 'appearance-workspace-rail',
     descKey: 'settingAppearance.workspaceRail.desc',
     keywords: ['workspace', 'workspace bar', 'workspace rail', 'switch workspace'],

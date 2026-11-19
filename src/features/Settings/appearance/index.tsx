@@ -37,6 +37,7 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
   const { t } = useTranslation('setting');
   const fontSize = useUserStore(userGeneralSettingsSelectors.fontSize);
   const animationMode = useUserStore(userGeneralSettingsSelectors.animationMode);
+  const pinnedLayout = useUserStore(userGeneralSettingsSelectors.pinnedConversationLayout);
   const showWorkspaceRail = useUserStore(userGeneralSettingsSelectors.showWorkspaceRail);
   const workspaceRailOffered = useWorkspaceStore((s) => s.isWorkspaceAvailable);
   const responseLanguage = useUserStore(userGeneralSettingsSelectors.responseLanguage);
@@ -187,6 +188,27 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
                 { label: t('settingAppearance.animationMode.elegant'), value: 'elegant' },
               ]}
               onChange={(value) => setSettings({ general: { animationMode: value } })}
+            />
+          </Form.Field>
+          <Form.Field
+            divider
+            desc={t('settingAppearance.pinnedConversations.desc')}
+            minWidth={undefined}
+            label={
+              <SettingsSearchAnchor id={'appearance-pinned-conversations'}>
+                {t('settingAppearance.pinnedConversations.title')}
+              </SettingsSearchAnchor>
+            }
+          >
+            <Select
+              aria-label={t('settingAppearance.pinnedConversations.title')}
+              style={SELECT_STYLE}
+              value={pinnedLayout}
+              options={[
+                { label: t('settingAppearance.pinnedConversations.tiles'), value: 'tiles' },
+                { label: t('settingAppearance.pinnedConversations.rows'), value: 'rows' },
+              ]}
+              onChange={(value) => setSettings({ general: { pinnedConversationLayout: value } })}
             />
           </Form.Field>
           {workspaceRailOffered && (

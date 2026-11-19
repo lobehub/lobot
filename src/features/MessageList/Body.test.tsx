@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import Body from './Body';
 
 const home = vi.hoisted(() => ({
+  pinnedLayout: 'tiles' as 'tiles' | 'rows',
   channels: [] as Record<string, unknown>[],
   channelsEnabled: true,
   channelsError: undefined as unknown,
@@ -67,6 +68,17 @@ vi.mock('@/features/AgentRoute/useResolvedAgentRouteId', () => ({
   resolveInboxAgentRouteId: (id: string) => id,
 }));
 
+vi.mock('@/store/user/selectors', async (importOriginal) => {
+  const actual = await importOriginal<{ userGeneralSettingsSelectors: object }>();
+  return {
+    ...actual,
+    userGeneralSettingsSelectors: {
+      ...actual.userGeneralSettingsSelectors,
+      pinnedConversationLayout: () => home.pinnedLayout,
+    },
+  };
+});
+
 vi.mock('@/store/home', () => ({
   useHomeStore: (selector: (state: object) => unknown) => selector({}),
 }));
@@ -95,11 +107,17 @@ vi.mock('./AgentConversation', () => ({
   default: ({
     active,
     conversation,
+    variant = 'row',
   }: {
     active: boolean;
     conversation: { item: { title: string } };
+    variant?: 'row' | 'tile';
   }) =>
-    createElement('div', { 'aria-current': active ? 'page' : undefined }, conversation.item.title),
+    createElement(
+      'div',
+      { 'aria-current': active ? 'page' : undefined, 'data-variant': variant },
+      conversation.item.title,
+    ),
 }));
 vi.mock('./GroupConversation', () => ({ default: () => null }));
 
@@ -117,6 +135,7 @@ beforeEach(() => {
   home.channelsEnabled = true;
   home.channelsError = undefined;
   home.pathname = '/';
+  home.pinnedLayout = 'tiles';
   home.query = '';
   home.error = undefined;
   home.isInit = false;
@@ -182,6 +201,54 @@ describe('MessageList Body', () => {
     expect(group).toHaveTextContent('Pinned 2');
     expect(group).not.toHaveTextContent('Agent A');
     expect(group).not.toHaveTextContent('Lobe AI row');
+  });
+
+  describe('pinned layout setting', () => {
+    const pinAgents = (count: number) => {
+      home.isInit = true;
+      const ids = Array.from({ length: count }, (_, i) => `p${i + 1}`);
+      home.items = ids.map((id) => ({
+        id,
+        pinned: false,
+        title: `Pinned ${id}`,
+        type: 'agent',
+        updatedAt: new Date(),
+      }));
+      home.channels = ids.map((agentId) => ({
+        agentId,
+        createdAt: new Date(),
+        id: `chn_${agentId}`,
+        pinnedAt: new Date(),
+        title: agentId,
+      }));
+    };
+    const pinnedVariants = () =>
+      [...screen.getByRole('group', { name: 'navPanel.pinned' }).children].map((node) =>
+        node.getAttribute('data-variant'),
+      );
+
+    it('keeps many pins as tiles by default', () => {
+      pinAgents(7);
+      render(createElement(Body));
+
+      expect(pinnedVariants()).toEqual(Array.from({ length: 7 }, () => 'tile'));
+    });
+
+    it('lists more than six pins as rows when the person picks rows', () => {
+      home.pinnedLayout = 'rows';
+      pinAgents(7);
+      render(createElement(Body));
+
+      expect(pinnedVariants()).toEqual(Array.from({ length: 7 }, () => 'row'));
+    });
+
+    it('keeps six pins as tiles even with rows picked', () => {
+      home.pinnedLayout = 'rows';
+      pinAgents(6);
+      render(createElement(Body));
+
+      expect(pinnedVariants()).toEqual(Array.from({ length: 6 }, () => 'tile'));
+    });
   });
 
   it("groups the person's own sections between the pinned rows and the rest", () => {

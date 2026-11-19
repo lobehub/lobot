@@ -2,7 +2,11 @@ import { isDesktop } from '@lobechat/const';
 
 import { DEFAULT_LANG } from '@/const/locale';
 import { type Locales, normalizeLocale } from '@/locales/resources';
-import { type ContextMenuMode, type UserGeneralConfig } from '@/types/user/settings';
+import {
+  type ContextMenuMode,
+  type PinnedConversationLayout,
+  type UserGeneralConfig,
+} from '@/types/user/settings';
 import { getSystemLanguage } from '@/utils/client/systemLanguage';
 import { isOnServerSide } from '@/utils/env';
 
@@ -38,6 +42,9 @@ const enableMessageLinkIcon = (s: UserStore) => generalConfig(s).enableMessageLi
 const enablePasteAutoConvert = (s: UserStore) =>
   generalConfig(s).enablePasteAutoConvert ?? s.preference.lab?.enableInputMarkdown !== false;
 const fontAntialiasing = (s: UserStore) => generalConfig(s).fontAntialiasing ?? true;
+/** Pinned conversations stay an avatar grid unless the person picks rows. */
+const pinnedConversationLayout = (s: UserStore): PinnedConversationLayout =>
+  generalConfig(s).pinnedConversationLayout ?? 'tiles';
 /** The workspace column is opt-in. An unset value stays hidden. */
 const showWorkspaceRail = (s: UserStore) => generalConfig(s).showWorkspaceRail === true;
 /** The setting is a boolean: either the live tool list is open or it is a
@@ -56,6 +63,7 @@ export const userGeneralSettingsSelectors = {
   fontAntialiasing,
   fontSize,
   neutralColor,
+  pinnedConversationLayout,
   primaryColor,
   currentResponseLanguage,
   responseLanguage,
