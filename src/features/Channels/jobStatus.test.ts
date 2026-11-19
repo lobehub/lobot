@@ -11,8 +11,11 @@ import {
   mainTimelineFailures,
   memberCurrentJob,
   memberJobStatus,
+  queueHead,
   replyActivityJobs,
   replyAvatarState,
+  replyJobStatus,
+  replyJobTone,
   unresolvedFailures,
   workingConversationCount,
   workingConversations,
@@ -146,6 +149,15 @@ describe('Channel task tone', () => {
     expect(memberCurrentJob(jobs, 'member')?.id).toBe('now');
     expect(memberCurrentJob(jobs.slice(0, 2), 'member')?.id).toBe('next');
     expect(memberCurrentJob(jobs.slice(0, 1), 'member')).toBeUndefined();
+  });
+
+  it("picks the head of a member's queue, which the newer requests wait behind", () => {
+    const jobs = [
+      job({ id: 'newest' }),
+      job({ id: 'newer' }),
+      job({ blockedCode: 'device_offline', id: 'head' }),
+    ];
+    expect(memberCurrentJob(jobs, 'member')?.id).toBe('head');
   });
 
   it("flags a member's failure until a newer reply from it settles", () => {
@@ -426,5 +438,70 @@ describe('workingConversations', () => {
     ];
 
     expect(workingConversations(jobs, 'mem_cook')).toEqual([null, 'thr_a']);
+  });
+});
+
+describe('replies queued behind an earlier one', () => {
+  const job = (patch: Partial<ChannelPublicJob>) =>
+    ({
+      blockedCode: null,
+      deviceId: null,
+      memberId: 'mem_cook',
+      publicationRevoked: false,
+      status: 'queued',
+      threadId: null,
+      writerHeld: false,
+      ...patch,
+    }) as ChannelPublicJob;
+
+  it('waits for the previous reply instead of typing, behind a running one', () => {
+    const jobs = [job({ id: 'later' }), job({ id: 'next' }), job({ id: 'now', status: 'running' })];
+    expect(queueHead(jobs[0], jobs)?.id).toBe('now');
+    expect(replyJobStatus(jobs[0], jobs)).toBe('blocked.member_busy');
+    expect(replyJobStatus(jobs[1], jobs)).toBe('blocked.member_busy');
+    expect(replyJobTone(jobs[0], jobs)).toBe('quiet');
+    expect(replyJobStatus(jobs[2], jobs)).toBe('status.running');
+  });
+
+  it('says it waits for the device the head of the queue waits for', () => {
+    const jobs = [
+      job({ id: 'later' }),
+      job({ blockedCode: 'device_offline', deviceId: 'dev_1', id: 'head' }),
+    ];
+    expect(queueHead(jobs[0], jobs)?.deviceId).toBe('dev_1');
+    expect(replyJobStatus(jobs[0], jobs)).toBe('queue.waitingDevice');
+    expect(replyJobTone(jobs[0], jobs)).toBe('attention');
+  });
+
+  it('still prepares the first queued reply, and one of another member or branch', () => {
+    const jobs = [
+      job({ id: 'thread', threadId: 'thr_1' }),
+      job({ id: 'other', memberId: 'mem_nasa' }),
+      job({ id: 'first' }),
+      job({ id: 'done', status: 'completed' }),
+    ];
+    for (const entry of jobs.slice(0, 3)) {
+      expect(queueHead(entry, jobs)).toBeUndefined();
+      expect(replyJobStatus(entry, jobs)).toBe('status.preparing');
+      expect(replyJobTone(entry, jobs)).toBe('working');
+    }
+  });
+
+  it('keeps the reason of a reply the server already found blocked', () => {
+    const jobs = [
+      job({ blockedCode: 'directory_locked', id: 'later' }),
+      job({ id: 'now', status: 'running' }),
+    ];
+    expect(queueHead(jobs[0], jobs)).toBeUndefined();
+    expect(replyJobStatus(jobs[0], jobs)).toBe('blocked.directory_locked');
+  });
+
+  it('does not count a waiting reply as work in progress', () => {
+    const jobs = [
+      job({ id: 'later', threadId: 'thr_1' }),
+      job({ blockedCode: 'device_offline', id: 'head', threadId: 'thr_1' }),
+    ];
+    expect(workingConversations(jobs, 'mem_cook')).toEqual([]);
+    expect(replyAvatarState(jobs)).toBe('waiting');
   });
 });

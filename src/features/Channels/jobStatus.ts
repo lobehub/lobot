@@ -55,6 +55,52 @@ export const isQuotaFailure = (job: Pick<ChannelPublicJob, 'errorMessage' | 'sta
 export const isChannelJobActive = (job: ChannelReplyJob) =>
   !job.publicationRevoked && (job.status === 'queued' || job.status === 'running');
 
+/**
+ * The reply a queued one waits behind: the oldest active reply of the same member in the same
+ * branch, when it is older than this one. The server writes `blockedCode` only on a job it tried
+ * to claim, so a request queued behind another reply of the same Agent carries none and would
+ * otherwise read as typing. Jobs arrive newest first.
+ *
+ * The server keeps requests from different requesters apart when no Channel device is pinned,
+ * but the public job does not say who asked, so this is per member and branch.
+ */
+export const queueHead = <T extends ChannelReplyJob>(job: T, jobs: T[]): T | undefined => {
+  if (job.status !== 'queued' || job.blockedCode || !isChannelJobActive(job)) return undefined;
+  const index = jobs.findIndex((entry) => entry.id === job.id);
+  if (index === -1) return undefined;
+  return jobs
+    .slice(index + 1)
+    .findLast(
+      (entry) =>
+        entry.memberId === job.memberId &&
+        (entry.threadId ?? null) === (job.threadId ?? null) &&
+        isChannelJobActive(entry),
+    );
+};
+
+/** A queue head blocked on its device: the replies behind it wait for that device too. */
+export const isDeviceBlocked = (job: ChannelReplyJob) =>
+  job.status === 'queued' && job.blockedCode === 'device_offline';
+
+/**
+ * A reply's status among the conversation's replies: one queued behind an earlier reply of the
+ * same Agent waits for it (or for the device that reply waits for) instead of typing.
+ */
+export const replyJobStatus = (job: ChannelReplyJob, jobs: ChannelReplyJob[]) => {
+  const head = queueHead(job, jobs);
+  if (!head) return channelJobStatus(job);
+  return isDeviceBlocked(head)
+    ? ('queue.waitingDevice' as const)
+    : ('blocked.member_busy' as const);
+};
+
+/** The tone of `replyJobStatus`: a reply waiting in line is quiet, behind a blocked one amber. */
+export const replyJobTone = (job: ChannelReplyJob, jobs: ChannelReplyJob[]): ChannelStatusTone => {
+  const head = queueHead(job, jobs);
+  if (!head) return channelJobTone(job);
+  return channelJobTone(head) === 'attention' ? 'attention' : 'quiet';
+};
+
 /** Work the conversation is still waiting on: shown above the composer, not on messages. */
 export const replyActivityJobs = <T extends ChannelReplyJob>(jobs: T[]) =>
   jobs.filter(
@@ -83,12 +129,15 @@ export const unresolvedFailures = <T extends ChannelReplyJob>(jobs: T[]) => {
 export const mainTimelineFailures = <T extends ChannelReplyJob>(jobs: T[]) =>
   unresolvedFailures(jobs.filter((job) => !job.threadId));
 
-/** What a member is busy with now: a running reply first, then the next queued one. */
+/**
+ * What a member is busy with now: a running reply first, then the head of its queue, the oldest
+ * queued one, which the newer ones wait behind. Jobs arrive newest first.
+ */
 export const memberCurrentJob = <T extends ChannelReplyJob>(jobs: T[], memberId: string) => {
   const own = jobs.filter((job) => job.memberId === memberId);
   return (
     own.find((job) => isChannelJobActive(job) && job.status === 'running') ??
-    own.find(isChannelJobActive) ??
+    own.findLast(isChannelJobActive) ??
     own.find((job) => job.publicationRevoked && job.writerHeld) ??
     unresolvedFailures(own)[0]
   );
@@ -117,7 +166,8 @@ export const replyAvatarState = (
 ): AgentAvatarState | undefined => {
   const pending = replyActivityJobs(jobs);
   if (pending.some((job) => isChannelJobActive(job) && job.status === 'running')) return 'working';
-  if (receiving || pending.some((job) => channelJobTone(job) === 'working')) return 'thinking';
+  if (receiving || pending.some((job) => replyJobTone(job, pending) === 'working'))
+    return 'thinking';
   return pending.length > 0 ? 'waiting' : undefined;
 };
 
@@ -134,15 +184,19 @@ export const directAvatarState = (detail: ChannelDetail) =>
  * deferred replies do not count. Given a member, only that member's replies count.
  */
 /** The conversations a member works in at once: `null` is the main one, the rest Thread ids. */
-export const workingConversations = (jobs: ChannelReplyJob[], memberId?: string) => [
-  ...new Set(
-    replyActivityJobs(jobs)
-      .filter(
-        (job) => channelJobTone(job) === 'working' && (!memberId || job.memberId === memberId),
-      )
-      .map((job) => job.threadId ?? null),
-  ),
-];
+export const workingConversations = (jobs: ChannelReplyJob[], memberId?: string) => {
+  const pending = replyActivityJobs(jobs);
+  return [
+    ...new Set(
+      pending
+        .filter(
+          (job) =>
+            replyJobTone(job, pending) === 'working' && (!memberId || job.memberId === memberId),
+        )
+        .map((job) => job.threadId ?? null),
+    ),
+  ];
+};
 
 export const workingConversationCount = (jobs: ChannelReplyJob[], memberId?: string) =>
   workingConversations(jobs, memberId).length;

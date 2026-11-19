@@ -524,6 +524,10 @@ class ChannelActionImpl {
     await channelService.retryJob(channelId, job.id);
     await this.refreshDetail({ channelId, threadId: job.threadId });
   };
+  resumeJob = async (channelId: string, job: { id: string; threadId: string | null }) => {
+    await channelService.resumeJob(channelId, job.id);
+    await this.refreshDetail({ channelId, threadId: job.threadId });
+  };
   stop = async (channelId: string, scope: Parameters<typeof channelService.stop>[1]) => {
     await channelService.stop(channelId, scope);
     await this.refreshDetail({ channelId, threadId: 'threadId' in scope ? scope.threadId : null });

@@ -74,4 +74,36 @@ describe('ReplyActivity', () => {
     );
     expect(screen.getByRole('status').textContent).toBe('Cook · status.running');
   });
+
+  it('describes the head of the queue, not a newer request waiting behind it', () => {
+    render(
+      <ReplyActivity
+        threadId={null}
+        detail={detail([
+          job({ id: 'job_new', status: 'queued', writerHeld: false }),
+          job({ id: 'job_newer', status: 'queued', writerHeld: false }),
+          job({
+            blockedCode: 'device_offline',
+            id: 'job_head',
+            status: 'queued',
+            writerHeld: false,
+          }),
+        ])}
+      />,
+    );
+    expect(screen.getByRole('status').textContent).toBe('Cook · blocked.device_offline');
+  });
+
+  it('does not say the Agent is typing while its requests only wait in line', () => {
+    render(
+      <ReplyActivity
+        threadId={null}
+        detail={detail([
+          job({ id: 'job_new', status: 'queued', writerHeld: false }),
+          job({ blockedCode: 'member_busy', id: 'job_head', status: 'queued', writerHeld: false }),
+        ])}
+      />,
+    );
+    expect(screen.getByRole('status').textContent).toBe('Cook · blocked.member_busy');
+  });
 });

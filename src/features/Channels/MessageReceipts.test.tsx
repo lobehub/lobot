@@ -10,9 +10,17 @@ import type { ReplyEntry } from './MessageReceipts';
 import { failureAnchors, ReplyDetail } from './MessageReceipts';
 
 const retryJob = vi.fn();
+const devices: Record<string, unknown> = {
+  dev_1: { deviceId: 'dev_1', friendlyName: 'Studio Mac' },
+};
 const openInWebApp = vi.fn();
 
-vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string, options?: { name?: string }) =>
+      options?.name ? `${key}:${options.name}` : key,
+  }),
+}));
 vi.mock('@lobehub/ui', () => ({
   ActionIcon: ({ onClick, title }: { onClick?: () => void; title?: string }) =>
     createElement('button', { onClick }, title),
@@ -31,7 +39,19 @@ vi.mock('@/store/channel', () => ({
 vi.mock('@/features/Electron/navigation/webApp', () => ({
   openInWebApp: (path: string) => openInWebApp(path),
 }));
-vi.mock('./ChannelStatus', () => ({ ChannelStatus: () => null }));
+vi.mock('./ChannelStatus', () => ({
+  ChannelStatus: ({ label }: { label: string }) =>
+    createElement('span', { 'data-testid': 'status' }, label),
+}));
+vi.mock('./CreateChannel/EnvironmentFields', () => ({
+  deviceLabel: (device: { friendlyName: string }) => device.friendlyName,
+}));
+vi.mock('@/store/device', () => ({
+  deviceSelectors: {
+    getDeviceById: (id?: string) => () => (id === 'dev_1' ? devices[id] : undefined),
+  },
+  useDeviceStore: (selector: (state: unknown) => unknown) => selector({}),
+}));
 vi.mock('./useOpenReplyAgent', () => ({ useOpenReplyAgent: () => () => {} }));
 vi.mock('./BlockedDevice', () => ({
   BlockedDevice: ({ retry }: { retry?: unknown }) =>
@@ -130,5 +150,28 @@ describe('failureAnchors', () => {
   it('sits right after the request when the Agent said nothing', () => {
     const anchors = failureAnchors([message('req'), message('later')], [entry]);
     expect([...anchors.keys()]).toEqual(['req']);
+  });
+});
+
+describe('ReplyDetail queue', () => {
+  const queued = (job: Partial<ChannelPublicJob>) =>
+    failedJob({ errorType: null, memberId: 'mem_cook', status: 'queued', ...job });
+  const renderQueued = (job: ChannelPublicJob, queue: ChannelPublicJob[]) =>
+    render(createElement(ReplyDetail, { channelId: 'chn_1', entry: { job, name: 'Cook' }, queue }));
+
+  // Requests queued behind another reply of the same Agent read "Typing…" for an hour.
+  it('says a request waits for the previous reply instead of typing', () => {
+    const queue = [queued({ id: 'later' }), queued({ id: 'now', status: 'running' })];
+    renderQueued(queue[0], queue);
+    expect(screen.getByTestId('status').textContent).toBe('blocked.member_busy');
+  });
+
+  it('names the device the head of the queue waits for', () => {
+    const queue = [
+      queued({ deviceId: null, id: 'later' }),
+      queued({ blockedCode: 'device_offline', deviceId: 'dev_1', id: 'head' }),
+    ];
+    renderQueued(queue[0], queue);
+    expect(screen.getByTestId('status').textContent).toBe('queue.waitingDevice:Studio Mac');
   });
 });

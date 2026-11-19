@@ -19,16 +19,11 @@ import { channelActions } from '@/store/channel';
 import { BlockedDevice } from './BlockedDevice';
 import { canManageAgents } from './channelAccess';
 import { ChannelStatus } from './ChannelStatus';
-import {
-  channelJobStatus,
-  channelJobTone,
-  isChannelJobActive,
-  isDeviceFailure,
-  isQuotaFailure,
-} from './jobStatus';
+import { isChannelJobActive, isDeviceFailure, isQuotaFailure } from './jobStatus';
 import { memberAvatar, memberName } from './memberName';
 import { statusStyles, styles } from './styles';
 import { useOpenReplyAgent } from './useOpenReplyAgent';
+import { useReplyStatusLabel } from './useReplyStatusLabel';
 
 export interface ReplyEntry {
   agentId?: string | null;
@@ -79,17 +74,22 @@ export const failureAnchors = (messages: ChannelPublicMessage[], entries: ReplyE
 /**
  * One reply: its state, why it failed or what device it waits for, and how to stop it or open
  * its Agent. `manageable` viewers (Channel admins) also see that device and can change it.
+ * `queue` holds the replies listed beside it, so one waiting behind an earlier reply of the same
+ * Agent says so instead of typing.
  */
 export function ReplyDetail({
   channelId,
   entry: { agentId, avatar, job, member, name },
   manageable,
+  queue,
 }: {
   channelId: string;
   entry: ReplyEntry;
   manageable?: boolean;
+  queue?: ChannelPublicJob[];
 }) {
   const { t } = useTranslation('channel');
+  const status = useReplyStatusLabel(job, queue ?? [job]);
   const { close } = usePopoverContext();
   const openAgent = useOpenReplyAgent(agentId, close);
   const deviceFailure = isDeviceFailure(job);
@@ -168,7 +168,7 @@ export function ReplyDetail({
         )}
         {/* The state stays whole on the row; the name gives way first. */}
         <span style={{ flexShrink: 0, whiteSpace: 'nowrap' }}>
-          <ChannelStatus label={t(channelJobStatus(job))} tone={channelJobTone(job)} />
+          <ChannelStatus label={status.label} tone={status.tone} />
         </span>
         <Flexbox horizontal align="center" gap={4} style={{ marginInlineStart: 'auto' }}>
           {/* The member who runs the reply can watch it work in its topic on LobeHub. */}
@@ -259,6 +259,7 @@ export function ReplyList({
   entries: ReplyEntry[];
   manageable?: boolean;
 }) {
+  const queue = entries.map((entry) => entry.job);
   return (
     <Flexbox gap={16} {...stylex.props(statusStyles.popover, statusStyles.replyList)}>
       {entries.map((entry) => (
@@ -267,6 +268,7 @@ export function ReplyList({
           entry={entry}
           key={entry.job.id}
           manageable={manageable}
+          queue={queue}
         />
       ))}
     </Flexbox>
