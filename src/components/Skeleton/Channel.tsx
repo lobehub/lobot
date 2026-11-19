@@ -54,6 +54,38 @@ const MessageRowSkeleton = ({ lines, name }: (typeof MESSAGE_ROWS)[number]) => (
   </Flexbox>
 );
 
+/** Snippet line widths per search hit, so the rows don't read as one repeated block. */
+const SEARCH_HIT_ROWS = [
+  { lines: ['92%', '64%'], name: 72 },
+  { lines: ['78%'], name: 96 },
+  { lines: ['86%', '48%'], name: 64 },
+  { lines: ['70%'], name: 88 },
+];
+
+/**
+ * Hits in the Channel search panel (`features/Channels/ChannelSearch.tsx`): a 28px
+ * avatar, the name and time on one line, then the clamped snippet, padded like a hit
+ * button so the real results paint over the same rows. `rows` trims it for a next page.
+ */
+export const ChannelSearchSkeleton = ({ rows = SEARCH_HIT_ROWS.length }: { rows?: number }) => (
+  <Flexbox aria-busy gap={2}>
+    {SEARCH_HIT_ROWS.slice(0, rows).map(({ lines, name }, index) => (
+      <Flexbox horizontal gap={10} key={index} paddingBlock={8} paddingInline={10}>
+        <Skeleton.Avatar shape={'circle'} size={28} />
+        <Flexbox flex={1} gap={8} paddingBlock={'2px 0'} style={{ minWidth: 0 }}>
+          <Flexbox horizontal align={'center'} gap={6}>
+            <SkeletonBar height={13} width={name} />
+            <SkeletonBar height={11} width={36} />
+          </Flexbox>
+          {lines.map((width, line) => (
+            <SkeletonBar height={13} key={line} width={width} />
+          ))}
+        </Flexbox>
+      </Flexbox>
+    ))}
+  </Flexbox>
+);
+
 /**
  * Body of a Channel conversation (`features/Channels/ChannelConversation.tsx`):
  * the full-width feed with 24px gutters, then the composer's activity line and
