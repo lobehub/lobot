@@ -164,6 +164,15 @@ export const styles = stylex.create({
     insetInlineStart: '50%',
     transform: 'translateX(-50%)',
   },
+  /** Unread @mentions of the viewer, pinned to the feed's top corner like an IM's. */
+  jumpToMention: {
+    position: 'absolute',
+    zIndex: 5,
+    insetBlockStart: 12,
+    insetInlineEnd: 16,
+    color: cssVar.colorPrimary,
+    boxShadow: cssVar.boxShadowSecondary,
+  },
   /**
    * One message row; hovering highlights it and reveals its toolbar, like a chat app.
    * The wash spans the feed edge to edge (cancelling the feed's 16px padding), square,
