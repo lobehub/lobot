@@ -143,7 +143,34 @@ beforeEach(() => {
   home.sections = undefined;
 });
 
+/** Lobe AI's direct Channel the person unpinned, so only the pins under test lead the list. */
+const unpinnedInbox = () => ({
+  agentId: 'inbox',
+  createdAt: new Date(),
+  id: 'chn_inbox',
+  pinnedAt: null,
+  title: 'Lobe AI',
+});
+
 describe('MessageList Body', () => {
+  it('pins Lobe AI for a new person, before its direct Channel exists', () => {
+    home.isInit = true;
+
+    render(createElement(Body));
+
+    expect(screen.getByRole('group', { name: 'navPanel.pinned' })).toHaveTextContent('Lobe AI row');
+  });
+
+  it('leaves Lobe AI unpinned once the person unpinned its direct Channel', () => {
+    home.isInit = true;
+    home.channels.push(unpinnedInbox());
+
+    render(createElement(Body));
+
+    expect(screen.queryByRole('group', { name: 'navPanel.pinned' })).not.toBeInTheDocument();
+    expect(screen.getByText('Lobe AI row')).toBeInTheDocument();
+  });
+
   it('keeps Lobe AI and Channels visible while the agent list is unresolved', () => {
     render(createElement(Body));
 
@@ -185,14 +212,17 @@ describe('MessageList Body', () => {
       { id: 'p2', pinned: false, title: 'Pinned 2', type: 'agent', updatedAt: new Date() },
       { id: 'a', pinned: false, title: 'Agent A', type: 'agent', updatedAt: new Date() },
     ];
-    // Pinned by this person through their direct Channels with the two Agents.
-    home.channels = ['p1', 'p2'].map((agentId) => ({
-      agentId,
-      createdAt: new Date(),
-      id: `chn_${agentId}`,
-      pinnedAt: new Date(),
-      title: agentId,
-    }));
+    // Pinned by this person through their direct Channels with the two Agents; Lobe AI unpinned.
+    home.channels = [
+      ...['p1', 'p2'].map((agentId) => ({
+        agentId,
+        createdAt: new Date(),
+        id: `chn_${agentId}`,
+        pinnedAt: new Date(),
+        title: agentId,
+      })),
+      unpinnedInbox(),
+    ];
 
     render(createElement(Body));
 
@@ -214,13 +244,16 @@ describe('MessageList Body', () => {
         type: 'agent',
         updatedAt: new Date(),
       }));
-      home.channels = ids.map((agentId) => ({
-        agentId,
-        createdAt: new Date(),
-        id: `chn_${agentId}`,
-        pinnedAt: new Date(),
-        title: agentId,
-      }));
+      home.channels = [
+        ...ids.map((agentId) => ({
+          agentId,
+          createdAt: new Date(),
+          id: `chn_${agentId}`,
+          pinnedAt: new Date(),
+          title: agentId,
+        })),
+        unpinnedInbox(),
+      ];
     };
     const pinnedVariants = () =>
       [...screen.getByRole('group', { name: 'navPanel.pinned' }).children].map((node) =>

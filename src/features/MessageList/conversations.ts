@@ -100,8 +100,10 @@ export const conversationPreview = (
  * Pinned by this person atop their own list. The pin lives on their membership of the
  * conversation's Channel, so an Agent's workspace-wide sidebar pin does not pin it here.
  */
-export const isPinned = (entry: { channel?: Pick<ChannelListItem, 'pinnedAt'> }) =>
-  !!entry.channel?.pinnedAt;
+export const isPinned = (entry: {
+  channel?: Pick<ChannelListItem, 'pinnedAt'>;
+  defaultPinned?: boolean;
+}) => (entry.channel ? !!entry.channel.pinnedAt : !!entry.defaultPinned);
 
 /** When a Channel last had a message, else when it was opened. */
 export const channelActivity = (channel: ChannelListItem): Date =>
@@ -179,7 +181,13 @@ export const buildConversationSections = (
 };
 
 export type ConversationEntry =
-  | { activeAt: Date; channel?: ChannelListItem; type: 'inbox' }
+  | {
+      activeAt: Date;
+      channel?: ChannelListItem;
+      /** Lobe AI before its direct Channel exists: a new person finds it pinned. */
+      defaultPinned?: boolean;
+      type: 'inbox';
+    }
   | { activeAt: Date; channel: ChannelListItem; type: 'channel' }
   | (Conversation & { type: 'item' });
 
@@ -190,7 +198,9 @@ export type ConversationEntry =
  */
 export const buildConversationEntries = (
   { pinned, recent }: ConversationSections,
-  inbox: { activeAt?: Date; channel?: ChannelListItem; title: string } | undefined,
+  inbox:
+    | { activeAt?: Date; channel?: ChannelListItem; defaultPinned?: boolean; title: string }
+    | undefined,
   query = '',
   channels: ChannelListItem[] = [],
   /** The name of the project a Channel belongs to, which a search also matches. */
@@ -223,6 +233,7 @@ export const buildConversationEntries = (
     rest.splice(index === -1 ? rest.length : index, 0, {
       activeAt,
       channel: inbox.channel,
+      defaultPinned: inbox.defaultPinned,
       type: 'inbox',
     });
   }

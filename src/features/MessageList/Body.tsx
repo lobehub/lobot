@@ -167,6 +167,7 @@ const Body = memo(() => {
   );
 
   const inboxChannel = inboxAgentId ? directChannels.get(inboxAgentId) : undefined;
+  const inboxDefaultPinned = channelsEnabled && !!allChannels && !inboxChannel;
   const userId = useUserStore(userProfileSelectors.userId);
   const pinnedLayout = useUserStore(userGeneralSettingsSelectors.pinnedConversationLayout);
 
@@ -195,6 +196,9 @@ const Body = memo(() => {
           {
             activeAt: inboxActivity(inboxUpdatedAt, inboxChannel),
             channel: inboxChannel,
+            // Lobe AI starts pinned: until the person has opened its Channel, there is no pin to
+            // read, so a loaded list without one shows it pinned.
+            defaultPinned: inboxDefaultPinned,
             title: inboxTitle,
           },
           query,
@@ -214,6 +218,7 @@ const Body = memo(() => {
     inboxUpdatedAt,
     inboxTitle,
     inboxChannel,
+    inboxDefaultPinned,
     query,
     channels,
     projectMap,
