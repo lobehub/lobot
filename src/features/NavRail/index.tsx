@@ -2,7 +2,7 @@
 
 import { ActionIcon, DropdownMenu, type DropdownMenuProps, Flexbox, Icon, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
-import { LogOut, PieChart, Settings, UsersCollaboration } from 'lucide-react';
+import { Settings, UsersCollaboration } from 'lucide-react';
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +14,6 @@ import {
   styles as listStyles,
 } from '@/features/MessageList/style';
 import UserAvatar from '@/features/User/UserAvatar';
-import { useSignOut } from '@/hooks/useSignOut';
 import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
@@ -37,13 +36,13 @@ const useContactRequestsCount = (channelsEnabled: boolean) => {
 
 /**
  * Footer of the list column: the signed-in user on the left opens a dropdown
- * (scope switch, usage, settings, sign out), and a contacts ActionIcon on the right opens
- * the address book.
+ * with only the scope switch and settings — usage and sign out live inside
+ * settings (sign out is the last row of Profile), so a stray click here can't
+ * end the session. A contacts ActionIcon on the right opens the address book.
  */
 const NavTabBar = memo(() => {
-  const { t } = useTranslation(['common', 'auth']);
+  const { t } = useTranslation('common');
   const contactsTitle = useContactsTitle();
-  const signOut = useSignOut();
   const channelsEnabled = useChannelsEnabled();
   const contactRequests = useContactRequestsCount(channelsEnabled);
   const [nickname, username] = useUserStore((s) => [
@@ -75,28 +74,13 @@ const NavTabBar = memo(() => {
     () => [
       ...(scopeItem ? [scopeItem, { type: 'divider' as const }] : []),
       {
-        icon: <Icon icon={PieChart} />,
-        key: 'usage',
-        label: t('userPanel.usages'),
-        onClick: openSettingsMenu,
-      },
-      {
         icon: <Icon icon={Settings} />,
         key: 'settings',
         label: t('tab.setting'),
         onClick: openSettingsMenu,
       },
-      { type: 'divider' },
-      {
-        icon: <Icon icon={LogOut} />,
-        key: 'signout',
-        label: t('signout', { ns: 'auth' }),
-        onClick: () => {
-          void signOut();
-        },
-      },
     ],
-    [openSettingsMenu, scopeItem, signOut, t],
+    [openSettingsMenu, scopeItem, t],
   );
 
   return (

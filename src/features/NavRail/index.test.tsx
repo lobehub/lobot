@@ -6,8 +6,12 @@ import type * as ContactStore from '@/store/contact';
 
 import NavTabBar from './index';
 
-const { contactState, useFetchRequests } = vi.hoisted(() => ({
+const { contactState, menu, useFetchRequests } = vi.hoisted(() => ({
   contactState: { requestsMap: {} as Record<string, object[]> },
+  menu: {
+    items: [] as { key?: string; type?: string }[],
+    scopeItem: null as { key: string } | null,
+  },
   useFetchRequests: vi.fn(),
 }));
 let channelsEnabled = true;
@@ -20,14 +24,19 @@ vi.mock('@lobehub/ui', () => ({
   ActionIcon: ({ 'aria-label': ariaLabel, title }: { 'aria-label'?: string; 'title'?: string }) => (
     <button aria-label={ariaLabel || title} type="button" />
   ),
-  DropdownMenu: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
+  DropdownMenu: ({
+    children,
+    items,
+  }: {
+    children?: ReactNode;
+    items: { key?: string; type?: string }[];
+  }) => {
+    menu.items = items;
+    return <div>{children}</div>;
+  },
   Flexbox: ({ children }: { children?: ReactNode }) => <div>{children}</div>,
   Icon: () => null,
   Text: ({ children }: { children?: ReactNode }) => <span>{children}</span>,
-}));
-
-vi.mock('@/hooks/useSignOut', () => ({
-  useSignOut: () => vi.fn(),
 }));
 
 vi.mock('@/styles/electron', () => ({
@@ -66,7 +75,7 @@ vi.mock('@/business/client/hooks/useActiveWorkspaceId', () => ({
 }));
 vi.mock('./ContactsPopup', () => ({ default: () => null }));
 vi.mock('./SettingsPopup', () => ({ default: () => null }));
-vi.mock('./useScopeMenuItem', () => ({ useScopeMenuItem: () => null }));
+vi.mock('./useScopeMenuItem', () => ({ useScopeMenuItem: () => menu.scopeItem }));
 
 const request = (id: string, direction: 'incoming' | 'outgoing') => ({
   direction,
@@ -78,6 +87,8 @@ describe('NavTabBar', () => {
   beforeEach(() => {
     channelsEnabled = true;
     contactState.requestsMap = {};
+    menu.items = [];
+    menu.scopeItem = null;
     useFetchRequests.mockClear();
   });
 
@@ -116,5 +127,23 @@ describe('NavTabBar', () => {
     expect(screen.getByLabelText('tab.setting')).toHaveTextContent('Test User');
     expect(screen.getByLabelText('tab.contacts')).toBeInTheDocument();
     expect(screen.queryByLabelText('tab.messages')).not.toBeInTheDocument();
+  });
+
+  it('keeps only the scope switch and settings in the footer menu', () => {
+    menu.scopeItem = { key: 'scope' };
+
+    render(<NavTabBar />);
+
+    expect(menu.items.map((item) => item.key ?? item.type)).toEqual([
+      'scope',
+      'divider',
+      'settings',
+    ]);
+  });
+
+  it('shows only settings in the footer menu when there is no scope to switch', () => {
+    render(<NavTabBar />);
+
+    expect(menu.items.map((item) => item.key ?? item.type)).toEqual(['settings']);
   });
 });
