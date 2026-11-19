@@ -43,11 +43,12 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, variant })
   // A Channel grouped under a project wears that project's logo; a standalone one pictures
   // its members like a group chat, and keeps "#" until someone else joins.
   const project = useProjectStore(projectListItemSelector(channel.projectId));
-  // A project Channel goes by its project's name; one renamed from the default "General" keeps
-  // its own name as a tag, so a project's Channels stay apart.
-  const title = project?.name || channel.title;
-  const tag =
-    project && !isProjectDefaultChannel(channel, project.name) ? channel.title : undefined;
+  // A project's default "General" Channel goes by the project's name. One named on purpose leads
+  // with its own name, the project muted after it, so a project's Channels stay apart.
+  const projectName = project?.name;
+  const defaultChannel = isProjectDefaultChannel(channel, projectName);
+  const title = defaultChannel ? projectName : channel.title;
+  const tag = defaultChannel ? undefined : projectName;
   const members = channel.memberAvatars ?? [];
   const channelMark = (
     <span {...stylex.props(styles.channelMark)}>

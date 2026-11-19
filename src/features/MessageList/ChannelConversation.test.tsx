@@ -80,11 +80,14 @@ describe('ChannelConversation project title', () => {
     expect(screen.queryByText('General')).toBeNull();
   });
 
-  it('keeps a renamed project Channel apart by its own name', () => {
+  it('titles a renamed project Channel by its own name, the project muted after it', () => {
     store.project = { id: 'prj_1', name: 'Lobe Write' };
     renderRow(channel({ memberAvatars: [], projectId: 'prj_1', title: 'Launch' }));
-    expect(screen.getByText('Lobe Write')).toBeTruthy();
-    expect(screen.getByText('Launch')).toBeTruthy();
+    // The muted tag sits inside the title, so the title is the element that holds it.
+    const title = screen.getByText('Launch');
+    const tag = screen.getByText('Lobe Write');
+    expect(title.contains(tag)).toBe(true);
+    expect(tag.contains(title)).toBe(false);
   });
 
   it('names a standalone Channel by its own title', () => {
