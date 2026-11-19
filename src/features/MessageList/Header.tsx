@@ -10,7 +10,6 @@ import {
   SearchBar,
   Text,
 } from '@lobehub/ui';
-import { GroupBotSquareIcon } from '@lobehub/ui/icons';
 import * as stylex from '@stylexjs/stylex';
 import { BotIcon, Hash, PlusIcon, SearchIcon, UserPlus } from 'lucide-react';
 import { type FocusEvent, memo, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
@@ -82,21 +81,20 @@ const Header = memo(() => {
     if (event.currentTarget.contains(event.relatedTarget as Node | null)) return;
     if (!query) setSearchOpen(false);
   };
-  const { addFriend, channelsEnabled, createAgent, createGroupChat, isLoading } =
-    useCreateActions();
-  // What a conversation starts from, the same three as the desktop app menu. With Channels on,
-  // the group chat is a Channel, general or a project's.
+  const { addFriend, createAgent, createGroupChat, isLoading } = useCreateActions();
+  // What a conversation starts from, the same three as the desktop app menu. The group chat is a
+  // Channel, general or a project's.
   const createItems = useMemo(
     () => [
       createRow({ key: 'newAgent', onClick: createAgent }, BotIcon, t('messageList.newAgent')),
       createRow(
-        { key: channelsEnabled ? 'newChannel' : 'newGroupChat', onClick: createGroupChat },
-        channelsEnabled ? Hash : GroupBotSquareIcon,
+        { key: 'newChannel', onClick: createGroupChat },
+        Hash,
         t('messageList.newGroupChat'),
       ),
       createRow({ key: 'addFriend', onClick: addFriend }, UserPlus, t('messageList.addFriend')),
     ],
-    [addFriend, channelsEnabled, createAgent, createGroupChat, t],
+    [addFriend, createAgent, createGroupChat, t],
   );
 
   // Both sit on the right, the same circle as the contacts button. Search stays an icon

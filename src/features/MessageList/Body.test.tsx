@@ -10,7 +10,6 @@ import Body from './Body';
 const home = vi.hoisted(() => ({
   pinnedLayout: 'tiles' as 'tiles' | 'rows',
   channels: [] as Record<string, unknown>[],
-  channelsEnabled: true,
   channelsError: undefined as unknown,
   pathname: '/',
   query: '',
@@ -45,9 +44,6 @@ vi.mock('@/store/project', () => ({
   useCurrentProjectList: () => [{ avatar: null, id: 'pro_1', name: 'Apollo' }],
   useProjectStore: (selector: (state: object) => unknown) =>
     selector({ useFetchProjectList: () => ({}) }),
-}));
-vi.mock('@/features/Channels/useChannelsEnabled', () => ({
-  useChannelsEnabled: () => home.channelsEnabled,
 }));
 vi.mock('@/features/Channels/useChannelEvents', () => ({ useChannelEvents: () => {} }));
 vi.mock('./SearchContext', () => ({
@@ -132,7 +128,6 @@ beforeEach(() => {
       title: 'Team',
     },
   ];
-  home.channelsEnabled = true;
   home.channelsError = undefined;
   home.pathname = '/';
   home.pinnedLayout = 'tiles';
@@ -153,6 +148,18 @@ const unpinnedInbox = () => ({
 });
 
 describe('MessageList Body', () => {
+  // Regression: Channels waited for the server's runtime config, which a cold start fetches over
+  // the network. Until it answered the list painted Lobe AI alone as a plain row, then filled in
+  // its Channels and pinned it. Channels are always on now: no server config is mounted here.
+  it('lists Channels and pins Lobe AI on the first paint, without the server config', () => {
+    home.isInit = true;
+
+    render(createElement(Body));
+
+    expect(screen.getByRole('group', { name: 'navPanel.pinned' })).toHaveTextContent('Lobe AI row');
+    expect(screen.getByText('# Team')).toBeInTheDocument();
+  });
+
   it('pins Lobe AI for a new person, before its direct Channel exists', () => {
     home.isInit = true;
 
@@ -385,14 +392,6 @@ describe('MessageList Body Channel rows', () => {
     expect(screen.getByText('# Old')).toBeInTheDocument();
     expect(screen.queryByText('archivedGroup')).not.toBeInTheDocument();
   });
-
-  it('shows no Channel rows while Channels are off', () => {
-    home.channelsEnabled = false;
-
-    render(createElement(Body));
-
-    expect(screen.queryByText('# Team')).not.toBeInTheDocument();
-  });
 });
 
 describe('MessageList Body active row', () => {
@@ -473,13 +472,7 @@ describe('MessageList Body network search', () => {
     expect(openAddContactModal).toHaveBeenCalledWith('canisminor');
   });
 
-  it('offers no lookup without a query, or while Channels are off', () => {
-    const { unmount } = render(createElement(Body));
-    expect(screen.queryByText('messageList.networkSearch')).not.toBeInTheDocument();
-    unmount();
-
-    home.query = 'canisminor';
-    home.channelsEnabled = false;
+  it('offers no lookup without a query', () => {
     render(createElement(Body));
     expect(screen.queryByText('messageList.networkSearch')).not.toBeInTheDocument();
   });

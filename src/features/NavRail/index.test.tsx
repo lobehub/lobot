@@ -14,7 +14,6 @@ const { contactState, menu, useFetchRequests } = vi.hoisted(() => ({
   },
   useFetchRequests: vi.fn(),
 }));
-let channelsEnabled = true;
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -41,10 +40,6 @@ vi.mock('@lobehub/ui', () => ({
 
 vi.mock('@/styles/electron', () => ({
   electronStylish: { nodrag: '' },
-}));
-
-vi.mock('@/features/Channels/useChannelsEnabled', () => ({
-  useChannelsEnabled: () => channelsEnabled,
 }));
 
 vi.mock('@/features/User/UserAvatar', () => ({ default: () => null }));
@@ -85,7 +80,6 @@ const request = (id: string, direction: 'incoming' | 'outgoing') => ({
 
 describe('NavTabBar', () => {
   beforeEach(() => {
-    channelsEnabled = true;
     contactState.requestsMap = {};
     menu.items = [];
     menu.scopeItem = null;
@@ -109,16 +103,6 @@ describe('NavTabBar', () => {
     render(<NavTabBar />);
 
     expect(screen.getByTestId('tab-tab.contacts')).toHaveAttribute('data-badge', '0');
-  });
-
-  it('does not fetch or count requests when Channels are off', () => {
-    channelsEnabled = false;
-    contactState.requestsMap = { all: [request('a', 'incoming')] };
-
-    render(<NavTabBar />);
-
-    expect(screen.getByTestId('tab-tab.contacts')).toHaveAttribute('data-badge', '0');
-    expect(useFetchRequests).toHaveBeenCalledWith(false);
   });
 
   it('shows the user name beside the avatar and has no Messages button', () => {

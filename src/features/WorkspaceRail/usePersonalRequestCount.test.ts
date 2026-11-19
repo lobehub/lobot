@@ -4,15 +4,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { usePersonalRequestCount } from './usePersonalRequestCount';
 
 const mocks = vi.hoisted(() => ({
-  enabled: true,
   incoming: [] as unknown[],
   personalIncomingCount: 0,
   useFetchPersonalRequests: vi.fn(),
 }));
 
-vi.mock('@/features/Channels/useChannelsEnabled', () => ({
-  useChannelsEnabled: () => mocks.enabled,
-}));
 vi.mock('@/store/contact', () => ({
   contactActions: { useFetchPersonalRequests: mocks.useFetchPersonalRequests },
   contactSelectors: {
@@ -32,7 +28,6 @@ const synced = () => mocks.useFetchPersonalRequests.mock.calls.some(([enabled]) 
 
 describe('usePersonalRequestCount', () => {
   beforeEach(() => {
-    mocks.enabled = true;
     mocks.incoming = [];
     mocks.personalIncomingCount = 0;
     mocks.useFetchPersonalRequests.mockReset();
@@ -54,15 +49,5 @@ describe('usePersonalRequestCount', () => {
 
     expect(result.current).toBe(1);
     expect(synced()).toBe(true);
-  });
-
-  it('shows nothing and polls nothing with Channels off', () => {
-    mocks.enabled = false;
-    mocks.incoming = [{ id: 'r1' }];
-
-    const { result } = renderHook(() => usePersonalRequestCount(false));
-
-    expect(result.current).toBe(0);
-    expect(synced()).toBe(false);
   });
 });

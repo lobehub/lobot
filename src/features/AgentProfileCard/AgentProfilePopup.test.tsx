@@ -51,7 +51,6 @@ vi.mock('./AgentCardActions', () => ({
 vi.mock('./useAgentProfileDetail', () => ({
   useAgentProfileDetail: () => ({ detail: detail.current, isLoading: false }),
 }));
-vi.mock('@/features/Channels/useChannelsEnabled', () => ({ useChannelsEnabled: () => true }));
 vi.mock('@/features/ResourcePermission/useResourceAccess', () => ({
   useResourceAccess: () => ({ canEditResource: false, isAccessResolved: true }),
 }));

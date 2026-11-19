@@ -4,11 +4,7 @@ import { Flexbox } from '@lobehub/ui';
 import { Form } from '@lobehub/ui/form';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 
-import {
-  featureFlagsSelectors,
-  serverConfigSelectors,
-  useServerConfigStore,
-} from '@/store/serverConfig';
+import { featureFlagsSelectors, useServerConfigStore } from '@/store/serverConfig';
 
 import SkeletonBar from '../../Bar';
 import SettingsSectionSkeleton from '../Section';
@@ -83,7 +79,6 @@ const ImageSettingsSkeleton = () => {
  */
 const ServiceModelFormSkeleton = () => {
   const text = useSkeletonText('setting');
-  const enableChannels = useServerConfigStore(serverConfigSelectors.enableChannels);
 
   return (
     <Flexbox aria-busy gap={16}>
@@ -102,13 +97,11 @@ const ServiceModelFormSkeleton = () => {
         text={text}
         title={'serviceModel.voice.title'}
       />
-      {enableChannels && (
-        <TierGroup
-          desc={'systemAgent.channelRouting.modelDesc'}
-          text={text}
-          title={'systemAgent.channelRouting.title'}
-        />
-      )}
+      <TierGroup
+        desc={'systemAgent.channelRouting.modelDesc'}
+        text={text}
+        title={'systemAgent.channelRouting.title'}
+      />
     </Flexbox>
   );
 };

@@ -25,7 +25,6 @@ import { useTranslation } from 'react-i18next';
 
 import { ModelIcon } from '@/components/LobeIcons';
 import { ArticleSkeleton } from '@/components/Skeleton';
-import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { CONTACT_URL } from '@/features/ContactList/const';
 import { useResourceAccess } from '@/features/ResourcePermission/useResourceAccess';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
@@ -148,8 +147,7 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
     const listEntry = useHomeStore(homeAgentListSelectors.getAgentById(agentId));
     // Contacts load with the Contacts tab; fetch them here too, so a shared Agent's card links to
     // its contact page before that tab was ever opened.
-    const channelsEnabled = useChannelsEnabled();
-    contactActions.useFetchList(open && channelsEnabled);
+    contactActions.useFetchList(open);
     // An Agent in my Contacts, mine or one shared with me, opens its contact card.
     const contactAgent = useContactStore(contactSelectors.agentById(agentId));
     const contactUrl = listEntry || contactAgent ? CONTACT_URL(agentId) : undefined;
@@ -331,7 +329,7 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
         {facts}
         {extra}
         {/* Only an Agent the server opens a conversation with: one's own, or a contact. */}
-        {contactUrl && channelsEnabled && (
+        {contactUrl && (
           <AgentCardActions
             agentId={agentId}
             profileUrl={contactUrl}

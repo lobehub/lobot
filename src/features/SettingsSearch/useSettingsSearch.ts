@@ -113,7 +113,6 @@ export const useSettingsSearch = (
   const { categoryGroups, itemTabs, keywordOwnerTabs } = scope;
   const { hideDocs, showAiImage } = useServerConfigStore(featureFlagsSelectors);
   const enableBusinessFeatures = useServerConfigStore(serverConfigSelectors.enableBusinessFeatures);
-  const enableChannels = useServerConfigStore(serverConfigSelectors.enableChannels);
   const enableGatewayMode = useServerConfigStore(serverConfigSelectors.enableGatewayMode);
   const enableComposio = useServerConfigStore(serverConfigSelectors.enableComposio);
   const disableEmailPassword = useServerConfigStore(serverConfigSelectors.disableEmailPassword);
@@ -130,7 +129,6 @@ export const useSettingsSearch = (
     const ctx: SettingsSearchContext = {
       disableEmailPassword: !!disableEmailPassword,
       enableBusinessFeatures: !!enableBusinessFeatures,
-      enableChannels,
       enableComposio: !!enableComposio,
       enableGatewayMode: !!enableGatewayMode,
       hasEmail,
@@ -234,7 +232,6 @@ export const useSettingsSearch = (
     t,
     disableEmailPassword,
     enableBusinessFeatures,
-    enableChannels,
     enableComposio,
     enableGatewayMode,
     hasEmail,

@@ -11,7 +11,6 @@ import { ContactListBody } from './index';
 
 const fetch = vi.hoisted(() => ({ error: undefined as unknown, mutate: vi.fn() }));
 const agentList = vi.hoisted(() => ({ init: false, items: [] as object[] }));
-const channels = vi.hoisted(() => ({ enabled: false }));
 const workspace = vi.hoisted(() => ({ activeId: null as string | null, members: [] as object[] }));
 const contacts = vi.hoisted(() => ({
   listMap: {} as Record<string, object[]>,
@@ -35,9 +34,6 @@ vi.mock('@/store/user', () => ({
 vi.mock('@/store/user/selectors', () => ({ userProfileSelectors: { userId: () => 'u_me' } }));
 vi.mock('@/hooks/useActiveLocation', () => ({ useActiveLocation: () => ({ pathname: '/' }) }));
 vi.mock('@/hooks/useFetchAgentList', () => ({ useFetchAgentList: () => fetch }));
-vi.mock('@/features/Channels/useChannelsEnabled', () => ({
-  useChannelsEnabled: () => channels.enabled,
-}));
 vi.mock('@/store/contact', async (original) => ({
   ...(await original<object>()),
   contactActions: {
@@ -73,7 +69,6 @@ vi.mock('@/components/AsyncError', () => ({
 beforeEach(() => {
   workspace.activeId = null;
   workspace.members = [];
-  channels.enabled = false;
   contacts.listMap = {};
   contacts.requestsMap = {};
   agentList.init = false;
@@ -142,7 +137,6 @@ describe('ContactListBody', () => {
   });
 
   it('lists people, shared Agents and incoming requests once Channels are on', () => {
-    channels.enabled = true;
     agentList.init = true;
     const owner = { avatar: null, fullName: 'Bob', id: 'u_bob', username: 'bob' };
     contacts.listMap = {
@@ -208,19 +202,7 @@ describe('ContactListBody', () => {
     expect(screen.queryByText('Dan')).not.toBeInTheDocument();
   });
 
-  it('keeps people and requests out without Channels', () => {
-    agentList.init = true;
-    contacts.listMap = {
-      all: [{ createdAt: new Date(), type: 'user', user: { fullName: 'Bob', id: 'u_bob' } }],
-    };
-
-    render(createElement(ContactListBody));
-
-    expect(screen.queryByText('contacts.people')).not.toBeInTheDocument();
-  });
-
   it('leaves people and groups out of a workspace’s member list, pinned or not', () => {
-    channels.enabled = true;
     agentList.init = true;
     workspace.activeId = 'ws_team';
     agentList.items = [
@@ -242,7 +224,6 @@ describe('ContactListBody', () => {
   });
 
   it('lists shared Agents among a workspace’s assistants, tagged as external', () => {
-    channels.enabled = true;
     agentList.init = true;
     workspace.activeId = 'ws_team';
     agentList.items = [{ id: 'agt_1', title: 'Product Helper' }];
@@ -271,7 +252,6 @@ describe('ContactListBody', () => {
   });
 
   it('lists the workspace’s other members, with their role unless a plain member', () => {
-    channels.enabled = true;
     agentList.init = true;
     workspace.activeId = 'ws_team';
     workspace.members = [
@@ -294,7 +274,6 @@ describe('ContactListBody', () => {
   });
 
   it('lists the workspace’s external contacts apart, marking who is not open to me', () => {
-    channels.enabled = true;
     agentList.init = true;
     workspace.activeId = 'ws_team';
     contacts.listMap = {
@@ -325,7 +304,6 @@ describe('ContactListBody', () => {
   });
 
   it('names the workspace an invitation to be its external contact comes from', () => {
-    channels.enabled = true;
     agentList.init = true;
     contacts.requestsMap = {
       all: [
@@ -346,7 +324,6 @@ describe('ContactListBody', () => {
   });
 
   it('has no members section in the personal space', () => {
-    channels.enabled = true;
     agentList.init = true;
 
     render(createElement(ContactListBody));

@@ -12,7 +12,6 @@ import { useUserStore } from '@/store/user';
 import { authSelectors } from '@/store/user/selectors';
 
 import { useChannelEvents } from '../useChannelEvents';
-import { useChannelsEnabled } from '../useChannelsEnabled';
 import { useContactEvents } from '../useContactEvents';
 import { useScopeChannelList } from '../useScopeChannelList';
 import { type ChannelActivitySnapshots, diffChannelActivity, snapshotChannels } from './activity';
@@ -107,12 +106,11 @@ const ActiveChannelNotifier = memo(() => {
 
 ActiveChannelNotifier.displayName = 'ActiveChannelNotifier';
 
-/** Runs only for a signed-in user with Channels on, so a signed-out shell never polls. */
+/** Runs only for a signed-in user, so a signed-out shell never polls. */
 const ChannelNotifier = memo(() => {
-  const channelsEnabled = useChannelsEnabled();
   const isLogin = useUserStore(authSelectors.isLogin);
 
-  return channelsEnabled && isLogin ? <ActiveChannelNotifier /> : null;
+  return isLogin ? <ActiveChannelNotifier /> : null;
 });
 
 ChannelNotifier.displayName = 'ChannelNotifier';

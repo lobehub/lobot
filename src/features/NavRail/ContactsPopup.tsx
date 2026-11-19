@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import { useActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
 import { openAddContactModal } from '@/features/AddContactModal';
 import { AgentViewAllPage } from '@/features/AgentViewAll';
-import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { ContactListBody } from '@/features/ContactList';
 import { ContactDetail } from '@/features/ContactList/ContactDetail';
 import { PersonCard } from '@/features/ContactList/PersonDetail';
@@ -78,7 +77,6 @@ const isMessagesHome = (pathname: string, slug: string | null) => {
 const ContactsPopup = memo<ContactsPopupProps>(({ open, onClose }) => {
   const { t } = useTranslation('common');
   const title = useContactsTitle();
-  const channelsEnabled = useChannelsEnabled();
   const preview = useContactsPopupStore((s) => s.preview);
   const setPreview = useContactsPopupStore((s) => s.setPreview);
   const [query, setQuery] = useState('');
@@ -146,15 +144,13 @@ const ContactsPopup = memo<ContactsPopupProps>(({ open, onClose }) => {
                 variant={'filled'}
                 onChange={(e) => setQuery(e.target.value)}
               />
-              {channelsEnabled && (
-                <ActionIcon
-                  icon={CirclePlusIcon}
-                  size={ADD_ICON_SIZE}
-                  style={{ flex: 'none' }}
-                  title={t('contacts.add')}
-                  onClick={() => openAddContactModal()}
-                />
-              )}
+              <ActionIcon
+                icon={CirclePlusIcon}
+                size={ADD_ICON_SIZE}
+                style={{ flex: 'none' }}
+                title={t('contacts.add')}
+                onClick={() => openAddContactModal()}
+              />
             </Flexbox>
             <ScrollArea
               disableContentFit

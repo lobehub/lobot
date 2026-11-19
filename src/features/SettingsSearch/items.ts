@@ -7,7 +7,6 @@ export type SettingsSearchTab = SettingsTabs;
 export interface SettingsSearchContext {
   disableEmailPassword: boolean;
   enableBusinessFeatures: boolean;
-  enableChannels: boolean;
   enableComposio: boolean;
   enableGatewayMode: boolean;
   /** Whether the signed-in user has an email on their profile */
@@ -526,7 +525,6 @@ export const SETTINGS_SEARCH_ITEMS: SettingsSearchItem[] = [
     keywords: ['channel', 'decision', 'Jev', '频道', '决策', '回复'],
     labelKey: 'systemAgent.channelRouting.title',
     tab: SettingsTabs.ServiceModel,
-    visible: (ctx) => ctx.enableChannels,
   },
   {
     anchor: 'service-model-image',
