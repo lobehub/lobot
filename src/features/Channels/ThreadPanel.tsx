@@ -32,7 +32,7 @@ import { styles } from './styles';
 import { type ChannelThreadDraft, draftThreadFollowerIds } from './threadDraft';
 import { threadIcon } from './threadIcon';
 import { threadTitle } from './threadTitle';
-import { threadPanelMenuItems, useThreadMenu } from './useThreadMenu';
+import { useThreadMenu } from './useThreadMenu';
 
 /** Below this width the thread floats over the channel instead of sitting beside it. */
 export const THREAD_FLOAT_BREAKPOINT = 760;
@@ -125,18 +125,8 @@ export function ThreadPanel({
   );
   const rootMessageId = threads.find((entry) => entry.id === lastThreadId)?.rootMessageId;
   const openThread = threadId ? threads.find((entry) => entry.id === threadId) : undefined;
-  // "Open as page" lives in this menu, the same list a right-click on the title opens.
-  const menuItems = threadPanelMenuItems(
-    openThread ? threadMenu(detail.channel, openThread) : [],
-    threadId
-      ? {
-          icon: Maximize2,
-          key: 'openThreadPage',
-          label: t('openThreadPage'),
-          onClick: () => onOpenPage(threadId),
-        }
-      : null,
-  );
+  // "Open as page" is its own header button, shown on hover; the menu keeps the thread's actions.
+  const menuItems = openThread ? threadMenu(detail.channel, openThread) : [];
   const withMenu = (node: ReactElement) =>
     menuItems.length > 0 ? <ContextMenuTrigger items={menuItems}>{node}</ContextMenuTrigger> : node;
   const title =
@@ -205,6 +195,18 @@ export function ThreadPanel({
             }
             right={
               <Flexbox horizontal align="center" gap={8}>
+                {/* Leftmost in the right-aligned group, so revealing it shifts nothing. */}
+                {threadId && (
+                  <span {...stylex.props(styles.headerMenu)}>
+                    <ActionIcon
+                      aria-label={t('openThreadPage')}
+                      icon={Maximize2}
+                      size="small"
+                      title={t('openThreadPage')}
+                      onClick={() => onOpenPage(threadId)}
+                    />
+                  </span>
+                )}
                 {lastTarget && <ThreadFollowers detail={detail} target={lastTarget} />}
                 <ActionIcon
                   aria-label={t('closeThread')}
