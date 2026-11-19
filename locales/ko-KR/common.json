@@ -209,7 +209,6 @@
   "contacts.external.remove": "워크스페이스에서 제거",
   "contacts.external.remove.confirm": "{{name}}님을 이 워크스페이스에서 제거할까요? 모든 멤버가 이 사용자에 대한 공개를 중지하고, 대기 중인 초대도 철회됩니다. 채팅 기록은 유지됩니다.",
   "contacts.externals": "외부 연락처",
-  "contacts.groups": "그룹",
   "contacts.info.bio": "소개",
   "contacts.info.handle": "핸들",
   "contacts.info.mail": "이메일",

@@ -1,7 +1,7 @@
 'use client';
 
-import type { ContactAgentItem, ContactRequestItem, ContactUserItem } from '@lobot/types';
 import { ActionIcon, Flexbox, toast } from '@lobehub/ui';
+import type { ContactAgentItem, ContactRequestItem, ContactUserItem } from '@lobot/types';
 import { CheckIcon, XIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -69,7 +69,7 @@ export const MemberRow = memo<{ active: boolean; member: WorkspaceMemberWithProf
 
 MemberRow.displayName = 'ContactMemberRow';
 
-/** Another person's Agent added through its share; dimmed while the share is paused. */
+/** Another person's Agent added through its share, tagged as external; dimmed while the share is paused. */
 export const SharedAgentRow = memo<{ active: boolean; item: ContactAgentItem }>(
   ({ active, item }) => {
     const { t } = useTranslation('common');
@@ -78,7 +78,7 @@ export const SharedAgentRow = memo<{ active: boolean; item: ContactAgentItem }>(
       <ConversationRow
         singleLine
         active={active}
-        tag={item.available ? personName(item.agent.owner) : t('contacts.agent.unavailable')}
+        tag={item.available ? t('contacts.agent.external') : t('contacts.agent.unavailable')}
         title={title}
         url={AGENT_CONTACT_URL(item.agent.agentId)}
         avatar={

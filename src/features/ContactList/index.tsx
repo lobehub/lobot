@@ -112,7 +112,6 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
   const channelsEnabled = useChannelsEnabled();
   contactActions.useFetchList(channelsEnabled);
   contactActions.useFetchRequests(channelsEnabled);
-  const people = useContactStore((s) => contactSelectors.people(s) ?? [], isEqual);
   const externals = useContactStore((s) => contactSelectors.externals(s) ?? [], isEqual);
   const sharedAgents = useContactStore((s) => contactSelectors.agents(s) ?? [], isEqual);
   const requests = useContactStore(contactSelectors.incomingRequests, isEqual);
@@ -126,7 +125,8 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
   );
   const updateSystemStatus = useGlobalStore((s) => s.updateSystemStatus);
 
-  const { agents, groups, pinned } = useMemo(
+  // Groups have no place in the member list: it lists people and assistants.
+  const { agents, pinned } = useMemo(
     () =>
       groupContacts(
         [...new Map(items.map((item) => [item.id, item])).values()],
@@ -142,14 +142,13 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
   const agentName = (item: SidebarAgentItem) =>
     item.type === 'group' ? item.title || untitled : agentDisplayName(item, untitled);
 
-  const visiblePinned = q ? pinned.filter((item) => match(agentName(item))) : pinned;
-  const visibleGroups = q ? groups.filter((item) => match(agentName(item))) : groups;
+  const pinnedAgents = pinned.filter((item) => item.type !== 'group');
+  const visiblePinned = q ? pinnedAgents.filter((item) => match(agentName(item))) : pinnedAgents;
   const visibleAgents = q ? agents.filter((item) => match(agentName(item))) : agents;
-  const visiblePeople = q ? people.filter((item) => match(personName(item.user))) : people;
   const visibleExternals = q ? externals.filter((item) => match(personName(item.user))) : externals;
-  const visibleShared = q
-    ? sharedAgents.filter((item) => match(item.agent.title || untitled))
-    : sharedAgents;
+  // Other people's Agents belong to the Channel experience, like the people around them.
+  const shared = channelsEnabled ? sharedAgents : [];
+  const visibleShared = q ? shared.filter((item) => match(item.agent.title || untitled)) : shared;
   const visibleRequests = q ? requests.filter((item) => match(personName(item.user))) : requests;
   const visibleMembers = q
     ? members.filter((member) =>
@@ -209,28 +208,6 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
           },
         ]
       : []),
-    // Other people's Agents are contacts too: they follow the people in the same section.
-    ...(channelsEnabled
-      ? [
-          {
-            count: visiblePeople.length + visibleShared.length,
-            key: 'people',
-            render: () => [
-              ...visiblePeople.map((item) => (
-                <PersonRow active={item.user.id === activeRouteId} item={item} key={item.user.id} />
-              )),
-              ...visibleShared.map((item) => (
-                <SharedAgentRow
-                  active={item.agent.agentId === activeRouteId}
-                  item={item}
-                  key={item.agent.agentId}
-                />
-              )),
-            ],
-            title: t('contacts.people'),
-          },
-        ]
-      : []),
     ...(channelsEnabled && inWorkspace
       ? [
           {
@@ -267,17 +244,20 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
           },
         ]
       : []),
-    // Groups next: there are few, and they would sink below every agent.
+    // Other people's Agents follow my own, tagged as external assistants.
     {
-      count: visibleGroups.length,
-      key: 'groups',
-      render: () => renderAgents(visibleGroups),
-      title: t('contacts.groups'),
-    },
-    {
-      count: visibleAgents.length,
+      count: visibleAgents.length + visibleShared.length,
       key: 'agents',
-      render: () => renderAgents(visibleAgents),
+      render: () => [
+        ...renderAgents(visibleAgents),
+        ...visibleShared.map((item) => (
+          <SharedAgentRow
+            active={item.agent.agentId === activeRouteId}
+            item={item}
+            key={item.agent.agentId}
+          />
+        )),
+      ],
       title: t('navPanel.agent'),
     },
   ];
