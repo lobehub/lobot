@@ -3,6 +3,7 @@
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { useWorkspaceStore } from '@/business/client/workspace/store';
 import { DEFAULT_PREFERENCE } from '@/const/user';
 import { useUserStore } from '@/store/user';
 import { writeUserDisplaySnapshot } from '@/store/user/displaySnapshot';
@@ -21,6 +22,28 @@ describe('applyDesktopBootstrapIdentity', () => {
       settings: {},
       user: undefined,
     });
+    useWorkspaceStore.setState({ activeWorkspaceId: null, restoredWorkspaceId: null });
+  });
+
+  // Regression: the window painted the personal space until the workspace list
+  // answered, then jumped into the workspace picked last time.
+  it('reopens the last workspace in the same step, from the cached preference', () => {
+    writeUserDisplaySnapshot('user-1', { preference: { lastWorkspaceId: 'ws-b' } });
+    localStorage.setItem('lobot:last-workspace:user-1', 'ws-a');
+
+    applyDesktopBootstrapIdentity({ isIdentityResolved: true, userId: 'user-1' });
+
+    expect(useWorkspaceStore.getState().activeWorkspaceId).toBe('ws-b');
+  });
+
+  it('falls back to the local copy, and opens nothing when signed out', () => {
+    localStorage.setItem('lobot:last-workspace:user-1', 'ws-a');
+
+    applyDesktopBootstrapIdentity({ isIdentityResolved: true, userId: undefined });
+    expect(useWorkspaceStore.getState().activeWorkspaceId).toBeNull();
+
+    applyDesktopBootstrapIdentity({ isIdentityResolved: true, userId: 'user-1' });
+    expect(useWorkspaceStore.getState().activeWorkspaceId).toBe('ws-a');
   });
 
   it("restores the signed-in user's saved profile and settings before the network answers", () => {

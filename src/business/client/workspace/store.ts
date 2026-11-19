@@ -29,6 +29,12 @@ export interface WorkspaceState {
    */
   membersMap: Record<string, WorkspaceMemberWithProfile[]>;
   membersReplica: ReplicaState<WorkspaceMemberWithProfile[]>;
+  /**
+   * The scope reopened at boot from the local copy, before the list answered
+   * (`restoreLastWorkspace`). Still a guess, not a pick made this session: the
+   * first list answer re-checks it against the server-side preference.
+   */
+  restoredWorkspaceId: string | null;
   workspaces: WorkspaceListItem[];
   /** Replica bookkeeping for `workspaces` (`./list.ts`). */
   workspacesReplica: ReplicaState<WorkspaceListItem[]>;
@@ -71,6 +77,7 @@ export const useWorkspaceStore = createWithEqualityFn<WorkspaceStore>()(
     isWorkspaceListInit: false,
     membersMap: {},
     membersReplica: createReplicaState(),
+    restoredWorkspaceId: null,
     switchToPersonal: () => {
       if (get().activeWorkspaceId !== null) set({ activeWorkspaceId: null });
     },
@@ -82,6 +89,19 @@ export const useWorkspaceStore = createWithEqualityFn<WorkspaceStore>()(
   }),
   shallow,
 );
+
+/**
+ * Reopen the last scope before the first paint, so a restart lands in the
+ * workspace instead of painting the personal space until the workspace list
+ * answers. `preferred` is the cached `lastWorkspaceId` preference (`null` is an
+ * explicit personal pick); without it the local copy decides. The list answer
+ * still verifies the guess and drops a workspace the user lost access to.
+ */
+export const restoreLastWorkspace = (userId: string, preferred?: string | null): void => {
+  const id = preferred !== undefined ? preferred : readLastWorkspaceId(userId);
+  if (!id) return;
+  useWorkspaceStore.setState({ activeWorkspaceId: id, restoredWorkspaceId: id });
+};
 
 // Acceptance runs (`app-probe.sh workspace`) enter their test workspace through it.
 expose('workspace', useWorkspaceStore);
