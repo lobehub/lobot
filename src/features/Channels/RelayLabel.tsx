@@ -1,5 +1,5 @@
-import type { ChannelPublicMessage } from '@lobot/types';
 import { Flexbox, Text } from '@lobehub/ui';
+import type { ChannelPublicMessage } from '@lobot/types';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
@@ -13,14 +13,19 @@ export const RelayLabel = ({ message }: { message: ChannelPublicMessage }) => {
   const { receipt, via } = message;
   if (!via) return null;
 
+  // The header lines its parts up on their text baselines. A flex row takes its baseline from
+  // its first baseline-aligned item; were that the avatar, which has no text, the baseline would
+  // fall on the avatar's bottom edge and lift the whole label above the time. So the row aligns
+  // on baselines too, and the avatar alone centres itself, leaving the baseline to the text.
   return (
-    <Flexbox horizontal align={'center'} gap={4} style={{ minWidth: 0 }}>
+    <Flexbox horizontal align={'baseline'} gap={4} style={{ minWidth: 0 }}>
       <AgentAvatar
         agentId={via.agentId}
         avatar={via.avatar ?? undefined}
         name={via.name}
         shape={'circle'}
         size={14}
+        style={{ alignSelf: 'center' }}
       />
       <Text ellipsis as={'span'} fontSize={12} type={'secondary'}>
         {receipt
