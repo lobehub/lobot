@@ -8,7 +8,7 @@ Source: user correction during Channel PR #21545 acceptance (2026-10-24); revise
 
 ## LOBE-UX-002 — Carry Agent execution choices into Channel setup
 
-When adding an Agent to a Channel, initialize the channel-local device and same-device working directory from the Agent's effective configuration. Do not ask for an already configured value again. Preserve explicit channel edits across refreshes; never replace an offline or inaccessible binding with another machine. Block submission with an actionable member-level reason when a coding Agent lacks an online device or directory. For coding Agents, list only device choices; “Choose a device” is a placeholder, never a selectable empty option. Native Agents retain an explicit “No device” choice.
+When adding an Agent to a Channel, initialize the channel-local device and same-device working directory from the Agent's effective configuration. Do not ask for an already configured value again. Preserve explicit channel edits across refreshes; never replace an offline or inaccessible binding with another machine. Block submission with an actionable member-level reason when a coding Agent lacks an online device or directory. For coding Agents, list only device choices; “Choose a device” is a placeholder, never a selectable empty option. Native Agents retain an explicit “No device” choice. In the member environment dialog, following the Agent's own settings is a separate option, not an empty device choice (see LOBE-UX-021).
 
 Enforcement: `src/features/Channels/CreateChannel/agentEnvironment.test.ts` covers inherited defaults, device-scoped directories, explicit overrides, presence and required fields. `useChannelAgentDraft.test.ts` exercises empty Select events (`undefined` / `null` / empty string): clear both the channel-local device and directory, preserve that override after refresh, and keep coding-Agent device requirements. The Channel member form uses these shared initialization and validation functions.
 
@@ -147,3 +147,11 @@ A Channel day divider is the full date alone ("2026 年 6 月 22 日"), not a da
 Enforcement: `src/features/Channels/messagePresentation.test.ts` (`channelMessageTime`) covers today, the yesterday boundary, and earlier dates in this and previous years in zh-CN and en-US.
 
 Source: user correction (2026-11-12): headers showed only "16:29", so a scrolled message had no visible date — "应该得是像 discord 这样改". This replaces the WeChat-style divider from PR #22556 (2026-11-08), which kept today as the time alone ("今天应该显示时间").
+
+## LOBE-UX-021 — A channel-local environment is a choice between two named options
+
+Changing where an Agent runs in one Channel starts with two options: “Follow <Agent>'s own settings” or “Choose for this channel”. The follow option is a real selected state, and it shows where the Agent will actually run: device, whether it is connected, and folder. When that device will hold replies back (offline, not shared, or the viewer's private device), it says so beneath. Device and directory fields appear only under “Choose for this channel”, each with its own label. The device dropdown has no empty or “follow” option. The title names the Agent, and the one-line scope sits right under it. Explanations of why some options cannot be picked (private devices) stay with those options: a disabled group in the dropdown, plus one quiet line with a link under the field. They are not body text or a bordered button competing with Save.
+
+Enforcement: `src/features/Channels/AgentEnvironment.test.tsx` covers the default follow state, fields appearing only for the channel option, clearing on switch back, and restoring the earlier pick. `CreateChannel/EnvironmentFields.test.tsx` covers the absence of an empty option, the private-device group, and the field labels.
+
+Source: Arvin Xu in the Lobot channel (2026-11-19): “这个设备选择很疑惑有点看不太懂”. The default looked unselected, a private-device paragraph led the dialog, and three grey paragraphs had no hierarchy. He approved the two-option draft.

@@ -1,7 +1,16 @@
-import { Button, createModal, Flexbox, Text, toast, useModalContext } from '@lobehub/ui';
+import {
+  Button,
+  createModal,
+  Flexbox,
+  RadioGroup,
+  Text,
+  toast,
+  useModalContext,
+} from '@lobehub/ui';
 import type { ChannelPublicMember } from '@lobot/types';
+import * as stylex from '@stylexjs/stylex';
 import { t } from 'i18next';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AsyncBoundary from '@/components/AsyncBoundary';
@@ -14,12 +23,21 @@ import { EnvironmentFields, EnvironmentIssue } from './CreateChannel/Environment
 import { useChannelAgentDraft } from './CreateChannel/useChannelAgentDraft';
 import { MemberAvatar } from './MemberAvatar';
 import { memberName } from './memberName';
+import { OwnEnvironmentSummary } from './OwnEnvironmentSummary';
 
 interface Environment {
   agentId: string;
   deviceId?: string;
   workingDirectory?: string;
 }
+
+/** `agent`: the Agent's own settings decide; `channel`: a device picked for this Channel. */
+type Mode = 'agent' | 'channel';
+
+const styles = stylex.create({
+  // Lines the fields up with the option text, past the radio dot and its gap.
+  fields: { minWidth: 0, overflow: 'visible', paddingInlineStart: 24 },
+});
 
 function EnvironmentForm({
   channelId,
@@ -38,16 +56,39 @@ function EnvironmentForm({
   ]);
   const devices = useDeviceList({ refreshInterval: 15_000 });
   const controls = useChannelAgentDraft(drafts[0], devices, setDrafts);
-  const { draft } = controls;
+  const { change, changeDevice, draft } = controls;
+  const [mode, setMode] = useState<Mode>(current.deviceId ? 'channel' : 'agent');
+  // Switching back to the Agent's settings and then to this Channel again restores the pick.
+  const lastPick = useRef<Pick<Environment, 'deviceId' | 'workingDirectory'>>({
+    deviceId: current.deviceId,
+    workingDirectory: current.workingDirectory,
+  });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<unknown>();
   const name = memberName(member, t('unnamedAgent'));
   const changed =
     (draft.deviceId ?? '') !== (current.deviceId ?? '') ||
     (draft.workingDirectory ?? '') !== (current.workingDirectory ?? '');
+  // Choosing "this Channel" without a device yet saves nothing: there is nothing to save.
+  const canSave = changed && !draft.issue && (mode === 'agent' || !!draft.deviceId);
+
+  const switchMode = (next: string) => {
+    if (next === mode) return;
+    if (next === 'agent') {
+      lastPick.current = { deviceId: draft.deviceId, workingDirectory: draft.workingDirectory };
+      changeDevice(undefined);
+      setMode('agent');
+      return;
+    }
+    setMode('channel');
+    const { deviceId, workingDirectory } = lastPick.current;
+    if (!deviceId) return;
+    change({ deviceId });
+    if (workingDirectory) change({ workingDirectory });
+  };
 
   const save = async () => {
-    if (busy || !changed || draft.issue) return;
+    if (busy || !canSave) return;
     setBusy(true);
     setError(undefined);
     try {
@@ -67,19 +108,48 @@ function EnvironmentForm({
 
   return (
     <Flexbox gap={16} style={{ minWidth: 0, overflow: 'visible' }}>
-      <Flexbox horizontal align="center" gap={8} style={{ minWidth: 0 }}>
-        <MemberAvatar member={member} size={28} />
-        <Text ellipsis weight={500}>
-          {name}
-        </Text>
-      </Flexbox>
-      <Flexbox gap={8} inert={busy} style={{ minWidth: 0, overflow: 'visible', width: '100%' }}>
-        <EnvironmentFields controls={controls} devices={devices} name={name} />
-        <EnvironmentIssue controls={controls} />
-      </Flexbox>
-      <Text fontSize={12} type="secondary">
-        {t('environment.scopeHint')}
+      <Text fontSize={13} type="secondary">
+        {t('environment.scopeHint', { name })}
       </Text>
+      <Flexbox gap={12} inert={busy} style={{ minWidth: 0, overflow: 'visible' }}>
+        <RadioGroup
+          aria-label={t('environment.editNamed', { name })}
+          gap={16}
+          horizontal={false}
+          value={mode}
+          options={[
+            {
+              label: (
+                <Flexbox gap={2}>
+                  <Text weight={500}>{t('environment.mode.agent', { name })}</Text>
+                  <OwnEnvironmentSummary agentId={current.agentId} name={name} />
+                </Flexbox>
+              ),
+              value: 'agent',
+            },
+            {
+              label: (
+                <Flexbox gap={2}>
+                  <Text weight={500}>{t('environment.mode.channel')}</Text>
+                  {mode === 'agent' && (
+                    <Text fontSize={13} type="secondary">
+                      {t('environment.mode.channelDesc')}
+                    </Text>
+                  )}
+                </Flexbox>
+              ),
+              value: 'channel',
+            },
+          ]}
+          onChange={switchMode}
+        />
+        {mode === 'channel' && (
+          <Flexbox gap={8} {...stylex.props(styles.fields)}>
+            <EnvironmentFields controls={controls} devices={devices} name={name} />
+            <EnvironmentIssue controls={controls} />
+          </Flexbox>
+        )}
+      </Flexbox>
       {error !== undefined && (
         <AsyncError error={error} title={t('environment.updateFailed')} variant="inline" />
       )}
@@ -87,12 +157,7 @@ function EnvironmentForm({
         <Button disabled={busy} onClick={close}>
           {t('cancel', { ns: 'common' })}
         </Button>
-        <Button
-          disabled={!changed || !!draft.issue}
-          loading={busy}
-          type="primary"
-          onClick={() => void save()}
-        >
+        <Button disabled={!canSave} loading={busy} type="primary" onClick={() => void save()}>
           {t('save', { ns: 'common' })}
         </Button>
       </Flexbox>
@@ -132,10 +197,19 @@ function AgentEnvironment({
 }
 
 /** Where one Agent runs in this Channel; its own Agent settings stay unchanged. */
-export const openChannelAgentEnvironment = (channelId: string, member: ChannelPublicMember) =>
-  createModal({
+export const openChannelAgentEnvironment = (channelId: string, member: ChannelPublicMember) => {
+  const name = memberName(member, t('unnamedAgent', { ns: 'channel' }));
+  return createModal({
     content: <AgentEnvironment channelId={channelId} member={member} />,
     footer: null,
-    title: t('environment.title', { ns: 'channel' }),
+    title: (
+      <Flexbox horizontal align="center" gap={8} style={{ minWidth: 0 }}>
+        <MemberAvatar member={member} size={24} />
+        <Text ellipsis fontSize={16} weight={600}>
+          {t('environment.titleNamed', { name, ns: 'channel' })}
+        </Text>
+      </Flexbox>
+    ),
     width: 'min(90vw, 480px)',
   });
+};

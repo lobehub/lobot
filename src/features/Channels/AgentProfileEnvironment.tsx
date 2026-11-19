@@ -1,4 +1,3 @@
-import { isDesktop } from '@lobechat/const';
 import { ActionIcon, CopyButton, Flexbox, Tag, Text } from '@lobehub/ui';
 import { Surface } from '@lobehub/ui/dashboard';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
@@ -9,23 +8,14 @@ import { FolderCog } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { getDeviceIcon } from '@/features/DeviceManager/getDeviceIcon';
-import { resolveExecutionTarget } from '@/helpers/executionTarget';
-import { useIsGatewayModeEnabled } from '@/helpers/gatewayMode';
-import { useEffectiveAgencyConfig } from '@/hooks/useEffectiveAgencyConfig';
-import { useAgentStore } from '@/store/agent';
-import { agentByIdSelectors } from '@/store/agent/selectors';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
-import { deviceSelectors, useDeviceStore } from '@/store/device';
-import { useDeviceList } from '@/store/device/useDeviceList';
 
 import { openChannelAgentEnvironment } from './AgentEnvironment';
 import { agentProfileStyles } from './agentProfileStyles';
-import { blockedDeviceState } from './blockedDeviceState';
 import { deviceLabel } from './CreateChannel/EnvironmentFields';
 import { memberName } from './memberName';
-import { profileEnvironment } from './profileEnvironment';
-
-const REFRESH_INTERVAL = 15_000;
+import type { ChannelChoice } from './useAgentRunLocation';
+import { useAgentRunLocation } from './useAgentRunLocation';
 
 const styles = stylex.create({
   label: {
@@ -49,35 +39,13 @@ const styles = stylex.create({
   },
 });
 
-interface ChannelChoice {
-  deviceId?: string;
-  workingDirectory?: string;
-}
-
 function EnvironmentRows({ agentId, channel }: { agentId: string; channel?: ChannelChoice }) {
   const { t } = useTranslation(['channel', 'chat']);
-  useDeviceStore((s) => s.useFetchAgentDeviceBinding)(agentId, {
-    refreshInterval: REFRESH_INTERVAL,
-  });
-  const binding = useDeviceStore(deviceSelectors.agentDeviceBinding(agentId));
-  const devices = useDeviceList({ refreshInterval: REFRESH_INTERVAL });
-  const { agencyConfig, workspaceScoped } = useEffectiveAgencyConfig(agentId, { topicId: null });
-  const deviceRoutingAvailable = useIsGatewayModeEnabled(agentId);
-  const isHetero = useAgentStore(agentByIdSelectors.isAgentHeterogeneousById(agentId));
-
-  // The server's binding is still on its way and the Channel picked nothing: no guess yet.
-  const resolving = binding === undefined && !channel?.deviceId;
-  const { deviceId, directory } = profileEnvironment({
-    agencyConfig,
-    bindingDeviceId: binding?.deviceId,
-    channel,
-    devices: devices.data,
-  });
+  const { deviceId, directory, resolving, state, target } = useAgentRunLocation(agentId, channel);
 
   let device;
   if (resolving) device = <Text type="secondary">{t('environment.checkingDevice')}</Text>;
-  else if (deviceId) {
-    const state = blockedDeviceState(deviceId, devices.data, devices.isConfirmed);
+  else if (deviceId && state) {
     const name = 'device' in state ? deviceLabel(state.device) : t('environment.unavailableDevice');
     const presence =
       state.kind === 'online'
@@ -114,12 +82,6 @@ function EnvironmentRows({ agentId, channel }: { agentId: string; channel?: Chan
     );
   } else {
     // No machine: say where it runs instead, in the chat input's words.
-    const target = resolveExecutionTarget(agencyConfig, {
-      clientExecutionAvailable: isDesktop,
-      deviceRoutingAvailable,
-      isHetero,
-      workspaceScoped,
-    });
     const label =
       target === 'sandbox' || target === 'auto'
         ? t(`heteroAgent.executionTarget.${target}`, { ns: 'chat' })
