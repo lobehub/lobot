@@ -13,9 +13,9 @@ export const COLUMN_ACTION_ICON_SIZE = {
 export const PINNED_AVATAR_SIZE = 52;
 
 export const styles = stylex.create({
-  /** Soft fill behind the column's outlined circle buttons. */
+  /** Elevated fill behind the column's outlined circle buttons. */
   columnActionIcon: {
-    backgroundColor: `color-mix(in srgb, ${cssVar.colorFillQuaternary} 50%, ${cssVar.colorFillTertiary})`,
+    backgroundColor: cssVar.colorBgElevated,
   },
   avatar: {
     position: 'relative',
@@ -71,8 +71,8 @@ export const styles = stylex.create({
     flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    columnGap: '8px',
-    rowGap: '8px',
+    columnGap: '4px',
+    rowGap: '4px',
     paddingBlockStart: '4px',
     paddingBlockEnd: '16px',
   },
@@ -190,7 +190,7 @@ export const styles = stylex.create({
     fontWeight: 400,
     color: cssVar.colorTextQuaternary,
   },
-  /** A pinned conversation: a square that holds the avatar and the name. */
+  /** A pinned conversation: a compact tile that holds the avatar and the name. */
   tile: {
     boxSizing: 'border-box',
     cursor: 'pointer',
@@ -202,10 +202,10 @@ export const styles = stylex.create({
     alignItems: 'center',
     justifyContent: 'center',
 
-    width: 88,
+    width: 72,
     height: 88,
     paddingBlock: '6px',
-    paddingInline: '8px',
+    paddingInline: '4px',
     borderRadius: cssVar.borderRadiusLG,
 
     color: cssVar.colorText,
