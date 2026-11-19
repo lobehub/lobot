@@ -297,16 +297,29 @@ describe('MacOSMenu', () => {
       expect(mainWindow.broadcast).toHaveBeenCalledWith('createNewTab', { path: '/settings' });
     });
 
-    it('should only keep New Agent and New Agent Group in the File menu', () => {
+    it('titles the create menu New and keeps the same three entries as the "+" menu', async () => {
       macOSMenu.buildAndSetAppMenu();
 
       const template = (Menu.buildFromTemplate as any).mock.calls[0][0];
-      const fileMenu = template.find((item: any) => item.label === 'File');
-      const labels = fileMenu.submenu
-        .filter((item: any) => item.label)
-        .map((item: any) => item.label);
+      expect(template.some((item: any) => item.label === 'File')).toBe(false);
+      const createMenu = template.find((item: any) => item.label === 'New');
+      const labels = createMenu.submenu.map((item: any) => item.label);
+      expect(labels).toEqual(['New Agent', 'New Group Chat', 'Add Friend']);
 
-      expect(labels).toEqual(['New Agent', 'New Agent Group', 'Close']);
+      await createMenu.submenu[2].click();
+      const mainWindow = (mockApp.browserManager.getMainWindow as any).mock.results[0].value;
+      expect(mainWindow.broadcast).toHaveBeenCalledWith('openAddFriend');
+    });
+
+    it('moves Close (Cmd+W) to the Window menu', () => {
+      macOSMenu.buildAndSetAppMenu();
+
+      const template = (Menu.buildFromTemplate as any).mock.calls[0][0];
+      const windowMenu = template.find((item: any) => item.label === 'Window');
+      expect(windowMenu.submenu[0]).toMatchObject({
+        accelerator: 'CmdOrCtrl+W',
+        label: 'Close',
+      });
     });
 
     it('should handle visit website click', async () => {

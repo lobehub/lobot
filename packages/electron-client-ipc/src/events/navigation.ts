@@ -12,8 +12,8 @@ export interface NavigationBroadcastEvents {
   createNewAgent: () => void;
 
   /**
-   * Ask renderer to create a new agent group (group chat).
-   * Triggered from the main process File menu.
+   * Ask renderer to start a new group chat: a Channel where Channels are on, otherwise an
+   * agent group. Triggered from the main process menu.
    */
   createNewAgentGroup: () => void;
 
@@ -58,6 +58,12 @@ export interface NavigationBroadcastEvents {
     replace?: boolean;
     workspaceId?: string | null;
   }) => void;
+
+  /**
+   * Ask renderer to open the add-friend dialog.
+   * Triggered from the main process menu.
+   */
+  openAddFriend: () => void;
 
   /** Ask the renderer to open the all-agents surface. */
   openAllAgents: () => void;

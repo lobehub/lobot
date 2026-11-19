@@ -80,8 +80,8 @@ describe('macOS menu bar language on first launch', () => {
 
     const { topLevel, windowSubmenu } = await buildMenuLabels();
 
-    expect(topLevel).toEqual(['LobeHub', '文件', '编辑', '视图', '前往', '窗口', '帮助']);
-    expect(windowSubmenu).toEqual(['最小化', '缩放', '前置所有窗口']);
+    expect(topLevel).toEqual(['LobeHub', '新建', '编辑', '视图', '前往', '窗口', '帮助']);
+    expect(windowSubmenu).toEqual(['关闭', '最小化', '缩放', '前置所有窗口']);
   });
 
   it('still renders English on an English system', async () => {
@@ -90,7 +90,7 @@ describe('macOS menu bar language on first launch', () => {
 
     const { topLevel, windowSubmenu } = await buildMenuLabels();
 
-    expect(topLevel).toEqual(['LobeHub', 'File', 'Edit', 'View', 'Go', 'Window', 'Help']);
-    expect(windowSubmenu).toEqual(['Minimize', 'Zoom', 'Bring All Windows to Front']);
+    expect(topLevel).toEqual(['LobeHub', 'New', 'Edit', 'View', 'Go', 'Window', 'Help']);
+    expect(windowSubmenu).toEqual(['Close', 'Minimize', 'Zoom', 'Bring All Windows to Front']);
   });
 });

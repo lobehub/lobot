@@ -116,7 +116,9 @@ export class MacOSMenu extends BaseMenuPlatform implements IMenuPlatform {
         ],
       },
       {
-        label: t('file.title'),
+        // The same three entries as the Messages "+" menu, titled New rather than File; Close
+        // moves to the Window menu.
+        label: t('create.title'),
         submenu: [
           {
             accelerator: 'Alt+Command+A',
@@ -125,7 +127,7 @@ export class MacOSMenu extends BaseMenuPlatform implements IMenuPlatform {
               mainWindow.show();
               mainWindow.broadcast('createNewAgent');
             },
-            label: t('file.newAgent'),
+            label: t('create.newAgent'),
           },
           {
             accelerator: 'Alt+Command+G',
@@ -134,13 +136,15 @@ export class MacOSMenu extends BaseMenuPlatform implements IMenuPlatform {
               mainWindow.show();
               mainWindow.broadcast('createNewAgentGroup');
             },
-            label: t('file.newAgentGroup'),
+            label: t('create.newGroupChat'),
           },
-          { type: 'separator' },
           {
-            accelerator: 'CmdOrCtrl+W',
-            click: (_item, targetWindow) => this.closeFocusedTabOrWindow(targetWindow),
-            label: t('window.close'),
+            click: () => {
+              const mainWindow = this.app.browserManager.getMainWindow();
+              mainWindow.show();
+              mainWindow.broadcast('openAddFriend');
+            },
+            label: t('create.addFriend'),
           },
         ],
       },
@@ -218,6 +222,12 @@ export class MacOSMenu extends BaseMenuPlatform implements IMenuPlatform {
         // the submenu — Electron's generated one carries its own English labels.
         role: 'windowMenu',
         submenu: [
+          {
+            accelerator: 'CmdOrCtrl+W',
+            click: (_item, targetWindow) => this.closeFocusedTabOrWindow(targetWindow),
+            label: t('window.close'),
+          },
+          { type: 'separator' },
           { label: t('window.minimize'), role: 'minimize' },
           { label: t('window.zoom'), role: 'zoom' },
           { type: 'separator' },
