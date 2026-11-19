@@ -3,7 +3,7 @@
  */
 import type { ChannelDetail, ChannelPublicMessage, ExternalWorkSummaryItem } from '@lobot/types';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { act, createElement, type ReactNode } from 'react';
+import { act, createElement, type CSSProperties, type ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import LobeAgentsElement from '@/features/Conversation/Markdown/plugins/LobeAgents';
@@ -91,7 +91,8 @@ vi.mock('@/features/LocalFile', () => ({
     createElement('span', { 'data-readonly': String(!!readonly) }, name),
 }));
 vi.mock('@/components/AgentAvatar', () => ({
-  default: ({ name }: { name?: string }) => createElement('i', { 'data-agent-avatar': name }),
+  default: ({ name, style }: { name?: string; style?: CSSProperties }) =>
+    createElement('i', { 'data-agent-avatar': name, style }),
 }));
 vi.mock('@/components/Avatar', () => ({
   default: ({ title }: { title?: string }) => createElement('img', { alt: 'avatar', title }),
@@ -632,6 +633,16 @@ describe('ChannelMessage relay', () => {
     // The time comes first, then the relay label.
     expect(header.firstElementChild?.tagName).toBe('TIME');
     expect(header.querySelector('[data-agent-avatar="Yunuo"]')).toBeTruthy();
+  });
+
+  it('sits the label on the time’s text baseline, not on its avatar’s bottom edge', () => {
+    const { container } = render(<ChannelMessage detail={detail} message={relayed({})} />);
+
+    const avatar = container.querySelector<HTMLElement>('header [data-agent-avatar="Yunuo"]')!;
+    const label = avatar.parentElement!;
+    // The header aligns on baselines; the label must hand it the text's baseline.
+    expect(label.style.getPropertyValue('--lobe-flex-align')).toBe('baseline');
+    expect(avatar.style.alignSelf).toBe('center');
   });
 
   it('says whose reply a receipt brings back', () => {
