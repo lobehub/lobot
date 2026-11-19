@@ -106,6 +106,7 @@ export const useChannelMenu = () => {
       key: 'deleteChat',
       label: t('deleteChat'),
       onClick: () => deletePeerChat(channel),
+      sfSymbol: 'trash',
     },
   ];
 
@@ -113,8 +114,18 @@ export const useChannelMenu = () => {
     pinItem(channel),
     muteItem(channel),
     ...sectionItems(channel),
+    // The person's own list settings above, the Channel itself below.
+    { type: 'divider' as const },
     ...(channel.canDelete && channel.status !== 'archived'
-      ? [{ icon: PencilLine, key: 'rename', label: t('rename'), onClick: () => rename(channel) }]
+      ? [
+          {
+            icon: PencilLine,
+            key: 'rename',
+            label: t('rename'),
+            onClick: () => rename(channel),
+            sfSymbol: 'pencil',
+          },
+        ]
       : []),
     {
       icon: Copy,
@@ -129,6 +140,7 @@ export const useChannelMenu = () => {
           toast.error(t('actionFailed'));
         }
       },
+      sfSymbol: 'doc.on.doc',
     },
     ...(channel.canDelete
       ? [
@@ -138,13 +150,14 @@ export const useChannelMenu = () => {
                 key: 'unarchive',
                 label: t('unarchive'),
                 onClick: () => void unarchive(channel.id),
-                sfSymbol: 'archivebox',
+                sfSymbol: 'tray.and.arrow.up',
               }
             : {
                 icon: Archive,
                 key: 'archive',
                 label: t('archive'),
                 onClick: () => archive(channel),
+                sfSymbol: 'archivebox',
               },
           { type: 'divider' as const },
           {
@@ -153,6 +166,7 @@ export const useChannelMenu = () => {
             key: 'delete',
             label: t('moveToTrash'),
             onClick: () => remove(channel),
+            sfSymbol: 'trash',
           },
         ]
       : []),
