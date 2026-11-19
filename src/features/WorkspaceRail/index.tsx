@@ -38,14 +38,14 @@ import { resolveRailTab } from '@/features/NavRail/railTab';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { useActiveLocation } from '@/hooks/useActiveLocation';
 import { useUserStore } from '@/store/user';
-import { userProfileSelectors } from '@/store/user/selectors';
+import { userGeneralSettingsSelectors, userProfileSelectors } from '@/store/user/selectors';
 
 import { useOpenCreateWorkspace } from './CreateWorkspace';
 import { writeWorkspaceRailHint } from './railHint';
 import { RAIL_AVATAR_SIZE, styles } from './style';
 import { useOrderedWorkspaces } from './useOrderedWorkspaces';
 import { usePersonalRequestCount } from './usePersonalRequestCount';
-import { useRailColumnShown } from './useRailColumnShown';
+import { useRailColumnShown, useWorkspaceRailSettingReady } from './useRailColumnShown';
 import { useScopeUnread } from './useScopeUnread';
 
 interface RailItemProps {
@@ -147,8 +147,8 @@ SortableWorkspaceItem.displayName = 'SortableWorkspaceItem';
 /**
  * Discord-style scope switcher: the personal space on top, then one avatar per
  * workspace in the user's own order (drag to rearrange), and a button to create one. Picking a scope sends every request to
- * it and lands on the same tab's root (Contacts or Messages). Hidden where the server has no workspaces
- * (self-hosted).
+ * it and lands on the same tab's root (Contacts or Messages). Hidden until Appearance
+ * turns the column on, and where the server has no workspaces (self-hosted).
  */
 const WorkspaceRail = memo(() => {
   const { t } = useTranslation('common');
@@ -156,6 +156,10 @@ const WorkspaceRail = memo(() => {
     s.isWorkspaceAvailable,
     s.isWorkspaceLoading,
   ]);
+  const showWorkspaceRail = useUserStore(userGeneralSettingsSelectors.showWorkspaceRail);
+  // Stays true across a workspace switch: that refetches user state and clears
+  // the init flag, but the appearance setting is already known.
+  const settingReady = useWorkspaceRailSettingReady();
   const columnShown = useRailColumnShown();
   const { reorder, workspaces } = useOrderedWorkspaces();
   const [dragging, setDragging] = useState(false);
@@ -241,13 +245,16 @@ const WorkspaceRail = memo(() => {
     reorder(arrayMove(ids, ids.indexOf(String(active.id)), ids.indexOf(String(over.id))));
   };
 
-  // Remember the outcome once the list settles, for the next boot skeleton.
+  // Remember the outcome once the list and the setting have both settled.
   useEffect(() => {
-    if (!loading) writeWorkspaceRailHint(available);
-  }, [available, loading]);
+    if (!loading && settingReady) writeWorkspaceRailHint(available && showWorkspaceRail);
+  }, [available, loading, settingReady, showWorkspaceRail]);
 
-  // Hold the column the rail had last time while the list loads, so the wrap stays put.
-  if (!available) return columnShown ? <div aria-hidden {...stylex.props(styles.rail)} /> : null;
+  // Hold the column the rail had last time while the list or the setting loads.
+  // A workspace switch must not take this branch: the setting is already known.
+  const holdColumn = settingReady ? showWorkspaceRail && columnShown : columnShown;
+  if (!settingReady || !showWorkspaceRail || !available)
+    return holdColumn ? <div aria-hidden {...stylex.props(styles.rail)} /> : null;
 
   return (
     <Flexbox

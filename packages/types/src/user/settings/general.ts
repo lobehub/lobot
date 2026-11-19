@@ -46,6 +46,12 @@ export interface UserGeneralConfig {
   neutralColor?: NeutralColors;
   primaryColor?: LobePrimaryColor;
   responseLanguage?: string;
+  /**
+   * The workspace column on the left of the list. Off until the user turns it
+   * on in Appearance; a server without workspaces still shows nothing.
+   * @default false
+   */
+  showWorkspaceRail?: boolean;
   telemetry: boolean;
   timezone?: string;
   transitionMode?: ResponseAnimationStyle;

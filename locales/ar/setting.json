@@ -1622,6 +1622,8 @@
   "settingAppearance.primaryColor.desc": "لون السمة المخصص",
   "settingAppearance.primaryColor.title": "لون السمة",
   "settingAppearance.title": "مظهر التطبيق",
+  "settingAppearance.workspaceRail.desc": "إظهار العمود على اليسار لمساحتك الشخصية ومساحات العمل.",
+  "settingAppearance.workspaceRail.title": "شريط مساحة العمل",
   "settingChat.chatStyleType.title": "نمط نافذة الدردشة",
   "settingChat.chatStyleType.type.chat": "وضع المحادثة",
   "settingChat.chatStyleType.type.docs": "وضع الصفحة",

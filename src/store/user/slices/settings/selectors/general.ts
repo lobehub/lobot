@@ -38,6 +38,8 @@ const enableMessageLinkIcon = (s: UserStore) => generalConfig(s).enableMessageLi
 const enablePasteAutoConvert = (s: UserStore) =>
   generalConfig(s).enablePasteAutoConvert ?? s.preference.lab?.enableInputMarkdown !== false;
 const fontAntialiasing = (s: UserStore) => generalConfig(s).fontAntialiasing ?? true;
+/** The workspace column is opt-in. An unset value stays hidden. */
+const showWorkspaceRail = (s: UserStore) => generalConfig(s).showWorkspaceRail === true;
 /** The setting is a boolean: either the live tool list is open or it is a
  *  summary row. "Open" means the full list — the height-capped middle level
  *  just hid part of what the user asked to see. */
@@ -57,6 +59,7 @@ export const userGeneralSettingsSelectors = {
   primaryColor,
   currentResponseLanguage,
   responseLanguage,
+  showWorkspaceRail,
   telemetry,
   transitionMode,
   workflowStreamingExpandLevel,

@@ -9,7 +9,12 @@ export const RAIL_WIDTH = 48;
  * skeleton and the still-loading rail reserve its column from it, so the wrap
  * does not jump right when the rail appears.
  */
-export const WORKSPACE_RAIL_HINT_KEY = 'LOBE_WORKSPACE_RAIL';
+/**
+ * Whether the column was on last time. Versioned apart from the old key, which
+ * only meant "this server has workspaces" and would keep reserving the column
+ * after the bar defaulted to off.
+ */
+export const WORKSPACE_RAIL_HINT_KEY = 'LOBE_WORKSPACE_RAIL_V2';
 
 export const readWorkspaceRailHint = (): boolean => {
   try {

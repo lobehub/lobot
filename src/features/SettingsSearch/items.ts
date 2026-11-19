@@ -335,6 +335,14 @@ export const SETTINGS_SEARCH_ITEMS: SettingsSearchItem[] = [
   },
 
   {
+    anchor: 'appearance-workspace-rail',
+    descKey: 'settingAppearance.workspaceRail.desc',
+    keywords: ['workspace', 'workspace bar', 'workspace rail', 'switch workspace'],
+    labelKey: 'settingAppearance.workspaceRail.title',
+    tab: SettingsTabs.Appearance,
+    visible: (ctx) => ctx.enableBusinessFeatures,
+  },
+  {
     anchor: 'appearance-app-tray',
     keywords: ['tray', 'menu bar', 'menubar'],
     labelKey: 'settingAppearance.appTray.title',

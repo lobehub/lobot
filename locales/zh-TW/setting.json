@@ -1622,6 +1622,8 @@
   "settingAppearance.primaryColor.desc": "自訂主題色",
   "settingAppearance.primaryColor.title": "主題色",
   "settingAppearance.title": "應用外觀",
+  "settingAppearance.workspaceRail.desc": "在左側顯示您個人空間與工作區的欄位。",
+  "settingAppearance.workspaceRail.title": "工作區列",
   "settingChat.chatStyleType.title": "聊天視窗樣式",
   "settingChat.chatStyleType.type.chat": "對話模式",
   "settingChat.chatStyleType.type.docs": "文件模式",

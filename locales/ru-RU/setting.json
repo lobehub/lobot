@@ -1622,6 +1622,8 @@
   "settingAppearance.primaryColor.desc": "Пользовательский цвет темы",
   "settingAppearance.primaryColor.title": "Цвет темы",
   "settingAppearance.title": "Внешний вид приложения",
+  "settingAppearance.workspaceRail.desc": "Показывать колонку слева для вашего личного пространства и рабочих пространств.",
+  "settingAppearance.workspaceRail.title": "Панель рабочих пространств",
   "settingChat.chatStyleType.title": "Стиль окна чата",
   "settingChat.chatStyleType.type.chat": "Режим диалога",
   "settingChat.chatStyleType.type.docs": "Режим страницы",

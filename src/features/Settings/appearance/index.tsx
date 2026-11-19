@@ -1,12 +1,13 @@
 'use client';
 
 import { isDesktop } from '@lobechat/const';
-import { Segmented, Select } from '@lobehub/ui';
+import { Segmented, Select, Switch } from '@lobehub/ui';
 import { Form, type FormGroupItem, useForm } from '@lobehub/ui/form';
 import { useTheme as useNextThemesTheme } from 'next-themes';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useWorkspaceStore } from '@/business/client/workspace/store';
 import AppearanceSkeleton from '@/components/Skeleton/Settings/tabs/Appearance';
 import { FORM_STYLE } from '@/const/layoutTokens';
 import FormNavField from '@/features/Settings/features/FormNavField';
@@ -38,6 +39,8 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
   const isUserStateInit = useUserStore((s) => s.isUserStateInit);
   const fontSize = useUserStore(userGeneralSettingsSelectors.fontSize);
   const animationMode = useUserStore(userGeneralSettingsSelectors.animationMode);
+  const showWorkspaceRail = useUserStore(userGeneralSettingsSelectors.showWorkspaceRail);
+  const workspaceRailOffered = useWorkspaceStore((s) => s.isWorkspaceAvailable);
   const responseLanguage = useUserStore(userGeneralSettingsSelectors.responseLanguage);
   const setSettings = useUserStore((s) => s.setSettings);
   const language = useGlobalStore(systemStatusSelectors.language);
@@ -196,6 +199,24 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
               onChange={(value) => setSettings({ general: { animationMode: value } })}
             />
           </Form.Field>
+          {workspaceRailOffered && (
+            <Form.Field
+              divider
+              desc={t('settingAppearance.workspaceRail.desc')}
+              minWidth={undefined}
+              label={
+                <SettingsSearchAnchor id={'appearance-workspace-rail'}>
+                  {t('settingAppearance.workspaceRail.title')}
+                </SettingsSearchAnchor>
+              }
+            >
+              <Switch
+                aria-label={t('settingAppearance.workspaceRail.title')}
+                checked={showWorkspaceRail}
+                onChange={(checked) => setSettings({ general: { showWorkspaceRail: checked } })}
+              />
+            </Form.Field>
+          )}
           {isDesktop && (
             <Form.Field
               divider

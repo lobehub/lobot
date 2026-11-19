@@ -44,6 +44,18 @@ describe('settingsSelectors', () => {
     });
   });
 
+  describe('showWorkspaceRail', () => {
+    it('stays hidden until the user turns it on', () => {
+      expect(userGeneralSettingsSelectors.showWorkspaceRail(initialState as UserStore)).toBe(false);
+
+      const s: UserState = merge(initialState, {
+        settings: { general: { showWorkspaceRail: true } },
+      });
+
+      expect(userGeneralSettingsSelectors.showWorkspaceRail(s as UserStore)).toBe(true);
+    });
+  });
+
   describe('fontAntialiasing', () => {
     it('should default to true when unset', () => {
       expect(userGeneralSettingsSelectors.fontAntialiasing(initialState as UserStore)).toBe(true);

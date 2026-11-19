@@ -1450,6 +1450,9 @@ export default {
   'settingAppearance.primaryColor.desc': 'Custom theme color',
   'settingAppearance.primaryColor.title': 'Theme Color',
   'settingAppearance.title': 'Application Appearance',
+  'settingAppearance.workspaceRail.desc':
+    'Show the column on the left for your personal space and workspaces.',
+  'settingAppearance.workspaceRail.title': 'Workspace bar',
   'settingChat.chatStyleType.title': 'Chat Window Style',
   'settingChat.chatStyleType.type.chat': 'Conversation Mode',
   'settingChat.chatStyleType.type.docs': 'Page Mode',

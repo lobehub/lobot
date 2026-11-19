@@ -16,7 +16,9 @@ const mocks = vi.hoisted(() => ({
   order: undefined as string[] | undefined,
   pathname: '/',
   personalRequests: 0,
+  showWorkspaceRail: true,
   updatePreference: vi.fn(async (_patch: unknown) => {}),
+  userReady: true,
   switchToPersonal: vi.fn(async () => {}),
   switchWorkspace: vi.fn(async (_id: string) => {}),
   unread: {} as Record<string, number>,
@@ -74,7 +76,10 @@ vi.mock('@/components/WorkspaceAvatar', () => ({ default: () => <span /> }));
 vi.mock('@/store/user', () => ({
   useUserStore: (selector: (s: unknown) => unknown) =>
     selector({
+      defaultSettings: { general: {} },
+      isUserStateInit: mocks.userReady,
       preference: { workspace: { order: mocks.order } },
+      settings: { general: { showWorkspaceRail: mocks.showWorkspaceRail } },
       updatePreference: mocks.updatePreference,
       user: { avatar: '', fullName: '', id: 'user-1' },
     }),
@@ -86,6 +91,8 @@ describe('WorkspaceRail', () => {
     mocks.available = true;
     mocks.loading = false;
     mocks.personalRequests = 0;
+    mocks.showWorkspaceRail = true;
+    mocks.userReady = true;
     mocks.order = undefined;
     mocks.pathname = '/';
     mocks.unread = {};
@@ -125,6 +132,37 @@ describe('WorkspaceRail', () => {
     const { container } = render(<WorkspaceRail />);
 
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it('stays hidden until the appearance setting turns the column on', () => {
+    mocks.showWorkspaceRail = false;
+    writeWorkspaceRailHint(true);
+    const { container } = render(<WorkspaceRail />);
+
+    expect(container).toBeEmptyDOMElement();
+    expect(readWorkspaceRailHint()).toBe(false);
+  });
+
+  it('keeps the rail mounted when user state resets during a workspace switch', () => {
+    const { rerender } = render(<WorkspaceRail />);
+    expect(screen.getByRole('navigation', { name: 'workspaceRail.title' })).toBeInTheDocument();
+
+    mocks.userReady = false;
+    rerender(<WorkspaceRail />);
+    expect(screen.getByRole('navigation', { name: 'workspaceRail.title' })).toBeInTheDocument();
+  });
+
+  it('holds the column from last time while settings are still loading', () => {
+    mocks.userReady = false;
+    mocks.showWorkspaceRail = false;
+    mocks.available = false;
+    mocks.loading = true;
+    writeWorkspaceRailHint(true);
+    const { container } = render(<WorkspaceRail />);
+
+    expect(container.firstElementChild).toBeEmptyDOMElement();
+    expect(container.firstElementChild).not.toBeNull();
+    expect(readWorkspaceRailHint()).toBe(true);
   });
 
   it('remembers whether it showed once the list settles', () => {

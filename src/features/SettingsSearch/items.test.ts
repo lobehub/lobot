@@ -63,6 +63,15 @@ describe('settings search index', () => {
     }
   });
 
+  it('offers the workspace bar only where business features are on', () => {
+    const item = SETTINGS_SEARCH_ITEMS.find(
+      (entry) => entry.anchor === 'appearance-workspace-rail',
+    )!;
+
+    expect(item.visible?.(webContext)).toBe(true);
+    expect(item.visible?.({ ...webContext, enableBusinessFeatures: false })).toBe(false);
+  });
+
   it('indexes the inbox notification channel', () => {
     expect(SETTINGS_SEARCH_ITEMS.some((item) => item.anchor === 'notification-inbox')).toBe(true);
   });
