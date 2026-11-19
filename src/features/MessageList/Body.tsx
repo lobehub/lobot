@@ -85,13 +85,16 @@ const useActiveRouteId = () => {
   return root === 'agent' || root === 'group' ? id : undefined;
 };
 
-const ConversationItem = memo<{ active: boolean; conversation: Conversation }>(
-  ({ active, conversation }) =>
-    conversation.item.type === 'group' ? (
-      <GroupConversation active={active} conversation={conversation} />
-    ) : (
-      <AgentConversation active={active} conversation={conversation} />
-    ),
+const ConversationItem = memo<{
+  active: boolean;
+  conversation: Conversation;
+  variant?: 'row' | 'tile';
+}>(({ active, conversation, variant }) =>
+  conversation.item.type === 'group' ? (
+    <GroupConversation active={active} conversation={conversation} variant={variant} />
+  ) : (
+    <AgentConversation active={active} conversation={conversation} variant={variant} />
+  ),
 );
 
 ConversationItem.displayName = 'ConversationItem';
@@ -216,8 +219,8 @@ const Body = memo(() => {
     userId,
   ]);
 
-  // Pinned rows lead the list as one block rather than a card each, then the person's own
-  // sections, then the rest.
+  // Pinned conversations lead the list as a card grid, then the person's own sections, then
+  // the rest.
   const groups = useMemo(
     () => groupBySection(entries, channelsEnabled ? sections : undefined),
     [channelsEnabled, entries, sections],
@@ -249,13 +252,14 @@ const Body = memo(() => {
       .catch((error) => console.error('Failed to reorder sections', error));
   };
 
-  const renderEntry = (entry: ConversationEntry) =>
+  const renderEntry = (entry: ConversationEntry, variant?: 'row' | 'tile') =>
     entry.type === 'inbox' ? (
       <InboxConversation
         activeAt={entry.activeAt}
         activeRouteId={activeRouteId}
         channel={entry.channel}
         key={'inbox'}
+        variant={variant}
       />
     ) : entry.type === 'channel' ? (
       <ChannelConversation
@@ -263,12 +267,14 @@ const Body = memo(() => {
         activeAt={entry.activeAt}
         channel={entry.channel}
         key={entry.channel.id}
+        variant={variant}
       />
     ) : (
       <ConversationItem
         active={entry.item.id === activeRouteId}
         conversation={entry}
         key={entry.item.id}
+        variant={variant}
       />
     );
 
@@ -280,7 +286,7 @@ const Body = memo(() => {
     <Flexbox gap={1} paddingBlock={'0 12px'} paddingInline={6} ref={listRef}>
       {groups.pinned.length > 0 && (
         <div aria-label={t('navPanel.pinned')} role="group" {...stylex.props(styles.pinnedGroup)}>
-          {groups.pinned.map(renderEntry)}
+          {groups.pinned.map((entry) => renderEntry(entry, 'tile'))}
         </div>
       )}
       {groups.sections.length > 0 && (

@@ -59,6 +59,8 @@ interface ConversationRowProps {
   title: string;
   unread?: number;
   url: string;
+  /** `tile` draws a pinned conversation as a large-avatar card; `row` is the regular list line. */
+  variant?: 'row' | 'tile';
 }
 
 type MenuItems = ComponentProps<typeof ContextMenuTrigger>['items'];
@@ -95,7 +97,9 @@ const ConversationRow = memo<ConversationRowProps>(
     activityCount = 0,
     unread,
     url,
+    variant = 'row',
   }) => {
+    const isTile = variant === 'tile';
     const { t } = useTranslation('channel');
     const menuItems = withHideItem(
       contextMenuItems,
@@ -110,24 +114,36 @@ const ConversationRow = memo<ConversationRowProps>(
       'aria-current': active ? 'page' : undefined,
       'aria-label': title,
       ref,
-      ...stylex.props(styles.row, active && styles.rowActive),
+      ...stylex.props(
+        isTile ? styles.tile : styles.row,
+        active && (isTile ? styles.tileActive : styles.rowActive),
+      ),
       'to': url,
       onClick,
       onMouseEnter,
     };
 
-    const content = (
+    const avatarNode = (
+      <span {...stylex.props(styles.avatar)}>
+        {avatar}
+        {!!unread &&
+          unread > 0 &&
+          (muted ? (
+            <span {...stylex.props(styles.unreadDot)} />
+          ) : (
+            <span {...stylex.props(styles.unread)}>{unread > 99 ? '99+' : unread}</span>
+          ))}
+      </span>
+    );
+
+    const content = isTile ? (
       <>
-        <span {...stylex.props(styles.avatar)}>
-          {avatar}
-          {!!unread &&
-            unread > 0 &&
-            (muted ? (
-              <span {...stylex.props(styles.unreadDot)} />
-            ) : (
-              <span {...stylex.props(styles.unread)}>{unread > 99 ? '99+' : unread}</span>
-            ))}
-        </span>
+        {avatarNode}
+        <span {...stylex.props(styles.tileTitle, active && styles.tileTitleActive)}>{title}</span>
+      </>
+    ) : (
+      <>
+        {avatarNode}
         <Flexbox
           flex={1}
           gap={2}

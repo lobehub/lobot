@@ -133,4 +133,23 @@ describe('ConversationRow', () => {
     expect(screen.getByRole('status')).toHaveTextContent('activity.parallel(2)');
     expect(screen.queryByText('last message')).toBeNull();
   });
+
+  // Pinned conversations are cards: avatar + name only, no preview or timestamp.
+  it('renders a pinned conversation as a title-only tile', () => {
+    render(
+      createElement(ConversationRow, {
+        active: false,
+        activeAt: new Date(),
+        avatar: null,
+        preview: 'Latest reply',
+        title: 'Dario',
+        url: '/agent/a',
+        variant: 'tile',
+      }),
+    );
+
+    const row = screen.getByRole('link', { name: 'Dario' });
+    expect(row).toHaveTextContent('Dario');
+    expect(row).not.toHaveTextContent('Latest reply');
+  });
 });

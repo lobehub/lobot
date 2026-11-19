@@ -14,16 +14,17 @@ import { operationSelectors } from '@/store/chat/selectors';
 
 import ConversationRow from './ConversationRow';
 import { type Conversation, replyActivity } from './conversations';
-import { AVATAR_SIZE } from './style';
+import { AVATAR_SIZE, PINNED_AVATAR_SIZE } from './style';
 import { useAgentConversationLink } from './useAgentConversationLink';
 import { useDirectChannelRow } from './useDirectChannelRow';
 
 interface AgentConversationProps {
   active: boolean;
   conversation: Conversation;
+  variant?: 'row' | 'tile';
 }
 
-const AgentConversation = memo<AgentConversationProps>(({ active, conversation }) => {
+const AgentConversation = memo<AgentConversationProps>(({ active, conversation, variant }) => {
   const { item, preview, previewThread, activeAt } = conversation;
   const { id, avatar, backgroundColor, pinned, slug, userId, visibility } = item;
   const { t } = useTranslation('chat');
@@ -91,6 +92,7 @@ const AgentConversation = memo<AgentConversationProps>(({ active, conversation }
       title={title}
       unread={conversation.unread ?? item.unreadCount}
       url={url}
+      variant={variant}
       avatar={
         // Same avatar the agent has everywhere else, including its direct Channel: its own
         // image or emoji, else the character generated from its id.
@@ -100,7 +102,7 @@ const AgentConversation = memo<AgentConversationProps>(({ active, conversation }
           avatar={avatarSrc}
           background={backgroundColor || undefined}
           name={title}
-          size={AVATAR_SIZE}
+          size={variant === 'tile' ? PINNED_AVATAR_SIZE : AVATAR_SIZE}
           state={avatarState}
         />
       }
