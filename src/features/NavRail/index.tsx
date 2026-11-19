@@ -7,6 +7,11 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
+import {
+  AVATAR_SIZE,
+  COLUMN_ACTION_ICON_SIZE,
+  styles as listStyles,
+} from '@/features/MessageList/style';
 import UserAvatar from '@/features/User/UserAvatar';
 import { useSignOut } from '@/hooks/useSignOut';
 import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
@@ -99,7 +104,7 @@ const NavTabBar = memo(() => {
       >
         <button aria-label={t('tab.setting')} type="button" {...stylex.props(styles.user)}>
           <span {...stylex.props(styles.avatar)}>
-            <UserAvatar shape={'circle'} size={36} />
+            <UserAvatar shape={'circle'} size={AVATAR_SIZE} />
           </span>
           {name && (
             <Text ellipsis fontSize={13} weight={500}>
@@ -117,10 +122,10 @@ const NavTabBar = memo(() => {
           active={contactsOpen}
           aria-label={t('tab.contacts')}
           icon={UsersCollaboration}
-          size={{ blockSize: 36, size: 20, borderRadius: '50%' }}
+          size={COLUMN_ACTION_ICON_SIZE}
           title={t('tab.contacts')}
           variant={'outlined'}
-          {...stylex.props(styles.contactsIcon)}
+          {...stylex.props(listStyles.columnActionIcon)}
           onClick={toggleContacts}
         />
         {contactRequests > 0 && (

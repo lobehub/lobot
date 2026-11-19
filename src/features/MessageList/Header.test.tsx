@@ -11,7 +11,15 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 vi.mock('@lobehub/ui', () => ({
-  ActionIcon: () => null,
+  ActionIcon: ({
+    'aria-label': ariaLabel,
+    title,
+    onClick,
+  }: {
+    'aria-label'?: string;
+    'onClick'?: () => void;
+    'title'?: string;
+  }) => <button aria-label={ariaLabel || title} type={'button'} onClick={onClick} />,
   DropdownMenu: ({
     items,
   }: {
@@ -29,7 +37,7 @@ vi.mock('@lobehub/ui', () => ({
   ),
   Flexbox: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Icon: () => null,
-  SearchBar: () => null,
+  SearchBar: ({ placeholder }: { placeholder?: string }) => <input placeholder={placeholder} />,
   Text: () => null,
 }));
 vi.mock('@/features/Channels/CreateChannel', () => ({
@@ -50,7 +58,10 @@ vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
 }));
 vi.mock('./SearchContext', () => ({ useMessageSearch: () => ({ query: '', setQuery: vi.fn() }) }));
 
-const menuKeys = () => screen.getAllByRole('button').map((el) => el.getAttribute('aria-label'));
+const menuKeys = () =>
+  [...screen.getByRole('list').querySelectorAll('button')].map((el) =>
+    el.getAttribute('aria-label'),
+  );
 
 describe('MessageList Header create menu', () => {
   beforeEach(() => {
@@ -79,6 +90,16 @@ describe('MessageList Header create menu', () => {
     expect(screen.getByRole('button', { name: 'legacyGroupChat' }).textContent).toBe(
       'messageList.startGroupChat',
     );
+  });
+
+  it('keeps search as an icon until it is opened', () => {
+    render(<Header />);
+
+    expect(screen.queryByPlaceholderText('messageList.search')).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: 'messageList.search' }));
+
+    expect(screen.getByPlaceholderText('messageList.search')).toBeInTheDocument();
   });
 
   it('falls back to an Agent group where Channels are off', () => {

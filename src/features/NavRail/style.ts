@@ -35,7 +35,9 @@ export const styles = stylex.create({
     minHeight: '52px',
     paddingBlockStart: 0,
     paddingBlockEnd: '8px',
-    paddingInline: '12px',
+    // The conversation rows sit 6px inside the list and 8px inside each row.
+    // Matching that inset puts this avatar on the same left edge.
+    paddingInline: '14px',
   },
   user: {
     cursor: 'pointer',
@@ -45,7 +47,8 @@ export const styles = stylex.create({
     flex: '1',
     alignItems: 'center',
     minWidth: '0',
-    gap: '8px',
+    // Same gap a conversation row leaves between its avatar and its name.
+    gap: '12px',
     margin: '0',
     padding: '0',
     borderWidth: '0',
@@ -57,9 +60,6 @@ export const styles = stylex.create({
   contacts: {
     position: 'relative',
     flex: 'none',
-  },
-  contactsIcon: {
-    backgroundColor: `color-mix(in srgb, ${cssVar.colorFillQuaternary} 50%, ${cssVar.colorFillTertiary})`,
   },
   item: {
     cursor: 'pointer',

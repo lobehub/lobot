@@ -432,9 +432,6 @@ const VirtualizedList = memo<VirtualizedListProps>(
     }, [dataSource, streamingIndices, selectionMessageIds]);
 
     const atBottom = useConversationStore(virtuaListSelectors.atBottom);
-    // The bottom of a forward transcript with rounds still to load is not the
-    // conversation's end.
-    const hasLaterMessages = useConversationStore(dataSelectors.hasLaterMessages);
 
     // The ChatInput's floating overlay (TodoProgress + QueueTray) covers the
     // bottom of this scroll viewport like a layer. Extend VList's internal
@@ -595,15 +592,13 @@ const VirtualizedList = memo<VirtualizedListProps>(
             );
           }}
         </VList>
-        {/* BackBottom is placed outside VList so it remains visible regardless of scroll position */}
-        <WideScreenContainer style={{ position: 'relative' }}>
-          <BackBottom
-            atBottom={atBottom}
-            bottomOffset={overlayHeight}
-            visible={!atBottom && !hasLaterMessages}
-            onScrollToBottom={handleBackBottom}
-          />
-        </WideScreenContainer>
+        {/* Floats over the list, centered above the composer, only after the reader leaves the bottom. */}
+        <BackBottom
+          atBottom={atBottom}
+          bottomOffset={overlayHeight}
+          visible={!atBottom}
+          onScrollToBottom={handleBackBottom}
+        />
         {printable && <PrintTranscript dataSource={dataSource} itemContent={itemContent} />}
       </div>
     );

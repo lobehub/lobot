@@ -2,10 +2,21 @@ import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 
 export const AVATAR_SIZE = 32;
+
+/** Circle shared by the list column's icon buttons: search, new chat, contacts. */
+export const COLUMN_ACTION_ICON_SIZE = {
+  blockSize: AVATAR_SIZE,
+  borderRadius: '50%',
+  size: 18,
+};
 /** Pinned tiles use a card-sized avatar over the compact row one. */
 export const PINNED_AVATAR_SIZE = 52;
 
 export const styles = stylex.create({
+  /** Soft fill behind the column's outlined circle buttons. */
+  columnActionIcon: {
+    backgroundColor: `color-mix(in srgb, ${cssVar.colorFillQuaternary} 50%, ${cssVar.colorFillTertiary})`,
+  },
   avatar: {
     position: 'relative',
     display: 'inline-flex',
@@ -62,7 +73,8 @@ export const styles = stylex.create({
     alignItems: 'flex-start',
     columnGap: '8px',
     rowGap: '8px',
-    paddingBlock: '16px',
+    paddingBlockStart: '4px',
+    paddingBlockEnd: '16px',
   },
   /** "[@me]" before the preview; the unread badge's red, so the two read as one signal. */
   mentioned: {

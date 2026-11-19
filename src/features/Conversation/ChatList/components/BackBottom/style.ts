@@ -7,8 +7,8 @@ export const styles = stylex.create({
     position: 'absolute',
     zIndex: 50,
     insetBlockEnd: '16px',
-    insetInlineEnd: '16px',
-    transform: 'translateY(16px)',
+    insetInlineStart: '50%',
+    transform: 'translateX(-50%) translateY(16px)',
     opacity: 0,
     backdropFilter: 'saturate(150%) blur(10px)',
     backgroundColor: `color-mix(in srgb, ${cssVar.colorBgElevated} 50%, transparent)`,
@@ -16,7 +16,7 @@ export const styles = stylex.create({
   },
   visible: {
     pointerEvents: 'all',
-    transform: 'translateY(0)',
+    transform: 'translateX(-50%) translateY(0)',
     opacity: 1,
   },
 });

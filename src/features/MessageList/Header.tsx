@@ -12,8 +12,9 @@ import {
   Text,
 } from '@lobehub/ui';
 import { GroupBotSquareIcon } from '@lobehub/ui/icons';
-import { BotIcon, CirclePlusIcon, FolderPlus, Hash } from 'lucide-react';
-import { memo, type ReactNode, useMemo } from 'react';
+import * as stylex from '@stylexjs/stylex';
+import { BotIcon, FolderPlus, Hash, PlusIcon, SearchIcon } from 'lucide-react';
+import { type FocusEvent, memo, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { openCreateChannel } from '@/features/Channels/CreateChannel';
@@ -23,9 +24,7 @@ import { useCreateMenuItems } from '@/features/HomeSidebar/hooks';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 
 import { useMessageSearch } from './SearchContext';
-
-// The header's icon size with a thinner stroke, so the outlined "+" reads lighter beside the search box.
-const CREATE_ICON_SIZE = { blockSize: 32, size: 20, strokeWidth: 1.5 };
+import { COLUMN_ACTION_ICON_SIZE, styles } from './style';
 
 /**
  * A WeChat-style "+" menu row: a line icon a step larger than a dense action menu's, at body
@@ -75,6 +74,20 @@ ListHeader.displayName = 'ListHeader';
 const Header = memo(() => {
   const { t } = useTranslation(['common', 'channel']);
   const { query, setQuery } = useMessageSearch();
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const closeSearch = () => {
+    setQuery('');
+    setSearchOpen(false);
+  };
+  useEffect(() => {
+    if (!searchOpen) return;
+    searchRef.current?.querySelector('input')?.focus();
+  }, [searchOpen]);
+  const onSearchBlur = (event: FocusEvent<HTMLDivElement>) => {
+    if (event.currentTarget.contains(event.relatedTarget as Node | null)) return;
+    if (!query) setSearchOpen(false);
+  };
   const { createAgentMenuItem, createGroupChatMenuItem, isLoading } = useCreateMenuItems();
   const channelsEnabled = useChannelsEnabled();
   const navigate = useWorkspaceAwareNavigate();
@@ -118,36 +131,61 @@ const Header = memo(() => {
     ],
   );
 
-  // WeChat-style header: a search box that filters the list, and one "+" entry.
+  // Both sit on the right, the same circle as the contacts button. Search stays an icon
+  // until it is opened, then the field takes the rest of the row.
   return (
     <Flexbox
       horizontal
       align={'center'}
-      gap={6}
+      gap={8}
+      justify={'flex-end'}
       paddingBlock={'12px 8px'}
-      paddingInline={'10px 8px'}
+      paddingInline={14}
     >
-      <SearchBar
-        allowClear
-        placeholder={t('messageList.search')}
-        // Shrinks below its input's natural width so the row fits a narrow column.
-        style={{ flex: 1, minWidth: 0 }}
-        value={query}
-        variant={'filled'}
-        onChange={(e) => setQuery(e.target.value)}
-      />
+      {searchOpen ? (
+        <div
+          ref={searchRef}
+          style={{ flex: 1, minWidth: 0 }}
+          onBlur={onSearchBlur}
+          onKeyDown={(event) => {
+            if (event.key !== 'Escape') return;
+            event.stopPropagation();
+            closeSearch();
+          }}
+        >
+          <SearchBar
+            allowClear
+            placeholder={t('messageList.search')}
+            style={{ width: '100%' }}
+            value={query}
+            variant={'filled'}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+      ) : (
+        <ActionIcon
+          aria-label={t('messageList.search')}
+          icon={SearchIcon}
+          size={COLUMN_ACTION_ICON_SIZE}
+          title={t('messageList.search')}
+          variant={'outlined'}
+          {...stylex.props(styles.columnActionIcon)}
+          onClick={() => setSearchOpen(true)}
+        />
+      )}
       <DropdownMenu
         items={createItems}
         placement={'bottomRight'}
         popupProps={{ style: { minWidth: 136, padding: 4 } }}
       >
         <ActionIcon
-          icon={CirclePlusIcon}
+          aria-label={t('messageList.newChat')}
+          icon={PlusIcon}
           loading={isLoading}
-          size={CREATE_ICON_SIZE}
-          // Keeps its square: the search box gives way in a narrow column, not this button.
-          style={{ flex: 'none' }}
+          size={COLUMN_ACTION_ICON_SIZE}
           title={t('messageList.newChat')}
+          variant={'outlined'}
+          {...stylex.props(styles.columnActionIcon)}
         />
       </DropdownMenu>
     </Flexbox>

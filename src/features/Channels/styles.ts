@@ -112,6 +112,21 @@ export const styles = stylex.create({
     paddingBlockStart: 16,
     paddingBlockEnd: 24,
   },
+  /** Holds the scrolling feed so the jump-to-bottom button can float over its foot. */
+  feedFrame: {
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    flex: '1',
+    minHeight: 0,
+  },
+  jumpToBottom: {
+    position: 'absolute',
+    zIndex: 5,
+    insetBlockEnd: 12,
+    insetInlineStart: '50%',
+    transform: 'translateX(-50%)',
+  },
   /**
    * One message row; hovering highlights it and reveals its toolbar, like a chat app.
    * The wash spans the feed edge to edge (cancelling the feed's 16px padding), square,

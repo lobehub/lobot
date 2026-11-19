@@ -1,6 +1,7 @@
-import { Button, Flexbox } from '@lobehub/ui';
+import { ActionIcon, Button, Flexbox } from '@lobehub/ui';
 import type { ChannelPublicMessage } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
+import { ArrowDown } from 'lucide-react';
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -118,6 +119,25 @@ const Timeline = ({
   const outgoingById = new Map(outgoing.map((item) => [item.message.id, item.entry]));
   const feedRef = useRef<HTMLDivElement>(null);
   const followLatest = useRef(true);
+  // Clicking the button hides it at once. Ignore the in-between scroll events
+  // of that animation, or the button flashes back before the feed arrives.
+  const settlingToBottom = useRef(false);
+  const settleDistance = useRef(0);
+  const [awayFromBottom, setAwayFromBottom] = useState(false);
+  const syncFollowLatest = (feed: HTMLDivElement) => {
+    const distance = feed.scrollHeight - feed.scrollTop - feed.clientHeight;
+    const atBottom = distance < 64;
+    if (settlingToBottom.current) {
+      // Still on the way down. A growing distance means the reader scrolled back up.
+      if (!atBottom && distance <= settleDistance.current + 1) {
+        settleDistance.current = distance;
+        return;
+      }
+      settlingToBottom.current = false;
+    }
+    followLatest.current = atBottom;
+    setAwayFromBottom((away) => (away === !atBottom ? away : !atBottom));
+  };
   const feedTail = timelineTail(detail?.messages, outgoing);
   const sequence = detail?.channel.sequence;
   useChannelEvents(params);
@@ -151,7 +171,10 @@ const Timeline = ({
 
   useEffect(() => {
     const feed = feedRef.current;
-    if (feed && followLatest.current && before === undefined) feed.scrollTop = feed.scrollHeight;
+    if (feed && followLatest.current && before === undefined) {
+      feed.scrollTop = feed.scrollHeight;
+      setAwayFromBottom(false);
+    }
   }, [feedTail, before]);
 
   useEffect(() => {
@@ -232,158 +255,189 @@ const Timeline = ({
                 />
               )}
               {detail ? (
-                <Flexbox
-                  aria-label={t(threadId ? 'thread' : 'main')}
-                  ref={feedRef}
-                  onScroll={(event) => {
-                    const feed = event.currentTarget;
-                    followLatest.current =
-                      feed.scrollHeight - feed.scrollTop - feed.clientHeight < 64;
-                  }}
-                  {...stylex.props(styles.feed)}
-                >
-                  <WideScreenContainer fullWidth paddingInline={16}>
-                    {(detail.hasMore || before !== undefined) && (
-                      <Flexbox horizontal align="center" gap={8} justify="center" paddingBlock={8}>
-                        <Button
-                          disabled={!detail.hasMore}
-                          size="small"
-                          onClick={() => setBefore(detail.messages[0]?.sequence)}
+                <div {...stylex.props(styles.feedFrame)}>
+                  <Flexbox
+                    aria-label={t(threadId ? 'thread' : 'main')}
+                    ref={feedRef}
+                    onScroll={(event) => syncFollowLatest(event.currentTarget)}
+                    {...stylex.props(styles.feed)}
+                  >
+                    <WideScreenContainer fullWidth paddingInline={16}>
+                      {(detail.hasMore || before !== undefined) && (
+                        <Flexbox
+                          horizontal
+                          align="center"
+                          gap={8}
+                          justify="center"
+                          paddingBlock={8}
                         >
-                          {t('olderMessages')}
-                        </Button>
-                        {before !== undefined && (
                           <Button
+                            disabled={!detail.hasMore}
                             size="small"
-                            type="text"
-                            onClick={() => {
-                              followLatest.current = true;
-                              setBefore(undefined);
-                            }}
+                            onClick={() => setBefore(detail.messages[0]?.sequence)}
                           >
-                            {t('latestMessages')}
+                            {t('olderMessages')}
                           </Button>
-                        )}
-                      </Flexbox>
-                    )}
-                    {detail.rootMessage && (
-                      <ThreadRootMessage
-                        detail={detail}
-                        highlighted={highlighted === detail.rootMessage.id}
-                        root={detail.rootMessage}
-                        onReply={
-                          channelArchived || thread?.status === 'archived' ? undefined : selectReply
-                        }
-                      />
-                    )}
-                    {/* The welcome heads the whole history, so it shows only above its first page. */}
-                    {!threadId && !detail.hasMore && before === undefined && (
-                      <ChannelWelcome
-                        detail={detail}
-                        onGreet={
-                          // Once anyone has spoken, there is nothing left to break the ice for.
-                          channelArchived || timeline.some((entry) => entry.kind === 'message')
-                            ? undefined
-                            : (content) => {
+                          {before !== undefined && (
+                            <Button
+                              size="small"
+                              type="text"
+                              onClick={() => {
                                 followLatest.current = true;
-                                followSent(
-                                  channelActions.queueSend({
-                                    attachments: [],
-                                    channelId,
-                                    content,
-                                    fileIds: [],
-                                    mentions: [],
-                                    threadId,
-                                  }),
-                                );
-                              }
-                        }
-                      />
-                    )}
-                    {threadId && !timeline.length && (
-                      <p {...stylex.props(styles.muted)}>{t('threadEmpty')}</p>
-                    )}
-                    {presented.map(({ item, date, startsDay, continuation }, index) => {
-                      const previous = presented[index - 1]?.item;
-                      // A failed reply posted in between ends the run of the same author.
-                      if (previous?.kind === 'message' && failures.has(previous.message.id))
-                        continuation = false;
-                      return (
-                        <Fragment key={item.kind === 'event' ? item.event.id : item.message.id}>
-                          {startsDay && (
-                            <div
-                              aria-label={timeFormats.date.format(date)}
-                              role="separator"
-                              {...stylex.props(styles.dateDivider)}
-                            >
-                              <time
-                                dateTime={date.toISOString()}
-                                title={timeFormats.date.format(date)}
-                              >
-                                {timeFormats.date.format(date)}
-                              </time>
-                            </div>
-                          )}
-                          {item.kind === 'event' ? (
-                            <JoinEventLine event={item.event} />
-                          ) : outgoingById.has(item.message.id) ? (
-                            <ChannelMessage
-                              continuation={continuation}
-                              message={item.message}
-                              pending={outgoingById.get(item.message.id)!.status === 'sending'}
-                              threadId={threadId}
-                              delivery={
-                                <OutgoingStatus
-                                  message={outgoingById.get(item.message.id)!}
-                                  onRetry={(failed) => followSent(channelActions.retrySend(failed))}
-                                />
-                              }
-                              detail={{
-                                ...detail,
-                                attachments: outgoingById.get(item.message.id)!.attachments,
+                                setBefore(undefined);
                               }}
-                              onJumpToMessage={jumpToMessage}
-                            />
-                          ) : (
-                            <ChannelMessage
-                              continuation={continuation}
-                              detail={detail}
-                              highlighted={highlighted === item.message.id}
-                              message={item.message}
-                              threadId={threadId}
-                              onJumpToMessage={jumpToMessage}
-                              onOpenThread={onOpenThread && openThread}
-                              onOpenTopic={onOpenTopic && openTopic}
-                              onReply={
-                                channelArchived || thread?.status === 'archived'
-                                  ? undefined
-                                  : selectReply
-                              }
-                              onStartThread={
-                                channelArchived || !onStartThread ? undefined : startThread
-                              }
-                            />
+                            >
+                              {t('latestMessages')}
+                            </Button>
                           )}
-                          {item.kind === 'message' &&
-                            failures
-                              .get(item.message.id)
-                              ?.map((entry) => (
-                                <ReplyFailureMessage
-                                  detail={detail}
-                                  entry={entry}
-                                  key={entry.job.id}
-                                  onHandoff={
-                                    channelArchived || thread?.status === 'archived'
-                                      ? undefined
-                                      : () => handOff(entry.job)
-                                  }
-                                />
-                              ))}
-                        </Fragment>
-                      );
-                    })}
-                  </WideScreenContainer>
-                </Flexbox>
+                        </Flexbox>
+                      )}
+                      {detail.rootMessage && (
+                        <ThreadRootMessage
+                          detail={detail}
+                          highlighted={highlighted === detail.rootMessage.id}
+                          root={detail.rootMessage}
+                          onReply={
+                            channelArchived || thread?.status === 'archived'
+                              ? undefined
+                              : selectReply
+                          }
+                        />
+                      )}
+                      {/* The welcome heads the whole history, so it shows only above its first page. */}
+                      {!threadId && !detail.hasMore && before === undefined && (
+                        <ChannelWelcome
+                          detail={detail}
+                          onGreet={
+                            // Once anyone has spoken, there is nothing left to break the ice for.
+                            channelArchived || timeline.some((entry) => entry.kind === 'message')
+                              ? undefined
+                              : (content) => {
+                                  followLatest.current = true;
+                                  followSent(
+                                    channelActions.queueSend({
+                                      attachments: [],
+                                      channelId,
+                                      content,
+                                      fileIds: [],
+                                      mentions: [],
+                                      threadId,
+                                    }),
+                                  );
+                                }
+                          }
+                        />
+                      )}
+                      {threadId && !timeline.length && (
+                        <p {...stylex.props(styles.muted)}>{t('threadEmpty')}</p>
+                      )}
+                      {presented.map(({ item, date, startsDay, continuation }, index) => {
+                        const previous = presented[index - 1]?.item;
+                        // A failed reply posted in between ends the run of the same author.
+                        if (previous?.kind === 'message' && failures.has(previous.message.id))
+                          continuation = false;
+                        return (
+                          <Fragment key={item.kind === 'event' ? item.event.id : item.message.id}>
+                            {startsDay && (
+                              <div
+                                aria-label={timeFormats.date.format(date)}
+                                role="separator"
+                                {...stylex.props(styles.dateDivider)}
+                              >
+                                <time
+                                  dateTime={date.toISOString()}
+                                  title={timeFormats.date.format(date)}
+                                >
+                                  {timeFormats.date.format(date)}
+                                </time>
+                              </div>
+                            )}
+                            {item.kind === 'event' ? (
+                              <JoinEventLine event={item.event} />
+                            ) : outgoingById.has(item.message.id) ? (
+                              <ChannelMessage
+                                continuation={continuation}
+                                message={item.message}
+                                pending={outgoingById.get(item.message.id)!.status === 'sending'}
+                                threadId={threadId}
+                                delivery={
+                                  <OutgoingStatus
+                                    message={outgoingById.get(item.message.id)!}
+                                    onRetry={(failed) =>
+                                      followSent(channelActions.retrySend(failed))
+                                    }
+                                  />
+                                }
+                                detail={{
+                                  ...detail,
+                                  attachments: outgoingById.get(item.message.id)!.attachments,
+                                }}
+                                onJumpToMessage={jumpToMessage}
+                              />
+                            ) : (
+                              <ChannelMessage
+                                continuation={continuation}
+                                detail={detail}
+                                highlighted={highlighted === item.message.id}
+                                message={item.message}
+                                threadId={threadId}
+                                onJumpToMessage={jumpToMessage}
+                                onOpenThread={onOpenThread && openThread}
+                                onOpenTopic={onOpenTopic && openTopic}
+                                onReply={
+                                  channelArchived || thread?.status === 'archived'
+                                    ? undefined
+                                    : selectReply
+                                }
+                                onStartThread={
+                                  channelArchived || !onStartThread ? undefined : startThread
+                                }
+                              />
+                            )}
+                            {item.kind === 'message' &&
+                              failures
+                                .get(item.message.id)
+                                ?.map((entry) => (
+                                  <ReplyFailureMessage
+                                    detail={detail}
+                                    entry={entry}
+                                    key={entry.job.id}
+                                    onHandoff={
+                                      channelArchived || thread?.status === 'archived'
+                                        ? undefined
+                                        : () => handOff(entry.job)
+                                    }
+                                  />
+                                ))}
+                          </Fragment>
+                        );
+                      })}
+                    </WideScreenContainer>
+                  </Flexbox>
+                  {awayFromBottom && (
+                    <div {...stylex.props(styles.jumpToBottom)}>
+                      <ActionIcon
+                        glass
+                        icon={ArrowDown}
+                        size={{ blockSize: 36, borderRadius: 36, size: 18 }}
+                        title={t('latestMessages')}
+                        variant={'outlined'}
+                        onClick={() => {
+                          followLatest.current = true;
+                          settlingToBottom.current = true;
+                          settleDistance.current = Number.POSITIVE_INFINITY;
+                          setAwayFromBottom(false);
+                          if (before !== undefined) {
+                            setBefore(undefined);
+                            return;
+                          }
+                          const feed = feedRef.current;
+                          if (feed) feed.scrollTo({ behavior: 'smooth', top: feed.scrollHeight });
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
               ) : (
                 // Opened before its first page arrives: no placeholder, just the input, so the
                 // conversation is usable at once and fills in when it loads.
