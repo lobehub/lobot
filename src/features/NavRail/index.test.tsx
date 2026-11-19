@@ -63,6 +63,7 @@ vi.mock('@/store/contact', async (importOriginal) => {
 
 vi.mock('./ContactsPopup', () => ({ default: () => null }));
 vi.mock('./SettingsPopup', () => ({ default: () => null }));
+vi.mock('./useScopeMenuItem', () => ({ useScopeMenuItem: () => null }));
 
 const request = (id: string, direction: 'incoming' | 'outgoing') => ({
   direction,

@@ -26,23 +26,17 @@ import { useTranslation } from 'react-i18next';
 
 import type { WorkspaceListItem } from '@/business/client/hooks/useActiveWorkspace';
 import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
-import { useActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
-import { useSwitchWorkspace } from '@/business/client/hooks/useSwitchWorkspace';
 import { useWorkspaceStore } from '@/business/client/workspace/store';
 import Avatar from '@/components/Avatar';
 import WorkspaceAvatar from '@/components/WorkspaceAvatar';
 import { suppressNextClick } from '@/features/HomeSidebar/Body/sortableRow';
 import { requestUnreadJump } from '@/features/MessageList/unreadJump';
-import { useContactsPopupStore } from '@/features/NavRail/contactsPopupStore';
-import { resolveRailTab } from '@/features/NavRail/railTab';
-import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
-import { useActiveLocation } from '@/hooks/useActiveLocation';
 import { useUserStore } from '@/store/user';
 import { userGeneralSettingsSelectors, userProfileSelectors } from '@/store/user/selectors';
 
-import { useOpenCreateWorkspace } from './CreateWorkspace';
 import { writeWorkspaceRailHint } from './railHint';
 import { RAIL_AVATAR_SIZE, styles } from './style';
+import { useOpenScope } from './useOpenScope';
 import { useOrderedWorkspaces } from './useOrderedWorkspaces';
 import { usePersonalRequestCount } from './usePersonalRequestCount';
 import { useRailColumnShown, useWorkspaceRailSettingReady } from './useRailColumnShown';
@@ -164,8 +158,6 @@ const WorkspaceRail = memo(() => {
   const { reorder, workspaces } = useOrderedWorkspaces();
   const [dragging, setDragging] = useState(false);
   const activeId = useActiveWorkspaceId();
-  const { switchToPersonal, switchWorkspace } = useSwitchWorkspace();
-  const navigate = useWorkspaceAwareNavigate();
   const userAvatar = useUserStore(userProfileSelectors.userAvatar);
   const userName = useUserStore(userProfileSelectors.displayUserName);
   // The personal tile also counts friend requests: a workspace's Contacts never shows them.
@@ -173,20 +165,15 @@ const WorkspaceRail = memo(() => {
   const personalRequests = usePersonalRequestCount(activeId === null);
   const personalUnread = personalMessagesUnread + personalRequests;
 
-  const { pathname } = useActiveLocation();
-  const activeWorkspaceSlug = useActiveWorkspaceSlug();
-  const railTab = resolveRailTab(pathname, activeWorkspaceSlug);
-  const stayOnContacts = railTab === 'contacts';
-  const openContacts = useContactsPopupStore((s) => s.openContacts);
-
-  // Lobot has no workspace routes: switching changes the request scope, then lands on
-  // Messages. A contact belongs to the scope just left, so the address book opens
-  // over that home instead of keeping the full-screen contacts page.
-  const openHome = useCallback(() => {
-    if (stayOnContacts) openContacts();
-    navigate('/', { escape: true });
-  }, [navigate, openContacts, stayOnContacts]);
-  const openCreate = useOpenCreateWorkspace(openHome);
+  const {
+    navigate,
+    openContacts,
+    openCreate,
+    openPersonal: enterPersonal,
+    openWorkspace,
+    railTab,
+    stayOnContacts,
+  } = useOpenScope();
 
   // Clicking the open scope's badge goes to its next unread conversation in the Messages list.
   const jumpToUnread = useCallback(() => {
@@ -205,28 +192,17 @@ const WorkspaceRail = memo(() => {
       }
       return;
     }
-    await switchToPersonal();
-    openHome();
+    await enterPersonal();
   }, [
     activeId,
+    enterPersonal,
     jumpToUnread,
     navigate,
     openContacts,
-    openHome,
     personalMessagesUnread,
     personalRequests,
     stayOnContacts,
-    switchToPersonal,
   ]);
-
-  const openWorkspace = useCallback(
-    async (id: string) => {
-      if (activeId === id) return;
-      await switchWorkspace(id);
-      openHome();
-    },
-    [activeId, openHome, switchWorkspace],
-  );
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
