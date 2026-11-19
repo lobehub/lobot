@@ -23,22 +23,20 @@ import { userProfileSelectors } from '@/store/user/selectors';
 
 import ConversationRow from './ConversationRow';
 import { channelPreview, channelPreviewThread, directCounterpart } from './conversations';
-import { AVATAR_SIZE, PINNED_AVATAR_SIZE, styles } from './style';
+import { AVATAR_SIZE, styles } from './style';
 
-interface Props {
+interface ChannelConversationProps {
   active: boolean;
   activeAt: Date;
   channel: ChannelListItem;
-  variant?: 'row' | 'tile';
 }
 
 /**
  * A group Channel as one more conversation, ordered with the Agents by its latest message. A
  * conversation with another person, or with someone's shared Agent, wears that counterpart.
  */
-const ChannelConversation = memo<Props>(({ active, activeAt, channel, variant }) => {
+const ChannelConversation = memo<ChannelConversationProps>(({ active, activeAt, channel }) => {
   const { t } = useTranslation('channel');
-  const avatarSize = variant === 'tile' ? PINNED_AVATAR_SIZE : AVATAR_SIZE;
   const menuItems = useChannelMenu();
   // A Channel grouped under a project wears that project's logo; a standalone one pictures
   // its members like a group chat, and keeps "#" until someone else joins.
@@ -82,7 +80,6 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, variant })
         title={counterpart.name || channel.title}
         unread={cleared ? 0 : channel.unreadCount}
         url={CHANNEL_URL(channel.id)}
-        variant={variant}
         avatar={
           counterpart.actorType === 'agent' ? (
             <AgentAvatar
@@ -90,10 +87,10 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, variant })
               avatar={counterpart.avatar}
               background={counterpart.backgroundColor || undefined}
               name={counterpart.name}
-              size={avatarSize}
+              size={AVATAR_SIZE}
             />
           ) : (
-            <UserAvatar avatar={counterpart.avatar} name={counterpart.name} size={avatarSize} />
+            <UserAvatar avatar={counterpart.avatar} name={counterpart.name} size={AVATAR_SIZE} />
           )
         }
       />
@@ -114,7 +111,6 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, variant })
       title={title}
       unread={channel.unreadCount}
       url={CHANNEL_URL(channel.id)}
-      variant={variant}
       avatar={
         project ? (
           <>
@@ -122,14 +118,14 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, variant })
               avatar={project.avatar}
               id={project.id}
               name={project.name}
-              size={avatarSize}
+              size={AVATAR_SIZE}
             />
             {channelMark}
           </>
         ) : members.length ? (
           <>
             <GroupAvatar
-              size={avatarSize}
+              size={AVATAR_SIZE}
               avatars={members.map((member) => ({
                 avatar: member.avatar || (member.actorType === 'user' ? member.name : null),
                 background: member.backgroundColor ?? undefined,
@@ -144,7 +140,7 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, variant })
             avatar={<Icon color={cssVar.colorTextSecondary} icon={HashIcon} size={16} />}
             background={cssVar.colorFillSecondary}
             shape={'square'}
-            size={avatarSize}
+            size={AVATAR_SIZE}
           />
         )
       }

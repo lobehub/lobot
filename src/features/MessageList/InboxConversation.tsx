@@ -18,7 +18,7 @@ import { userProfileSelectors } from '@/store/user/selectors';
 
 import ConversationRow from './ConversationRow';
 import { channelPreviewThread, conversationPreview, replyActivity } from './conversations';
-import { AVATAR_SIZE, PINNED_AVATAR_SIZE } from './style';
+import { AVATAR_SIZE } from './style';
 import { useInboxConversationLink } from './useAgentConversationLink';
 import { useDirectChannelRow } from './useDirectChannelRow';
 
@@ -28,8 +28,7 @@ const InboxConversation = memo<{
   activeRouteId?: string;
   /** The inbox Agent's direct Channel, when the row opens it. */
   channel?: ChannelListItem;
-  variant?: 'row' | 'tile';
-}>(({ activeAt, activeRouteId, channel, variant }) => {
+}>(({ activeAt, activeRouteId, channel }) => {
   const { t } = useTranslation('chat');
   const inboxAgentId = useAgentStore(builtinAgentSelectors.inboxAgentId);
   const routeId = resolveInboxAgentRouteId(inboxAgentId);
@@ -55,14 +54,13 @@ const InboxConversation = memo<{
       title={title}
       unread={channel?.unreadCount ?? undefined}
       url={url}
-      variant={variant}
       avatar={
         <AgentAvatar
           agentId={routeId}
           animated={!!avatarState}
           avatar={meta.avatar || DEFAULT_INBOX_AVATAR}
           name={title}
-          size={variant === 'tile' ? PINNED_AVATAR_SIZE : AVATAR_SIZE}
+          size={AVATAR_SIZE}
           state={avatarState}
         />
       }
