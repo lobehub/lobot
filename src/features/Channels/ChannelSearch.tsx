@@ -5,6 +5,8 @@ import { SearchIcon } from 'lucide-react';
 import { type FocusEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { ChannelSearchSkeleton } from '@/components/Skeleton/Channel';
+import { useDelayedVisible } from '@/components/Skeleton/Delayed';
 import { type ChannelSearchHit, channelService } from '@/services/channel';
 import { markdownToTxt } from '@/utils/markdownToTxt';
 
@@ -85,7 +87,6 @@ const styles = stylex.create({
     color: cssVar.colorText,
     backgroundColor: cssVar.colorWarningBorder,
   },
-  more: { display: 'flex', justifyContent: 'center', paddingBlock: 8 },
   sentinel: { flexShrink: 0, height: 1 },
 });
 
@@ -298,6 +299,13 @@ const SearchHit = ({
   );
 };
 
+/**
+ * Hit-shaped rows while a page loads: the first page fills the panel, a next page adds
+ * one row. Held back for the shared 200ms so a fast search goes straight to results.
+ */
+const SearchLoading = ({ rows }: { rows?: number }) =>
+  useDelayedVisible() ? <ChannelSearchSkeleton rows={rows} /> : null;
+
 /** Search results beside the conversation; picking one jumps to the message. */
 export function ChannelSearchPanel({
   availableWidth,
@@ -357,9 +365,7 @@ export function ChannelSearchPanel({
             </Button>
           </div>
         ) : loading ? (
-          <div {...stylex.props(hits.length ? styles.more : styles.status)}>
-            <Button loading size="small" type="text" />
-          </div>
+          <SearchLoading key={hits.length} rows={hits.length ? 1 : undefined} />
         ) : hasMore ? (
           <div aria-hidden ref={sentinelRef} {...stylex.props(styles.sentinel)} />
         ) : (
