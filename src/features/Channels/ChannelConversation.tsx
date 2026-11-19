@@ -1,7 +1,7 @@
 import { ActionIcon, Button, Flexbox } from '@lobehub/ui';
 import type { ChannelPublicMessage } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
-import { ArrowDown } from 'lucide-react';
+import { ArrowDown, ChevronsUp } from 'lucide-react';
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useShallow } from 'zustand/react/shallow';
@@ -48,6 +48,12 @@ import type { ReplyTopic } from './ReplyTopicPanel';
 import { styles } from './styles';
 import type { ChannelThreadDraft } from './threadDraft';
 import { markThreadRead } from './threadReads';
+import {
+  mayHaveEarlierMentions,
+  readPositionBeforeVisit,
+  type UnreadMentionRange,
+  unreadMentionsOf,
+} from './unreadMentions';
 import { useChannelEvents } from './useChannelEvents';
 import { useChannelProjectName } from './useChannelProjectName';
 import { channelDraftKey } from './useComposerDraft';
@@ -127,6 +133,12 @@ const Timeline = ({
     [kept, stacked],
   );
   const listed = useChannelStore(channelSelectors.listed(channelId));
+  // Taken while rendering, before this visit marks the conversation read below and the listed
+  // counts drop to zero.
+  const [mentionsFrom, setMentionsFrom] = useState<UnreadMentionRange | null>(null);
+  const readFrom = threadId || mentionsFrom ? null : readPositionBeforeVisit(listed);
+  if (listed && readFrom !== null)
+    setMentionsFrom({ readFrom, total: listed.mentionCount ?? 0, upTo: listed.sequence });
   const shell = showsListedShell({ before, error: sync.error, loaded: !!detail, threadId })
     ? listed
     : undefined;
@@ -260,6 +272,39 @@ const Timeline = ({
   const channelArchived = channel?.status === 'archived';
   const oneToOne = !!(channel?.agentId || channel?.peerUserId);
   const messages = detail ? visibleChannelMessages(detail.messages, detail.threads) : [];
+  // Unread @mentions of the viewer on the loaded pages, oldest first; each is dropped once jumped
+  // to. More may sit on pages not loaded yet, until the history reaches the read position.
+  const [seenMentions, setSeenMentions] = useState<ReadonlySet<string>>(() => new Set());
+  const foundMentions =
+    detail && mentionsFrom ? unreadMentionsOf(messages, detail.members, userId, mentionsFrom) : [];
+  const nextMention = foundMentions.find((message) => !seenMentions.has(message.id));
+  const pendingMentions = foundMentions.filter((message) => !seenMentions.has(message.id)).length;
+  const searchEarlierMentions =
+    !!detail &&
+    !!mentionsFrom &&
+    foundMentions.length < mentionsFrom.total &&
+    mayHaveEarlierMentions(detail.messages[0]?.sequence, detail.hasMore, mentionsFrom.readFrom);
+  const [seekingMention, setSeekingMention] = useState(false);
+  const seekCursor = useRef<number | undefined>(undefined);
+  const jumpToNextMention = useEventCallback(() => {
+    if (nextMention) {
+      setSeekingMention(false);
+      setSeenMentions((seen) => new Set(seen).add(nextMention.id));
+      jumpToMessage(nextMention);
+      return;
+    }
+    if (!searchEarlierMentions) return setSeekingMention(false);
+    // A page that failed to load leaves the oldest message where it was: stop instead of retrying.
+    const cursor = detail?.messages[0]?.sequence;
+    if (seekingMention && seekCursor.current === cursor) return setSeekingMention(false);
+    seekCursor.current = cursor;
+    setSeekingMention(true);
+    loadEarlier();
+  });
+  // Pages back until the history holds an unread mention or reaches the read position.
+  useEffect(() => {
+    if (seekingMention && !loadingEarlier) jumpToNextMention();
+  }, [seekingMention, loadingEarlier, detail, jumpToNextMention]);
   const timeline = detail
     ? channelTimeline(
         outgoing.length ? [...messages, ...outgoing.map((item) => item.message)] : messages,
@@ -476,6 +521,19 @@ const Timeline = ({
                       })}
                     </WideScreenContainer>
                   </Flexbox>
+                  {(pendingMentions > 0 || searchEarlierMentions) && (
+                    <Button
+                      icon={ChevronsUp}
+                      loading={seekingMention}
+                      shape="round"
+                      onClick={jumpToNextMention}
+                      {...stylex.props(styles.jumpToMention)}
+                    >
+                      {pendingMentions > 0
+                        ? t('mentionJump.count', { count: pendingMentions })
+                        : t('mentionJump.earlier')}
+                    </Button>
+                  )}
                   {awayFromBottom && (
                     <div {...stylex.props(styles.jumpToBottom)}>
                       <ActionIcon

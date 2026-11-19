@@ -231,6 +231,8 @@ export default {
   'syncing': 'Syncing…',
   'threadEmpty': 'Keep discussing this message here.',
   'conversationEmpty': 'Start the conversation',
+  'mentionJump.count': '{{count}} unread @mentions of you',
+  'mentionJump.earlier': 'Earlier @mentions of you',
   'mentionHint':
     'Mention Agents to choose who replies. Without a mention, every Agent here replies.',
   'mentionInvite.failed': "Couldn't add {{name}} to the channel. Try again.",

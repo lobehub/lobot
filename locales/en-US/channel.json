@@ -162,6 +162,8 @@
   "mentionInvite.failed": "Couldn't add {{name}} to the channel. Try again.",
   "mentionInvite.failedReason": "Couldn't add {{name}} to the channel: {{reason}}",
   "mentionInvite.section": "Not in this channel · mention to add",
+  "mentionJump.count": "{{count}} unread @mentions of you",
+  "mentionJump.earlier": "Earlier @mentions of you",
   "mentionedYou": "[@me]",
   "message.collapse": "Collapse message",
   "message.copied": "Copied",
