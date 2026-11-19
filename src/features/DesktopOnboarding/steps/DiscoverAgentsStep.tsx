@@ -34,7 +34,7 @@ const DiscoverAgentsStep = memo<DiscoverAgentsStepProps>(({ onBack, onNext }) =>
   useEffect(() => {
     let mounted = true;
     discoverLocalAgents()
-      .then((agents) => {
+      .then(({ found: agents }) => {
         if (!mounted) return;
         setFound(agents);
         setSelected(agents.map((agent) => agent.provider.type));

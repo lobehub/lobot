@@ -1,13 +1,21 @@
-import type { HeterogeneousAgentScanMap, HeterogeneousAgentType } from '@lobechat/heterogeneous-agents';
+import { BUILTIN_AGENT_SLUGS } from '@lobechat/const/builtinAgents';
+import type {
+  HeterogeneousAgentScanMap,
+  HeterogeneousAgentType,
+} from '@lobechat/heterogeneous-agents';
 import type { SidebarAgentListResponse } from '@lobot/types';
 
 import { homeService } from '@/services/home';
 import { useAgentStore } from '@/store/agent';
-import { useGlobalStore } from '@/store/global';
 import { scanLocalAgents } from '@/store/device/agentScan';
+import { useGlobalStore } from '@/store/global';
 import { useHomeStore } from '@/store/home';
 
-import { buildConnectAgentConfig, CONNECTABLE_PROVIDERS, type ConnectableProvider } from './providers';
+import {
+  buildConnectAgentConfig,
+  CONNECTABLE_PROVIDERS,
+  type ConnectableProvider,
+} from './providers';
 
 /**
  * Providers auto-discovery may import on its own. Platform agents (OpenClaw,
@@ -39,6 +47,8 @@ const flattenAgentList = (list: SidebarAgentListResponse) => [
   ...list.privateUngrouped,
 ];
 
+const BUILTIN_SLUGS: ReadonlySet<string> = new Set<string>(Object.values(BUILTIN_AGENT_SLUGS));
+
 /** Agent types the user already has, read from the server so it works before the sidebar loads. */
 export const fetchImportedAgentTypes = async (): Promise<Set<string>> => {
   const list = await homeService.getSidebarAgentList();
@@ -49,18 +59,30 @@ export const fetchImportedAgentTypes = async (): Promise<Set<string>> => {
   );
 };
 
+export interface LocalAgentDiscovery {
+  found: DiscoveredAgent[];
+  /** The sidebar holds nothing but builtin agents (LobeAI), i.e. a brand-new user. */
+  onlyBuiltin: boolean;
+}
+
 /**
  * Installed local agents that are neither imported yet nor in `skip` (types
  * already offered once, so a deleted or declined agent is not offered again).
  */
 export const discoverLocalAgents = async (
   skip: readonly string[] = [],
-): Promise<DiscoveredAgent[]> => {
-  const [scan, imported] = await Promise.all([scanDiscoverable(), fetchImportedAgentTypes()]);
-  return DISCOVERABLE_PROVIDERS.filter(
+): Promise<LocalAgentDiscovery> => {
+  const [scan, list] = await Promise.all([scanDiscoverable(), homeService.getSidebarAgentList()]);
+  const items = flattenAgentList(list);
+  const imported = new Set(items.map((agent) => agent.heterogeneousType).filter(Boolean));
+  const found = DISCOVERABLE_PROVIDERS.filter(
     (provider) =>
-      scan[provider.type]?.available && !imported.has(provider.type) && !skip.includes(provider.type),
+      scan[provider.type]?.available &&
+      !imported.has(provider.type) &&
+      !skip.includes(provider.type),
   ).map((provider) => ({ provider, version: scan[provider.type]?.version }));
+  const onlyBuiltin = items.every((item) => !!item.slug && BUILTIN_SLUGS.has(item.slug));
+  return { found, onlyBuiltin };
 };
 
 /**

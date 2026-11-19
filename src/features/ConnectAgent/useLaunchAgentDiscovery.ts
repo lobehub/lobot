@@ -19,9 +19,10 @@ const LAUNCH_SCAN_DELAY = 5000;
 let scannedThisSession = false;
 
 /**
- * Once per launch, look for agent CLIs installed since the last offer and ask
- * before importing them. Nothing is created without a click; an offered type
- * (imported or ignored) is remembered and never offered again on this install.
+ * Once per launch, look for agent CLIs installed since the last offer. A new
+ * user (sidebar holds only LobeAI) gets them imported straight away; anyone
+ * else is asked first. An offered type (imported or ignored) is remembered and
+ * never offered again on this install.
  */
 export const useLaunchAgentDiscovery = () => {
   const isLogin = useUserStore(authSelectors.isLogin);
@@ -37,18 +38,36 @@ export const useLaunchAgentDiscovery = () => {
     const timer = setTimeout(async () => {
       if (scannedThisSession) return;
       scannedThisSession = true;
-      let found;
+      let discovery;
       try {
-        found = await discoverLocalAgents(getDiscoveredAgentTypes());
+        discovery = await discoverLocalAgents(getDiscoveredAgentTypes());
       } catch (error) {
         console.error('[AgentDiscovery] Launch scan failed:', error);
         return;
       }
+      const { found, onlyBuiltin } = discovery;
       if (found.length === 0) return;
 
       const providers = found.map((agent) => agent.provider);
       const types = providers.map((provider) => provider.type);
       const names = providers.map((provider) => provider.title).join(', ');
+
+      const importAll = async () => {
+        markAgentTypesDiscovered(types);
+        const imported = await importDiscoveredAgents(providers);
+        if (imported.length > 0) {
+          toast.success(
+            t('connectAgent.create.doneTitleMany', { ns: 'chat', total: imported.length }),
+          );
+        }
+      };
+
+      // A new user with only LobeAI has nothing to protect: put the local
+      // agents straight into the sidebar instead of asking first.
+      if (onlyBuiltin) {
+        await importAll();
+        return;
+      }
 
       const instance = toast.info({
         actions: [
@@ -64,13 +83,7 @@ export const useLaunchAgentDiscovery = () => {
             label: t('connectAgent.discovery.import', { ns: 'chat' }),
             onClick: async () => {
               instance.close();
-              markAgentTypesDiscovered(types);
-              const imported = await importDiscoveredAgents(providers);
-              if (imported.length > 0) {
-                toast.success(
-                  t('connectAgent.create.doneTitleMany', { ns: 'chat', total: imported.length }),
-                );
-              }
+              await importAll();
             },
             variant: 'primary',
           },
