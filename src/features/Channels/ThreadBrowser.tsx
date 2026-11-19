@@ -70,6 +70,7 @@ const styles = stylex.create({
     gap: 6,
     minHeight: 0,
   },
+  countLabel: { whiteSpace: 'nowrap' },
   empty: {
     paddingBlock: 24,
     fontSize: 13,
@@ -436,7 +437,7 @@ export const ThreadBrowser = ({
         </div>
       </div>
       <div {...stylex.props(styles.count)}>
-        <span>
+        <span {...stylex.props(styles.countLabel)}>
           {query.trim()
             ? t('threadBrowser.matches', { count: entries.length })
             : t('threadBrowser.count', { count: entries.length })}
@@ -445,8 +446,11 @@ export const ThreadBrowser = ({
           aria-label={t('threadBrowser.sort')}
           popupMatchSelectWidth={false}
           size="small"
-          value={sort}
+          style={{ flex: 'none', width: 112 }}
           variant="borderless"
+          // Sized to its longest option so it sits at the row's end instead of stretching across
+          // it; inline so it wins over the trigger's own full width.
+          value={sort}
           options={[
             { label: t('threadBrowser.sortActivity'), value: 'activity' },
             { label: t('threadBrowser.sortCreated'), value: 'created' },
