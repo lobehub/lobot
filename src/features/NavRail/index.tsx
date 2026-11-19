@@ -7,6 +7,7 @@ import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
+import { useContactsTitle } from '@/features/ContactList/useContactsTitle';
 import {
   AVATAR_SIZE,
   COLUMN_ACTION_ICON_SIZE,
@@ -41,6 +42,7 @@ const useContactRequestsCount = (channelsEnabled: boolean) => {
  */
 const NavTabBar = memo(() => {
   const { t } = useTranslation(['common', 'auth']);
+  const contactsTitle = useContactsTitle();
   const signOut = useSignOut();
   const channelsEnabled = useChannelsEnabled();
   const contactRequests = useContactRequestsCount(channelsEnabled);
@@ -122,10 +124,10 @@ const NavTabBar = memo(() => {
       >
         <ActionIcon
           active={contactsOpen}
-          aria-label={t('tab.contacts')}
+          aria-label={contactsTitle}
           icon={UsersCollaboration}
           size={COLUMN_ACTION_ICON_SIZE}
-          title={t('tab.contacts')}
+          title={contactsTitle}
           variant={'outlined'}
           {...stylex.props(listStyles.columnActionIcon)}
           onClick={toggleContacts}

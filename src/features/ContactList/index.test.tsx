@@ -210,6 +210,58 @@ describe('ContactListBody', () => {
     expect(screen.queryByText('contacts.people')).not.toBeInTheDocument();
   });
 
+  it('leaves people and groups out of a workspace’s member list, pinned or not', () => {
+    channels.enabled = true;
+    agentList.init = true;
+    workspace.activeId = 'ws_team';
+    agentList.items = [
+      { id: 'agt_1', title: 'Product Helper' },
+      { id: 'grp_1', title: 'Launch Crew', type: 'group' },
+      { id: 'grp_2', pinned: true, title: 'Pinned Crew', type: 'group' },
+    ];
+    contacts.listMap = {
+      all: [{ createdAt: new Date(), type: 'user', user: { fullName: 'Bob', id: 'u_bob' } }],
+    };
+
+    render(createElement(ContactListBody));
+
+    expect(screen.queryByText('contacts.people')).not.toBeInTheDocument();
+    expect(screen.queryByText('contacts.groups')).not.toBeInTheDocument();
+    expect(screen.queryByText('contacts.pinned')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Bob' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Launch Crew' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Pinned Crew' })).not.toBeInTheDocument();
+  });
+
+  it('lists shared Agents among a workspace’s assistants, tagged as external', () => {
+    channels.enabled = true;
+    agentList.init = true;
+    workspace.activeId = 'ws_team';
+    agentList.items = [{ id: 'agt_1', title: 'Product Helper' }];
+    contacts.listMap = {
+      all: [
+        {
+          agent: {
+            agentId: 'agt_shared',
+            owner: { fullName: 'Bob', id: 'u_bob' },
+            title: 'Bob Helper',
+          },
+          available: true,
+          createdAt: new Date(),
+          type: 'agent',
+        },
+      ],
+    };
+
+    render(createElement(ContactListBody));
+
+    const own = screen.getByRole('link', { name: 'Product Helper' });
+    const sharedAgent = screen.getByRole('link', { name: /Bob Helper/ });
+    expect(own.compareDocumentPosition(sharedAgent)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(sharedAgent).toHaveTextContent('contacts.agent.external');
+    expect(screen.getByText('navPanel.agent').nextElementSibling).toHaveTextContent('2');
+  });
+
   it('lists the workspace’s other members, with their role unless a plain member', () => {
     channels.enabled = true;
     agentList.init = true;
@@ -257,8 +309,6 @@ describe('ContactListBody', () => {
     render(createElement(ContactListBody));
 
     expect(screen.getByText('contacts.externals').nextElementSibling).toHaveTextContent('2');
-    // They are not my contacts: the people section stays empty.
-    expect(screen.getByText('contacts.people').nextElementSibling).toHaveTextContent('0');
     expect(screen.getByRole('link', { name: 'Eve' })).toHaveAttribute(
       'href',
       '/agents/people/u_eve',

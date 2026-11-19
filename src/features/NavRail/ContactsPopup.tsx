@@ -14,6 +14,7 @@ import { ContactDetail } from '@/features/ContactList/ContactDetail';
 import { PersonCard } from '@/features/ContactList/PersonDetail';
 import { type ContactPreview, ContactPreviewContext } from '@/features/ContactList/previewContext';
 import { SharedAgentProfile } from '@/features/ContactList/SharedAgentProfile';
+import { useContactsTitle } from '@/features/ContactList/useContactsTitle';
 import { useActiveLocation } from '@/hooks/useActiveLocation';
 
 import { useContactsPopupStore } from './contactsPopupStore';
@@ -76,6 +77,7 @@ const isMessagesHome = (pathname: string, slug: string | null) => {
 
 const ContactsPopup = memo<ContactsPopupProps>(({ open, onClose }) => {
   const { t } = useTranslation('common');
+  const title = useContactsTitle();
   const channelsEnabled = useChannelsEnabled();
   const preview = useContactsPopupStore((s) => s.preview);
   const setPreview = useContactsPopupStore((s) => s.setPreview);
@@ -114,7 +116,7 @@ const ContactsPopup = memo<ContactsPopupProps>(({ open, onClose }) => {
       footer={null}
       height={'min(calc(880px + 56px), calc(100vh - 160px))'}
       open={open}
-      title={t('tab.contacts')}
+      title={title}
       width={'min(1280px, calc(100vw - 160px))'}
       styles={{
         body: { overflow: 'hidden', padding: 0 },
