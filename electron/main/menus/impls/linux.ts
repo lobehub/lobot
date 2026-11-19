@@ -64,7 +64,7 @@ export class LinuxMenu extends BaseMenuPlatform implements IMenuPlatform {
               mainWindow.show();
               mainWindow.broadcast('createNewAgent');
             },
-            label: t('file.newAgent'),
+            label: t('create.newAgent'),
           },
           {
             accelerator: 'Alt+Ctrl+G',
@@ -73,7 +73,15 @@ export class LinuxMenu extends BaseMenuPlatform implements IMenuPlatform {
               mainWindow.show();
               mainWindow.broadcast('createNewAgentGroup');
             },
-            label: t('file.newAgentGroup'),
+            label: t('create.newGroupChat'),
+          },
+          {
+            click: () => {
+              const mainWindow = this.app.browserManager.getMainWindow();
+              mainWindow.show();
+              mainWindow.broadcast('openAddFriend');
+            },
+            label: t('create.addFriend'),
           },
           { type: 'separator' },
           {

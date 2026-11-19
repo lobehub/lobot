@@ -1,6 +1,5 @@
 'use client';
 
-import { CHANNEL_URL } from '@lobechat/const';
 import {
   ActionIcon,
   type DropdownItem,
@@ -13,18 +12,13 @@ import {
 } from '@lobehub/ui';
 import { GroupBotSquareIcon } from '@lobehub/ui/icons';
 import * as stylex from '@stylexjs/stylex';
-import { BotIcon, FolderPlus, Hash, PlusIcon, SearchIcon } from 'lucide-react';
+import { BotIcon, Hash, PlusIcon, SearchIcon, UserPlus } from 'lucide-react';
 import { type FocusEvent, memo, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { openCreateChannel } from '@/features/Channels/CreateChannel';
-import { useChannelSections } from '@/features/Channels/useChannelSections';
-import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
-import { useCreateMenuItems } from '@/features/HomeSidebar/hooks';
-import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
-
 import { useMessageSearch } from './SearchContext';
 import { COLUMN_ACTION_ICON_SIZE, styles } from './style';
+import { useCreateActions } from './useCreateActions';
 
 /**
  * A WeChat-style "+" menu row: a line icon a step larger than a dense action menu's, at body
@@ -72,7 +66,7 @@ export const ListHeader = memo<ListHeaderProps>(({ title, actions }) => (
 ListHeader.displayName = 'ListHeader';
 
 const Header = memo(() => {
-  const { t } = useTranslation(['common', 'channel']);
+  const { t } = useTranslation('common');
   const { query, setQuery } = useMessageSearch();
   const [searchOpen, setSearchOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -88,47 +82,21 @@ const Header = memo(() => {
     if (event.currentTarget.contains(event.relatedTarget as Node | null)) return;
     if (!query) setSearchOpen(false);
   };
-  const { createAgentMenuItem, createGroupChatMenuItem, isLoading } = useCreateMenuItems();
-  const channelsEnabled = useChannelsEnabled();
-  const navigate = useWorkspaceAwareNavigate();
-  const { create: createSection, sections } = useChannelSections();
-  // Only the two things a conversation is started with: an Agent (whose modal also connects
-  // external ones) and a group. With Channels on, the group is a Channel, general or a project's.
+  const { addFriend, channelsEnabled, createAgent, createGroupChat, isLoading } =
+    useCreateActions();
+  // What a conversation starts from, the same three as the desktop app menu. With Channels on,
+  // the group chat is a Channel, general or a project's.
   const createItems = useMemo(
     () => [
-      createRow(createAgentMenuItem(), BotIcon),
-      channelsEnabled
-        ? createRow(
-            {
-              key: 'newChannel',
-              onClick: () => openCreateChannel((id) => navigate(CHANNEL_URL(id))),
-            },
-            Hash,
-            t('create', { ns: 'channel' }),
-          )
-        : // Worded the way WeChat's "+" menu starts one.
-          createRow(createGroupChatMenuItem(), GroupBotSquareIcon, t('messageList.startGroupChat')),
-      // The person's own sections of this list, once the server has them.
-      ...(channelsEnabled && sections
-        ? [
-            { type: 'divider' as const },
-            createRow(
-              { key: 'newSection', onClick: () => createSection() },
-              FolderPlus,
-              t('section.create', { ns: 'channel' }),
-            ),
-          ]
-        : []),
+      createRow({ key: 'newAgent', onClick: createAgent }, BotIcon, t('messageList.newAgent')),
+      createRow(
+        { key: channelsEnabled ? 'newChannel' : 'newGroupChat', onClick: createGroupChat },
+        channelsEnabled ? Hash : GroupBotSquareIcon,
+        t('messageList.newGroupChat'),
+      ),
+      createRow({ key: 'addFriend', onClick: addFriend }, UserPlus, t('messageList.addFriend')),
     ],
-    [
-      channelsEnabled,
-      createAgentMenuItem,
-      createGroupChatMenuItem,
-      createSection,
-      navigate,
-      sections,
-      t,
-    ],
+    [addFriend, channelsEnabled, createAgent, createGroupChat, t],
   );
 
   // Both sit on the right, the same circle as the contacts button. Search stays an icon

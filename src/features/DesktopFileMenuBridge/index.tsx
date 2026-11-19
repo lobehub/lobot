@@ -4,8 +4,8 @@ import { AGENT_CHAT_URL } from '@lobechat/const';
 import { useWatchBroadcast } from '@lobechat/electron-client-ipc';
 import { useCallback } from 'react';
 
-import { useOpenCreateAgentModal } from '@/features/AgentIdentityModal/useOpenCreateAgentModal';
 import { useCreateMenuItems } from '@/features/HomeSidebar/hooks/useCreateMenuItems';
+import { useCreateActions } from '@/features/MessageList/useCreateActions';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { useAgentStore } from '@/store/agent';
 import { builtinAgentSelectors } from '@/store/agent/selectors';
@@ -18,8 +18,9 @@ import { openCurrentWorkspaceInNewWindow } from './openCurrentWorkspaceInNewWind
  * Listens to broadcast events for creating new topics, agents, agent groups, pages and windows
  */
 const DesktopFileMenuBridge = () => {
-  const { createEmptyGroup, createPage } = useCreateMenuItems();
-  const openCreateAgentModal = useOpenCreateAgentModal();
+  const { createPage } = useCreateMenuItems();
+  // The same actions as the Messages "+" menu.
+  const { addFriend, createAgent, createGroupChat } = useCreateActions();
   const navigate = useWorkspaceAwareNavigate();
   const inboxAgentId = useAgentStore(builtinAgentSelectors.inboxAgentId);
   const activeAgentId = useAgentStore((s) => s.activeAgentId);
@@ -37,24 +38,15 @@ const DesktopFileMenuBridge = () => {
     navigate(AGENT_CHAT_URL(inboxAgentId, false));
   }, [activeAgentId, inboxAgentId, navigate]);
 
-  // Handle create new agent from File menu — same identity form as the sidebar
-  const handleCreateNewAgent = useCallback(() => {
-    openCreateAgentModal();
-  }, [openCreateAgentModal]);
-
-  // Handle create new agent group from File menu
-  const handleCreateNewAgentGroup = useCallback(async () => {
-    await createEmptyGroup();
-  }, [createEmptyGroup]);
-
   // Handle create new page from File menu
   const handleCreateNewPage = useCallback(async () => {
     await createPage();
   }, [createPage]);
 
   useWatchBroadcast('createNewTopic', handleCreateNewTopic);
-  useWatchBroadcast('createNewAgent', handleCreateNewAgent);
-  useWatchBroadcast('createNewAgentGroup', handleCreateNewAgentGroup);
+  useWatchBroadcast('createNewAgent', createAgent);
+  useWatchBroadcast('createNewAgentGroup', createGroupChat);
+  useWatchBroadcast('openAddFriend', addFriend);
   useWatchBroadcast('createNewPage', handleCreateNewPage);
   useWatchBroadcast('openNewWindow', openCurrentWorkspaceInNewWindow);
 
