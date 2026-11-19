@@ -1,7 +1,8 @@
-import { Button, SearchBar } from '@lobehub/ui';
+import { ActionIcon, Button, SearchBar } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { SearchIcon } from 'lucide-react';
+import { type FocusEvent, type ReactNode, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { type ChannelSearchHit, channelService } from '@/services/channel';
@@ -12,15 +13,12 @@ import { ChannelSidePanel } from './MemberPanel';
 import { channelMessageTime } from './messagePresentation';
 
 const styles = stylex.create({
-  box: {
-    // Gives way before the title and icons in a narrow window.
+  /** Sits where the header's right buttons were, without spanning the title. */
+  field: {
     flexShrink: 1,
     minWidth: 140,
     width: 220,
-    transitionDuration: '150ms',
-    transitionProperty: 'width',
   },
-  boxActive: { width: 320 },
   list: {
     overflowY: 'auto',
     display: 'flex',
@@ -163,36 +161,91 @@ export const useChannelSearch = (channelId: string, query: string) => {
   };
 };
 
-/** The header's search box, Discord-style: narrow until focused or holding a query. */
+/** An icon until opened. ⌘F still opens it, the same shortcut the field used to show. */
 export function ChannelSearchBox({
   onChange,
+  onOpenChange,
   onSearch,
   value,
 }: {
   onChange: (value: string) => void;
+  onOpenChange?: (open: boolean) => void;
   onSearch: (query: string) => void;
   value: string;
 }) {
   const { t } = useTranslation('channel');
-  const [focused, setFocused] = useState(false);
+  const [open, setOpen] = useState(false);
+  const fieldRef = useRef<HTMLDivElement>(null);
+  // A draft query keeps the field up after it loses focus; an empty field closes.
+  const expanded = open || !!value;
+  const reveal = (next: boolean) => {
+    setOpen(next);
+    onOpenChange?.(next);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    fieldRef.current?.querySelector('input')?.focus();
+  }, [open]);
+
+  useEffect(() => {
+    if (expanded) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.altKey || event.shiftKey || event.repeat) return;
+      if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'f') return;
+      event.preventDefault();
+      setOpen(true);
+      onOpenChange?.(true);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [expanded, onOpenChange]);
+
+  if (!expanded) {
+    return (
+      <ActionIcon
+        aria-label={t('search.shortcut')}
+        icon={SearchIcon}
+        size="small"
+        title={t('search.shortcut')}
+        onClick={() => reveal(true)}
+      />
+    );
+  }
+
+  const close = () => {
+    onChange('');
+    reveal(false);
+  };
   return (
-    <SearchBar
-      allowClear
-      enableShortKey
-      aria-label={t('search.shortcut')}
-      placeholder={t('search.placeholder')}
-      shortKey="mod+f"
-      title={t('search.shortcut')}
-      value={value}
-      variant="filled"
-      {...stylex.props(styles.box, (focused || !!value) && styles.boxActive)}
-      onBlur={() => setFocused(false)}
-      onChange={(event) => onChange(event.target.value)}
-      onFocus={() => setFocused(true)}
-      onSearch={(next) => {
-        if (next.trim()) onSearch(next.trim());
+    <div
+      ref={fieldRef}
+      {...stylex.props(styles.field)}
+      onBlur={(event: FocusEvent<HTMLDivElement>) => {
+        if (event.currentTarget.contains(event.relatedTarget as Node | null)) return;
+        if (!value) reveal(false);
       }}
-    />
+      onKeyDown={(event) => {
+        if (event.key !== 'Escape') return;
+        event.stopPropagation();
+        close();
+      }}
+    >
+      <SearchBar
+        allowClear
+        enableShortKey
+        aria-label={t('search.placeholder')}
+        placeholder={t('search.placeholder')}
+        shortKey="mod+f"
+        style={{ width: '100%' }}
+        value={value}
+        variant="filled"
+        onChange={(event) => onChange(event.target.value)}
+        onSearch={(next) => {
+          if (next.trim()) onSearch(next.trim());
+        }}
+      />
+    </div>
   );
 }
 

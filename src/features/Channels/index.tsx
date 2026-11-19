@@ -57,6 +57,9 @@ function EnabledChannelPage() {
   const openSettings = useOpenChannelSettings();
   // The box keeps its text per Channel; the panel shows the query last submitted.
   const [searchInput, setSearchInput] = useState({ channelId: '', value: '' });
+  // The header field starts as an icon. Opening it is separate from submitting a query.
+  const [searchFieldOpen, setSearchFieldOpen] = useState(false);
+  const [searchFieldChannelId, setSearchFieldChannelId] = useState(channelId);
   const [search, setSearch] = useState<{ channelId: string; query: string } | null>(null);
   const conversationRef = useRef<HTMLDivElement>(null);
   const conversationWidth = useSize(conversationRef)?.width;
@@ -138,6 +141,12 @@ function EnabledChannelPage() {
     !visibleTopic;
   if (!channelId) return null;
   const searchValue = searchInput.channelId === channelId ? searchInput.value : '';
+  // Opening the field belongs to one Channel. A switch closes it on this render.
+  if (searchFieldChannelId !== channelId) {
+    setSearchFieldChannelId(channelId);
+    setSearchFieldOpen(false);
+  }
+  const headerSearchOpen = (searchFieldChannelId === channelId && searchFieldOpen) || !!searchValue;
   const openSearch = (query: string) => {
     if (!pageThreadId) panel.close();
     setMembersChannelId(null);
@@ -240,30 +249,38 @@ function EnabledChannelPage() {
       }
       right={
         detail && (
-          <Flexbox horizontal align="center" gap={8}>
-            {pageThreadId && <ThreadPageActions detail={detail} threadId={pageThreadId} />}
-            <ThreadsButton
-              activeId={pageThreadId ?? threadId}
-              detail={detail}
-              onOpen={openThread}
-            />
-            <MemberStatus
-              detail={detail}
-              memberPanel={
-                hasMemberPanel
-                  ? {
-                      id: memberPanelId,
-                      open: membersOpen,
-                      onToggle: toggleMemberPanel,
-                    }
-                  : undefined
-              }
-              onOpenThread={openThread}
-            />
-            {/* Last in the row, like Discord's search. */}
+          <Flexbox horizontal align="center" gap={headerSearchOpen ? 0 : 8}>
+            {!headerSearchOpen && pageThreadId && (
+              <ThreadPageActions detail={detail} threadId={pageThreadId} />
+            )}
+            {!headerSearchOpen && (
+              <ThreadsButton
+                activeId={pageThreadId ?? threadId}
+                detail={detail}
+                onOpen={openThread}
+              />
+            )}
+            {!headerSearchOpen && (
+              <MemberStatus
+                detail={detail}
+                memberPanel={
+                  hasMemberPanel
+                    ? {
+                        id: memberPanelId,
+                        open: membersOpen,
+                        onToggle: toggleMemberPanel,
+                      }
+                    : undefined
+                }
+                onOpenThread={openThread}
+              />
+            )}
+            {/* An icon until opened; the field then covers the other buttons on this side. */}
             <ChannelSearchBox
+              key={channelId}
               value={searchValue}
               onChange={(value) => setSearchInput({ channelId, value })}
+              onOpenChange={setSearchFieldOpen}
               onSearch={openSearch}
             />
           </Flexbox>
