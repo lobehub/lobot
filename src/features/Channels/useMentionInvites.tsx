@@ -1,14 +1,13 @@
-import { DEFAULT_USER_AVATAR } from '@lobechat/const';
+import type { ISlashMenuOption } from '@lobehub/editor';
 import type { ChannelListItem, ChannelPublicMember } from '@lobot/types';
 import { agentDisplayName } from '@lobot/types';
-import type { ISlashMenuOption } from '@lobehub/editor';
 import { useLatest } from 'ahooks';
 import type { Dispatch, SetStateAction } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
-import Avatar from '@/components/Avatar';
+import PersonAvatar from '@/components/UserAvatar';
 import { useSingleton } from '@/hooks/useSingleton';
 import type { ChannelAgentSelection, ChannelPersonOption } from '@/services/channel';
 import { channelService } from '@/services/channel';
@@ -198,14 +197,7 @@ export const useMentionInvites = (
       ...persons.map((person) => {
         const name = person.fullName || person.username || t('person');
         return {
-          icon: (
-            <Avatar
-              avatar={person.avatar || DEFAULT_USER_AVATAR}
-              shape={'circle'}
-              size={24}
-              title={name}
-            />
-          ),
+          icon: <PersonAvatar avatar={person.avatar} name={name} shape={'circle'} size={24} />,
           key: `invite:${inviteKey({ actorType: 'user', id: person.userId })}`,
           label: name,
           metadata: {

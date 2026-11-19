@@ -1,4 +1,4 @@
-import { ActionIcon, Avatar, Icon, Popover, SearchBar, Select } from '@lobehub/ui';
+import { ActionIcon, Icon, Popover, SearchBar, Select } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { ChannelDetail, ChannelPublicThread } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
@@ -14,8 +14,8 @@ import { useCloseOnNavigate } from '@/hooks/useCloseOnNavigate';
 import { channelSelectors, useChannelStore } from '@/store/channel';
 import { markdownToTxt } from '@/utils/markdownToTxt';
 
+import { AuthorAvatar } from './AuthorAvatar';
 import { MemberAvatar } from './MemberAvatar';
-import { authorAvatar } from './memberName';
 import { useMentionedThreadIds, useUnreadThreadIds } from './threadReads';
 import { threadTitle } from './threadTitle';
 
@@ -349,12 +349,7 @@ export const ThreadCard = ({
         </span>
         {lastReply && (
           <span {...stylex.props(styles.reply)}>
-            <Avatar
-              avatar={authorAvatar(lastReply.author)}
-              shape="circle"
-              size={16}
-              title={lastReply.author.name ?? undefined}
-            />
+            <AuthorAvatar author={lastReply.author} size={16} />
             {lastReply.author.name && (
               <span {...stylex.props(styles.author)}>{lastReply.author.name}:</span>
             )}

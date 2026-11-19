@@ -29,6 +29,7 @@ import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
 import CollapsibleContent from '@/components/CollapsibleContent';
+import PersonAvatar from '@/components/UserAvatar';
 import AgentProfilePopup from '@/features/AgentProfileCard/AgentProfilePopup';
 import { ChatItem } from '@/features/Conversation/ChatItem';
 import Markdown from '@/features/Conversation/Markdown';
@@ -539,7 +540,20 @@ const ChannelMessageView = ({
                     !!userMember && styles.messageAvatarHoverable,
                   )}
                 >
-                  {isOwnMessage ? <UserAvatar shape={'circle'} size={AVATAR_SIZE} /> : avatar}
+                  {isOwnMessage ? (
+                    <UserAvatar shape={'circle'} size={AVATAR_SIZE} />
+                  ) : message.author.type === 'user' ? (
+                    // Without an image, the pixel avatar generated from the name: the face the
+                    // message list shows for this person.
+                    <PersonAvatar
+                      avatar={message.author.avatar}
+                      name={message.author.name || t('deletedMember')}
+                      shape={'circle'}
+                      size={AVATAR_SIZE}
+                    />
+                  ) : (
+                    avatar
+                  )}
                 </span>
               </MemberProfilePopup>
             ) : (

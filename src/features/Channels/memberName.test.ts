@@ -1,7 +1,7 @@
-import type { ChannelPublicMessage } from '@lobot/types';
+import type { ChannelPublicMember, ChannelPublicMessage } from '@lobot/types';
 import { describe, expect, it } from 'vitest';
 
-import { isCurrentUserAuthor, isCurrentUserMember } from './memberName';
+import { authorAvatar, isCurrentUserAuthor, isCurrentUserMember, memberAvatar } from './memberName';
 
 const author = (
   patch: Partial<ChannelPublicMessage['author']> = {},
@@ -35,5 +35,21 @@ describe('Channel personal avatar ownership', () => {
   it('does not identify a deleted member or an unresolved viewer as self', () => {
     expect(isCurrentUserAuthor(author({ id: null }), 'self')).toBe(false);
     expect(isCurrentUserAuthor(author(), undefined)).toBe(false);
+  });
+});
+
+// A person without an image showed a stock 😀 in the Channel while the message list drew their
+// generated pixel avatar; leaving the image empty lets `UserAvatar` draw that same face.
+describe('Channel avatar images', () => {
+  const member = (patch: Partial<ChannelPublicMember>) => patch as ChannelPublicMember;
+
+  it('leaves a person without an image empty instead of a stock emoji', () => {
+    expect(memberAvatar(member({ actorType: 'user', userAvatar: null }))).toBeUndefined();
+    expect(authorAvatar(author())).toBeUndefined();
+  });
+  it('keeps the image a person or an Agent has', () => {
+    expect(memberAvatar(member({ actorType: 'user', userAvatar: '/ann.png' }))).toBe('/ann.png');
+    expect(memberAvatar(member({ actorType: 'agent', avatar: '🤖' }))).toBe('🤖');
+    expect(authorAvatar(author({ avatar: '/ann.png' }))).toBe('/ann.png');
   });
 });
