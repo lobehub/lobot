@@ -1,5 +1,3 @@
-import { toast } from '@lobehub/ui';
-import { t } from 'i18next';
 import { useEffect } from 'react';
 
 import { useGlobalStore } from '@/store/global';
@@ -12,6 +10,7 @@ import {
   importDiscoveredAgents,
   markAgentTypesDiscovered,
 } from './discovery';
+import { showDiscoveryTip } from './discoveryTipStore';
 
 /** Let boot-time fetches settle before probing a dozen CLIs. */
 const LAUNCH_SCAN_DELAY = 5000;
@@ -21,7 +20,7 @@ let scannedThisSession = false;
 /**
  * Once per launch, look for agent CLIs installed since the last offer. A new
  * user (sidebar holds only LobeAI) gets them imported straight away; anyone
- * else is asked first. An offered type (imported or ignored) is remembered and
+ * else gets a tip in the title bar. An offered type (imported or ignored) is remembered and
  * never offered again on this install.
  */
 export const useLaunchAgentDiscovery = () => {
@@ -49,50 +48,16 @@ export const useLaunchAgentDiscovery = () => {
       if (found.length === 0) return;
 
       const providers = found.map((agent) => agent.provider);
-      const types = providers.map((provider) => provider.type);
-      const names = providers.map((provider) => provider.title).join(', ');
-
-      const importAll = async () => {
-        markAgentTypesDiscovered(types);
-        const imported = await importDiscoveredAgents(providers);
-        if (imported.length > 0) {
-          toast.success(
-            t('connectAgent.create.doneTitleMany', { ns: 'chat', total: imported.length }),
-          );
-        }
-      };
 
       // A new user with only LobeAI has nothing to protect: put the local
-      // agents straight into the sidebar instead of asking first.
+      // agents straight into the sidebar. Anyone else gets a title bar tip.
       if (onlyBuiltin) {
-        await importAll();
+        markAgentTypesDiscovered(providers.map((provider) => provider.type));
+        await importDiscoveredAgents(providers);
         return;
       }
 
-      const instance = toast.info({
-        actions: [
-          {
-            label: t('connectAgent.discovery.ignore', { ns: 'chat' }),
-            onClick: () => {
-              markAgentTypesDiscovered(types);
-              instance.close();
-            },
-            variant: 'text',
-          },
-          {
-            label: t('connectAgent.discovery.import', { ns: 'chat' }),
-            onClick: async () => {
-              instance.close();
-              await importAll();
-            },
-            variant: 'primary',
-          },
-        ],
-        description: t('connectAgent.discovery.description', { ns: 'chat' }),
-        duration: 20_000,
-        id: 'launch-agent-discovery',
-        title: t('connectAgent.discovery.title', { names, ns: 'chat' }),
-      });
+      showDiscoveryTip(providers);
     }, LAUNCH_SCAN_DELAY);
 
     return () => clearTimeout(timer);

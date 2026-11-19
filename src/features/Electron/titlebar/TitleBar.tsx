@@ -2,6 +2,7 @@ import { TITLE_BAR_HEIGHT } from '@lobechat/desktop-bridge';
 import { Divider, Flexbox } from '@lobehub/ui';
 import { memo } from 'react';
 
+import AgentDiscoveryTip from '@/features/ConnectAgent/AgentDiscoveryTip';
 import { electronStylish } from '@/styles/electron';
 import { getPlatform } from '@/utils/platform';
 
@@ -35,6 +36,7 @@ const TitleBar = memo(() => {
 
       <Flexbox horizontal align={'center'} gap={4}>
         <Flexbox horizontal align={'center'} className={electronStylish.nodrag} gap={8}>
+          <AgentDiscoveryTip />
           <UpdateNotification />
           <DeviceGateway />
         </Flexbox>
