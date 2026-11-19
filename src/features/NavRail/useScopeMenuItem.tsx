@@ -1,7 +1,7 @@
 'use client';
 
 import { type DropdownItem, Icon } from '@lobehub/ui';
-import { ArrowLeftRight, Check, PlusIcon } from 'lucide-react';
+import { Check, PlusIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -18,8 +18,8 @@ const MENU_AVATAR_SIZE = 18;
 
 /**
  * The footer menu's scope switcher: the workspace rail is off by default, so the
- * personal space and every workspace are also one submenu away here. Labelled
- * with the scope in use; `null` where the server has no workspaces (self-hosted).
+ * personal space and every workspace are also one submenu away here. Shows
+ * the scope in use by its logo and name; `null` where the server has no workspaces (self-hosted).
  */
 export const useScopeMenuItem = (): DropdownItem => {
   const { t } = useTranslation('common');
@@ -35,15 +35,16 @@ export const useScopeMenuItem = (): DropdownItem => {
 
     const check = (active: boolean) => (active ? <Icon icon={Check} size={14} /> : undefined);
     const personalLabel = t('workspaceRail.personal');
-    const activeName = workspaces.find((ws) => ws.id === activeId)?.name ?? personalLabel;
+    const activeWorkspace = workspaces.find((ws) => ws.id === activeId);
+    const personalAvatar = (
+      <Avatar avatar={userAvatar} name={userName} shape={'square'} size={MENU_AVATAR_SIZE} />
+    );
 
     return {
       children: [
         {
           extra: check(activeId === null),
-          icon: (
-            <Avatar avatar={userAvatar} name={userName} shape={'square'} size={MENU_AVATAR_SIZE} />
-          ),
+          icon: personalAvatar,
           key: 'scope-personal',
           label: personalLabel,
           onClick: () => {
@@ -74,9 +75,19 @@ export const useScopeMenuItem = (): DropdownItem => {
           onClick: openCreate,
         },
       ],
-      icon: <Icon icon={ArrowLeftRight} />,
+      // The scope in use shows by its own logo, like its rail tile.
+      icon: activeWorkspace ? (
+        <WorkspaceAvatar
+          avatar={activeWorkspace.avatar}
+          name={activeWorkspace.name}
+          shape={'square'}
+          size={MENU_AVATAR_SIZE}
+        />
+      ) : (
+        personalAvatar
+      ),
       key: 'scope',
-      label: activeName,
+      label: activeWorkspace?.name ?? personalLabel,
     };
   }, [
     activeId,
