@@ -79,7 +79,6 @@ const NavTabBar = memo(() => {
       },
       { type: 'divider' },
       {
-        danger: true,
         icon: <Icon icon={LogOut} />,
         key: 'signout',
         label: t('signout', { ns: 'auth' }),
