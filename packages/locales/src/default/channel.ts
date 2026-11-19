@@ -68,7 +68,6 @@ export default {
   'environment.agentUnavailable':
     'This Agent is no longer available. Remove it and choose another.',
   'environment.checkingDevice': 'Checking status',
-  'environment.followAgent': "Use the Agent's own settings",
   'environment.configurationFailed': 'Could not load this Agent’s settings. Try again.',
   'environment.configurationLoading': 'Loading this Agent’s settings…',
   'environment.connectorUpgradeRequired':
@@ -90,8 +89,14 @@ export default {
     'This Agent’s device is offline. Reconnect the device, or remove the Agent.',
   'environment.inherited.deviceUnavailable':
     'This Agent’s device is unavailable in the current space. Change it in the Agent’s settings, or remove the Agent.',
+  'environment.mode.agent': 'Follow {{name}}’s own settings',
+  'environment.mode.channel': 'Choose for this channel',
+  'environment.mode.channelDesc': 'Another device or folder, used only in this channel',
+  'environment.ownDeviceOffline':
+    'This device is offline, so {{name}}’s replies here wait until it reconnects. You can choose an online device for this channel instead.',
+  'environment.privateGroup': 'Private devices · publish to the workspace to use here',
   'environment.privateDevicesHint':
-    'Private devices run only your own replies, so a Channel Agent can’t use them. Publish one to the workspace in its device settings to choose it here.',
+    'Private devices only run replies you start yourself. Publish one to the workspace to use it here.',
   'environment.directoryUnavailable':
     'Could not verify the directory. Check the device connection and choose the directory again.',
   'environment.executionRequired':
@@ -314,10 +319,12 @@ export default {
   'autoTitle.more': '{{names}} and {{count}} more',
   'autoTitle.separator': ', ',
   'environment.editNamed': 'Change where {{name}} runs',
-  'environment.saved': 'Runtime environment updated',
+  'environment.saved':
+    'Updated. It applies from the next reply; replies already running are unaffected.',
   'environment.scopeHint':
-    'Applies only to this channel. Replies already running keep their environment, and the Agent’s own settings stay unchanged.',
+    'Only affects later replies in this channel. {{name}}’s own settings stay unchanged.',
   'environment.title': 'Runtime environment',
+  'environment.titleNamed': 'Where {{name}} runs in this channel',
   'environment.updateFailed':
     'Could not save the runtime environment. Your choices are preserved; try again.',
   'events.invited': '{{inviter}} invited {{names}} to the channel',
