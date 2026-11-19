@@ -23,7 +23,16 @@ import { isPlainClick } from './conversations';
  * fall back to, so an Agent that cannot open one, or a failed open, keeps the person where they
  * are and says why. Without an id yet (the inbox Agent while it loads) the row links the Agent.
  */
-export const useAgentConversationLink = (agentId: string | undefined, agentUrl: string) => {
+export const useAgentConversationLink = (
+  agentId: string | undefined,
+  agentUrl: string,
+  {
+    pinOnOpen = false,
+  }: {
+    /** Pin the Channel the first click opens, so a row shown pinned before it stays pinned. */
+    pinOnOpen?: boolean;
+  } = {},
+) => {
   const enabled = useChannelsEnabled() && !!agentId;
   const directChannelId = useChannelStore((s) =>
     enabled ? channelSelectors.directByAgent(agentId!)(s)?.id : undefined,
@@ -48,6 +57,9 @@ export const useAgentConversationLink = (agentId: string | undefined, agentUrl: 
       opening.current = true;
       const from = here();
       const scope = cacheScope.get();
+      // Only a Channel this click creates: with the list not loaded yet, the server may return
+      // one the person already unpinned.
+      const pin = pinOnOpen && !!useChannelStore.getState().listMap.all;
       // Navigate only if nothing else was selected meanwhile, and never route an id from the
       // previous workspace under a new one.
       const go = (path: string) => {
@@ -56,6 +68,10 @@ export const useAgentConversationLink = (agentId: string | undefined, agentUrl: 
       void channelActions
         .openDirect(agentId)
         .then((channelId) => {
+          if (channelId && pin)
+            void channelActions
+              .setPinned(channelId, true)
+              .catch((error) => console.error('[channel] Failed to pin Lobe AI', error));
           if (channelId) go(CHANNEL_URL(channelId));
           else toast.error(t('openDirect.unavailable', { ns: 'channel' }));
         })
@@ -67,16 +83,19 @@ export const useAgentConversationLink = (agentId: string | undefined, agentUrl: 
           opening.current = false;
         });
     },
-    [agentId, here, navigate],
+    [agentId, here, navigate, pinOnOpen],
   );
 
   if (directChannelId) return { url: CHANNEL_URL(directChannelId) };
   return { onClick: enabled ? onClick : undefined, url: agentUrl };
 };
 
-/** The inbox Agent's row opens its direct Channel the same way any other Agent's row does. */
+/**
+ * The inbox Agent's row opens its direct Channel the same way any other Agent's row does. Lobe AI
+ * starts pinned, so the Channel its first click opens is pinned too.
+ */
 export const useInboxConversationLink = () => {
   const inboxAgentId = useAgentStore(builtinAgentSelectors.inboxAgentId);
   const agentUrl = usePreservedAgentUrl(resolveInboxAgentRouteId(inboxAgentId));
-  return useAgentConversationLink(inboxAgentId, agentUrl);
+  return useAgentConversationLink(inboxAgentId, agentUrl, { pinOnOpen: true });
 };

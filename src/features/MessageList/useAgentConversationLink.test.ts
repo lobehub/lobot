@@ -13,7 +13,9 @@ const state = vi.hoisted(() => ({
   inboxAgentId: 'agt_inbox' as string | undefined,
   navigate: vi.fn(),
   toastError: vi.fn(),
+  listLoaded: true,
   openDirect: vi.fn(),
+  setPinned: vi.fn(),
   pathname: '/',
   scope: 'personal',
   slug: null as string | null,
@@ -48,11 +50,13 @@ vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
   useWorkspaceAwareNavigate: () => state.navigate,
 }));
 vi.mock('@/store/channel', () => ({
-  channelActions: { openDirect: state.openDirect },
+  channelActions: { openDirect: state.openDirect, setPinned: state.setPinned },
   channelSelectors: {
     directByAgent: () => () => (state.directChannelId ? { id: state.directChannelId } : undefined),
   },
-  useChannelStore: (selector: (s: object) => unknown) => selector({}),
+  useChannelStore: Object.assign((selector: (s: object) => unknown) => selector({}), {
+    getState: () => ({ listMap: { all: state.listLoaded ? [] : undefined } }),
+  }),
 }));
 
 const click = (patch: Partial<MouseEvent> = {}) =>
@@ -67,6 +71,8 @@ describe('useAgentConversationLink', () => {
     state.directChannelId = undefined;
     state.enabled = true;
     state.inboxAgentId = 'agt_inbox';
+    state.listLoaded = true;
+    state.setPinned.mockResolvedValue(undefined);
     state.pathname = '/';
     state.scope = 'personal';
     state.slug = null;
@@ -99,6 +105,25 @@ describe('useAgentConversationLink', () => {
     expect(state.navigate).toHaveBeenCalledWith('/channels/chn_000000000002');
   });
 
+  it('pins the inbox direct Channel its first click opens', async () => {
+    state.openDirect.mockResolvedValue('chn_000000000002');
+    const { result } = renderHook(() => useInboxConversationLink());
+
+    await act(async () => result.current.onClick?.(click()));
+
+    expect(state.setPinned).toHaveBeenCalledExactlyOnceWith('chn_000000000002', true);
+  });
+
+  it('does not re-pin an inbox Channel opened before the list loaded', async () => {
+    state.listLoaded = false;
+    state.openDirect.mockResolvedValue('chn_000000000002');
+    const { result } = renderHook(() => useInboxConversationLink());
+
+    await act(async () => result.current.onClick?.(click()));
+
+    expect(state.setPinned).not.toHaveBeenCalled();
+  });
+
   it('keeps the Agent page while Channels are off', () => {
     state.enabled = false;
     expect(render().result.current).toEqual({ onClick: undefined, url: '/agent/agt_nasa' });
@@ -114,6 +139,7 @@ describe('useAgentConversationLink', () => {
     expect(event.preventDefault).toHaveBeenCalled();
     expect(state.openDirect).toHaveBeenCalledExactlyOnceWith('agt_nasa');
     expect(state.navigate).toHaveBeenCalledWith('/channels/chn_000000000002');
+    expect(state.setPinned).not.toHaveBeenCalled();
   });
 
   // Lobot has no Agent page: falling back to one landed on the "page unavailable" error screen.

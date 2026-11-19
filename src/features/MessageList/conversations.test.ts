@@ -257,6 +257,33 @@ describe('buildConversationEntries', () => {
     ).toEqual(['p', 'a', 'inbox', 'b']);
   });
 
+  it('pins Lobe AI by default until its direct Channel exists', () => {
+    expect(
+      ids(
+        buildConversationEntries(sections, {
+          activeAt: new Date('2026-10-03'),
+          defaultPinned: true,
+          title: 'Lobe AI',
+        }),
+      ),
+    ).toEqual(['inbox', 'p', 'a', 'b']);
+  });
+
+  it("follows the pin on Lobe AI's direct Channel once it exists", () => {
+    const unpinned = { ...channel('chn_inbox', 'Lobe AI', '2026-10-03'), pinnedAt: null };
+
+    expect(
+      ids(
+        buildConversationEntries(sections, {
+          activeAt: new Date('2026-10-03'),
+          channel: unpinned,
+          defaultPinned: true,
+          title: 'Lobe AI',
+        }),
+      ),
+    ).toEqual(['p', 'a', 'inbox', 'b']);
+  });
+
   it('puts Lobe AI last until its activity is known', () => {
     expect(ids(buildConversationEntries(sections, { title: 'Lobe AI' }))).toEqual([
       'p',
