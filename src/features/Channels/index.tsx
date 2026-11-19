@@ -25,6 +25,7 @@ import { ChannelHeaderTitle } from './ChannelHeaderTitle';
 import { groupChannelName } from './channelName';
 import { ChannelSearchBox, ChannelSearchPanel } from './ChannelSearch';
 import { ChannelSyncing } from './ChannelSyncing';
+import { headerHoverMarker } from './markers.stylex';
 import { MEMBER_FLOAT_BREAKPOINT, MemberPanel } from './MemberPanel';
 import { ChannelMenu, MemberStatus } from './MemberStatus';
 import { requestChannelJump } from './messageJump';
@@ -203,8 +204,8 @@ function EnabledChannelPage() {
   const canOpenChannelSettings = !!detail?.channel.canDelete && !isDirect && !isPeer;
   const header = (
     <NavHeader
-      // A rule separates the header from the feed scrolling under it.
-      {...stylex.props(styles.threadHeader)}
+      // The rule separates the feed. The marker reveals the title's "more" button on hover.
+      {...stylex.props(headerHoverMarker, styles.threadHeader)}
       // A thread page leads back to its Channel itself; a second back to the list would compete.
       showTogglePanelButton={!(compact && pageThreadId)}
       left={

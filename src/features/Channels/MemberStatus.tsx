@@ -30,16 +30,19 @@ export function ChannelMenu({
 }) {
   const { t } = useTranslation(['channel', 'channelHeader']);
   const items = useChannelHeaderMenuItems(detail, onToggleAgentPanel);
+  const [open, setOpen] = useState(false);
 
   return (
-    <DropdownMenu items={items}>
-      <ActionIcon
-        aria-label={t('more', { ns: 'common' })}
-        icon={MoreHorizontal}
-        size="small"
-        title={t('more', { ns: 'common' })}
-      />
-    </DropdownMenu>
+    <span data-menu-open={open ? '' : undefined} {...stylex.props(styles.headerMenu)}>
+      <DropdownMenu items={items} onOpenChange={setOpen}>
+        <ActionIcon
+          aria-label={t('more', { ns: 'common' })}
+          icon={MoreHorizontal}
+          size="small"
+          title={t('more', { ns: 'common' })}
+        />
+      </DropdownMenu>
+    </span>
   );
 }
 

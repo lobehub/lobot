@@ -1,6 +1,8 @@
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 
+import { headerHoverMarker } from './markers.stylex';
+
 const HOVER = '@media (hover: hover)';
 
 export const styles = stylex.create({
@@ -103,6 +105,41 @@ export const styles = stylex.create({
     borderBlockEndWidth: 1,
     borderBlockEndStyle: 'solid',
     borderBlockEndColor: cssVar.colorBorderSecondary,
+  },
+  /**
+   * The title's "more" button. It leaves the row until the header is hovered or focused, and
+   * stays while its menu is open. A touch screen has no hover, so the button stays in the row.
+   */
+  headerMenu: {
+    display: 'flex',
+    flex: 'none',
+    position: {
+      default: 'static',
+      [HOVER]: {
+        'default': 'absolute',
+        ':is([data-menu-open])': 'static',
+        [stylex.when.ancestor(':hover', headerHoverMarker)]: 'static',
+        [stylex.when.ancestor(':focus-within', headerHoverMarker)]: 'static',
+      },
+    },
+    opacity: {
+      default: 1,
+      [HOVER]: {
+        'default': 0,
+        ':is([data-menu-open])': 1,
+        [stylex.when.ancestor(':hover', headerHoverMarker)]: 1,
+        [stylex.when.ancestor(':focus-within', headerHoverMarker)]: 1,
+      },
+    },
+    pointerEvents: {
+      default: 'auto',
+      [HOVER]: {
+        'default': 'none',
+        ':is([data-menu-open])': 'auto',
+        [stylex.when.ancestor(':hover', headerHoverMarker)]: 'auto',
+        [stylex.when.ancestor(':focus-within', headerHoverMarker)]: 'auto',
+      },
+    },
   },
   feed: {
     overflowY: 'auto',
