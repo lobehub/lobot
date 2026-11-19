@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "خاص",
+  "visibility.private.notice": "{{name}} هو جهازك الخاص: أنت فقط يمكنك استخدام الوكلاء الذين يعملون عليه. للسماح لأعضاء مساحة العمل الآخرين باستخدامهم، انشره إلى مساحة العمل من إعدادات الجهاز.",
+  "visibility.private.openSettings": "فتح إعدادات الجهاز",
   "workingDirectory.addFolder": "إضافة مجلد…",
   "workingDirectory.addFolderDesc": "أدخل مسارًا مطلقًا على الجهاز الهدف، مثل /Users/name/projects",
   "workingDirectory.addFolderFailed": "تعذر إضافة هذا المجلد. يرجى المحاولة مرة أخرى.",

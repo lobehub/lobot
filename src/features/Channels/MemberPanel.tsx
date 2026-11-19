@@ -73,7 +73,7 @@ export function ChannelSidePanel({
   /** Optional lower bound for this panel only; remembered widths are clamped to it. */
   minWidth?: number;
   onClose: () => void;
-  title: string;
+  title?: string;
   xstyle?: StyleXStyles;
 }) {
   const [preferredWidth, updateSystemStatus] = useGlobalStore((s) => [
@@ -120,11 +120,11 @@ export function ChannelSidePanel({
           left={
             centeredTitle ? (
               <span aria-hidden style={{ width: 24 }} />
-            ) : (
+            ) : title ? (
               <Text fontSize={12} type="secondary" weight={500}>
                 {title}
               </Text>
-            )
+            ) : undefined
           }
           right={
             <Flexbox horizontal align="center" gap={4}>

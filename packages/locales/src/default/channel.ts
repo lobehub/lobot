@@ -51,7 +51,7 @@ export default {
   'create.back': 'Back',
   'create.namePlaceholder': 'Leave empty to name it after its members',
   'create.next': 'Next',
-  'create.private': 'Private channel',
+  'create.private': 'Private',
   'create.privateHint':
     'Only invited members can see it. Otherwise anyone in the workspace can find and join it.',
   'create.publicFailed':

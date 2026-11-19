@@ -138,7 +138,7 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
     },
     {
       children: (
-        <>
+        <div style={{ minWidth: 0, paddingBlock: 16, width: '100%' }}>
           <ChatThemePreview />
           <div style={{ minWidth: 0, paddingBlockStart: 8, width: '100%' }}>
             <FontSizeControl
@@ -146,7 +146,7 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
               onChange={(value) => setSettings({ general: { fontSize: value } })}
             />
           </div>
-        </>
+        </div>
       ),
       title: (
         <SettingsSearchAnchor id={'appearance-font-size'}>

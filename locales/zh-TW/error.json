@@ -1,6 +1,8 @@
 {
   "asyncState.desc": "載入時發生錯誤。請再試一次。",
+  "asyncState.hideDetails": "隱藏詳細資訊",
   "asyncState.metricLabel": "載入失敗",
+  "asyncState.showDetails": "顯示詳細資訊",
   "asyncState.title": "載入失敗",
   "chatRequestBlocked.contactSupport": "聯繫支援",
   "chatRequestBlocked.description": "此請求已被我們的安全檢查阻止。如果您認為這是錯誤，請聯繫支援以恢復訪問。",
@@ -89,6 +91,7 @@
   "response.GoogleAIBlockReason.SAFETY": "內容因安全原因被屏蔽。請進行調整後再試一次。",
   "response.GoogleAIBlockReason.SPII": "內容可能包含敏感的個人信息（SPII）。請移除敏感細節後再試一次。",
   "response.GoogleAIBlockReason.default": "內容被屏蔽（{{blockReason}}）。請進行調整後再試一次。",
+  "response.InsufficientBudgetForAgentRunFee": "點數不足，無法支付 Agent 執行費用。每次 Agent 執行都會收取費用，即使使用您自己的 CLI 帳戶也一樣。請儲值或升級方案後再試一次。",
   "response.InsufficientBudgetForModel": "您剩餘的餘額不足以使用此模型。請儲值、升級方案，或嘗試較便宜的模型。",
   "response.InvalidAccessCode": "密碼不正確或為空，請輸入正確的訪問密碼，或添加自定義 API 金鑰",
   "response.LobeHubModelDeprecated": "模型 \"{{model}}\" 已不再可用。請從模型選擇器中選擇一個當前的模型。",

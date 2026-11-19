@@ -1,4 +1,5 @@
 import { Button, Flexbox, Icon, Switch, Text, toast } from '@lobehub/ui';
+import { Surface } from '@lobehub/ui/dashboard';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { TaskAutomationMode } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
@@ -10,6 +11,7 @@ import { useTaskStore } from '@/store/task';
 import { taskListSelectors } from '@/store/task/selectors';
 import type { TaskListQuery } from '@/store/task/slices/list/projection';
 
+import { agentProfileStyles } from './agentProfileStyles';
 import { type AgentSchedule, agentScheduleTime, toAgentSchedule } from './agentScheduleModel';
 
 /** Rows shown before "Show all". */
@@ -64,6 +66,13 @@ const styles = stylex.create({
     minWidth: 0,
     paddingBlock: '8px',
   },
+  panelRow: {
+    paddingBlock: 10,
+    paddingInline: 12,
+  },
+  panelTime: {
+    fontSize: 13,
+  },
   time: {
     overflow: 'hidden',
     fontSize: '12px',
@@ -93,19 +102,37 @@ const ScheduleRow = ({
       horizontal
       align="center"
       gap={10}
-      {...stylex.props(styles.row, variant === 'contact' && styles.contactRow)}
+      {...stylex.props(styles.row, variant === 'contact' ? styles.contactRow : styles.panelRow)}
     >
-      <Icon color={cssVar.colorTextTertiary} icon={ClockIcon} size={16} />
+      <Icon
+        color={cssVar.colorTextTertiary}
+        icon={ClockIcon}
+        size={16}
+        style={variant === 'panel' ? { flexShrink: 0 } : undefined}
+      />
       <Flexbox flex={1} style={{ minWidth: 0 }}>
-        <Text ellipsis fontSize={13} weight={500}>
+        <Text
+          ellipsis
+          fontSize={variant === 'panel' ? 14 : 13}
+          title={item.name}
+          weight={variant === 'panel' ? 400 : 500}
+        >
           {item.name}
         </Text>
-        {time && <span {...stylex.props(styles.time)}>{time}</span>}
+        {time && (
+          <span
+            {...stylex.props(styles.time, variant === 'panel' && styles.panelTime)}
+            title={time}
+          >
+            {time}
+          </span>
+        )}
       </Flexbox>
       <Switch
         aria-label={item.name}
         checked={item.enabled}
         size="small"
+        style={variant === 'panel' ? { flexShrink: 0 } : undefined}
         onChange={(checked) => onToggle(item, checked)}
       />
     </Flexbox>
@@ -165,6 +192,7 @@ export function AgentSchedules({
       {hasMore && (
         <Button
           block
+          aria-expanded={variant === 'panel' ? expanded : undefined}
           size="small"
           type="text"
           {...stylex.props(styles.more, variant === 'contact' && styles.contactMore)}
@@ -186,8 +214,17 @@ export function AgentSchedules({
 
   return (
     <Flexbox gap={8} style={{ minWidth: 0 }}>
-      <Text weight={500}>{t('profile.schedules')}</Text>
-      <div style={{ minWidth: 0, overflow: 'visible' }}>{list}</div>
+      <Text fontSize={13} type="secondary" weight={400}>
+        {t('profile.schedules')}
+      </Text>
+      <Surface
+        aria-label={t('profile.schedules')}
+        padded={false}
+        role="group"
+        {...stylex.props(agentProfileStyles.card)}
+      >
+        {list}
+      </Surface>
     </Flexbox>
   );
 }

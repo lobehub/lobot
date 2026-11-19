@@ -1,6 +1,8 @@
 {
   "asyncState.desc": "Yükleme sırasında bir hata oluştu. Lütfen tekrar deneyin.",
+  "asyncState.hideDetails": "Ayrıntıları gizle",
   "asyncState.metricLabel": "Yüklenemedi",
+  "asyncState.showDetails": "Ayrıntıları göster",
   "asyncState.title": "Yüklenemedi",
   "chatRequestBlocked.contactSupport": "Destek ile iletişime geçin",
   "chatRequestBlocked.description": "Bu istek güvenlik kontrollerimiz tarafından engellendi. Bunun bir hata olduğunu düşünüyorsanız, erişimi geri yüklemek için destek ile iletişime geçin.",
@@ -89,6 +91,7 @@
   "response.GoogleAIBlockReason.SAFETY": "İçerik güvenlik nedenleriyle engellendi. Lütfen ayarlayın ve tekrar deneyin.",
   "response.GoogleAIBlockReason.SPII": "İçerik hassas kişisel bilgiler (SPII) içerebilir. Lütfen hassas detayları kaldırarak tekrar deneyin.",
   "response.GoogleAIBlockReason.default": "İçerik engellendi ({{blockReason}}). Lütfen ayarlayın ve tekrar deneyin.",
+  "response.InsufficientBudgetForAgentRunFee": "Ajan çalıştırma ücretini ödemek için yeterli krediniz yok. Her ajan çalıştırması, kendi CLI hesabınızda bile bir ücret taşır. Bakiye yükleyin veya planınızı yükseltin, ardından tekrar deneyin.",
   "response.InsufficientBudgetForModel": "Kalan bakiyeniz bu model için yetersiz. Lütfen bakiye yükleyin, planınızı yükseltin veya daha ucuz bir model deneyin.",
   "response.InvalidAccessCode": "Geçersiz veya boş erişim kodu. Lütfen doğru erişim kodunu girin veya özel bir API Anahtarı ekleyin.",
   "response.LobeHubModelDeprecated": "\"{{model}}\" modeli artık mevcut değil. Lütfen model seçicisinden güncel bir model seçin.",

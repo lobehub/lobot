@@ -110,13 +110,74 @@ describe('ChannelMenu in a direct conversation', () => {
   });
 });
 
+describe('Agent settings in the title menu', () => {
+  it('puts the settings action after the Channel identity actions and uses the same toggle', () => {
+    const onToggleAgentPanel = vi.fn();
+    render(createElement(ChannelMenu, { detail: detail(), onToggleAgentPanel }));
+    expect(menuKeys()).toEqual(['openAgent', 'environment', 'copyId', 'agentSettings']);
+    fireEvent.click(screen.getByText('agentSettings'));
+    expect(onToggleAgentPanel).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps a shared, read-only Agent profile accessible without granting environment editing', () => {
+    const onToggleAgentPanel = vi.fn();
+    render(
+      createElement(ChannelMenu, {
+        detail: detail({ canDelete: false, sharedAgent: { id: 'shared' } }),
+        onToggleAgentPanel,
+      }),
+    );
+    expect(menuKeys()).toContain('agentSettings');
+    expect(menuKeys()).not.toContain('environment');
+    fireEvent.click(screen.getByText('agentSettings'));
+    expect(onToggleAgentPanel).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps a readable archived Agent profile without enabling environment edits', () => {
+    render(
+      createElement(ChannelMenu, {
+        detail: detail({ status: 'archived' }),
+        onToggleAgentPanel: vi.fn(),
+      }),
+    );
+    expect(menuKeys()).toContain('agentSettings');
+    expect(menuKeys()).not.toContain('environment');
+  });
+
+  it('does not add an Agent action when the parent cannot show its profile', () => {
+    render(createElement(ChannelMenu, { detail: detail() }));
+    expect(menuKeys()).not.toContain('agentSettings');
+  });
+
+  it('does not change the group menu even if a callback is accidentally supplied', () => {
+    render(
+      createElement(ChannelMenu, {
+        detail: detail({ agentId: null }),
+        onToggleAgentPanel: vi.fn(),
+      }),
+    );
+    expect(menuKeys()).toEqual(['copyId', 'settings']);
+  });
+
+  it('leaves a human private chat on its existing action menu', () => {
+    render(
+      createElement(ChannelMenu, {
+        detail: detail({ agentId: null, peerUserId: 'usr_1' }),
+        onToggleAgentPanel: vi.fn(),
+      }),
+    );
+    expect(menuKeys()).not.toContain('agentSettings');
+    expect(menuKeys()).toContain('delete');
+  });
+});
+
 describe('MemberStatus profile toggle', () => {
   const memberPanel = { id: 'panel', onToggle: () => {}, open: false };
 
-  it('opens the Agent profile from a direct conversation', () => {
+  it('removes the standalone Agent profile button from a direct conversation', () => {
     render(createElement(MemberStatus, { detail: detail(), memberPanel }));
 
-    expect(screen.getByText('profile.show')).toBeTruthy();
+    expect(screen.queryByText('profile.show')).toBeNull();
     expect(screen.queryByText('members.show')).toBeNull();
   });
 

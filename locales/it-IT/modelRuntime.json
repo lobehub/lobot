@@ -45,6 +45,7 @@
   "ProviderNetworkError": "La connessione al provider è scaduta o è stata interrotta. Controlla la tua rete e riprova.",
   "ProviderNoImageGenerated": "Il provider non ha restituito alcuna immagine per questa richiesta. Prova a riformulare la richiesta o scegli un modello che supporti la generazione di immagini.",
   "ProviderServiceUnavailable": "Il provider è temporaneamente sovraccarico o non disponibile. Riprova tra poco.",
+  "ProviderStreamInterrupted": "Il provider ha chiuso la connessione prima di completare la risposta. Di solito è un problema temporaneo, riprova.",
   "QuotaLimitReached": "Spiacenti, l'utilizzo dei token o il numero di richieste ha raggiunto il limite di quota per questa chiave. Aumenta la quota della chiave o riprova più tardi.",
   "RateLimitExceeded": "Spiacenti, l'utilizzo dei token o il numero di richieste ha raggiunto il limite di velocità per questa chiave. Riprova più tardi o aumenta la quota della chiave.",
   "RemoteMediaDownloadTimeout": "Il provider ha superato il tempo limite durante il download di un'immagine o file allegato. Riprova.",

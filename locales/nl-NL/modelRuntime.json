@@ -45,6 +45,7 @@
   "ProviderNetworkError": "De verbinding met de provider is verlopen of verbroken. Controleer uw netwerk en probeer het opnieuw.",
   "ProviderNoImageGenerated": "De provider heeft geen afbeelding gegenereerd voor deze aanvraag. Probeer de aanvraag anders te formuleren of kies een model dat beeldgeneratie ondersteunt.",
   "ProviderServiceUnavailable": "De provider is tijdelijk overbelast of niet beschikbaar. Probeer het over een tijdje opnieuw.",
+  "ProviderStreamInterrupted": "De provider heeft de verbinding gesloten voordat het antwoord gereed was. Dit is meestal tijdelijk; probeer het opnieuw.",
   "QuotaLimitReached": "Sorry, het tokengebruik of het aantal verzoeken heeft de quotumlimiet voor deze sleutel bereikt. Verhoog het quotum van de sleutel of probeer het later opnieuw.",
   "RateLimitExceeded": "Sorry, het tokengebruik of het aantal verzoeken heeft de snelheidslimiet voor deze sleutel bereikt. Probeer het later opnieuw of verhoog het quotum van de sleutel.",
   "RemoteMediaDownloadTimeout": "De provider heeft een time-out gekregen bij het downloaden van een bijgevoegde afbeelding of bestand. Probeer het opnieuw.",

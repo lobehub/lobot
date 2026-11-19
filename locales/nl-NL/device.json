@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "Privé",
+  "visibility.private.notice": "{{name}} is je privéapparaat: alleen jij kunt agenten gebruiken die erop draaien. Om andere leden van de werkruimte ze te laten gebruiken, publiceer je het naar de werkruimte in de apparaatinstellingen.",
+  "visibility.private.openSettings": "Apparaatinstellingen openen",
   "workingDirectory.addFolder": "Map toevoegen…",
   "workingDirectory.addFolderDesc": "Voer een absoluut pad in op het doelapparaat, bijvoorbeeld /Users/name/projects",
   "workingDirectory.addFolderFailed": "Kon deze map niet toevoegen. Probeer het opnieuw.",

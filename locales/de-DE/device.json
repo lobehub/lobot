@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "Privat",
+  "visibility.private.notice": "{{name}} ist Ihr privates Gerät: Nur Sie können Agenten verwenden, die darauf laufen. Damit andere Mitglieder des Arbeitsbereichs sie nutzen können, veröffentlichen Sie es in den Geräteeinstellungen für den Arbeitsbereich.",
+  "visibility.private.openSettings": "Geräteeinstellungen öffnen",
   "workingDirectory.addFolder": "Ordner hinzufügen…",
   "workingDirectory.addFolderDesc": "Geben Sie einen absoluten Pfad auf dem Zielgerät ein, z. B. /Users/name/projects",
   "workingDirectory.addFolderFailed": "Dieser Ordner konnte nicht hinzugefügt werden. Bitte versuchen Sie es erneut.",

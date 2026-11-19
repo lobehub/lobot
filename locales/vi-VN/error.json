@@ -1,6 +1,8 @@
 {
   "asyncState.desc": "Đã xảy ra lỗi khi tải. Vui lòng thử lại.",
+  "asyncState.hideDetails": "Ẩn chi tiết",
   "asyncState.metricLabel": "Không thể tải",
+  "asyncState.showDetails": "Hiện chi tiết",
   "asyncState.title": "Không thể tải",
   "chatRequestBlocked.contactSupport": "Liên hệ hỗ trợ",
   "chatRequestBlocked.description": "Yêu cầu này đã bị chặn bởi các kiểm tra bảo mật của chúng tôi. Nếu bạn nghĩ đây là một sai sót, hãy liên hệ hỗ trợ để khôi phục quyền truy cập.",
@@ -89,6 +91,7 @@
   "response.GoogleAIBlockReason.SAFETY": "Nội dung đã bị chặn vì lý do an toàn. Vui lòng điều chỉnh và thử lại.",
   "response.GoogleAIBlockReason.SPII": "Nội dung có thể bao gồm thông tin cá nhân nhạy cảm (SPII). Vui lòng xóa các chi tiết nhạy cảm và thử lại.",
   "response.GoogleAIBlockReason.default": "Nội dung đã bị chặn ({{blockReason}}). Vui lòng điều chỉnh và thử lại.",
+  "response.InsufficientBudgetForAgentRunFee": "Không đủ tín dụng để trả phí chạy Agent. Mỗi lần chạy Agent đều có phí, ngay cả trên tài khoản CLI của riêng bạn. Vui lòng nạp tiền hoặc nâng cấp gói, sau đó thử lại.",
   "response.InsufficientBudgetForModel": "Số dư còn lại của bạn không đủ cho mô hình này. Vui lòng nạp tiền, nâng cấp gói hoặc thử một mô hình rẻ hơn.",
   "response.InvalidAccessCode": "Mã truy cập không hợp lệ hoặc để trống. Vui lòng nhập mã truy cập chính xác hoặc thêm API Key tùy chỉnh.",
   "response.LobeHubModelDeprecated": "Mô hình \"{{model}}\" không còn khả dụng. Vui lòng chọn một mô hình hiện tại từ bộ chọn mô hình.",

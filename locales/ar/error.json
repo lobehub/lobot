@@ -1,6 +1,8 @@
 {
   "asyncState.desc": "حدث خطأ أثناء التحميل. يرجى المحاولة مرة أخرى.",
+  "asyncState.hideDetails": "إخفاء التفاصيل",
   "asyncState.metricLabel": "فشل في التحميل",
+  "asyncState.showDetails": "عرض التفاصيل",
   "asyncState.title": "فشل في التحميل",
   "chatRequestBlocked.contactSupport": "اتصل بالدعم",
   "chatRequestBlocked.description": "تم حظر هذا الطلب بواسطة فحوصات الأمان لدينا. إذا كنت تعتقد أن هذا خطأ، فاتصل بالدعم لاستعادة الوصول.",
@@ -89,6 +91,7 @@
   "response.GoogleAIBlockReason.SAFETY": "تم حظر المحتوى لأسباب تتعلق بالسلامة. يرجى تعديله والمحاولة مرة أخرى.",
   "response.GoogleAIBlockReason.SPII": "قد يتضمن المحتوى معلومات شخصية حساسة (SPII). يرجى إزالة التفاصيل الحساسة والمحاولة مرة أخرى.",
   "response.GoogleAIBlockReason.default": "تم حظر المحتوى ({{blockReason}}). يرجى تعديله والمحاولة مرة أخرى.",
+  "response.InsufficientBudgetForAgentRunFee": "لا توجد أرصدة كافية لدفع رسوم تشغيل الوكيل. يترتب على كل تشغيل للوكيل رسم، حتى على حساب CLI الخاص بك. أعد التعبئة أو رقِّ خطتك، ثم حاول مرة أخرى.",
   "response.InsufficientBudgetForModel": "رصيدك المتبقي غير كافٍ لهذا النموذج. يرجى إعادة التعبئة أو ترقية خطتك أو تجربة نموذج أقل تكلفة.",
   "response.InvalidAccessCode": "رمز الوصول غير صالح أو فارغ. يرجى إدخال رمز الوصول الصحيح أو إضافة مفتاح API مخصص.",
   "response.LobeHubModelDeprecated": "النموذج \"{{model}}\" لم يعد متاحًا. يرجى اختيار نموذج حالي من محدد النماذج.",

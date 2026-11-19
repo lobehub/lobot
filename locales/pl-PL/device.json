@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "Prywatne",
+  "visibility.private.notice": "{{name}} to Twoje prywatne urządzenie: tylko Ty możesz używać agentów, którzy na nim działają. Aby inni członkowie przestrzeni roboczej mogli z nich korzystać, opublikuj je w przestrzeni roboczej w ustawieniach urządzenia.",
+  "visibility.private.openSettings": "Otwórz ustawienia urządzenia",
   "workingDirectory.addFolder": "Dodaj folder…",
   "workingDirectory.addFolderDesc": "Wprowadź bezwzględną ścieżkę na docelowym urządzeniu, np. /Users/name/projects",
   "workingDirectory.addFolderFailed": "Nie można dodać tego folderu. Spróbuj ponownie.",

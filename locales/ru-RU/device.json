@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "Приватный",
+  "visibility.private.notice": "{{name}} — ваше приватное устройство: только вы можете использовать агентов, запущенных на нем. Чтобы другие участники рабочего пространства могли ими пользоваться, опубликуйте его в рабочем пространстве в настройках устройства.",
+  "visibility.private.openSettings": "Открыть настройки устройства",
   "workingDirectory.addFolder": "Добавить папку…",
   "workingDirectory.addFolderDesc": "Введите абсолютный путь на целевом устройстве, например /Users/name/projects",
   "workingDirectory.addFolderFailed": "Не удалось добавить эту папку. Пожалуйста, попробуйте снова.",

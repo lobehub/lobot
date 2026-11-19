@@ -1,6 +1,6 @@
 'use client';
 
-import { Icon, Text } from '@lobehub/ui';
+import { Flexbox, Icon, Text } from '@lobehub/ui';
 import { Form } from '@lobehub/ui/form';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import { ChevronRightIcon } from 'lucide-react';
@@ -51,8 +51,15 @@ const FormNavField = ({ anchor, children, desc, divider, label, to }: FormNavFie
   return (
     <Link style={rowStyle} to={to} onClick={handleClick}>
       <Form.Field desc={desc} divider={divider} label={labelNode} minWidth={undefined}>
-        {children}
-        <Icon color={cssVar.colorTextQuaternary} icon={ChevronRightIcon} size={16} />
+        <Flexbox horizontal align={'center'} gap={4} style={{ maxWidth: '100%', minWidth: 0 }}>
+          {children}
+          <Icon
+            color={cssVar.colorTextQuaternary}
+            icon={ChevronRightIcon}
+            size={16}
+            style={{ flex: 'none' }}
+          />
+        </Flexbox>
       </Form.Field>
     </Link>
   );

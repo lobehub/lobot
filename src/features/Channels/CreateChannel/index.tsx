@@ -7,8 +7,10 @@ import {
   Switch,
   Text,
   toast,
+  Tooltip,
   useModalContext,
 } from '@lobehub/ui';
+import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import { agentDisplayName, CHANNEL_LIMITS } from '@lobot/types';
 import { t } from 'i18next';
 import { Hash, Lock } from 'lucide-react';
@@ -59,8 +61,18 @@ const openMemberDialog = (props: CreateChannelProps) =>
   createModal({
     content: <CreateChannel {...props} />,
     footer: null,
+    // Longhands, not `padding: 0`: the modal's own paddingInline / paddingBlockEnd
+    // would otherwise stay and inset the panes on the left, right, and bottom.
+    styles: {
+      content: {
+        overflow: 'hidden',
+        paddingBlockEnd: 0,
+        paddingBlockStart: 0,
+        paddingInline: 0,
+      },
+    },
     title: t(props.existing ? 'invite.title' : 'create', { ns: 'channel' }),
-    width: 'min(90vw, 800px)',
+    width: 'min(90vw, 760px)',
   });
 
 export const openCreateChannel = (onCreated?: (id: string) => void) =>
@@ -71,9 +83,10 @@ export const openInviteMembers = (existing: ExistingChannel, onCreated?: (id: st
   openMemberDialog({ existing, onCreated });
 
 /**
- * One step: the member pickers, with the name and, for a new workspace Channel, whether it is
- * private below them. The name is optional and defaults to the members' names. Inviting into an existing
- * Channel shows only the pickers. Workspace Channels, new or existing, also list workspace members.
+ * One step, laid out like starting a group chat: candidates on the left, the chosen
+ * members and the actions on the right. The name is optional and defaults to the members'
+ * names. Inviting into an existing Channel shows only the pickers. Workspace Channels, new
+ * or existing, also list workspace members.
  */
 function CreateChannel({ existing, onCreated }: CreateChannelProps) {
   const { t } = useTranslation('channel');
@@ -197,72 +210,71 @@ function CreateChannel({ existing, onCreated }: CreateChannelProps) {
   };
 
   return (
-    <Flexbox gap={16}>
-      {startsGroup && (
-        <Text fontSize={12} type="secondary">
-          {t('invite.directHint', { name: counterpartName })}
-        </Text>
-      )}
-      <Flexbox gap={8} inert={busy}>
-        <MemberSelection
-          emptyHint={existing ? undefined : t('create.onlyYou')}
-          exclude={existing?.agentIds}
-          options={options}
-          value={agents}
-          people={
-            canPickPeople
-              ? { channelId: existing?.id, onChange: setPeople, value: people }
-              : undefined
-          }
-          onChange={setAgents}
-        />
-      </Flexbox>
-      {(!existing || startsGroup) && (
-        <Flexbox gap={6} inert={busy}>
-          <label htmlFor="channel-title" style={{ fontWeight: 500 }}>
-            {t('nameOptional')}
-          </label>
+    <MemberSelection
+      exclude={existing?.agentIds}
+      locked={busy}
+      options={options}
+      value={agents}
+      footer={
+        <Flexbox gap={12} padding={16}>
+          {error !== undefined && (
+            <AsyncError error={error} title={t(getChannelSaveErrorKey(error))} variant="inline" />
+          )}
+          <Flexbox horizontal align="center" gap={8} justify="space-between">
+            <Flexbox horizontal align="center" gap={8}>
+              {!existing && activeWorkspaceId && (
+                <Tooltip title={t('create.privateHint')}>
+                  <Flexbox horizontal align="center" gap={8} inert={busy}>
+                    <Icon color={cssVar.colorTextSecondary} icon={Lock} size={14} />
+                    <label htmlFor="channel-private">
+                      <Text>{t('create.private')}</Text>
+                    </label>
+                    <Switch checked={isPrivate} id="channel-private" onChange={setIsPrivate} />
+                  </Flexbox>
+                </Tooltip>
+              )}
+              {agents.length > 0 && !canSubmit && (
+                <Text fontSize={12} type="secondary">
+                  {t('environment.resolveRequired')}
+                </Text>
+              )}
+            </Flexbox>
+            <Flexbox horizontal align="center" gap={8}>
+              <Button disabled={busy} type="fill" onClick={close}>
+                {t('cancel')}
+              </Button>
+              <Button
+                disabled={!canSubmit}
+                loading={busy}
+                type="primary"
+                onClick={() => void submit()}
+              >
+                {t(existing && !startsGroup ? 'invite.submit' : 'submit')}
+              </Button>
+            </Flexbox>
+          </Flexbox>
+        </Flexbox>
+      }
+      notice={
+        !existing || startsGroup ? (
           <Input
+            aria-label={t('nameOptional')}
             id="channel-title"
+            inert={busy}
             maxLength={CHANNEL_LIMITS.titleLength}
             placeholder={autoTitle}
             prefix={<Icon icon={Hash} size={14} />}
             value={title}
+            variant="filled"
             onChange={(event) => setTitle(event.target.value)}
             onPressEnter={() => void submit()}
           />
-        </Flexbox>
-      )}
-      {!existing && activeWorkspaceId && (
-        <Flexbox horizontal align={'center'} gap={16} inert={busy} justify={'space-between'}>
-          <Flexbox gap={2}>
-            <Flexbox horizontal align={'center'} gap={6}>
-              <Icon icon={Lock} size={14} />
-              <Text weight={500}>{t('create.private')}</Text>
-            </Flexbox>
-            <Text fontSize={12} type={'secondary'}>
-              {t('create.privateHint')}
-            </Text>
-          </Flexbox>
-          <Switch checked={isPrivate} onChange={setIsPrivate} />
-        </Flexbox>
-      )}
-      {error !== undefined && (
-        <AsyncError error={error} title={t(getChannelSaveErrorKey(error))} variant="inline" />
-      )}
-      <Flexbox horizontal align="center" gap={8} justify="flex-end">
-        {agents.length > 0 && !canSubmit && (
-          <Text fontSize={12} type="secondary">
-            {t('environment.resolveRequired')}
-          </Text>
-        )}
-        <Button disabled={busy} onClick={close}>
-          {t('cancel')}
-        </Button>
-        <Button disabled={!canSubmit} loading={busy} type="primary" onClick={() => void submit()}>
-          {t(existing && !startsGroup ? 'invite.submit' : 'submit')}
-        </Button>
-      </Flexbox>
-    </Flexbox>
+        ) : undefined
+      }
+      people={
+        canPickPeople ? { channelId: existing?.id, onChange: setPeople, value: people } : undefined
+      }
+      onChange={setAgents}
+    />
   );
 }

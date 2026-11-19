@@ -1,8 +1,8 @@
 import { getHeterogeneousTypeLabel } from '@lobechat/heterogeneous-agents';
+import { Checkbox, Flexbox, ScrollArea, SearchBar, Tag, Text } from '@lobehub/ui';
 import { agentDisplayName } from '@lobot/types';
-import { Checkbox, Flexbox, SearchBar, Tag, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, ReactNode, SetStateAction } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -59,12 +59,16 @@ const AgentOptionRow = ({
 );
 
 /**
- * Searchable candidates on the left, chosen members on the right. Workspace Channels also
- * offer people, so inviting anyone happens in one place with one search.
+ * Searchable candidates on the left, chosen members on the right, with the dialog's
+ * actions at the bottom of the right pane. Workspace Channels also offer people, so
+ * inviting anyone happens in one place with one search.
  */
 export const MemberSelection = ({
   emptyHint,
   exclude = [],
+  footer,
+  locked = false,
+  notice,
   options,
   people,
   value,
@@ -74,12 +78,18 @@ export const MemberSelection = ({
   emptyHint?: string;
   /** Agents already in the Channel. */
   exclude?: string[];
+  /** Name, privacy and actions, pinned under the chosen members. */
+  footer?: ReactNode;
+  /** Freeze the lists while a save is in flight. Actions stay clickable. */
+  locked?: boolean;
+  /** Optional name, shown above the chosen members. */
+  notice?: ReactNode;
   onChange: Dispatch<SetStateAction<ChannelAgentDraft[]>>;
   options: ReturnType<typeof useChannelAgentOptions>;
   people?: PeopleSelection;
   value: ChannelAgentDraft[];
 }) => {
-  const { t } = useTranslation(['channel', 'device', 'chat', 'common']);
+  const { t } = useTranslation('channel');
   const { agents, projectAgentIds = [] } = options;
   const [search, setSearch] = useState('');
   const available = (agents ?? []).filter((agent) => !exclude.includes(agent.id));
@@ -140,22 +150,28 @@ export const MemberSelection = ({
   const selectedCount = value.length + (people?.value.length ?? 0);
 
   return (
-    <Flexbox gap={12}>
-      <div {...stylex.props(styles.picker)}>
-        <Flexbox gap={8} {...stylex.props(styles.pane, styles.candidates)}>
+    <div {...stylex.props(styles.picker)}>
+      <Flexbox inert={locked} {...stylex.props(styles.candidates)}>
+        <div {...stylex.props(styles.search)}>
           <SearchBar
             allowClear
             autoFocus
             placeholder={t(people ? 'invite.search' : 'searchAgents')}
             value={search}
-            variant="outlined"
+            variant="filled"
             onChange={(event) => setSearch(event.target.value)}
           />
-          {/* Searching opens every folded group again, so no match hides behind a heading. */}
+        </div>
+        {/* Searching opens every folded group again, so no match hides behind a heading. */}
+        <ScrollArea
+          disableContentFit
+          scrollFade
+          className={stylex.props(styles.list).className}
+          contentProps={{ className: stylex.props(styles.listContent).className }}
+        >
           <Flexbox
             gap={people || priority.length ? 8 : 0}
             key={search.trim() ? 'search' : 'browse'}
-            {...stylex.props(styles.pane)}
           >
             {people && <PeopleOptions people={people} search={search} />}
             {/* People load on their own, so an Agent-list failure must not take them down. */}
@@ -165,21 +181,16 @@ export const MemberSelection = ({
               agentGroups
             )}
           </Flexbox>
-        </Flexbox>
-        <Flexbox gap={8} {...stylex.props(styles.pane, styles.selected)}>
-          <Text fontSize={12} type="secondary">
-            {t('memberSelection.selectedAgents', { ns: 'chat', count: selectedCount })}
-          </Text>
-          {!selectedCount &&
-            (emptyHint ? (
-              <AgentSelectionEmpty description={emptyHint} />
-            ) : people ? (
-              <Text fontSize={12} type="secondary" {...stylex.props(styles.section)}>
-                {t('invite.noSelected')}
-              </Text>
-            ) : (
-              <AgentSelectionEmpty variant="noSelected" />
-            ))}
+        </ScrollArea>
+      </Flexbox>
+      <Flexbox {...stylex.props(styles.aside)}>
+        {notice && <div {...stylex.props(styles.search)}>{notice}</div>}
+        <Flexbox gap={4} inert={locked} {...stylex.props(styles.selected)}>
+          {!selectedCount && emptyHint && (
+            <Text fontSize={12} type="secondary" {...stylex.props(styles.section)}>
+              {emptyHint}
+            </Text>
+          )}
           {people?.value.map((person) => (
             <SelectedPerson
               key={person.userId}
@@ -210,7 +221,8 @@ export const MemberSelection = ({
             />
           ))}
         </Flexbox>
-      </div>
-    </Flexbox>
+        {footer}
+      </Flexbox>
+    </div>
   );
 };

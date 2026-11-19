@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "Privé",
+  "visibility.private.notice": "{{name}} est votre appareil privé : vous seul pouvez utiliser les agents qui y sont exécutés. Pour permettre aux autres membres de l'espace de travail de les utiliser, publiez-le dans l'espace de travail depuis les paramètres de l'appareil.",
+  "visibility.private.openSettings": "Ouvrir les paramètres de l'appareil",
   "workingDirectory.addFolder": "Ajouter un dossier…",
   "workingDirectory.addFolderDesc": "Entrez un chemin absolu sur l'appareil cible, par exemple /Users/name/projects",
   "workingDirectory.addFolderFailed": "Impossible d'ajouter ce dossier. Veuillez réessayer.",

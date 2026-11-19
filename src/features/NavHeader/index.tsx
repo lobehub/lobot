@@ -14,9 +14,13 @@ import { getNavHeaderLeading } from './leading';
 import MobileHeaderNav from './MobileHeaderNav';
 import MobileRouteTitle from './MobileRouteTitle';
 
+const cssSize = (value: number | string) => (typeof value === 'number' ? `${value}px` : value);
+
 interface NavHeaderProps extends Omit<FlexboxProps, 'children'> {
   children?: ReactNode;
   left?: ReactNode;
+  paddingBlockEnd?: number | string;
+  paddingBlockStart?: number | string;
   right?: ReactNode;
   showTogglePanelButton?: boolean;
   slotClassNames?: {
@@ -38,6 +42,10 @@ const NavHeader = memo<NavHeaderProps>(
     children,
     left,
     right,
+    paddingBlock,
+    paddingBlockEnd = 8,
+    paddingBlockStart = 8,
+    paddingInline = 8,
     slotClassNames,
     styles,
     ...rest
@@ -66,7 +74,8 @@ const NavHeader = memo<NavHeaderProps>(
         gap={4}
         height={44}
         justify={'space-between'}
-        padding={8}
+        paddingBlock={paddingBlock ?? `${cssSize(paddingBlockStart)} ${cssSize(paddingBlockEnd)}`}
+        paddingInline={paddingInline}
         style={style}
         {...rest}
       >

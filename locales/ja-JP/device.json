@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "プライベート",
+  "visibility.private.notice": "{{name}} はあなたのプライベートデバイスです。ここで実行されるエージェントはあなただけが使用できます。他のワークスペースメンバーが使用できるようにするには、デバイス設定でワークスペースに公開してください。",
+  "visibility.private.openSettings": "デバイス設定を開く",
   "workingDirectory.addFolder": "フォルダーを追加…",
   "workingDirectory.addFolderDesc": "ターゲットデバイス上の絶対パスを入力してください。例: /Users/name/projects",
   "workingDirectory.addFolderFailed": "このフォルダを追加できませんでした。もう一度お試しください。",

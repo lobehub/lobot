@@ -1,7 +1,6 @@
-import { cssVar, Flexbox, Tag, Text } from '@lobehub/ui';
+import { Flexbox, Tag, Text } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { useSize } from 'ahooks';
-import { Hash } from 'lucide-react';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useSearchParams } from 'react-router';
@@ -22,11 +21,10 @@ import { AgentProfilePanel } from './AgentProfilePanel';
 import { isChannelGone, visibleChannelDetail } from './channelAccess';
 import { ChannelConversation } from './ChannelConversation';
 import { ChannelEmpty } from './ChannelEmpty';
+import { ChannelHeaderTitle } from './ChannelHeaderTitle';
 import { groupChannelName } from './channelName';
 import { ChannelSearchBox, ChannelSearchPanel } from './ChannelSearch';
 import { ChannelSyncing } from './ChannelSyncing';
-import { DirectAgentRole } from './DirectAgentRole';
-import { workingConversationCount, workingJob } from './jobStatus';
 import { MEMBER_FLOAT_BREAKPOINT, MemberPanel } from './MemberPanel';
 import { ChannelMenu, MemberStatus } from './MemberStatus';
 import { requestChannelJump } from './messageJump';
@@ -35,7 +33,7 @@ import { channelTitle } from './peerTitle';
 import { CHANNEL_ENTITY_PORTAL_SCOPE, PortalPanel } from './PortalPanel';
 import { type ReplyTopic, ReplyTopicPanel } from './ReplyTopicPanel';
 import { ChannelSettingsPanel } from './Settings/Panel';
-import { CHANNEL_SETTINGS_PARAM } from './Settings/tabs';
+import { CHANNEL_SETTINGS_PARAM, useOpenChannelSettings } from './Settings/tabs';
 import { styles } from './styles';
 import { ThreadsButton } from './ThreadBrowser';
 import { ThreadPageActions, ThreadPageTitle } from './ThreadPageTitle';
@@ -56,6 +54,7 @@ function EnabledChannelPage() {
   const settingsPanelId = useId();
   const [searchParams, setSearchParams] = useSearchParams();
   const settingsRequested = searchParams.has(CHANNEL_SETTINGS_PARAM);
+  const openSettings = useOpenChannelSettings();
   // The box keeps its text per Channel; the panel shows the query last submitted.
   const [searchInput, setSearchInput] = useState({ channelId: '', value: '' });
   const [search, setSearch] = useState<{ channelId: string; query: string } | null>(null);
@@ -78,19 +77,6 @@ function EnabledChannelPage() {
   const directAgent = detail?.channel.agentId
     ? detail.members.find((member) => member.agentId === detail.channel.agentId)
     : undefined;
-  // The open conversation's jobs and a direct Channel's list row both cover its Threads too.
-  const directWorkingJob = isDirect
-    ? detail
-      ? workingJob(detail.jobs, directAgent?.id)
-      : workingJob(listItem?.replyJobs ?? [])
-    : undefined;
-  const directWorkingCount = isDirect
-    ? workingConversationCount(
-        detail
-          ? detail.jobs.filter((job) => !directAgent || job.memberId === directAgent.id)
-          : (listItem?.replyJobs ?? []),
-      )
-    : 0;
   const [topic, setTopic] = useState<(ReplyTopic & { channelId: string }) | null>(null);
   const portalOpen = usePortalPanelOpen();
   const clearPortalStack = useChatStore((s) => s.clearPortalStack);
@@ -189,6 +175,23 @@ function EnabledChannelPage() {
     !pageThreadId &&
     !!(threadId || threadDraft) &&
     (conversationWidth ?? 1000) >= THREAD_FLOAT_BREAKPOINT;
+  // Shared by the group roster toggle and the direct Agent's title-menu entry.
+  const toggleMemberPanel = () => {
+    if (!membersOpen) {
+      // A thread page stays; only a side panel is replaced.
+      if (!pageThreadId) panel.close();
+      setSearch(null);
+      setTopic(null);
+      clearPortalStack();
+      closeSettings();
+    }
+    setMembersChannelId(membersOpen ? null : channelId);
+  };
+  const toggleChannelSettings = () => {
+    if (settingsOpen) closeSettings();
+    else openSettings();
+  };
+  const canOpenChannelSettings = !!detail?.channel.canDelete && !isDirect && !isPeer;
   const header = (
     <NavHeader
       // A rule separates the header from the feed scrolling under it.
@@ -205,29 +208,32 @@ function EnabledChannelPage() {
           />
         ) : (
           <Flexbox horizontal align="center" gap={8}>
-            {/* A direct conversation is titled by its Agent's name alone, like an IM chat. */}
-            {!isDirect && !isPeer && <Hash color={cssVar.colorTextDescription} size={16} />}
-            <Text ellipsis weight={500}>
-              {detail
-                ? channelTitle(detail, viewerId, projectName)
-                : listItem &&
-                  (directCounterpart(listItem)?.name || groupChannelName(listItem, projectName))}
-            </Text>
+            {/* A left click on the name opens settings; a right click opens the same menu as "…". */}
+            <ChannelHeaderTitle
+              detail={detail}
+              showHash={!isDirect && !isPeer}
+              title={
+                detail
+                  ? channelTitle(detail, viewerId, projectName)
+                  : listItem &&
+                    (directCounterpart(listItem)?.name || groupChannelName(listItem, projectName))
+              }
+              onToggleAgentPanel={isDirect && hasMemberPanel ? toggleMemberPanel : undefined}
+              onToggleChannelSettings={canOpenChannelSettings ? toggleChannelSettings : undefined}
+            />
             {isSharedAgent && (
               <Text style={{ flex: 'none' }} type="secondary">
                 {t('sharedAgent.tag')}
               </Text>
             )}
-            {directAgentId && (
-              <DirectAgentRole
-                agentId={directAgentId}
-                count={directWorkingCount}
-                job={directWorkingJob}
-              />
-            )}
             {detail?.channel.status === 'archived' && <Tag size="small">{t('archived')}</Tag>}
             {/* The Channel's own actions sit by its name; the right holds the panels it opens. */}
-            {detail && <ChannelMenu detail={detail} />}
+            {detail && (
+              <ChannelMenu
+                detail={detail}
+                onToggleAgentPanel={isDirect && hasMemberPanel ? toggleMemberPanel : undefined}
+              />
+            )}
             <ChannelSyncing failed={!!sync.error} params={view} />
           </Flexbox>
         )
@@ -248,17 +254,7 @@ function EnabledChannelPage() {
                   ? {
                       id: memberPanelId,
                       open: membersOpen,
-                      onToggle: () => {
-                        if (!membersOpen) {
-                          // The roster sits beside a thread page; it only replaces a side panel.
-                          if (!pageThreadId) panel.close();
-                          setSearch(null);
-                          setTopic(null);
-                          clearPortalStack();
-                          closeSettings();
-                        }
-                        setMembersChannelId(membersOpen ? null : channelId);
-                      },
+                      onToggle: toggleMemberPanel,
                     }
                   : undefined
               }

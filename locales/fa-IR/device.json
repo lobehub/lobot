@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "خصوصی",
+  "visibility.private.notice": "{{name}} دستگاه خصوصی شماست: فقط شما می‌توانید از عامل‌هایی که روی آن اجرا می‌شوند استفاده کنید. برای اینکه سایر اعضای فضای کاری بتوانند از آن‌ها استفاده کنند، آن را در تنظیمات دستگاه به فضای کاری منتشر کنید.",
+  "visibility.private.openSettings": "باز کردن تنظیمات دستگاه",
   "workingDirectory.addFolder": "افزودن پوشه…",
   "workingDirectory.addFolderDesc": "یک مسیر مطلق در دستگاه هدف وارد کنید، به عنوان مثال /Users/name/projects",
   "workingDirectory.addFolderFailed": "امکان افزودن این پوشه وجود ندارد. لطفاً دوباره تلاش کنید.",

@@ -19,32 +19,23 @@ import { resetSettingsPopupViewport } from './settingsPopupScroll';
 import { isPersonalSettingsPath, useSettingsPopupStore } from './settingsPopupStore';
 
 const ProfileEntry = memo<{ active: boolean; onSelect: () => void }>(({ active, onSelect }) => {
-  const [nickname, username] = useUserStore((s) => [
-    userProfileSelectors.nickName(s),
-    userProfileSelectors.displayUserName(s),
-  ]);
+  const nickname = useUserStore(userProfileSelectors.nickName);
 
   return (
     <Block
       clickable
       horizontal
       align={'center'}
-      gap={12}
-      padding={8}
+      gap={8}
+      height={36}
+      paddingInline={4}
       variant={active ? 'filled' : 'borderless'}
       onClick={onSelect}
     >
-      <UserAvatar shape={'circle'} size={40} />
-      <Flexbox flex={1} gap={2} style={{ overflow: 'hidden' }}>
-        <Text ellipsis fontSize={15} weight={600}>
-          {nickname}
-        </Text>
-        {username && (
-          <Text ellipsis fontSize={12} type={'secondary'}>
-            {username}
-          </Text>
-        )}
-      </Flexbox>
+      <UserAvatar shape={'circle'} size={28} />
+      <Text ellipsis style={{ flex: 1 }}>
+        {nickname}
+      </Text>
     </Block>
   );
 });
@@ -135,13 +126,15 @@ const SettingsPopup = memo(() => {
             height: '100%',
           }}
         >
-          <Flexbox gap={8} padding={8}>
-            <ProfileEntry
-              active={activeTab === SettingsTabs.Profile}
-              onSelect={() => setTab(SettingsTabs.Profile)}
-            />
-            {categoryGroups.map((group) => (
-              <Flexbox gap={1} key={group.key}>
+          <Flexbox gap={4} paddingBlock="0 8px" paddingInline={8}>
+            {categoryGroups.map((group, index) => (
+              <Flexbox gap={4} key={group.key}>
+                {index === 0 && (
+                  <ProfileEntry
+                    active={activeTab === SettingsTabs.Profile}
+                    onSelect={() => setTab(SettingsTabs.Profile)}
+                  />
+                )}
                 {group.items.map((item) => (
                   <div
                     key={item.key}
@@ -161,7 +154,7 @@ const SettingsPopup = memo(() => {
           style={{ flex: 1, height: '100%', minWidth: 0 }}
           viewportProps={{ ref: contentViewportRef }}
         >
-          <div style={subPage ? undefined : { padding: 24 }}>{body}</div>
+          <div style={subPage ? undefined : { paddingBlockEnd: 48, paddingInline: 24 }}>{body}</div>
         </ScrollArea>
       </Flexbox>
     </Modal>

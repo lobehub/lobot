@@ -16,7 +16,11 @@ const styles = stylex.create({
     display: 'flex',
     gap: '8px',
     alignItems: 'center',
-    width: '100%',
+    boxSizing: 'border-box',
+    // The card insets its body by 16px. Bleed back to the card edges so the
+    // hover fill is the whole row, while the label stays in line with the fields.
+    width: 'calc(100% + 32px)',
+    marginInline: '-16px',
     minHeight: '48px',
     paddingBlock: '8px',
     paddingInline: '16px',

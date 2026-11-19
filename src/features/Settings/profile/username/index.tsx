@@ -79,7 +79,7 @@ const UsernamePage = () => {
       tab={SettingsTabs.Profile}
       title={t('profile.username')}
       right={
-        <Button disabled={!!error} loading={saving} size={'small'} onClick={handleDone}>
+        <Button disabled={!!error} loading={saving} size={'small'} type="fill" onClick={handleDone}>
           {t('profile.save')}
         </Button>
       }

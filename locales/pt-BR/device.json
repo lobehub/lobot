@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "Privado",
+  "visibility.private.notice": "{{name}} é seu dispositivo privado: somente você pode usar Agentes executados nele. Para permitir que outros membros do espaço de trabalho os usem, publique-o no espaço de trabalho nas configurações do dispositivo.",
+  "visibility.private.openSettings": "Abrir configurações do dispositivo",
   "workingDirectory.addFolder": "Adicionar pasta…",
   "workingDirectory.addFolderDesc": "Insira um caminho absoluto no dispositivo de destino, por exemplo, /Users/name/projects",
   "workingDirectory.addFolderFailed": "Não foi possível adicionar esta pasta. Por favor, tente novamente.",

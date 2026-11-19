@@ -22,7 +22,13 @@ vi.mock('@lobehub/ui', () => ({
   ActionIcon: ({ title }: { title?: string }) => createElement('button', { title }),
   CopyButton: () => null,
   Flexbox: ({ children }: { children?: unknown }) => createElement('div', {}, children as never),
+  Tag: ({ children, ...props }: { children?: unknown }) =>
+    createElement('span', props, children as never),
   Text: ({ children }: { children?: unknown }) => createElement('span', {}, children as never),
+}));
+vi.mock('@lobehub/ui/dashboard', () => ({
+  Surface: ({ children, padded: _padded, ...props }: { children?: unknown; padded?: boolean }) =>
+    createElement('div', props, children as never),
 }));
 vi.mock('@lobechat/const', () => ({ isDesktop: true }));
 vi.mock('@/features/DeviceManager/getDeviceIcon', () => ({ getDeviceIcon: () => null }));
@@ -84,7 +90,10 @@ describe('AgentProfileEnvironment', () => {
   it('shows the device the Agent runs on, whether it is connected, and its directory', () => {
     state.binding = { deviceId: 'box' };
     renderPanel();
-    expect(screen.getByText('dev-box')).toBeTruthy();
+    const card = screen.getByRole('group', { name: 'environment.title' });
+    expect(card).toContainElement(screen.getByText('dev-box'));
+    expect(card).toContainElement(screen.getByText('blockedDevice.connected'));
+    expect(card).not.toContainElement(screen.getByText('environment.title'));
     expect(screen.getByText('blockedDevice.connected')).toBeTruthy();
     expect(screen.getByText('/srv/app')).toBeTruthy();
     // Only an admin may read the Channel's own pick.
@@ -99,7 +108,9 @@ describe('AgentProfileEnvironment', () => {
     expect(screen.getByText('blockedDevice.offline')).toBeTruthy();
     expect(screen.queryByText('dev-box')).toBeNull();
     expect(screen.getByText('/repo/lobot')).toBeTruthy();
-    expect(screen.getByTitle('environment.editNamed')).toBeTruthy();
+    expect(screen.getByRole('group', { name: 'environment.title' })).toContainElement(
+      screen.getByTitle('environment.editNamed'),
+    );
   });
 
   it('says where an Agent without a device runs, with no directory', () => {

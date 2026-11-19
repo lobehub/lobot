@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "Riêng tư",
+  "visibility.private.notice": "{{name}} là thiết bị riêng tư của bạn: chỉ bạn mới có thể sử dụng các agent chạy trên đó. Để các thành viên khác trong không gian làm việc có thể sử dụng chúng, hãy xuất bản nó lên không gian làm việc trong phần cài đặt thiết bị.",
+  "visibility.private.openSettings": "Mở cài đặt thiết bị",
   "workingDirectory.addFolder": "Thêm thư mục…",
   "workingDirectory.addFolderDesc": "Nhập đường dẫn tuyệt đối trên thiết bị mục tiêu, ví dụ: /Users/name/projects",
   "workingDirectory.addFolderFailed": "Không thể thêm thư mục này. Vui lòng thử lại.",

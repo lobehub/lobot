@@ -1,6 +1,8 @@
 {
   "asyncState.desc": "Coś poszło nie tak podczas ładowania. Spróbuj ponownie.",
+  "asyncState.hideDetails": "Ukryj szczegóły",
   "asyncState.metricLabel": "Nie udało się załadować",
+  "asyncState.showDetails": "Pokaż szczegóły",
   "asyncState.title": "Nie udało się załadować",
   "chatRequestBlocked.contactSupport": "Skontaktuj się z pomocą techniczną",
   "chatRequestBlocked.description": "To żądanie zostało zablokowane przez nasze kontrole bezpieczeństwa. Jeśli uważasz, że to pomyłka, skontaktuj się z pomocą techniczną, aby przywrócić dostęp.",
@@ -89,6 +91,7 @@
   "response.GoogleAIBlockReason.SAFETY": "Treść została zablokowana ze względów bezpieczeństwa. Proszę dostosować ją i spróbować ponownie.",
   "response.GoogleAIBlockReason.SPII": "Treść może zawierać wrażliwe dane osobowe (SPII). Proszę usunąć wrażliwe szczegóły i spróbować ponownie.",
   "response.GoogleAIBlockReason.default": "Treść została zablokowana ({{blockReason}}). Proszę dostosować ją i spróbować ponownie.",
+  "response.InsufficientBudgetForAgentRunFee": "Za mało kredytów na opłatę za uruchomienie Agenta. Każde uruchomienie Agenta wiąże się z opłatą, nawet na Twoim własnym koncie CLI. Doładuj konto lub uaktualnij plan, a następnie spróbuj ponownie.",
   "response.InsufficientBudgetForModel": "Twoje pozostałe saldo jest niewystarczające dla tego modelu. Doładuj konto, uaktualnij plan lub wypróbuj tańszy model.",
   "response.InvalidAccessCode": "Nieprawidłowy lub pusty kod dostępu. Wprowadź poprawny kod lub dodaj własny klucz API.",
   "response.LobeHubModelDeprecated": "Model \"{{model}}\" nie jest już dostępny. Proszę wybrać aktualny model z selektora modeli.",

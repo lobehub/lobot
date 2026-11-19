@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   close: vi.fn(),
   detail: undefined as object | undefined,
   error: undefined as unknown,
+  searchParams: new URLSearchParams(),
   setSearchParams: vi.fn(),
   threadId: null as string | null,
   list: [] as Array<{ agentId: string | null; id: string; title: string }>,
@@ -16,7 +17,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('react-router', () => ({
   useParams: () => ({ channelId: mocks.channelId }),
-  useSearchParams: () => [new URLSearchParams(), mocks.setSearchParams],
+  useSearchParams: () => [mocks.searchParams, mocks.setSearchParams],
 }));
 vi.mock('@/store/serverConfig', () => ({
   serverConfigSelectors: { enableChannels: () => true },
@@ -70,8 +71,27 @@ vi.mock('./PortalPanel', () => ({
 vi.mock('./ReplyTopicPanel', () => ({ ReplyTopicPanel: () => null }));
 vi.mock('./ThreadPanel', () => ({ THREAD_FLOAT_BREAKPOINT: 760, ThreadPanel: () => null }));
 vi.mock('./MemberPanel', () => ({ MEMBER_FLOAT_BREAKPOINT: 640, MemberPanel: () => null }));
-vi.mock('./AgentProfilePanel', () => ({ AgentProfilePanel: () => null }));
+vi.mock('./AgentProfilePanel', () => ({
+  AgentProfilePanel: () => createElement('div', { 'data-testid': 'agent-profile' }),
+}));
+vi.mock('./Settings/Panel', () => ({
+  ChannelSettingsPanel: () => createElement('div', { 'data-testid': 'channel-settings' }),
+}));
 vi.mock('./MemberStatus', () => ({ ChannelMenu: () => null, MemberStatus: () => null }));
+vi.mock('./ChannelHeaderTitle', () => ({
+  ChannelHeaderTitle: ({
+    onToggleAgentPanel,
+    onToggleChannelSettings,
+    title,
+  }: {
+    onToggleAgentPanel?: () => void;
+    onToggleChannelSettings?: () => void;
+    title?: unknown;
+  }) => {
+    const onClick = onToggleAgentPanel ?? onToggleChannelSettings;
+    return createElement(onClick ? 'button' : 'span', onClick ? { onClick } : {}, title as never);
+  },
+}));
 vi.mock('@/features/EntityLink/host', () => ({
   EntityLinkHostProvider: ({ children }: { children: unknown }) => children,
 }));
@@ -94,6 +114,7 @@ describe('ChannelPage', () => {
     mocks.list = [];
     mocks.detail = undefined;
     mocks.threadId = null;
+    mocks.searchParams = new URLSearchParams();
     mocks.close.mockClear();
     mocks.setSearchParams.mockClear();
   });
@@ -127,12 +148,13 @@ describe('ChannelPage', () => {
     expect(screen.getByRole('banner')).not.toHaveTextContent('title');
   });
 
-  it("puts a direct conversation's Agent role after its name", () => {
+  it('shows only the Agent name without its description in the header', () => {
     mocks.list = [{ agentId: 'agt_neko', id: 'chn_gone', title: 'Side Neko' }];
 
     render(createElement(ChannelPage));
 
-    expect(screen.getByRole('banner')).toHaveTextContent('Side NekoMagic cat companion');
+    expect(screen.getByRole('banner')).toHaveTextContent('Side Neko');
+    expect(screen.getByRole('banner')).not.toHaveTextContent('Magic cat companion');
   });
 
   it('shows no role in a group conversation', () => {
@@ -172,5 +194,64 @@ describe('ChannelPage', () => {
     expect(screen.getByTestId('conversation:chn_b')).toBeTruthy();
     expect(screen.queryByTestId('conversation:chn_a')).toBeNull();
     expect(screen.queryByTestId('stale')).toBeNull();
+  });
+
+  it('opens Channel settings from a click on the group title and closes them on the next click', () => {
+    mocks.list = [{ agentId: null, id: 'chn_gone', title: 'General' }];
+    mocks.detail = {
+      channel: { agentId: null, canDelete: true, id: 'chn_gone', status: 'active' },
+      members: [],
+    };
+
+    const view = render(createElement(ChannelPage));
+    fireEvent.click(screen.getByRole('button', { name: 'General' }));
+
+    const open = mocks.setSearchParams.mock.calls[0][0] as (
+      current: URLSearchParams,
+    ) => URLSearchParams;
+    expect(open(new URLSearchParams()).get('settings')).toBe('1');
+
+    mocks.searchParams = new URLSearchParams('settings=1');
+    mocks.setSearchParams.mockClear();
+    view.rerender(createElement(ChannelPage));
+    fireEvent.click(screen.getByRole('button', { name: 'General' }));
+
+    const close = mocks.setSearchParams.mock.calls[0][0] as (
+      current: URLSearchParams,
+    ) => URLSearchParams;
+    expect(close(new URLSearchParams('settings=1')).has('settings')).toBe(false);
+  });
+
+  it("opens the Agent profile from a click on the Agent's name and closes it on the next click", () => {
+    mocks.list = [{ agentId: 'agt_neko', id: 'chn_gone', title: 'Side Neko' }];
+    mocks.detail = {
+      channel: { agentId: 'agt_neko', canDelete: true, id: 'chn_gone', status: 'active' },
+      members: [{ agentId: 'agt_neko', id: 'mem_neko', name: 'Side Neko', status: 'active' }],
+    };
+
+    render(createElement(ChannelPage));
+    fireEvent.click(screen.getByRole('button', { name: 'General' }));
+    expect(screen.getByTestId('agent-profile')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'General' }));
+    expect(screen.queryByTestId('agent-profile')).toBeNull();
+  });
+
+  it('does not turn a human private chat title into a Channel settings control', () => {
+    mocks.list = [{ agentId: null, id: 'chn_gone', title: 'Ada' }];
+    mocks.detail = {
+      channel: {
+        agentId: null,
+        canDelete: true,
+        id: 'chn_gone',
+        peerUserId: 'usr_1',
+        status: 'active',
+      },
+      members: [],
+    };
+
+    render(createElement(ChannelPage));
+    expect(screen.queryByRole('button', { name: 'General' })).toBeNull();
+    expect(screen.getByRole('banner')).toHaveTextContent('General');
   });
 });

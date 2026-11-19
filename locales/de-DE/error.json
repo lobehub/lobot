@@ -1,6 +1,8 @@
 {
   "asyncState.desc": "Beim Laden ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+  "asyncState.hideDetails": "Details ausblenden",
   "asyncState.metricLabel": "Laden fehlgeschlagen",
+  "asyncState.showDetails": "Details anzeigen",
   "asyncState.title": "Laden fehlgeschlagen",
   "chatRequestBlocked.contactSupport": "Support kontaktieren",
   "chatRequestBlocked.description": "Diese Anfrage wurde durch unsere Sicherheitsüberprüfungen blockiert. Wenn Sie denken, dass dies ein Fehler ist, kontaktieren Sie den Support, um den Zugriff wiederherzustellen.",
@@ -89,6 +91,7 @@
   "response.GoogleAIBlockReason.SAFETY": "Der Inhalt wurde aus Sicherheitsgründen blockiert. Bitte passen Sie ihn an und versuchen Sie es erneut.",
   "response.GoogleAIBlockReason.SPII": "Der Inhalt könnte sensible persönliche Informationen (SPII) enthalten. Bitte entfernen Sie sensible Details und versuchen Sie es erneut.",
   "response.GoogleAIBlockReason.default": "Der Inhalt wurde blockiert ({{blockReason}}). Bitte passen Sie ihn an und versuchen Sie es erneut.",
+  "response.InsufficientBudgetForAgentRunFee": "Nicht genügend Guthaben, um die Gebühr für den Agentenlauf zu bezahlen. Für jeden Agentenlauf fällt eine Gebühr an, auch mit Ihrem eigenen CLI-Konto. Laden Sie Guthaben auf oder upgraden Sie Ihren Tarif, und versuchen Sie es dann erneut.",
   "response.InsufficientBudgetForModel": "Ihr verbleibendes Guthaben reicht für dieses Modell nicht aus. Bitte laden Sie Guthaben auf, upgraden Sie Ihren Tarif oder verwenden Sie ein günstigeres Modell.",
   "response.InvalidAccessCode": "Ungültiger oder leerer Zugangscode. Bitte geben Sie den richtigen Code ein.",
   "response.LobeHubModelDeprecated": "Das Modell \"{{model}}\" ist nicht mehr verfügbar. Bitte wählen Sie ein aktuelles Modell aus dem Modellwähler aus.",

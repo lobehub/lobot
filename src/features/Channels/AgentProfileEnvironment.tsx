@@ -1,5 +1,6 @@
 import { isDesktop } from '@lobechat/const';
-import { ActionIcon, CopyButton, Flexbox, Text } from '@lobehub/ui';
+import { ActionIcon, CopyButton, Flexbox, Tag, Text } from '@lobehub/ui';
+import { Surface } from '@lobehub/ui/dashboard';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { ChannelPublicMember } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
@@ -18,6 +19,7 @@ import { deviceSelectors, useDeviceStore } from '@/store/device';
 import { useDeviceList } from '@/store/device/useDeviceList';
 
 import { openChannelAgentEnvironment } from './AgentEnvironment';
+import { agentProfileStyles } from './agentProfileStyles';
 import { blockedDeviceState } from './blockedDeviceState';
 import { deviceLabel } from './CreateChannel/EnvironmentFields';
 import { memberName } from './memberName';
@@ -86,18 +88,28 @@ function EnvironmentRows({ agentId, channel }: { agentId: string; channel?: Chan
             ? t('blockedDevice.notShared')
             : t('environment.checkingDevice');
     device = (
-      <Flexbox gap={2} style={{ minWidth: 0 }}>
-        <Flexbox horizontal align="center" gap={6} style={{ minWidth: 0 }}>
-          <span aria-hidden style={{ display: 'inline-flex', flexShrink: 0 }}>
-            {getDeviceIcon('device' in state ? state.device.platform : null, 14)}
-          </span>
-          <span title={name} {...stylex.props(styles.value)}>
-            {name}
-          </span>
-        </Flexbox>
-        <Text fontSize={12} role="status" type={state.kind === 'online' ? 'success' : 'secondary'}>
+      <Flexbox horizontal align="center" gap={8} style={{ minWidth: 0 }}>
+        <span aria-hidden style={{ display: 'inline-flex', flexShrink: 0 }}>
+          {getDeviceIcon('device' in state ? state.device.platform : null, 14)}
+        </span>
+        <span title={name} {...stylex.props(styles.value)}>
+          {name}
+        </span>
+        <Tag
+          color={state.kind === 'online' ? 'success' : undefined}
+          role="status"
+          size="small"
+          title={presence}
+          style={{
+            flexShrink: 0,
+            margin: 0,
+            maxWidth: '46%',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
           {presence}
-        </Text>
+        </Tag>
       </Flexbox>
     );
   } else {
@@ -170,26 +182,40 @@ export function AgentProfileEnvironment({
   const { t } = useTranslation('channel');
   const editLabel = t('environment.editNamed', { name: memberName(member, t('deletedMember')) });
   return (
-    <Flexbox gap={12} style={{ minWidth: 0 }}>
-      <Flexbox horizontal align="center" gap={12} justify="space-between">
-        <Text weight={500}>{t('environment.title')}</Text>
-        {manageable && (
-          <ActionIcon
-            aria-label={editLabel}
-            icon={FolderCog}
-            size="small"
-            title={editLabel}
-            onClick={() => openChannelAgentEnvironment(channelId, member)}
-          />
-        )}
-      </Flexbox>
-      <Flexbox gap={12} style={{ minWidth: 0, overflow: 'visible', paddingBlock: 8 }}>
-        {manageable ? (
-          <ChannelEnvironmentRows agentId={agentId} channelId={channelId} memberId={member.id} />
-        ) : (
-          <EnvironmentRows agentId={agentId} />
-        )}
-      </Flexbox>
+    <Flexbox gap={8} style={{ minWidth: 0 }}>
+      <Text fontSize={13} type="secondary" weight={400}>
+        {t('environment.title')}
+      </Text>
+      <Surface
+        aria-label={t('environment.title')}
+        padded={false}
+        role="group"
+        {...stylex.props(agentProfileStyles.card, agentProfileStyles.environment)}
+      >
+        <Flexbox horizontal align="flex-start" gap={8}>
+          <Flexbox flex={1} gap={12} style={{ minWidth: 0 }}>
+            {manageable ? (
+              <ChannelEnvironmentRows
+                agentId={agentId}
+                channelId={channelId}
+                memberId={member.id}
+              />
+            ) : (
+              <EnvironmentRows agentId={agentId} />
+            )}
+          </Flexbox>
+          {manageable && (
+            <ActionIcon
+              aria-label={editLabel}
+              icon={FolderCog}
+              size="small"
+              style={{ flexShrink: 0 }}
+              title={editLabel}
+              onClick={() => openChannelAgentEnvironment(channelId, member)}
+            />
+          )}
+        </Flexbox>
+      </Surface>
     </Flexbox>
   );
 }

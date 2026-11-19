@@ -92,6 +92,13 @@ export const styles = stylex.create({
     gap: 6,
     maxWidth: 'none',
   },
+  // Interaction feedback only: never change the original title's box or background.
+  headerTitleInteractive: {
+    cursor: 'pointer',
+    textDecorationLine: 'none',
+    outline: { 'default': null, ':focus-visible': `2px solid ${cssVar.colorTextDescription}` },
+    outlineOffset: 2,
+  },
   threadHeader: {
     borderBlockEndWidth: 1,
     borderBlockEndStyle: 'solid',

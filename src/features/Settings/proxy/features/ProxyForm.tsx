@@ -291,7 +291,7 @@ const ProxyForm = () => {
               value={testUrl}
               onChange={(e) => setTestUrl(e.target.value)}
             />
-            <Button loading={isTesting} type="default" onClick={handleTest}>
+            <Button loading={isTesting} type="fill" onClick={handleTest}>
               {t('proxy.testButton')}
             </Button>
           </Flexbox>

@@ -1,6 +1,8 @@
 {
   "asyncState.desc": "Une erreur s'est produite lors du chargement. Veuillez réessayer.",
+  "asyncState.hideDetails": "Masquer les détails",
   "asyncState.metricLabel": "Échec du chargement",
+  "asyncState.showDetails": "Afficher les détails",
   "asyncState.title": "Échec du chargement",
   "chatRequestBlocked.contactSupport": "Contacter le support",
   "chatRequestBlocked.description": "Cette demande a été bloquée par nos vérifications de sécurité. Si vous pensez qu'il s'agit d'une erreur, contactez le support pour rétablir l'accès.",
@@ -89,6 +91,7 @@
   "response.GoogleAIBlockReason.SAFETY": "Le contenu a été bloqué pour des raisons de sécurité. Veuillez l'ajuster et réessayer.",
   "response.GoogleAIBlockReason.SPII": "Le contenu peut inclure des informations personnelles sensibles (SPII). Veuillez supprimer les détails sensibles et réessayer.",
   "response.GoogleAIBlockReason.default": "Le contenu a été bloqué ({{blockReason}}). Veuillez l'ajuster et réessayer.",
+  "response.InsufficientBudgetForAgentRunFee": "Crédits insuffisants pour payer les frais d'exécution de l'agent. Chaque exécution d'agent entraîne des frais, même sur votre propre compte CLI. Rechargez votre compte ou mettez à niveau votre forfait, puis réessayez.",
   "response.InsufficientBudgetForModel": "Votre solde restant est insuffisant pour ce modèle. Veuillez recharger votre compte, mettre à niveau votre forfait ou essayer un modèle moins coûteux.",
   "response.InvalidAccessCode": "Code d'accès invalide ou vide. Veuillez entrer le bon code ou ajouter une clé API personnalisée.",
   "response.LobeHubModelDeprecated": "Le modèle \"{{model}}\" n'est plus disponible. Veuillez choisir un modèle actuel dans le sélecteur de modèles.",

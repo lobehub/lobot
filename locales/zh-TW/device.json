@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "私人",
+  "visibility.private.notice": "{{name}} 是您的私人設備：只有您可以使用在其上執行的代理。若要讓其他工作區成員使用這些代理，請在該設備的設定中將其發佈至工作區。",
+  "visibility.private.openSettings": "開啟設備設定",
   "workingDirectory.addFolder": "新增資料夾…",
   "workingDirectory.addFolderDesc": "輸入目標設備上的絕對路徑，例如 /Users/name/projects",
   "workingDirectory.addFolderFailed": "無法新增此資料夾。請再試一次。",

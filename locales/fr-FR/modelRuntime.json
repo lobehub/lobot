@@ -45,6 +45,7 @@
   "ProviderNetworkError": "La connexion au fournisseur a expiré ou a été interrompue. Veuillez vérifier votre réseau et réessayer.",
   "ProviderNoImageGenerated": "Le fournisseur n'a généré aucune image pour cette demande. Essayez de reformuler la demande ou choisissez un modèle qui prend en charge la génération d'images.",
   "ProviderServiceUnavailable": "Le fournisseur est temporairement surchargé ou indisponible. Veuillez réessayer sous peu.",
+  "ProviderStreamInterrupted": "Le fournisseur a fermé la connexion avant d'avoir terminé la réponse. Il s'agit généralement d'un problème temporaire, veuillez réessayer.",
   "QuotaLimitReached": "Désolé, l'utilisation des jetons ou le nombre de requêtes a atteint la limite de quota pour cette clé. Veuillez augmenter le quota de la clé ou réessayer plus tard.",
   "RateLimitExceeded": "Désolé, l'utilisation des jetons ou le nombre de requêtes a atteint la limite de débit pour cette clé. Veuillez réessayer plus tard ou augmenter le quota de la clé.",
   "RemoteMediaDownloadTimeout": "Le fournisseur a dépassé le délai lors du téléchargement d'une image ou d'un fichier joint. Veuillez réessayer.",

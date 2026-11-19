@@ -45,6 +45,7 @@
   "ProviderNetworkError": "Die Verbindung zum Anbieter wurde unterbrochen oder ist abgelaufen. Bitte überprüfen Sie Ihr Netzwerk und versuchen Sie es erneut.",
   "ProviderNoImageGenerated": "Der Anbieter hat kein Bild für diese Anfrage zurückgegeben. Versuchen Sie, die Anfrage umzuformulieren, oder wählen Sie ein Modell, das die Bildgenerierung unterstützt.",
   "ProviderServiceUnavailable": "Der Anbieter ist vorübergehend überlastet oder nicht verfügbar. Bitte versuchen Sie es in Kürze erneut.",
+  "ProviderStreamInterrupted": "Der Anbieter hat die Verbindung geschlossen, bevor die Antwort vollständig war. Dies ist in der Regel vorübergehend, bitte versuchen Sie es erneut.",
   "QuotaLimitReached": "Entschuldigung, die Token-Nutzung oder die Anzahl der Anfragen hat das Kontingentlimit für diesen Schlüssel erreicht. Bitte erhöhen Sie das Kontingent des Schlüssels oder versuchen Sie es später erneut.",
   "RateLimitExceeded": "Entschuldigung, die Token-Nutzung oder die Anzahl der Anfragen hat das Ratenlimit für diesen Schlüssel erreicht. Bitte versuchen Sie es später erneut oder erhöhen Sie das Kontingent des Schlüssels.",
   "RemoteMediaDownloadTimeout": "Der Anbieter hat beim Herunterladen eines angehängten Bildes oder einer Datei eine Zeitüberschreitung erreicht. Bitte versuchen Sie es erneut.",

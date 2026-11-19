@@ -3,7 +3,7 @@ import * as stylex from '@stylexjs/stylex';
 
 export const AVATAR_SIZE = 32;
 /** Pinned tiles use a card-sized avatar over the compact row one. */
-export const PINNED_AVATAR_SIZE = 56;
+export const PINNED_AVATAR_SIZE = 52;
 
 export const styles = stylex.create({
   avatar: {
@@ -190,9 +190,9 @@ export const styles = stylex.create({
     alignItems: 'center',
     justifyContent: 'center',
 
-    width: 96,
-    height: 96,
-    paddingBlock: '8px',
+    width: 88,
+    height: 88,
+    paddingBlock: '6px',
     paddingInline: '8px',
     borderRadius: cssVar.borderRadiusLG,
 

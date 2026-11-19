@@ -45,6 +45,7 @@
   "ProviderNetworkError": "A conexão com o provedor expirou ou foi interrompida. Por favor, verifique sua rede e tente novamente.",
   "ProviderNoImageGenerated": "O provedor não retornou nenhuma imagem para esta solicitação. Tente reformular a solicitação ou escolha um modelo que suporte geração de imagens.",
   "ProviderServiceUnavailable": "O provedor está temporariamente sobrecarregado ou indisponível. Por favor, tente novamente em breve.",
+  "ProviderStreamInterrupted": "O provedor fechou a conexão antes de terminar a resposta. Isso geralmente é temporário; por favor, tente novamente.",
   "QuotaLimitReached": "Desculpe, o uso de tokens ou a contagem de solicitações atingiu o limite de cota para esta chave. Por favor, aumente a cota da chave ou tente novamente mais tarde.",
   "RateLimitExceeded": "Desculpe, o uso de tokens ou a contagem de solicitações atingiu o limite de taxa para esta chave. Por favor, tente novamente mais tarde ou aumente a cota da chave.",
   "RemoteMediaDownloadTimeout": "O provedor excedeu o tempo limite ao baixar uma imagem ou arquivo anexado. Por favor, tente novamente.",

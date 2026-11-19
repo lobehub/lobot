@@ -66,7 +66,11 @@ const DebugLogs = memo(() => {
       },
       {
         children: (
-          <Button icon={FolderOpen} onClick={() => desktopSettingsService.openLogDirectory()}>
+          <Button
+            icon={FolderOpen}
+            type="fill"
+            onClick={() => desktopSettingsService.openLogDirectory()}
+          >
             {t('settingAbout.debugLogs.openDirectory')}
           </Button>
         ),

@@ -40,6 +40,9 @@ vi.mock('@lobehub/ui', () => ({
     />
   ),
   Text: ({ children }: { children: ReactNode }) => <span>{children}</span>,
+  Tooltip: ({ children, title }: { children: ReactNode; title?: string }) => (
+    <div title={title}>{children}</div>
+  ),
   toast: { warning: vi.fn() },
   useModalContext: () => ({ close: vi.fn(), setCanDismissByClickOutside: vi.fn() }),
 }));
@@ -57,16 +60,22 @@ vi.mock('../privateAgentJoin', () => ({
 }));
 vi.mock('./MemberSelection', () => ({
   MemberSelection: ({
+    footer,
+    notice,
     people,
   }: {
+    footer?: ReactNode;
+    notice?: ReactNode;
     people?: { onChange: (people: { userId: string }[]) => void };
   }) => (
     <div data-testid={'members'}>
+      {notice}
       {people && (
         <button type={'button'} onClick={() => people.onChange([{ userId: 'usr_3' }])}>
           pick person
         </button>
       )}
+      {footer}
     </div>
   ),
 }));
@@ -105,6 +114,7 @@ describe('CreateChannel', () => {
     mocks.workspaceId = 'ws_1';
     renderDialog(() => openCreateChannel());
     expect(screen.getByRole('checkbox', { name: 'private' })).not.toBeChecked();
+    expect(screen.getByTitle('create.privateHint')).toBeInTheDocument();
     await submit();
     await waitFor(() => expect(mocks.updateVisibility).toHaveBeenCalledWith('chn_new', 'public'));
   });
@@ -144,7 +154,8 @@ describe('CreateChannel', () => {
         onCreated,
       ),
     );
-    expect(screen.getByText('invite.directHint')).toBeInTheDocument();
+    expect(screen.getByTestId('channel-title')).toBeInTheDocument();
+    expect(screen.queryByText('invite.directHint')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'pick person' }));
     expect(await submit()).toMatchObject({ agents: [], userIds: ['usr_2', 'usr_3'] });
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith('chn_new'));

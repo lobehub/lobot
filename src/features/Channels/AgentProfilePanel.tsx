@@ -6,7 +6,7 @@ import * as stylex from '@stylexjs/stylex';
 import { SquareArrowOutUpRightIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { AgentPresenceDot, AgentPresenceLabel } from '@/features/ContactList/AgentPresenceBadge';
+import { AgentPresenceLabel } from '@/features/ContactList/AgentPresenceBadge';
 import { useAgentPresence } from '@/features/ContactList/useAgentPresence';
 import { useAgentStore } from '@/store/agent';
 import { agentSelectors } from '@/store/agent/selectors';
@@ -21,36 +21,26 @@ import { SharedAgentOwner, useSharedAgentOwner } from './SharedAgentOwner';
 import { useOpenDirectAgent } from './useOpenDirectAgent';
 
 const styles = stylex.create({
-  avatar: {
-    position: 'relative',
-    display: 'inline-flex',
-  },
   description: {
     fontSize: '13px',
     lineHeight: '20px',
     color: cssVar.colorTextSecondary,
     whiteSpace: 'pre-wrap',
+    overflowWrap: 'anywhere',
   },
   detail: {
     paddingBlock: '16px',
     paddingInline: '16px',
-    borderBlockStartWidth: '1px',
-    borderBlockStartStyle: 'solid',
-    borderBlockStartColor: cssVar.colorBorderSecondary,
   },
   hero: {
-    paddingBlockStart: '28px',
-    paddingBlockEnd: '16px',
-    paddingInline: '40px',
+    paddingBlockStart: '16px',
+    paddingBlockEnd: '8px',
+    paddingInline: '16px',
     textAlign: 'center',
   },
   label: {
-    fontSize: '12px',
-    color: cssVar.colorTextTertiary,
-  },
-  placeholder: {
     fontSize: '13px',
-    color: cssVar.colorTextQuaternary,
+    color: cssVar.colorTextSecondary,
   },
   role: {
     overflow: 'hidden',
@@ -106,7 +96,6 @@ export function AgentProfilePanel({
       closeLabel={t('profile.hide')}
       id={id}
       label={t('profile.title')}
-      title={t('profile.title')}
       actions={
         openAgent && (
           <ActionIcon
@@ -122,31 +111,27 @@ export function AgentProfilePanel({
     >
       <Flexbox style={{ minHeight: 0, overflowY: 'auto' }}>
         <Flexbox align="center" gap={6} {...stylex.props(styles.hero)}>
-          <span {...stylex.props(styles.avatar)}>
-            <MemberAvatar member={member} size={64} />
-            {presence && <AgentPresenceDot presence={presence} size="small" />}
-          </span>
+          <MemberAvatar member={member} size={64} />
           <Text ellipsis fontSize={17} style={{ maxWidth: '100%' }} weight={600}>
             {name}
           </Text>
           {roleLine && <span {...stylex.props(styles.role)}>{roleLine}</span>}
           {presence && <AgentPresenceLabel presence={presence} />}
         </Flexbox>
-        <Flexbox gap={20} {...stylex.props(styles.detail)}>
+        <Flexbox gap={24} {...stylex.props(styles.detail)}>
           {owner && (
             <Flexbox gap={6}>
               <span {...stylex.props(styles.label)}>{t('profile.owner')}</span>
               <SharedAgentOwner owner={owner} />
             </Flexbox>
           )}
-          <Flexbox gap={6}>
-            <span {...stylex.props(styles.label)}>{t('profile.about')}</span>
-            {member.description ? (
+          {member.description?.trim() && (
+            <Flexbox gap={8}>
+              <span {...stylex.props(styles.label)}>{t('profile.about')}</span>
               <span {...stylex.props(styles.description)}>{member.description}</span>
-            ) : (
-              <span {...stylex.props(styles.placeholder)}>{t('profile.noDescription')}</span>
-            )}
-          </Flexbox>
+            </Flexbox>
+          )}
+          {!shared && <AgentSchedules agentId={agentId} />}
           {!shared && (
             <AgentProfileEnvironment
               agentId={agentId}
@@ -155,7 +140,6 @@ export function AgentProfilePanel({
               member={member}
             />
           )}
-          {!shared && <AgentSchedules agentId={agentId} />}
         </Flexbox>
       </Flexbox>
     </ChannelSidePanel>

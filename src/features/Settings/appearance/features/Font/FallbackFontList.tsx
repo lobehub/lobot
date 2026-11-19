@@ -96,7 +96,7 @@ const FallbackFontList = ({
           block
           disabled={atLimit}
           icon={PlusIcon}
-          type={'dashed'}
+          type={'fill'}
           onClick={() => setAdding(true)}
         >
           {atLimit

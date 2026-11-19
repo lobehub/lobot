@@ -45,6 +45,7 @@
   "ProviderNetworkError": "Kết nối với nhà cung cấp đã hết thời gian hoặc bị ngắt. Vui lòng kiểm tra mạng của bạn và thử lại.",
   "ProviderNoImageGenerated": "Nhà cung cấp không trả về hình ảnh nào cho yêu cầu này. Hãy thử diễn đạt lại yêu cầu hoặc chọn một mô hình hỗ trợ tạo hình ảnh.",
   "ProviderServiceUnavailable": "Nhà cung cấp tạm thời quá tải hoặc không khả dụng. Vui lòng thử lại sau.",
+  "ProviderStreamInterrupted": "Nhà cung cấp đã đóng kết nối trước khi hoàn thành phản hồi. Đây thường chỉ là sự cố tạm thời, vui lòng thử lại.",
   "QuotaLimitReached": "Rất tiếc, việc sử dụng token hoặc số lượng yêu cầu đã đạt đến giới hạn hạn mức cho khóa này. Vui lòng tăng hạn mức của khóa hoặc thử lại sau.",
   "RateLimitExceeded": "Rất tiếc, việc sử dụng token hoặc số lượng yêu cầu đã đạt đến giới hạn tốc độ cho khóa này. Vui lòng thử lại sau hoặc tăng hạn mức của khóa.",
   "RemoteMediaDownloadTimeout": "Nhà cung cấp đã hết thời gian khi tải xuống hình ảnh hoặc tệp đính kèm. Vui lòng thử lại.",

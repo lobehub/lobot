@@ -34,6 +34,10 @@ const SubPageFrame = ({ children, right, tab, title }: SubPageFrameProps) => {
   return (
     <>
       <NavHeader
+        height={36}
+        paddingBlockEnd={0}
+        paddingBlockStart={0}
+        paddingInline={24}
         right={right}
         showTogglePanelButton={false}
         left={
@@ -52,10 +56,11 @@ const SubPageFrame = ({ children, right, tab, title }: SubPageFrameProps) => {
         }
       />
       <SettingContainer
+        height={'auto'}
         maxWidth={getSettingsContainerMaxWidth(tab)}
-        paddingBlock={'24px 128px'}
+        paddingBlock="0 48px"
         paddingInline={24}
-        style={{ background: 'transparent' }}
+        style={{ background: 'transparent', overflowX: 'visible', overflowY: 'visible' }}
       >
         {children}
       </SettingContainer>

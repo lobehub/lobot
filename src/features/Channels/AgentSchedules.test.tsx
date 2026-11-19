@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { SWRConfig } from 'swr';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -50,6 +50,10 @@ describe('AgentSchedules', () => {
       expect.objectContaining({ assigneeAgentId: 'agt_1', automated: true }),
     );
     expect(screen.queryByText('Task f')).not.toBeInTheDocument();
+    const card = screen.getByRole('group', { name: 'profile.schedules' });
+    expect(within(card).getAllByRole('switch')).toHaveLength(5);
+    expect(card).not.toContainElement(screen.getByText('profile.schedules'));
+    expect(within(card).getByRole('button', { name: 'profile.schedules.expand' })).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: 'profile.schedules.expand' }));
     expect(screen.getByText('Task f')).toBeInTheDocument();
@@ -111,5 +115,6 @@ describe('AgentSchedules', () => {
     const title = screen.getByText('profile.schedules');
     const box = title.parentElement!.parentElement!;
     expect(box).toContainElement(row);
+    expect(screen.queryByRole('group', { name: 'profile.schedules' })).toBeNull();
   });
 });

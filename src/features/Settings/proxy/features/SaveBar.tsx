@@ -52,15 +52,6 @@ const styles = stylex.create({
     paddingBlock: 0,
     paddingInline: '12px',
     borderRadius: '999px',
-    color: {
-      'default': `${cssVar.colorTextSecondary} !important`,
-      ':hover': `${cssVar.colorText} !important`,
-    },
-    backgroundColor: {
-      'default': 'transparent',
-      ':hover': `${cssVar.colorFillSecondary} !important`,
-    },
-    backgroundImage: 'none',
   },
   saveButton: {
     height: '28px',
@@ -100,7 +91,7 @@ const SaveBar = memo<SaveBarProps>(({ isDirty, isSaving, onReset, onSave }) => {
               className={stylex.props(styles.resetButton).className}
               disabled={isSaving}
               size="small"
-              type="text"
+              type="fill"
               onClick={onReset}
             >
               {t('proxy.resetButton')}
@@ -109,7 +100,7 @@ const SaveBar = memo<SaveBarProps>(({ isDirty, isSaving, onReset, onSave }) => {
               className={stylex.props(styles.saveButton).className}
               loading={isSaving}
               size="small"
-              type="primary"
+              type="fill"
               onClick={onSave}
             >
               {t('proxy.saveButton')}

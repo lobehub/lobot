@@ -11,20 +11,6 @@ import {
 } from '@lobehub/ui/form';
 import { type CSSProperties, type ReactNode } from 'react';
 
-const SURFACE_CARD_STYLE: CSSProperties = {
-  background: 'color-mix(in srgb, var(--lobe-color-text) 8%, var(--lobe-color-bg-container))',
-  minWidth: 0,
-  overflow: 'visible',
-  overflowX: 'visible',
-  overflowY: 'visible',
-};
-
-const SURFACE_BODY_STYLE: CSSProperties = {
-  minWidth: 0,
-  paddingBlock: 8,
-  paddingInline: 16,
-};
-
 interface SettingsSurfaceGroupProps {
   children: ReactNode;
   desc?: ReactNode;
@@ -65,8 +51,8 @@ export const SettingsSurfaceGroup = ({
           {extra}
         </Flexbox>
       )}
-      <Surface padded={false} style={SURFACE_CARD_STYLE}>
-        <div style={SURFACE_BODY_STYLE}>
+      <Surface padded={false} style={{ minWidth: 0 }}>
+        <div style={{ paddingInline: 16 }}>
           <Form.Group collapsible={false} variant={'borderless'}>
             {children}
           </Form.Group>

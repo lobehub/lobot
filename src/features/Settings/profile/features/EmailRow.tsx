@@ -68,30 +68,25 @@ const EmailRow = () => {
 
   // Desktop OIDC and Better Auth sessions are not bridged, so change-email can only
   // be completed on the web app.
+  const openWebProfile = () => {
+    if (!appOrigin) return;
+    void electronSystemService.openExternalLink(urlJoin(appOrigin, '/settings/profile'));
+  };
+
   if (isDesktop)
     return (
-      <Form.Field
-        divider
-        label={label}
-        minWidth={undefined}
-        extra={
-          <Text
-            style={{ cursor: 'pointer', fontSize: 13 }}
-            onClick={() => {
-              if (!appOrigin) return;
-              void electronSystemService.openExternalLink(urlJoin(appOrigin, '/settings/profile'));
-            }}
-          >
+      <Form.Field divider label={label} minWidth={undefined}>
+        <Flexbox horizontal align={'center'} gap={12} style={{ maxWidth: '100%', minWidth: 0 }}>
+          <Text ellipsis type={'secondary'}>
+            {email || '--'}
+          </Text>
+          <Text style={{ cursor: 'pointer', flex: 'none', fontSize: 13 }} onClick={openWebProfile}>
             <Flexbox horizontal align={'center'} gap={4}>
               {t('profile.updateEmail')}
               <Icon icon={ExternalLinkIcon} size={12} />
             </Flexbox>
           </Text>
-        }
-      >
-        <Text ellipsis type={'secondary'}>
-          {email || '--'}
-        </Text>
+        </Flexbox>
       </Form.Field>
     );
 
@@ -103,18 +98,14 @@ const EmailRow = () => {
       extra={
         isEditing ? (
           <Flexbox horizontal gap={8}>
-            <Button disabled={saving} size="small" onClick={handleCancel}>
+            <Button disabled={saving} size="small" type="fill" onClick={handleCancel}>
               {t('profile.cancel')}
             </Button>
-            <Button loading={saving} size="small" type="primary" onClick={handleSave}>
+            <Button loading={saving} size="small" type="fill" onClick={handleSave}>
               {t('profile.save')}
             </Button>
           </Flexbox>
-        ) : (
-          <Text style={{ cursor: 'pointer', fontSize: 13 }} onClick={handleStartEdit}>
-            {t('profile.updateEmail')}
-          </Text>
-        )
+        ) : null
       }
     >
       {isEditing ? (
@@ -132,9 +123,14 @@ const EmailRow = () => {
           onPressEnter={handleSave}
         />
       ) : (
-        <Text ellipsis type={'secondary'}>
-          {email || '--'}
-        </Text>
+        <Flexbox horizontal align={'center'} gap={12} style={{ maxWidth: '100%', minWidth: 0 }}>
+          <Text ellipsis type={'secondary'}>
+            {email || '--'}
+          </Text>
+          <Text style={{ cursor: 'pointer', flex: 'none', fontSize: 13 }} onClick={handleStartEdit}>
+            {t('profile.updateEmail')}
+          </Text>
+        </Flexbox>
       )}
     </Form.Field>
   );

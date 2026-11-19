@@ -2,7 +2,7 @@ import {
   COMPLETION_BUILTIN_SOUNDS,
   type CompletionSoundSettings,
 } from '@lobechat/electron-client-ipc';
-import { Alert, Button, Flexbox, Segmented, Select, Slider, Switch } from '@lobehub/ui';
+import { Alert, Button, Flexbox, Select, Slider, Switch } from '@lobehub/ui';
 import { useForm } from '@lobehub/ui/form';
 import { Play } from 'lucide-react';
 import { useCallback, useEffect, useId, useState } from 'react';
@@ -84,7 +84,7 @@ export const DesktopNotificationSettings = () => {
           description={t('completionSound.error')}
           type={'error'}
           action={
-            <Button onClick={() => run(completionSoundService.getSettings)}>
+            <Button type="fill" onClick={() => run(completionSoundService.getSettings)}>
               {t('completionSound.retry')}
             </Button>
           }
@@ -113,7 +113,7 @@ export const DesktopNotificationSettings = () => {
               children: [
                 {
                   children: (
-                    <Segmented<ChannelNotificationLevel>
+                    <Select
                       value={channelLevel}
                       options={[
                         { label: t('channelNotification.level.all'), value: 'all' },
@@ -121,7 +121,10 @@ export const DesktopNotificationSettings = () => {
                         { label: t('channelNotification.level.off'), value: 'off' },
                       ]}
                       onChange={(channelNotificationLevel) =>
-                        updateSystemStatus({ channelNotificationLevel })
+                        updateSystemStatus({
+                          channelNotificationLevel:
+                            channelNotificationLevel as ChannelNotificationLevel,
+                        })
                       }
                     />
                   ),
@@ -158,9 +161,16 @@ export const DesktopNotificationSettings = () => {
                 },
                 {
                   children: (
-                    <Flexbox horizontal align={'center'} gap={8} justify={'flex-end'}>
+                    <Flexbox
+                      horizontal
+                      align={'center'}
+                      gap={8}
+                      justify={'flex-end'}
+                      width={'100%'}
+                    >
                       <Select
                         disabled={busy}
+                        style={{ flex: 1, minWidth: 0 }}
                         value={settings.name ? IMPORTED : settings.builtin}
                         options={[
                           ...(settings.name ? [{ label: settings.name, value: IMPORTED }] : []),
@@ -179,7 +189,9 @@ export const DesktopNotificationSettings = () => {
                       <Button
                         disabled={settings.volume === 0}
                         icon={Play}
+                        style={{ flex: 'none' }}
                         title={t('completionSound.preview')}
+                        type="fill"
                         onClick={() => report(() => completionSoundService.play({ preview: true }))}
                       />
                     </Flexbox>
@@ -214,22 +226,36 @@ export const DesktopNotificationSettings = () => {
               children: [
                 {
                   children: (
-                    <Flexbox horizontal align={'center'} gap={8} justify={'flex-end'}>
-                      <Button
-                        icon={Play}
-                        title={t('completionSound.preview')}
-                        onClick={previewBanner}
-                      />
-                      <Segmented<CompletionSoundSettings['notificationSound']>
+                    <Flexbox
+                      horizontal
+                      align={'center'}
+                      gap={8}
+                      justify={'flex-end'}
+                      width={'100%'}
+                    >
+                      <Select
                         disabled={busy}
+                        style={{ flex: 1, minWidth: 0 }}
                         value={settings.notificationSound}
                         options={[
                           { label: t('completionSound.banner.system'), value: 'system' },
                           { label: t('completionSound.banner.lobehub'), value: 'lobehub' },
                         ]}
                         onChange={(notificationSound) =>
-                          run(() => completionSoundService.setSettings({ notificationSound }))
+                          run(() =>
+                            completionSoundService.setSettings({
+                              notificationSound:
+                                notificationSound as CompletionSoundSettings['notificationSound'],
+                            }),
+                          )
                         }
+                      />
+                      <Button
+                        icon={Play}
+                        style={{ flex: 'none' }}
+                        title={t('completionSound.preview')}
+                        type="fill"
+                        onClick={previewBanner}
                       />
                     </Flexbox>
                   ),

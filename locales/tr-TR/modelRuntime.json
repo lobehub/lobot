@@ -45,6 +45,7 @@
   "ProviderNetworkError": "Sağlayıcıya bağlantı zaman aşımına uğradı veya kesildi. Lütfen ağınızı kontrol edip yeniden deneyin.",
   "ProviderNoImageGenerated": "Sağlayıcı bu istek için bir görüntü döndürmedi. İsteği yeniden ifade etmeyi deneyin veya görüntü oluşturmayı destekleyen bir model seçin.",
   "ProviderServiceUnavailable": "Sağlayıcı geçici olarak aşırı yüklenmiş veya kullanılamıyor. Lütfen kısa bir süre sonra yeniden deneyin.",
+  "ProviderStreamInterrupted": "Sağlayıcı, yanıtı tamamlamadan bağlantıyı kapattı. Bu genellikle geçicidir, lütfen tekrar deneyin.",
   "QuotaLimitReached": "Üzgünüz, jeton kullanımı veya istek sayısı bu anahtar için kota sınırına ulaştı. Lütfen anahtarın kotasını artırın veya daha sonra yeniden deneyin.",
   "RateLimitExceeded": "Üzgünüz, jeton kullanımı veya istek sayısı bu anahtar için hız sınırına ulaştı. Lütfen daha sonra yeniden deneyin veya anahtarın kotasını artırın.",
   "RemoteMediaDownloadTimeout": "Sağlayıcı, ekli bir görüntü veya dosyayı indirirken zaman aşımına uğradı. Lütfen tekrar deneyin.",

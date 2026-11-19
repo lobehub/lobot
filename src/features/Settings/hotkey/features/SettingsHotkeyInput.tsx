@@ -7,7 +7,11 @@ import { memo } from 'react';
 const styles = createStaticStyles(({ css, cssVar }) => ({
   root: css`
     .lobe-hotkey-input__control {
+      box-sizing: border-box;
+      flex-shrink: 0;
       gap: 8px;
+      /* Fits the longest default binding (Ctrl Shift ?) plus the clear button. */
+      width: 192px;
     }
 
     .lobe-hotkey-input__value :is(.lobe-hotkey, .lobe-hotkey__kbd) {

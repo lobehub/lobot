@@ -2,24 +2,53 @@ import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 
 export const pickerStyles = stylex.create({
-  /** Candidates sit on a tinted pane so the chosen side reads as the result, like WeChat. */
+  /** The dialog is the two panes. A line splits them; neither pane is another card. */
   candidates: {
-    padding: 12,
-    backgroundColor: cssVar.colorFillQuaternary,
+    flex: '1',
+    minWidth: 0,
+    minHeight: 0,
+    height: '100%',
+    borderInlineEndWidth: 1,
+    borderInlineEndStyle: 'solid',
+    borderInlineEndColor: cssVar.colorBorderSecondary,
   },
   picker: {
     overflow: 'hidden',
     display: 'flex',
-    height: 500,
-    maxHeight: '55vh',
-    minHeight: 240,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: cssVar.colorBorderSecondary,
-    borderRadius: cssVar.borderRadiusLG,
+    height: 520,
+    maxHeight: '68vh',
+    minHeight: 360,
   },
-  pane: { flex: '1', minWidth: 0, minHeight: 0, overflowY: 'auto' },
-  selected: { padding: 12 },
+  search: {
+    flex: 'none',
+    // The modal title bar already pads its bottom edge, so the body starts flush.
+    paddingBlockEnd: 8,
+    paddingInline: 16,
+  },
+  list: {
+    flex: '1',
+    minWidth: 0,
+    minHeight: 0,
+  },
+  listContent: {
+    paddingInline: 8,
+    paddingBlockEnd: 8,
+  },
+  /** Chosen members scroll between the name and the actions. */
+  aside: {
+    flex: '1',
+    minWidth: 0,
+    minHeight: 0,
+    height: '100%',
+  },
+  selected: {
+    flex: '1',
+    minWidth: 0,
+    minHeight: 0,
+    overflowY: 'auto',
+    paddingBlock: 8,
+    paddingInline: 8,
+  },
   row: {
     display: 'flex',
     alignItems: 'center',

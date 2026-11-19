@@ -45,6 +45,7 @@
   "ProviderNetworkError": "Połączenie z dostawcą zostało przerwane lub przekroczono limit czasu. Proszę sprawdzić swoje połączenie sieciowe i spróbować ponownie.",
   "ProviderNoImageGenerated": "Dostawca nie zwrócił obrazu dla tego żądania. Spróbuj sformułować żądanie inaczej lub wybierz model obsługujący generowanie obrazów.",
   "ProviderServiceUnavailable": "Dostawca jest tymczasowo przeciążony lub niedostępny. Proszę spróbować ponownie za chwilę.",
+  "ProviderStreamInterrupted": "Dostawca zamknął połączenie przed ukończeniem odpowiedzi. Zwykle jest to problem tymczasowy, proszę spróbować ponownie.",
   "QuotaLimitReached": "Przepraszamy, wykorzystanie tokenów lub liczba żądań osiągnęły limit przydziału dla tego klucza. Proszę zwiększyć przydział klucza lub spróbować ponownie później.",
   "RateLimitExceeded": "Przepraszamy, wykorzystanie tokenów lub liczba żądań osiągnęły limit szybkości dla tego klucza. Proszę spróbować ponownie później lub zwiększyć przydział klucza.",
   "RemoteMediaDownloadTimeout": "Dostawca przekroczył limit czasu podczas pobierania załączonego obrazu lub pliku. Spróbuj ponownie.",

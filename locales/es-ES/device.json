@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "Privado",
+  "visibility.private.notice": "{{name}} es tu dispositivo privado: solo tú puedes usar los Agentes que se ejecutan en él. Para que otros miembros del espacio de trabajo puedan usarlos, publícalo en el espacio de trabajo desde la configuración del dispositivo.",
+  "visibility.private.openSettings": "Abrir configuración del dispositivo",
   "workingDirectory.addFolder": "Agregar carpeta…",
   "workingDirectory.addFolderDesc": "Introduce una ruta absoluta en el dispositivo de destino, por ejemplo, /Usuarios/nombre/proyectos",
   "workingDirectory.addFolderFailed": "No se pudo agregar esta carpeta. Por favor, inténtalo de nuevo.",

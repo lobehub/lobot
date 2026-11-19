@@ -1,4 +1,7 @@
 {
+  "visibility.private.badge": "Özel",
+  "visibility.private.notice": "{{name}} sizin özel cihazınız: üzerinde çalışan Ajanları yalnızca siz kullanabilirsiniz. Diğer çalışma alanı üyelerinin bunları kullanabilmesi için cihaz ayarlarından çalışma alanına yayımlayın.",
+  "visibility.private.openSettings": "Cihaz ayarlarını aç",
   "workingDirectory.addFolder": "Klasör ekle…",
   "workingDirectory.addFolderDesc": "Hedef cihazda mutlak bir yol girin, ör. /Users/name/projects",
   "workingDirectory.addFolderFailed": "Bu klasör eklenemedi. Lütfen tekrar deneyin.",

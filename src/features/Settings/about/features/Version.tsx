@@ -4,9 +4,7 @@ import {
   type UpdaterState,
   useWatchBroadcast,
 } from '@lobechat/electron-client-ipc';
-import { Block, Button, Flexbox, Tag, Tooltip } from '@lobehub/ui';
-import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
-import * as stylex from '@stylexjs/stylex';
+import { Button, Flexbox, Tag, Tooltip } from '@lobehub/ui';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -48,8 +46,6 @@ const OtaVersionTag = memo(() => {
 });
 
 OtaVersionTag.displayName = 'OtaVersionTag';
-
-const styles = stylex.create({ logo: { borderRadius: `calc(${cssVar.borderRadiusLG} * 2)` } });
 
 const Version = memo<{ mobile?: boolean }>(({ mobile }) => {
   const hasNewVersion = useNewVersion();
@@ -111,7 +107,7 @@ const Version = memo<{ mobile?: boolean }>(({ mobile }) => {
       if (hasNewVersion) {
         return (
           <a href={MANUAL_UPGRADE_URL} rel="noreferrer" style={{ flex: 1 }} target="_blank">
-            <Button block={mobile} type={'primary'}>
+            <Button block={mobile} type="fill">
               {t('upgradeVersion.action')}
             </Button>
           </a>
@@ -120,7 +116,12 @@ const Version = memo<{ mobile?: boolean }>(({ mobile }) => {
       // A failed update check must not read as "up to date" — offer a retry.
       if (updateCheckError) {
         return (
-          <Button block={mobile} loading={isCheckingUpdate} onClick={() => recheckUpdate()}>
+          <Button
+            block={mobile}
+            loading={isCheckingUpdate}
+            type="fill"
+            onClick={() => recheckUpdate()}
+          >
             {t('checkForUpdates')}
           </Button>
         );
@@ -133,7 +134,7 @@ const Version = memo<{ mobile?: boolean }>(({ mobile }) => {
     switch (stage) {
       case 'checking': {
         return (
-          <Button loading block={mobile}>
+          <Button loading block={mobile} type="fill">
             {t('checkForUpdates')}
           </Button>
         );
@@ -141,21 +142,21 @@ const Version = memo<{ mobile?: boolean }>(({ mobile }) => {
       case 'downloading': {
         const percent = progress ? Math.round(progress.percent) : 0;
         return (
-          <Button loading block={mobile}>
+          <Button loading block={mobile} type="fill">
             {t('downloadingUpdate', { percent })}
           </Button>
         );
       }
       case 'downloaded': {
         return (
-          <Button block={mobile} type="primary" onClick={() => void autoUpdateService.installNow()}>
+          <Button block={mobile} type="fill" onClick={() => void autoUpdateService.installNow()}>
             {t('restartToUpdate')}
           </Button>
         );
       }
       case 'latest': {
         return (
-          <Button disabled block={mobile}>
+          <Button disabled block={mobile} type="fill">
             {t('alreadyUpToDate')}
           </Button>
         );
@@ -166,14 +167,16 @@ const Version = memo<{ mobile?: boolean }>(({ mobile }) => {
         return (
           <Tooltip title={t('updateUnsupported.desc')}>
             <a href={DOWNLOAD_URL.default} rel="noreferrer" style={{ flex: 1 }} target="_blank">
-              <Button block={mobile}>{t('updateUnsupported.action')}</Button>
+              <Button block={mobile} type="fill">
+                {t('updateUnsupported.action')}
+              </Button>
             </a>
           </Tooltip>
         );
       }
       default: {
         return (
-          <Button block={mobile} onClick={() => void autoUpdateService.checkUpdate()}>
+          <Button block={mobile} type="fill" onClick={() => void autoUpdateService.checkUpdate()}>
             {t('checkForUpdates')}
           </Button>
         );
@@ -190,17 +193,8 @@ const Version = memo<{ mobile?: boolean }>(({ mobile }) => {
       width={'100%'}
     >
       <Flexbox horizontal align={'center'} flex={'none'} gap={16}>
-        <a href={OFFICIAL_SITE} rel="noreferrer" target="_blank">
-          <Block
-            clickable
-            align={'center'}
-            className={stylex.props(styles.logo).className}
-            height={64}
-            justify={'center'}
-            width={64}
-          >
-            <ProductLogo size={52} />
-          </Block>
+        <a href={OFFICIAL_SITE} rel="noreferrer" style={{ display: 'flex' }} target="_blank">
+          <ProductLogo size={52} />
         </a>
         <Flexbox align={'flex-start'} gap={6}>
           <div style={{ fontSize: 18, fontWeight: 'bolder' }}>{BRANDING_NAME}</div>
@@ -234,7 +228,9 @@ const Version = memo<{ mobile?: boolean }>(({ mobile }) => {
       </Flexbox>
       <Flexbox horizontal flex={mobile ? 1 : undefined} gap={8}>
         <a href={CHANGELOG_URL} rel="noreferrer" style={{ flex: 1 }} target="_blank">
-          <Button block={mobile}>{t('changelog')}</Button>
+          <Button block={mobile} type="fill">
+            {t('changelog')}
+          </Button>
         </a>
         {renderUpdateButton()}
       </Flexbox>
