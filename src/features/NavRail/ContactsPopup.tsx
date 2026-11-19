@@ -1,6 +1,6 @@
 'use client';
 
-import { ActionIcon, Flexbox, Modal, ScrollArea, SearchBar } from '@lobehub/ui';
+import { ActionIcon, DraggablePanel, Flexbox, Modal, ScrollArea, SearchBar } from '@lobehub/ui';
 import { CirclePlusIcon } from 'lucide-react';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,10 @@ interface ContactsPopupProps {
 
 // Same size as the Messages list "+" beside the search box.
 const ADD_ICON_SIZE = { blockSize: 32, size: 20, strokeWidth: 1.5 };
+
+const LIST_WIDTH = 280;
+const LIST_MIN_WIDTH = 240;
+const LIST_MAX_WIDTH = 400;
 
 const ContactsContent = memo<{ preview: ContactPreview }>(({ preview }) => {
   switch (preview.kind) {
@@ -81,6 +85,8 @@ const ContactsPopup = memo<ContactsPopupProps>(({ open, onClose }) => {
   const channelsEnabled = useChannelsEnabled();
   const preview = useContactsPopupStore((s) => s.preview);
   const setPreview = useContactsPopupStore((s) => s.setPreview);
+  const listCollapsed = useContactsPopupStore((s) => s.listCollapsed);
+  const setListCollapsed = useContactsPopupStore((s) => s.setListCollapsed);
   const [query, setQuery] = useState('');
   // Each time the popup opens, start from an empty search. Adjusting state
   // while rendering is how a prop change resets state without an effect.
@@ -125,10 +131,17 @@ const ContactsPopup = memo<ContactsPopupProps>(({ open, onClose }) => {
     >
       <ContactPreviewContext.Provider value={previewValue}>
         <Flexbox horizontal style={{ height: '100%', minHeight: 0, overflow: 'hidden' }}>
-          <Flexbox
-            flex={'none'}
-            height={'100%'}
-            style={{ minWidth: 0, overflow: 'hidden', width: 280 }}
+          {/* The seam between list and page folds the list away, like the app's own sidebar. */}
+          <DraggablePanel
+            showHandleWhenCollapsed
+            backgroundColor={'transparent'}
+            defaultSize={{ height: '100%', width: LIST_WIDTH }}
+            expand={!listCollapsed}
+            maxWidth={LIST_MAX_WIDTH}
+            minWidth={LIST_MIN_WIDTH}
+            placement={'left'}
+            styles={{ content: { minWidth: 0, overflow: 'hidden' } }}
+            onExpandChange={(expand) => setListCollapsed(!expand)}
           >
             <Flexbox
               horizontal
@@ -163,7 +176,7 @@ const ContactsPopup = memo<ContactsPopupProps>(({ open, onClose }) => {
             >
               <ContactListBody query={query} />
             </ScrollArea>
-          </Flexbox>
+          </DraggablePanel>
           <ScrollArea
             disableContentFit
             key={previewPaneKey(preview)}

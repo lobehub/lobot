@@ -5,7 +5,12 @@ import * as activeWorkspaceSlugModule from '@/business/client/hooks/useActiveWor
 import { openContactsFromUrl, useContactsPopupStore } from './contactsPopupStore';
 
 const resetStore = () =>
-  useContactsPopupStore.setState({ open: false, preview: { kind: 'home' }, segment: null });
+  useContactsPopupStore.setState({
+    listCollapsed: false,
+    open: false,
+    preview: { kind: 'home' },
+    segment: null,
+  });
 
 describe('openContactsFromUrl', () => {
   afterEach(() => {
@@ -53,5 +58,33 @@ describe('openContactsFromUrl', () => {
     expect(openContactsFromUrl('/agent/agt_1/profile')).toBe(false);
     expect(openContactsFromUrl('agents')).toBe(false);
     expect(useContactsPopupStore.getState().open).toBe(false);
+  });
+
+  it('folds the contact list only when the caller asks, and a fresh open shows it again', () => {
+    vi.spyOn(activeWorkspaceSlugModule, 'getActiveWorkspaceSlug').mockReturnValue(null);
+
+    openContactsFromUrl('/agents/agt_1', { listCollapsed: true });
+    expect(useContactsPopupStore.getState()).toMatchObject({
+      listCollapsed: true,
+      open: true,
+      preview: { id: 'agt_1', kind: 'agent' },
+    });
+
+    useContactsPopupStore.getState().closeContacts();
+    openContactsFromUrl('/agents/agt_1');
+    expect(useContactsPopupStore.getState()).toMatchObject({ listCollapsed: false, open: true });
+  });
+
+  it('keeps what the person folded when another contact opens in the open popup', () => {
+    vi.spyOn(activeWorkspaceSlugModule, 'getActiveWorkspaceSlug').mockReturnValue(null);
+
+    openContactsFromUrl('/agents/agt_1');
+    useContactsPopupStore.getState().setListCollapsed(true);
+    openContactsFromUrl('/agents/agt_2');
+
+    expect(useContactsPopupStore.getState()).toMatchObject({
+      listCollapsed: true,
+      preview: { id: 'agt_2', kind: 'agent' },
+    });
   });
 });

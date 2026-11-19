@@ -6,8 +6,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AgentCardActions } from './AgentCardActions';
 
-const { navigate, openDirect, params, state } = vi.hoisted(() => ({
+const { navigate, openContactsFromUrl, openDirect, params, state } = vi.hoisted(() => ({
   navigate: vi.fn(),
+  openContactsFromUrl: vi.fn(),
   openDirect: vi.fn(),
   params: { channelId: undefined as string | undefined },
   state: { directId: undefined as string | undefined },
@@ -18,6 +19,7 @@ vi.mock('react-router', () => ({ useParams: () => params }));
 vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
   useWorkspaceAwareNavigate: () => navigate,
 }));
+vi.mock('@/features/NavRail/contactsPopupStore', () => ({ openContactsFromUrl }));
 vi.mock('@/store/channel', () => ({
   channelActions: { openDirect },
   channelSelectors: {
@@ -50,13 +52,26 @@ describe('AgentCardActions', () => {
     expect(onDone).toHaveBeenCalled();
   });
 
-  it('opens the Agent profile from "View profile"', () => {
+  it('opens the Agent profile from "View profile" with the contact list folded', () => {
+    openContactsFromUrl.mockReturnValue(true);
+    renderActions();
+
+    fireEvent.click(screen.getByText('contacts.viewProfile'));
+
+    expect(openContactsFromUrl).toHaveBeenCalledWith('/agents/agt_justin', {
+      listCollapsed: true,
+    });
+    expect(navigate).not.toHaveBeenCalled();
+    expect(onDone).toHaveBeenCalled();
+  });
+
+  it('navigates to the profile when it is not a contacts page', () => {
+    openContactsFromUrl.mockReturnValue(false);
     renderActions();
 
     fireEvent.click(screen.getByText('contacts.viewProfile'));
 
     expect(navigate).toHaveBeenCalledWith('/agents/agt_justin');
-    expect(onDone).toHaveBeenCalled();
   });
 
   it('leaves out "Send message" inside the conversation with that Agent', () => {

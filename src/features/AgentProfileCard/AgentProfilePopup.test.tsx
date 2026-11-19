@@ -8,12 +8,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import AgentProfilePopup from './AgentProfilePopup';
 
-const { detail, navigate, useFetchList } = vi.hoisted(() => ({
+const { detail, navigate, openContactsFromUrl, useFetchList } = vi.hoisted(() => ({
   detail: {
     current: undefined as
       { agencyConfig?: { heterogeneousProvider?: { type?: string } } } | undefined,
   },
   navigate: vi.fn(),
+  openContactsFromUrl: vi.fn(),
   useFetchList: vi.fn(),
 }));
 
@@ -58,6 +59,7 @@ vi.mock('@/features/ResourcePermission/useResourceAccess', () => ({
 vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
   useWorkspaceAwareNavigate: () => navigate,
 }));
+vi.mock('@/features/NavRail/contactsPopupStore', () => ({ openContactsFromUrl }));
 vi.mock('@/hooks/usePermission', () => ({ usePermission: () => ({ allowed: false }) }));
 vi.mock('@/store/home', () => ({
   useHomeStore: (selector: (s: unknown) => unknown) => selector({}),
@@ -76,6 +78,7 @@ vi.mock('@/store/contact', () => ({
 beforeEach(() => {
   detail.current = undefined;
   navigate.mockClear();
+  openContactsFromUrl.mockReset();
   useFetchList.mockClear();
 });
 
@@ -95,7 +98,8 @@ describe('AgentProfilePopup', () => {
     expect(useFetchList).toHaveBeenLastCalledWith(true);
   });
 
-  it('opens a contact Agent on its Contacts page', () => {
+  it('opens a contact Agent on its Contacts page with the contact list folded', () => {
+    openContactsFromUrl.mockReturnValue(true);
     render(
       <AgentProfilePopup agentId={'agt_shared'} trigger={'hover'}>
         <span />
@@ -104,7 +108,10 @@ describe('AgentProfilePopup', () => {
 
     fireEvent.click(screen.getByText('header'));
 
-    expect(navigate).toHaveBeenCalledWith('/agents/agt_shared');
+    expect(openContactsFromUrl).toHaveBeenCalledWith('/agents/agt_shared', {
+      listCollapsed: true,
+    });
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it('offers message and profile actions for an Agent the person can talk to', () => {

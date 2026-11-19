@@ -27,6 +27,7 @@ import { ModelIcon } from '@/components/LobeIcons';
 import { ArticleSkeleton } from '@/components/Skeleton';
 import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { CONTACT_URL } from '@/features/ContactList/const';
+import { openContactsFromUrl } from '@/features/NavRail/contactsPopupStore';
 import { useResourceAccess } from '@/features/ResourcePermission/useResourceAccess';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { usePermission } from '@/hooks/usePermission';
@@ -187,6 +188,8 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
 
     const handleHeaderClick = () => {
       setOpen(false);
+      // Same as "View profile": this one contact's page, with the list folded away.
+      if (contactUrl && openContactsFromUrl(contactUrl, { listCollapsed: true })) return;
       navigate(contactUrl ?? `/agent/${agentId}/profile`);
     };
 

@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router';
 
+import { openContactsFromUrl } from '@/features/NavRail/contactsPopupStore';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 
@@ -80,7 +81,8 @@ export const AgentCardActions = ({ agentId, onDone, profileUrl }: AgentCardActio
         type={'fill'}
         onClick={() => {
           onDone();
-          navigate(profileUrl);
+          // The card already picked one contact, so its profile opens without the list beside it.
+          if (!openContactsFromUrl(profileUrl, { listCollapsed: true })) navigate(profileUrl);
         }}
       >
         {t('contacts.viewProfile')}
