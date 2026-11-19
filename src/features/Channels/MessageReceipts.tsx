@@ -50,6 +50,27 @@ export const replyEntries = (
   });
 
 /**
+ * Where each failed reply shows: after the last message its member already posted in answer
+ * to the request (an opening, a partial reply), or right after the request when it said nothing.
+ * Keyed by that message's id.
+ */
+export const failureAnchors = (messages: ChannelPublicMessage[], entries: ReplyEntry[]) => {
+  const anchors = new Map<string, ReplyEntry[]>();
+  for (const entry of entries) {
+    const { job } = entry;
+    const answer = messages.findLast(
+      (message) =>
+        message.replyToId === job.messageId &&
+        (message.author.id === job.memberId ||
+          (!!entry.agentId && message.agentId === entry.agentId)),
+    );
+    const anchor = answer?.id ?? job.messageId;
+    anchors.set(anchor, [...(anchors.get(anchor) ?? []), entry]);
+  }
+  return anchors;
+};
+
+/**
  * One reply: its state, why it failed or what device it waits for, and how to stop it or open
  * its Agent. `manageable` viewers (Channel admins) also see that device and can change it.
  */

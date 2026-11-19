@@ -1,12 +1,13 @@
 /**
  * @vitest-environment happy-dom
  */
-import type { ChannelPublicJob } from '@lobot/types';
+import type { ChannelPublicJob, ChannelPublicMessage } from '@lobot/types';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { createElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ReplyDetail } from './MessageReceipts';
+import type { ReplyEntry } from './MessageReceipts';
+import { failureAnchors, ReplyDetail } from './MessageReceipts';
 
 const retryJob = vi.fn();
 const openInWebApp = vi.fn();
@@ -99,5 +100,35 @@ describe('ReplyDetail topic', () => {
     renderAgentReply(runningJob());
 
     expect(screen.queryByText('receipt.openTopic')).toBeNull();
+  });
+});
+
+describe('failureAnchors', () => {
+  const message = (id: string, fields: Partial<ChannelPublicMessage> = {}) =>
+    ({
+      agentId: null,
+      author: { id: null },
+      id,
+      replyToId: null,
+      ...fields,
+    }) as ChannelPublicMessage;
+  const entry = { agentId: 'agt_a', job: { memberId: 'mem_a', messageId: 'req' } } as ReplyEntry;
+
+  it('follows what the failed Agent already said about the request', () => {
+    const anchors = failureAnchors(
+      [
+        message('req'),
+        message('ack', { agentId: 'agt_a', replyToId: 'req' }),
+        message('other', { agentId: 'agt_b', replyToId: 'req' }),
+        message('later'),
+      ],
+      [entry],
+    );
+    expect([...anchors.keys()]).toEqual(['ack']);
+  });
+
+  it('sits right after the request when the Agent said nothing', () => {
+    const anchors = failureAnchors([message('req'), message('later')], [entry]);
+    expect([...anchors.keys()]).toEqual(['req']);
   });
 });

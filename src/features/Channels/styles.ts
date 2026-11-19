@@ -4,17 +4,28 @@ import * as stylex from '@stylexjs/stylex';
 const HOVER = '@media (hover: hover)';
 
 export const styles = stylex.create({
-  /** The body of a failed reply posted in the feed: its reason and the way to retry. */
-  replyFailureCard: {
-    alignSelf: 'flex-start',
-    maxWidth: 560,
-    paddingBlock: 10,
-    paddingInline: 12,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: cssVar.colorErrorBorder,
-    borderRadius: cssVar.borderRadiusLG,
-    backgroundColor: cssVar.colorErrorBg,
+  /** A failed reply, as one system line: avatar, name, state, reason and a retry. */
+  replyFailure: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 6,
+    minWidth: 0,
+  },
+  replyFailureName: {
+    flexShrink: 0,
+    fontWeight: 500,
+    color: cssVar.colorText,
+  },
+  replyFailureState: {
+    flexShrink: 0,
+    color: cssVar.colorError,
+  },
+  /** The server's diagnostic can run long; it gives way first, whole on hover. */
+  replyFailureReason: {
+    minWidth: 0,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
   layout: {
     display: 'flex',

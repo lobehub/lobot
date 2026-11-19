@@ -35,7 +35,7 @@ import {
   presentChannelTimeline,
   visibleChannelMessages,
 } from './messagePresentation';
-import { replyEntries, type ReplyEntry } from './MessageReceipts';
+import { failureAnchors, replyEntries, type ReplyEntry } from './MessageReceipts';
 import { presentOutgoingMessage, timelineTail } from './outgoing';
 import { OutgoingStatus } from './OutgoingStatus';
 import { channelTitle } from './peerTitle';
@@ -180,17 +180,19 @@ const Timeline = ({
         !detail.hasMore && before === undefined,
       )
     : [];
-  // Failed replies this conversation still owes, each posted under the message it answers.
-  const failures = new Map<string, ReplyEntry[]>();
-  if (detail)
-    for (const entry of replyEntries(
-      detail,
-      unresolvedFailures(
-        (detail.jobs ?? []).filter((job) => (job.threadId ?? null) === (threadId ?? null)),
-      ),
-      t('unnamedAgent'),
-    ))
-      failures.set(entry.job.messageId, [...(failures.get(entry.job.messageId) ?? []), entry]);
+  // Failed replies this conversation still owes, each after what its Agent already said.
+  const failures = detail
+    ? failureAnchors(
+        messages,
+        replyEntries(
+          detail,
+          unresolvedFailures(
+            (detail.jobs ?? []).filter((job) => (job.threadId ?? null) === (threadId ?? null)),
+          ),
+          t('unnamedAgent'),
+        ),
+      )
+    : new Map<string, ReplyEntry[]>();
   const presented = presentChannelTimeline(timeline);
 
   return (
