@@ -8,6 +8,10 @@ export default {
   'builtins.lobe-channel.moreHistory': 'Earlier messages are available',
   'builtins.lobe-channel.empty': 'No messages are visible in this conversation.',
   'builtins.lobe-channel.apiName.readMessage': 'Read Channel message',
+  'builtins.lobe-channel.apiName.listChannels': 'List Channels',
+  'builtins.lobe-channel.apiName.listPeople': 'List people',
+  'builtins.lobe-channel.apiName.messagePerson': 'Message a person',
+  'builtins.lobe-channel.apiName.sendMessage': 'Message an Agent',
 
   'builtins.lobe-attachments.apiName.readAttachment': 'Read attachment',
   'builtins.lobe-attachments.title': 'Attachments',

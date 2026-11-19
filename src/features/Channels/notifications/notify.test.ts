@@ -104,6 +104,18 @@ describe('buildChannelBanner', () => {
     });
   });
 
+  it('says which Agent relayed a message between two people', () => {
+    const peer = channel({ peerUserId: 'u2', title: 'Arvin Xu' });
+    const relayed = {
+      ...message('LiJian', 'Report is ready'),
+      via: { agentId: 'agt_1', avatar: null, name: 'Lobe AI' },
+    };
+    expect(buildChannelBanner({ channel: peer, kind: 'message' }, relayed)).toEqual({
+      body: 'Report is ready',
+      title: 'notification.relayedTitle(agent=Lobe AI,name=LiJian)',
+    });
+  });
+
   it('names the other person from the list when the message page could not load', () => {
     const peer = channel({
       memberAvatars: [
