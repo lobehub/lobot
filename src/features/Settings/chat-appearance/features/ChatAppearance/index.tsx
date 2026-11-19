@@ -7,7 +7,6 @@ import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoSaveHint from '@/components/Editor/AutoSaveHint';
-import { ChatAppearanceSectionSkeleton } from '@/components/Skeleton/Settings/tabs/Appearance';
 import { FORM_STYLE } from '@/const/layoutTokens';
 import SettingsForm, { SettingsSurfaceGroup } from '@/features/Settings/features/SettingsForm';
 import { useSaveState } from '@/hooks/useSaveState';
@@ -23,12 +22,10 @@ const ChatAppearance = memo(() => {
   const { t } = useTranslation('setting');
   const { general } = useUserStore(settingsSelectors.currentSettings, isEqual);
   const enablePasteAutoConvert = useUserStore(userGeneralSettingsSelectors.enablePasteAutoConvert);
-  const [setSettings, isUserStateInit] = useUserStore((s) => [s.setSettings, s.isUserStateInit]);
+  const setSettings = useUserStore((s) => s.setSettings);
   const { status: saveStatus, lastSavedAt, save, retry } = useSaveState();
   const [savingKey, setSavingKey] = useState<string>();
   const form = useForm();
-
-  if (!isUserStateInit) return <ChatAppearanceSectionSkeleton />;
 
   const handleChange = (key: string, value: any) => {
     setSavingKey(key);

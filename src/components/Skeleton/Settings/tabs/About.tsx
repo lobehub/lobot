@@ -1,6 +1,7 @@
 'use client';
 
 import { BRANDING_NAME } from '@lobechat/business-const';
+import { isDesktop } from '@lobechat/const';
 import { Divider, Flexbox, Grid } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import { useTranslation } from 'react-i18next';
@@ -81,6 +82,21 @@ const Body = () => {
       </SettingsSurfaceGroup>
       <SettingsFormSkeleton
         groups={[
+          ...(isDesktop
+            ? [
+                {
+                  items: [
+                    {
+                      control: { height: 32, width: 160 },
+                      desc: setting('tab.advanced.updateChannel.desc', 240, 12),
+                      label: setting('tab.advanced.updateChannel.title', 80, 14),
+                      minWidth: undefined,
+                    },
+                  ],
+                  title: setting('tab.advanced.appUpdates.title', 72, 18),
+                },
+              ]
+            : []),
           {
             items: [
               {
@@ -96,6 +112,28 @@ const Body = () => {
             ],
             title: setting('analytics.title', 64),
           },
+          ...(isDesktop
+            ? [
+                {
+                  items: [
+                    {
+                      control: SWITCH_CONTROL,
+                      desc: setting('settingAbout.debugLogs.desc', 240, 12),
+                      label: setting('settingAbout.debugLogs.title', 72, 14),
+                      minWidth: undefined,
+                    },
+                    {
+                      control: { height: 32, radius: 8, width: 96 },
+                      desc: setting('settingAbout.debugLogs.openDirectoryDesc', 200, 12),
+                      divider: true,
+                      label: setting('settingAbout.debugLogs.directory', 64, 14),
+                      minWidth: undefined,
+                    },
+                  ],
+                  title: setting('settingAbout.diagnostics.title', 56, 18),
+                },
+              ]
+            : []),
         ]}
       />
     </Flexbox>

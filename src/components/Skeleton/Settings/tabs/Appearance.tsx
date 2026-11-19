@@ -8,7 +8,7 @@ import { SettingsSurfaceGroup } from '@/features/Settings/features/SettingsForm'
 import SkeletonBar from '../../Bar';
 import { SettingsFormSkeleton, SWITCH_CONTROL } from '../Section';
 import { useSkeletonText } from '../useSkeletonText';
-import type { SettingsTabSkeleton } from './types';
+import type { SettingsTabSkeleton, SettingsTabSkeletonProps } from './types';
 
 /** The idle auto-save hint ("loaded the latest version") on the right of a group head. */
 const SAVE_HINT = <SkeletonBar height={20} width={102} />;
@@ -113,37 +113,44 @@ export const ChatAppearanceSectionSkeleton = () => {
   );
 };
 
+/** A settings select, the same 32×140 control the appearance rows use. */
+const SELECT = { height: 32, width: 140 };
+
 /**
- * The appearance tab's form groups: color theme (preview, theme cards, accent
- * dots), text size, then the rows that open the font and chat pages.
+ * The appearance tab: common selects (theme, accent, languages), the message
+ * preview with the font-size slider, then the display rows.
  */
-const Body = () => {
+const AppearanceBody = () => {
   const text = useSkeletonText('setting');
+  const select = (key: string, width: number) => ({
+    control: SELECT,
+    label: text(key, width, 14),
+    minWidth: undefined as undefined,
+  });
 
   return (
     <Flexbox aria-busy gap={20}>
-      <SettingsSurfaceGroup title={text('settingAppearance.colorTheme.title', 56, 18)}>
-        <SkeletonBar height={176} radius={8} />
-        <Flexbox horizontal gap={16} paddingBlock={8}>
-          {[0, 1, 2].map((key) => (
-            <Flexbox align={'center'} gap={8} key={key}>
-              <SkeletonBar height={64} radius={12} width={96} />
-              <SkeletonBar height={14} width={40} />
-            </Flexbox>
-          ))}
-        </Flexbox>
-        <Flexbox horizontal gap={8} paddingBlock={8}>
-          {Array.from({ length: 13 }, (_, key) => (
-            <SkeletonBar height={24} key={key} radius={'50%'} width={24} />
-          ))}
-        </Flexbox>
-      </SettingsSurfaceGroup>
-      <SettingsSurfaceGroup
-        desc={text('settingChatAppearance.fontSize.desc', 96, 12)}
-        title={text('settingChatAppearance.fontSize.title', 56, 18)}
-      >
-        <Flexbox gap={24} paddingBlock={8}>
-          <SkeletonBar height={4} />
+      <SettingsFormSkeleton
+        groups={[
+          {
+            items: [
+              select('settingCommon.themeMode.title', 64),
+              { ...select('settingAppearance.primaryColor.title', 56), divider: true },
+              { ...select('settingCommon.lang.interfaceTitle', 72), divider: true },
+              {
+                ...select('settingCommon.responseLanguage.title', 72),
+                desc: text('settingCommon.responseLanguage.desc', 240, 12),
+                divider: true,
+              },
+            ],
+            title: text('group.common', 32, 18),
+          },
+        ]}
+      />
+      <SettingsSurfaceGroup title={text('settingChatAppearance.fontSize.title', 56, 18)}>
+        <Flexbox gap={12} paddingBlock={8}>
+          <SkeletonBar height={120} radius={8} />
+          <SkeletonBar height={28} />
         </Flexbox>
       </SettingsSurfaceGroup>
       <SettingsFormSkeleton
@@ -157,11 +164,13 @@ const Body = () => {
               },
               {
                 control: { height: 16, width: 16 },
+                divider: true,
                 label: text('settingAppearance.chatDisplay.title', 64, 14),
                 minWidth: undefined,
               },
               {
                 control: { height: 32, width: 200 },
+                divider: true,
                 label: text('settingAppearance.animationMode.title', 64, 14),
                 minWidth: undefined,
               },
@@ -169,18 +178,25 @@ const Body = () => {
                 ? [
                     {
                       control: SWITCH_CONTROL,
+                      divider: true,
                       label: text('settingAppearance.appTray.title', 96, 14),
                       minWidth: undefined,
                     },
                   ]
                 : []),
             ],
-            title: null,
+            title: text('settingAppearance.display.title', 32, 18),
           },
         ]}
       />
     </Flexbox>
   );
+};
+
+const Body = ({ sub }: SettingsTabSkeletonProps) => {
+  if (sub === 'font') return <FontSectionSkeleton />;
+  if (sub === 'chat') return <ChatAppearanceSectionSkeleton />;
+  return <AppearanceBody />;
 };
 
 const AppearanceSkeleton: SettingsTabSkeleton = { Body };

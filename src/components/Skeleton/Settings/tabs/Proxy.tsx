@@ -1,48 +1,84 @@
 'use client';
 
-import SettingsSectionSkeleton from '../Section';
+import { Flexbox } from '@lobehub/ui';
+
+import SkeletonBar from '../../Bar';
+import { SettingsFormSkeleton, SWITCH_CONTROL } from '../Section';
 import { useSkeletonText } from '../useSkeletonText';
 import type { SettingsTabSkeleton } from './types';
 
+const INPUT = { height: 32, width: 240 };
+
+/** Two radio choices, the shape of the proxy type row. */
+const TypeControl = () => (
+  <Flexbox horizontal align={'center'} gap={16}>
+    <SkeletonBar height={16} radius={'50%'} width={16} />
+    <SkeletonBar height={14} width={48} />
+    <SkeletonBar height={16} radius={'50%'} width={16} />
+    <SkeletonBar height={14} width={40} />
+  </Flexbox>
+);
+
 /**
- * The proxy form: enable, basic settings (type / server / port), auth and
- * connection-test groups of one grouped form, 16px apart. Credentials stay
- * hidden until the proxy and auth are enabled, so the auth group has one row.
+ * The proxy form: enable, type / server / port, auth (credentials stay hidden
+ * until both the proxy and auth are on) and the connection test.
  */
 const Body = () => {
   const text = useSkeletonText('electron');
 
   return (
-    <SettingsSectionSkeleton
-      gap={16}
+    <SettingsFormSkeleton
       groups={[
         {
-          control: { height: 22, width: 44 },
-          labels: [text('proxy.enable', 64)],
-          rows: 1,
-          title: text('proxy.enable', 64, 18),
+          items: [
+            {
+              control: SWITCH_CONTROL,
+              label: text('proxy.enable', 72, 14),
+              minWidth: undefined,
+            },
+          ],
+          title: text('proxy.enable', 72, 18),
         },
         {
-          controls: {
-            0: { height: 22, width: 220 },
-            1: { height: 32, width: 336 },
-            2: { height: 32, width: 120 },
-          },
-          labels: [text('proxy.type', 40), text('proxy.server', 56), text('proxy.port', 40)],
-          rows: 3,
+          items: [
+            {
+              control: <TypeControl />,
+              label: text('proxy.type', 40, 14),
+              minWidth: undefined,
+            },
+            {
+              control: INPUT,
+              divider: true,
+              label: text('proxy.server', 56, 14),
+              minWidth: undefined,
+            },
+            {
+              control: { height: 32, width: 120 },
+              divider: true,
+              label: text('proxy.port', 40, 14),
+              minWidth: undefined,
+            },
+          ],
           title: text('proxy.basicSettings', 80, 18),
-          withDesc: [false, true, true],
         },
         {
-          control: { height: 22, width: 44 },
-          labels: [text('proxy.auth', 72)],
-          rows: 1,
+          items: [
+            {
+              control: SWITCH_CONTROL,
+              label: text('proxy.auth', 72, 14),
+              minWidth: undefined,
+            },
+          ],
           title: text('proxy.authSettings', 80, 18),
         },
         {
-          control: { height: 32, width: 264 },
-          labels: [text('proxy.testUrl', 72)],
-          rows: 1,
+          items: [
+            {
+              control: INPUT,
+              label: text('proxy.testUrl', 72, 14),
+              minWidth: undefined,
+            },
+          ],
           title: text('proxy.connectionTest', 80, 18),
         },
       ]}

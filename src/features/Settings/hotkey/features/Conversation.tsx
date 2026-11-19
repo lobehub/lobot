@@ -7,7 +7,6 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoSaveHint from '@/components/Editor/AutoSaveHint';
-import { ConversationHotkeysSkeleton } from '@/components/Skeleton/Settings/tabs/Hotkey';
 import { HOTKEYS_REGISTRATION } from '@/const/hotkeys';
 import { FORM_STYLE } from '@/const/layoutTokens';
 import SettingsForm from '@/features/Settings/features/SettingsForm';
@@ -23,15 +22,13 @@ import SettingsHotkeyInput from './SettingsHotkeyInput';
 const HotkeySetting = memo(() => {
   const { t } = useTranslation(['setting', 'hotkey']);
   const { hotkey } = useUserStore(settingsSelectors.currentSettings, isEqual);
-  const [setSettings, isUserStateInit] = useUserStore((s) => [s.setSettings, s.isUserStateInit]);
+  const setSettings = useUserStore((s) => s.setSettings);
   const { status: saveStatus, lastSavedAt, save, retry } = useSaveState();
   const form = useForm({
     initialValues: hotkey,
     values: hotkey,
     onValuesChange: (values) => save(() => setSettings({ hotkey: values })),
   });
-
-  if (!isUserStateInit) return <ConversationHotkeysSkeleton />;
 
   const clearHotkeyBinding = (id: HotkeyItem['id']) => {
     if (!hotkey[id]) return;

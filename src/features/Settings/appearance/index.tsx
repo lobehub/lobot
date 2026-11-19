@@ -8,7 +8,6 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useWorkspaceStore } from '@/business/client/workspace/store';
-import AppearanceSkeleton from '@/components/Skeleton/Settings/tabs/Appearance';
 import { FORM_STYLE } from '@/const/layoutTokens';
 import FormNavField from '@/features/Settings/features/FormNavField';
 import SettingHeader from '@/features/Settings/features/SettingHeader';
@@ -36,7 +35,6 @@ const SELECT_STYLE = { minWidth: 140 };
 
 const Page = ({ showSettingHeader = true }: PageProps) => {
   const { t } = useTranslation('setting');
-  const isUserStateInit = useUserStore((s) => s.isUserStateInit);
   const fontSize = useUserStore(userGeneralSettingsSelectors.fontSize);
   const animationMode = useUserStore(userGeneralSettingsSelectors.animationMode);
   const showWorkspaceRail = useUserStore(userGeneralSettingsSelectors.showWorkspaceRail);
@@ -56,14 +54,6 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
   );
 
   const header = showSettingHeader && <SettingHeader title={t('tab.appearance')} />;
-
-  if (!isUserStateInit)
-    return (
-      <>
-        {header}
-        <AppearanceSkeleton.Body />
-      </>
-    );
 
   const items: FormGroupItem[] = [
     {

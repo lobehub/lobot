@@ -26,7 +26,9 @@ const ProfileSetting = ({ showSettingHeader = true }: ProfileSettingProps) => {
     userProfileSelectors.userProfile(s),
     s.isLoaded,
   ]);
-  const isLoading = !isUserLoaded;
+  // A profile already in the store paints immediately. The skeleton is only the
+  // first moment before auth has resolved and there is no user to show.
+  const isLoading = !isUserLoaded && !userProfile;
   const form = useForm();
 
   const { t } = useTranslation('auth');

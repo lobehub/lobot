@@ -174,6 +174,8 @@ export interface SettingsFormSkeletonItem {
   control?: { height: number; radius?: number | string; width?: number | string } | ReactNode;
   /** The field's real description (static copy). */
   desc?: ReactNode;
+  /** A rule above the field, as the loaded form draws between rows. */
+  divider?: boolean;
   /** The field's real label (static copy). */
   label: ReactNode;
   /** The loaded field's layout, e.g. `vertical` for a full-width preview. */
@@ -206,13 +208,14 @@ const isControlSize = (
 export const SettingsFormSkeleton = ({ groups }: { groups: SettingsFormSkeletonGroup[] }) => {
   const form = useForm();
   const items: FormGroupItem[] = groups.map((group) => ({
-    children: group.items.map(({ control, desc, label, layout, ...rest }) => ({
+    children: group.items.map(({ control, desc, divider, label, layout, ...rest }) => ({
       children: isControlSize(control) ? (
         <SkeletonBar height={control.height} radius={control.radius} width={control.width} />
       ) : (
         (control ?? <SkeletonBar height={32} />)
       ),
       desc,
+      divider,
       label,
       layout,
       ...('minWidth' in rest ? { minWidth: rest.minWidth } : {}),

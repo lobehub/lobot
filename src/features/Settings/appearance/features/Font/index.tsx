@@ -7,7 +7,6 @@ import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoSaveHint from '@/components/Editor/AutoSaveHint';
-import { FontSectionSkeleton } from '@/components/Skeleton/Settings/tabs/Appearance';
 import { FORM_STYLE } from '@/const/layoutTokens';
 import SettingsForm from '@/features/Settings/features/SettingsForm';
 import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
@@ -28,7 +27,6 @@ const FontSettings = memo(() => {
   const fontAntialiasing = useUserStore(userGeneralSettingsSelectors.fontAntialiasing);
   const updatePreference = useUserStore((s) => s.updatePreference);
   const setSettings = useUserStore((s) => s.setSettings);
-  const isUserStateInit = useUserStore((s) => s.isUserStateInit);
   const { status: saveStatus, lastSavedAt, save, retry } = useSaveState();
   const form = useForm();
 
@@ -53,8 +51,6 @@ const FontSettings = memo(() => {
     save(() => updatePreference({ fontFamily: joinFontStack(stack) }));
   const saveMonospaceStack = (stack: string[]) =>
     save(() => updatePreference({ terminalFontFamily: joinFontStack(stack) }));
-
-  if (!isUserStateInit) return <FontSectionSkeleton />;
 
   const font: FormGroupItem = {
     children: [

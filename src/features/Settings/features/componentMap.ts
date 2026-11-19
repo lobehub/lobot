@@ -1,36 +1,23 @@
-import { createElement } from 'react';
-
-import { SettingsChunkSkeleton } from '@/components/Skeleton/Settings/Page';
-import dynamic from '@/libs/next/dynamic';
 import { SettingsTabs } from '@/store/global/initialState';
 
-const loading = (_debugId: string) => () => createElement(SettingsChunkSkeleton);
+import About from '../about';
+import Appearance from '../appearance';
+import Hotkey from '../hotkey';
+import Language from '../language';
+import { DesktopNotificationSettings } from '../notification';
+import Profile from '../profile';
+import Proxy from '../proxy';
 
 /**
- * Lobot keeps only the everyday, Telegram-like sections. Configuration surfaces
- * such as providers, skills or OAuth apps are intentionally absent.
+ * Lobot keeps only the everyday sections. They are imported directly so opening
+ * the settings popup paints the page itself instead of a chunk skeleton.
  */
 export const componentMap = {
-  [SettingsTabs.Profile]: dynamic(() => import('../profile'), {
-    loading: loading('Settings > Profile'),
-  }),
-  [SettingsTabs.Appearance]: dynamic(() => import('../appearance'), {
-    loading: loading('Settings > Appearance'),
-  }),
-  [SettingsTabs.Language]: dynamic(() => import('../language'), {
-    loading: loading('Settings > Language'),
-  }),
-  [SettingsTabs.Notification]: dynamic(
-    () => import('../notification').then((m) => ({ default: m.DesktopNotificationSettings })),
-    { loading: loading('Settings > Notification') },
-  ),
-  [SettingsTabs.Hotkey]: dynamic(() => import('../hotkey'), {
-    loading: loading('Settings > Hotkey'),
-  }),
-  [SettingsTabs.Proxy]: dynamic(() => import('../proxy'), {
-    loading: loading('Settings > Proxy'),
-  }),
-  [SettingsTabs.About]: dynamic(() => import('../about'), {
-    loading: loading('Settings > About'),
-  }),
+  [SettingsTabs.Profile]: Profile,
+  [SettingsTabs.Appearance]: Appearance,
+  [SettingsTabs.Language]: Language,
+  [SettingsTabs.Notification]: DesktopNotificationSettings,
+  [SettingsTabs.Hotkey]: Hotkey,
+  [SettingsTabs.Proxy]: Proxy,
+  [SettingsTabs.About]: About,
 };
