@@ -1,5 +1,5 @@
-import { ActionIcon, copyToClipboard, Flexbox, Text, toast } from '@lobehub/ui';
-import { DownloadIcon, LinkIcon } from 'lucide-react';
+import { ActionIcon, copyToClipboard, DropdownMenu, Flexbox, Text, toast } from '@lobehub/ui';
+import { DownloadIcon, LinkIcon, MoreHorizontal } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { getFileDownloadUrl } from '@/features/EditorCanvas/fileDownload';
@@ -18,6 +18,10 @@ interface AttachmentFile {
 const useAttachmentDownloadUrl = (file: AttachmentFile) =>
   getFileDownloadUrl(file.url, { appOrigin: useAppOrigin(), fileId: file.id });
 
+// Synchronous with the click, so popup blockers let the download through.
+const openDownload = (downloadUrl: string) =>
+  window.open(downloadUrl, '_blank', 'noopener,noreferrer');
+
 export const DownloadAttachmentButton = ({ file }: { file: AttachmentFile }) => {
   const { t } = useTranslation('channel');
   const downloadUrl = useAttachmentDownloadUrl(file);
@@ -29,38 +33,45 @@ export const DownloadAttachmentButton = ({ file }: { file: AttachmentFile }) => 
       icon={DownloadIcon}
       size="small"
       title={label}
-      // Synchronous with the click, so popup blockers let the download through.
-      onClick={() => window.open(downloadUrl, '_blank', 'noopener,noreferrer')}
+      onClick={() => openDownload(downloadUrl)}
     />
   );
 };
 
-export const CopyAttachmentLinkButton = ({ file }: { file: AttachmentFile }) => {
-  const { t } = useTranslation('channel');
+/** Preview modal title: the file name, with its actions behind "more". */
+export const AttachmentPreviewTitle = ({ file }: { file: AttachmentFile & { name: string } }) => {
+  const { t } = useTranslation(['channel', 'common']);
   const downloadUrl = useAttachmentDownloadUrl(file);
-  const label = t('attachments.copyLink');
 
   return (
-    <ActionIcon
-      aria-label={label}
-      icon={LinkIcon}
-      size="small"
-      title={label}
-      onClick={async () => {
-        await copyToClipboard(downloadUrl);
-        toast.success(t('attachments.copyLinkSuccess'));
-      }}
-    />
+    <Flexbox horizontal align={'center'} gap={8} style={{ minWidth: 0 }}>
+      <Text ellipsis>{file.name}</Text>
+      <DropdownMenu
+        items={[
+          {
+            icon: LinkIcon,
+            key: 'copyLink',
+            label: t('attachments.copyLink'),
+            onClick: async () => {
+              await copyToClipboard(downloadUrl);
+              toast.success(t('attachments.copyLinkSuccess'));
+            },
+          },
+          {
+            icon: DownloadIcon,
+            key: 'download',
+            label: t('attachments.download'),
+            onClick: () => openDownload(downloadUrl),
+          },
+        ]}
+      >
+        <ActionIcon
+          aria-label={t('more', { ns: 'common' })}
+          icon={MoreHorizontal}
+          size="small"
+          title={t('more', { ns: 'common' })}
+        />
+      </DropdownMenu>
+    </Flexbox>
   );
 };
-
-/** Preview modal title: the file name, then the actions that work for any format. */
-export const AttachmentPreviewTitle = ({ file }: { file: AttachmentFile & { name: string } }) => (
-  <Flexbox horizontal align={'center'} gap={8} style={{ minWidth: 0 }}>
-    <Text ellipsis>{file.name}</Text>
-    <Flexbox horizontal align={'center'} flex={'none'} gap={2}>
-      <CopyAttachmentLinkButton file={file} />
-      <DownloadAttachmentButton file={file} />
-    </Flexbox>
-  </Flexbox>
-);

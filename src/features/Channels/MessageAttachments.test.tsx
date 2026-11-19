@@ -17,11 +17,23 @@ const { copyToClipboard, createModal } = vi.hoisted(() => ({
   copyToClipboard: vi.fn(),
   createModal: vi.fn(),
 }));
-vi.mock('@lobehub/ui', async (importOriginal) => ({
-  ...(await importOriginal<Record<string, unknown>>()),
-  copyToClipboard,
-  createModal,
-}));
+vi.mock('@lobehub/ui', async (importOriginal) => {
+  const { createElement } = await import('react');
+  return {
+    ...(await importOriginal<Record<string, unknown>>()),
+    copyToClipboard,
+    createModal,
+    // Menu items render inline so the test can see and click them.
+    DropdownMenu: ({ items }: { items: { key: string; onClick: () => void }[] }) =>
+      createElement(
+        'ul',
+        { 'aria-label': 'menu' },
+        items.map((item) =>
+          createElement('li', { key: item.key, onClick: item.onClick }, item.key),
+        ),
+      ),
+  };
+});
 
 const zip = {
   fileType: 'application/zip',
@@ -85,7 +97,7 @@ describe('MessageAttachments', () => {
     open.mockRestore();
   });
 
-  it('titles the preview with actions that copy a download link that does not expire', () => {
+  it('puts the preview title actions behind a menu that copies a link that does not expire', () => {
     render(<MessageAttachments attachments={[zip]} fileIds={['file_Z']} />);
     fireEvent.click(screen.getByText('icons.zip'));
 
@@ -93,9 +105,14 @@ describe('MessageAttachments', () => {
     cleanup();
     render(title);
     expect(screen.getByText('icons.zip')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'attachments.copyLink' }));
+    // Only the name and the menu, no loose icon buttons.
+    expect(screen.queryByRole('button', { name: 'attachments.download' })).toBeNull();
+    expect(screen.getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+      'copyLink',
+      'download',
+    ]);
+    fireEvent.click(screen.getByText('copyLink'));
 
     expect(copyToClipboard).toHaveBeenCalledWith('https://app.lobehub.com/f/file_Z?download=1');
-    expect(screen.getByRole('button', { name: 'attachments.download' })).toBeTruthy();
   });
 });
