@@ -13,6 +13,7 @@ import AgentAvatar from '@/components/AgentAvatar';
 import UserAvatar from '@/components/UserAvatar';
 import { isProjectDefaultChannel } from '@/features/Channels/channelName';
 import { useClearedThrough } from '@/features/Channels/clearedChannels';
+import { withoutChannelMore } from '@/features/Channels/flattenChannelMenu';
 import { useHasUnreadThreadMention } from '@/features/Channels/threadReads';
 import { useChannelMenu } from '@/features/Channels/useChannelMenu';
 import GroupAvatar from '@/features/GroupAvatar';
@@ -41,7 +42,9 @@ interface Props {
 const ChannelConversation = memo<Props>(({ active, activeAt, channel, tile, variant }) => {
   const { t } = useTranslation('channel');
   const avatarSize = conversationAvatarSize(variant, tile);
-  const menuItems = useChannelMenu();
+  const channelMenu = useChannelMenu();
+  // A row's menu keeps the person's own list settings; managing the Channel is in its header.
+  const menuItems = (item: ChannelListItem) => withoutChannelMore(channelMenu(item));
   // A Channel grouped under a project wears that project's logo; a standalone one pictures
   // its members like a group chat, and keeps "#" until someone else joins.
   const project = useProjectStore(projectListItemSelector(channel.projectId));
