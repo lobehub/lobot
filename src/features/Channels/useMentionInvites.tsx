@@ -174,7 +174,7 @@ export const useMentionInvites = (
     return result;
   };
 
-  /** Workspace people and Agents outside the Channel whose name matches `query`. */
+  /** People and Agents outside the Channel whose name matches `query`. */
   const options = async (query: string): Promise<ISlashMenuOption[]> => {
     const { agentOptions, channel, enabled, members } = latest.current;
     const search = query.trim();
@@ -185,14 +185,11 @@ export const useMentionInvites = (
       priorityIds: agentOptions.projectAgentIds,
       query: search,
     });
-    // People join only workspace Channels.
     // The search result may predate someone joining, so members are filtered here as well.
     const memberUserIds = new Set(members.map((member) => member.userId));
-    const persons = channel.workspaceId
-      ? (await searchPeople(channel.id, search))
-          .filter((person) => !memberUserIds.has(person.userId))
-          .slice(0, MENTION_INVITE_LIMIT)
-      : [];
+    const persons = (await searchPeople(channel.id, search))
+      .filter((person) => !memberUserIds.has(person.userId))
+      .slice(0, MENTION_INVITE_LIMIT);
     return [
       ...persons.map((person) => {
         const name = person.fullName || person.username || t('person');

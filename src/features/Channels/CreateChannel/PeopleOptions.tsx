@@ -19,7 +19,7 @@ import { PickerSection } from './PickerSection';
 import { pickerStyles } from './pickerStyles';
 
 export interface PeopleSelection {
-  /** Unset while creating a Channel: every workspace member except the creator. */
+  /** Unset while creating a Channel: everyone the creator can bring in, except themselves. */
   channelId?: string;
   onChange: Dispatch<SetStateAction<ChannelPersonOption[]>>;
   value: ChannelPersonOption[];
@@ -35,9 +35,10 @@ const PersonAvatar = ({ name, person }: { name: string; person: ChannelPersonOpt
 );
 
 /**
- * The same candidates from the workspace roster replica, so the list paints from disk while the
- * server answers. Undefined until both the roster and, for an existing Channel, its member list
- * are local: a guess without them could offer someone already in.
+ * In a workspace, the same candidates from its roster replica, so the list paints from disk while
+ * the server answers; the personal space has no roster and waits for the server. Undefined until
+ * both the roster and, for an existing Channel, its member list are local: a guess without them
+ * could offer someone already in.
  */
 const useLocalUserCandidates = (channelId: string | undefined, query: string) => {
   const roster = useWorkspaceMembers();
@@ -52,7 +53,7 @@ const useLocalUserCandidates = (channelId: string | undefined, query: string) =>
   }, [channelId, members, query, roster, selfId]);
 };
 
-/** Workspace members who are not in the Channel yet, searched on the server. */
+/** People who can join and are not in the Channel yet, searched on the server. */
 export const PeopleOptions = ({ people, search }: { people: PeopleSelection; search: string }) => {
   const { t } = useTranslation('channel');
   const nameOf = usePersonName();

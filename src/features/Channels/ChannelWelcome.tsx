@@ -115,7 +115,6 @@ export function ChannelWelcome({ detail, onGreet }: ChannelWelcomeProps) {
                 peopleCount: detail.members.filter(
                   (member) => member.status === 'active' && member.actorType === 'user',
                 ).length,
-                workspaceId: channel.workspaceId,
               })
             }
           >

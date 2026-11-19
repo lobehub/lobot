@@ -44,7 +44,6 @@ export function InviteMembersButton({ detail }: { detail: ChannelDetail }) {
             peopleCount: members.filter(
               (member) => member.status === 'active' && member.actorType === 'user',
             ).length,
-            workspaceId: channel.workspaceId,
           },
           // Inviting from a one-to-one conversation opens the group it starts.
           (id) => navigate(CHANNEL_URL(id)),

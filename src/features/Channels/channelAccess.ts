@@ -33,19 +33,12 @@ export const showsListedShell = ({
 /**
  * Inviting needs an admin of an open Channel; archived Channels take no new members until
  * reopened. Inviting from a direct conversation, or from one between two people, starts a new
- * group instead of joining it; people share a group only in a workspace, so a conversation
- * between two people outside one offers no invite. A conversation with another person's shared
- * Agent offers none either.
+ * group instead of joining it, in a workspace or the personal space alike. A conversation with
+ * another person's shared Agent offers no invite.
  */
 export const canInviteMembers = (
-  channel: Pick<
-    ChannelListItem,
-    'canDelete' | 'peerUserId' | 'sharedAgent' | 'status' | 'workspaceId'
-  >,
-) =>
-  canManageAgents(channel) &&
-  !channel.sharedAgent &&
-  (!channel.peerUserId || !!channel.workspaceId);
+  channel: Pick<ChannelListItem, 'canDelete' | 'sharedAgent' | 'status'>,
+) => canManageAgents(channel) && !channel.sharedAgent;
 
 /** Changing where an Agent runs needs an admin of an open Channel. */
 export const canManageAgents = (channel: Pick<ChannelListItem, 'canDelete' | 'status'>) =>

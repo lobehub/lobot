@@ -134,7 +134,7 @@ describe('CreateChannel', () => {
 
   it('goes straight to members when inviting into an existing Channel', () => {
     renderDialog(() =>
-      openInviteMembers({ agentIds: [], id: 'chn_1', peopleCount: 1, workspaceId: null }),
+      openInviteMembers({ agentIds: [], id: 'chn_1', peopleCount: 1 }),
     );
     expect(screen.queryByTestId('channel-title')).toBeNull();
     expect(screen.getByTestId('members')).toBeInTheDocument();
@@ -149,7 +149,6 @@ describe('CreateChannel', () => {
           id: 'chn_peer',
           peer: { name: 'yaocai', userId: 'usr_2' },
           peopleCount: 2,
-          workspaceId: 'ws_1',
         },
         onCreated,
       ),

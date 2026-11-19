@@ -153,11 +153,10 @@ describe('@mentions that invite people and Agents from outside the Channel', () 
     expect(await result.current.options('writer')).toEqual([]);
   });
 
-  it('offers only Agents in a personal Channel, where people cannot join', async () => {
+  it('offers people in a personal Channel too, from its owner\'s contacts', async () => {
     const { result } = setup({ ...channel, workspaceId: null });
-    const options = await result.current.options('writer');
-    expect(options.map((option) => option.metadata.actorType)).toEqual(['agent', 'agent']);
-    expect(channelService.userCandidates).not.toHaveBeenCalled();
+    await result.current.options('writer');
+    expect(channelService.userCandidates).toHaveBeenCalledExactlyOnceWith(channel.id, 'writer');
   });
 
   it('adds a mentioned person once and resolves the message mention to the new member', async () => {

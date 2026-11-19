@@ -47,8 +47,6 @@ interface ExistingChannel {
   peer?: { name: string; userId: string };
   /** Active people in the Channel, the inviter included. */
   peopleCount: number;
-  /** People can be invited only into workspace Channels. */
-  workspaceId: string | null;
 }
 
 interface CreateChannelProps {
@@ -85,8 +83,8 @@ export const openInviteMembers = (existing: ExistingChannel, onCreated?: (id: st
 /**
  * One step, laid out like starting a group chat: candidates on the left, the chosen
  * members and the actions on the right. The name is optional and defaults to the members'
- * names. Inviting into an existing Channel shows only the pickers. Workspace Channels, new
- * or existing, also list workspace members.
+ * names. Inviting into an existing Channel shows only the pickers. It also lists the people
+ * who can join: workspace members in a workspace, mutual contacts in the personal space.
  */
 function CreateChannel({ existing, onCreated }: CreateChannelProps) {
   const { t } = useTranslation('channel');
@@ -106,8 +104,6 @@ function CreateChannel({ existing, onCreated }: CreateChannelProps) {
   const counterpartName = direct ? existing?.directAgentName || t('unnamedAgent') : peer?.name;
   const nameOf = usePersonName();
   const activeWorkspaceId = useActiveWorkspaceId();
-  // People join only workspace Channels: a new one is created in the active workspace.
-  const canPickPeople = existing ? !!existing.workspaceId : !!activeWorkspaceId;
   const dirty = !!title.trim() || agents.length > 0 || people.length > 0;
 
   // A mask click must not drop what the user typed or picked; ✕ and Esc still close.
@@ -271,9 +267,7 @@ function CreateChannel({ existing, onCreated }: CreateChannelProps) {
           />
         ) : undefined
       }
-      people={
-        canPickPeople ? { channelId: existing?.id, onChange: setPeople, value: people } : undefined
-      }
+      people={{ channelId: existing?.id, onChange: setPeople, value: people }}
       onChange={setAgents}
     />
   );

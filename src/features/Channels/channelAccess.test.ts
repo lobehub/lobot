@@ -32,13 +32,9 @@ describe('inviting members', () => {
   it('lets an admin invite from an open Channel', () => {
     expect(canInviteMembers(open)).toBe(true);
   });
-  it('lets either person invite from a workspace conversation between two people', () => {
-    expect(canInviteMembers({ ...open, peerUserId: 'peer', workspaceId: 'ws' })).toBe(true);
-  });
   it.each([
     ['a plain member', { canDelete: false }],
     ['an archived Channel', { status: 'archived' as const }],
-    ['a personal conversation between two people', { peerUserId: 'peer' }],
     ["a conversation with another person's shared Agent", { sharedAgent: true }],
   ])('offers no invite to %s', (_, override) => {
     expect(canInviteMembers({ ...open, ...override })).toBe(false);
