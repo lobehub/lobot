@@ -2,8 +2,9 @@ import { ActionIcon, Button, Flexbox } from '@lobehub/ui';
 import type { ChannelPublicMessage } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { ArrowDown } from 'lucide-react';
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useShallow } from 'zustand/react/shallow';
 
 import AsyncBoundary from '@/components/AsyncBoundary';
 import AsyncError from '@/components/AsyncError';
@@ -89,14 +90,40 @@ const Timeline = ({
   const sync = channelActions.useFetchDetail(params);
   const cached = useChannelStore(channelSelectors.detail(params));
   const visible = visibleChannelDetail(cached, sync.error);
+  // Scrolling up stacks earlier pages above the open one instead of replacing it.
+  const viewKey = `${channelId}:${threadId ?? 'main'}:${before ?? 'latest'}`;
+  const [earlier, setEarlier] = useState<{ cursors: number[]; key: string }>({
+    cursors: [],
+    key: viewKey,
+  });
+  const earlierCursors = earlier.key === viewKey ? earlier.cursors : [];
+  const earlierPages = useChannelStore(
+    useShallow((state) =>
+      earlierCursors.map((cursor) =>
+        channelSelectors.detail({ before: cursor, channelId, threadId })(state),
+      ),
+    ),
+  );
+  const loadingEarlier = earlierPages.some((page) => !page);
+  const stacked = useMemo(() => {
+    if (!visible || !earlierPages.length) return visible;
+    const seen = new Set<string>();
+    const messages = [...earlierPages]
+      .reverse()
+      .flatMap((page) => page?.messages ?? [])
+      .concat(visible.messages)
+      .filter((message) => !seen.has(message.id) && !!seen.add(message.id));
+    const oldest = earlierPages.at(-1);
+    return { ...visible, hasMore: oldest ? oldest.hasMore : true, messages };
+  }, [visible, earlierPages]);
   // A conversation the person deleted shows only what came after, on this device.
-  const kept = useAfterCleared(channelId, threadId ? undefined : visible?.messages);
+  const kept = useAfterCleared(channelId, threadId ? undefined : stacked?.messages);
   const detail = useMemo(
     () =>
-      visible && kept.cleared
-        ? { ...visible, hasMore: false, messages: kept.messages ?? [] }
-        : visible,
-    [kept, visible],
+      stacked && kept.cleared
+        ? { ...stacked, hasMore: false, messages: kept.messages ?? [] }
+        : stacked,
+    [kept, stacked],
   );
   const listed = useChannelStore(channelSelectors.listed(channelId));
   const shell = showsListedShell({ before, error: sync.error, loaded: !!detail, threadId })
@@ -124,7 +151,34 @@ const Timeline = ({
   const settlingToBottom = useRef(false);
   const settleDistance = useRef(0);
   const [awayFromBottom, setAwayFromBottom] = useState(false);
+  // Distance from the feed's foot when an earlier page was asked for, so it lands without a jump.
+  const earlierAnchor = useRef<number | null>(null);
+  const loadEarlier = () => {
+    const cursor = detail?.messages[0]?.sequence;
+    if (!detail?.hasMore || loadingEarlier || cursor === undefined) return;
+    const feed = feedRef.current;
+    if (feed) earlierAnchor.current = feed.scrollHeight - feed.scrollTop;
+    setEarlier({ cursors: [...earlierCursors, cursor], key: viewKey });
+    channelActions.refreshDetail({ before: cursor, channelId, threadId }).catch((error: unknown) => {
+      console.error('Failed to load earlier Channel messages', error);
+      earlierAnchor.current = null;
+      // Drop the page so scrolling up can ask again.
+      setEarlier((current) =>
+        current.key === viewKey
+          ? { ...current, cursors: current.cursors.filter((entry) => entry !== cursor) }
+          : current,
+      );
+    });
+  };
+  const oldestShown = detail?.messages[0]?.id;
+  useLayoutEffect(() => {
+    const feed = feedRef.current;
+    if (!feed || earlierAnchor.current === null || loadingEarlier) return;
+    feed.scrollTop = feed.scrollHeight - earlierAnchor.current;
+    earlierAnchor.current = null;
+  }, [oldestShown, loadingEarlier]);
   const syncFollowLatest = (feed: HTMLDivElement) => {
+    if (feed.scrollTop < 200) loadEarlier();
     const distance = feed.scrollHeight - feed.scrollTop - feed.clientHeight;
     const atBottom = distance < 64;
     if (settlingToBottom.current) {
@@ -273,8 +327,9 @@ const Timeline = ({
                         >
                           <Button
                             disabled={!detail.hasMore}
+                            loading={loadingEarlier}
                             size="small"
-                            onClick={() => setBefore(detail.messages[0]?.sequence)}
+                            onClick={loadEarlier}
                           >
                             {t('olderMessages')}
                           </Button>
