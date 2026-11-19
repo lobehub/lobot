@@ -9,14 +9,15 @@ import { useGroupDropdownMenu } from '@/features/HomeSidebar/Body/Agent/List/Age
 
 import ConversationRow from './ConversationRow';
 import { type Conversation } from './conversations';
-import { AVATAR_SIZE } from './style';
+import { AVATAR_SIZE, PINNED_AVATAR_SIZE } from './style';
 
 interface GroupConversationProps {
   active: boolean;
   conversation: Conversation;
+  variant?: 'row' | 'tile';
 }
 
-const GroupConversation = memo<GroupConversationProps>(({ active, conversation }) => {
+const GroupConversation = memo<GroupConversationProps>(({ active, conversation, variant }) => {
   const { item, preview, activeAt } = conversation;
   const { id, avatar, backgroundColor, description, pinned, userId } = item;
   const { t } = useTranslation('chat');
@@ -49,12 +50,13 @@ const GroupConversation = memo<GroupConversationProps>(({ active, conversation }
       title={title}
       unread={item.unreadCount}
       url={GROUP_CHAT_URL(id)}
+      variant={variant}
       avatar={
         <AgentGroupAvatar
           avatar={customAvatar}
           backgroundColor={backgroundColor || undefined}
           memberAvatars={memberAvatars}
-          size={AVATAR_SIZE}
+          size={variant === 'tile' ? PINNED_AVATAR_SIZE : AVATAR_SIZE}
         />
       }
     />
