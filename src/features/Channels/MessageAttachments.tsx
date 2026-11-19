@@ -6,6 +6,8 @@ import FileListViewer from '@/features/Conversation/Messages/User/components/Fil
 import ImageFileListViewer from '@/features/Conversation/Messages/User/components/ImageFileListViewer';
 import FileViewer from '@/features/FileViewer';
 
+import { AttachmentPreviewTitle, DownloadAttachmentButton } from './AttachmentActions';
+
 type Attachment = ChannelDetail['attachments'][number];
 
 const openFile = (file: {
@@ -17,25 +19,28 @@ const openFile = (file: {
 }) =>
   createModal({
     content: (
-      <FileViewer
-        chunkCount={null}
-        chunkingError={null}
-        createdAt={new Date()}
-        embeddingError={null}
-        fileType={file.fileType}
-        finishEmbedding={false}
-        id={file.id}
-        name={file.name}
-        size={file.size}
-        sourceType="upload"
-        updatedAt={new Date()}
-        url={file.url}
-      />
+      // A column that fills the modal body, so a viewer without a preview fills it too.
+      <Flexbox height={'100%'}>
+        <FileViewer
+          chunkCount={null}
+          chunkingError={null}
+          createdAt={new Date()}
+          embeddingError={null}
+          fileType={file.fileType}
+          finishEmbedding={false}
+          id={file.id}
+          name={file.name}
+          size={file.size}
+          sourceType="upload"
+          updatedAt={new Date()}
+          url={file.url}
+        />
+      </Flexbox>
     ),
     footer: null,
     maskClosable: true,
     styles: { content: { height: '80vh', minHeight: 0, overflow: 'auto', padding: 0 } },
-    title: file.name,
+    title: <AttachmentPreviewTitle file={file} />,
     width: 'min(90vw, 1024px)',
   });
 
@@ -79,7 +84,11 @@ export function MessageAttachments({
       )}
       {others.length > 0 && (
         <Flexbox style={{ maxWidth: FILE_CARD_MAX_WIDTH }}>
-          <FileListViewer items={others} onOpenFile={openFile} />
+          <FileListViewer
+            items={others}
+            renderActions={(file) => <DownloadAttachmentButton file={file} />}
+            onOpenFile={openFile}
+          />
         </Flexbox>
       )}
     </Flexbox>

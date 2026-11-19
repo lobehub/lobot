@@ -27,7 +27,7 @@ const HTMLViewer = memo<HTMLViewerProps>(({ url }) => {
 
   if (!loading && fileData === null)
     return (
-      <Flexbox>
+      <Flexbox flex={1}>
         {error && <AsyncError error={error} variant={'block'} />}
         <NotSupport tooLarge={tooLarge} url={url} />
       </Flexbox>

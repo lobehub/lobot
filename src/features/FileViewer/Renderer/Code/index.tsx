@@ -34,7 +34,7 @@ const CodeViewer = memo<CodeViewerProps>(({ url, fileName }) => {
 
   if (!loading && fileData === null)
     return (
-      <Flexbox>
+      <Flexbox flex={1}>
         {error && <AsyncError error={error} variant={'block'} />}
         <NotSupport fileName={fileName} tooLarge={tooLarge} url={url} />
       </Flexbox>

@@ -1,6 +1,6 @@
 import { Block, Flexbox, Icon, Text } from '@lobehub/ui';
 import { FileLock2Icon } from 'lucide-react';
-import { memo } from 'react';
+import { memo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FileIcon from '@/components/FileIcon';
@@ -38,8 +38,14 @@ const InaccessibleFileItem = memo(() => {
   );
 });
 
-const FileItem = memo<ChatFileItem & { onClick?: () => void }>(
-  ({ id, fileType, size, name, inaccessible, onClick }) => {
+interface FileItemProps extends ChatFileItem {
+  /** Trailing controls, e.g. a download button; clicks on them do not open the file. */
+  actions?: ReactNode;
+  onClick?: () => void;
+}
+
+const FileItem = memo<FileItemProps>(
+  ({ id, fileType, size, name, inaccessible, onClick, actions }) => {
     const openFilePreview = useChatStore((s) => s.openFilePreview);
 
     if (inaccessible) return <InaccessibleFileItem />;
@@ -60,12 +66,23 @@ const FileItem = memo<ChatFileItem & { onClick?: () => void }>(
         }}
       >
         <FileIcon fileName={name} fileType={fileType} size={32} />
-        <Flexbox style={{ overflow: 'hidden' }}>
+        <Flexbox flex={1} style={{ overflow: 'hidden' }}>
           <Text ellipsis>{name}</Text>
           <Text fontSize={12} type={'secondary'}>
             {formatSize(size)}
           </Text>
         </Flexbox>
+        {actions && (
+          <Flexbox
+            horizontal
+            align={'center'}
+            flex={'none'}
+            gap={4}
+            onClick={(event) => event.stopPropagation()}
+          >
+            {actions}
+          </Flexbox>
+        )}
       </Block>
     );
   },

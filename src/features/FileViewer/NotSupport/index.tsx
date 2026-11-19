@@ -8,7 +8,8 @@ import { downloadFile } from '@/utils/client/downloadFile';
 
 const styles = createStaticStyles(({ css, cssVar }) => ({
   page: css`
-    width: 100%;
+    flex: 1;
+    min-height: 0;
     margin: 12px;
     padding: 24px;
     border-radius: 4px;
