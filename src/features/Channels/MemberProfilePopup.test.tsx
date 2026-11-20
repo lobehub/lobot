@@ -15,6 +15,30 @@ vi.mock('react-i18next', () => ({
       options?.date ? `${key}:${options.date}` : key,
   }),
 }));
+const { navigate } = vi.hoisted(() => ({ navigate: vi.fn() }));
+vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
+  useWorkspaceAwareNavigate: () => navigate,
+}));
+vi.mock('@lobehub/ui', async (original) => ({
+  ...(await original<object>()),
+  // The menu's items as plain buttons, so a test can pick one without opening a popup.
+  DropdownMenu: ({
+    items,
+  }: {
+    items: Array<{ key: string; label: string; onClick: () => void }>;
+  }) =>
+    createElement(
+      'div',
+      { 'data-testid': 'person-menu' },
+      items.map((item) =>
+        createElement(
+          'button',
+          { key: item.key, onClick: item.onClick, type: 'button' },
+          item.label,
+        ),
+      ),
+    ),
+}));
 vi.mock('./MemberAvatar', () => ({ MemberAvatar: () => null }));
 vi.mock('./PersonAction', () => ({
   PersonAction: ({ userId }: { userId: string }) =>
@@ -67,6 +91,22 @@ describe('PersonProfileCard', () => {
     render(<PersonProfileCard member={{ ...person, userId: null }} />);
 
     expect(screen.queryByTestId('person-action')).toBeNull();
+  });
+
+  it('opens the full profile from its menu, closing the card first', () => {
+    const onClose = vi.fn();
+    render(<PersonProfileCard member={person} onClose={onClose} />);
+
+    fireEvent.click(screen.getByText('contacts.viewProfile'));
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(navigate).toHaveBeenCalledWith('/agents/people/user-ann');
+  });
+
+  it('has no menu for a deleted account', () => {
+    render(<PersonProfileCard member={{ ...person, userId: null }} />);
+
+    expect(screen.queryByTestId('person-menu')).toBeNull();
   });
 
   it('leaves the handle out for a person without one', () => {
