@@ -103,9 +103,9 @@ export default function ChannelPage() {
   const threadId = portalOpen ? null : panel.threadId;
   const threadDraft = portalOpen ? null : panel.draft;
   const pageThreadId = panel.pageThreadId;
-  // A direct conversation's side panel is its Agent's profile; a workspace group's is the roster.
-  const hasMemberPanel =
-    !!directAgent || (!!detail?.channel.workspaceId && !detail.channel.agentId);
+  // A direct conversation's side panel is its Agent's profile; any other Channel's, in a
+  // workspace or the personal space, is the roster.
+  const hasMemberPanel = !!directAgent || (!!detail && !detail.channel.agentId);
   const membersOpen =
     hasMemberPanel && membersChannelId === channelId && !threadId && !threadDraft && !portalOpen;
   // Only a group its viewer manages has settings; a report covers them like a thread.
