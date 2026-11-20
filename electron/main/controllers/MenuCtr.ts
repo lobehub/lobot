@@ -37,6 +37,14 @@ export default class MenuController extends ControllerModule {
     return this.app.menuManager.rebuildAppMenu({ showDevItems: visible });
   }
 
+  /**
+   * Hide the add-friend entry while a workspace is active
+   */
+  @IpcMethod()
+  setAddFriendVisible(visible: boolean) {
+    return this.app.menuManager.setAddFriendVisible(visible);
+  }
+
   @IpcMethod()
   popupContextMenu(params: PopupContextMenuParams): Promise<PopupContextMenuResult> {
     const context = getIpcContext();

@@ -2,14 +2,16 @@
 
 import { AGENT_CHAT_URL } from '@lobechat/const';
 import { useWatchBroadcast } from '@lobechat/electron-client-ipc';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
+import { useHasActiveWorkspace } from '@/business/client/hooks/useHasActiveWorkspace';
 import { useCreateMenuItems } from '@/features/HomeSidebar/hooks/useCreateMenuItems';
 import { useCreateActions } from '@/features/MessageList/useCreateActions';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { useAgentStore } from '@/store/agent';
 import { builtinAgentSelectors } from '@/store/agent/selectors';
 import { useChatStore } from '@/store/chat';
+import { ensureElectronIpc } from '@/utils/electron/ipc';
 
 import { openCurrentWorkspaceInNewWindow } from './openCurrentWorkspaceInNewWindow';
 
@@ -22,6 +24,7 @@ const DesktopFileMenuBridge = () => {
   // The same actions as the Messages "+" menu.
   const { addFriend, createAgent, createGroupChat } = useCreateActions();
   const navigate = useWorkspaceAwareNavigate();
+  const inWorkspace = useHasActiveWorkspace();
   const inboxAgentId = useAgentStore(builtinAgentSelectors.inboxAgentId);
   const activeAgentId = useAgentStore((s) => s.activeAgentId);
 
@@ -42,6 +45,14 @@ const DesktopFileMenuBridge = () => {
   const handleCreateNewPage = useCallback(async () => {
     await createPage();
   }, [createPage]);
+
+  // Friends belong to the personal space, so the app menu drops Add Friend inside a workspace,
+  // like the Messages "+" menu.
+  useEffect(() => {
+    ensureElectronIpc()
+      .menu.setAddFriendVisible(!inWorkspace)
+      .catch((error) => console.error('Failed to update the Add Friend menu item:', error));
+  }, [inWorkspace]);
 
   useWatchBroadcast('createNewTopic', handleCreateNewTopic);
   useWatchBroadcast('createNewAgent', createAgent);

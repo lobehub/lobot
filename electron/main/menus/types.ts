@@ -50,5 +50,8 @@ export interface IMenuPlatform {
    */
   refresh: (options?: MenuOptions) => void;
 
+  /** Show or hide the add-friend entry; returns whether it changed. */
+  setAddFriendVisible: (visible: boolean) => boolean;
+
   updateDockMenu?: (snapshot: TrayNavigationSnapshot) => void;
 }

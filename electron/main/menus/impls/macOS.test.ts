@@ -133,6 +133,22 @@ describe('MacOSMenu', () => {
       expect(devMenu).toBeUndefined();
     });
 
+    it('should leave out Add Friend while a workspace is active', () => {
+      const newMenuLabels = () =>
+        (Menu.buildFromTemplate as any).mock.calls[0][0]
+          .find((item: any) => item.label === 'New')
+          .submenu.map((item: any) => item.label);
+
+      macOSMenu.buildAndSetAppMenu();
+      expect(newMenuLabels()).toContain('Add Friend');
+
+      vi.clearAllMocks();
+      expect(macOSMenu.setAddFriendVisible(false)).toBe(true);
+      expect(macOSMenu.setAddFriendVisible(false)).toBe(false);
+      macOSMenu.buildAndSetAppMenu();
+      expect(newMenuLabels()).not.toContain('Add Friend');
+    });
+
     it('should create menu with correct structure', () => {
       macOSMenu.buildAndSetAppMenu();
 

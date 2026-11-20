@@ -15,6 +15,8 @@ import { BotIcon, Hash, PlusIcon, SearchIcon, UserPlus } from 'lucide-react';
 import { type FocusEvent, memo, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useHasActiveWorkspace } from '@/business/client/hooks/useHasActiveWorkspace';
+
 import { useMessageSearch } from './SearchContext';
 import { COLUMN_ACTION_ICON_SIZE, styles } from './style';
 import { useCreateActions } from './useCreateActions';
@@ -82,8 +84,10 @@ const Header = memo(() => {
     if (!query) setSearchOpen(false);
   };
   const { addFriend, createAgent, createGroupChat, isLoading } = useCreateActions();
+  const inWorkspace = useHasActiveWorkspace();
   // What a conversation starts from, the same three as the desktop app menu. The group chat is a
-  // Channel, general or a project's.
+  // Channel, general or a project's. Friends belong to the personal space, so a workspace has no
+  // add-friend entry.
   const createItems = useMemo(
     () => [
       createRow({ key: 'newAgent', onClick: createAgent }, BotIcon, t('messageList.newAgent')),
@@ -92,9 +96,17 @@ const Header = memo(() => {
         Hash,
         t('messageList.newGroupChat'),
       ),
-      createRow({ key: 'addFriend', onClick: addFriend }, UserPlus, t('messageList.addFriend')),
+      ...(inWorkspace
+        ? []
+        : [
+            createRow(
+              { key: 'addFriend', onClick: addFriend },
+              UserPlus,
+              t('messageList.addFriend'),
+            ),
+          ]),
     ],
-    [addFriend, createAgent, createGroupChat, t],
+    [addFriend, createAgent, createGroupChat, inWorkspace, t],
   );
 
   // Both sit on the right, the same circle as the contacts button. Search stays an icon
