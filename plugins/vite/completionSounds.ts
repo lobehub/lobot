@@ -49,12 +49,16 @@ const GLASS: Partial[] = [
   { amp: 0.12, decay: 8, ratio: 3.02 },
 ];
 
+/**
+ * Played an octave down (F4 → C5) with a dulled mallet and a quieter shimmer: at F5 → C6
+ * the default read as a sharp alert, too bright for a "reply finished" cue.
+ */
 const MARIMBA: Instrument = {
   body: WOOD,
-  mallet: { cutoff: 1800, decay: 260, gain: 0.14 },
-  shimmer: { attack: 0.02, delay: 0.02, gain: 0.14, mul: 2, partials: GLASS, tail: 0.95 },
+  mallet: { cutoff: 1000, decay: 260, gain: 0.1 },
+  shimmer: { attack: 0.02, delay: 0.02, gain: 0.07, mul: 2, partials: GLASS, tail: 0.95 },
   tail: 0.7,
-  transpose: 1,
+  transpose: 0.5,
 };
 
 const GLASS_BELL: Instrument = {

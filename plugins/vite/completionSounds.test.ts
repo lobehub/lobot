@@ -21,12 +21,12 @@ describe('completion sounds', () => {
     );
   });
 
-  it('renders the shipped default chime unchanged', () => {
+  it('renders the shipped default chime (an octave-down marimba) unchanged', () => {
     const { aiff, wavs } = renderCompletionSounds();
     expect(sha256(wavs['chat-complete'])).toBe(
-      '2c7fb55ffa283824e83d1157079ad5ba631d3b3505d6189c4b5235914ac8af2c',
+      '00ba7b4a05fcc792228ae3d4b27459567d87c509df3f8fb71925865208157bef',
     );
-    expect(sha256(aiff)).toBe('680ffeee96312acbf73711b0538c77fe044cd4b1a5a5c3987e47118b9de94764');
+    expect(sha256(aiff)).toBe('297808b9c0971b7147382de92710c813b50b4c545e80c9775f3d5e6740e7f4fc');
   });
 
   it('renders every built-in as a 24 kHz mono WAV under 100 KB', () => {
