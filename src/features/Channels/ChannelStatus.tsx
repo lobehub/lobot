@@ -8,7 +8,7 @@ import { statusStyles } from './styles';
 /**
  * Each state has its own glyph, so states tell apart by shape, not by a row of coloured dots; a
  * reply that waits for someone to step in raises a hand. The text stays one quiet colour. Only an
- * error is red, and only the working spinner is blue.
+ * error is red; the working spinner and the hand are blue.
  */
 const TONE_ICONS: Record<ChannelStatusTone, LucideIcon> = {
   attention: Hand,
@@ -51,7 +51,7 @@ export function ChannelStatus({
           {...stylex.props(
             statusStyles.stateIcon,
             tone === 'working' && statusStyles.stateIconSpin,
-            tone === 'working' && statusStyles.stateIconWorking,
+            (tone === 'working' || tone === 'attention') && statusStyles.stateIconAccent,
           )}
         />
       )}

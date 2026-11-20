@@ -637,7 +637,8 @@ export const statusStyles = stylex.create({
   stateIcon: {
     flex: 'none',
   },
-  stateIconWorking: {
+  /** The glyph of a reply at work or one waiting for a person; the text stays quiet. */
+  stateIconAccent: {
     color: cssVar.colorInfo,
   },
   stateIconSpin: {
