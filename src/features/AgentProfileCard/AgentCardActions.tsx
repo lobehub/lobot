@@ -25,6 +25,8 @@ const styles = stylex.create({
 
 interface AgentCardActionsProps {
   agentId: string;
+  /** Off for an Agent not yet in one's Contacts, which the server opens no conversation with. */
+  canMessage?: boolean;
   /** Closes the card before it navigates away. */
   onDone: () => void;
   /** The Agent's own page: its contact card. */
@@ -35,7 +37,12 @@ interface AgentCardActionsProps {
  * A person's card ends in "Send message"; an Agent's card offers the same, plus a way to its
  * full profile. "Send message" is left out inside the conversation with that Agent itself.
  */
-export const AgentCardActions = ({ agentId, onDone, profileUrl }: AgentCardActionsProps) => {
+export const AgentCardActions = ({
+  agentId,
+  canMessage = true,
+  onDone,
+  profileUrl,
+}: AgentCardActionsProps) => {
   const { t } = useTranslation('common');
   const navigate = useWorkspaceAwareNavigate();
   const { channelId } = useParams<{ channelId?: string }>();
@@ -63,7 +70,7 @@ export const AgentCardActions = ({ agentId, onDone, profileUrl }: AgentCardActio
 
   return (
     <Flexbox horizontal gap={8} {...stylex.props(styles.actions)}>
-      {!inDirect && (
+      {canMessage && !inDirect && (
         <Button
           block
           icon={MessageCircleIcon}

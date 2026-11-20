@@ -1,12 +1,18 @@
+import { Popover, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { ContactCard } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
+import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
 import UserAvatar from '@/components/UserAvatar';
-import { PERSON_CONTACT_URL, SHARED_AGENT_URL } from '@/features/ContactList/const';
-import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
+import AgentProfilePopup from '@/features/AgentProfileCard/AgentProfilePopup';
+import { DeferredHoverCard } from '@/features/Channels/DeferredHoverCard';
+import { PersonCardFrame } from '@/features/Channels/MemberProfilePopup';
+import { PersonAction } from '@/features/Channels/PersonAction';
+import { SHARED_AGENT_URL } from '@/features/ContactList/const';
+import { cardPopoverProps } from '@/styles/cardPopover';
 
 import { contactCardName } from './cardText';
 
@@ -130,28 +136,79 @@ export const ContactCardPreview = ({ card }: { card: ContactCard }) => (
   </div>
 );
 
+type UserCard = Extract<ContactCard, { type: 'user' }>;
+
+/** The person's profile card, as a Channel member's avatar opens it, from the card's snapshot. */
+const PersonCardProfile = ({ card, name }: { card: UserCard; name: string }) => (
+  <PersonCardFrame
+    avatar={<UserAvatar avatar={card.avatar} name={name} shape={'circle'} size={42} />}
+    image={card.avatar}
+    name={name}
+  >
+    {card.username && (
+      <Text ellipsis fontSize={12} type={'secondary'}>
+        @{card.username}
+      </Text>
+    )}
+    <PersonAction userId={card.userId} />
+  </PersonCardFrame>
+);
+
 /**
  * A contact card in a Channel message, drawn from the snapshot the server stored when it was sent.
- * Clicking it opens the live profile in Contacts, where the reader can add or message it.
+ * Clicking it opens the profile card in place, the same one an avatar opens; its actions message
+ * or add the contact, and "View profile" goes on to Contacts.
  */
 export const ContactCardMessage = ({ card }: { card: ContactCard }) => {
   const { t } = useTranslation('channel');
-  const navigate = useWorkspaceAwareNavigate();
+  const name = contactCardName(card);
   const label = t(card.type === 'user' ? 'contactCard.label.user' : 'contactCard.label.agent');
 
-  return (
-    <button
-      aria-label={`${label}: ${contactCardName(card)}`}
+  const trigger = (
+    <div
+      aria-label={`${label}: ${name}`}
       data-testid={'contact-card'}
-      type={'button'}
-      onClick={() =>
-        navigate(
-          card.type === 'user' ? PERSON_CONTACT_URL(card.userId) : SHARED_AGENT_URL(card.shareId),
-        )
-      }
+      role={'button'}
+      tabIndex={0}
       {...stylex.props(styles.card)}
     >
       <ContactCardFace card={card} />
-    </button>
+    </div>
+  );
+
+  return (
+    <DeferredHoverCard
+      openOn={'click'}
+      render={(node: ReactElement, control) =>
+        card.type === 'user' ? (
+          <Popover
+            {...cardPopoverProps}
+            content={<PersonCardProfile card={card} name={name} />}
+            nativeButton={false}
+            open={control?.open}
+            placement={'right'}
+            trigger={'click'}
+            onOpenChange={control?.onOpenChange}
+          >
+            {node}
+          </Popover>
+        ) : (
+          <AgentProfilePopup
+            agent={{ avatar: card.avatar, backgroundColor: card.backgroundColor, title: name }}
+            agentId={card.agentId}
+            highlightTrigger={false}
+            open={control?.open}
+            placement={'right'}
+            shareUrl={SHARED_AGENT_URL(card.shareId)}
+            trigger={'click'}
+            onOpenChange={control?.onOpenChange}
+          >
+            {node}
+          </AgentProfilePopup>
+        )
+      }
+    >
+      {trigger}
+    </DeferredHoverCard>
   );
 };
