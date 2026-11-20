@@ -1,28 +1,52 @@
 import * as stylex from '@stylexjs/stylex';
-import { Check } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import { Check, CircleX, Clock, Hand, LoaderCircle } from 'lucide-react';
 
 import type { ChannelStatusTone } from './jobStatus';
-import { statusStyles, toneStyles } from './styles';
+import { statusStyles } from './styles';
 
 /**
- * A status line led by a tone dot, or by a check once the reply landed. `hideDot` is for a line
- * beside an avatar that already wears the same dot.
+ * Each state has its own glyph, so states tell apart by shape, not by a row of coloured dots; a
+ * reply that waits for someone to step in raises a hand. The text stays one quiet colour. Only an
+ * error is red, and only the hand is amber.
+ */
+const TONE_ICONS: Record<ChannelStatusTone, LucideIcon> = {
+  attention: Hand,
+  done: Check,
+  error: CircleX,
+  quiet: Clock,
+  working: LoaderCircle,
+};
+
+/**
+ * A status line led by its state's glyph. `hideIcon` is for a line beside an avatar that already
+ * wears the state as a dot.
  */
 export function ChannelStatus({
-  hideDot,
+  hideIcon,
   label,
   tone,
 }: {
-  hideDot?: boolean;
+  hideIcon?: boolean;
   label: string;
   tone: ChannelStatusTone;
 }) {
+  const Icon = TONE_ICONS[tone];
   return (
-    <span data-tone={tone} {...stylex.props(statusStyles.state, toneStyles[tone])}>
-      {tone === 'done' ? (
-        <Check size={12} />
-      ) : hideDot ? null : (
-        <span aria-hidden {...stylex.props(statusStyles.dot)} />
+    <span
+      data-tone={tone}
+      {...stylex.props(statusStyles.state, tone === 'error' ? statusStyles.stateError : null)}
+    >
+      {!hideIcon && (
+        <Icon
+          aria-hidden
+          size={12}
+          {...stylex.props(
+            statusStyles.stateIcon,
+            tone === 'working' && statusStyles.stateIconSpin,
+            tone === 'attention' && statusStyles.stateIconAttention,
+          )}
+        />
       )}
       {label}
     </span>

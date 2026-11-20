@@ -94,11 +94,15 @@ export const replyJobStatus = (job: ChannelReplyJob, jobs: ChannelReplyJob[]) =>
     : ('blocked.member_busy' as const);
 };
 
-/** The tone of `replyJobStatus`: a reply waiting in line is quiet, behind a blocked one amber. */
+/**
+ * The tone of `replyJobStatus`. A reply waiting in line is quiet whatever holds up the reply ahead:
+ * that reply's own row says why. Only one waiting for a named device needs the user, so it asks
+ * for attention.
+ */
 export const replyJobTone = (job: ChannelReplyJob, jobs: ChannelReplyJob[]): ChannelStatusTone => {
   const head = queueHead(job, jobs);
   if (!head) return channelJobTone(job);
-  return channelJobTone(head) === 'attention' ? 'attention' : 'quiet';
+  return isDeviceBlocked(head) ? 'attention' : 'quiet';
 };
 
 /** Work the conversation is still waiting on: shown above the composer, not on messages. */

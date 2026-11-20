@@ -7,7 +7,7 @@ import { createElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ReplyEntry } from './MessageReceipts';
-import { failureAnchors, ReplyDetail } from './MessageReceipts';
+import { failureAnchors, groupReplyEntries, ReplyDetail, ReplyList } from './MessageReceipts';
 
 const retryJob = vi.fn();
 const devices: Record<string, unknown> = {
@@ -173,5 +173,41 @@ describe('ReplyDetail queue', () => {
     ];
     renderQueued(queue[0], queue);
     expect(screen.getByTestId('status').textContent).toBe('queue.waitingDevice:Studio Mac');
+  });
+});
+
+describe('ReplyList grouping', () => {
+  const reply = (id: string, memberId: string, name: string, status = 'queued') =>
+    ({
+      job: failedJob({ errorType: null, id, memberId, status: status as never }),
+      name,
+    }) as ReplyEntry;
+
+  it('groups replies by their Agent in first-seen order, keeping each group in order', () => {
+    const entries = [
+      reply('a1', 'mem_a', 'A'),
+      reply('b1', 'mem_b', 'B'),
+      reply('a2', 'mem_a', 'A'),
+    ];
+    expect(groupReplyEntries(entries).map((group) => group.map((entry) => entry.job.id))).toEqual([
+      ['a1', 'a2'],
+      ['b1'],
+    ]);
+  });
+
+  // Three replies of one Agent repeated its avatar and name on every row.
+  it('names an Agent once above all of its replies, each still with its own state', () => {
+    render(
+      createElement(ReplyList, {
+        channelId: 'chn_1',
+        entries: [
+          reply('later', 'mem_star', '小星'),
+          reply('next', 'mem_star', '小星'),
+          reply('now', 'mem_star', '小星', 'running'),
+        ],
+      }),
+    );
+    expect(screen.getAllByText('小星')).toHaveLength(1);
+    expect(screen.getAllByTestId('status')).toHaveLength(3);
   });
 });
