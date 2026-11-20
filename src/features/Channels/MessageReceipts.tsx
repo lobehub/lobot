@@ -7,7 +7,7 @@ import type {
   ChannelPublicMessage,
 } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
-import { ExternalLink, Square } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -75,18 +75,15 @@ export const failureAnchors = (messages: ChannelPublicMessage[], entries: ReplyE
  * One reply: its state, why it failed or what device it waits for, and how to stop it or open
  * its Agent. `manageable` viewers (Channel admins) also see that device and can change it.
  * `queue` holds the replies listed beside it, so one waiting behind an earlier reply of the same
- * Agent says so instead of typing. `continued` marks a later reply of the Agent on the row above:
- * it drops the avatar and name and lines its state up under that name.
+ * Agent says so instead of typing.
  */
 export function ReplyDetail({
   channelId,
-  continued,
   entry: { agentId, avatar, job, member, name },
   manageable,
   queue,
 }: {
   channelId: string;
-  continued?: boolean;
   entry: ReplyEntry;
   manageable?: boolean;
   queue?: ChannelPublicJob[];
@@ -140,22 +137,18 @@ export function ReplyDetail({
   return (
     <Flexbox gap={8} {...stylex.props(stylex.defaultMarker())}>
       <Flexbox horizontal align="center" gap={8}>
-        {continued ? (
-          <span aria-hidden {...stylex.props(statusStyles.replyIndent)} />
-        ) : (
-          <AgentAvatar
-            agentId={agentId}
-            avatar={avatar}
-            name={name}
-            shape={'circle'}
-            size={24}
-            title={name}
-          />
-        )}
+        <AgentAvatar
+          agentId={agentId}
+          avatar={avatar}
+          name={name}
+          shape={'circle'}
+          size={24}
+          title={name}
+        />
         {/* Name, then its state; the stop action sits at the far end of the same row. The name
             opens the Agent without an icon, keeps its own width and only shrinks (to an ellipsis)
             when the row runs out. */}
-        {continued ? null : agentId ? (
+        {agentId ? (
           <Button
             aria-label={t('openAgentNamed', { name })}
             outdent="start"
@@ -199,7 +192,6 @@ export function ReplyDetail({
           )}
           {job.canStop && isChannelJobActive(job) && (
             <Button
-              icon={Square}
               loading={stopping}
               size="small"
               style={{ flexShrink: 0 }}
@@ -288,8 +280,8 @@ export const groupReplyEntries = (entries: ReplyEntry[]): ReplyEntry[][] => {
 };
 
 /**
- * Replies as popover content, one group per Agent: the avatar and name head the group once, and
- * each further reply of that Agent is just its state.
+ * Replies as popover content, one group per Agent so its replies sit together. Every row keeps its
+ * avatar and name, so the rows line up whatever Agent they belong to.
  */
 export function ReplyList({
   channelId,
@@ -306,10 +298,9 @@ export function ReplyList({
     <Flexbox gap={16} {...stylex.props(statusStyles.popover, statusStyles.replyList)}>
       {groupReplyEntries(entries).map((group) => (
         <Flexbox gap={8} key={group[0].job.id}>
-          {group.map((entry, index) => (
+          {group.map((entry) => (
             <ReplyDetail
               channelId={channelId}
-              continued={index > 0}
               entry={entry}
               key={entry.job.id}
               manageable={manageable}

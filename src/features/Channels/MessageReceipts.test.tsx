@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ReplyEntry } from './MessageReceipts';
 import { failureAnchors, groupReplyEntries, ReplyDetail, ReplyList } from './MessageReceipts';
+import { REPLY_POPUP_PROPS } from './replyPopup';
 
 const retryJob = vi.fn();
 const devices: Record<string, unknown> = {
@@ -208,8 +209,8 @@ describe('ReplyList grouping', () => {
     ]);
   });
 
-  // Three replies of one Agent repeated its avatar and name on every row.
-  it('names an Agent once above all of its replies, each still with its own state', () => {
+  // Dropping the name from later rows of one Agent left the rows out of line.
+  it('names the Agent on every row, each with its own state', () => {
     render(
       createElement(ReplyList, {
         channelId: 'chn_1',
@@ -220,7 +221,16 @@ describe('ReplyList grouping', () => {
         ],
       }),
     );
-    expect(screen.getAllByText('小星')).toHaveLength(1);
+    expect(screen.getAllByText('小星')).toHaveLength(3);
     expect(screen.getAllByTestId('status')).toHaveLength(3);
+  });
+});
+
+describe('reply popover focus', () => {
+  // A pointer-opened popover focused its first row, which showed that row's actions at once.
+  it('leaves focus on the trigger when opened by pointer, and moves in from the keyboard', () => {
+    expect(REPLY_POPUP_PROPS.initialFocus('mouse')).toBe(false);
+    expect(REPLY_POPUP_PROPS.initialFocus('touch')).toBe(false);
+    expect(REPLY_POPUP_PROPS.initialFocus('keyboard')).toBe(true);
   });
 });
