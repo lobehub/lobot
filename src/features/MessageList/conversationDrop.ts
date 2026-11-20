@@ -94,8 +94,17 @@ export const conversationDropActions = (
 const isConversationDrop = (type: unknown) => type === PIN_DROP || type === SECTION_DROP;
 
 /**
+ * A drop changes the rows on screen. A workspace switch can still be painting the previous
+ * workspace, and those rows are not this list. A ready list kept as a snapshot, so its tiles do
+ * not remount, is still this list: the two objects differ, the conversations do not.
+ */
+export const canApplyConversationDrop = (listReady: boolean, paintedIsLive: boolean): boolean =>
+  listReady || paintedIsLive;
+
+/**
  * Section headers reorder among themselves. A conversation lands on the pinned tiles or on a
- * group, whichever the pointer is inside, and ignores the header reorder targets.
+ * group, whichever the pointer is inside, and ignores the header reorder targets. A keyboard
+ * drag has no pointer, so it lands on the group nearest the ghost.
  */
 export const conversationCollision: CollisionDetection = (args) => {
   if (args.active.data.current?.type !== CONVERSATION_DRAG) {
@@ -107,10 +116,10 @@ export const conversationCollision: CollisionDetection = (args) => {
     });
   }
 
-  return pointerWithin(args).filter((collision) =>
-    isConversationDrop(
-      args.droppableContainers.find((container) => container.id === collision.id)?.data.current
-        ?.type,
-    ),
+  const targets = args.droppableContainers.filter((container) =>
+    isConversationDrop(container.data.current?.type),
   );
+  const hit = pointerWithin({ ...args, droppableContainers: targets });
+  if (hit.length > 0 || args.pointerCoordinates) return hit;
+  return closestCenter({ ...args, droppableContainers: targets });
 };

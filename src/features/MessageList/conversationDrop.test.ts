@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  canApplyConversationDrop,
   CONVERSATION_DRAG,
+  conversationCollision,
   type ConversationDragSource,
   conversationDropActions,
   conversationDropTarget,
@@ -111,6 +113,82 @@ describe('conversationDropTarget', () => {
     });
     expect(conversationDropTarget({ sortable: { index: 0 } })).toBeNull();
     expect(conversationDropTarget(undefined)).toBeNull();
+  });
+});
+
+describe('canApplyConversationDrop', () => {
+  it('applies a drop when the ready list is still painted from its snapshot', () => {
+    expect(canApplyConversationDrop(true, false)).toBe(true);
+  });
+
+  it('ignores a drop while the rows on screen belong to the previous workspace', () => {
+    expect(canApplyConversationDrop(false, false)).toBe(false);
+  });
+});
+
+const box = (top: number, height: number) => ({
+  bottom: top + height,
+  height,
+  left: 0,
+  right: 200,
+  top,
+  width: 200,
+});
+
+const droppable = (id: string, data: object) => ({
+  data: { current: data },
+  disabled: false,
+  id,
+  key: id,
+  node: { current: null },
+  rect: { current: null },
+});
+
+describe('conversationCollision', () => {
+  const pin = droppable('drop-pin', { type: PIN_DROP });
+  const section = droppable('drop-section:sec', {
+    collapsed: false,
+    sectionId: 'sec',
+    type: SECTION_DROP,
+  });
+  const header = droppable('sec', { sortable: { index: 0 } });
+  const rects = new Map([
+    ['drop-pin', box(0, 40)],
+    ['drop-section:sec', box(80, 120)],
+    ['sec', box(80, 120)],
+  ]);
+  const args = {
+    collisionRect: box(90, 20),
+    droppableContainers: [pin, section, header],
+    droppableRects: rects,
+  };
+
+  it('lands a conversation on the group under the pointer, not the section header', () => {
+    const hit = conversationCollision({
+      ...args,
+      active: { data: { current: source() }, id: 'conversation:1' },
+      pointerCoordinates: { x: 10, y: 100 },
+    } as never);
+    expect(hit[0]?.id).toBe('drop-section:sec');
+  });
+
+  it('lands a keyboard drag on the nearest group when there is no pointer', () => {
+    const hit = conversationCollision({
+      ...args,
+      active: { data: { current: source() }, id: 'conversation:1' },
+      pointerCoordinates: null,
+    } as never);
+    expect(hit[0]?.id).toBe('drop-section:sec');
+    expect(hit.map((collision) => collision.id)).not.toContain('sec');
+  });
+
+  it('keeps a section-header drag on the headers', () => {
+    const hit = conversationCollision({
+      ...args,
+      active: { data: { current: { sortable: { index: 1 } } }, id: 'sec_other' },
+      pointerCoordinates: { x: 10, y: 100 },
+    } as never);
+    expect(hit[0]?.id).toBe('sec');
   });
 });
 

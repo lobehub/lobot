@@ -49,6 +49,7 @@ import AgentConversation from './AgentConversation';
 import ChannelConversation from './ChannelConversation';
 import { ConversationDrag, ConversationPinDrop, ConversationRestDrop } from './ConversationDrag';
 import {
+  canApplyConversationDrop,
   conversationCollision,
   conversationDropActions,
   conversationDropTarget,
@@ -342,8 +343,8 @@ const Body = memo(() => {
     // The drop lands on the dragged row or header, whose click would open or fold it.
     suppressNextClick();
     setDragChannelId(null);
-    // The rows on screen still belong to the previous workspace until its replacement loads.
-    if (groups !== liveGroups) return;
+    // Rows still on screen from the previous workspace are not this list.
+    if (!canApplyConversationDrop(listReady, groups === liveGroups)) return;
     const source = isConversationDragSource(active.data.current) ? active.data.current : undefined;
     if (source) {
       const target = conversationDropTarget(over?.data.current);
