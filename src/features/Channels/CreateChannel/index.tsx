@@ -12,7 +12,6 @@ import {
 } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import { agentDisplayName, CHANNEL_LIMITS } from '@lobot/types';
-import { t } from 'i18next';
 import { Hash, Lock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -57,6 +56,8 @@ interface CreateChannelProps {
 
 const openMemberDialog = (props: CreateChannelProps) =>
   createModal({
+    // Like WeChat's group picker, the heading sits atop the chosen members, not over both panes.
+    closable: false,
     content: <CreateChannel {...props} />,
     footer: null,
     // Longhands, not `padding: 0`: the modal's own paddingInline / paddingBlockEnd
@@ -69,7 +70,6 @@ const openMemberDialog = (props: CreateChannelProps) =>
         paddingInline: 0,
       },
     },
-    title: t(props.existing ? 'invite.title' : 'create', { ns: 'channel' }),
     width: 'min(90vw, 760px)',
   });
 
@@ -211,6 +211,7 @@ function CreateChannel({ existing, onCreated }: CreateChannelProps) {
       locked={busy}
       options={options}
       people={{ channelId: existing?.id, onChange: setPeople, value: people }}
+      title={t(existing && !startsGroup ? 'invite.title' : 'create')}
       value={agents}
       footer={
         <Flexbox gap={12} padding={16}>
