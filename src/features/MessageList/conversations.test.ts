@@ -19,7 +19,9 @@ import {
   inboxActivity,
   messagesUnreadCount,
   reuseUnchangedEntries,
+  UNGROUPED_SECTION_ID,
   withoutHidden,
+  withUngroupedSection,
 } from './conversations';
 
 const agent = (id: string, updatedAt: string, extra: Partial<SidebarAgentItem> = {}) =>
@@ -499,6 +501,33 @@ describe('groupBySection', () => {
 
     expect(ids(groupBySection(rows, [section('s1')]).rest)).toEqual(['a', 'inbox']);
     expect(ids(groupBySection(rows).rest)).toEqual(['a', 'inbox']);
+  });
+
+  it('gathers the rest under one trailing group once a section exists', () => {
+    const split = groupBySection(
+      [entry('a', { sectionId: 's1' }), entry('b'), entry('c')],
+      [section('s1')],
+    );
+
+    const grouped = withUngroupedSection(split, true);
+
+    expect(grouped.rest).toEqual([]);
+    expect(grouped.sections.map((group) => [group.section.id, ids(group.entries)])).toEqual([
+      ['s1', ['a']],
+      [UNGROUPED_SECTION_ID, ['b', 'c']],
+    ]);
+    expect(grouped.sections[1]?.section.collapsed).toBe(true);
+  });
+
+  it('leaves the rest ungrouped when there is no section, or nothing left over', () => {
+    expect(ids(withUngroupedSection(groupBySection([entry('a')]), false).rest)).toEqual(['a']);
+
+    const filed = withUngroupedSection(
+      groupBySection([entry('a', { sectionId: 's1' })], [section('s1')]),
+      false,
+    );
+    expect(filed.sections.map((group) => group.section.id)).toEqual(['s1']);
+    expect(filed.rest).toEqual([]);
   });
 });
 

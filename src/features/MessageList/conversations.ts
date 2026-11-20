@@ -278,6 +278,43 @@ export const groupBySection = (
   };
 };
 
+/**
+ * The trailing group the list draws for chats that belong to no section. It is not saved: it
+ * exists only while the person has at least one section and at least one chat outside them.
+ */
+export const UNGROUPED_SECTION_ID = 'ungrouped';
+
+const UNGROUPED_SECTION_TIME = new Date(0);
+
+/** The list-owned Ungrouped group. It is not one of the person's saved sections. */
+export const ungroupedSectionData = (collapsed: boolean): ChannelSection => ({
+  collapsed,
+  createdAt: UNGROUPED_SECTION_TIME,
+  id: UNGROUPED_SECTION_ID,
+  name: '',
+  sort: null,
+  updatedAt: UNGROUPED_SECTION_TIME,
+});
+
+/**
+ * Once a section exists, chats outside every section gather under one trailing group instead of
+ * sitting below a divider. With no sections, or with nothing left over, the rest stays as it is.
+ */
+export const withUngroupedSection = (
+  groups: { pinned: ConversationEntry[]; rest: ConversationEntry[]; sections: SectionGroup[] },
+  collapsed: boolean,
+): { pinned: ConversationEntry[]; rest: ConversationEntry[]; sections: SectionGroup[] } => {
+  if (groups.sections.length === 0 || groups.rest.length === 0) return groups;
+  return {
+    pinned: groups.pinned,
+    rest: [],
+    sections: [
+      ...groups.sections,
+      { entries: groups.rest, section: ungroupedSectionData(collapsed) },
+    ],
+  };
+};
+
 /** The key a list row is hidden by: its Channel, its Agent or group, or Lobe AI. */
 export const conversationKey = (entry: ConversationEntry): string =>
   entry.type === 'inbox' ? 'inbox' : entry.type === 'channel' ? entry.channel.id : entry.item.id;

@@ -1,5 +1,5 @@
 import { cssVar } from '@lobehub/ui';
-import { type RefObject, useEffect, useState } from 'react';
+import { type RefObject, useEffect, useRef, useState } from 'react';
 import { create } from 'zustand';
 
 import { channelActions } from '@/store/channel';
@@ -79,9 +79,13 @@ const flash = (row: HTMLElement) => {
 export const useUnreadJump = (
   container: RefObject<HTMLElement | null>,
   groups: { pinned: ConversationEntry[]; rest: ConversationEntry[]; sections: SectionGroup[] },
+  /** Opens a folded group the list owns. Returns true when it did, so no section is written. */
+  openSection?: (id: string) => boolean,
 ) => {
   const requestedAt = useUnreadJumpStore((s) => s.requestedAt);
   const [target, setTarget] = useState<string>();
+  const openSectionRef = useRef(openSection);
+  openSectionRef.current = openSection;
 
   useEffect(() => {
     if (requestedAt === undefined) return;
@@ -96,7 +100,7 @@ export const useUnreadJump = (
     useUnreadJumpStore.setState({ lastKey: key, requestedAt: undefined });
 
     const folded = foldedSectionOf(groups.sections, key);
-    if (folded) {
+    if (folded && !openSectionRef.current?.(folded.id)) {
       void channelActions
         .setSectionCollapsed(folded.id, false)
         .catch((error) => console.error('Failed to open section', error));

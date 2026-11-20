@@ -1,23 +1,36 @@
 /**
  * @vitest-environment happy-dom
  */
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import Body from './Body';
+import { resetWorkspaceListMemory } from './holdWorkspaceList';
 
+const listeners = vi.hoisted(() => new Set<() => void>());
 const home = vi.hoisted(() => ({
   pinnedLayout: 'tiles' as 'tiles' | 'rows',
-  channels: [] as Record<string, unknown>[],
+  channels: [] as Record<string, unknown>[] | undefined,
   channelsError: undefined as unknown,
   pathname: '/',
   query: '',
   error: undefined as unknown,
   isInit: false,
   items: [] as unknown[],
+  listHydrated: undefined as boolean | undefined,
   mutate: () => {},
+  notify() {
+    this.revision += 1;
+    listeners.forEach((listener) => listener());
+  },
+  revision: 0,
   sections: undefined as Record<string, unknown>[] | undefined,
+  subscribe(listener: () => void) {
+    listeners.add(listener);
+    return () => listeners.delete(listener);
+  },
+  workspaceId: null as string | null,
 }));
 
 const openAddContactModal = vi.hoisted(() => vi.fn());
@@ -28,14 +41,30 @@ vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => k
 vi.mock('@/business/client/hooks/useActiveWorkspaceSlug', () => ({
   useActiveWorkspaceSlug: () => null,
 }));
+vi.mock('@/business/client/hooks/useActiveWorkspaceId', async (importOriginal) => {
+  const { useSyncExternalStore } = await import('react');
+  const actual = (await importOriginal()) as {
+    getActiveWorkspaceId: () => string | null;
+    useActiveWorkspaceId: () => string | null;
+  };
+  return {
+    ...actual,
+    useActiveWorkspaceId: () => {
+      useSyncExternalStore(home.subscribe, () => home.revision);
+      return home.workspaceId;
+    },
+  };
+});
 vi.mock('@/hooks/useActiveLocation', () => ({
   useActiveLocation: () => ({ pathname: home.pathname }),
 }));
+const setSectionCollapsed = vi.hoisted(() => vi.fn(async () => {}));
 vi.mock('@/store/channel', () => ({
   channelActions: {
     refreshList: () => {},
-    useFetchList: () => ({ error: home.channelsError }),
-    useFetchSections: () => ({}),
+    setSectionCollapsed,
+    useFetchList: () => ({ error: home.channelsError, isHydrated: home.listHydrated }),
+    useFetchSections: () => ({ isHydrated: home.listHydrated }),
   },
   channelSelectors: { list: () => home.channels, sections: () => home.sections },
   useChannelStore: (selector: (state: object) => unknown) => selector({}),
@@ -54,7 +83,11 @@ vi.mock('@/features/NavPanel/components/NavItem', () => ({
     createElement('button', { onClick }, title),
 }));
 vi.mock('@/hooks/useFetchAgentList', () => ({
-  useFetchAgentList: () => ({ error: home.error, mutate: home.mutate }),
+  useFetchAgentList: () => ({
+    error: home.error,
+    isHydrated: home.listHydrated,
+    mutate: home.mutate,
+  }),
 }));
 vi.mock('@/components/AsyncError', () => ({
   default: ({ error, onRetry }: { error: unknown; onRetry: () => void }) =>
@@ -118,6 +151,7 @@ vi.mock('./AgentConversation', () => ({
 vi.mock('./GroupConversation', () => ({ default: () => null }));
 
 beforeEach(() => {
+  resetWorkspaceListMemory();
   home.channels = [
     {
       agentId: null,
@@ -135,7 +169,9 @@ beforeEach(() => {
   home.error = undefined;
   home.isInit = false;
   home.items = [];
+  home.listHydrated = undefined;
   home.sections = undefined;
+  home.workspaceId = null;
 });
 
 /** Lobe AI's direct Channel the person unpinned, so only the pins under test lead the list. */
@@ -240,6 +276,88 @@ describe('MessageList Body', () => {
     expect(group).not.toHaveTextContent('Lobe AI row');
   });
 
+  it('keeps the painted list until the next workspace has loaded', () => {
+    home.isInit = true;
+    home.listHydrated = true;
+    home.workspaceId = 'ws-a';
+    home.items = [
+      { id: 'p1', pinned: false, title: 'Pinned 1', type: 'agent', updatedAt: new Date() },
+    ];
+    home.channels = [
+      {
+        agentId: 'p1',
+        createdAt: new Date(),
+        id: 'chn_p1',
+        pinnedAt: new Date(),
+        title: 'p1',
+      },
+      unpinnedInbox(),
+    ];
+
+    render(createElement(Body));
+    expect(screen.getByRole('group', { name: 'navPanel.pinned' })).toHaveTextContent('Pinned 1');
+
+    home.workspaceId = 'ws-b';
+    home.listHydrated = false;
+    home.isInit = false;
+    home.items = [];
+    home.channels = [];
+    act(() => home.notify());
+
+    expect(screen.getByRole('group', { name: 'navPanel.pinned' })).toHaveTextContent('Pinned 1');
+    expect(screen.queryByText('Loading agents')).not.toBeInTheDocument();
+
+    home.listHydrated = true;
+    home.isInit = true;
+    home.items = [{ id: 'n', pinned: false, title: 'Next', type: 'agent', updatedAt: new Date() }];
+    home.channels = [
+      { agentId: 'n', createdAt: new Date(), id: 'chn_n', pinnedAt: null, title: 'n' },
+      unpinnedInbox(),
+    ];
+    act(() => home.notify());
+
+    expect(screen.getByText('Next')).toBeInTheDocument();
+    expect(screen.queryByText('Pinned 1')).not.toBeInTheDocument();
+
+    home.workspaceId = 'ws-a';
+    home.isInit = false;
+    home.items = [];
+    home.channels = undefined;
+    act(() => home.notify());
+
+    expect(screen.getByRole('group', { name: 'navPanel.pinned' })).toHaveTextContent('Pinned 1');
+    expect(screen.queryByText('Next')).not.toBeInTheDocument();
+    expect(screen.queryByText('Loading agents')).not.toBeInTheDocument();
+  });
+
+  it('keeps the pin block while the channel list has not caught up', () => {
+    home.isInit = true;
+    home.workspaceId = 'ws-a';
+    home.items = [
+      { id: 'p1', pinned: false, title: 'Pinned 1', type: 'agent', updatedAt: new Date() },
+    ];
+    home.channels = [
+      {
+        agentId: 'p1',
+        createdAt: new Date(),
+        id: 'chn_p1',
+        pinnedAt: new Date(),
+        title: 'p1',
+      },
+      unpinnedInbox(),
+    ];
+
+    render(createElement(Body));
+    expect(screen.getByRole('group', { name: 'navPanel.pinned' })).toHaveTextContent('Pinned 1');
+
+    home.isInit = true;
+    home.channels = undefined;
+    act(() => home.notify());
+
+    expect(screen.getByRole('group', { name: 'navPanel.pinned' })).toHaveTextContent('Pinned 1');
+    expect(screen.queryByText('Loading agents')).not.toBeInTheDocument();
+  });
+
   describe('pinned layout setting', () => {
     const pinAgents = (count: number) => {
       home.isInit = true;
@@ -309,7 +427,18 @@ describe('MessageList Body', () => {
     // A folded section keeps its header but not its rows.
     expect(screen.getByRole('group', { name: 'Later' })).not.toHaveTextContent('# Beta');
     expect(screen.queryByText('# Beta')).not.toBeInTheDocument();
-    expect(screen.getByText('# Gamma')).toBeInTheDocument();
+    // Chats outside every section gather under Ungrouped, with no divider beneath the sections.
+    const ungrouped = screen.getByRole('group', { name: 'section.ungrouped' });
+    expect(ungrouped).toHaveTextContent('# Gamma');
+
+    const workHeader = screen.getByRole('button', { name: 'Work' });
+    expect(workHeader.firstElementChild).toHaveTextContent('Work');
+    expect(workHeader.firstElementChild?.querySelector('svg')).toBeNull();
+    expect(workHeader.querySelector('svg')).not.toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: 'section.ungrouped' }));
+    expect(screen.queryByText('# Gamma')).not.toBeInTheDocument();
+    expect(setSectionCollapsed).not.toHaveBeenCalled();
   });
 
   // Every agent and group got a row, so the list read like Contacts instead of open conversations.
@@ -358,6 +487,7 @@ describe('MessageList Body Channel rows', () => {
     expect(screen.queryByText('# Nasa')).not.toBeInTheDocument();
     expect(screen.getByText('# Project')).toBeInTheDocument();
     expect(screen.queryByText('# Old')).not.toBeInTheDocument();
+    expect(screen.queryByRole('group', { name: 'section.ungrouped' })).not.toBeInTheDocument();
   });
 
   it('keeps an archived Channel listed while it is open, and highlights it', () => {

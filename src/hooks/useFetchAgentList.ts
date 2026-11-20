@@ -15,10 +15,11 @@ export const useFetchAgentList = () => {
 
   const isAgentListInit = useHomeStore(homeAgentListSelectors.isAgentListInit);
 
-  const { error, isValidating, revalidate } = useFetchAgentListHook(isLogin);
+  const { error, isHydrated, isValidating, revalidate } = useFetchAgentListHook(isLogin);
 
   return {
     error,
+    isHydrated,
     // isRevalidating: has cached data, updating in background
     isRevalidating: isValidating && isAgentListInit,
     mutate: revalidate,

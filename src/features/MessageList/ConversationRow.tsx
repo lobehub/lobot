@@ -11,6 +11,7 @@ import { TypingDots } from '@/features/Channels/TypingDots';
 import WorkspaceLink, { type WorkspaceLinkProps } from '@/features/Workspace/WorkspaceLink';
 import type { NativeContextMenuItem } from '@/libs/contextMenu/types';
 
+import { useConversationDrag } from './ConversationDrag';
 import {
   type ChannelPreviewThread,
   type ConversationActivity,
@@ -107,6 +108,7 @@ const ConversationRow = memo<ConversationRowProps>(
     variant = 'row',
   }) => {
     const isTile = variant === 'tile';
+    const drag = useConversationDrag();
     const { t } = useTranslation('channel');
     const menuItems = withHideItem(
       contextMenuItems,
@@ -122,17 +124,24 @@ const ConversationRow = memo<ConversationRowProps>(
     const link: WorkspaceLinkProps = {
       'aria-current': active ? 'page' : undefined,
       'aria-label': title,
-      ref,
+      'ref': (node: HTMLElement | null) => {
+        drag?.setNodeRef(node);
+        if (typeof ref === 'function') ref(node);
+        else if (ref) ref.current = node;
+      },
       ...stylex.props(
         isTile ? styles.tile : styles.row,
         isTile && tile === 'dense' && styles.tileDense,
         isTile && tile === 'pair' && styles.tilePair,
         isTile && tile === 'solo' && styles.tileSolo,
         active && (isTile ? styles.tileActive : styles.rowActive),
+        drag?.isDragging && styles.dragging,
       ),
       'to': url,
       onClick,
       onMouseEnter,
+      // The list drags with the mouse and touch sensors, which listen for mousedown and touchstart.
+      ...(drag?.listeners as WorkspaceLinkProps | undefined),
     };
 
     const avatarNode = (

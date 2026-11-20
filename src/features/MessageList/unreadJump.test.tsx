@@ -77,11 +77,13 @@ describe('useUnreadJump', () => {
 
   const List = ({
     groups,
+    openSection,
   }: {
     groups: { pinned: ConversationEntry[]; rest: ConversationEntry[]; sections: SectionGroup[] };
+    openSection?: (id: string) => boolean;
   }) => {
     const ref = useRef<HTMLDivElement>(null);
-    useUnreadJump(ref, groups);
+    useUnreadJump(ref, groups, openSection);
     const visible = [
       ...groups.pinned,
       ...groups.sections.filter((g) => !g.section.collapsed).flatMap((g) => g.entries),
@@ -135,6 +137,21 @@ describe('useUnreadJump', () => {
     act(() => void requestUnreadJump());
 
     expect(setSectionCollapsed).toHaveBeenCalledWith('sec_later', false);
+  });
+
+  it('lets the list open a folded group it owns, without writing a section', () => {
+    const openSection = vi.fn(() => true);
+    const groups = {
+      pinned: [],
+      rest: [],
+      sections: [section('ungrouped', true, [row('b', { unreadCount: 1 })])],
+    };
+    render(<List groups={groups} openSection={openSection} />);
+
+    act(() => void requestUnreadJump());
+
+    expect(openSection).toHaveBeenCalledWith('ungrouped');
+    expect(setSectionCollapsed).not.toHaveBeenCalled();
   });
 
   it('waits for rows when the list mounts before they load', () => {

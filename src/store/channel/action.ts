@@ -49,12 +49,11 @@ class ChannelActionImpl {
   /** Read the people through `channelSelectors.userCandidates`. */
   useFetchUserCandidates = (channelId: string | undefined, search: string) =>
     this.#private.userCandidates.useSync({ channelId, search });
-  useFetchList = () => {
+  useFetchList = (enabled = true) => {
     const pending = useChannelStore(channelSelectors.listHasPendingWork);
-    return this.#private.list.useSync(
-      {},
-      { refreshInterval: pending ? CHANNEL_ACTIVE_REFRESH_MS : CHANNEL_IDLE_REFRESH_MS },
-    );
+    return this.#private.list.useSync(enabled ? {} : null, {
+      refreshInterval: pending ? CHANNEL_ACTIVE_REFRESH_MS : CHANNEL_IDLE_REFRESH_MS,
+    });
   };
   useFetchDetail = (params: ChannelViewParams | null) => {
     // Subscribe to the replica, not just SWR's last response: sending a message

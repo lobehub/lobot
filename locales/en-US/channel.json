@@ -296,6 +296,7 @@
   "section.moveTo": "Move to section",
   "section.new": "New section…",
   "section.rename": "Rename section",
+  "section.ungrouped": "Ungrouped",
   "send": "Send",
   "sendFailed": "Message was not sent. Your draft is preserved; try again.",
   "settings.close": "Close channel settings",

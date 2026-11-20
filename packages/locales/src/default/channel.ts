@@ -26,6 +26,7 @@ export default {
   'section.moveTo': 'Move to section',
   'section.new': 'New section…',
   'section.rename': 'Rename section',
+  'section.ungrouped': 'Ungrouped',
   'sort.by': 'Sort by',
   'sort.by.createdAt': 'Date created',
   'sort.by.title': 'Name',

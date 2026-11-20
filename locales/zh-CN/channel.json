@@ -296,6 +296,7 @@
   "section.moveTo": "移动到分类",
   "section.new": "新建分类…",
   "section.rename": "重命名分类",
+  "section.ungrouped": "未分组",
   "send": "发送",
   "sendFailed": "发送失败，草稿已保留，请重试。",
   "settings.close": "关闭频道设置",

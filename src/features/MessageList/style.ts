@@ -1,6 +1,11 @@
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 
+import { sectionHeaderMarker } from './markers.stylex';
+
+/** A pointer that can hover. A touch screen keeps the fold arrow in the header. */
+const HOVER = '@media (hover: hover)';
+
 export const AVATAR_SIZE = 32;
 
 /** Circle shared by the list column's icon buttons: search, new chat, contacts. */
@@ -108,6 +113,34 @@ export const styles = stylex.create({
   pinnedGroupDense: {
     columnGap: '2px',
   },
+  /** Where a dragged conversation can land: the pinned tiles, or a group. */
+  dropOver: {
+    borderRadius: cssVar.borderRadiusLG,
+    backgroundColor: cssVar.colorFillTertiary,
+  },
+  /** Shown only while dragging, when that landing spot is not already on screen. */
+  dropSlot: {
+    minHeight: '72px',
+    borderRadius: cssVar.borderRadiusLG,
+    backgroundColor: cssVar.colorFillQuaternary,
+  },
+  /** The rows under no section, so a drop can cover them as one target. */
+  dropStack: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    borderRadius: cssVar.borderRadiusLG,
+  },
+  /** The conversation following the pointer. */
+  dragGhost: {
+    display: 'inline-flex',
+    borderRadius: cssVar.borderRadiusLG,
+    backgroundColor: cssVar.colorBgElevated,
+  },
+  /** The row left behind while its ghost follows the pointer. */
+  dragging: {
+    opacity: 0.35,
+  },
   /** "[@me]" before the preview; the unread badge's red, so the two read as one signal. */
   mentioned: {
     flex: 'none',
@@ -156,14 +189,6 @@ export const styles = stylex.create({
   rowTextSingleLine: {
     minHeight: 0,
   },
-  /** Sets the unsectioned rows apart from the last section above them. */
-  restDivider: {
-    height: '1px',
-    marginBlockStart: '6px',
-    marginBlockEnd: '4px',
-    marginInline: '8px',
-    backgroundColor: cssVar.colorBorderSecondary,
-  },
   /** One of the person's own sections: its header, then its rows. */
   section: {
     position: 'relative',
@@ -172,9 +197,20 @@ export const styles = stylex.create({
     gap: '4px',
     marginBlockStart: '6px',
   },
+  /** Sits at the end of the header, and stays out of the way until the header is pointed at. */
   sectionChevron: {
     flex: 'none',
-    transition: 'transform 150ms ease',
+    opacity: {
+      default: 1,
+      [HOVER]: {
+        default: 0,
+        [stylex.when.ancestor(':hover', sectionHeaderMarker)]: 1,
+        [stylex.when.ancestor(':focus-visible', sectionHeaderMarker)]: 1,
+      },
+    },
+    transitionProperty: 'opacity, transform',
+    transitionDuration: '150ms',
+    transitionTimingFunction: 'ease',
   },
   sectionChevronOpen: {
     transform: 'rotate(90deg)',
