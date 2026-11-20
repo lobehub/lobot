@@ -211,7 +211,7 @@ function CreateChannel({ existing, onCreated }: CreateChannelProps) {
       locked={busy}
       options={options}
       people={{ channelId: existing?.id, onChange: setPeople, value: people }}
-      title={t(existing && !startsGroup ? 'invite.title' : 'create')}
+      title={t(existing && !startsGroup ? 'invite.title' : 'create.title')}
       value={agents}
       footer={
         <Flexbox gap={12} padding={16}>

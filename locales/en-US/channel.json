@@ -88,6 +88,7 @@
   "create.private": "Private",
   "create.privateHint": "Only invited members can see it. Otherwise anyone in the workspace can find and join it.",
   "create.publicFailed": "The channel was created, but it could not be made public, so it is still private.",
+  "create.title": "Start group chat",
   "date.yesterday": "Yesterday",
   "delete": "Delete Channel",
   "deleteChat": "Delete chat",

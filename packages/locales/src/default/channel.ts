@@ -54,6 +54,7 @@ export default {
   'create.private': 'Private',
   'create.privateHint':
     'Only invited members can see it. Otherwise anyone in the workspace can find and join it.',
+  'create.title': 'Start group chat',
   'create.publicFailed':
     'The channel was created, but it could not be made public, so it is still private.',
   'agents': 'Agents',

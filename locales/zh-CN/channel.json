@@ -88,6 +88,7 @@
   "create.private": "私密",
   "create.privateHint": "只有受邀成员能看到。关闭后，工作区里的任何人都能找到并加入。",
   "create.publicFailed": "群聊已创建，但没能设为公开，目前仍是私密的。",
+  "create.title": "发起群聊",
   "date.yesterday": "昨天",
   "delete": "删除频道",
   "deleteChat": "删除聊天",
