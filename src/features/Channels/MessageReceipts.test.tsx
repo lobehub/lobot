@@ -257,7 +257,7 @@ describe('ReplyList name column', () => {
       }),
     );
     for (const name of ['Cook', 'Justin']) {
-      expect(screen.getByText(name).style.width).toBe('80px');
+      expect(screen.getByText(name).style.width).toBe('56px');
     }
   });
 

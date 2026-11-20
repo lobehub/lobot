@@ -71,8 +71,8 @@ export const failureAnchors = (messages: ChannelPublicMessage[], entries: ReplyE
   return anchors;
 };
 
-/** Width of the name column when several Agents are listed: room for a short name or two words. */
-const NAME_COLUMN_WIDTH = 80;
+/** Width of the name column when several Agents are listed: about four CJK characters or a short name. */
+const NAME_COLUMN_WIDTH = 56;
 const NAME_FREE = { flex: '0 1 auto', minWidth: 0 } as const;
 const NAME_COLUMN = { flex: 'none', minWidth: 0, width: NAME_COLUMN_WIDTH } as const;
 /** A state stays whole on the row; a topic's name in its place shrinks to an ellipsis instead. */
