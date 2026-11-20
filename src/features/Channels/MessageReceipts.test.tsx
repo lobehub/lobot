@@ -121,6 +121,19 @@ describe('ReplyDetail topic', () => {
 
     expect(screen.queryByText('receipt.openTopic')).toBeNull();
   });
+
+  // Several replies of one Agent read alike; the topic each runs in tells them apart.
+  it('names the topic a reply runs in for the member who runs it', () => {
+    renderAgentReply(runningJob({ topicId: 'tpc_1', topicTitle: 'Fix the login bug' }));
+
+    expect(screen.getByText('Fix the login bug')).toBeTruthy();
+  });
+
+  it('shows no topic name without the topic itself', () => {
+    renderAgentReply(runningJob({ topicTitle: 'Fix the login bug' }));
+
+    expect(screen.queryByText('Fix the login bug')).toBeNull();
+  });
 });
 
 describe('failureAnchors', () => {

@@ -93,6 +93,7 @@ export function ReplyDetail({
 }) {
   const { t } = useTranslation('channel');
   const status = useReplyStatusLabel(job, queue ?? [job]);
+  const topicTitle = job.topicId ? job.topicTitle?.trim() : undefined;
   const { close } = usePopoverContext();
   const openAgent = useOpenReplyAgent(agentId, close);
   const deviceFailure = isDeviceFailure(job);
@@ -210,6 +211,19 @@ export function ReplyDetail({
           )}
         </Flexbox>
       </Flexbox>
+      {/* The topic the reply runs in, by name, so replies of one Agent tell apart at a glance.
+          Only its runner gets it, as with the open-topic action. */}
+      {topicTitle && (
+        <Text
+          ellipsis
+          fontSize={12}
+          title={topicTitle}
+          type="secondary"
+          {...stylex.props(statusStyles.replyTopic)}
+        >
+          {topicTitle}
+        </Text>
+      )}
       {job.status === 'queued' && job.blockedCode === 'device_offline' && (
         <BlockedDevice
           waiting
