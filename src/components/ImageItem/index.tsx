@@ -6,7 +6,6 @@ import { Trash } from 'lucide-react';
 import { type CSSProperties } from 'react';
 import { memo } from 'react';
 
-import { usePlatform } from '@/hooks/usePlatform';
 import { cachedMediaUrl } from '@/libs/mediaCache/cachedMediaUrl';
 import { sx } from '@/styles/sx';
 
@@ -64,7 +63,6 @@ const ImageItem = memo<ImageItemProps>(
     height,
   }) => {
     const IMAGE_SIZE = editable ? MIN_IMAGE_SIZE : '100%';
-    const { isSafari } = usePlatform();
     const aspectRatio = square
       ? 1
       : ratio && ratio > 0
@@ -77,7 +75,7 @@ const ImageItem = memo<ImageItemProps>(
       <Image
         alt={alt || ''}
         alwaysShowActions={alwaysShowClose}
-        height={square || !isSafari ? '100%' : 'auto'}
+        height={square ? '100%' : 'auto'}
         isLoading={loading}
         objectFit={square ? 'cover' : undefined}
         preview={preview}
@@ -102,10 +100,12 @@ const ImageItem = memo<ImageItemProps>(
         }}
         style={{
           aspectRatio,
-          height: aspectRatio || isSafari ? 'auto' : '100%',
-          // the grid's min-height and row stretch would push wide images past their ratio, leaving a blank strip
-          alignSelf: aspectRatio ? 'start' : undefined,
-          minHeight: aspectRatio ? 'auto' : undefined,
+          // Follow the bitmap, ratio known or not: the grid's 64px min-height and row
+          // stretch would otherwise make a wide image's tile taller than the image,
+          // leaving the gray fill showing underneath.
+          height: 'auto',
+          alignSelf: 'start',
+          minHeight: 'auto',
           width: '100%',
           ...style,
         }}
