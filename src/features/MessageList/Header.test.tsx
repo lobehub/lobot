@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   addFriend: vi.fn(),
   createAgent: vi.fn(),
   createGroupChat: vi.fn(),
+  hasActiveWorkspace: false,
 }));
 
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
@@ -48,6 +49,9 @@ vi.mock('./useCreateActions', () => ({
     isLoading: false,
   }),
 }));
+vi.mock('@/business/client/hooks/useHasActiveWorkspace', () => ({
+  useHasActiveWorkspace: () => mocks.hasActiveWorkspace,
+}));
 vi.mock('./SearchContext', () => ({ useMessageSearch: () => ({ query: '', setQuery: vi.fn() }) }));
 
 const menuKeys = () =>
@@ -58,6 +62,7 @@ const menuKeys = () =>
 describe('MessageList Header create menu', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.hasActiveWorkspace = false;
   });
 
   it('offers only a new Agent, a new group chat and adding a friend', () => {
@@ -73,6 +78,12 @@ describe('MessageList Header create menu', () => {
     expect(mocks.createAgent).toHaveBeenCalledOnce();
     expect(mocks.createGroupChat).toHaveBeenCalledOnce();
     expect(mocks.addFriend).toHaveBeenCalledOnce();
+  });
+
+  it('leaves out adding a friend in a workspace', () => {
+    mocks.hasActiveWorkspace = true;
+    render(<Header />);
+    expect(menuKeys()).toEqual(['newAgent', 'newChannel']);
   });
 
   it('keeps search as an icon until it is opened', () => {
