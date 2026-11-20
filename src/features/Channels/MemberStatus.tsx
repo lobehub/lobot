@@ -66,7 +66,8 @@ export function MemberStatus({
   const entries = useMemberEntries(detail);
   const overflow = entries.length - MAX_VISIBLE;
   const title = t('membersCount', { count: entries.length });
-  const direct = !!channel.agentId;
+  // A one-on-one, with an Agent or another person, has no roster to show.
+  const direct = !!channel.agentId || !!channel.peerUserId;
 
   return (
     <Flexbox horizontal align="center" gap={4}>
@@ -127,7 +128,7 @@ export function MemberStatus({
             </Button>
           </Popover>
         ))}
-      {/* A direct conversation has no roster, so starting a group with its Agent stays here. */}
+      {/* A one-on-one has no roster, so starting a group with the other side stays here. */}
       {direct && <InviteMembersButton detail={detail} />}
     </Flexbox>
   );

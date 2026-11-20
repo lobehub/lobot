@@ -227,4 +227,11 @@ describe('MemberStatus invite', () => {
 
     expect(screen.getByText('invite.title')).toBeTruthy();
   });
+
+  it('offers starting a group in a one-on-one with a person instead of an empty roster', () => {
+    render(createElement(MemberStatus, { detail: detail({ agentId: null, peerUserId: 'usr_1' }) }));
+
+    expect(screen.getByText('invite.title')).toBeTruthy();
+    expect(screen.queryByText('members.show')).toBeNull();
+  });
 });
