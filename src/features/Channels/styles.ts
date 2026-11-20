@@ -617,10 +617,16 @@ export const statusStyles = stylex.create({
     maxWidth: '100%',
     fontSize: cssVar.fontSizeSM,
   },
+  /**
+   * A state sits in headers that line their parts up on text baselines. An inline flex box takes
+   * its baseline from its first item; were that the glyph, which has no text, the baseline would
+   * fall on the glyph's bottom edge and lift the label above the name beside it. So the box aligns
+   * on baselines and the glyph alone centres itself, leaving the baseline to the label.
+   */
   state: {
     display: 'inline-flex',
     gap: 4,
-    alignItems: 'center',
+    alignItems: 'baseline',
     color: cssVar.colorTextSecondary,
   },
   stateShrink: {
@@ -638,6 +644,7 @@ export const statusStyles = stylex.create({
   },
   stateIcon: {
     flex: 'none',
+    alignSelf: 'center',
   },
   /** The glyph of a reply at work or one waiting for a person; the text stays quiet. */
   stateIconAccent: {
