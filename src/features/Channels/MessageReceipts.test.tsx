@@ -29,7 +29,8 @@ vi.mock('@lobehub/ui', () => ({
     createElement('button', { onClick }, children as never),
   Flexbox: ({ children }: { children?: unknown }) => createElement('div', {}, children as never),
   Popover: ({ children }: { children?: unknown }) => children,
-  Text: ({ children }: { children?: unknown }) => createElement('span', {}, children as never),
+  Text: ({ children, style }: { children?: unknown; style?: object }) =>
+    createElement('span', { style }, children as never),
   usePopoverContext: () => ({ close: () => {} }),
 }));
 vi.mock('@/components/AgentAvatar', () => ({ default: () => null }));
@@ -232,5 +233,30 @@ describe('reply popover focus', () => {
     expect(REPLY_POPUP_PROPS.initialFocus('mouse')).toBe(false);
     expect(REPLY_POPUP_PROPS.initialFocus('touch')).toBe(false);
     expect(REPLY_POPUP_PROPS.initialFocus('keyboard')).toBe(true);
+  });
+});
+
+describe('ReplyList name column', () => {
+  const reply = (id: string, memberId: string, name: string) =>
+    ({ job: failedJob({ errorType: null, id, memberId, status: 'queued' }), name }) as ReplyEntry;
+
+  // Names of different lengths pushed each row's state to a different place.
+  it('gives every name one width when several replies are listed', () => {
+    render(
+      createElement(ReplyList, {
+        channelId: 'chn_1',
+        entries: [reply('a', 'mem_cook', 'Cook'), reply('b', 'mem_justin', 'Justin')],
+      }),
+    );
+    for (const name of ['Cook', 'Justin']) {
+      expect(screen.getByText(name).style.width).toBe('80px');
+    }
+  });
+
+  it('lets a lone reply keep its name at its own width', () => {
+    render(
+      createElement(ReplyList, { channelId: 'chn_1', entries: [reply('a', 'mem_cook', 'Cook')] }),
+    );
+    expect(screen.getByText('Cook').style.width).toBe('');
   });
 });
