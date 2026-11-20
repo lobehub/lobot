@@ -40,6 +40,10 @@ const styles = stylex.create({
     transitionProperty: 'border-color',
     transitionDuration: '0.15s',
   },
+  static: {
+    alignSelf: 'stretch',
+    cursor: 'default',
+  },
   head: {
     display: 'flex',
     gap: 12,
@@ -78,32 +82,22 @@ const styles = stylex.create({
   },
 });
 
-/**
- * A contact card in a Channel message, drawn from the snapshot the server stored when it was sent.
- * Clicking it opens the live profile in Contacts, where the reader can add or message it.
- */
-export const ContactCardMessage = ({ card }: { card: ContactCard }) => {
+/** Whose card it is, under the name: a person's handle, or whose Agent it is. */
+const useCardSecondary = (card: ContactCard) => {
   const { t } = useTranslation('channel');
-  const navigate = useWorkspaceAwareNavigate();
+  return card.type === 'user'
+    ? card.username && `@${card.username}`
+    : card.ownerName && t('contactCard.agentOwner', { name: card.ownerName });
+};
+
+/** The card's face: avatar and name over a hairline, then what kind of card it is. */
+const ContactCardFace = ({ card }: { card: ContactCard }) => {
+  const { t } = useTranslation('channel');
   const name = contactCardName(card);
-  const label = t(card.type === 'user' ? 'contactCard.label.user' : 'contactCard.label.agent');
-  const secondary =
-    card.type === 'user'
-      ? card.username && `@${card.username}`
-      : card.ownerName && t('contactCard.agentOwner', { name: card.ownerName });
+  const secondary = useCardSecondary(card);
 
   return (
-    <button
-      aria-label={`${label}: ${name}`}
-      data-testid={'contact-card'}
-      type={'button'}
-      onClick={() =>
-        navigate(
-          card.type === 'user' ? PERSON_CONTACT_URL(card.userId) : SHARED_AGENT_URL(card.shareId),
-        )
-      }
-      {...stylex.props(styles.card)}
-    >
+    <>
       <span {...stylex.props(styles.head)}>
         {card.type === 'user' ? (
           <UserAvatar avatar={card.avatar} name={name} shape={'square'} size={AVATAR_SIZE} />
@@ -122,7 +116,42 @@ export const ContactCardMessage = ({ card }: { card: ContactCard }) => {
           {secondary && <span {...stylex.props(styles.secondary)}>{secondary}</span>}
         </span>
       </span>
-      <span {...stylex.props(styles.footer)}>{label}</span>
+      <span {...stylex.props(styles.footer)}>
+        {t(card.type === 'user' ? 'contactCard.label.user' : 'contactCard.label.agent')}
+      </span>
+    </>
+  );
+};
+
+/** The card as it will read once sent, for the share dialog. Not clickable. */
+export const ContactCardPreview = ({ card }: { card: ContactCard }) => (
+  <div data-testid={'contact-card-preview'} {...stylex.props(styles.card, styles.static)}>
+    <ContactCardFace card={card} />
+  </div>
+);
+
+/**
+ * A contact card in a Channel message, drawn from the snapshot the server stored when it was sent.
+ * Clicking it opens the live profile in Contacts, where the reader can add or message it.
+ */
+export const ContactCardMessage = ({ card }: { card: ContactCard }) => {
+  const { t } = useTranslation('channel');
+  const navigate = useWorkspaceAwareNavigate();
+  const label = t(card.type === 'user' ? 'contactCard.label.user' : 'contactCard.label.agent');
+
+  return (
+    <button
+      aria-label={`${label}: ${contactCardName(card)}`}
+      data-testid={'contact-card'}
+      type={'button'}
+      onClick={() =>
+        navigate(
+          card.type === 'user' ? PERSON_CONTACT_URL(card.userId) : SHARED_AGENT_URL(card.shareId),
+        )
+      }
+      {...stylex.props(styles.card)}
+    >
+      <ContactCardFace card={card} />
     </button>
   );
 };
