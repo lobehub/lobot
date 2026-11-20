@@ -18,10 +18,6 @@ import { chatPortalSelectors } from '@/store/chat/selectors';
 
 import { PortalMoreMenuSlot } from './PortalMoreMenu/context';
 
-const CONTENT_INSET = 12;
-// (28px box - 16px glyph) / 2
-const BACK_GLYPH_INSET = 6;
-
 const Header = memo<{
   onClose?: () => void;
   paddingInline?: number;
@@ -39,11 +35,6 @@ const Header = memo<{
     s.goBack,
     s.clearPortalStack,
   ]);
-  // The panel's rows (publish bar, breadcrumb, body) start 12px in. A header
-  // with no inset of its own, like the local file tab strip, would put the
-  // arrow's 28px box on the edge and its glyph 6px in; push the box so the
-  // glyph lands on that 12px column.
-  const backInset = Math.max(0, CONTENT_INSET - BACK_GLYPH_INSET - paddingInline);
   const isTopicPageRoute =
     !!params.aid &&
     !!params.topicId &&
@@ -60,7 +51,6 @@ const Header = memo<{
               aria-label={t('back')}
               icon={ArrowLeft}
               size={DESKTOP_HEADER_ICON_SMALL_SIZE}
-              style={{ marginInlineStart: backInset }}
               title={t('back')}
               onClick={goBack}
             />
