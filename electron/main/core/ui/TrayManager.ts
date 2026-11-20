@@ -106,6 +106,7 @@ export class TrayManager {
       identifier: 'main',
       isTemplateImage: isMac,
       tooltip: name,
+      unreadIconPath: isMac ? undefined : 'trayBadge.png',
     });
   }
 

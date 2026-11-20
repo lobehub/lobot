@@ -126,7 +126,9 @@ export default class NotificationCtr extends ControllerModule {
   @IpcMethod()
   setBadgeCount(count: number): void {
     try {
-      app.setBadgeCount(Math.max(0, Math.floor(count)));
+      const next = Math.max(0, Math.floor(count));
+      app.setBadgeCount(next);
+      this.app.trayManager.setUnreadCount(next);
     } catch (error) {
       logger.error('Failed to set badge count:', error);
     }

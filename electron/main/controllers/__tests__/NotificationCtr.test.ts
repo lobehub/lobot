@@ -45,6 +45,7 @@ vi.mock('electron', () => {
         bounce: vi.fn(),
       },
       setAppUserModelId: vi.fn(),
+      setBadgeCount: vi.fn(),
     },
     nativeImage: {
       createFromDataURL: vi.fn(() => ({ isEmpty: () => true, toPNG: () => Buffer.alloc(0) })),
@@ -81,8 +82,13 @@ const mockBrowserManager = {
   showMainWindow: vi.fn(),
 };
 
+const mockTrayManager = {
+  setUnreadCount: vi.fn(),
+};
+
 const mockApp = {
   browserManager: mockBrowserManager,
+  trayManager: mockTrayManager,
 } as unknown as App;
 
 describe('NotificationCtr', () => {
@@ -391,6 +397,18 @@ describe('NotificationCtr', () => {
         error: 'Unknown error',
         success: false,
       });
+    });
+  });
+
+  describe('setBadgeCount', () => {
+    it('pairs the taskbar badge with the tray red dot', async () => {
+      const { app } = await import('electron');
+
+      controller.setBadgeCount(3.7);
+      controller.setBadgeCount(-1);
+
+      expect(vi.mocked(app.setBadgeCount).mock.calls).toEqual([[3], [0]]);
+      expect(mockTrayManager.setUnreadCount.mock.calls).toEqual([[3], [0]]);
     });
   });
 
