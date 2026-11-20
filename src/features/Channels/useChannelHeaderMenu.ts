@@ -65,7 +65,11 @@ export const useChannelHeaderMenuItems = (
               icon: Share2,
               key: 'shareAgent',
               label: t('shareAgent'),
-              onClick: () => openShareAgentCardModal(agentId),
+              onClick: () =>
+                openShareAgentCardModal(agentId, {
+                  avatar: directAgent.member.avatar,
+                  name: directAgent.name,
+                }),
             },
           ]
         : []),
