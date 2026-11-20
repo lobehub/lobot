@@ -92,6 +92,8 @@ Enforcement: `jobStatus.test.ts` covers unresolved failures and the member statu
 
 Source: acceptance round 4 review — “回执错误应该放到右上角” (2026-10-26).
 
+Revised (2026-11-20): a failure is shown calmly, not as an alarm. The header indicator and the "failed" state wear an amber glyph; their text stays in the quiet secondary colour, never red. The popover's title already says the replies failed, so its rows drop the state and the "Failure reason" label: avatar and name, the jump-to-message as an icon at the row's end, and the reason in secondary text aligned under the name. Source: user feedback that the failure dropdown read cluttered and its red error caused anxiety. Enforcement: `FailureIndicator.test.tsx`.
+
 ## LOBE-UX-013 — Channel timeline reads like a chat app
 
 The composer is one row (attach, input, send) that grows with its content. Mentioned members render as chips in sent messages; the viewer cannot mention themself. Hovering a message highlights its row and shows a toolbar with a labelled “Start thread” action. The main timeline starts with who joined (“你邀请了 … 加入频道”), and later additions appear in time order; the generic empty state is only for a Channel with neither. The tab shows the Channel's name.

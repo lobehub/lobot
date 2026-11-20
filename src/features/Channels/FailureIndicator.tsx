@@ -1,4 +1,4 @@
-import { Button, Flexbox, Icon, Popover, Text, usePopoverContext } from '@lobehub/ui';
+import { ActionIcon, Button, Flexbox, Icon, Popover, Text, usePopoverContext } from '@lobehub/ui';
 import type { ChannelDetail } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { CircleAlert, LocateFixed } from 'lucide-react';
@@ -9,7 +9,7 @@ import { mainTimelineFailures } from './jobStatus';
 import type { ReplyEntry } from './MessageReceipts';
 import { ReplyDetail, replyEntries } from './MessageReceipts';
 import { REPLY_POPUP_PROPS } from './replyPopup';
-import { statusStyles, toneStyles } from './styles';
+import { statusStyles } from './styles';
 
 /** Scrolls the main conversation to a message, if it is in the loaded page. */
 const findMessage = (messageId: string) =>
@@ -29,21 +29,27 @@ function FailureRow({
   const { t } = useTranslation('channel');
   const { close } = usePopoverContext();
   return (
-    <Flexbox gap={4}>
-      <ReplyDetail channelId={channelId} entry={entry} manageable={manageable} />
-      <Button
-        icon={LocateFixed}
-        size="small"
-        style={{ alignSelf: 'flex-start' }}
-        type="text"
-        onClick={() => {
-          close();
-          findMessage(entry.job.messageId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }}
-      >
-        {t('failure.locate')}
-      </Button>
-    </Flexbox>
+    <ReplyDetail
+      hideState
+      channelId={channelId}
+      entry={entry}
+      manageable={manageable}
+      trailing={
+        <ActionIcon
+          aria-label={t('failure.locate')}
+          icon={LocateFixed}
+          size="small"
+          title={t('failure.locate')}
+          onClick={() => {
+            close();
+            findMessage(entry.job.messageId)?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
+          }}
+        />
+      }
+    />
   );
 }
 
@@ -64,7 +70,7 @@ export function FailureIndicator({ detail }: { detail: ChannelDetail }) {
       popupProps={REPLY_POPUP_PROPS}
       trigger="click"
       content={
-        <Flexbox gap={12} {...stylex.props(statusStyles.popover, statusStyles.replyList)}>
+        <Flexbox gap={16} {...stylex.props(statusStyles.popover, statusStyles.replyList)}>
           <Text fontSize={12} type="secondary" weight={500}>
             {label}
           </Text>
@@ -84,9 +90,9 @@ export function FailureIndicator({ detail }: { detail: ChannelDetail }) {
         size="small"
         title={label}
         type="text"
-        {...stylex.props(statusStyles.failureButton, toneStyles.error)}
+        {...stylex.props(statusStyles.failureButton)}
       >
-        <Icon icon={CircleAlert} size={16} />
+        <Icon icon={CircleAlert} size={16} {...stylex.props(statusStyles.failureIcon)} />
         {failures.length}
       </Button>
     </Popover>

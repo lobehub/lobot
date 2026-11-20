@@ -244,7 +244,6 @@
   "projectAgents": "项目成员",
   "queue.waitingDevice": "等待 {{name}} 上线",
   "receipt.deviceUnreachable": "Agent 运行的设备不在线，回复没能开始。请重新连接设备或更换设备后重试。",
-  "receipt.errorReason": "失败原因",
   "receipt.errorUnavailable": "未记录具体原因，请检查 Agent 的模型与设备设置后重新发送。",
   "receipt.failedHint": "再次 @ 它即可重试。",
   "receipt.handoff": "换一个接力",

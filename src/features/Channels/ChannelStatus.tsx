@@ -1,19 +1,19 @@
 import * as stylex from '@stylexjs/stylex';
 import type { LucideIcon } from 'lucide-react';
-import { Check, CircleX, Clock, Hand, LoaderCircle } from 'lucide-react';
+import { Check, CircleAlert, Clock, Hand, LoaderCircle } from 'lucide-react';
 
 import type { ChannelStatusTone } from './jobStatus';
 import { statusStyles } from './styles';
 
 /**
  * Each state has its own glyph, so states tell apart by shape, not by a row of coloured dots; a
- * reply that waits for someone to step in raises a hand. The text stays one quiet colour. Only an
- * error is red; the working spinner and the hand are blue.
+ * reply that waits for someone to step in raises a hand. The text stays one quiet colour; only the
+ * glyph takes a colour: amber for a failure, blue for the working spinner and the hand.
  */
 const TONE_ICONS: Record<ChannelStatusTone, LucideIcon> = {
   attention: Hand,
   done: Check,
-  error: CircleX,
+  error: CircleAlert,
   quiet: Clock,
   working: LoaderCircle,
 };
@@ -38,11 +38,7 @@ export function ChannelStatus({
     <span
       data-tone={tone}
       title={ellipsis ? label : undefined}
-      {...stylex.props(
-        statusStyles.state,
-        tone === 'error' ? statusStyles.stateError : null,
-        ellipsis && statusStyles.stateShrink,
-      )}
+      {...stylex.props(statusStyles.state, ellipsis && statusStyles.stateShrink)}
     >
       {!hideIcon && (
         <Icon
@@ -52,6 +48,7 @@ export function ChannelStatus({
             statusStyles.stateIcon,
             tone === 'working' && statusStyles.stateIconSpin,
             (tone === 'working' || tone === 'attention') && statusStyles.stateIconAccent,
+            tone === 'error' && statusStyles.stateIconError,
           )}
         />
       )}

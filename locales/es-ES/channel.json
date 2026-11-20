@@ -232,7 +232,6 @@
   "profile.view": "Ver perfil",
   "projectAgents": "Miembros del proyecto",
   "receipt.deviceUnreachable": "El dispositivo en el que se ejecuta este agente está desconectado, así que la respuesta no pudo iniciarse. Vuelve a conectar el dispositivo o cambia a otro y vuelve a intentarlo.",
-  "receipt.errorReason": "Razón del fallo",
   "receipt.errorUnavailable": "No se registró una razón detallada. Verifica el modelo y la configuración del dispositivo del agente antes de enviar nuevamente.",
   "receipt.failedHint": "Menciónalo nuevamente para reintentar.",
   "receipt.handoff": "Transferir a otro agente",

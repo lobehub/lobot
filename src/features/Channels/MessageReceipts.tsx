@@ -8,6 +8,7 @@ import type {
 } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { ExternalLink } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -106,19 +107,25 @@ const NAME_COLUMN_BUTTON = { ...NAME_COLUMN, justifyContent: 'flex-start' } as c
  * `queue` holds the replies listed beside it, so one waiting behind an earlier reply of the same
  * Agent says so instead of typing. `nameColumn` puts the name in the list's name column, as wide as
  * the widest name (a too-long one ends in an ellipsis), so the states line up in one column.
+ * `hideState` drops the state where the list's title already says it (every reply failed);
+ * `trailing` is an always-visible action at the end of the name row.
  */
 export function ReplyDetail({
   channelId,
   entry: { agentId, avatar, job, member, name },
+  hideState,
   manageable,
   nameColumn,
   queue,
+  trailing,
 }: {
   channelId: string;
   entry: ReplyEntry;
+  hideState?: boolean;
   manageable?: boolean;
   nameColumn?: boolean;
   queue?: ChannelPublicJob[];
+  trailing?: ReactNode;
 }) {
   const { t } = useTranslation('channel');
   const status = useReplyStatusLabel(job, queue ?? [job]);
@@ -217,13 +224,15 @@ export function ReplyDetail({
         )}
         {/* The state stays whole on the row and the name gives way first; a topic's name in the
             state's place shrinks with it. */}
-        <span style={topicAsState ? STATE_SHRINK : STATE_WHOLE}>
-          <ChannelStatus
-            ellipsis={topicAsState}
-            label={topicAsState ? topicTitle! : status.label}
-            tone={status.tone}
-          />
-        </span>
+        {!hideState && (
+          <span style={topicAsState ? STATE_SHRINK : STATE_WHOLE}>
+            <ChannelStatus
+              ellipsis={topicAsState}
+              label={topicAsState ? topicTitle! : status.label}
+              tone={status.tone}
+            />
+          </span>
+        )}
         <Flexbox
           horizontal
           align="center"
@@ -255,6 +264,7 @@ export function ReplyDetail({
             </Button>
           )}
         </Flexbox>
+        {trailing}
       </Flexbox>
       {/* The topic the reply runs in, by name, so replies of one Agent tell apart at a glance.
           Only its runner gets it, as with the open-topic action. */}
@@ -264,7 +274,7 @@ export function ReplyDetail({
           fontSize={12}
           title={topicTitle}
           type="secondary"
-          {...stylex.props(statusStyles.replyTopic)}
+          {...stylex.props(statusStyles.replyIndent)}
         >
           {topicTitle}
         </Text>
@@ -294,16 +304,18 @@ export function ReplyDetail({
           {t('receipt.worktree', { branch: job.worktreeBranch })}
         </Text>
       )}
+      {/* The reason sits under the name, in the quiet colour: the state already says it failed. */}
       {job.status === 'failed' && (
-        <Flexbox gap={4}>
-          <Text weight={500}>{t('receipt.errorReason')}</Text>
-          <Text style={{ overflowWrap: 'anywhere', whiteSpace: 'pre-wrap' }}>
-            {/* A known cause reads in the viewer's language; others keep the server's diagnostic. */}
-            {deviceFailure
-              ? t('receipt.deviceUnreachable')
-              : job.errorMessage?.trim() || t('receipt.errorUnavailable')}
-          </Text>
-        </Flexbox>
+        <Text
+          data-reply-reason
+          type="secondary"
+          {...stylex.props(statusStyles.replyIndent, statusStyles.replyReason)}
+        >
+          {/* A known cause reads in the viewer's language; others keep the server's diagnostic. */}
+          {deviceFailure
+            ? t('receipt.deviceUnreachable')
+            : job.errorMessage?.trim() || t('receipt.errorUnavailable')}
+        </Text>
       )}
       {deviceFailure && (
         <BlockedDevice

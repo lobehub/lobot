@@ -232,7 +232,6 @@
   "profile.view": "Profil anzeigen",
   "projectAgents": "Projektmitglieder",
   "receipt.deviceUnreachable": "Das Gerät, auf dem dieser Agent läuft, ist offline, daher konnte die Antwort nicht starten. Verbinden Sie das Gerät erneut oder wechseln Sie zu einem anderen und versuchen Sie es dann erneut.",
-  "receipt.errorReason": "Fehlergrund",
   "receipt.errorUnavailable": "Es wurde kein detaillierter Grund aufgezeichnet. Überprüfen Sie das Modell und die Geräteeinstellungen des Agenten, bevor Sie es erneut senden.",
   "receipt.failedHint": "Erwähnen Sie es erneut, um es erneut zu versuchen.",
   "receipt.handoff": "An einen anderen Agenten übergeben",

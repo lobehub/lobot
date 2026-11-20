@@ -232,7 +232,6 @@
   "profile.view": "Ver perfil",
   "projectAgents": "Membros do projeto",
   "receipt.deviceUnreachable": "O dispositivo em que este Agente é executado está offline, então a resposta não pôde começar. Reconecte o dispositivo ou mude para outro e tente novamente.",
-  "receipt.errorReason": "Motivo da falha",
   "receipt.errorUnavailable": "Nenhum motivo detalhado foi registrado. Verifique o modelo e as configurações do dispositivo do Agente antes de enviar novamente.",
   "receipt.failedHint": "Mencione novamente para tentar novamente.",
   "receipt.handoff": "Passar para outro Agente",
