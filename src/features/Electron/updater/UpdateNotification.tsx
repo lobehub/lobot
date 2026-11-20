@@ -19,8 +19,6 @@ import { useTranslation } from 'react-i18next';
 
 import { autoUpdateService } from '@/services/electron/autoUpdate';
 import { rendererOtaService } from '@/services/electron/rendererOta';
-import { useUserStore } from '@/store/user';
-import { userGeneralSettingsSelectors } from '@/store/user/selectors';
 
 import { applyCoreUpdate } from './applyCoreUpdate';
 import { formatCoreVersion } from './coreVersion';
@@ -235,9 +233,6 @@ const openUpdateDetailModal = (updateInfo: UpdateInfo) =>
     width: 520,
   });
 
-const withDevVersion = (label: string, version: string | undefined, isDevMode: boolean) =>
-  isDevMode && version ? `${label} · ${version}` : label;
-
 const Island = ({
   children,
   ...rest
@@ -247,21 +242,33 @@ const Island = ({
   </Surface>
 );
 
-const Status = ({ label, onClick }: { label: string; onClick?: () => void }) =>
-  onClick ? (
+/** The version stays out of the narrow island and shows on hover instead. */
+const Status = ({
+  label,
+  onClick,
+  version,
+}: {
+  label: string;
+  onClick?: () => void;
+  version?: string;
+}) => {
+  const title = version ? `${label} · ${version}` : label;
+
+  return onClick ? (
     <button
       className={stylex.props(styles.status, styles.statusButton).className}
-      title={label}
+      title={title}
       type="button"
       onClick={onClick}
     >
       {label}
     </button>
   ) : (
-    <span className={stylex.props(styles.status).className} title={label}>
+    <span className={stylex.props(styles.status).className} title={title}>
       {label}
     </span>
   );
+};
 
 const ActionButton = ({
   busy,
@@ -355,7 +362,6 @@ export const UpdateNotification: React.FC = () => {
   useWatchBroadcast('updaterStateChanged', (state) => {
     setUpdaterState(state);
   });
-  const isDevMode = useUserStore((s) => userGeneralSettingsSelectors.config(s).isDevMode);
 
   const view = selectUpdateIsland({
     appliedVersion,
@@ -396,11 +402,8 @@ export const UpdateNotification: React.FC = () => {
     return (
       <Island>
         <Status
-          label={withDevVersion(
-            tElectron('updater.downloadingUpdate'),
-            updaterState?.updateInfo?.version,
-            isDevMode,
-          )}
+          label={tElectron('updater.downloadingUpdate')}
+          version={updaterState?.updateInfo?.version}
         />
         <ProgressPill
           percent={percent}
@@ -432,11 +435,8 @@ export const UpdateNotification: React.FC = () => {
     return (
       <Island>
         <Status
-          label={withDevVersion(
-            tElectron('updater.updateReady'),
-            formatCoreVersion(updateInfo.version),
-            isDevMode,
-          )}
+          label={tElectron('updater.updateReady')}
+          version={formatCoreVersion(updateInfo.version)}
         />
         <ActionButton busy={isInstalling} onClick={() => applyCoreUpdateNow(true)}>
           {tElectron('updater.upgradeNow')}
@@ -482,7 +482,8 @@ export const UpdateNotification: React.FC = () => {
     return (
       <Island>
         <Status
-          label={withDevVersion(tElectron('updater.updateReady'), updateInfo.version, isDevMode)}
+          label={tElectron('updater.updateReady')}
+          version={updateInfo.version}
           onClick={() => openUpdateDetailModal(updateInfo)}
         />
         <ActionButton
