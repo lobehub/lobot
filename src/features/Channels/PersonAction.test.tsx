@@ -6,21 +6,24 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PersonAction } from './PersonAction';
 
-const { contacts, navigate, openPeer, scope, sendRequest } = vi.hoisted(() => ({
-  contacts: {
-    profileMap: {} as Record<string, unknown>,
-    requestsMap: {} as Record<string, unknown[]>,
-  },
-  navigate: vi.fn(),
-  openPeer: vi.fn(),
-  scope: {
-    members: [] as Array<{ userId: string }>,
-    membersReady: true,
-    myId: 'u_me',
-    workspace: null as { id: string } | null,
-  },
-  sendRequest: vi.fn(),
-}));
+const { contacts, navigate, openPeer, openShareUserCardModal, scope, sendRequest } = vi.hoisted(
+  () => ({
+    contacts: {
+      profileMap: {} as Record<string, unknown>,
+      requestsMap: {} as Record<string, unknown[]>,
+    },
+    navigate: vi.fn(),
+    openPeer: vi.fn(),
+    openShareUserCardModal: vi.fn(),
+    scope: {
+      members: [] as Array<{ userId: string }>,
+      membersReady: true,
+      myId: 'u_me',
+      workspace: null as { id: string } | null,
+    },
+    sendRequest: vi.fn(),
+  }),
+);
 
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 vi.mock('@/business/client/hooks/useActiveWorkspace', () => ({
@@ -33,6 +36,7 @@ vi.mock('@/business/client/hooks/useWorkspaceMembers', () => ({
 vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
   useWorkspaceAwareNavigate: () => navigate,
 }));
+vi.mock('@/features/ContactCardShare/ShareContactCardModal', () => ({ openShareUserCardModal }));
 vi.mock('@/store/channel', () => ({ channelActions: { openPeer } }));
 vi.mock('@/store/user', () => ({
   useUserStore: (selector: (s: unknown) => unknown) => selector(undefined),
@@ -72,6 +76,14 @@ describe('PersonAction in a workspace', () => {
     expect(openPeer).toHaveBeenCalledWith('u_ann');
   });
 
+  it('shares a fellow member’s card beside messaging them', () => {
+    render(<PersonAction userId={'u_ann'} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'shareCard' }));
+
+    expect(openShareUserCardModal).toHaveBeenCalledWith('u_ann');
+  });
+
   // The server lets two people talk one-on-one in a workspace only while both are its members.
   it('offers nothing for someone outside the workspace', () => {
     const { container } = render(<PersonAction userId={'u_external'} />);
@@ -84,14 +96,18 @@ describe('PersonAction in a workspace', () => {
     render(<PersonAction userId={'u_ann'} />);
 
     expect(screen.queryByText('contacts.sendMessage')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'shareCard' })).toBeNull();
   });
 });
 
 describe('PersonAction', () => {
-  it('offers nothing on one’s own card', () => {
-    const { container } = render(<PersonAction userId={'u_me'} />);
+  it('offers only sharing on one’s own card', () => {
+    render(<PersonAction userId={'u_me'} />);
 
-    expect(container.innerHTML).toBe('');
+    fireEvent.click(screen.getByText('shareCard'));
+
+    expect(openShareUserCardModal).toHaveBeenCalledWith('u_me');
+    expect(screen.queryByText('contacts.sendMessage')).toBeNull();
   });
 
   it('messages a contact in the personal space', () => {
@@ -100,6 +116,7 @@ describe('PersonAction', () => {
     render(<PersonAction userId={'u_ann'} />);
 
     expect(screen.getByText('contacts.sendMessage')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'shareCard' })).toBeTruthy();
   });
 
   it('asks a stranger in the personal space to become a contact instead', () => {
@@ -111,5 +128,6 @@ describe('PersonAction', () => {
 
     expect(sendRequest).toHaveBeenCalledWith('u_ann');
     expect(screen.queryByText('contacts.sendMessage')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'shareCard' })).toBeNull();
   });
 });

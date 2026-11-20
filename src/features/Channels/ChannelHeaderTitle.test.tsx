@@ -28,8 +28,9 @@ vi.mock('lucide-react', () => ({
   Share2: () => null,
   Users: () => null,
 }));
-vi.mock('@/features/ContactCardShare/ShareAgentCardModal', () => ({
+vi.mock('@/features/ContactCardShare/ShareContactCardModal', () => ({
   openShareAgentCardModal: vi.fn(),
+  openShareUserCardModal: vi.fn(),
 }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 vi.mock('@lobehub/ui', () => ({
@@ -232,7 +233,7 @@ describe('ChannelHeaderTitle', () => {
 
     expect(screen.queryByRole('button', { name: 'Ada' })).toBeNull();
     fireEvent.contextMenu(screen.getByText('Ada'));
-    expect(contextKeys()).toEqual(['rename', 'copyId', 'archive', 'delete']);
+    expect(contextKeys()).toEqual(['shareCard', 'rename', 'copyId', 'archive', 'delete']);
     expect(onToggleChannelSettings).not.toHaveBeenCalled();
   });
 

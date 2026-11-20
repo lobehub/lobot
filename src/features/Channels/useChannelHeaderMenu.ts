@@ -3,7 +3,10 @@ import type { ChannelDetail } from '@lobot/types';
 import { CircleUserRound, Settings, Share2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { openShareAgentCardModal } from '@/features/ContactCardShare/ShareAgentCardModal';
+import {
+  openShareAgentCardModal,
+  openShareUserCardModal,
+} from '@/features/ContactCardShare/ShareContactCardModal';
 import { channelSelectors, useChannelStore } from '@/store/channel';
 
 import { flattenChannelMenu } from './flattenChannelMenu';
@@ -80,8 +83,21 @@ export const useChannelHeaderMenuItems = (
     ];
   }
 
-  // A conversation between two people has no settings to manage, only the private chat's actions.
-  if (channel.peerUserId) return channelMenu(channel);
+  // A conversation between two people has no settings to manage: sharing the other person's card,
+  // then the private chat's actions.
+  if (channel.peerUserId) {
+    const peerUserId = channel.peerUserId;
+    return [
+      {
+        icon: Share2,
+        key: 'shareCard',
+        label: t('shareCard'),
+        onClick: () => openShareUserCardModal(peerUserId),
+      },
+      { type: 'divider' as const },
+      ...channelMenu(channel),
+    ];
+  }
 
   // Managing a group lives in its settings panel; deleting it is not one click from the header.
   return [
