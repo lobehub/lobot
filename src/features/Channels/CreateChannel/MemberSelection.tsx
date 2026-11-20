@@ -71,6 +71,7 @@ export const MemberSelection = ({
   notice,
   options,
   people,
+  title,
   value,
   onChange,
 }: {
@@ -87,6 +88,8 @@ export const MemberSelection = ({
   onChange: Dispatch<SetStateAction<ChannelAgentDraft[]>>;
   options: ReturnType<typeof useChannelAgentOptions>;
   people?: PeopleSelection;
+  /** The dialog's heading, shown atop the chosen members with how many are picked. */
+  title?: string;
   value: ChannelAgentDraft[];
 }) => {
   const { t } = useTranslation('channel');
@@ -184,6 +187,21 @@ export const MemberSelection = ({
         </ScrollArea>
       </Flexbox>
       <Flexbox {...stylex.props(styles.aside)}>
+        {title && (
+          <Flexbox
+            horizontal
+            align="center"
+            justify="space-between"
+            {...stylex.props(styles.header)}
+          >
+            <Text strong as="h2" fontSize={16} {...stylex.props(styles.heading)}>
+              {title}
+            </Text>
+            <Text fontSize={12} type="secondary">
+              {selectedCount ? t('invite.selected', { count: selectedCount }) : t('invite.pick')}
+            </Text>
+          </Flexbox>
+        )}
         {notice && <div {...stylex.props(styles.search)}>{notice}</div>}
         <Flexbox gap={4} inert={locked} {...stylex.props(styles.selected)}>
           {!selectedCount && emptyHint && (

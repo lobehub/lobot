@@ -5,6 +5,8 @@ export const pickerStyles = stylex.create({
   /** The dialog is the two panes. A line splits them; neither pane is another card. */
   candidates: {
     flex: '1',
+    // No title bar above the panes: each pane pads its own top edge.
+    paddingBlockStart: 16,
     minWidth: 0,
     minHeight: 0,
     height: '100%',
@@ -21,7 +23,6 @@ export const pickerStyles = stylex.create({
   },
   search: {
     flex: 'none',
-    // The modal title bar already pads its bottom edge, so the body starts flush.
     paddingBlockEnd: 8,
     paddingInline: 16,
   },
@@ -37,10 +38,19 @@ export const pickerStyles = stylex.create({
   /** Chosen members scroll between the name and the actions. */
   aside: {
     flex: '1',
+    paddingBlockStart: 16,
     minWidth: 0,
     minHeight: 0,
     height: '100%',
   },
+  /** Heading row of the right pane, level with the search box on the left. */
+  header: {
+    flex: 'none',
+    minHeight: 32,
+    paddingBlockEnd: 8,
+    paddingInline: 16,
+  },
+  heading: { margin: 0 },
   selected: {
     flex: '1',
     minWidth: 0,
