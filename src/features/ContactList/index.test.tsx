@@ -192,12 +192,10 @@ describe('ContactListBody', () => {
       'href',
       '/agents/people/u_carol',
     );
-    // Shared Agents sit inside the people section, right below the people.
-    expect(screen.queryByText('contacts.sharedAgents')).not.toBeInTheDocument();
-    const people = screen.getByRole('link', { name: /Bob$/ });
-    const sharedAgent = screen.getByRole('link', { name: /Bob Helper/ });
-    expect(people.compareDocumentPosition(sharedAgent)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
-    expect(screen.getByText('contacts.people').nextElementSibling).toHaveTextContent('2');
+    // Shared Agents get their own section after the assistants, tagged with their owner.
+    expect(screen.getByText('contacts.people').nextElementSibling).toHaveTextContent('1');
+    expect(screen.getByText('contacts.agent.external').nextElementSibling).toHaveTextContent('1');
+    expect(screen.getByRole('link', { name: /Bob Helper/ })).toHaveTextContent('Bob');
     // Only requests waiting for my answer are listed.
     expect(screen.queryByText('Dan')).not.toBeInTheDocument();
   });
@@ -223,7 +221,7 @@ describe('ContactListBody', () => {
     expect(screen.queryByRole('link', { name: 'Pinned Crew' })).not.toBeInTheDocument();
   });
 
-  it('lists shared Agents among a workspace’s assistants, tagged as external', () => {
+  it('lists shared Agents in their own section after a workspace’s assistants', () => {
     agentList.init = true;
     workspace.activeId = 'ws_team';
     agentList.items = [{ id: 'agt_1', title: 'Product Helper' }];
@@ -247,8 +245,16 @@ describe('ContactListBody', () => {
     const own = screen.getByRole('link', { name: 'Product Helper' });
     const sharedAgent = screen.getByRole('link', { name: /Bob Helper/ });
     expect(own.compareDocumentPosition(sharedAgent)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
-    expect(sharedAgent).toHaveTextContent('contacts.agent.external');
-    expect(screen.getByText('navPanel.agent').nextElementSibling).toHaveTextContent('2');
+    expect(screen.getByText('navPanel.agent').nextElementSibling).toHaveTextContent('1');
+    expect(screen.getByText('contacts.agent.external').nextElementSibling).toHaveTextContent('1');
+  });
+
+  it('leaves the external assistants section out until an Agent is shared', () => {
+    agentList.init = true;
+
+    render(createElement(ContactListBody));
+
+    expect(screen.queryByText('contacts.agent.external')).not.toBeInTheDocument();
   });
 
   it('lists the workspace’s other members, with their role unless a plain member', () => {
