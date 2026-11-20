@@ -46,6 +46,14 @@ const createTask = (definition: RoutePreloadDefinition): RoutePreloadTask => ({
 });
 
 const createWebRoutePreloadTasks = (): RoutePreloadTask[] => [
+  // The Messages tab opens a Channel. Its chunk has to be ready before the
+  // first click, ahead of the other routes.
+  createTask({
+    id: 'channels',
+    idleDelay: 0,
+    matches: (pathname) => /\/channels\/[^/]+/.test(pathname),
+    priority: 'high',
+  }),
   createTask({
     id: 'agent',
     idleDelay: 1500,
@@ -302,10 +310,12 @@ export const createRoutePreloadScheduler = (
 
 let routePreloadStarted = false;
 
+export const webRoutePreloadTasks = createWebRoutePreloadTasks();
+
 export const startRoutePreload = () => {
   if (routePreloadStarted || typeof window === 'undefined') return;
   routePreloadStarted = true;
 
-  const tasks = __MOBILE__ ? createMobileRoutePreloadTasks() : createWebRoutePreloadTasks();
+  const tasks = __MOBILE__ ? createMobileRoutePreloadTasks() : webRoutePreloadTasks;
   createRoutePreloadScheduler(tasks).start();
 };

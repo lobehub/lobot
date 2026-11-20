@@ -152,4 +152,24 @@ describe('ConversationRow', () => {
     expect(row).toHaveTextContent('Dario');
     expect(row).not.toHaveTextContent('Latest reply');
   });
+
+  // A press opens the conversation on the next frame. The row has to say so on
+  // hover and on that press, before the click.
+  it('signals intent on hover and on press', () => {
+    const onIntent = vi.fn();
+    render(
+      createElement(ConversationRow, {
+        active: false,
+        avatar: null,
+        onIntent,
+        title: 'Dario',
+        url: '/channels/chn_dario',
+      }),
+    );
+    const row = screen.getByRole('link', { name: 'Dario' });
+    fireEvent.mouseEnter(row);
+    fireEvent.pointerDown(row);
+
+    expect(onIntent).toHaveBeenCalledTimes(2);
+  });
 });

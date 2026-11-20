@@ -1,5 +1,5 @@
 import type { ChannelListItem, ChannelPublicMessage } from '@lobot/types';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('i18next', () => ({
   t: (key: string, options?: Record<string, string>) =>
@@ -25,10 +25,18 @@ vi.mock('@/store/chat/utils/notificationAvatar', () => ({
   ),
 }));
 
-const { buildChannelBanner, buildDirectSender, buildGroupSender, latestIncoming } =
-  await import('./notify');
+const {
+  buildChannelBanner,
+  buildDirectSender,
+  buildGroupSender,
+  latestIncoming,
+  notifyChannelActivity,
+} = await import('./notify');
 const { channelService } = await import('@/services/channel');
+const { completionSoundService } = await import('@/services/electron/completionSound');
+const { desktopNotificationService } = await import('@/services/electron/desktopNotification');
 const { buildNotificationSender } = await import('@/store/chat/utils/desktopNotification');
+const { projectListItemSelector, useProjectStore } = await import('@/store/project');
 
 const channel = (extra: Partial<ChannelListItem> = {}) =>
   ({
@@ -258,5 +266,87 @@ describe('latestIncoming', () => {
     });
 
     expect(result).toBeUndefined();
+  });
+});
+
+describe('notifyChannelActivity', () => {
+  const at = new Date('2026-11-20T03:00:00Z');
+  const showNotification = vi.fn(async () => ({ skipped: false, success: true }));
+  const posted = (threadId: string | null) =>
+    ({
+      author: { avatar: null, id: 'u2', name: 'Ann', type: 'user' },
+      content: 'ship it',
+      createdAt: at,
+      id: 'msg_9',
+      sequence: 12,
+      threadId,
+    }) as ChannelPublicMessage;
+
+  beforeEach(() => {
+    showNotification.mockClear();
+    Object.assign(desktopNotificationService, { showNotification });
+    Object.assign(completionSoundService, {
+      getNotificationSoundFile: async () => undefined,
+      play: async () => undefined,
+    });
+    Object.assign(useProjectStore, { getState: () => ({}) });
+    vi.mocked(projectListItemSelector).mockReturnValue(() => undefined);
+  });
+
+  it('opens the main conversation on the message the banner is about', async () => {
+    Object.assign(channelService, { detail: async () => ({ messages: [posted(null)] }) });
+
+    await notifyChannelActivity({
+      channel: channel({ lastMessage: { content: 'ship it', createdAt: at, thread: null } }),
+      kind: 'message',
+    });
+
+    expect(showNotification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        navigate: { path: '/channels/chn_1?message=msg_9&sequence=12', workspaceId: undefined },
+      }),
+    );
+  });
+
+  it('opens the thread on that message when it was posted in one', async () => {
+    Object.assign(channelService, { detail: async () => ({ messages: [posted('thd_1')] }) });
+
+    await notifyChannelActivity({
+      channel: channel({
+        lastMessage: { content: 'ship it', createdAt: at, thread: { id: 'thd_1', title: null } },
+      }),
+      kind: 'message',
+    });
+
+    expect(showNotification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        navigate: {
+          path: '/channels/chn_1?thread=thd_1&view=page&message=msg_9&sequence=12',
+          workspaceId: undefined,
+        },
+      }),
+    );
+  });
+
+  // The list preview still knows which thread the activity was in when its page cannot load.
+  it('still opens the thread when the message page cannot load', async () => {
+    Object.assign(channelService, {
+      detail: async () => {
+        throw new Error('offline');
+      },
+    });
+
+    await notifyChannelActivity({
+      channel: channel({
+        lastMessage: { content: 'ship it', createdAt: at, thread: { id: 'thd_1', title: null } },
+      }),
+      kind: 'message',
+    });
+
+    expect(showNotification).toHaveBeenCalledWith(
+      expect.objectContaining({
+        navigate: { path: '/channels/chn_1?thread=thd_1&view=page', workspaceId: undefined },
+      }),
+    );
   });
 });

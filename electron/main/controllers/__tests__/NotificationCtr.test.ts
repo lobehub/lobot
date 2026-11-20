@@ -46,6 +46,9 @@ vi.mock('electron', () => {
       },
       setAppUserModelId: vi.fn(),
     },
+    nativeImage: {
+      createFromDataURL: vi.fn(() => ({ isEmpty: () => true, toPNG: () => Buffer.alloc(0) })),
+    },
   };
 });
 

@@ -160,10 +160,10 @@ export const buildGroupSender = async (
 };
 
 /**
- * Announce one Channel's new activity: an OS banner that opens the Channel, carrying the user's
- * notification sound. The main process shows banners only while the window is hidden or
- * unfocused; when it skips one, the in-app chime plays instead so a message in another Channel
- * is still heard.
+ * Announce one Channel's new activity: an OS banner that opens that message — its thread, when it
+ * was posted in one — carrying the user's notification sound. The main process shows banners only
+ * while the window is hidden or unfocused; when it skips one, the in-app chime plays instead so a
+ * message in another Channel is still heard.
  *
  * `workspaceId` is the scope the Channel lives in when it is not the active one (`null` is the
  * personal space): its page loads from there, and clicking the banner switches to it.
@@ -191,7 +191,14 @@ export const notifyChannelActivity = async (
 
     const result = await desktopNotificationService.showNotification({
       ...banner,
-      navigate: { path: CHANNEL_URL(channel.id), workspaceId },
+      navigate: {
+        path: CHANNEL_URL(
+          channel.id,
+          message?.threadId ?? channel.lastMessage?.thread?.id,
+          message ? { id: message.id, sequence: message.sequence } : null,
+        ),
+        workspaceId,
+      },
       sender,
       soundName,
     });

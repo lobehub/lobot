@@ -3,7 +3,14 @@
 import { type ContextMenuItem, ContextMenuTrigger, Flexbox, Icon } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
 import { BellOffIcon, EyeOffIcon } from 'lucide-react';
-import { type ComponentProps, memo, type MouseEvent, type ReactNode, type Ref } from 'react';
+import {
+  type ComponentProps,
+  memo,
+  type MouseEvent,
+  type PointerEvent,
+  type ReactNode,
+  type Ref,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { activityLabel } from '@/features/Channels/activityLabel';
@@ -48,6 +55,11 @@ interface ConversationRowProps {
    */
   muted?: boolean;
   onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
+  /**
+   * The pointer is on the row (hover or press). The conversation can be read
+   * into memory before the click opens it.
+   */
+  onIntent?: () => void;
   onMouseEnter?: () => void;
   preview?: string;
   /** The Thread the preview's message was posted in; the preview line names it first. */
@@ -93,6 +105,7 @@ const ConversationRow = memo<ConversationRowProps>(
     mentioned,
     muted,
     onClick,
+    onIntent,
     onMouseEnter,
     preview,
     previewThread,
@@ -139,9 +152,19 @@ const ConversationRow = memo<ConversationRowProps>(
       ),
       'to': url,
       onClick,
-      onMouseEnter,
       // The list drags with the mouse and touch sensors, which listen for mousedown and touchstart.
       ...(drag?.listeners as WorkspaceLinkProps | undefined),
+      // After the drag listeners, so a hover still reaches the row: those
+      // listeners are the sensor events and would replace this one.
+      'onMouseEnter': (event: MouseEvent<HTMLAnchorElement>) => {
+        onIntent?.();
+        onMouseEnter?.();
+        drag?.listeners?.onMouseEnter?.(event);
+      },
+      'onPointerDown': (event: PointerEvent<HTMLAnchorElement>) => {
+        onIntent?.();
+        drag?.listeners?.onPointerDown?.(event);
+      },
     };
 
     const avatarNode = (

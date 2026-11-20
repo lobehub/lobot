@@ -3,7 +3,11 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createRoutePreloadScheduler, type RoutePreloadTask } from './routePreload';
+import {
+  createRoutePreloadScheduler,
+  type RoutePreloadTask,
+  webRoutePreloadTasks,
+} from './routePreload';
 
 const createTask = (
   id: string,
@@ -127,6 +131,26 @@ describe('createRoutePreloadScheduler', () => {
 
     expect(image.load).toHaveBeenCalledTimes(1);
     anchor.remove();
+  });
+
+  it('preloads a channel conversation as soon as its link is hovered', async () => {
+    const channels = webRoutePreloadTasks.find((task) => task.id === 'channels');
+    expect(channels).toMatchObject({ idleDelay: 0, priority: 'high' });
+    const load = vi.spyOn(channels!, 'load').mockResolvedValue(undefined);
+    const anchor = document.createElement('a');
+    anchor.href = '/acme/project/prj_1/channels/chn_1';
+    document.body.append(anchor);
+
+    createRoutePreloadScheduler(webRoutePreloadTasks).start();
+    anchor.dispatchEvent(new Event('pointerover', { bubbles: true }));
+    await Promise.resolve();
+
+    expect(load).toHaveBeenCalledTimes(1);
+    expect(channels!.matches('/channels/chn_1')).toBe(true);
+    expect(channels!.matches('/agent/agt_1')).toBe(false);
+    load.mockRestore();
+    anchor.remove();
+    vi.clearAllTimers();
   });
 
   it('does not start the same scheduler more than once', async () => {

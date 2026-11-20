@@ -9,6 +9,7 @@ import { Suspense } from 'react';
 import { HotkeysProvider } from 'react-hotkeys-hook';
 
 import WorkspaceContextSlot from '@/business/client/WorkspaceContextSlot';
+import ChannelConversationWarmup from '@/features/Channels/ChannelConversationWarmup';
 import ChannelNotifier from '@/features/Channels/notifications/ChannelNotifier';
 import DesktopBrowserGatewayBridge from '@/features/DesktopBrowserGatewayBridge';
 import DesktopFileMenuBridge from '@/features/DesktopFileMenuBridge';
@@ -127,6 +128,7 @@ const Layout: FC = () => {
           <CmdkLazy />
           <WorkspaceMentionNotifier />
           <ChannelNotifier />
+          <ChannelConversationWarmup />
         </Suspense>
       </WorkspaceContextSlot>
     </HotkeysProvider>

@@ -105,8 +105,17 @@ export class MessageQueryActionImpl {
 
     // The transcript's own head read: it joins a sync already in flight, and a
     // send landing while it is out keeps its rows (see the head merge).
+    // The saved window is read beside that request, so a conversation opened
+    // from a prefetch paints before the network answers. A read that lands
+    // after the server snapshot fills nothing.
+    const transcript = getMessageTranscript(this.#set, this.#get);
+    if (!transcript.read(transcript.keyOf(context))) {
+      void transcript.slice.hydrate(context).catch((error: unknown) => {
+        log('Failed to read the saved message transcript: %O', error);
+      });
+    }
     try {
-      await getMessageTranscript(this.#set, this.#get).slice.fetch(context);
+      await transcript.slice.fetch(context);
     } catch (error) {
       // Background warming should never surface an unhandled rejection.
       log('Failed to warm the message transcript: %O', error);

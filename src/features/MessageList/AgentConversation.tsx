@@ -10,6 +10,7 @@ import { useAgentDropdownMenu } from '@/features/HomeSidebar/Body/Agent/List/Age
 import { usePreservedAgentUrl } from '@/features/HomeSidebar/Body/Agent/List/usePreservedAgentUrl';
 import { useAgentModal } from '@/features/HomeSidebar/Body/Agent/ModalProvider';
 import { usePrefetchAgent } from '@/hooks/usePrefetchAgent';
+import { channelActions } from '@/store/channel';
 import { useChatStore } from '@/store/chat';
 import { operationSelectors } from '@/store/chat/selectors';
 
@@ -38,13 +39,19 @@ const AgentConversation = memo<AgentConversationProps>(
     const { openCreateGroupModal } = useAgentModal();
     const inWorkspace = !!useActiveWorkspaceId();
     const prefetchAgent = usePrefetchAgent();
+    const channelId = conversation.channel?.id;
+    const warm = () => {
+      prefetchAgent(id);
+      if (channelId) void channelActions.warmView(channelId);
+    };
     const chatRunning = useChatStore(operationSelectors.isAgentVisiblyRunning(id));
     const agentUrl = usePreservedAgentUrl(id);
     const { onClick, url } = useAgentConversationLink(id, agentUrl);
-    const { channelActions, replyState, workingCount } = useDirectChannelRow(
-      conversation.channel,
-      active,
-    );
+    const {
+      channelActions: directMenu,
+      replyState,
+      workingCount,
+    } = useDirectChannelRow(conversation.channel, active);
     const avatarState = replyState ?? (chatRunning ? 'working' : undefined);
     // Only the direct Channel's own reply shows on the preview: a run in one of the Agent's other topics
     // only animates the avatar. A blocked reply keeps the preview; its avatar shows it waiting.
@@ -82,7 +89,7 @@ const AgentConversation = memo<AgentConversationProps>(
         //
         // In a workspace the row is only a chat: opening, copying, renaming, permissions,
         // visibility and deletion belong to the Agent's own page, so its menu stays out.
-        const items = channelActions();
+        const items = directMenu();
         if (inWorkspace) return items;
         const agentItems = contextMenuItems().filter(
           (entry) => !(entry && 'key' in entry && AGENT_ONLY_KEYS.has(String(entry.key))),
@@ -90,7 +97,7 @@ const AgentConversation = memo<AgentConversationProps>(
         if (items.length === 0) return agentItems;
         return [...items, { type: 'divider' as const }, ...agentItems];
       },
-      [channelActions, contextMenuItems, inWorkspace],
+      [directMenu, contextMenuItems, inWorkspace],
     );
 
     return (
@@ -122,7 +129,7 @@ const AgentConversation = memo<AgentConversationProps>(
           />
         }
         onClick={onClick}
-        onMouseEnter={() => prefetchAgent(id)}
+        onIntent={warm}
       />
     );
   },

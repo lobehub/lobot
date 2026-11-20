@@ -50,6 +50,9 @@ vi.mock('electron', () => {
       handle: ipcMainHandleMock,
     },
     Notification: MockNotification,
+    nativeImage: {
+      createFromDataURL: vi.fn(() => ({ isEmpty: () => true, toPNG: () => Buffer.alloc(0) })),
+    },
     app: {
       dock: {
         bounce: vi.fn(),

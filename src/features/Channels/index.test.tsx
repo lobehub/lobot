@@ -1,8 +1,9 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, renderHook, screen } from '@testing-library/react';
 import { createElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import ChannelPage from './index';
+import { consumeChannelJump, useChannelJump } from './messageJump';
 
 const mocks = vi.hoisted(() => ({
   channelId: 'chn_gone',
@@ -249,5 +250,26 @@ describe('ChannelPage', () => {
     render(createElement(ChannelPage));
     expect(screen.queryByRole('button', { name: 'General' })).toBeNull();
     expect(screen.getByRole('banner')).toHaveTextContent('General');
+  });
+
+  it('reveals the message a notification linked, including one inside a thread', () => {
+    mocks.channelId = 'chn_1';
+    mocks.list = [{ agentId: null, id: 'chn_1', title: 'General' }];
+    mocks.searchParams = new URLSearchParams('thread=cht_1&view=page&message=msg_9&sequence=12');
+
+    render(createElement(ChannelPage));
+
+    const { result } = renderHook(() => useChannelJump('chn_1', 'cht_1'));
+    expect(result.current).toMatchObject({ id: 'msg_9', sequence: 12, threadId: 'cht_1' });
+    const update = mocks.setSearchParams.mock.calls.at(-1);
+    expect(update?.[1]).toEqual({ replace: true });
+    expect(
+      update?.[0](
+        new URLSearchParams('thread=cht_1&view=page&message=msg_9&sequence=12'),
+      ).toString(),
+    ).toBe('thread=cht_1&view=page');
+    act(() => {
+      if (result.current) consumeChannelJump(result.current);
+    });
   });
 });

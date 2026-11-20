@@ -67,6 +67,46 @@ class ChannelActionImpl {
   refreshDetail = (params: ChannelViewParams) =>
     this.#private.detail.fetch(params, { fresh: true });
   /**
+   * Channel ids whose latest page is already being read. A hover and the
+   * press that follows it share one request.
+   */
+  readonly #warming = new Set<string>();
+  /**
+   * Put a conversation's latest page in memory before it opens.
+   *
+   * The saved copy is read at once, and a server refresh runs beside it when
+   * that copy is missing or the list already shows a newer message. Resolves
+   * when the saved copy has been read, so a navigation can wait out a storage
+   * stall without waiting for the network. A page already as new as the list
+   * is left alone.
+   */
+  warmView = (channelId: string): Promise<void> => {
+    if (!channelId) return Promise.resolve();
+    const view = { channelId, threadId: null };
+    const state = useChannelStore.getState();
+    const loaded = channelSelectors.detail(view)(state);
+    const listed = channelSelectors.listed(channelId)(state);
+    const fresh = !!loaded && (listed === undefined || loaded.channel.sequence >= listed.sequence);
+    if (!fresh && !this.#warming.has(channelId)) {
+      this.#warming.add(channelId);
+      void this.#private.detail
+        .fetch(view)
+        .catch((error: unknown) => {
+          console.error('Failed to warm a Channel conversation', error);
+        })
+        .finally(() => {
+          this.#warming.delete(channelId);
+        });
+    }
+    if (loaded) return Promise.resolve();
+    return this.#private.detail.hydrate(view).then(
+      () => undefined,
+      (error: unknown) => {
+        console.error('Failed to read a saved Channel conversation', error);
+      },
+    );
+  };
+  /**
    * Refresh after a write that already committed. A failed refresh must not read as a failed
    * write, or retrying repeats it; the periodic sync catches up instead.
    */
@@ -535,6 +575,7 @@ class ChannelActionImpl {
     this.#private.resetThreadRemovals();
     this.#deliveries.clear();
     this.#restoredScopes.clear();
+    this.#warming.clear();
     useChannelStore.setState(initialState, false, 'channel/reset');
   };
 }

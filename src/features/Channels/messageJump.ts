@@ -40,3 +40,27 @@ export const useChannelJump = (channelId: string, threadId: string | null) =>
   useSyncExternalStore(subscribe, () =>
     pending?.channelId === channelId && pending.threadId === threadId ? pending : null,
   );
+
+const MESSAGE_PARAM = 'message';
+const SEQUENCE_PARAM = 'sequence';
+
+/**
+ * The message a link asked to reveal. `sequence` has to be a whole number: anything else is not a
+ * location, and the address is left alone.
+ */
+export const readChannelMessageLink = (
+  params: URLSearchParams,
+): Pick<ChannelJumpRequest, 'id' | 'sequence' | 'threadId'> | null => {
+  const id = params.get(MESSAGE_PARAM);
+  const sequence = params.get(SEQUENCE_PARAM);
+  if (!id || sequence === null || !/^\d+$/.test(sequence)) return null;
+  return { id, sequence: Number(sequence), threadId: params.get('thread') };
+};
+
+/** Removes the message location once the conversation has been asked to reveal it. */
+export const omitChannelMessageLink = (params: URLSearchParams) => {
+  const next = new URLSearchParams(params);
+  next.delete(MESSAGE_PARAM);
+  next.delete(SEQUENCE_PARAM);
+  return next;
+};

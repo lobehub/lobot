@@ -11,6 +11,7 @@ import { resolveInboxAgentRouteId } from '@/features/AgentRoute/useResolvedAgent
 import { usePrefetchAgent } from '@/hooks/usePrefetchAgent';
 import { useAgentStore } from '@/store/agent';
 import { agentSelectors, builtinAgentSelectors } from '@/store/agent/selectors';
+import { channelActions } from '@/store/channel';
 import { useChatStore } from '@/store/chat';
 import { operationSelectors } from '@/store/chat/selectors';
 import { useUserStore } from '@/store/user';
@@ -40,11 +41,19 @@ const InboxConversation = memo<{
     inboxAgentId ? operationSelectors.isAgentVisiblyRunning(inboxAgentId) : () => false,
   );
   const prefetchAgent = usePrefetchAgent();
+  const warm = () => {
+    if (inboxAgentId) prefetchAgent(inboxAgentId);
+    if (channel?.id) void channelActions.warmView(channel.id);
+  };
   const userId = useUserStore(userProfileSelectors.userId);
   const { onClick, url } = useInboxConversationLink();
   const title = agentDisplayName(meta, DEFAULT_INBOX_TITLE);
   const active = !!activeRouteId && (activeRouteId === routeId || activeRouteId === inboxAgentId);
-  const { channelActions, replyState, workingCount } = useDirectChannelRow(channel, active);
+  const {
+    channelActions: directMenu,
+    replyState,
+    workingCount,
+  } = useDirectChannelRow(channel, active);
   const avatarState = replyState ?? (running ? 'working' : undefined);
   const activity = replyActivity(avatarState);
 
@@ -70,10 +79,10 @@ const InboxConversation = memo<{
         />
       }
       onClick={onClick}
-      onMouseEnter={() => inboxAgentId && prefetchAgent(inboxAgentId)}
+      onIntent={warm}
       activeAt={activeAt}
       // Its direct Channel is the only thing this row acts on: pin it, or free an archived one.
-      contextMenuItems={channel ? channelActions : undefined}
+      contextMenuItems={channel ? directMenu : undefined}
       activityCount={workingCount}
       // Same preview and time as every other Agent row; its tagline when it has nothing yet.
       preview={conversationPreview(meta.description, channel, userId) ?? t('inbox.desc')}

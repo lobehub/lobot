@@ -25,7 +25,7 @@ import { ChannelSyncing } from './ChannelSyncing';
 import { headerHoverMarker } from './markers.stylex';
 import { MEMBER_FLOAT_BREAKPOINT, MemberPanel } from './MemberPanel';
 import { ChannelMenu, MemberStatus } from './MemberStatus';
-import { requestChannelJump } from './messageJump';
+import { omitChannelMessageLink, readChannelMessageLink, requestChannelJump } from './messageJump';
 import { openTopic } from './openTopic';
 import { channelTitle } from './peerTitle';
 import { CHANNEL_ENTITY_PORTAL_SCOPE, PortalPanel } from './PortalPanel';
@@ -51,6 +51,22 @@ export default function ChannelPage() {
   const searchPanelId = useId();
   const settingsPanelId = useId();
   const [searchParams, setSearchParams] = useSearchParams();
+  const messageId = searchParams.get('message');
+  const messageSequence = searchParams.get('sequence');
+  const messageThreadId = searchParams.get('thread');
+  // A notification (or any message link) names the message. Ask that conversation to reveal it,
+  // then drop the location so the address stays the Channel or thread the reader is now in.
+  useEffect(() => {
+    if (!channelId || !messageId || messageSequence === null) return;
+    const params = new URLSearchParams();
+    params.set('message', messageId);
+    params.set('sequence', messageSequence);
+    if (messageThreadId) params.set('thread', messageThreadId);
+    const linked = readChannelMessageLink(params);
+    if (!linked) return;
+    requestChannelJump({ channelId, ...linked });
+    setSearchParams((current) => omitChannelMessageLink(current), { replace: true });
+  }, [channelId, messageId, messageSequence, messageThreadId, setSearchParams]);
   const settingsRequested = searchParams.has(CHANNEL_SETTINGS_PARAM);
   const openSettings = useOpenChannelSettings();
   // The box keeps its text per Channel; the panel shows the query last submitted.

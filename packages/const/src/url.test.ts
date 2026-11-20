@@ -46,4 +46,13 @@ describe('CHANNEL_URL', () => {
     expect(CHANNEL_URL('chn_1')).toBe('/channels/chn_1');
     expect(CHANNEL_URL('chn_1', 'cht_1')).toBe('/channels/chn_1?thread=cht_1&view=page');
   });
+
+  it('points a notification at one message, in the main conversation or a thread', () => {
+    expect(CHANNEL_URL('chn_1', null, { id: 'msg_9', sequence: 12 })).toBe(
+      '/channels/chn_1?message=msg_9&sequence=12',
+    );
+    expect(CHANNEL_URL('chn_1', 'cht_1', { id: 'msg_9', sequence: 12 })).toBe(
+      '/channels/chn_1?thread=cht_1&view=page&message=msg_9&sequence=12',
+    );
+  });
 });

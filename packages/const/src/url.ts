@@ -85,14 +85,35 @@ export const GROUP_CHAT_URL = (groupId: string) => `/group/${groupId}`;
 export const GROUP_CHAT_TOPIC_URL = (groupId: string, topicId: string) =>
   urlJoin('/group', groupId, topicId);
 
+/** The message a Channel link should scroll to. The page drops these params once it has asked. */
+export interface ChannelMessageTarget {
+  id: string;
+  sequence: number;
+}
+
 /**
  * A Channel page. A thread link opens the thread as the page (`view=page`); opening one from
- * a message instead shows it beside the Channel (`?thread=` alone). Lobot has no project pages,
- * so a project's Channel opens at the same path as any other.
+ * a message instead shows it beside the Channel (`?thread=` alone). `message` scrolls that
+ * conversation to one message — a notification click — in the main conversation or a thread.
+ * Lobot has no project pages, so a project's Channel opens at the same path as any other.
  */
-export const CHANNEL_URL = (channelId: string, threadId?: string | null) => {
+export const CHANNEL_URL = (
+  channelId: string,
+  threadId?: string | null,
+  message?: ChannelMessageTarget | null,
+) => {
   const path = `/channels/${channelId}`;
-  return threadId ? `${path}?thread=${encodeURIComponent(threadId)}&view=page` : path;
+  const params = new URLSearchParams();
+  if (threadId) {
+    params.set('thread', threadId);
+    params.set('view', 'page');
+  }
+  if (message) {
+    params.set('message', message.id);
+    params.set('sequence', String(message.sequence));
+  }
+  const query = params.toString();
+  return query ? `${path}?${query}` : path;
 };
 
 export const LIBRARY_URL = (id: string) => urlJoin('/resource/library', id);

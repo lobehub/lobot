@@ -18,6 +18,7 @@ import { useHasUnreadThreadMention } from '@/features/Channels/threadReads';
 import { useChannelMenu } from '@/features/Channels/useChannelMenu';
 import GroupAvatar from '@/features/GroupAvatar';
 import ProjectAvatar from '@/features/Projects/ProjectAvatar';
+import { channelActions } from '@/store/channel';
 import { projectListItemSelector, useProjectStore } from '@/store/project';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
@@ -70,6 +71,9 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, tile, vari
   // mention stays until its Thread is opened, even after the main conversation was read.
   const threadMentioned = useHasUnreadThreadMention(channel.threadMentions);
   const mentioned = !active && !cleared && ((channel.mentionCount ?? 0) > 0 || threadMentioned);
+  const warm = () => {
+    void channelActions.warmView(channel.id);
+  };
 
   if (counterpart)
     return (
@@ -81,9 +85,6 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, tile, vari
         mentioned={mentioned}
         muted={!!channel.mutedAt}
         preview={cleared ? undefined : channelPreview(channel, { userId })}
-        previewThread={cleared ? undefined : channelPreviewThread(channel)}
-        // Someone else's Agent looks like one's own otherwise; the tag says it is theirs.
-        tag={channel.sharedAgent ? t('sharedAgent.tag') : undefined}
         tile={tile}
         title={counterpart.name || channel.title}
         unread={cleared ? 0 : channel.unreadCount}
@@ -107,6 +108,10 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, tile, vari
             />
           )
         }
+        onIntent={warm}
+        previewThread={cleared ? undefined : channelPreviewThread(channel)}
+        // Someone else's Agent looks like one's own otherwise; the tag says it is theirs.
+        tag={channel.sharedAgent ? t('sharedAgent.tag') : undefined}
       />
     );
 
@@ -117,9 +122,6 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, tile, vari
       contextMenuItems={menuItems(channel)}
       hideKey={channel.id}
       mentioned={mentioned}
-      muted={!!channel.mutedAt}
-      // A group names who said it; the viewer's own message reads "Me: …".
-      preview={channelPreview(channel, { group: true, userId })}
       previewThread={channelPreviewThread(channel)}
       tag={tag}
       tile={tile}
@@ -161,6 +163,10 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, tile, vari
           />
         )
       }
+      onIntent={warm}
+      muted={!!channel.mutedAt}
+      // A group names who said it; the viewer's own message reads "Me: …".
+      preview={channelPreview(channel, { group: true, userId })}
     />
   );
 });

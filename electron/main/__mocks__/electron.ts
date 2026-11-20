@@ -53,7 +53,11 @@ export const protocol = { handle: vi.fn(), registerSchemesAsPrivileged: vi.fn() 
 
 export const clipboard = { readText: vi.fn(() => ''), writeText: vi.fn() };
 
-export const nativeImage = { createEmpty: vi.fn(), createFromPath: vi.fn() };
+export const nativeImage = {
+  createEmpty: vi.fn(),
+  createFromDataURL: vi.fn(() => ({ isEmpty: () => true, toPNG: () => Buffer.alloc(0) })),
+  createFromPath: vi.fn(),
+};
 
 export default {
   app,
