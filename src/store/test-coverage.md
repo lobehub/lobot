@@ -199,7 +199,7 @@ bunx vitest run --silent='passed-only' 'src/store/[domain]/slices/[slice]/action
 bun run type-check
 
 # Fix any linting issues
-bunx eslint src/store/[domain]/ --fix
+bunx oxlint --fix src/store/[domain]/
 ```
 
 **Common Type Errors to Watch For:**
@@ -282,7 +282,7 @@ bunx vitest run --silent='passed-only' 'src/store/tool/slices/mcpStore/action.te
 
 # 2. Type/Lint Phase (REQUIRED)
 bun run type-check # Must pass!
-bunx eslint src/store/tool/ --fix
+bunx oxlint --fix src/store/tool/
 
 # 3. Coverage Phase
 bunx vitest run --coverage 'src/store'
@@ -369,7 +369,7 @@ After all subagents complete:
 bun run type-check
 
 # Run lint on all new test files
-bunx eslint src/store/discover/ --fix
+bunx oxlint --fix src/store/discover/
 
 # Run all new tests together
 bunx vitest run 'src/store/discover/**/*.test.ts'
@@ -454,13 +454,13 @@ bunx tsc --noEmit --watch
 
 ```bash
 # Lint specific store
-bunx eslint src/store/[domain]/ --fix
+bunx oxlint --fix src/store/[domain]/
 
 # Lint all stores
-bunx eslint src/store/ --fix
+bunx oxlint --fix src/store/
 
 # Lint without auto-fix (check only)
-bunx eslint src/store/[domain]/
+bunx oxlint src/store/[domain]/
 ```
 
 ## Completed Work
