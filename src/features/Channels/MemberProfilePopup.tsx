@@ -1,13 +1,16 @@
-import { Flexbox, Popover, Text } from '@lobehub/ui';
+import { ActionIcon, DropdownMenu, Flexbox, Popover, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { ChannelPublicMember } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
+import { MoreHorizontal, UserRoundIcon } from 'lucide-react';
 import { type ReactElement, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import PersonAvatar from '@/components/UserAvatar';
 import AgentProfilePopup from '@/features/AgentProfileCard/AgentProfilePopup';
 import { cardStyles } from '@/features/AgentViewAll/AgentCard';
+import { PERSON_CONTACT_URL } from '@/features/ContactList/const';
+import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { cardPopoverProps } from '@/styles/cardPopover';
 
 import { type DeferredCardControl, DeferredHoverCard } from './DeferredHoverCard';
@@ -37,9 +40,19 @@ const styles = stylex.create({
     paddingInline: 16,
   },
   card: {
+    position: 'relative',
     overflow: 'hidden',
     width: 280,
     backgroundColor: cssVar.colorBgElevated,
+  },
+  // Over the banner's top-right corner, on a backdrop so it reads on any blurred avatar.
+  menu: {
+    position: 'absolute',
+    insetBlockStart: 8,
+    insetInlineEnd: 8,
+    borderRadius: cssVar.borderRadius,
+    backgroundColor: cssVar.colorBgMask,
+    backdropFilter: 'blur(8px)',
   },
   name: {
     fontSize: 16,
@@ -53,6 +66,7 @@ export const PersonCardFrame = ({
   avatar,
   children,
   image,
+  menu,
   name,
 }: {
   /** The avatar drawn over the banner's edge. Pass size 42; the ring makes the disc 48px. */
@@ -60,6 +74,8 @@ export const PersonCardFrame = ({
   children?: ReactNode;
   /** The avatar image the banner blurs. */
   image: string | null | undefined;
+  /** Drawn over the banner's top-right corner: the card's "…" menu. */
+  menu?: ReactNode;
   name: string;
 }) => (
   <Flexbox {...stylex.props(styles.card)}>
@@ -69,6 +85,7 @@ export const PersonCardFrame = ({
         <PersonAvatar avatar={image} name={name} shape={'square'} size={400} />
       </span>
     </div>
+    {menu && <span {...stylex.props(styles.menu)}>{menu}</span>}
     <Flexbox gap={8} {...stylex.props(styles.body)}>
       <span
         className={cardStyles.avatarRing}
@@ -86,11 +103,42 @@ export const PersonCardFrame = ({
   </Flexbox>
 );
 
+/** The person card's "…" menu: their full profile in Contacts, closing the card on the way. */
+const PersonCardMenu = ({ onClose, userId }: { onClose?: () => void; userId: string }) => {
+  const { t } = useTranslation('common');
+  const navigate = useWorkspaceAwareNavigate();
+
+  return (
+    <DropdownMenu
+      items={[
+        {
+          icon: UserRoundIcon,
+          key: 'viewProfile',
+          label: t('contacts.viewProfile'),
+          onClick: () => {
+            onClose?.();
+            navigate(PERSON_CONTACT_URL(userId));
+          },
+        },
+      ]}
+    >
+      <ActionIcon aria-label={t('more')} icon={MoreHorizontal} size={'small'} title={t('more')} />
+    </DropdownMenu>
+  );
+};
+
 /**
  * A person's card: who they are in the Channel, and a way to message them one-on-one. Agents keep
  * their own profile card.
  */
-export const PersonProfileCard = ({ member }: { member: ChannelPublicMember }) => {
+export const PersonProfileCard = ({
+  member,
+  onClose,
+}: {
+  member: ChannelPublicMember;
+  /** Closes the popover the card sits in, before its menu leaves for another page. */
+  onClose?: () => void;
+}) => {
   const { t, i18n } = useTranslation('channel');
   const name = memberName(member, t('deletedMember'));
   // Every person's card shows the handle, even when it matches the name (`AmAzing-` / `amazing-`),
@@ -107,6 +155,7 @@ export const PersonProfileCard = ({ member }: { member: ChannelPublicMember }) =
     <PersonCardFrame
       avatar={<MemberAvatar member={member} size={42} />}
       image={memberAvatar(member)}
+      menu={member.userId && <PersonCardMenu userId={member.userId} onClose={onClose} />}
       name={name}
     >
       {handle && (
@@ -181,7 +230,7 @@ export const MemberProfilePopup = ({
     ) : (
       <Popover
         {...cardPopoverProps}
-        content={<PersonProfileCard member={member} />}
+        content={<PersonProfileCard member={member} onClose={() => cardChange(false)} />}
         nativeButton={false}
         open={cardOpen}
         placement={placement}
