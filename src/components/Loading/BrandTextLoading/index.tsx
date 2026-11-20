@@ -1,8 +1,9 @@
 // oxlint-disable-next-line stylex-migration/no-emotion-styles -- BrandLoading renders its svg without a slot
 import { createStaticStyles } from '@lobehub/ui';
-import { BrandLoading, LobeHubText } from '@lobehub/ui/brand';
+import { BrandLoading } from '@lobehub/ui/brand';
 import * as stylex from '@stylexjs/stylex';
 
+import { LobotText } from '@/components/Branding';
 import { isCustomBranding } from '@/const/version';
 
 import CircleLoading from '../CircleLoading';
@@ -103,7 +104,7 @@ const BrandTextLoading = ({ debugId }: BrandTextLoadingProps) => {
   return (
     <div className={fallback.container}>
       <div aria-label="Loading" className={fallback.brand} role="status">
-        <BrandLoading size={40} text={LobeHubText} />
+        <BrandLoading size={40} text={LobotText} />
       </div>
       {showDebug && (
         <div {...stylex.props(stylesAtomic['debug'])}>
