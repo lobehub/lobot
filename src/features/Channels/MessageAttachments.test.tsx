@@ -55,8 +55,12 @@ describe('MessageAttachments', () => {
       />,
     );
 
-    const src = container.querySelector('img')?.getAttribute('src');
-    expect(src).toBe(`lobe-file-cache://file/file_A/a.png?src=${encodeURIComponent(signedUrl)}`);
+    const src = new URL(container.querySelector('img')!.getAttribute('src')!);
+    // The file id is the cache key. `src` rides along so a miss can still download the image
+    // instead of 404ing and looking like a missing picture.
+    expect(src.protocol).toBe('lobe-file-cache:');
+    expect(src.pathname).toBe('/file_A/a.png');
+    expect(src.searchParams.get('src')).toBe(signedUrl);
     expect(container.querySelector('img')?.parentElement?.parentElement?.style.aspectRatio).toBe(
       '',
     );
@@ -116,8 +120,22 @@ describe('MessageAttachments', () => {
     expect(copyToClipboard).toHaveBeenCalledWith('https://app.lobehub.com/f/file_Z?download=1');
   });
 
-  it('plays an MP4 inline through the proxy, which re-signs the URL on every request', () => {
-    const { container } = render(
+  it('plays an MP4 from the file-id cache and keeps that id when the signature changes', () => {
+    const signed = 'https://s3.example.com/demo.mp4?X-Amz-Signature=one';
+    const { container, rerender } = render(
+      <MessageAttachments
+        fileIds={['file_V']}
+        attachments={[
+          { fileType: 'video/mp4', id: 'file_V', name: 'demo.mp4', size: 1, url: signed },
+        ]}
+      />,
+    );
+
+    const src = new URL(container.querySelector('video')!.getAttribute('src')!);
+    expect(src.pathname).toBe('/file_V/demo.mp4');
+    expect(src.searchParams.get('src')).toBe(signed);
+
+    rerender(
       <MessageAttachments
         fileIds={['file_V']}
         attachments={[
@@ -126,15 +144,16 @@ describe('MessageAttachments', () => {
             id: 'file_V',
             name: 'demo.mp4',
             size: 1,
-            url: 'https://s3.example.com/demo.mp4?X-Amz-Expires=300',
+            url: 'https://s3.example.com/demo.mp4?X-Amz-Signature=two',
           },
         ]}
       />,
     );
 
-    expect(container.querySelector('video')?.getAttribute('src')).toBe(
-      'https://app.lobehub.com/f/file_V',
-    );
+    const next = new URL(container.querySelector('video')!.getAttribute('src')!);
+    // The player keeps the address it started with, so a refreshed signature does not restart it.
+    // The path is the file id either way, which is what the disk cache keys on.
+    expect(next.pathname).toBe('/file_V/demo.mp4');
     expect(screen.queryByRole('button', { name: 'attachments.download' })).toBeNull();
   });
 
@@ -188,6 +207,9 @@ describe('MessageAttachments', () => {
       />,
     );
 
+    // The disk copy fails first (never cached, or a codec the element cannot play), then the
+    // proxy is the one that falls back to the file card.
+    fireEvent.error(container.querySelector('video')!);
     fireEvent.error(container.querySelector('video')!);
 
     expect(container.querySelector('video')).toBeNull();

@@ -20,6 +20,7 @@ import StoreInitialization, {
   BuiltinAgentInitialization,
 } from '@/layout/GlobalProvider/StoreInitialization';
 import { registerNativeContextMenuInterceptor } from '@/libs/contextMenu';
+import { retireBrowserMediaCache } from '@/libs/mediaCache/registerBrowserMediaCache';
 import { usePostRenderReady } from '@/spa/atoms/app';
 import { ServerConfigStoreProvider } from '@/store/serverConfig/Provider';
 import type { SPAServerConfig } from '@/types/spaServerConfig';
@@ -27,6 +28,7 @@ import type { SPAServerConfig } from '@/types/spaServerConfig';
 import Locale from './Locale';
 
 registerNativeContextMenuInterceptor();
+retireBrowserMediaCache();
 const DevDock = lazy(() => import('@/features/DevDock'));
 const ImperativeMountHost = lazy(() => import('@/components/ImperativeMount'));
 const DynamicFavicon = lazy(() => import('@/layout/GlobalProvider/DynamicFavicon'));

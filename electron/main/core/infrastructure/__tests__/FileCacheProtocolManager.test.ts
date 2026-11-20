@@ -104,6 +104,97 @@ describe('FileCacheProtocolManager', () => {
     expect(response.headers.get('content-type')).toBe('application/octet-stream');
   });
 
+  it('serves a cached video with a byte range and does not download it again', async () => {
+    const video = Buffer.from([
+      0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x6d, 0x70, 0x34, 0x32,
+    ]);
+    fetchRemote.mockResolvedValueOnce(
+      new Response(new Uint8Array(video), {
+        headers: { 'content-type': 'video/mp4' },
+        status: 200,
+      }),
+    );
+
+    const full = await manager.handleRequest(
+      new Request(`lobe-file-cache://file/file_V/demo.mp4?src=${encodeURIComponent(SIGNED_URL)}`),
+    );
+    expect(full.status).toBe(200);
+    expect(full.headers.get('content-type')).toBe('video/mp4');
+    expect(full.headers.get('accept-ranges')).toBe('bytes');
+
+    const ranged = await manager.handleRequest(
+      new Request('lobe-file-cache://file/file_V/demo.mp4', { headers: { range: 'bytes=0-3' } }),
+    );
+
+    expect(ranged.status).toBe(206);
+    expect(ranged.headers.get('content-range')).toBe(`bytes 0-3/${video.length}`);
+    expect(Buffer.from(await ranged.arrayBuffer())).toEqual(video.subarray(0, 4));
+    expect(fetchRemote).toHaveBeenCalledTimes(1);
+  });
+
+  it('primes a cached file without sending its body again', async () => {
+    fetchRemote.mockResolvedValueOnce(imageResponse());
+    await manager.handleRequest(request('file_1'));
+
+    const prime = await manager.handleRequest(
+      new Request(
+        `lobe-file-cache://file/file_1/a.png?prime=1&src=${encodeURIComponent(SIGNED_URL)}`,
+      ),
+    );
+
+    expect(prime.status).toBe(204);
+    expect(prime.body).toBeNull();
+    // A file id is immutable, so the fresh signature is not fetched.
+    expect(fetchRemote).toHaveBeenCalledTimes(1);
+  });
+
+  it('serves an element that asks before the signed URL is primed', async () => {
+    let resolveDownload: (response: Response) => void = () => {};
+    fetchRemote.mockReturnValue(
+      new Promise((resolve) => {
+        resolveDownload = resolve;
+      }),
+    );
+
+    const displayed = manager.handleRequest(new Request('lobe-file-cache://file/file_1/a.png'));
+    const prime = manager.handleRequest(request('file_1'));
+    resolveDownload(imageResponse());
+
+    expect((await prime).status).toBe(200);
+    expect(Buffer.from(await (await displayed).arrayBuffer())).toEqual(PNG);
+    expect(fetchRemote).toHaveBeenCalledTimes(1);
+  });
+
+  it('rechecks a mutable avatar with its validator and keeps the disk copy on 304', async () => {
+    manager = new FileCacheProtocolManager({
+      cacheDir,
+      fetch: fetchRemote,
+      revalidateIntervalMs: 0,
+    });
+    const hash = 'a'.repeat(64);
+    const prime = (signature: string) =>
+      new Request(
+        `lobe-file-cache://media/${hash}/a.png?prime=1&src=${encodeURIComponent(`https://cdn.example.com/avatars/a.png?X-Amz-Signature=${signature}`)}`,
+      );
+
+    fetchRemote.mockResolvedValueOnce(
+      new Response(new Uint8Array(PNG), {
+        headers: { 'content-type': 'image/png', 'etag': '"v1"' },
+        status: 200,
+      }),
+    );
+    expect((await manager.handleRequest(prime('one'))).status).toBe(204);
+
+    fetchRemote.mockResolvedValueOnce(new Response(null, { status: 304 }));
+    expect((await manager.handleRequest(prime('two'))).status).toBe(204);
+    await vi.waitFor(() => expect(fetchRemote).toHaveBeenCalledTimes(2));
+    const headers = fetchRemote.mock.calls[1]?.[1]?.headers as Headers;
+    expect(headers.get('If-None-Match')).toBe('"v1"');
+
+    const shown = await manager.handleRequest(new Request(`lobe-file-cache://media/${hash}/a.png`));
+    expect(Buffer.from(await shown.arrayBuffer())).toEqual(PNG);
+  });
+
   it('trims least recently used files over the cap and partial downloads', async () => {
     manager = new FileCacheProtocolManager({ cacheDir, fetch: fetchRemote, maxCacheBytes: 10 });
     const old = new Date('2026-01-01');

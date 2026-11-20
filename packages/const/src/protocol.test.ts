@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildFileCacheUrl, buildLocalFileUrl } from './protocol';
+import {
+  buildFileCacheUrl,
+  buildLocalFileUrl,
+  isFileProxyUrl,
+  stableFileCacheUrl,
+  stableMediaCacheUrl,
+  stableMediaIdentity,
+} from './protocol';
 
 describe('buildLocalFileUrl', () => {
   it('returns null for empty / nullish input', () => {
@@ -69,5 +76,42 @@ describe('buildFileCacheUrl', () => {
   it('leaves non-http sources and id-less files untouched', () => {
     expect(buildFileCacheUrl({ id: 'f1', url: 'blob:app://x/1' })).toBe('blob:app://x/1');
     expect(buildFileCacheUrl({ id: '', url: 'https://a.test/x' })).toBe('https://a.test/x');
+  });
+});
+
+describe('stableMediaIdentity', () => {
+  it('ignores a new signature and keeps params that change the bytes', () => {
+    const first = stableMediaIdentity(
+      'https://s3.example.com/avatars/a.png?w=64&X-Amz-Signature=one&X-Amz-Expires=300',
+    );
+    const second = stableMediaIdentity(
+      'https://s3.example.com/avatars/a.png?X-Amz-Signature=two&w=64',
+    );
+    const full = stableMediaIdentity('https://s3.example.com/avatars/a.png?X-Amz-Signature=two');
+
+    expect(first).toBe(second);
+    expect(first).not.toBe(full);
+    expect(stableMediaIdentity('blob:app://x/1')).toBeNull();
+  });
+});
+
+describe('stable cache urls', () => {
+  it('keeps the file id in the path and the signature out of it', () => {
+    expect(stableFileCacheUrl({ id: 'file_V', name: 'demo.mp4' })).toBe(
+      'lobe-file-cache://file/file_V/demo.mp4',
+    );
+  });
+
+  it('hashes an avatar to the same address across signatures', () => {
+    const first = stableMediaCacheUrl('https://cdn.example.com/a.png?X-Amz-Signature=one');
+    const second = stableMediaCacheUrl('https://cdn.example.com/a.png?X-Amz-Signature=two');
+
+    expect(first).toBe(second);
+    expect(first).toMatch(/^lobe-file-cache:\/\/media\/[a-f0-9]{64}\/a\.png$/);
+  });
+
+  it('recognises the file proxy, which the disk cache cannot fetch', () => {
+    expect(isFileProxyUrl('https://app.lobehub.com/f/file_V')).toBe(true);
+    expect(isFileProxyUrl('https://s3.example.com/a.png?X-Amz-Signature=x')).toBe(false);
   });
 });

@@ -31,6 +31,11 @@ export interface AvatarProps extends LobeAvatarProps {
  * The image element is rendered here rather than left to the library so this
  * component owns the `error` event. Probing the URL separately would let the
  * two disagree, and on disagreement the library's own "UN" fallback wins.
+ *
+ * The source stays the profile URL. Routing it through the desktop file cache
+ * 404s when that fetch cannot see the bytes (a cookie, or a main process that
+ * does not know the cache yet), and a 404 here is recorded as "no avatar",
+ * which replaces the photo with the generated fallback.
  */
 const Avatar = memo<AvatarProps>(
   ({ alt, avatar, background, brokenFallback, name, size = 48, title, unoptimized, ...rest }) => {

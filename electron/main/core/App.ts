@@ -207,7 +207,7 @@ export class App {
     // `localfile://` to the renderer. Active in both dev and prod.
     this.localFileProtocolManager.registerHandler();
 
-    // Serves remote images from a disk copy keyed by file id via `lobe-file-cache://`.
+    // Serves remote images and video from a disk copy via `lobe-file-cache://`.
     this.fileCacheProtocolManager.registerHandler();
 
     // initialize protocol handlers

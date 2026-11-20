@@ -6,6 +6,8 @@ import { ExternalLink } from 'lucide-react';
 import { memo, type ReactEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { cachedMediaUrl } from '@/libs/mediaCache/cachedMediaUrl';
+
 // Mirrors the @lobehub/ui (6.15) Video control-bar button style, which the library does not export.
 const styles = stylex.create({
   action: {
@@ -28,6 +30,8 @@ interface MessageVideoProps {
   maxHeight?: number;
   /** The element could not load or decode the source. */
   onError?: ReactEventHandler<HTMLVideoElement>;
+  /** Link opened by "open original". Defaults to `src`. */
+  openHref?: string;
   poster?: string;
   src: string;
 }
@@ -36,37 +40,40 @@ interface MessageVideoProps {
  * Inline video player for conversation messages and tool renders, built on the
  * @lobehub/ui Video player with an open-original-file action.
  */
-const MessageVideo = memo<MessageVideoProps>(({ maxHeight = 400, onError, poster, src }) => {
-  const { t } = useTranslation('common');
+const MessageVideo = memo<MessageVideoProps>(
+  ({ maxHeight = 400, onError, openHref, poster, src }) => {
+    const { t } = useTranslation('common');
+    const source = cachedMediaUrl(src) ?? src;
 
-  return (
-    <Video.Root maxHeight={maxHeight} poster={poster} src={src} onError={onError}>
-      <Video.Frame>
-        <Video.Caption />
-        <Video.CenterPlay />
-        <Video.Controls
-          extra={
-            // Stored files are served cross-origin, where `download` is ignored, so open the
-            // original in a new tab and let the browser save it from there.
-            <a
-              aria-label={t('openOriginalFile')}
-              {...stylex.props(styles.action)}
-              href={src}
-              rel="noreferrer"
-              target="_blank"
-              title={t('openOriginalFile')}
-            >
-              <ExternalLink size={15} />
-            </a>
-          }
-        >
-          <Video.Timeline />
-        </Video.Controls>
-        <Video.LoadError />
-      </Video.Frame>
-    </Video.Root>
-  );
-});
+    return (
+      <Video.Root maxHeight={maxHeight} poster={poster} src={source} onError={onError}>
+        <Video.Frame>
+          <Video.Caption />
+          <Video.CenterPlay />
+          <Video.Controls
+            extra={
+              // Stored files are served cross-origin, where `download` is ignored, so open the
+              // original in a new tab and let the browser save it from there.
+              <a
+                aria-label={t('openOriginalFile')}
+                {...stylex.props(styles.action)}
+                href={openHref || src}
+                rel="noreferrer"
+                target="_blank"
+                title={t('openOriginalFile')}
+              >
+                <ExternalLink size={15} />
+              </a>
+            }
+          >
+            <Video.Timeline />
+          </Video.Controls>
+          <Video.LoadError />
+        </Video.Frame>
+      </Video.Root>
+    );
+  },
+);
 
 MessageVideo.displayName = 'MessageVideo';
 

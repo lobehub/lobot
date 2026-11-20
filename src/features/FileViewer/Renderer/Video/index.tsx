@@ -3,6 +3,8 @@
 import { Center, createStaticStyles } from '@lobehub/ui';
 import { memo } from 'react';
 
+import { cachedMediaUrl } from '@/libs/mediaCache/cachedMediaUrl';
+
 const styles = createStaticStyles(({ css, cssVar }) => ({
   container: css`
     padding: ${cssVar.paddingSM};
@@ -33,12 +35,18 @@ interface VideoViewerProps {
   url: string | null;
 }
 
-const VideoViewer = memo<VideoViewerProps>(({ url }) => {
+const VideoViewer = memo<VideoViewerProps>(({ fileId, url }) => {
   if (!url) return null;
 
   return (
     <Center className={styles.container} height={'100%'} width={'100%'}>
-      <video controls className={styles.video} height={'100%'} src={url} width={'100%'} />
+      <video
+        controls
+        className={styles.video}
+        height={'100%'}
+        src={cachedMediaUrl(url, { id: fileId }) ?? url}
+        width={'100%'}
+      />
     </Center>
   );
 });

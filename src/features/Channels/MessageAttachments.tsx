@@ -1,4 +1,4 @@
-import { buildFileCacheUrl, isDesktop } from '@lobechat/const';
+import { isDesktop } from '@lobechat/const';
 import { createModal, Flexbox } from '@lobehub/ui';
 import type { ChannelDetail } from '@lobot/types';
 import { useState } from 'react';
@@ -8,6 +8,7 @@ import FileListViewer from '@/features/Conversation/Messages/User/components/Fil
 import ImageFileListViewer from '@/features/Conversation/Messages/User/components/ImageFileListViewer';
 import FileViewer from '@/features/FileViewer';
 import { useAppOrigin } from '@/hooks/useAppOrigin';
+import { cachedMediaUrl } from '@/libs/mediaCache/cachedMediaUrl';
 
 import { AttachmentPreviewTitle, DownloadAttachmentButton } from './AttachmentActions';
 
@@ -48,11 +49,11 @@ const openFile = (file: {
   });
 
 /**
- * The server signs attachment URLs for minutes while the conversation is persisted, so a reopened
- * Channel would render expired URLs. On desktop an image loads through the file-id disk cache.
+ * The server signs attachment URLs for minutes while the conversation is persisted. On desktop
+ * the file id is the cache key, so a new signature still paints the copy already on disk.
  */
 const imageUrl = (file: { id: string; name: string; url: string }) =>
-  isDesktop ? buildFileCacheUrl(file) : file.url;
+  cachedMediaUrl(file.url, { id: file.id, name: file.name }) ?? file.url;
 
 /** File cards stretch to the message width by default, which reads badly in a wide Channel. */
 const FILE_CARD_MAX_WIDTH = 400;
@@ -79,22 +80,29 @@ const FileCards = ({ files }: { files: Attachment[] }) => (
 );
 
 /**
- * Plays a video inline. The signed URL expires minutes after the Channel loads, which would break
- * playback (and every later range request) in a reopened conversation, so the player loads the
- * `/f/:id` proxy, which redirects to a freshly signed URL on each request. A video the element
- * cannot decode (a HEVC `.mov`, say) falls back to its file card.
+ * Plays a video inline. On desktop the file id names immutable bytes, so seeking and a later
+ * visit read the disk copy instead of following `/f/:id` to a new signature. A cache miss with
+ * an expired signature falls back to that proxy, which can still sign a fresh URL. A video the
+ * element cannot decode (a HEVC `.mov`, say) falls back to its file card.
  */
 const VideoAttachment = ({ file }: { file: Attachment }) => {
   const appOrigin = useAppOrigin();
   const [unplayable, setUnplayable] = useState(false);
+  const proxy = `${appOrigin}/f/${encodeURIComponent(file.id)}`;
+  const cached = isDesktop ? cachedMediaUrl(file.url, { id: file.id, name: file.name }) : undefined;
+  const [src, setSrc] = useState(cached || proxy);
 
   if (unplayable) return <FileCards files={[file]} />;
 
   return (
     <MessageVideo
       maxHeight={360}
-      src={`${appOrigin}/f/${encodeURIComponent(file.id)}`}
-      onError={() => setUnplayable(true)}
+      openHref={proxy}
+      src={src}
+      onError={() => {
+        if (src !== proxy) setSrc(proxy);
+        else setUnplayable(true);
+      }}
     />
   );
 };

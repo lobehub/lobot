@@ -7,6 +7,7 @@ import { type CSSProperties } from 'react';
 import { memo } from 'react';
 
 import { usePlatform } from '@/hooks/usePlatform';
+import { cachedMediaUrl } from '@/libs/mediaCache/cachedMediaUrl';
 import { sx } from '@/styles/sx';
 
 import { MIN_IMAGE_SIZE } from './style';
@@ -81,7 +82,7 @@ const ImageItem = memo<ImageItemProps>(
         objectFit={square ? 'cover' : undefined}
         preview={preview}
         size={IMAGE_SIZE}
-        src={url}
+        src={cachedMediaUrl(url) ?? url}
         actions={
           editable && (
             <ActionIcon

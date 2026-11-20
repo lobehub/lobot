@@ -1,3 +1,5 @@
+import { sha256Hex } from './sha256';
+
 /**
  * Custom protocol the desktop main process exposes for serving approved
  * local workspace file previews to the renderer.
@@ -41,17 +43,108 @@ export const buildLocalFileUrl = (absolutePath: string | null | undefined): stri
 };
 
 /**
- * Desktop protocol that keeps a disk copy of remote images by file id. A file id names immutable
- * content, so the copy stays valid after the short-lived signed URL it was downloaded from
- * expires. Backed by `FileCacheProtocolManager` in `electron`.
+ * Desktop protocol that keeps a disk copy of remote media. `file` is keyed by an immutable file
+ * id; `media` is keyed by the resource itself, ignoring the rotating signature on its URL.
+ * Backed by `FileCacheProtocolManager` in `electron`.
  */
 export const FILE_CACHE_PROTOCOL_SCHEME = 'lobe-file-cache';
 export const FILE_CACHE_PROTOCOL_HOST = 'file';
+/** Avatars and other remote media whose URL has no file id. The host stays lowercase. */
+export const FILE_CACHE_MEDIA_HOST = 'media';
 
 /**
- * Build `lobe-file-cache://file/<id>/<name>?src=<url>`. The id sits in the path because a
- * standard scheme lowercases its host; the name gives downloads their file name; `src` is only
- * fetched on a cache miss. Non-http(s) sources (blob:, data:) are returned unchanged.
+ * Query keys that authenticate a signed URL or change the response disposition, not the bytes.
+ * Two signatures of one object must share a cache key. Size and format params stay, so a
+ * thumbnail does not collide with the original.
+ */
+const SIGNING_QUERY =
+  /^(?:x-amz-|x-goog-|response-content-|awsaccesskeyid$|signature$|expires$|security-token$)/i;
+
+const compareQuery = (left: [string, string], right: [string, string]) => {
+  if (left[0] !== right[0]) return left[0] < right[0] ? -1 : 1;
+  if (left[1] === right[1]) return 0;
+  return left[1] < right[1] ? -1 : 1;
+};
+
+/**
+ * Origin, path, and the query params that select bytes. `null` when `url` is not http(s).
+ * A new `X-Amz-Signature` does not change the result; a new path or `?w=` does.
+ */
+export const stableMediaIdentity = (url: string): string | null => {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
+
+  const kept: [string, string][] = [];
+  for (const [key, value] of parsed.searchParams) {
+    if (!SIGNING_QUERY.test(key)) kept.push([key, value]);
+  }
+  kept.sort(compareQuery);
+  const query = kept
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+  return `${parsed.origin}${parsed.pathname}${query ? `?${query}` : ''}`;
+};
+
+/** The app's `/f/:id` proxy. It needs the session cookie, which the disk cache cannot send. */
+export const isFileProxyUrl = (url: string): boolean => {
+  try {
+    return /^\/f\/[^/]+(?:\/raw)?\/?$/.test(new URL(url).pathname);
+  } catch {
+    return false;
+  }
+};
+
+const cacheObjectName = (name: string | undefined, fallback: string): string => {
+  const base = (name || fallback).split(/[/\\]/).pop() || fallback;
+  return base.slice(0, 120) || fallback;
+};
+
+/**
+ * `lobe-file-cache://file/<id>/<name>` with no query. The signed URL must not be part of the
+ * address an `<img>` or `<video>` loads, or a new signature is a new resource and the decoded
+ * image is thrown away. The latest signature is delivered separately, and only fetched on a miss.
+ */
+export const stableFileCacheUrl = ({ id, name }: { id: string; name?: string }): string => {
+  const fileName = cacheObjectName(name, id);
+  return `${FILE_CACHE_PROTOCOL_SCHEME}://${FILE_CACHE_PROTOCOL_HOST}/${encodeURIComponent(id)}/${encodeURIComponent(fileName)}`;
+};
+
+/**
+ * `lobe-file-cache://media/<hash>/<name>` for a remote URL with no file id. The hash is the
+ * stable identity, so a new signature hits the same disk copy.
+ */
+export const stableMediaCacheUrl = (url: string): string | null => {
+  const identity = stableMediaIdentity(url);
+  if (!identity) return null;
+
+  let base = 'media';
+  try {
+    const last = new URL(url).pathname.split('/').pop();
+    if (last) base = decodeURIComponent(last);
+  } catch {
+    // `stableMediaIdentity` already rejected URLs that do not parse.
+  }
+
+  return `${FILE_CACHE_PROTOCOL_SCHEME}://${FILE_CACHE_MEDIA_HOST}/${sha256Hex(identity)}/${encodeURIComponent(cacheObjectName(base, 'media'))}`;
+};
+
+/** Asks the disk cache to remember `src` and download it only when that key is missing. */
+export const fileCachePrimeUrl = (stable: string, src: string): string => {
+  const primed = new URL(stable);
+  primed.searchParams.set('src', src);
+  primed.searchParams.set('prime', '1');
+  return primed.toString();
+};
+
+/**
+ * Build `lobe-file-cache://file/<id>/<name>?src=<url>`. Prefer {@link stableFileCacheUrl}: this
+ * form puts the signed URL in the address, so a new signature misses the renderer's image cache.
+ * Kept for callers that still hand the source to the protocol in the same request.
  */
 export const buildFileCacheUrl = ({
   id,
