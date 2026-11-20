@@ -8,6 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ReplyEntry } from './MessageReceipts';
 import { failureAnchors, groupReplyEntries, ReplyDetail, ReplyList } from './MessageReceipts';
+import { REPLY_POPUP_PROPS } from './replyPopup';
 
 const retryJob = vi.fn();
 const devices: Record<string, unknown> = {
@@ -28,7 +29,8 @@ vi.mock('@lobehub/ui', () => ({
     createElement('button', { onClick }, children as never),
   Flexbox: ({ children }: { children?: unknown }) => createElement('div', {}, children as never),
   Popover: ({ children }: { children?: unknown }) => children,
-  Text: ({ children }: { children?: unknown }) => createElement('span', {}, children as never),
+  Text: ({ children, style }: { children?: unknown; style?: object }) =>
+    createElement('span', { style }, children as never),
   usePopoverContext: () => ({ close: () => {} }),
 }));
 vi.mock('@/components/AgentAvatar', () => ({ default: () => null }));
@@ -121,6 +123,19 @@ describe('ReplyDetail topic', () => {
 
     expect(screen.queryByText('receipt.openTopic')).toBeNull();
   });
+
+  // Several replies of one Agent read alike; the topic each runs in tells them apart.
+  it('names the topic a reply runs in for the member who runs it', () => {
+    renderAgentReply(runningJob({ topicId: 'tpc_1', topicTitle: 'Fix the login bug' }));
+
+    expect(screen.getByText('Fix the login bug')).toBeTruthy();
+  });
+
+  it('shows no topic name without the topic itself', () => {
+    renderAgentReply(runningJob({ topicTitle: 'Fix the login bug' }));
+
+    expect(screen.queryByText('Fix the login bug')).toBeNull();
+  });
 });
 
 describe('failureAnchors', () => {
@@ -195,8 +210,8 @@ describe('ReplyList grouping', () => {
     ]);
   });
 
-  // Three replies of one Agent repeated its avatar and name on every row.
-  it('names an Agent once above all of its replies, each still with its own state', () => {
+  // Dropping the name from later rows of one Agent left the rows out of line.
+  it('names the Agent on every row, each with its own state', () => {
     render(
       createElement(ReplyList, {
         channelId: 'chn_1',
@@ -207,7 +222,41 @@ describe('ReplyList grouping', () => {
         ],
       }),
     );
-    expect(screen.getAllByText('小星')).toHaveLength(1);
+    expect(screen.getAllByText('小星')).toHaveLength(3);
     expect(screen.getAllByTestId('status')).toHaveLength(3);
+  });
+});
+
+describe('reply popover focus', () => {
+  // A pointer-opened popover focused its first row, which showed that row's actions at once.
+  it('leaves focus on the trigger when opened by pointer, and moves in from the keyboard', () => {
+    expect(REPLY_POPUP_PROPS.initialFocus('mouse')).toBe(false);
+    expect(REPLY_POPUP_PROPS.initialFocus('touch')).toBe(false);
+    expect(REPLY_POPUP_PROPS.initialFocus('keyboard')).toBe(true);
+  });
+});
+
+describe('ReplyList name column', () => {
+  const reply = (id: string, memberId: string, name: string) =>
+    ({ job: failedJob({ errorType: null, id, memberId, status: 'queued' }), name }) as ReplyEntry;
+
+  // Names of different lengths pushed each row's state to a different place.
+  it('gives every name one width when several replies are listed', () => {
+    render(
+      createElement(ReplyList, {
+        channelId: 'chn_1',
+        entries: [reply('a', 'mem_cook', 'Cook'), reply('b', 'mem_justin', 'Justin')],
+      }),
+    );
+    for (const name of ['Cook', 'Justin']) {
+      expect(screen.getByText(name).style.width).toBe('80px');
+    }
+  });
+
+  it('lets a lone reply keep its name at its own width', () => {
+    render(
+      createElement(ReplyList, { channelId: 'chn_1', entries: [reply('a', 'mem_cook', 'Cook')] }),
+    );
+    expect(screen.getByText('Cook').style.width).toBe('');
   });
 });

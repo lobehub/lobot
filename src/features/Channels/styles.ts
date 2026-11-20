@@ -628,7 +628,7 @@ export const statusStyles = stylex.create({
     flex: 'none',
   },
   stateIconAttention: {
-    color: cssVar.colorWarning,
+    color: cssVar.colorInfo,
   },
   stateIconSpin: {
     animationName: { 'default': spin, '@media (prefers-reduced-motion: reduce)': 'none' },
@@ -654,10 +654,9 @@ export const statusStyles = stylex.create({
   replyActionsBusy: {
     opacity: 1,
   },
-  /** A later reply of the same Agent: no avatar or name, its state lines up under the name. */
-  replyIndent: {
-    flex: 'none',
-    width: 24,
+  /** The reply's topic name, under the Agent's name (24px avatar + 8px gap). */
+  replyTopic: {
+    paddingInlineStart: 32,
   },
   dot: {
     flex: 'none',

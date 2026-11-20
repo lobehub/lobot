@@ -7,7 +7,7 @@ import type {
   ChannelPublicMessage,
 } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
-import { ExternalLink, Square } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -71,28 +71,36 @@ export const failureAnchors = (messages: ChannelPublicMessage[], entries: ReplyE
   return anchors;
 };
 
+/** Width of the name column when several replies are listed: room for a short name or two words. */
+const NAME_COLUMN_WIDTH = 80;
+const NAME_FREE = { flex: '0 1 auto', minWidth: 0 } as const;
+const NAME_COLUMN = { flex: 'none', minWidth: 0, width: NAME_COLUMN_WIDTH } as const;
+/** The name button starts its text at the column's edge instead of centring it. */
+const NAME_COLUMN_BUTTON = { ...NAME_COLUMN, justifyContent: 'flex-start' } as const;
+
 /**
  * One reply: its state, why it failed or what device it waits for, and how to stop it or open
  * its Agent. `manageable` viewers (Channel admins) also see that device and can change it.
  * `queue` holds the replies listed beside it, so one waiting behind an earlier reply of the same
- * Agent says so instead of typing. `continued` marks a later reply of the Agent on the row above:
- * it drops the avatar and name and lines its state up under that name.
+ * Agent says so instead of typing. `nameColumn` gives the name a fixed width (cut off with an
+ * ellipsis) so the states of several replies line up in one column.
  */
 export function ReplyDetail({
   channelId,
-  continued,
   entry: { agentId, avatar, job, member, name },
   manageable,
+  nameColumn,
   queue,
 }: {
   channelId: string;
-  continued?: boolean;
   entry: ReplyEntry;
   manageable?: boolean;
+  nameColumn?: boolean;
   queue?: ChannelPublicJob[];
 }) {
   const { t } = useTranslation('channel');
   const status = useReplyStatusLabel(job, queue ?? [job]);
+  const topicTitle = job.topicId ? job.topicTitle?.trim() : undefined;
   const { close } = usePopoverContext();
   const openAgent = useOpenReplyAgent(agentId, close);
   const deviceFailure = isDeviceFailure(job);
@@ -139,27 +147,23 @@ export function ReplyDetail({
   return (
     <Flexbox gap={8} {...stylex.props(stylex.defaultMarker())}>
       <Flexbox horizontal align="center" gap={8}>
-        {continued ? (
-          <span aria-hidden {...stylex.props(statusStyles.replyIndent)} />
-        ) : (
-          <AgentAvatar
-            agentId={agentId}
-            avatar={avatar}
-            name={name}
-            shape={'circle'}
-            size={24}
-            title={name}
-          />
-        )}
+        <AgentAvatar
+          agentId={agentId}
+          avatar={avatar}
+          name={name}
+          shape={'circle'}
+          size={24}
+          title={name}
+        />
         {/* Name, then its state; the stop action sits at the far end of the same row. The name
-            opens the Agent without an icon, keeps its own width and only shrinks (to an ellipsis)
-            when the row runs out. */}
-        {continued ? null : agentId ? (
+            opens the Agent without an icon. Alone it keeps its own width and only shrinks (to an
+            ellipsis) when the row runs out; in a list it takes the name column's width. */}
+        {agentId ? (
           <Button
             aria-label={t('openAgentNamed', { name })}
             outdent="start"
             size="small"
-            style={{ flex: '0 1 auto', minWidth: 0 }}
+            style={nameColumn ? NAME_COLUMN_BUTTON : NAME_FREE}
             title={t('openAgentNamed', { name })}
             type="text"
             onClick={openAgent}
@@ -169,7 +173,7 @@ export function ReplyDetail({
             </Text>
           </Button>
         ) : (
-          <Text ellipsis style={{ flex: '0 1 auto', minWidth: 0 }} weight={500}>
+          <Text ellipsis style={nameColumn ? NAME_COLUMN : NAME_FREE} weight={500}>
             {name}
           </Text>
         )}
@@ -198,7 +202,6 @@ export function ReplyDetail({
           )}
           {job.canStop && isChannelJobActive(job) && (
             <Button
-              icon={Square}
               loading={stopping}
               size="small"
               style={{ flexShrink: 0 }}
@@ -210,6 +213,19 @@ export function ReplyDetail({
           )}
         </Flexbox>
       </Flexbox>
+      {/* The topic the reply runs in, by name, so replies of one Agent tell apart at a glance.
+          Only its runner gets it, as with the open-topic action. */}
+      {topicTitle && (
+        <Text
+          ellipsis
+          fontSize={12}
+          title={topicTitle}
+          type="secondary"
+          {...stylex.props(statusStyles.replyTopic)}
+        >
+          {topicTitle}
+        </Text>
+      )}
       {job.status === 'queued' && job.blockedCode === 'device_offline' && (
         <BlockedDevice
           waiting
@@ -274,8 +290,8 @@ export const groupReplyEntries = (entries: ReplyEntry[]): ReplyEntry[][] => {
 };
 
 /**
- * Replies as popover content, one group per Agent: the avatar and name head the group once, and
- * each further reply of that Agent is just its state.
+ * Replies as popover content, one group per Agent so its replies sit together. Every row keeps its
+ * avatar and name, so the rows line up whatever Agent they belong to.
  */
 export function ReplyList({
   channelId,
@@ -288,17 +304,19 @@ export function ReplyList({
 }) {
   // The queue keeps the jobs' own order (newest first): a reply's place in it says what it waits on.
   const queue = entries.map((entry) => entry.job);
+  // With more than one reply the names take one width, so the states line up down the list.
+  const nameColumn = entries.length > 1;
   return (
     <Flexbox gap={16} {...stylex.props(statusStyles.popover, statusStyles.replyList)}>
       {groupReplyEntries(entries).map((group) => (
         <Flexbox gap={8} key={group[0].job.id}>
-          {group.map((entry, index) => (
+          {group.map((entry) => (
             <ReplyDetail
               channelId={channelId}
-              continued={index > 0}
               entry={entry}
               key={entry.job.id}
               manageable={manageable}
+              nameColumn={nameColumn}
               queue={queue}
             />
           ))}

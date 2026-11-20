@@ -14,6 +14,7 @@ import {
   workingConversationCount,
 } from './jobStatus';
 import { replyEntries, ReplyList } from './MessageReceipts';
+import { REPLY_POPUP_PROPS } from './replyPopup';
 import { activityStyles } from './styles';
 import { TypingDots } from './TypingDots';
 
@@ -60,6 +61,7 @@ export function ReplyActivity({
   return (
     <Popover
       placement="topLeft"
+      popupProps={REPLY_POPUP_PROPS}
       trigger="click"
       content={
         <ReplyList

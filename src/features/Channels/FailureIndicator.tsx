@@ -8,6 +8,7 @@ import { canManageAgents } from './channelAccess';
 import { mainTimelineFailures } from './jobStatus';
 import type { ReplyEntry } from './MessageReceipts';
 import { ReplyDetail, replyEntries } from './MessageReceipts';
+import { REPLY_POPUP_PROPS } from './replyPopup';
 import { statusStyles, toneStyles } from './styles';
 
 /** Scrolls the main conversation to a message, if it is in the loaded page. */
@@ -60,6 +61,7 @@ export function FailureIndicator({ detail }: { detail: ChannelDetail }) {
   return (
     <Popover
       placement="bottomRight"
+      popupProps={REPLY_POPUP_PROPS}
       trigger="click"
       content={
         <Flexbox gap={12} {...stylex.props(statusStyles.popover, statusStyles.replyList)}>
