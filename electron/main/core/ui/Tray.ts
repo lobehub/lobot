@@ -38,6 +38,12 @@ export interface TrayOptions {
    * Tray tooltip text
    */
   tooltip?: string;
+
+  /**
+   * Icon shown while there are unread messages (relative to resource directory). Used where the
+   * tray has no title to carry a count (Windows / Linux), so the icon itself carries a red dot.
+   */
+  unreadIconPath?: string;
 }
 
 export class Tray {
@@ -205,6 +211,8 @@ export class Tray {
       if (nextIsTemplate) icon.setTemplateImage(true);
       this._tray?.setImage(icon);
       this.options.iconPath = iconPath;
+      // The new image has no red dot; let the next unread count put it back.
+      this._showsUnreadIcon = false;
       if (isTemplateImage !== undefined) this.options.isTemplateImage = isTemplateImage;
       logger.debug(`[${this.identifier}] Icon updated successfully`);
     } catch (error) {
@@ -213,11 +221,28 @@ export class Tray {
   }
 
   /**
-   * Show the unread count beside the menu bar icon; 0 clears it. Only macOS renders tray titles.
+   * Show unread state on the tray; 0 clears it. macOS renders the count as the menu bar title;
+   * Windows / Linux have no tray title, so the icon switches to its red-dot variant instead.
    */
   setUnreadCount(count: number) {
-    if (!isMac) return;
-    this._tray?.setTitle(count > 0 ? String(count) : '');
+    if (isMac) {
+      this._tray?.setTitle(count > 0 ? String(count) : '');
+      return;
+    }
+
+    const { iconPath, unreadIconPath } = this.options;
+    const showUnread = count > 0;
+    if (!this._tray || !unreadIconPath || showUnread === this._showsUnreadIcon) return;
+
+    try {
+      const icon = nativeImage.createFromPath(
+        path.join(resourcesDir, showUnread ? unreadIconPath : iconPath),
+      );
+      this._tray.setImage(icon);
+      this._showsUnreadIcon = showUnread;
+    } catch (error) {
+      logger.error(`[${this.identifier}] Failed to update unread icon:`, error);
+    }
   }
 
   /**

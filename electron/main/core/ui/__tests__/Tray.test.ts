@@ -353,12 +353,46 @@ describe('Tray', () => {
       expect(mockElectronTray.setTitle.mock.calls).toEqual([['6'], ['']]);
     });
 
-    it('should leave the tray untouched off macOS', () => {
+    it('should swap to the red-dot icon off macOS and back at 0', () => {
+      const unreadIcon = { kind: 'unread' };
+      const baseIcon = { kind: 'base' };
+      vi.mocked(nativeImage.createFromPath).mockImplementation(
+        (file: string) => (file.endsWith('trayBadge.png') ? unreadIcon : baseIcon) as any,
+      );
+      tray = new Tray(
+        { iconPath: 'tray.png', identifier: 'test-tray', unreadIconPath: 'trayBadge.png' },
+        mockApp,
+      );
+
+      tray.setUnreadCount(6);
+      tray.setUnreadCount(7);
+      tray.setUnreadCount(0);
+
+      expect(mockElectronTray.setTitle).not.toHaveBeenCalled();
+      expect(mockElectronTray.setImage.mock.calls).toEqual([[unreadIcon], [baseIcon]]);
+      expect(nativeImage.createFromPath).toHaveBeenCalledWith('/mock/resources/trayBadge.png');
+    });
+
+    it('should leave the icon alone off macOS without an unread icon', () => {
       tray = new Tray({ iconPath: 'tray.png', identifier: 'test-tray' }, mockApp);
 
       tray.setUnreadCount(6);
 
       expect(mockElectronTray.setTitle).not.toHaveBeenCalled();
+      expect(mockElectronTray.setImage).not.toHaveBeenCalled();
+    });
+
+    it('should restore the red dot after the base icon is replaced', () => {
+      tray = new Tray(
+        { iconPath: 'tray.png', identifier: 'test-tray', unreadIconPath: 'trayBadge.png' },
+        mockApp,
+      );
+
+      tray.setUnreadCount(6);
+      tray.updateIcon('tray-alt.png');
+      tray.setUnreadCount(6);
+
+      expect(mockElectronTray.setImage).toHaveBeenCalledTimes(3);
     });
   });
 

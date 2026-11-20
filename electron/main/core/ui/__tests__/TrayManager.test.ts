@@ -7,10 +7,10 @@ import { TrayManager } from '../TrayManager';
 // Mock electron modules (empty shim — TrayManager no longer reads nativeTheme)
 vi.mock('electron', () => ({}));
 
+const mockEnv = vi.hoisted(() => ({ isMac: true }));
+
 // Mock environment constants
-vi.mock('@/const/env', () => ({
-  isMac: true,
-}));
+vi.mock('@/const/env', () => mockEnv);
 
 // Mock package.json
 vi.mock('@/../../package.json', () => ({
@@ -29,6 +29,7 @@ describe('TrayManager', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockEnv.isMac = true;
 
     // Mock Tray instance
     mockTray = {
@@ -130,6 +131,21 @@ describe('TrayManager', () => {
         mockApp,
       );
       expect(result).toBe(mockTray);
+    });
+
+    it('should create main tray with a red-dot unread icon off macOS', () => {
+      mockEnv.isMac = false;
+
+      trayManager.initializeMainTray();
+
+      expect(Tray).toHaveBeenCalledWith(
+        expect.objectContaining({
+          iconPath: 'tray.png',
+          isTemplateImage: false,
+          unreadIconPath: 'trayBadge.png',
+        }),
+        mockApp,
+      );
     });
 
     it('should add created tray to trays map', () => {
