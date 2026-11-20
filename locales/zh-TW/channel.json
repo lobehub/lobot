@@ -232,7 +232,6 @@
   "profile.view": "查看代理資訊",
   "projectAgents": "專案成員",
   "receipt.deviceUnreachable": "此代理運行所在的裝置已離線，因此回覆無法開始。重新連接裝置或切換到其他裝置，然後重試。",
-  "receipt.errorReason": "失敗原因",
   "receipt.errorUnavailable": "未記錄詳細原因。再次發送前，檢查代理的模型和裝置設置。",
   "receipt.failedHint": "再次提及以重試。",
   "receipt.handoff": "交接給其他代理",

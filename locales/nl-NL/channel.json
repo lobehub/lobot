@@ -232,7 +232,6 @@
   "profile.view": "Profiel bekijken",
   "projectAgents": "Projectleden",
   "receipt.deviceUnreachable": "Het apparaat waarop deze Agent draait is offline, dus het antwoord kon niet starten. Verbind het apparaat opnieuw of schakel over naar een ander apparaat en probeer het dan opnieuw.",
-  "receipt.errorReason": "Reden van mislukking",
   "receipt.errorUnavailable": "Er is geen gedetailleerde reden geregistreerd. Controleer het model en de apparaatinstellingen van de Agent voordat je het opnieuw verzendt.",
   "receipt.failedHint": "Noem het opnieuw om het opnieuw te proberen.",
   "receipt.handoff": "Overdragen aan een andere Agent",

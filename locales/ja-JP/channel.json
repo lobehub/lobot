@@ -232,7 +232,6 @@
   "profile.view": "プロフィールを表示",
   "projectAgents": "プロジェクトメンバー",
   "receipt.deviceUnreachable": "このエージェントが実行されるデバイスがオフラインのため、返信を開始できませんでした。デバイスを再接続するか別のデバイスに切り替えてから、再試行してください。",
-  "receipt.errorReason": "失敗理由",
   "receipt.errorUnavailable": "詳細な理由は記録されていません。再送信する前にエージェントのモデルとデバイス設定を確認してください。",
   "receipt.failedHint": "再試行するには再度言及してください。",
   "receipt.handoff": "別のエージェントに引き継ぐ",

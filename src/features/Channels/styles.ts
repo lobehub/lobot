@@ -639,8 +639,12 @@ export const statusStyles = stylex.create({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
-  stateError: {
-    color: cssVar.colorError,
+  /**
+   * A failed reply is something to look at, not an alarm: the glyph alone takes the warning
+   * colour and the label stays quiet like every other state.
+   */
+  stateIconError: {
+    color: cssVar.colorWarning,
   },
   stateIcon: {
     flex: 'none',
@@ -674,9 +678,14 @@ export const statusStyles = stylex.create({
   replyActionsBusy: {
     opacity: 1,
   },
-  /** The reply's topic name, under the Agent's name (24px avatar + 8px gap). */
-  replyTopic: {
+  /** A line under the Agent's name (24px avatar + 8px gap): its topic, or why it failed. */
+  replyIndent: {
     paddingInlineStart: 32,
+  },
+  /** A failure reason keeps the server's line breaks and wraps a long token. */
+  replyReason: {
+    overflowWrap: 'anywhere',
+    whiteSpace: 'pre-wrap',
   },
   dot: {
     flex: 'none',
@@ -695,6 +704,10 @@ export const statusStyles = stylex.create({
     gap: 4,
     height: 28,
     paddingInline: 6,
+    color: cssVar.colorTextSecondary,
+  },
+  failureIcon: {
+    color: cssVar.colorWarning,
   },
   replyList: {
     overflowY: 'auto',

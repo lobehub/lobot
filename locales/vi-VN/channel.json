@@ -232,7 +232,6 @@
   "profile.view": "Xem hồ sơ",
   "projectAgents": "Thành viên dự án",
   "receipt.deviceUnreachable": "Thiết bị mà Ajan này chạy đang ngoại tuyến, nên không thể bắt đầu phản hồi. Kết nối lại thiết bị hoặc chuyển sang thiết bị khác, rồi thử lại.",
-  "receipt.errorReason": "Lý do thất bại",
   "receipt.errorUnavailable": "Không có lý do chi tiết nào được ghi lại. Kiểm tra mô hình và cài đặt thiết bị của Ajan trước khi gửi lại.",
   "receipt.failedHint": "Nhắc lại để thử lại.",
   "receipt.handoff": "Chuyển giao cho Ajan khác",

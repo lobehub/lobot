@@ -232,7 +232,6 @@
   "profile.view": "Voir le profil",
   "projectAgents": "Membres du projet",
   "receipt.deviceUnreachable": "L'appareil sur lequel s'exécute cet Agent est hors ligne ; la réponse n'a pas pu démarrer. Reconnectez l'appareil ou passez-en à un autre, puis réessayez.",
-  "receipt.errorReason": "Raison de l'échec",
   "receipt.errorUnavailable": "Aucune raison détaillée n'a été enregistrée. Vérifiez le modèle et les paramètres de l'appareil de l'Agent avant de renvoyer.",
   "receipt.failedHint": "Mentionnez-le à nouveau pour réessayer.",
   "receipt.handoff": "Transférer à un autre Agent",

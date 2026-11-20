@@ -232,7 +232,6 @@
   "profile.view": "Profili görüntüle",
   "projectAgents": "Proje üyeleri",
   "receipt.deviceUnreachable": "Bu Ajanın çalıştığı cihaz çevrimdışı, bu yüzden yanıt başlatılamadı. Cihazı yeniden bağlayın veya başka bir cihaza geçin, ardından tekrar deneyin.",
-  "receipt.errorReason": "Başarısızlık nedeni",
   "receipt.errorUnavailable": "Detaylı bir neden kaydedilmedi. Tekrar göndermeden önce Ajanın modeli ve cihaz ayarlarını kontrol edin.",
   "receipt.failedHint": "Tekrar denemek için tekrar etiketleyin.",
   "receipt.handoff": "Başka bir Ajana devret",
