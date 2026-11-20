@@ -11,7 +11,7 @@ import { sessionSelectors } from '@/store/session/selectors';
 
 import { type MarkdownElementProps } from '../type';
 
-const styles = createStaticStyles(({ css, cssVar }) => ({
+const styles = createStaticStyles(({ css }) => ({
   mention: css`
     cursor: pointer;
 
@@ -26,14 +26,14 @@ const styles = createStaticStyles(({ css, cssVar }) => ({
 
     font-size: 0.875em;
     line-height: 1;
-    color: ${cssVar.colorInfo};
+    color: var(--lobe-mention-color);
     word-break: break-word;
     white-space: break-spaces;
 
-    background: ${cssVar.colorInfoBg};
+    background: var(--lobe-mention-bg);
 
     &:hover {
-      background: color-mix(in srgb, ${cssVar.colorInfo} 15%, ${cssVar.colorBgContainer});
+      background: var(--lobe-mention-bg-hover);
     }
   `,
 }));

@@ -1,6 +1,8 @@
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 
+import { mentionTokens } from '@/styles/mention.stylex';
+
 import { headerHoverMarker } from './markers.stylex';
 
 const HOVER = '@media (hover: hover)';
@@ -462,19 +464,19 @@ export const styles = stylex.create({
     minWidth: 0,
     overflowWrap: 'anywhere',
   },
-  /** A mentioned member inside message text. */
+  /** A mentioned member inside message text; blue-violet so it never reads as a link. */
   mention: {
     paddingBlock: 1,
     paddingInline: 4,
     borderRadius: 4,
     fontWeight: 500,
-    color: cssVar.colorInfo,
-    backgroundColor: cssVar.colorInfoBg,
+    color: mentionTokens.color,
+    backgroundColor: mentionTokens.bg,
   },
   /** A mention of a known member opens their profile card on hover. */
   mentionHoverable: {
     cursor: 'pointer',
-    backgroundColor: { 'default': cssVar.colorInfoBg, ':hover': cssVar.colorInfoBgHover },
+    backgroundColor: { 'default': mentionTokens.bg, ':hover': mentionTokens.bgHover },
     transition: 'background-color 0.15s',
   },
   /** A `<#thread>` reference inside message text: Discord's channel chip, a glyph and the title. */
@@ -528,10 +530,10 @@ export const styles = stylex.create({
   composerMention: {
     userSelect: 'none',
     fontWeight: 500,
-    color: cssVar.colorInfo,
+    color: mentionTokens.color,
     // `.selected` is added by the editor's selection observer, not by React.
     borderRadius: { 'default': null, ':is(.selected)': cssVar.borderRadiusXS },
-    backgroundColor: { 'default': null, ':is(.selected)': cssVar.colorInfoBgHover },
+    backgroundColor: { 'default': null, ':is(.selected)': mentionTokens.bg },
   },
   composer: {
     'position': 'relative',
