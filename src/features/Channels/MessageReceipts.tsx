@@ -8,7 +8,7 @@ import type {
 } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { ExternalLink } from 'lucide-react';
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
@@ -71,10 +71,29 @@ export const failureAnchors = (messages: ChannelPublicMessage[], entries: ReplyE
   return anchors;
 };
 
-/** Width of the name column when several replies are listed: room for a short name or two words. */
-const NAME_COLUMN_WIDTH = 80;
+/**
+ * The name column, when several Agents are listed, is as wide as the widest name, up to this cap;
+ * a longer name ends in an ellipsis.
+ */
+const NAME_COLUMN_MAX = 120;
+/** The column width the list measures, set on the list element. */
+const NAME_COLUMN_VAR = '--reply-name-width';
 const NAME_FREE = { flex: '0 1 auto', minWidth: 0 } as const;
-const NAME_COLUMN = { flex: 'none', minWidth: 0, width: NAME_COLUMN_WIDTH } as const;
+const NAME_COLUMN = {
+  flex: 'none',
+  minWidth: 0,
+  width: `var(${NAME_COLUMN_VAR}, auto)`,
+} as const;
+
+/**
+ * The name column's width: the widest name's full width, capped. A name's full width is its box
+ * plus whatever its text runs past the box (its ellipsis cut).
+ */
+export const nameColumnWidth = (names: { box: number; text: number; textBox: number }[]) =>
+  Math.min(
+    NAME_COLUMN_MAX,
+    Math.ceil(Math.max(0, ...names.map((n) => n.box + n.text - n.textBox))),
+  );
 /** A state stays whole on the row; a topic's name in its place shrinks to an ellipsis instead. */
 const STATE_WHOLE = { flexShrink: 0, whiteSpace: 'nowrap' } as const;
 const STATE_SHRINK = { display: 'flex', flex: '0 1 auto', minWidth: 0 } as const;
@@ -85,8 +104,8 @@ const NAME_COLUMN_BUTTON = { ...NAME_COLUMN, justifyContent: 'flex-start' } as c
  * One reply: its state, why it failed or what device it waits for, and how to stop it or open
  * its Agent. `manageable` viewers (Channel admins) also see that device and can change it.
  * `queue` holds the replies listed beside it, so one waiting behind an earlier reply of the same
- * Agent says so instead of typing. `nameColumn` gives the name a fixed width (cut off with an
- * ellipsis) so the states of several replies line up in one column.
+ * Agent says so instead of typing. `nameColumn` puts the name in the list's name column, as wide as
+ * the widest name (a too-long one ends in an ellipsis), so the states line up in one column.
  */
 export function ReplyDetail({
   channelId,
@@ -167,6 +186,7 @@ export function ReplyDetail({
         {agentId ? (
           <Button
             aria-label={t('openAgentNamed', { name })}
+            data-reply-name={nameColumn || undefined}
             outdent="start"
             size="small"
             style={nameColumn ? NAME_COLUMN_BUTTON : NAME_FREE}
@@ -174,12 +194,24 @@ export function ReplyDetail({
             type="text"
             onClick={openAgent}
           >
-            <Text ellipsis as="span" style={{ minWidth: 0 }} weight={500}>
+            <Text
+              ellipsis
+              as="span"
+              data-reply-name-text={nameColumn || undefined}
+              style={{ minWidth: 0 }}
+              weight={500}
+            >
               {name}
             </Text>
           </Button>
         ) : (
-          <Text ellipsis style={nameColumn ? NAME_COLUMN : NAME_FREE} weight={500}>
+          <Text
+            ellipsis
+            data-reply-name={nameColumn || undefined}
+            data-reply-name-text={nameColumn || undefined}
+            style={nameColumn ? NAME_COLUMN : NAME_FREE}
+            weight={500}
+          >
             {name}
           </Text>
         )}
@@ -315,10 +347,33 @@ export function ReplyList({
 }) {
   // The queue keeps the jobs' own order (newest first): a reply's place in it says what it waits on.
   const queue = entries.map((entry) => entry.job);
-  // With more than one reply the names take one width, so the states line up down the list.
-  const nameColumn = entries.length > 1;
+  // With replies of more than one Agent the names take one width, so the states line up down the
+  // list. One Agent's replies already share a name, so it keeps its own width.
+  const nameColumn = new Set(entries.map((entry) => entry.job.memberId)).size > 1;
+  const listRef = useRef<HTMLElement>(null);
+  const namesKey = nameColumn ? entries.map((entry) => entry.name).join('\n') : '';
+  // Size the column to the widest name: measure every name at its own width, then set the column.
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    list.style.removeProperty(NAME_COLUMN_VAR);
+    if (!namesKey) return;
+    const names = [...list.querySelectorAll<HTMLElement>('[data-reply-name]')].map((box) => {
+      const text = box.matches('[data-reply-name-text]')
+        ? box
+        : box.querySelector<HTMLElement>('[data-reply-name-text]');
+      return {
+        box: box.getBoundingClientRect().width,
+        text: text?.scrollWidth ?? 0,
+        textBox: text?.clientWidth ?? 0,
+      };
+    });
+    const width = nameColumnWidth(names);
+    // Measured before it laid out (hidden), it would collapse every name: keep their own widths.
+    if (width > 0) list.style.setProperty(NAME_COLUMN_VAR, `${width}px`);
+  }, [namesKey]);
   return (
-    <Flexbox gap={16} {...stylex.props(statusStyles.popover, statusStyles.replyList)}>
+    <Flexbox gap={16} ref={listRef} {...stylex.props(statusStyles.popover, statusStyles.replyList)}>
       {groupReplyEntries(entries).map((group) => (
         <Flexbox gap={8} key={group[0].job.id}>
           {group.map((entry) => (

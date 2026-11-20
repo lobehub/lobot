@@ -488,10 +488,21 @@ describe('replies queued behind an earlier one', () => {
   });
 
   it('stays quiet behind a reply that is itself held up, which says why on its own row', () => {
-    const jobs = [job({ id: 'later' }), job({ blockedCode: 'directory_locked', id: 'head' })];
+    const jobs = [job({ id: 'later' }), job({ blockedCode: 'device_required', id: 'head' })];
     expect(replyJobStatus(jobs[0], jobs)).toBe('blocked.member_busy');
     expect(replyJobTone(jobs[1], jobs)).toBe('attention');
     expect(replyJobTone(jobs[0], jobs)).toBe('quiet');
+  });
+
+  // The server's "busy" and a reply the client sees queued behind another both read "Queued",
+  // but one wore a raised hand and the other a clock.
+  it('reads a block that clears by itself as waiting, not as needing a person', () => {
+    for (const blockedCode of ['member_busy', 'directory_locked', 'awaiting_primary'] as const) {
+      expect(channelJobTone(job({ blockedCode, id: blockedCode }))).toBe('quiet');
+    }
+    for (const blockedCode of ['device_offline', 'device_required', 'agent_private'] as const) {
+      expect(channelJobTone(job({ blockedCode, id: blockedCode }))).toBe('attention');
+    }
   });
 
   it('keeps the reason of a reply the server already found blocked', () => {

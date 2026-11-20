@@ -7,7 +7,13 @@ import { createElement } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ReplyEntry } from './MessageReceipts';
-import { failureAnchors, groupReplyEntries, ReplyDetail, ReplyList } from './MessageReceipts';
+import {
+  failureAnchors,
+  groupReplyEntries,
+  nameColumnWidth,
+  ReplyDetail,
+  ReplyList,
+} from './MessageReceipts';
 import { REPLY_POPUP_PROPS } from './replyPopup';
 
 const retryJob = vi.fn();
@@ -249,7 +255,7 @@ describe('ReplyList name column', () => {
     ({ job: failedJob({ errorType: null, id, memberId, status: 'queued' }), name }) as ReplyEntry;
 
   // Names of different lengths pushed each row's state to a different place.
-  it('gives every name one width when several replies are listed', () => {
+  it('puts every name in one measured column when replies of several Agents are listed', () => {
     render(
       createElement(ReplyList, {
         channelId: 'chn_1',
@@ -257,8 +263,19 @@ describe('ReplyList name column', () => {
       }),
     );
     for (const name of ['Cook', 'Justin']) {
-      expect(screen.getByText(name).style.width).toBe('80px');
+      expect(screen.getByText(name).style.width).toBe('var(--reply-name-width, auto)');
     }
+  });
+
+  // One Agent's replies share a name: a fixed width only added a gap after it.
+  it('lets several replies of one Agent keep the name at its own width', () => {
+    render(
+      createElement(ReplyList, {
+        channelId: 'chn_1',
+        entries: [reply('a', 'mem_justin', 'Justin'), reply('b', 'mem_justin', 'Justin')],
+      }),
+    );
+    for (const name of screen.getAllByText('Justin')) expect(name.style.width).toBe('');
   });
 
   it('lets a lone reply keep its name at its own width', () => {
@@ -266,5 +283,21 @@ describe('ReplyList name column', () => {
       createElement(ReplyList, { channelId: 'chn_1', entries: [reply('a', 'mem_cook', 'Cook')] }),
     );
     expect(screen.getByText('Cook').style.width).toBe('');
+  });
+});
+
+describe('nameColumnWidth', () => {
+  // A fixed width was too wide for short names and cut long ones; the column follows the names.
+  it('is as wide as the widest name, including the part an ellipsis cut', () => {
+    expect(
+      nameColumnWidth([
+        { box: 40, text: 32, textBox: 32 },
+        { box: 50, text: 70, textBox: 42 },
+      ]),
+    ).toBe(78);
+  });
+
+  it('caps a very long name so it ends in an ellipsis', () => {
+    expect(nameColumnWidth([{ box: 100, text: 400, textBox: 92 }])).toBe(120);
   });
 });
