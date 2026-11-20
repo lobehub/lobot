@@ -24,14 +24,29 @@ export const memberJobStatus = (job: ChannelReplyJob) => {
 const isAwaitingPrimary = (job: ChannelReplyJob) =>
   job.status === 'queued' && job.blockedCode === 'awaiting_primary';
 
-/** Colour family of a status: working blue, attention amber, error red, settled grey. */
+/**
+ * Blocks that only wait their turn: behind the primary responder, behind the Agent's own earlier
+ * reply, or for its working directory. They clear by themselves, so they read as waiting, not as
+ * something a person must step in for.
+ */
+const SELF_CLEARING_BLOCKS = new Set<ChannelReplyJob['blockedCode']>([
+  'awaiting_primary',
+  'directory_locked',
+  'member_busy',
+]);
+
+/** Family of a status: working, waiting (quiet), needs a person (attention), failed, settled. */
 export type ChannelStatusTone = 'attention' | 'done' | 'error' | 'quiet' | 'working';
 
 export const channelJobTone = (job: ChannelReplyJob): ChannelStatusTone => {
   if (job.status === 'failed') return 'error';
   if (job.publicationRevoked) return job.writerHeld ? 'attention' : 'quiet';
   if (job.status === 'queued')
-    return isAwaitingPrimary(job) ? 'quiet' : job.blockedCode ? 'attention' : 'working';
+    return !job.blockedCode
+      ? 'working'
+      : SELF_CLEARING_BLOCKS.has(job.blockedCode)
+        ? 'quiet'
+        : 'attention';
   if (job.status === 'running') return 'working';
   if (job.status === 'completed') return 'done';
   return 'quiet';

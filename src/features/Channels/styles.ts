@@ -637,7 +637,7 @@ export const statusStyles = stylex.create({
   stateIcon: {
     flex: 'none',
   },
-  stateIconAttention: {
+  stateIconWorking: {
     color: cssVar.colorInfo,
   },
   stateIconSpin: {
