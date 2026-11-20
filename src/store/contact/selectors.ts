@@ -38,7 +38,15 @@ export const contactSelectors = {
     (share: string) =>
     (state: ContactState): Extract<ContactSearchResult, { type: 'agent' }> | null | undefined => {
       const results = state.shareMap[share];
-      if (!results) return undefined;
+      if (!results) {
+        // An Agent already in my Contacts paints from the persisted contact list until the
+        // share lookup answers, rather than a skeleton.
+        const contact = state.listMap.all?.find(
+          (item): item is ContactAgentItem =>
+            item.type === 'agent' && (item.agent.shareId === share || item.agent.slug === share),
+        );
+        return contact ? { agent: contact.agent, relation: 'contact', type: 'agent' } : undefined;
+      }
       return (
         results.find(
           (result): result is Extract<ContactSearchResult, { type: 'agent' }> =>
