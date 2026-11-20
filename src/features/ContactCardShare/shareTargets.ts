@@ -1,4 +1,4 @@
-import type { ChannelListItem } from '@lobot/types';
+import type { ChannelListItem, ContactCardInput } from '@lobot/types';
 
 import { groupChannelName } from '@/features/Channels/channelName';
 
@@ -18,16 +18,23 @@ const activity = (channel: ChannelListItem) =>
 /**
  * The open conversations a card can be sent to, most recent first: a conversation of two by the
  * other side, a project's default Channel by its project, any other by its title. The
- * conversation with the shared Agent itself is left out; the card would only point back at it.
+ * conversation with the shared Agent or person itself is left out; the card would only point
+ * back at it.
  */
 export const buildShareTargets = (
   channels: ChannelListItem[],
   projectName: (projectId: string) => string | undefined,
-  sharedAgentId?: string,
+  card?: ContactCardInput,
 ): ShareChannelTarget[] =>
   channels
     .filter((channel) => channel.status === 'active')
-    .filter((channel) => !sharedAgentId || channel.agentId !== sharedAgentId)
+    .filter((channel) =>
+      card?.type === 'agent'
+        ? channel.agentId !== card.agentId
+        : card?.type === 'user'
+          ? channel.peerUserId !== card.userId
+          : true,
+    )
     .toSorted((a, b) => activity(b) - activity(a))
     .map((channel) => {
       const direct = !!channel.peerUserId || !!channel.agentId;

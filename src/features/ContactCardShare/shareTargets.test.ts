@@ -33,7 +33,7 @@ describe('buildShareTargets', () => {
       channel({ agentId: 'agt_shared', id: 'chn_direct', title: 'Writer' }),
     ],
     (projectId) => (projectId === 'prj_1' ? 'Launch' : undefined),
-    'agt_shared',
+    { agentId: 'agt_shared', type: 'agent' },
   );
 
   it('lists open conversations by latest activity, named as the list names them', () => {
@@ -46,6 +46,18 @@ describe('buildShareTargets', () => {
 
   it('leaves out the conversation with the shared Agent itself', () => {
     expect(targets.some((target) => target.channel.id === 'chn_direct')).toBe(false);
+  });
+
+  it('leaves out the conversation with the shared person', () => {
+    const forAnn = buildShareTargets(
+      [
+        channel({ id: 'chn_peer', peerUserId: 'user_ann' }),
+        channel({ id: 'chn_group', title: 'Design' }),
+      ],
+      () => undefined,
+      { type: 'user', userId: 'user_ann' },
+    );
+    expect(forAnn.map((target) => target.channel.id)).toEqual(['chn_group']);
   });
 
   it('filters by name', () => {

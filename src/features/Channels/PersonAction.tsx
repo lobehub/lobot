@@ -1,7 +1,7 @@
 import { CHANNEL_URL } from '@lobechat/const';
-import { Button, Skeleton, toast } from '@lobehub/ui';
+import { Button, Flexbox, Skeleton, toast, Tooltip } from '@lobehub/ui';
 import * as stylex from '@stylexjs/stylex';
-import { CheckIcon, MessageCircleIcon, UserRoundPlusIcon } from 'lucide-react';
+import { CheckIcon, MessageCircleIcon, Share2Icon, UserRoundPlusIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -10,6 +10,7 @@ import {
   useWorkspaceMembers,
   useWorkspaceMembersReady,
 } from '@/business/client/hooks/useWorkspaceMembers';
+import { openShareUserCardModal } from '@/features/ContactCardShare/ShareContactCardModal';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { channelActions } from '@/store/channel';
 import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
@@ -19,6 +20,10 @@ import { userProfileSelectors } from '@/store/user/selectors';
 const styles = stylex.create({
   action: {
     marginBlockStart: 10,
+  },
+  grow: {
+    flex: '1',
+    minWidth: 0,
   },
 });
 
@@ -46,6 +51,28 @@ const usePendingRun = () => {
   return { pending, run };
 };
 
+/**
+ * Sends this person's card into another conversation. The server shares only oneself, a contact
+ * or a fellow workspace member, the same people whose card offers "Message" (or nothing, for one's
+ * own).
+ */
+export const ShareCardButton = ({ block, userId }: { block?: boolean; userId: string }) => {
+  const { t } = useTranslation('channel');
+  const button = (
+    <Button
+      aria-label={t('shareCard')}
+      block={block}
+      icon={Share2Icon}
+      type={'fill'}
+      {...stylex.props(block && styles.action)}
+      onClick={() => openShareUserCardModal(userId)}
+    >
+      {block ? t('shareCard') : undefined}
+    </Button>
+  );
+  return block ? button : <Tooltip title={t('shareCard')}>{button}</Tooltip>;
+};
+
 /** Opens the one-on-one conversation with this person in the active scope and goes there. */
 const MessageButton = ({ userId }: { userId: string }) => {
   const { t } = useTranslation('common');
@@ -58,7 +85,7 @@ const MessageButton = ({ userId }: { userId: string }) => {
       icon={MessageCircleIcon}
       loading={pending}
       type={'fill'}
-      {...stylex.props(styles.action)}
+      {...stylex.props(styles.grow)}
       onClick={() =>
         run(async () => {
           const channelId = await channelActions.openPeer(userId);
@@ -70,6 +97,14 @@ const MessageButton = ({ userId }: { userId: string }) => {
     </Button>
   );
 };
+
+/** "Message" with "Share card" beside it, for a person one may both talk to and share. */
+const MessageAndShare = ({ userId }: { userId: string }) => (
+  <Flexbox horizontal gap={8} {...stylex.props(styles.action)}>
+    <MessageButton userId={userId} />
+    <ShareCardButton userId={userId} />
+  </Flexbox>
+);
 
 /** What to do with a person by our contact relation: message a contact, or ask to become one. */
 export const ContactAction = ({ userId }: { userId: string }) => {
@@ -86,7 +121,7 @@ export const ContactAction = ({ userId }: { userId: string }) => {
 
   switch (relation) {
     case 'contact': {
-      return <MessageButton userId={userId} />;
+      return <MessageAndShare userId={userId} />;
     }
     case 'none': {
       return (
@@ -136,18 +171,19 @@ const WorkspaceMemberAction = ({ userId }: { userId: string }) => {
   const isMember = useWorkspaceMembers().some((member) => member.userId === userId);
 
   if (!ready) return <ActionSkeleton />;
-  return isMember ? <MessageButton userId={userId} /> : null;
+  return isMember ? <MessageAndShare userId={userId} /> : null;
 };
 
 /**
  * The action on a Channel member's card, matching who the server lets talk one-on-one: in a
  * workspace, two of its current members; in the personal space, two mutual contacts (so others
- * get "Add contact" instead). Nothing on one's own card.
+ * get "Add contact" instead). Whoever can be messaged can also have their card shared; one's own
+ * card offers only sharing.
  */
 export const PersonAction = ({ userId }: { userId: string }) => {
   const workspace = useActiveWorkspace();
   const myId = useUserStore(userProfileSelectors.userId);
 
-  if (userId === myId) return null;
+  if (userId === myId) return <ShareCardButton block userId={userId} />;
   return workspace ? <WorkspaceMemberAction userId={userId} /> : <ContactAction userId={userId} />;
 };
