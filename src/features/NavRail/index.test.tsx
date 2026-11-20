@@ -11,6 +11,7 @@ const { contactState, menu, useFetchRequests } = vi.hoisted(() => ({
   menu: {
     items: [] as { key?: string; type?: string }[],
     scopeItem: null as { key: string } | null,
+    usageItems: [] as { key: string }[],
   },
   useFetchRequests: vi.fn(),
 }));
@@ -71,6 +72,9 @@ vi.mock('@/business/client/hooks/useActiveWorkspaceId', () => ({
 vi.mock('./ContactsPopup', () => ({ default: () => null }));
 vi.mock('./SettingsPopup', () => ({ default: () => null }));
 vi.mock('./useScopeMenuItem', () => ({ useScopeMenuItem: () => menu.scopeItem }));
+vi.mock('@/features/Usage/useUsageMenuItems', () => ({
+  useUsageMenuItems: () => menu.usageItems,
+}));
 
 const request = (id: string, direction: 'incoming' | 'outgoing') => ({
   direction,
@@ -83,6 +87,7 @@ describe('NavTabBar', () => {
     contactState.requestsMap = {};
     menu.items = [];
     menu.scopeItem = null;
+    menu.usageItems = [];
     useFetchRequests.mockClear();
   });
 
@@ -113,7 +118,23 @@ describe('NavTabBar', () => {
     expect(screen.queryByLabelText('tab.messages')).not.toBeInTheDocument();
   });
 
-  it('keeps only the scope switch and settings in the footer menu', () => {
+  it('puts the personal usage and upgrade between the scope switch and settings', () => {
+    menu.scopeItem = { key: 'scope' };
+    menu.usageItems = [{ key: 'usage' }, { key: 'upgrade' }];
+
+    render(<NavTabBar />);
+
+    expect(menu.items.map((item) => item.key ?? item.type)).toEqual([
+      'scope',
+      'divider',
+      'usage',
+      'upgrade',
+      'divider',
+      'settings',
+    ]);
+  });
+
+  it('keeps only the scope switch and settings in the footer menu without usage', () => {
     menu.scopeItem = { key: 'scope' };
 
     render(<NavTabBar />);

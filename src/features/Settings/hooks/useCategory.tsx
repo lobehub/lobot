@@ -1,8 +1,9 @@
 import { isDesktop } from '@lobechat/const';
-import { BellIcon, EthernetPort, Info, KeyboardIcon } from 'lucide-react';
+import { BellIcon, EthernetPort, Gauge, Info, KeyboardIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useUsageAvailable } from '@/features/Usage/store';
 import { SettingsTabs } from '@/store/global/initialState';
 import { featureFlagsSelectors, useServerConfigStore } from '@/store/serverConfig';
 
@@ -33,11 +34,18 @@ interface CategoryGroup {
  * switches, …) are not offered. The update channel lives on About.
  */
 export const useCategory = () => {
-  const { t } = useTranslation('setting');
+  const { t } = useTranslation(['setting', 'subscription']);
+  const usageAvailable = useUsageAvailable();
   const { hideDocs } = useServerConfigStore(featureFlagsSelectors);
 
   return useMemo<CategoryGroup[]>(() => {
     const generalItems = [
+      // Only the personal space of a LobeHub Cloud account has a plan to show.
+      usageAvailable && {
+        icon: Gauge,
+        key: SettingsTabs.Usage,
+        label: t('usageBilling.title', { ns: 'subscription' }),
+      },
       { icon: BellIcon, key: SettingsTabs.Notification, label: t('tab.notification') },
       { icon: KeyboardIcon, key: SettingsTabs.Hotkey, label: t('tab.hotkey') },
       isDesktop && { icon: EthernetPort, key: SettingsTabs.Proxy, label: t('tab.proxy') },
@@ -51,5 +59,5 @@ export const useCategory = () => {
       { items: generalItems, key: SettingsGroupKey.General, title: t('group.common') },
       { items: systemItems, key: SettingsGroupKey.System, title: t('group.systemDeveloper') },
     ];
-  }, [t, hideDocs]);
+  }, [t, hideDocs, usageAvailable]);
 };

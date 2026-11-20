@@ -11,6 +11,7 @@ const SETTINGS_POPUP_TABS = new Set<string>([
   SettingsTabs.Notification,
   SettingsTabs.Profile,
   SettingsTabs.Proxy,
+  SettingsTabs.Usage,
 ]);
 
 const TAB_ALIASES: Record<string, string> = {

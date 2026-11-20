@@ -1,3 +1,4 @@
+import UsageSettings from '@/features/Usage/UsageSettings';
 import { SettingsTabs } from '@/store/global/initialState';
 
 import About from '../about';
@@ -15,5 +16,6 @@ export const componentMap = {
   [SettingsTabs.Notification]: DesktopNotificationSettings,
   [SettingsTabs.Hotkey]: Hotkey,
   [SettingsTabs.Proxy]: Proxy,
+  [SettingsTabs.Usage]: UsageSettings,
   [SettingsTabs.About]: About,
 };

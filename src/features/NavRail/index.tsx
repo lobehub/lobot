@@ -12,8 +12,10 @@ import {
   COLUMN_ACTION_ICON_SIZE,
   styles as listStyles,
 } from '@/features/MessageList/style';
+import { useUsageMenuItems } from '@/features/Usage/useUsageMenuItems';
 import UserAvatar from '@/features/User/UserAvatar';
 import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
+import { SettingsTabs } from '@/store/global/initialState';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 import { electronStylish } from '@/styles/electron';
@@ -33,9 +35,9 @@ const useContactRequestsCount = () => {
 
 /**
  * Footer of the list column: the signed-in user on the left opens a dropdown
- * with only the scope switch and settings — usage and sign out live inside
- * settings (sign out is the last row of Profile), so a stray click here can't
- * end the session. A contacts ActionIcon on the right opens the address book.
+ * with the scope switch, the personal plan's usage and upgrade, and settings —
+ * sign out lives inside settings (the last row of Profile), so a stray click
+ * here can't end the session. A contacts ActionIcon on the right opens the address book.
  */
 const NavTabBar = memo(() => {
   const { t } = useTranslation('common');
@@ -65,10 +67,16 @@ const NavTabBar = memo(() => {
     closeContacts();
     openSettings();
   }, [closeContacts, openSettings]);
+  const openUsage = useCallback(() => {
+    closeContacts();
+    openSettings({ tab: SettingsTabs.Usage });
+  }, [closeContacts, openSettings]);
+  const usageItems = useUsageMenuItems(openUsage);
 
   const menuItems = useMemo<DropdownMenuProps['items']>(
     () => [
       ...(scopeItem ? [scopeItem, { type: 'divider' as const }] : []),
+      ...(usageItems.length > 0 ? [...usageItems, { type: 'divider' as const }] : []),
       {
         icon: <Icon icon={Settings} />,
         key: 'settings',
@@ -76,7 +84,7 @@ const NavTabBar = memo(() => {
         onClick: openSettingsMenu,
       },
     ],
-    [openSettingsMenu, scopeItem, t],
+    [openSettingsMenu, scopeItem, t, usageItems],
   );
 
   return (
