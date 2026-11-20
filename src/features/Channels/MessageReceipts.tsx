@@ -75,6 +75,9 @@ export const failureAnchors = (messages: ChannelPublicMessage[], entries: ReplyE
 const NAME_COLUMN_WIDTH = 80;
 const NAME_FREE = { flex: '0 1 auto', minWidth: 0 } as const;
 const NAME_COLUMN = { flex: 'none', minWidth: 0, width: NAME_COLUMN_WIDTH } as const;
+/** A state stays whole on the row; a topic's name in its place shrinks to an ellipsis instead. */
+const STATE_WHOLE = { flexShrink: 0, whiteSpace: 'nowrap' } as const;
+const STATE_SHRINK = { display: 'flex', flex: '0 1 auto', minWidth: 0 } as const;
 /** The name button starts its text at the column's edge instead of centring it. */
 const NAME_COLUMN_BUTTON = { ...NAME_COLUMN, justifyContent: 'flex-start' } as const;
 
@@ -101,6 +104,9 @@ export function ReplyDetail({
   const { t } = useTranslation('channel');
   const status = useReplyStatusLabel(job, queue ?? [job]);
   const topicTitle = job.topicId ? job.topicTitle?.trim() : undefined;
+  // A reply at work says what it works on: its topic's name, when the viewer runs it, stands in
+  // for the generic "working". Any other state keeps its label and names the topic below.
+  const topicAsState = !!topicTitle && status.tone === 'working';
   const { close } = usePopoverContext();
   const openAgent = useOpenReplyAgent(agentId, close);
   const deviceFailure = isDeviceFailure(job);
@@ -177,9 +183,14 @@ export function ReplyDetail({
             {name}
           </Text>
         )}
-        {/* The state stays whole on the row; the name gives way first. */}
-        <span style={{ flexShrink: 0, whiteSpace: 'nowrap' }}>
-          <ChannelStatus label={status.label} tone={status.tone} />
+        {/* The state stays whole on the row and the name gives way first; a topic's name in the
+            state's place shrinks with it. */}
+        <span style={topicAsState ? STATE_SHRINK : STATE_WHOLE}>
+          <ChannelStatus
+            ellipsis={topicAsState}
+            label={topicAsState ? topicTitle! : status.label}
+            tone={status.tone}
+          />
         </span>
         <Flexbox
           horizontal
@@ -215,7 +226,7 @@ export function ReplyDetail({
       </Flexbox>
       {/* The topic the reply runs in, by name, so replies of one Agent tell apart at a glance.
           Only its runner gets it, as with the open-topic action. */}
-      {topicTitle && (
+      {topicTitle && !topicAsState && (
         <Text
           ellipsis
           fontSize={12}

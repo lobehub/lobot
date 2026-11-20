@@ -124,10 +124,18 @@ describe('ReplyDetail topic', () => {
     expect(screen.queryByText('receipt.openTopic')).toBeNull();
   });
 
-  // Several replies of one Agent read alike; the topic each runs in tells them apart.
-  it('names the topic a reply runs in for the member who runs it', () => {
+  // Every reply at work read "Working…"; the topic it works on says more.
+  it('names the topic in place of "working" for the member who runs it', () => {
     renderAgentReply(runningJob({ topicId: 'tpc_1', topicTitle: 'Fix the login bug' }));
 
+    expect(screen.getByTestId('status').textContent).toBe('Fix the login bug');
+    expect(screen.getAllByText('Fix the login bug')).toHaveLength(1);
+  });
+
+  it('keeps any other state and names the topic under it', () => {
+    renderAgentReply(failedJob({ topicId: 'tpc_1', topicTitle: 'Fix the login bug' }));
+
+    expect(screen.getByTestId('status').textContent).toBe('status.failed');
     expect(screen.getByText('Fix the login bug')).toBeTruthy();
   });
 
