@@ -190,15 +190,6 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
 
   const renderAgents = (list: SidebarAgentItem[]) =>
     list.map((item) => <Contact active={item.id === activeRouteId} item={item} key={item.id} />);
-  const renderShared = (external?: boolean) =>
-    visibleShared.map((item) => (
-      <SharedAgentRow
-        active={item.agent.agentId === activeRouteId}
-        external={external}
-        item={item}
-        key={item.agent.agentId}
-      />
-    ));
   const sections = [
     // Requests waiting for an answer lead; the section is left out when there are none.
     ...(visibleRequests.length > 0
@@ -229,18 +220,15 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
           },
         ]
       : []),
-    // In the personal space, other people's Agents follow the people in the same section.
     ...(!inWorkspace
       ? [
           {
-            count: visiblePeople.length + visibleShared.length,
+            count: visiblePeople.length,
             key: 'people',
-            render: () => [
-              ...visiblePeople.map((item) => (
+            render: () =>
+              visiblePeople.map((item) => (
                 <PersonRow active={item.user.id === activeRouteId} item={item} key={item.user.id} />
               )),
-              ...renderShared(),
-            ],
             title: t('contacts.people'),
           },
         ]
@@ -281,13 +269,30 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
           },
         ]
       : []),
-    // In a workspace, other people's Agents follow my own, tagged as external assistants.
     {
-      count: visibleAgents.length + (inWorkspace ? visibleShared.length : 0),
+      count: visibleAgents.length,
       key: 'agents',
-      render: () => [...renderAgents(visibleAgents), ...(inWorkspace ? renderShared(true) : [])],
+      render: () => renderAgents(visibleAgents),
       title: t('navPanel.agent'),
     },
+    // Other people's Agents added through their shares; left out until there is one.
+    ...(visibleShared.length > 0
+      ? [
+          {
+            count: visibleShared.length,
+            key: 'sharedAgents',
+            render: () =>
+              visibleShared.map((item) => (
+                <SharedAgentRow
+                  active={item.agent.agentId === activeRouteId}
+                  item={item}
+                  key={item.agent.agentId}
+                />
+              )),
+            title: t('contacts.agent.external'),
+          },
+        ]
+      : []),
   ];
 
   // Collapsed keys persist (not expanded ones), so a section that appears
