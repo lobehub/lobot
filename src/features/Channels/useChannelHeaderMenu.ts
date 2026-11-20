@@ -1,23 +1,22 @@
 import type { DropdownItem } from '@lobehub/ui';
 import type { ChannelDetail } from '@lobot/types';
-import { Bot, CircleUserRound, FolderCog, Settings, Share2 } from 'lucide-react';
+import { CircleUserRound, Settings, Share2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { openShareAgentCardModal } from '@/features/ContactCardShare/ShareAgentCardModal';
 import { channelSelectors, useChannelStore } from '@/store/channel';
 
-import { openChannelAgentEnvironment } from './AgentEnvironment';
 import { flattenChannelMenu } from './flattenChannelMenu';
 import { useMemberEntries } from './MemberList';
 import { useOpenChannelSettings } from './Settings/tabs';
 import { useChannelMenu } from './useChannelMenu';
-import { useOpenDirectAgent } from './useOpenDirectAgent';
 
 /**
  * Channel actions a direct conversation keeps. It is the chat with one Agent, so it cannot be
- * renamed, archived or trashed; `unarchive` only frees one that was archived earlier.
+ * renamed, archived or trashed; `unarchive` only frees one that was archived earlier. Opening the
+ * Agent and its environment live in the profile panel, not here.
  */
-const DIRECT_MENU_KEYS = new Set(['copyId', 'unarchive']);
+const DIRECT_MENU_KEYS = new Set(['unarchive']);
 
 /**
  * The items the Channel header's "…" menu and a right-click on its title share: a direct
@@ -34,7 +33,6 @@ export const useChannelHeaderMenuItems = (
   const directAgent = channel.agentId
     ? entries.find((entry) => entry.member.agentId === channel.agentId)
     : undefined;
-  const openAgent = useOpenDirectAgent(channel.id, channel.agentId ?? '');
   const channelMenu = useChannelMenu();
   const direct = !!channel.agentId;
   // Only the list row marks a conversation with another person's shared Agent, so the loaded
@@ -45,8 +43,7 @@ export const useChannelHeaderMenuItems = (
 
   if (direct) {
     const agentId = channel.agentId!;
-    // Agent profile (or settings) first, then sharing its card, then the conversation's own
-    // actions. A shared Agent's "open" is its profile, so it is not offered twice.
+    // Agent profile (or settings), then sharing its card, then unarchiving if it was archived.
     const agentItems: DropdownItem[] = [
       ...(onToggleAgentPanel
         ? [
@@ -55,31 +52,6 @@ export const useChannelHeaderMenuItems = (
               key: 'agentSettings',
               label: shared ? t('profile.title') : t('agentSettings', { ns: 'channelHeader' }),
               onClick: onToggleAgentPanel,
-            },
-          ]
-        : []),
-      ...(directAgent && openAgent && !shared
-        ? [
-            {
-              icon: Bot,
-              key: 'openAgent',
-              label: t('openAgentNamed', { name: directAgent.name }),
-              onClick: () => openAgent(),
-            },
-          ]
-        : []),
-      // The member list is hidden here, so its device and directory setup lives in this menu.
-      ...(directAgent &&
-      !shared &&
-      directAgent.member.status === 'active' &&
-      channel.canDelete &&
-      channel.status !== 'archived'
-        ? [
-            {
-              icon: FolderCog,
-              key: 'environment',
-              label: t('environment.title'),
-              onClick: () => openChannelAgentEnvironment(channel.id, directAgent.member),
             },
           ]
         : []),

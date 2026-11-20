@@ -198,7 +198,7 @@ describe('ChannelHeaderTitle', () => {
     renderTitle({}, { onToggleAgentPanel, title: 'Cook' });
     fireEvent.contextMenu(screen.getByRole('button', { name: 'Cook' }));
     expect(contextKeys()).toEqual(expected);
-    expect(expected).toEqual(['agentSettings', 'openAgent', 'environment', 'shareAgent', 'copyId']);
+    expect(expected).toEqual(['agentSettings', 'shareAgent']);
   });
 
   it('keeps a shared, read-only Agent name opening the existing profile, not Channel settings', () => {
@@ -212,7 +212,7 @@ describe('ChannelHeaderTitle', () => {
     expect(onToggleChannelSettings).not.toHaveBeenCalled();
   });
 
-  it('offers a shared Agent its profile, sharing it, then copying the ID', () => {
+  it('offers a shared Agent its profile, then sharing it', () => {
     // Only the list row marks the share; the loaded detail does not.
     listedShared.current = true;
     renderTitle({}, { onToggleAgentPanel, title: 'Cook' });
@@ -220,7 +220,7 @@ describe('ChannelHeaderTitle', () => {
     const name = screen.getByRole('button', { name: 'Cook' });
     expect(name.getAttribute('title')).toBe('profile.title');
     fireEvent.contextMenu(name);
-    expect(contextKeys()).toEqual(['agentSettings', 'shareAgent', 'copyId']);
+    expect(contextKeys()).toEqual(['agentSettings', 'shareAgent']);
     const profile = (
       showContextMenu.mock.calls[0][0] as Array<{ key?: string; label?: string }>
     ).find((item) => item?.key === 'agentSettings');
@@ -288,7 +288,7 @@ describe('ChannelHeaderTitle', () => {
 
     expect(screen.queryByRole('button', { name: 'Cook' })).toBeNull();
     fireEvent.contextMenu(screen.getByText('Cook'));
-    expect(contextKeys()).toEqual(['openAgent', 'environment', 'shareAgent', 'copyId']);
+    expect(contextKeys()).toEqual(['shareAgent']);
   });
 
   it('leaves a member who cannot manage a group able to right-click, but not to open settings', () => {
