@@ -12,7 +12,8 @@ export const styles = stylex.create({
     insetInlineEnd: '-2px',
     minWidth: '16px',
     height: '16px',
-    paddingInline: '4px',
+    // Same geometry as the conversation rows' unread badge: one digit fits, so it stays a circle.
+    paddingInline: '2px',
     borderWidth: '1.5px',
     borderStyle: 'solid',
     borderColor: cssVar.colorBgContainer,

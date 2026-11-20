@@ -356,7 +356,9 @@ export const styles = stylex.create({
     insetInlineEnd: '-6px',
     minWidth: '16px',
     height: '16px',
-    paddingInline: '4px',
+    // Border-box: 16 − 2×1.5 ring − 2×2 padding leaves 9px for one digit, so a single count stays
+    // a circle instead of a 17×16 oval.
+    paddingInline: '2px',
     borderWidth: '1.5px',
     borderStyle: 'solid',
     borderColor: cssVar.colorBgContainer,

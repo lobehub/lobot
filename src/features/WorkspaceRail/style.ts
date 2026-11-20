@@ -101,7 +101,9 @@ export const styles = stylex.create({
     insetInlineEnd: '4px',
     minWidth: '18px',
     height: '18px',
-    paddingInline: '4px',
+    // Border-box: 18 − 2×3 ring − 2×2 padding leaves 8px, wide enough for one digit, so a single
+    // count stays a circle; at 4px padding it stretched to 20×18.
+    paddingInline: '2px',
     borderWidth: '3px',
     borderStyle: 'solid',
     borderColor: cssVar.colorBgLayout,
