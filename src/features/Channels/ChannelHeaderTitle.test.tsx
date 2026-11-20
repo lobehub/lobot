@@ -25,7 +25,11 @@ vi.mock('lucide-react', () => ({
   Hash: (props: object) => createElement('svg', { ...props, 'data-testid': 'title-hash' }),
   MoreHorizontal: () => null,
   Settings: () => null,
+  Share2: () => null,
   Users: () => null,
+}));
+vi.mock('@/features/ContactCardShare/ShareAgentCardModal', () => ({
+  openShareAgentCardModal: vi.fn(),
 }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
 vi.mock('@lobehub/ui', () => ({
@@ -194,7 +198,7 @@ describe('ChannelHeaderTitle', () => {
     renderTitle({}, { onToggleAgentPanel, title: 'Cook' });
     fireEvent.contextMenu(screen.getByRole('button', { name: 'Cook' }));
     expect(contextKeys()).toEqual(expected);
-    expect(expected).toEqual(['openAgent', 'environment', 'copyId', 'agentSettings']);
+    expect(expected).toEqual(['agentSettings', 'openAgent', 'environment', 'shareAgent', 'copyId']);
   });
 
   it('keeps a shared, read-only Agent name opening the existing profile, not Channel settings', () => {
@@ -208,7 +212,7 @@ describe('ChannelHeaderTitle', () => {
     expect(onToggleChannelSettings).not.toHaveBeenCalled();
   });
 
-  it('offers a shared Agent its profile, not settings or where it runs', () => {
+  it('offers a shared Agent its profile, sharing it, then copying the ID', () => {
     // Only the list row marks the share; the loaded detail does not.
     listedShared.current = true;
     renderTitle({}, { onToggleAgentPanel, title: 'Cook' });
@@ -216,7 +220,7 @@ describe('ChannelHeaderTitle', () => {
     const name = screen.getByRole('button', { name: 'Cook' });
     expect(name.getAttribute('title')).toBe('profile.title');
     fireEvent.contextMenu(name);
-    expect(contextKeys()).toEqual(['openAgent', 'copyId', 'agentSettings']);
+    expect(contextKeys()).toEqual(['agentSettings', 'shareAgent', 'copyId']);
     const profile = (
       showContextMenu.mock.calls[0][0] as Array<{ key?: string; label?: string }>
     ).find((item) => item?.key === 'agentSettings');
@@ -284,7 +288,7 @@ describe('ChannelHeaderTitle', () => {
 
     expect(screen.queryByRole('button', { name: 'Cook' })).toBeNull();
     fireEvent.contextMenu(screen.getByText('Cook'));
-    expect(contextKeys()).toEqual(['openAgent', 'environment', 'copyId']);
+    expect(contextKeys()).toEqual(['openAgent', 'environment', 'shareAgent', 'copyId']);
   });
 
   it('leaves a member who cannot manage a group able to right-click, but not to open settings', () => {

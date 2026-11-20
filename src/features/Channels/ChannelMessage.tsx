@@ -10,6 +10,7 @@ import {
   toast,
 } from '@lobehub/ui';
 import type { ChannelDetail, ChannelPublicMember, ChannelPublicMessage } from '@lobot/types';
+import { contactCardOf } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import {
   ChevronsDownUp,
@@ -29,6 +30,8 @@ import AgentAvatar from '@/components/AgentAvatar';
 import CollapsibleContent from '@/components/CollapsibleContent';
 import PersonAvatar from '@/components/UserAvatar';
 import AgentProfilePopup from '@/features/AgentProfileCard/AgentProfilePopup';
+import { localizeCardFallback } from '@/features/ContactCardShare/cardText';
+import { ContactCardMessage } from '@/features/ContactCardShare/ContactCardMessage';
 import { ChatItem } from '@/features/Conversation/ChatItem';
 import Markdown from '@/features/Conversation/Markdown';
 import LobeAgentsElement from '@/features/Conversation/Markdown/plugins/LobeAgents';
@@ -380,9 +383,12 @@ const ChannelMessageView = ({
   // survives the pointer leaving. Without hover (touch) it is always visible, so mount it upfront.
   const [toolbarMounted, setToolbarMounted] = useState(() => !canHover());
   const mountToolbar = () => setToolbarMounted(true);
+  // A shared contact card renders as the card; its text is only the server's fallback.
+  const card = deleted ? undefined : contactCardOf(message.card);
   // Only a person's own sent message; one still sending has nothing on the server to edit yet.
+  // A card's text is not something its sender wrote, so there is nothing to edit.
   const canEdit =
-    !deleted && isOwnMessage && message.author.type === 'user' && !pending && !delivery;
+    !deleted && !card && isOwnMessage && message.author.type === 'user' && !pending && !delivery;
   // A person deletes their own message; an admin any, Agent replies included.
   const canDelete =
     !deleted &&
@@ -479,7 +485,7 @@ const ChannelMessageView = ({
     ? t('reply.unavailable')
     : quoted.deletedAt
       ? t('reply.deleted')
-      : `${quoteAuthor?.name || t('deletedMember')}: ${(quoted.content || t('reply.attachment')).replaceAll(/\s+/g, ' ').trim()}`;
+      : `${quoteAuthor?.name || t('deletedMember')}: ${(localizeCardFallback(quoted.content) || t('reply.attachment')).replaceAll(/\s+/g, ' ').trim()}`;
   const replyQuote = !isRoot && showsReplyQuote(message) && (
     <button
       aria-label={t('reply.viewOriginal')}
@@ -516,6 +522,8 @@ const ChannelMessageView = ({
     </Text>
   ) : replyError ? (
     <ReplyErrorCard detail={detail} message={message} replyError={replyError} />
+  ) : card ? (
+    <ContactCardMessage card={card} />
   ) : (
     message.content &&
     (collapsible ? (

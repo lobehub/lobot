@@ -1,5 +1,6 @@
 import type { LobeAgentAgencyConfig, LobeAgentConfig, RemoteHeterogeneousAgentType } from './agent';
 import { LocalExecutionHeterogeneousAgentTypeSchema } from './agent/heterogeneousAgent';
+import type { ContactCard, ContactCardType } from './contact';
 import { getWorkingDirEffectivePath } from './device';
 import type { BotWakeKind } from './signal';
 import type { ExternalWorkSummaryItem } from './work';
@@ -386,6 +387,8 @@ export interface ChannelLastMessage {
    * from servers before it was added.
    */
   author?: { id: string | null; name: string | null; type: ChannelMemberActorType };
+  /** A shared contact card, so a list can localize "[Agent card] …" instead of the stored text. */
+  card?: { name: string | null; type: ContactCardType } | null;
   content: string;
   createdAt: Date;
   /**
@@ -536,6 +539,8 @@ export interface ChannelPublicMessage {
     name: string | null;
     type: ChannelMemberActorType;
   };
+  /** A person or an Agent shared as a contact card; the content holds its text fallback. */
+  card?: ContactCard | null;
   content: string;
   createdAt: Date;
   /**

@@ -3,6 +3,7 @@ import type { DesktopNotificationSender } from '@lobechat/electron-client-ipc';
 import type { ChannelListItem, ChannelPublicMessage } from '@lobot/types';
 import { t } from 'i18next';
 
+import { localizeCardFallback } from '@/features/ContactCardShare/cardText';
 import { channelService } from '@/services/channel';
 import { completionSoundService } from '@/services/electron/completionSound';
 import { desktopNotificationService } from '@/services/electron/desktopNotification';
@@ -62,8 +63,9 @@ export const buildChannelBanner = (
   projectName?: string,
 ): ChannelBanner => {
   const sender = message?.author.name || '';
+  const stored = message?.content ?? channel.lastMessage?.content;
   const text = buildNotificationBody(
-    message?.content ?? channel.lastMessage?.content,
+    stored && localizeCardFallback(stored),
     t('notification.newMessage', { ns: 'channel' }),
   );
 

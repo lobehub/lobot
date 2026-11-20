@@ -3,6 +3,7 @@ import type {
   ChannelPublicThread,
   ChannelStatus,
   ChannelThreadStatus,
+  ContactCardInput,
 } from '@lobot/types';
 
 import { cacheScope } from '@/libs/replica';
@@ -455,6 +456,12 @@ class ChannelActionImpl {
     if (cacheScope.get() === scope) await this.#refreshAfterSend(input, data.threadId);
     return data;
   };
+  /**
+   * Shares a contact card as a message of its own. The server checks the card may be shared and
+   * writes its text, so it waits for the server instead of queueing a draft.
+   */
+  sendContactCard = (input: { card: ContactCardInput; channelId: string }) =>
+    this.send({ ...input, content: '', mentions: [], requestKey: crypto.randomUUID() });
   /**
    * Sends without waiting: the message shows in its conversation at once, marked sending, and a
    * failure keeps it there to retry. One conversation's messages reach the server in order.

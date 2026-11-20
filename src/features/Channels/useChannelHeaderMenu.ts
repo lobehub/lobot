@@ -1,8 +1,9 @@
 import type { DropdownItem } from '@lobehub/ui';
 import type { ChannelDetail } from '@lobot/types';
-import { Bot, CircleUserRound, FolderCog, Settings } from 'lucide-react';
+import { Bot, CircleUserRound, FolderCog, Settings, Share2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { openShareAgentCardModal } from '@/features/ContactCardShare/ShareAgentCardModal';
 import { channelSelectors, useChannelStore } from '@/store/channel';
 
 import { openChannelAgentEnvironment } from './AgentEnvironment';
@@ -43,43 +44,12 @@ export const useChannelHeaderMenuItems = (
   const shared = !!(channel.sharedAgent || listedShared);
 
   if (direct) {
-    return [
-      ...(directAgent
-        ? [
-            ...(openAgent
-              ? [
-                  {
-                    icon: Bot,
-                    key: 'openAgent',
-                    label: t('openAgentNamed', { name: directAgent.name }),
-                    onClick: () => openAgent(),
-                  },
-                ]
-              : []),
-            // The member list is hidden here, so its device and directory setup lives in this menu.
-            ...(!shared &&
-            directAgent.member.status === 'active' &&
-            channel.canDelete &&
-            channel.status !== 'archived'
-              ? [
-                  {
-                    icon: FolderCog,
-                    key: 'environment',
-                    label: t('environment.title'),
-                    onClick: () => openChannelAgentEnvironment(channel.id, directAgent.member),
-                  },
-                ]
-              : []),
-            { type: 'divider' as const },
-          ]
-        : []),
-      // Keyed items only: the menu's own dividers separate actions a direct conversation does not have.
-      ...flattenChannelMenu(channelMenu(channel)).filter(
-        (item) => !!item && 'key' in item && DIRECT_MENU_KEYS.has(String(item.key)),
-      ),
+    const agentId = channel.agentId!;
+    // Agent profile (or settings) first, then sharing its card, then the conversation's own
+    // actions. A shared Agent's "open" is its profile, so it is not offered twice.
+    const agentItems: DropdownItem[] = [
       ...(onToggleAgentPanel
         ? [
-            { type: 'divider' as const },
             {
               icon: shared ? CircleUserRound : Settings,
               key: 'agentSettings',
@@ -88,6 +58,53 @@ export const useChannelHeaderMenuItems = (
             },
           ]
         : []),
+      ...(directAgent && openAgent && !shared
+        ? [
+            {
+              icon: Bot,
+              key: 'openAgent',
+              label: t('openAgentNamed', { name: directAgent.name }),
+              onClick: () => openAgent(),
+            },
+          ]
+        : []),
+      // The member list is hidden here, so its device and directory setup lives in this menu.
+      ...(directAgent &&
+      !shared &&
+      directAgent.member.status === 'active' &&
+      channel.canDelete &&
+      channel.status !== 'archived'
+        ? [
+            {
+              icon: FolderCog,
+              key: 'environment',
+              label: t('environment.title'),
+              onClick: () => openChannelAgentEnvironment(channel.id, directAgent.member),
+            },
+          ]
+        : []),
+      // Sends the Agent's card into another conversation, so others can add it.
+      ...(directAgent
+        ? [
+            {
+              icon: Share2,
+              key: 'shareAgent',
+              label: t('shareAgent'),
+              onClick: () => openShareAgentCardModal(agentId),
+            },
+          ]
+        : []),
+    ];
+    // Keyed items only: the menu's own dividers separate actions a direct conversation does not have.
+    const conversationItems = flattenChannelMenu(channelMenu(channel)).filter(
+      (item) => !!item && 'key' in item && DIRECT_MENU_KEYS.has(String(item.key)),
+    );
+    return [
+      ...agentItems,
+      ...(agentItems.length > 0 && conversationItems.length > 0
+        ? [{ type: 'divider' as const }]
+        : []),
+      ...conversationItems,
     ];
   }
 
