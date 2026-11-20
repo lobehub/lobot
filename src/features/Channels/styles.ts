@@ -699,14 +699,12 @@ export const statusStyles = stylex.create({
     backgroundColor: 'transparent',
     boxShadow: 'inset 0 0 0 1.5px currentcolor',
   },
+  /** A square icon button, the header's other icon actions' size, in the warning colour. */
   failureButton: {
     flex: 'none',
-    gap: 4,
+    width: 28,
     height: 28,
-    paddingInline: 6,
-    color: cssVar.colorTextSecondary,
-  },
-  failureIcon: {
+    padding: 0,
     color: cssVar.colorWarning,
   },
   replyList: {

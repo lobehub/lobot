@@ -1,7 +1,7 @@
 import { ActionIcon, Button, Flexbox, Icon, Popover, Text, usePopoverContext } from '@lobehub/ui';
 import type { ChannelDetail } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
-import { CircleAlert, LocateFixed } from 'lucide-react';
+import { BotX, LocateFixed } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { canManageAgents } from './channelAccess';
@@ -55,7 +55,8 @@ function FailureRow({
 
 /**
  * Replies that failed and were not settled by a newer reply from the same Agent. Lives in
- * the header so the timeline stays readable; each message keeps a small marker.
+ * the header so the timeline stays readable; each message keeps a small marker. The trigger is a
+ * lone amber glyph: the count is in its label and the popover's title, not beside the icon.
  */
 export function FailureIndicator({ detail }: { detail: ChannelDetail }) {
   const { t } = useTranslation('channel');
@@ -92,8 +93,7 @@ export function FailureIndicator({ detail }: { detail: ChannelDetail }) {
         type="text"
         {...stylex.props(statusStyles.failureButton)}
       >
-        <Icon icon={CircleAlert} size={16} {...stylex.props(statusStyles.failureIcon)} />
-        {failures.length}
+        <Icon icon={BotX} size={16} />
       </Button>
     </Popover>
   );

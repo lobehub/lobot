@@ -14,8 +14,15 @@ vi.mock('react-i18next', () => ({
 vi.mock('@lobehub/ui', () => ({
   ActionIcon: ({ onClick, title }: { onClick?: () => void; title?: string }) =>
     createElement('button', { 'aria-label': title, onClick }),
-  Button: ({ children, onClick }: { children?: unknown; onClick?: () => void }) =>
-    createElement('button', { onClick }, children as never),
+  Button: ({
+    'aria-label': label,
+    children,
+    onClick,
+  }: {
+    'aria-label'?: string;
+    'children'?: unknown;
+    'onClick'?: () => void;
+  }) => createElement('button', { 'aria-label': label, onClick }, children as never),
   Flexbox: ({ children }: { children?: unknown }) => createElement('div', {}, children as never),
   Icon: () => null,
   // The content renders beside the trigger, so the rows can be read without opening it.
@@ -68,6 +75,12 @@ describe('FailureIndicator popover', () => {
     // The title already says the replies failed: no per-row state, no "Failure reason" label.
     expect(screen.queryByTestId('status')).toBeNull();
     expect(screen.queryByText('receipt.errorReason')).toBeNull();
+  });
+
+  it('shows the trigger as an icon alone, with the count only in its label', () => {
+    render(createElement(FailureIndicator, { detail }));
+    const trigger = screen.getByRole('button', { name: 'failure.title' });
+    expect(trigger.textContent).toBe('');
   });
 
   it('jumps to the failed request from an icon at the row’s end', () => {
