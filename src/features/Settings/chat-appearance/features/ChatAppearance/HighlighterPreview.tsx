@@ -12,7 +12,13 @@ const dog = { name: "Buddy", breed: "Golden Retriever" } satisfies Animal;
 
 const HighlighterPreview = ({ theme }: { theme?: HighlighterProps['theme'] }) => {
   return (
-    <Highlighter copyable={false} language={'ts'} showLanguage={false} theme={theme}>
+    <Highlighter
+      copyable={false}
+      language={'ts'}
+      showLanguage={false}
+      theme={theme}
+      variant={'borderless'}
+    >
       {code}
     </Highlighter>
   );

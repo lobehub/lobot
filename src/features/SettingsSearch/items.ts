@@ -225,35 +225,7 @@ export const TAB_SEARCH_KEYWORDS_KEYS: Partial<Record<string, string>> = {
  * automatically, but a stale anchor silently degrades to a plain tab switch.
  */
 export const SETTINGS_SEARCH_ITEMS: SettingsSearchItem[] = [
-  // Profile
-  {
-    anchor: 'profile-avatar',
-    keywords: ['avatar', 'photo', 'profile picture'],
-    labelKey: 'profile.avatar',
-    ns: 'auth',
-    tab: SettingsTabs.Profile,
-  },
-  {
-    anchor: 'profile-full-name',
-    keywords: ['full name', 'fullname', 'display name', 'nickname'],
-    labelKey: 'profile.fullName',
-    ns: 'auth',
-    tab: SettingsTabs.Profile,
-  },
-  {
-    anchor: 'profile-username',
-    keywords: ['username', 'handle', 'user name'],
-    labelKey: 'profile.username',
-    ns: 'auth',
-    tab: SettingsTabs.Profile,
-  },
-  {
-    anchor: 'profile-interests',
-    keywords: ['interests', 'topics', 'personalization'],
-    labelKey: 'profile.interests',
-    ns: 'auth',
-    tab: SettingsTabs.Profile,
-  },
+  // Profile. The account card replaced the avatar, name, username and interests rows.
   {
     anchor: 'profile-password',
     keywords: ['password', 'change password', 'set password', 'reset password'],
@@ -324,6 +296,7 @@ export const SETTINGS_SEARCH_ITEMS: SettingsSearchItem[] = [
     descKey: 'settingAppearance.animationMode.desc',
     keywords: ['animation', 'motion', 'transition'],
     labelKey: 'settingAppearance.animationMode.title',
+    subPage: 'chat',
     tab: SettingsTabs.Appearance,
   },
 
@@ -413,6 +386,7 @@ export const SETTINGS_SEARCH_ITEMS: SettingsSearchItem[] = [
     descKey: 'settingChatAppearance.fontSize.desc',
     keywords: ['font', 'size', 'text'],
     labelKey: 'settingChatAppearance.fontSize.title',
+    subPage: 'font',
     tab: SettingsTabs.Appearance,
   },
   {

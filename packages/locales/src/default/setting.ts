@@ -1,10 +1,9 @@
 export default {
   'channelNotification.desc.all':
-    'Every new message in your Channels shows a banner and plays a sound; the dock badge counts what is unread.',
+    'A banner and a sound for every new message. The badge shows unread.',
   'channelNotification.desc.mentions':
-    'Only @mentions of you and messages in direct conversations notify; the dock badge still counts every unread message.',
-  'channelNotification.desc.off':
-    'No banners or sounds for Channel messages and mentions; unread counts and the dock badge still update.',
+    'Only @mentions and direct messages. The badge still counts every unread.',
+  'channelNotification.desc.off': 'No banners or sounds. Unread counts still update.',
   'channelNotification.label': 'Notify me about',
   'channelNotification.level.all': 'All messages',
   'channelNotification.level.mentions': 'Mentions & direct',
@@ -60,30 +59,28 @@ export default {
   'completionSound.title': 'In-app completion sound',
   'completionSound.enabled': 'Play completion sound',
   'completionSound.desc':
-    'Play a chime when a chat finishes while LobeHub is in the foreground. The sound, volume and imports stay on this device and are not synced.',
+    'Plays when a chat finishes while the app is in front. Saved only on this device.',
   'completionSound.sound': 'Sound',
   'completionSound.builtin.lobehub': 'LobeHub chime',
   'completionSound.builtin.glassBell': 'Glass bell',
   'completionSound.builtin.softTone': 'Soft tone',
   'completionSound.builtin.xylophone': 'Xylophone',
   'completionSound.import': 'Import sound…',
-  'completionSound.importHint':
-    'Choose WAV, MP3 or OGG (up to 1 MB), or openpeon.json from an extracted OpenPeon pack. Only task completion sounds are imported.',
+  'completionSound.importHint': 'WAV, MP3, or OGG, up to 1 MB. OpenPeon packs work too.',
   'completionSound.preview': 'Preview',
   'completionSound.volume': 'Volume',
-  'completionSound.error':
-    'Could not load, save or play the sound. Check the audio file or OpenPeon pack and try again.',
+  'completionSound.error': 'Could not save or play the sound. Try again.',
   'completionSound.retry': 'Reload settings',
   'completionSound.banner.title': 'Background notification',
   'completionSound.banner.label': 'Notification sound',
   'completionSound.banner.desc':
-    'Sound the notification banner carries when a chat finishes while LobeHub is in the background. macOS Focus and per-app notification settings still apply.',
+    'Sound for a finished chat while the app is in the background. System notification settings still apply.',
   'completionSound.banner.system': 'System default',
   'completionSound.banner.lobehub': 'LobeHub chime',
   'completionSound.banner.previewTitle': 'Notification preview',
   'completionSound.banner.previewBody': 'This is how a finished chat will sound in the background.',
   'completionSound.banner.systemMuted':
-    'macOS has notification sounds turned off for LobeHub, so background notifications stay silent. Turn them back on in System Settings › Notifications › LobeHub.',
+    'Notification sounds are off. Turn them on in System Settings › Notifications › LobeHub.',
   '_cloud.officialProvider': '{{name}} Official Model Service',
   'about.title': 'About',
   'agentImport.action': 'Copy to Workspace...',
@@ -1446,7 +1443,7 @@ export default {
     'With more than 6 pinned, the grid gets crowded. List them as rows at the top of Messages instead.',
   'settingAppearance.pinnedConversations.rows': 'Rows when more than 6',
   'settingAppearance.pinnedConversations.tiles': 'Grid',
-  'settingAppearance.pinnedConversations.title': 'Pinned chats',
+  'settingAppearance.pinnedConversations.title': 'Pinned style',
   'settingAppearance.preview.agentMessage':
     "Morning 👋 Today's report is ready. Want me to post it to #General?",
   'settingAppearance.preview.agentReply': 'Posted ✅',

@@ -1,95 +1,45 @@
 'use client';
 
 import { Flexbox } from '@lobehub/ui';
-import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 
-import { FORM_STYLE } from '@/const/layoutTokens';
 import { SettingsSurfaceGroup } from '@/features/Settings/features/SettingsForm';
-import { useUserStore } from '@/store/user';
-import { authSelectors, userProfileSelectors } from '@/store/user/selectors';
 
 import SkeletonBar from '../Bar';
-import { SettingsFormSkeleton } from './Section';
+import AppearanceSkeleton from './tabs/Appearance';
 import { useSkeletonText } from './useSkeletonText';
 
 const styles = stylex.create({
-  hero: {
+  row: {
     display: 'flex',
-    gap: '16px',
+    gap: '12px',
     alignItems: 'center',
     minHeight: '64px',
-    paddingBlock: '16px',
-  },
-  signOut: {
-    display: 'flex',
-    alignItems: 'center',
-    minHeight: '48px',
-    color: cssVar.colorError,
+    paddingBlock: '4px',
   },
 });
 
 /**
- * The profile tab's form groups: same captions and row labels as the settled
- * page, with placeholders only for the user's values. Rows the settled page
- * shows conditionally (email, sign out) follow the same conditions.
+ * The profile page: the account card, then the appearance groups that now
+ * live under it. Same captions as the settled page.
  */
 const SettingsProfileSkeleton = () => {
-  const isLogin = useUserStore(authSelectors.isLogin);
-  const email = useUserStore(userProfileSelectors.email);
   const text = useSkeletonText('auth');
 
   return (
     <Flexbox aria-busy data-testid={'settings-profile-skeleton'} gap={20}>
-      <SettingsSurfaceGroup style={FORM_STYLE.style}>
-        <div {...stylex.props(styles.hero)}>
+      <SettingsSurfaceGroup title={text('profile.account', 32, 12)}>
+        <div {...stylex.props(styles.row)}>
           <SkeletonBar height={40} radius={'50%'} width={40} />
           <Flexbox flex={1} gap={4}>
-            {text('profile.fullName', 64, 14)}
-            {text('profile.nameHint', 240, 12)}
+            <SkeletonBar height={14} width={96} />
+            <SkeletonBar height={12} width={72} />
           </Flexbox>
-          <SkeletonBar height={32} width={160} />
+          <SkeletonBar height={32} width={64} />
+          <SkeletonBar height={32} width={72} />
         </div>
       </SettingsSurfaceGroup>
-      <SettingsFormSkeleton
-        groups={[
-          {
-            items: [
-              {
-                control: { height: 22, width: 72 },
-                desc: text('profile.interestsHint', 320, 12),
-                label: text('profile.interests', 64, 14),
-                minWidth: undefined,
-              },
-            ],
-            title: null,
-          },
-          {
-            items: [
-              {
-                control: { height: 22, width: 120 },
-                label: text('profile.username', 64, 14),
-                minWidth: undefined,
-              },
-              ...(isLogin && email
-                ? [
-                    {
-                      control: { height: 22, width: 184 },
-                      label: text('profile.email', 96, 14),
-                      minWidth: undefined,
-                    },
-                  ]
-                : []),
-            ],
-            title: null,
-          },
-        ]}
-      />
-      {isLogin && (
-        <SettingsSurfaceGroup style={FORM_STYLE.style}>
-          <div {...stylex.props(styles.signOut)}>{text('signout', 64, 16)}</div>
-        </SettingsSurfaceGroup>
-      )}
+      <AppearanceSkeleton.Body />
     </Flexbox>
   );
 };

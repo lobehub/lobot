@@ -1,7 +1,9 @@
 'use client';
 
 import { Flexbox } from '@lobehub/ui';
+import { PaletteIcon } from 'lucide-react';
 import { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 
 import NavItem from '@/features/NavPanel/components/NavItem';
@@ -31,15 +33,38 @@ const useActiveTab = () => {
  * plain groups, the way Telegram lays out its settings list.
  */
 const Body = memo(() => {
+  const { t } = useTranslation(['setting', 'auth']);
   const categoryGroups = useCategory();
-  const searchScope = useMemo(() => ({ categoryGroups }), [categoryGroups]);
+  // Appearance is no longer a sidebar section — its controls sit on profile —
+  // but search still has to find them and their font / chat sub-pages.
+  const searchScope = useMemo(
+    () => ({
+      categoryGroups: [
+        {
+          items: [
+            {
+              icon: PaletteIcon,
+              key: SettingsTabs.Appearance,
+              label: t('tab.appearance'),
+            },
+          ],
+          key: 'appearance',
+          title: t('profile.account', { ns: 'auth' }),
+        },
+        ...categoryGroups,
+      ],
+    }),
+    [categoryGroups, t],
+  );
   const navigate = useWorkspaceAwareNavigate();
   const activeTab = useActiveTab();
 
   return (
     <Flexbox gap={8} paddingBlock={'0 12px'} paddingInline={4}>
       <SearchSection scope={searchScope}>
-        <ProfileCard active={activeTab === SettingsTabs.Profile} />
+        <ProfileCard
+          active={activeTab === SettingsTabs.Profile || activeTab === SettingsTabs.Appearance}
+        />
         {categoryGroups.map((group) => (
           <Flexbox gap={1} key={group.key}>
             {group.items.map((item) => {

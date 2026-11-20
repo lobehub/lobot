@@ -28,6 +28,11 @@ export const FontSectionSkeleton = () => {
         {
           extra: SAVE_HINT,
           items: [
+            {
+              control: { height: 28, width: 280 },
+              label: text('settingChatAppearance.fontSize.title', 64, 14),
+              minWidth: undefined,
+            },
             ...(isDesktop
               ? ['fontFamily', 'fallback', 'monospace', 'monospaceFallback'].map(fontRow)
               : []),
@@ -64,6 +69,11 @@ export const ChatAppearanceSectionSkeleton = () => {
         groups={[
           {
             items: [
+              {
+                control: { height: 32, width: 200 },
+                label: text('settingAppearance.animationMode.title', 64, 14),
+                minWidth: undefined,
+              },
               {
                 control: SWITCH_CONTROL,
                 label: text('settingChatAppearance.autoScrollOnStreaming.title', 120, 14),
@@ -147,33 +157,11 @@ const AppearanceBody = () => {
           },
         ]}
       />
-      <SettingsSurfaceGroup title={text('settingChatAppearance.fontSize.title', 56, 18)}>
-        <Flexbox gap={12} paddingBlock={8}>
-          <SkeletonBar height={120} radius={8} />
-          <SkeletonBar height={28} />
-        </Flexbox>
-      </SettingsSurfaceGroup>
       <SettingsFormSkeleton
         groups={[
           {
             items: [
-              {
-                control: { height: 16, width: 16 },
-                label: text('settingAppearance.font.title', 32, 14),
-                minWidth: undefined,
-              },
-              {
-                control: { height: 16, width: 16 },
-                divider: true,
-                label: text('settingAppearance.chatDisplay.title', 64, 14),
-                minWidth: undefined,
-              },
-              {
-                control: { height: 32, width: 200 },
-                divider: true,
-                label: text('settingAppearance.animationMode.title', 64, 14),
-                minWidth: undefined,
-              },
+              select('settingAppearance.pinnedConversations.title', 64),
               ...(isDesktop
                 ? [
                     {
@@ -184,6 +172,18 @@ const AppearanceBody = () => {
                     },
                   ]
                 : []),
+              {
+                control: { height: 16, width: 16 },
+                divider: true,
+                label: text('settingAppearance.font.title', 32, 14),
+                minWidth: undefined,
+              },
+              {
+                control: { height: 16, width: 16 },
+                divider: true,
+                label: text('settingAppearance.chatDisplay.title', 64, 14),
+                minWidth: undefined,
+              },
             ],
             title: text('settingAppearance.display.title', 32, 18),
           },

@@ -21,10 +21,11 @@ const resetStore = () =>
 describe('resolveSettingsTab', () => {
   it('maps legacy aliases and unknown tabs onto popup tabs', () => {
     expect(resolveSettingsTab()).toBe(SettingsTabs.Profile);
-    expect(resolveSettingsTab('common')).toBe(SettingsTabs.Appearance);
-    expect(resolveSettingsTab('chat-appearance')).toBe(SettingsTabs.Appearance);
-    expect(resolveSettingsTab('language')).toBe(SettingsTabs.Appearance);
-    expect(resolveSettingsTab(SettingsTabs.Language)).toBe(SettingsTabs.Appearance);
+    expect(resolveSettingsTab('common')).toBe(SettingsTabs.Profile);
+    expect(resolveSettingsTab('chat-appearance')).toBe(SettingsTabs.Profile);
+    expect(resolveSettingsTab('language')).toBe(SettingsTabs.Profile);
+    expect(resolveSettingsTab(SettingsTabs.Language)).toBe(SettingsTabs.Profile);
+    expect(resolveSettingsTab(SettingsTabs.Appearance)).toBe(SettingsTabs.Appearance);
     expect(resolveSettingsTab('hotkey')).toBe(SettingsTabs.Hotkey);
     expect(resolveSettingsTab('provider')).toBe(SettingsTabs.Profile);
     expect(resolveSettingsTab('devices')).toBe(SettingsTabs.Profile);
@@ -46,12 +47,22 @@ describe('parsePersonalSettingsPath', () => {
     expect(parsePersonalSettingsPath('/settings?tab=appearance')).toEqual({
       hash: null,
       subPage: null,
+      tab: SettingsTabs.Profile,
+    });
+    expect(parsePersonalSettingsPath('/settings/appearance#appearance-theme-mode')).toEqual({
+      hash: 'appearance-theme-mode',
+      subPage: null,
+      tab: SettingsTabs.Profile,
+    });
+    expect(parsePersonalSettingsPath('/settings/appearance/font')).toEqual({
+      hash: null,
+      subPage: 'font',
       tab: SettingsTabs.Appearance,
     });
     expect(parsePersonalSettingsPath('/settings/common')).toEqual({
       hash: null,
       subPage: null,
-      tab: SettingsTabs.Appearance,
+      tab: SettingsTabs.Profile,
     });
   });
 
@@ -81,7 +92,13 @@ describe('useSettingsPopupStore', () => {
     });
 
     closeSubPage();
-    expect(useSettingsPopupStore.getState().subPage).toBeNull();
+    expect(useSettingsPopupStore.getState()).toMatchObject({
+      subPage: null,
+      tab: SettingsTabs.Profile,
+    });
+
+    openSettings({ tab: SettingsTabs.Appearance });
+    expect(useSettingsPopupStore.getState().tab).toBe(SettingsTabs.Profile);
 
     closeSettings();
     expect(useSettingsPopupStore.getState().open).toBe(false);

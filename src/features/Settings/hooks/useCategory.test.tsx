@@ -41,6 +41,9 @@ describe('settings useCategory', () => {
       SettingsGroupKey.System,
     ]);
     expect(groups[1].items.map((item) => item.key)).toEqual([SettingsTabs.About]);
+    expect(groups[0].items.map((item) => item.key)).not.toContain(SettingsTabs.Appearance);
+    expect(groups[0].items.map((item) => item.key)).toContain(SettingsTabs.Notification);
+    expect(groups[0].items.map((item) => item.key)).toContain(SettingsTabs.Hotkey);
   });
 
   it('never offers configuration surfaces such as providers, skills, OAuth apps or labs', () => {

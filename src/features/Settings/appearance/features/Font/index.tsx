@@ -14,8 +14,10 @@ import { useSaveState } from '@/hooks/useSaveState';
 import { useUserStore } from '@/store/user';
 import { preferenceSelectors, userGeneralSettingsSelectors } from '@/store/user/selectors';
 
+import ChatThemePreview from '../ColorTheme/ChatThemePreview';
 import { APPLICATION_DEFAULT_FONT, useSystemFontOptions } from '../useSystemFontOptions';
 import FallbackFontList from './FallbackFontList';
+import { FontSizeControl } from './FontSize';
 import { joinFontStack, parseFontStack } from './fontStack';
 
 const FontSettings = memo(() => {
@@ -25,6 +27,7 @@ const FontSettings = memo(() => {
     preferenceSelectors.terminalFontFamily(s),
   ]);
   const fontAntialiasing = useUserStore(userGeneralSettingsSelectors.fontAntialiasing);
+  const fontSize = useUserStore(userGeneralSettingsSelectors.fontSize);
   const updatePreference = useUserStore((s) => s.updatePreference);
   const setSettings = useUserStore((s) => s.setSettings);
   const { status: saveStatus, lastSavedAt, save, retry } = useSaveState();
@@ -48,9 +51,29 @@ const FontSettings = memo(() => {
   });
 
   const saveInterfaceStack = (stack: string[]) =>
+    // lobe-design-ignore LOBE-FONT-FAMILY: preference field name, not a CSS font-family
     save(() => updatePreference({ fontFamily: joinFontStack(stack) }));
   const saveMonospaceStack = (stack: string[]) =>
     save(() => updatePreference({ terminalFontFamily: joinFontStack(stack) }));
+
+  const fontSizeGroup: FormGroupItem = {
+    children: (
+      <div style={{ minWidth: 0, paddingBlock: 16, width: '100%' }}>
+        <ChatThemePreview />
+        <div style={{ minWidth: 0, paddingBlockStart: 8, width: '100%' }}>
+          <FontSizeControl
+            value={fontSize}
+            onChange={(value) => setSettings({ general: { fontSize: value } })}
+          />
+        </div>
+      </div>
+    ),
+    title: (
+      <SettingsSearchAnchor id={'appearance-font-size'}>
+        {t('settingChatAppearance.fontSize.title')}
+      </SettingsSearchAnchor>
+    ),
+  };
 
   const font: FormGroupItem = {
     children: [
@@ -175,7 +198,7 @@ const FontSettings = memo(() => {
     <SettingsForm
       collapsible={false}
       form={form}
-      items={[font]}
+      items={[fontSizeGroup, font]}
       itemsType={'group'}
       variant={'borderless'}
       {...FORM_STYLE}

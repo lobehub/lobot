@@ -1,6 +1,14 @@
 'use client';
 
-import { Flexbox, highlighterThemes, mermaidThemes, Select, Switch, Tabs } from '@lobehub/ui';
+import {
+  Flexbox,
+  highlighterThemes,
+  mermaidThemes,
+  Segmented,
+  Select,
+  Switch,
+  Tabs,
+} from '@lobehub/ui';
 import { useForm } from '@lobehub/ui/form';
 import isEqual from 'fast-deep-equal';
 import { memo, useState } from 'react';
@@ -9,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import AutoSaveHint from '@/components/Editor/AutoSaveHint';
 import { FORM_STYLE } from '@/const/layoutTokens';
 import SettingsForm, { SettingsSurfaceGroup } from '@/features/Settings/features/SettingsForm';
+import { SettingsSearchAnchor } from '@/features/SettingsSearch/anchor';
 import { useSaveState } from '@/hooks/useSaveState';
 import { useUserStore } from '@/store/user';
 import { settingsSelectors, userGeneralSettingsSelectors } from '@/store/user/selectors';
@@ -77,6 +86,25 @@ const ChatAppearance = memo(() => {
         items={[
           {
             children: [
+              {
+                children: (
+                  <Segmented
+                    value={general.animationMode ?? 'agile'}
+                    options={[
+                      { label: t('settingAppearance.animationMode.disabled'), value: 'disabled' },
+                      { label: t('settingAppearance.animationMode.agile'), value: 'agile' },
+                      { label: t('settingAppearance.animationMode.elegant'), value: 'elegant' },
+                    ]}
+                    onChange={(value) => handleChange('animationMode', value)}
+                  />
+                ),
+                label: (
+                  <SettingsSearchAnchor id={'appearance-animation'}>
+                    {t('settingAppearance.animationMode.title')}
+                  </SettingsSearchAnchor>
+                ),
+                minWidth: undefined,
+              },
               {
                 children: (
                   <Flexbox horizontal align={'center'} gap={8}>
@@ -157,7 +185,9 @@ const ChatAppearance = memo(() => {
           </Flexbox>
         }
       >
-        <HighlighterPreview key={general.highlighterTheme} theme={general.highlighterTheme} />
+        <div style={{ paddingBlock: 12 }}>
+          <HighlighterPreview key={general.highlighterTheme} theme={general.highlighterTheme} />
+        </div>
       </SettingsSurfaceGroup>
 
       <SettingsSurfaceGroup
@@ -179,7 +209,9 @@ const ChatAppearance = memo(() => {
           </Flexbox>
         }
       >
-        <MermaidPreview key={general.mermaidTheme} theme={general.mermaidTheme} />
+        <div style={{ paddingBlock: 12 }}>
+          <MermaidPreview key={general.mermaidTheme} theme={general.mermaidTheme} />
+        </div>
       </SettingsSurfaceGroup>
     </Flexbox>
   );

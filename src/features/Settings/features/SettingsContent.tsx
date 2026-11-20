@@ -16,17 +16,20 @@ import { hasSettingsSubPage, renderSettingsSubPage } from './subPages';
 import { useSettingsTabTitle } from './tabTitles';
 
 const REDIRECT_MAP: Record<string, string> = {
-  [SettingsTabs.Common]: SettingsTabs.Appearance,
-  [SettingsTabs.ChatAppearance]: SettingsTabs.Appearance,
+  [SettingsTabs.Common]: SettingsTabs.Profile,
+  [SettingsTabs.ChatAppearance]: SettingsTabs.Profile,
+  [SettingsTabs.Language]: SettingsTabs.Profile,
 };
 
 /**
- * Where a tab URL lands instead: legacy aliases map to their new tab, and tabs
- * Lobot does not offer (providers, skills, OAuth apps, …) go to the profile.
+ * Where a tab URL lands instead: legacy aliases and the appearance page (its
+ * controls now sit on profile) map to profile. Appearance sub-pages stay.
+ * Tabs Lobot does not offer (providers, skills, OAuth apps, …) go to profile.
  */
-const getSettingsRedirect = (tab: string | undefined): string | undefined => {
+const getSettingsRedirect = (tab: string | undefined, subPage?: string): string | undefined => {
   if (!tab) return;
   if (REDIRECT_MAP[tab]) return REDIRECT_MAP[tab];
+  if (tab === SettingsTabs.Appearance && !subPage) return SettingsTabs.Profile;
   if (!(tab in componentMap)) return SettingsTabs.Profile;
 };
 
@@ -46,12 +49,16 @@ const SettingsContent = ({ mobile, activeTab, subPage }: SettingsContentProps) =
 
   // An unknown sub page falls back to its tab rather than rendering nothing.
   const redirectTo =
-    getSettingsRedirect(activeTab) ??
+    getSettingsRedirect(activeTab, subPage) ??
     (subPage && !hasSettingsSubPage(activeTab, subPage) ? activeTab : undefined);
 
   useEffect(() => {
     // `escape: true` keeps the user in personal context even when a workspace is active.
-    if (redirectTo) navigate(`/settings/${redirectTo}`, { escape: true, replace: true });
+    // Keep the hash so a search for a control that used to live on appearance
+    // still scrolls to it after the page folds into profile.
+    if (!redirectTo) return;
+    const hash = globalThis.location?.hash ?? '';
+    navigate(`/settings/${redirectTo}${hash}`, { escape: true, replace: true });
   }, [redirectTo, navigate]);
 
   const renderComponent = (tab: string) => {

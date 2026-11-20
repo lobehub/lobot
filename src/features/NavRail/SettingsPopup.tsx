@@ -82,7 +82,12 @@ const SettingsPopup = memo(() => {
 
   // Tab / sub-page changes should start at the top, but a search hash must
   // still win — resetting here would scroll the anchor back out of view.
+  // The dialog focuses a control after paint, which can nudge this scroller
+  // a few pixels; the second pass puts it back before that reads as a scroll.
   useLayoutEffect(() => {
+    resetSettingsPopupViewport(contentViewportRef.current, { hash, open });
+  }, [activeTab, hash, open, subPage]);
+  useEffect(() => {
     resetSettingsPopupViewport(contentViewportRef.current, { hash, open });
   }, [activeTab, hash, open, subPage]);
 
@@ -104,6 +109,12 @@ const SettingsPopup = memo(() => {
   useEffect(() => {
     if (open && subPage && !hasSettingsSubPage(activeTab, subPage)) closeSubPage();
   }, [activeTab, closeSubPage, open, subPage]);
+
+  // Appearance has no page of its own anymore. A bare tab (Back from font or
+  // chat, or an old link) returns to the profile page that now holds it.
+  useEffect(() => {
+    if (open && activeTab === SettingsTabs.Appearance && !subPage) setTab(SettingsTabs.Profile);
+  }, [activeTab, open, setTab, subPage]);
 
   return (
     <Modal
@@ -131,7 +142,9 @@ const SettingsPopup = memo(() => {
               <Flexbox gap={4} key={group.key}>
                 {index === 0 && (
                   <ProfileEntry
-                    active={activeTab === SettingsTabs.Profile}
+                    active={
+                      activeTab === SettingsTabs.Profile || activeTab === SettingsTabs.Appearance
+                    }
                     onSelect={() => setTab(SettingsTabs.Profile)}
                   />
                 )}
@@ -152,7 +165,14 @@ const SettingsPopup = memo(() => {
           disableContentFit
           scrollFade="vertical"
           style={{ flex: 1, height: '100%', minWidth: 0 }}
-          viewportProps={{ ref: contentViewportRef }}
+          viewportProps={{
+            ref: contentViewportRef,
+            // The fade is a scroll-timeline animation. The modal panel keeps
+            // `transform: scale(1)`, and that detaches the timeline, so the
+            // top mask can read as already scrolled while scrollTop is 0.
+            // Without the animation the mask follows the overflow distance.
+            style: { animationName: 'none', overflowAnchor: 'none' },
+          }}
         >
           <div style={subPage ? undefined : { paddingBlockEnd: 48, paddingInline: 24 }}>{body}</div>
         </ScrollArea>

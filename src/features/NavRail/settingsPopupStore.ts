@@ -14,9 +14,18 @@ const SETTINGS_POPUP_TABS = new Set<string>([
 ]);
 
 const TAB_ALIASES: Record<string, string> = {
-  [SettingsTabs.ChatAppearance]: SettingsTabs.Appearance,
-  [SettingsTabs.Common]: SettingsTabs.Appearance,
-  [SettingsTabs.Language]: SettingsTabs.Appearance,
+  [SettingsTabs.ChatAppearance]: SettingsTabs.Profile,
+  [SettingsTabs.Common]: SettingsTabs.Profile,
+  [SettingsTabs.Language]: SettingsTabs.Profile,
+};
+
+/**
+ * Appearance settings render on the profile page. The appearance tab stays
+ * only so its second-level pages (font, chat display) still open.
+ */
+const foldSettingsTab = (tab: string, subPage?: string | null): string => {
+  if (tab === SettingsTabs.Appearance && !subPage) return SettingsTabs.Profile;
+  return tab;
 };
 
 export interface SettingsPopupTarget {
@@ -81,7 +90,10 @@ export const parsePersonalSettingsPath = (input: string): SettingsPopupTarget | 
   return {
     hash,
     subPage,
-    tab: resolveSettingsTab(tabFromPath || tabFromQuery || SettingsTabs.Profile),
+    tab: foldSettingsTab(
+      resolveSettingsTab(tabFromPath || tabFromQuery || SettingsTabs.Profile),
+      subPage,
+    ),
   };
 };
 
@@ -98,7 +110,13 @@ export const openSettingsFromUrl = (input: string): boolean => {
 export const useSettingsPopupStore = createWithEqualityFn<SettingsPopupState>()(
   (set, get) => ({
     closeSettings: () => set({ hash: null, open: false, pending: null, subPage: null }),
-    closeSubPage: () => set({ hash: null, subPage: null }),
+    closeSubPage: () =>
+      set((state) => ({
+        hash: null,
+        subPage: null,
+        // Font and chat display open from the profile page, so Back returns there.
+        tab: state.tab === SettingsTabs.Appearance ? SettingsTabs.Profile : state.tab,
+      })),
     flushPending: () => {
       const { pending } = get();
       if (!pending) return;
@@ -107,18 +125,20 @@ export const useSettingsPopupStore = createWithEqualityFn<SettingsPopupState>()(
         open: true,
         pending: null,
         subPage: pending.subPage ?? null,
-        tab: resolveSettingsTab(pending.tab),
+        tab: foldSettingsTab(resolveSettingsTab(pending.tab), pending.subPage),
       });
     },
     hash: null,
     open: false,
     openSettings: (target) => {
-      const tab = target?.tab != null ? resolveSettingsTab(target.tab) : get().tab;
+      const subPage = target?.subPage ?? null;
+      const tab =
+        target?.tab != null ? foldSettingsTab(resolveSettingsTab(target.tab), subPage) : get().tab;
       set({
         hash: target?.hash ?? null,
         open: true,
         pending: null,
-        subPage: target?.subPage ?? null,
+        subPage,
         tab,
       });
     },
@@ -128,11 +148,12 @@ export const useSettingsPopupStore = createWithEqualityFn<SettingsPopupState>()(
         pending: {
           hash: target?.hash ?? null,
           subPage: target?.subPage ?? null,
-          tab: resolveSettingsTab(target?.tab),
+          tab: foldSettingsTab(resolveSettingsTab(target?.tab), target?.subPage),
         },
       });
     },
-    setTab: (tab) => set({ hash: null, subPage: null, tab: resolveSettingsTab(tab) }),
+    setTab: (tab) =>
+      set({ hash: null, subPage: null, tab: foldSettingsTab(resolveSettingsTab(tab)) }),
     subPage: null,
     tab: SettingsTabs.Profile,
   }),

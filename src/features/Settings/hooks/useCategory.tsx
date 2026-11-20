@@ -1,5 +1,5 @@
 import { isDesktop } from '@lobechat/const';
-import { BellIcon, EthernetPort, Info, KeyboardIcon, PaletteIcon } from 'lucide-react';
+import { BellIcon, EthernetPort, Info, KeyboardIcon } from 'lucide-react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,7 +27,8 @@ interface CategoryGroup {
 
 /**
  * The settings list column, Telegram-style: the profile card sits above these
- * groups, so Profile itself is not listed. Lobot keeps only everyday sections;
+ * groups, so Profile itself is not listed. Appearance lives on that profile
+ * page, not as its own section. Lobot keeps only everyday sections;
  * configuration surfaces (providers, skills, OAuth apps, labs, developer
  * switches, …) are not offered. The update channel lives on About.
  */
@@ -37,7 +38,6 @@ export const useCategory = () => {
 
   return useMemo<CategoryGroup[]>(() => {
     const generalItems = [
-      { icon: PaletteIcon, key: SettingsTabs.Appearance, label: t('tab.appearance') },
       { icon: BellIcon, key: SettingsTabs.Notification, label: t('tab.notification') },
       { icon: KeyboardIcon, key: SettingsTabs.Hotkey, label: t('tab.hotkey') },
       isDesktop && { icon: EthernetPort, key: SettingsTabs.Proxy, label: t('tab.proxy') },

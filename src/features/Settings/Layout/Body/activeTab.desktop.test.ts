@@ -51,6 +51,10 @@ vi.mock('react-router', () => ({
   Link: ({ children }: { children?: ReactNode }) => h('span', null, children),
 }));
 
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({ t: (key: string) => key }),
+}));
+
 const tab = (id: string, url: string) => ({ id, lastVisited: 0, url });
 
 const activeStateOf = (label: string) =>
@@ -64,19 +68,19 @@ describe('settings sidebar active tab (desktop)', () => {
   it('follows the active tab url via the electron store mirror', async () => {
     useElectronStore.setState({
       activeTabId: 't1',
-      tabs: [tab('t1', '/settings/profile'), tab('t2', '/settings/appearance')],
+      tabs: [tab('t1', '/settings/profile'), tab('t2', '/settings/hotkey')],
     });
 
     const { default: Body } = await import('./index');
     render(h(Body));
 
     expect(activeStateOf('Profile')).toBe('true');
-    expect(activeStateOf('Appearance')).toBe('false');
+    expect(activeStateOf('Hotkeys')).toBe('false');
 
     act(() => useElectronStore.setState({ activeTabId: 't2' }));
 
     expect(activeStateOf('Profile')).toBe('false');
-    expect(activeStateOf('Appearance')).toBe('true');
+    expect(activeStateOf('Hotkeys')).toBe('true');
   });
 
   it('treats bare /settings as the profile page', async () => {

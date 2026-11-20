@@ -1,7 +1,7 @@
 'use client';
 
 import { isDesktop } from '@lobechat/const';
-import { Segmented, Select, Switch } from '@lobehub/ui';
+import { Select, Switch } from '@lobehub/ui';
 import { Form, type FormGroupItem, useForm } from '@lobehub/ui/form';
 import { useTheme as useNextThemesTheme } from 'next-themes';
 import { useMemo } from 'react';
@@ -23,9 +23,7 @@ import { userGeneralSettingsSelectors } from '@/store/user/selectors';
 import { type LocaleMode } from '@/types/locale';
 
 import AccentSwatches from './features/ColorTheme/AccentSwatches';
-import ChatThemePreview from './features/ColorTheme/ChatThemePreview';
 import AppTraySwitch from './features/Desktop';
-import { FontSizeControl } from './features/Font/FontSize';
 
 interface PageProps {
   showSettingHeader?: boolean;
@@ -35,8 +33,6 @@ const SELECT_STYLE = { minWidth: 140 };
 
 const Page = ({ showSettingHeader = true }: PageProps) => {
   const { t } = useTranslation('setting');
-  const fontSize = useUserStore(userGeneralSettingsSelectors.fontSize);
-  const animationMode = useUserStore(userGeneralSettingsSelectors.animationMode);
   const pinnedLayout = useUserStore(userGeneralSettingsSelectors.pinnedConversationLayout);
   const showWorkspaceRail = useUserStore(userGeneralSettingsSelectors.showWorkspaceRail);
   const workspaceRailOffered = useWorkspaceStore((s) => s.isWorkspaceAvailable);
@@ -130,24 +126,6 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
       ],
       title: t('group.common'),
     },
-    {
-      children: (
-        <div style={{ minWidth: 0, paddingBlock: 16, width: '100%' }}>
-          <ChatThemePreview />
-          <div style={{ minWidth: 0, paddingBlockStart: 8, width: '100%' }}>
-            <FontSizeControl
-              value={fontSize}
-              onChange={(value) => setSettings({ general: { fontSize: value } })}
-            />
-          </div>
-        </div>
-      ),
-      title: (
-        <SettingsSearchAnchor id={'appearance-font-size'}>
-          {t('settingChatAppearance.fontSize.title')}
-        </SettingsSearchAnchor>
-      ),
-    },
   ];
 
   return (
@@ -162,37 +140,7 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
         {...FORM_STYLE}
       >
         <SettingsSurfaceGroup title={t('settingAppearance.display.title')}>
-          <FormNavField
-            label={t('settingAppearance.font.title')}
-            to={getSettingsSubPageUrl(SettingsTabs.Appearance, 'font')}
-          />
-          <FormNavField
-            divider
-            label={t('settingAppearance.chatDisplay.title')}
-            to={getSettingsSubPageUrl(SettingsTabs.Appearance, 'chat')}
-          />
           <Form.Field
-            divider
-            minWidth={undefined}
-            label={
-              <SettingsSearchAnchor id={'appearance-animation'}>
-                {t('settingAppearance.animationMode.title')}
-              </SettingsSearchAnchor>
-            }
-          >
-            <Segmented
-              value={animationMode}
-              options={[
-                { label: t('settingAppearance.animationMode.disabled'), value: 'disabled' },
-                { label: t('settingAppearance.animationMode.agile'), value: 'agile' },
-                { label: t('settingAppearance.animationMode.elegant'), value: 'elegant' },
-              ]}
-              onChange={(value) => setSettings({ general: { animationMode: value } })}
-            />
-          </Form.Field>
-          <Form.Field
-            divider
-            desc={t('settingAppearance.pinnedConversations.desc')}
             minWidth={undefined}
             label={
               <SettingsSearchAnchor id={'appearance-pinned-conversations'}>
@@ -242,6 +190,16 @@ const Page = ({ showSettingHeader = true }: PageProps) => {
               <AppTraySwitch />
             </Form.Field>
           )}
+          <FormNavField
+            divider
+            label={t('settingAppearance.font.title')}
+            to={getSettingsSubPageUrl(SettingsTabs.Appearance, 'font')}
+          />
+          <FormNavField
+            divider
+            label={t('settingAppearance.chatDisplay.title')}
+            to={getSettingsSubPageUrl(SettingsTabs.Appearance, 'chat')}
+          />
         </SettingsSurfaceGroup>
       </SettingsForm>
     </>
