@@ -1,4 +1,4 @@
-import { ActionIcon, CopyButton, Flexbox, Tag, Text } from '@lobehub/ui';
+import { ActionIcon, CopyButton, Flexbox, Text, Tooltip } from '@lobehub/ui';
 import { Surface } from '@lobehub/ui/dashboard';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { ChannelPublicMember } from '@lobot/types';
@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import { FolderCog } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import DeviceLoadMeter, { useDeviceLoad } from '@/features/DeviceManager/DeviceLoadMeter';
 import { getDeviceIcon } from '@/features/DeviceManager/getDeviceIcon';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 
@@ -18,9 +19,27 @@ import type { ChannelChoice } from './useAgentRunLocation';
 import { useAgentRunLocation } from './useAgentRunLocation';
 
 const styles = stylex.create({
+  dot: {
+    flex: 'none',
+    width: '6px',
+    height: '6px',
+    borderRadius: '50%',
+    backgroundColor: cssVar.colorTextQuaternary,
+  },
+  dotOnline: {
+    backgroundColor: cssVar.colorSuccess,
+  },
   label: {
     fontSize: '12px',
     color: cssVar.colorTextTertiary,
+  },
+  muted: {
+    overflow: 'hidden',
+    flexShrink: 1,
+    fontSize: '12px',
+    color: cssVar.colorTextTertiary,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
   path: {
     overflow: 'hidden',
@@ -42,6 +61,7 @@ const styles = stylex.create({
 function EnvironmentRows({ agentId, channel }: { agentId: string; channel?: ChannelChoice }) {
   const { t } = useTranslation(['channel', 'chat']);
   const { deviceId, directory, resolving, state, target } = useAgentRunLocation(agentId, channel);
+  const load = useDeviceLoad(state?.kind === 'online' ? state.device : undefined);
 
   let device;
   if (resolving) device = <Text type="secondary">{t('environment.checkingDevice')}</Text>;
@@ -63,21 +83,25 @@ function EnvironmentRows({ agentId, channel }: { agentId: string; channel?: Chan
         <span title={name} {...stylex.props(styles.value)}>
           {name}
         </span>
-        <Tag
-          color={state.kind === 'online' ? 'success' : undefined}
-          role="status"
-          size="small"
-          title={presence}
-          style={{
-            flexShrink: 0,
-            margin: 0,
-            maxWidth: '46%',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
-        >
-          {presence}
-        </Tag>
+        {state.kind === 'online' ? (
+          // Connected is the normal case: a glance-sized signal, with the readings on hover.
+          <Tooltip title={load ? `${presence} · ${load.summary}` : presence}>
+            <span role="status" style={{ display: 'inline-flex', flexShrink: 0 }}>
+              {load ? (
+                <DeviceLoadMeter load={load} />
+              ) : (
+                <span aria-label={presence} {...stylex.props(styles.dot, styles.dotOnline)} />
+              )}
+            </span>
+          </Tooltip>
+        ) : (
+          <Flexbox horizontal align="center" gap={6} role="status" style={{ minWidth: 0 }}>
+            {state.kind === 'offline' && <span aria-hidden {...stylex.props(styles.dot)} />}
+            <span title={presence} {...stylex.props(styles.muted)}>
+              {presence}
+            </span>
+          </Flexbox>
+        )}
       </Flexbox>
     );
   } else {

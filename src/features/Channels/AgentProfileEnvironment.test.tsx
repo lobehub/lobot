@@ -22,15 +22,18 @@ vi.mock('@lobehub/ui', () => ({
   ActionIcon: ({ title }: { title?: string }) => createElement('button', { title }),
   CopyButton: () => null,
   Flexbox: ({ children }: { children?: unknown }) => createElement('div', {}, children as never),
-  Tag: ({ children, ...props }: { children?: unknown }) =>
-    createElement('span', props, children as never),
   Text: ({ children }: { children?: unknown }) => createElement('span', {}, children as never),
+  Tooltip: ({ children }: { children?: unknown }) => children,
 }));
 vi.mock('@lobehub/ui/dashboard', () => ({
   Surface: ({ children, padded: _padded, ...props }: { children?: unknown; padded?: boolean }) =>
     createElement('div', props, children as never),
 }));
 vi.mock('@lobechat/const', () => ({ isDesktop: true }));
+vi.mock('@/features/DeviceManager/DeviceLoadMeter', () => ({
+  default: () => null,
+  useDeviceLoad: () => null,
+}));
 vi.mock('@/features/DeviceManager/getDeviceIcon', () => ({ getDeviceIcon: () => null }));
 vi.mock('@/helpers/executionTarget', () => ({ resolveExecutionTarget: () => 'sandbox' }));
 vi.mock('@/helpers/gatewayMode', () => ({ useIsGatewayModeEnabled: () => true }));
@@ -92,9 +95,10 @@ describe('AgentProfileEnvironment', () => {
     renderPanel();
     const card = screen.getByRole('group', { name: 'environment.title' });
     expect(card).toContainElement(screen.getByText('dev-box'));
-    expect(card).toContainElement(screen.getByText('blockedDevice.connected'));
+    // Connected reads as a green dot, not a word; the word stays for screen readers.
+    expect(card).toContainElement(screen.getByLabelText('blockedDevice.connected'));
+    expect(screen.queryByText('blockedDevice.connected')).toBeNull();
     expect(card).not.toContainElement(screen.getByText('environment.title'));
-    expect(screen.getByText('blockedDevice.connected')).toBeTruthy();
     expect(screen.getByText('/srv/app')).toBeTruthy();
     // Only an admin may read the Channel's own pick.
     expect(state.fetchEnvironment).not.toHaveBeenCalled();
