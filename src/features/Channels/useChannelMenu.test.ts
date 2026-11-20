@@ -46,4 +46,14 @@ describe('useChannelMenu', () => {
   it('offers a conversation between two people only what changes it for me', () => {
     expect(keys({ ...channel, peerUserId: 'usr_lijian' })).toEqual(['pin', 'mute']);
   });
+
+  // An open project Channel read without joining: pinning joins it, but nothing notifies a
+  // non-member, so there is nothing to mute yet.
+  it('offers no mute on a Channel the person has not joined', () => {
+    expect(keys({ ...channel, canDelete: false, joined: false })).toEqual([
+      'pin',
+      'divider',
+      'more',
+    ]);
+  });
 });
