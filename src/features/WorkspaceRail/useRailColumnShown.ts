@@ -6,6 +6,20 @@ import { userGeneralSettingsSelectors } from '@/store/user/selectors';
 
 import { readWorkspaceRailHint } from './railHint';
 
+interface RailListState {
+  isWorkspaceAvailable: boolean;
+  isWorkspaceListInit?: boolean;
+  isWorkspaceLoading: boolean;
+}
+
+/**
+ * The rail has workspaces to show: the server answered, or the saved list was read back while
+ * that answer is still on its way. Waiting for the network left a blank column on every start.
+ * A server without workspaces (self-hosted) never saved one, and its error ends the loading.
+ */
+export const workspaceRailListed = (s: RailListState): boolean =>
+  s.isWorkspaceAvailable || (s.isWorkspaceLoading && !!s.isWorkspaceListInit);
+
 /**
  * The bootstrap flag drops on every workspace switch while the new scope
  * loads. Settings are not cleared with it, so the first successful init is
@@ -26,7 +40,7 @@ export const useWorkspaceRailSettingReady = (): boolean => {
  */
 export const useRailColumnShown = (): boolean => {
   const [available, loading] = useWorkspaceStore((s) => [
-    s.isWorkspaceAvailable,
+    workspaceRailListed(s),
     s.isWorkspaceLoading,
   ]);
   // Read once: the hint only bridges the first load.

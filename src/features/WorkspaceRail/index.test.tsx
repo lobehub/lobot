@@ -10,6 +10,7 @@ import { readWorkspaceRailHint, WORKSPACE_RAIL_HINT_KEY, writeWorkspaceRailHint 
 const mocks = vi.hoisted(() => ({
   activeId: null as string | null,
   available: true,
+  listInit: false,
   loading: false,
   openCreate: vi.fn(),
   navigate: vi.fn(),
@@ -49,8 +50,17 @@ vi.mock('./usePersonalRequestCount', () => ({
 vi.mock('./CreateWorkspace', () => ({ useOpenCreateWorkspace: () => mocks.openCreate }));
 vi.mock('@/business/client/workspace/store', () => ({
   useWorkspaceStore: (
-    selector: (s: { isWorkspaceAvailable: boolean; isWorkspaceLoading: boolean }) => unknown,
-  ) => selector({ isWorkspaceAvailable: mocks.available, isWorkspaceLoading: mocks.loading }),
+    selector: (s: {
+      isWorkspaceAvailable: boolean;
+      isWorkspaceListInit: boolean;
+      isWorkspaceLoading: boolean;
+    }) => unknown,
+  ) =>
+    selector({
+      isWorkspaceAvailable: mocks.available,
+      isWorkspaceListInit: mocks.listInit,
+      isWorkspaceLoading: mocks.loading,
+    }),
 }));
 vi.mock('@/business/client/hooks/useWorkspaces', () => ({ useWorkspaces: () => mocks.workspaces }));
 vi.mock('@/business/client/hooks/useActiveWorkspaceId', () => ({
@@ -89,6 +99,7 @@ describe('WorkspaceRail', () => {
   beforeEach(() => {
     mocks.activeId = null;
     mocks.available = true;
+    mocks.listInit = false;
     mocks.loading = false;
     mocks.personalRequests = 0;
     mocks.showWorkspaceRail = true;
@@ -124,6 +135,18 @@ describe('WorkspaceRail', () => {
 
     expect(container.firstElementChild).toBeEmptyDOMElement();
     expect(container.firstElementChild).not.toBeNull();
+  });
+
+  it('paints the saved workspaces while the server is still answering', () => {
+    writeWorkspaceRailHint(true);
+    mocks.available = false;
+    mocks.listInit = true;
+    mocks.loading = true;
+    render(<WorkspaceRail />);
+
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
+    expect(screen.getByLabelText('LobeHub')).toBeInTheDocument();
+    expect(screen.getByLabelText('Acme')).toBeInTheDocument();
   });
 
   it('reserves nothing while loading when it did not show last time', () => {
