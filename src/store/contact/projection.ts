@@ -32,12 +32,16 @@ export const contactProfileResource = defineReplica<{ userId: string }, ContactU
   version: 1,
 });
 
-/** A shared Agent reached by its share id, handle or link, with my relation to it. */
+/**
+ * A shared Agent reached by its share id, handle or link, with my relation to it. Persisted so
+ * its card opens from the last copy after a restart, then revalidates.
+ */
 export const contactShareResource = defineReplica<{ share: string }, ContactSearchResult[]>({
   fetcher: ({ share }) => contactService.search(share),
   key: ({ share }) => share,
   name: 'contactShare',
-  storage: 'memory',
+  persist: { maxEntries: 50 },
+  storage: 'indexedDB',
   version: 1,
 });
 
