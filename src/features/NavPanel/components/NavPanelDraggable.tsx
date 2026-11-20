@@ -7,6 +7,7 @@ import { Activity, memo, Suspense, useMemo, useRef } from 'react';
 import NavPanelUpgradeEntry from '@/business/client/features/NavPanelUpgradeEntry';
 import { isDesktop } from '@/const/version';
 import { MAC_VIBRANCY_BACKGROUND } from '@/features/Electron/system/macWindowFullscreen';
+import { UpdateNotification } from '@/features/Electron/updater/UpdateNotification';
 import { USER_DROPDOWN_ICON_ID } from '@/features/NavPanel/constants';
 import { TOGGLE_BUTTON_ID } from '@/features/NavPanel/ToggleLeftPanelButton';
 import NavTabBar from '@/features/NavRail';
@@ -190,6 +191,7 @@ export const NavPanelDraggable = memo<NavPanelDraggableProps>(
         <Suspense fallback={null}>
           <NavPanelUpgradeEntry />
         </Suspense>
+        <UpdateNotification />
         {/* The tab bar owns navigation, settings and help. */}
         <NavTabBar />
       </>

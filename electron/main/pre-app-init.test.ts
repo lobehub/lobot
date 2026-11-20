@@ -4,6 +4,7 @@ const { app, isDev } = vi.hoisted(() => ({
   app: {
     commandLine: { appendSwitch: vi.fn() },
     getPath: vi.fn(() => '/app-data'),
+    setAppUserModelId: vi.fn(),
     setName: vi.fn(),
     setPath: vi.fn(),
   },
@@ -57,6 +58,25 @@ describe('pre-app-init', () => {
     });
 
     expect(app.commandLine.appendSwitch).not.toHaveBeenCalled();
+  });
+
+  it('stamps the installer app id before Windows can create a toast notifier', async () => {
+    await load({ platform: 'win32' });
+
+    expect(app.setAppUserModelId).toHaveBeenCalledWith('com.lobehub.lobot');
+  });
+
+  it("stamps a distribution's app id when one is configured", async () => {
+    vi.stubEnv('DESKTOP_APP_ID', 'com.acme.work');
+    await load({ platform: 'win32' });
+
+    expect(app.setAppUserModelId).toHaveBeenCalledWith('com.acme.work');
+  });
+
+  it('leaves the app id alone off Windows', async () => {
+    await load({ platform: 'darwin' });
+
+    expect(app.setAppUserModelId).not.toHaveBeenCalled();
   });
 
   it('keeps the keychain for the shared dev profile and other platforms', async () => {

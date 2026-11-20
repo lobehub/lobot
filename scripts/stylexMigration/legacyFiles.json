@@ -404,7 +404,6 @@
   "src/features/Electron/titlebar/TabBar/styles.ts",
   "src/features/Electron/titlebar/WinControl.tsx",
   "src/features/Electron/titlebar/WindowsAppMenu.tsx",
-  "src/features/Electron/updater/UpdateNotification.tsx",
   "src/features/EntityLink/Render/InternalEntityLink.tsx",
   "src/features/EntityLink/Render/InternalEntityPreview.tsx",
   "src/features/EntityLink/Render/LinkChip.tsx",

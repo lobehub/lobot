@@ -8,7 +8,6 @@ import { getPlatform } from '@/utils/platform';
 
 import DeviceGateway from '../connection/DeviceGateway';
 import { useWatchThemeUpdate } from '../system/useWatchThemeUpdate';
-import { UpdateNotification } from '../updater/UpdateNotification';
 import { getTitleBarLayoutConfig } from './layout';
 import NavigationBar from './NavigationBar';
 import { useMenuPageCommands } from './useMenuPageCommands';
@@ -37,7 +36,6 @@ const TitleBar = memo(() => {
       <Flexbox horizontal align={'center'} gap={4}>
         <Flexbox horizontal align={'center'} className={electronStylish.nodrag} gap={8}>
           <AgentDiscoveryTip />
-          <UpdateNotification />
           <DeviceGateway />
         </Flexbox>
         {showCustomWinControl && (

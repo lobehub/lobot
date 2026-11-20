@@ -1,18 +1,19 @@
-import type { UpdateInfo } from '@lobechat/electron-client-ipc';
+import type { UpdateInfo, UpdaterState } from '@lobechat/electron-client-ipc';
 import { useWatchBroadcast } from '@lobechat/electron-client-ipc';
 import {
   Button as BaseButton,
   createModal,
-  createStaticStyles,
-  cssVar,
   Flexbox,
   Icon,
   Markdown,
   toast,
   useModalContext,
 } from '@lobehub/ui';
+import { Surface } from '@lobehub/ui/dashboard';
+import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import * as stylex from '@stylexjs/stylex';
 import { t } from 'i18next';
-import { X } from 'lucide-react';
+import { Loader2, RefreshCw, X } from 'lucide-react';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,67 +25,156 @@ import { userGeneralSettingsSelectors } from '@/store/user/selectors';
 import { applyCoreUpdate } from './applyCoreUpdate';
 import { formatCoreVersion } from './coreVersion';
 import { selectUpdateInfo } from './selectUpdateInfo';
+import { formatUpdatePercent, selectUpdateIsland } from './selectUpdateIsland';
 import { useAutoDismiss } from './useAutoDismiss';
 
 const APPLIED_TOAST_DURATION = 3000;
 
-const styles = createStaticStyles(({ css, cssVar }) => ({
-  installLaterCloseButton: css`
-    all: unset;
+const spin = stylex.keyframes({
+  to: { transform: 'rotate(360deg)' },
+});
 
-    cursor: pointer;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    inline-size: 24px;
-    block-size: 24px;
-    border-radius: 6px;
-
-    color: ${cssVar.colorTextTertiary};
-
-    &:hover {
-      color: ${cssVar.colorText};
-      background: ${cssVar.colorFillTertiary};
-    }
-
-    &:focus-visible {
-      outline: 2px solid ${cssVar.colorPrimary};
-      outline-offset: 2px;
-    }
-  `,
-
-  // Sits inline in the title bar's right cluster so it never covers page content
-  installLaterToast: css`
-    display: flex;
-    flex-shrink: 0;
-    gap: 4px;
-    align-items: center;
-
-    block-size: 28px;
-    padding-inline: 10px 4px;
-    border: 1px solid ${cssVar.colorBorderSecondary};
-    border-radius: ${cssVar.borderRadiusLG};
-
-    font-size: ${cssVar.fontSizeSM};
-    line-height: 1;
-    color: ${cssVar.colorText};
-    white-space: nowrap;
-
-    background: ${cssVar.colorFillQuaternary};
-  `,
-
-  releaseNote: css`
-    overflow: scroll;
-
-    max-height: 300px;
-    padding: 8px;
-    border-radius: 8px;
-
-    background: ${cssVar.colorFillQuaternary};
-  `,
-}));
+const styles = stylex.create({
+  // Same fill and stroke as the outlined contacts ActionIcon in this column.
+  island: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    boxSizing: 'border-box',
+    marginBlockStart: '4px',
+    marginBlockEnd: '8px',
+    marginInline: '12px',
+    paddingBlock: '6px',
+    paddingInlineStart: '12px',
+    paddingInlineEnd: '6px',
+    borderColor: cssVar.colorBorder,
+    fontSize: '13px',
+    lineHeight: '18px',
+    whiteSpace: 'nowrap',
+    userSelect: 'none',
+    backgroundColor: cssVar.colorBgElevated,
+  },
+  status: {
+    overflow: 'hidden',
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 'auto',
+    minWidth: 0,
+    marginBlock: 0,
+    marginInline: 0,
+    paddingBlock: 0,
+    paddingInline: 0,
+    borderWidth: 0,
+    borderStyle: 'none',
+    borderColor: 'transparent',
+    backgroundColor: 'transparent',
+    backgroundImage: 'none',
+    color: 'inherit',
+    font: 'inherit',
+    fontWeight: 600,
+    textAlign: 'start',
+    textOverflow: 'ellipsis',
+  },
+  statusButton: {
+    cursor: 'pointer',
+    outlineWidth: { 'default': 0, ':focus-visible': '2px' },
+    outlineStyle: { 'default': 'none', ':focus-visible': 'solid' },
+    outlineColor: { 'default': 'transparent', ':focus-visible': cssVar.colorPrimary },
+    outlineOffset: '2px',
+  },
+  action: {
+    cursor: { 'default': 'pointer', ':disabled': 'progress' },
+    display: 'inline-flex',
+    flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '4px',
+    boxSizing: 'border-box',
+    height: '26px',
+    marginBlock: 0,
+    marginInline: 0,
+    paddingBlock: 0,
+    paddingInline: '10px',
+    borderWidth: 0,
+    borderStyle: 'none',
+    borderColor: 'transparent',
+    borderRadius: '8px',
+    boxShadow: `0 1px 2px color-mix(in srgb, ${cssVar.colorText} 12%, transparent)`,
+    font: 'inherit',
+    fontSize: '12px',
+    fontWeight: 600,
+    fontVariantNumeric: 'tabular-nums',
+    lineHeight: 1,
+    opacity: { 'default': 1, ':disabled': 1 },
+    outlineWidth: { 'default': 0, ':focus-visible': '2px' },
+    outlineStyle: { 'default': 'none', ':focus-visible': 'solid' },
+    outlineColor: { 'default': 'transparent', ':focus-visible': cssVar.colorPrimary },
+    outlineOffset: '2px',
+    transform: {
+      'default': 'scale(1)',
+      ':active': 'scale(0.96)',
+      ':disabled': 'scale(1)',
+      '@media (prefers-reduced-motion: reduce)': 'scale(1)',
+    },
+    color: cssVar.colorBgContainer,
+    backgroundColor: {
+      'default': cssVar.colorText,
+      ':hover': cssVar.colorText,
+      ':disabled': cssVar.colorText,
+    },
+    backgroundImage: 'none',
+  },
+  progressAction: {
+    minWidth: '64px',
+    cursor: 'progress',
+  },
+  close: {
+    cursor: 'pointer',
+    display: 'inline-flex',
+    flexShrink: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '28px',
+    height: '28px',
+    marginBlock: 0,
+    marginInline: 0,
+    paddingBlock: 0,
+    paddingInline: 0,
+    borderWidth: 0,
+    borderStyle: 'none',
+    borderColor: 'transparent',
+    borderRadius: '8px',
+    backgroundColor: { 'default': cssVar.colorText, ':hover': cssVar.colorText },
+    backgroundImage: 'none',
+    color: cssVar.colorBgContainer,
+    outlineWidth: { 'default': 0, ':focus-visible': '2px' },
+    outlineStyle: { 'default': 'none', ':focus-visible': 'solid' },
+    outlineColor: { 'default': 'transparent', ':focus-visible': cssVar.colorPrimary },
+    outlineOffset: '2px',
+  },
+  spin: {
+    display: 'inline-flex',
+    animationName: { 'default': spin, '@media (prefers-reduced-motion: reduce)': 'none' },
+    animationDuration: { 'default': '0.8s', '@media (prefers-reduced-motion: reduce)': '0s' },
+    animationTimingFunction: {
+      'default': 'linear',
+      '@media (prefers-reduced-motion: reduce)': 'linear',
+    },
+    animationIterationCount: {
+      'default': 'infinite',
+      '@media (prefers-reduced-motion: reduce)': 1,
+    },
+  },
+  releaseNote: {
+    overflow: 'auto',
+    maxHeight: '300px',
+    paddingBlock: '8px',
+    paddingInline: '8px',
+    borderRadius: '8px',
+    backgroundColor: cssVar.colorFillQuaternary,
+    backgroundImage: 'none',
+  },
+});
 
 interface UpdateDetailContentProps {
   updateInfo: UpdateInfo;
@@ -100,11 +190,11 @@ const UpdateDetailContent = memo<UpdateDetailContentProps>(({ updateInfo }) => {
       <div style={{ color: cssVar.colorTextSecondary, fontSize: 12 }}>{updateInfo.version}</div>
       {updateInfo.releaseNotes &&
         (typeof updateInfo.releaseNotes === 'string' ? (
-          <div className={styles.releaseNote}>
+          <div {...stylex.props(styles.releaseNote)}>
             <Markdown>{updateInfo.releaseNotes}</Markdown>
           </div>
         ) : (
-          <div className={styles.releaseNote}>
+          <div {...stylex.props(styles.releaseNote)}>
             {updateInfo.releaseNotes.map((note) => (
               <Markdown key={note.version}>{note.note ?? ''}</Markdown>
             ))}
@@ -145,9 +235,77 @@ const openUpdateDetailModal = (updateInfo: UpdateInfo) =>
     width: 520,
   });
 
+const withDevVersion = (label: string, version: string | undefined, isDevMode: boolean) =>
+  isDevMode && version ? `${label} · ${version}` : label;
+
+const Island = ({
+  children,
+  ...rest
+}: { children: React.ReactNode } & React.HTMLAttributes<HTMLDivElement>) => (
+  <Surface className={stylex.props(styles.island).className} {...rest}>
+    {children}
+  </Surface>
+);
+
+const Status = ({ label, onClick }: { label: string; onClick?: () => void }) =>
+  onClick ? (
+    <button
+      className={stylex.props(styles.status, styles.statusButton).className}
+      title={label}
+      type="button"
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  ) : (
+    <span className={stylex.props(styles.status).className} title={label}>
+      {label}
+    </span>
+  );
+
+const ActionButton = ({
+  busy,
+  children,
+  onClick,
+}: {
+  busy?: boolean;
+  children: React.ReactNode;
+  onClick?: () => void;
+}) => (
+  <button
+    className={stylex.props(styles.action).className}
+    disabled={busy}
+    type="button"
+    onClick={onClick}
+  >
+    <span className={busy ? stylex.props(styles.spin).className : undefined}>
+      <Icon icon={busy ? Loader2 : RefreshCw} size={12} />
+    </span>
+    {children}
+  </button>
+);
+
+const ProgressPill = ({ label, percent }: { label: string; percent: number | null }) => (
+  <span
+    aria-label={label}
+    aria-valuemax={100}
+    aria-valuemin={0}
+    aria-valuenow={percent ?? undefined}
+    className={stylex.props(styles.action, styles.progressAction).className}
+    role="progressbar"
+  >
+    <span className={stylex.props(styles.spin).className}>
+      <Icon icon={Loader2} size={12} />
+    </span>
+    {percent === null ? null : `${percent}%`}
+  </span>
+);
+
 export const UpdateNotification: React.FC = () => {
   const { t: tElectron } = useTranslation('electron');
+  const { t: tCommon } = useTranslation('common');
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
+  const [updaterState, setUpdaterState] = useState<UpdaterState | null>(null);
   const [installConfirmMode, setInstallConfirmMode] = useState<
     'unconfirm' | 'installLater' | 'installNow' | null
   >('unconfirm');
@@ -172,6 +330,12 @@ export const UpdateNotification: React.FC = () => {
         }
       })
       .catch(console.error);
+    autoUpdateService
+      .getUpdaterState()
+      .then((state) => {
+        if (active) setUpdaterState((current) => current ?? state);
+      })
+      .catch(console.error);
     return () => {
       active = false;
     };
@@ -188,11 +352,21 @@ export const UpdateNotification: React.FC = () => {
     setIsInstalling(false);
     toast.info(tElectron('updater.rendererUpdateDeferred'));
   });
+  useWatchBroadcast('updaterStateChanged', (state) => {
+    setUpdaterState(state);
+  });
   const isDevMode = useUserStore((s) => userGeneralSettingsSelectors.config(s).isDevMode);
+
+  const view = selectUpdateIsland({
+    appliedVersion,
+    installConfirmMode,
+    updateKind: updateInfo?.kind ?? null,
+    updaterStage: updaterState?.stage ?? null,
+  });
 
   // The "updated to version" toast only shows when no pending update takes its slot
   const appliedToastHoverHandlers = useAutoDismiss(
-    updateInfo ? null : appliedVersion,
+    view === 'applied' ? appliedVersion : null,
     () => setAppliedVersion(null),
     APPLIED_TOAST_DURATION,
   );
@@ -217,106 +391,110 @@ export const UpdateNotification: React.FC = () => {
     if (!applied || !keepLoadingOnSuccess) setIsInstalling(false);
   };
 
-  if (updateInfo?.kind === 'renderer' || updateInfo?.kind === 'core-reload') {
+  if (view === 'downloading') {
+    const percent = formatUpdatePercent(updaterState?.progress?.percent);
     return (
-      <div className={styles.installLaterToast}>
-        <span>
-          {tElectron('updater.rendererReady', { version: formatCoreVersion(updateInfo.version) })}
-        </span>
-        <BaseButton size={'small'} type={'text'} onClick={() => setUpdateInfo(null)}>
-          {tElectron('updater.ignore')}
-        </BaseButton>
-        <BaseButton
-          loading={isInstalling}
-          size={'small'}
-          type={'primary'}
-          onClick={() => applyCoreUpdateNow(false)}
-        >
-          {tElectron('updater.upgradeNow')}
-        </BaseButton>
-      </div>
+      <Island>
+        <Status
+          label={withDevVersion(
+            tElectron('updater.downloadingUpdate'),
+            updaterState?.updateInfo?.version,
+            isDevMode,
+          )}
+        />
+        <ProgressPill
+          percent={percent}
+          label={
+            percent === null
+              ? tElectron('updater.downloadingUpdate')
+              : tCommon('downloadingUpdate', { percent })
+          }
+        />
+      </Island>
     );
   }
 
-  if (updateInfo?.kind === 'core-relaunch') {
+  if (view === 'reload-ready' && updateInfo)
     return (
-      <div className={styles.installLaterToast}>
-        <span>
-          {tElectron('updater.updateReady')}
-          {isDevMode ? ` · ${formatCoreVersion(updateInfo.version)}` : ''}
-        </span>
-        <BaseButton size={'small'} type={'text'} onClick={() => setUpdateInfo(null)}>
-          {tElectron('updater.later')}
-        </BaseButton>
-        <BaseButton
-          loading={isInstalling}
-          size={'small'}
-          type={'primary'}
-          onClick={() => applyCoreUpdateNow(true)}
-        >
+      <Island>
+        <Status
+          label={tElectron('updater.rendererReady', {
+            version: formatCoreVersion(updateInfo.version),
+          })}
+        />
+        <ActionButton busy={isInstalling} onClick={() => applyCoreUpdateNow(false)}>
           {tElectron('updater.upgradeNow')}
-        </BaseButton>
-      </div>
+        </ActionButton>
+      </Island>
     );
-  }
 
-  if (!updateInfo)
-    return appliedVersion ? (
-      <div className={styles.installLaterToast} {...appliedToastHoverHandlers}>
-        <span>
-          {tElectron('updater.rendererUpdated', { version: formatCoreVersion(appliedVersion) })}
-        </span>
-        <BaseButton
-          size={'small'}
-          type={'text'}
+  if (view === 'relaunch-ready' && updateInfo)
+    return (
+      <Island>
+        <Status
+          label={withDevVersion(
+            tElectron('updater.updateReady'),
+            formatCoreVersion(updateInfo.version),
+            isDevMode,
+          )}
+        />
+        <ActionButton busy={isInstalling} onClick={() => applyCoreUpdateNow(true)}>
+          {tElectron('updater.upgradeNow')}
+        </ActionButton>
+      </Island>
+    );
+
+  if (view === 'applied' && appliedVersion)
+    return (
+      <Island {...appliedToastHoverHandlers}>
+        <Status
+          label={tElectron('updater.rendererUpdated', {
+            version: formatCoreVersion(appliedVersion),
+          })}
+        />
+        <ActionButton
           onClick={() => {
             setAppliedVersion(null);
             rendererOtaService.dismissAppliedNotice().catch(console.error);
           }}
         >
           {tElectron('updater.ignore')}
-        </BaseButton>
-      </div>
-    ) : null;
+        </ActionButton>
+      </Island>
+    );
 
-  if (installConfirmMode === 'installLater') {
+  if (view === 'install-later')
     return (
-      <div className={styles.installLaterToast}>
-        {tElectron('updater.willInstallLater')}
+      <Island>
+        <Status label={tElectron('updater.willInstallLater')} />
         <button
-          aria-label="Close"
-          className={styles.installLaterCloseButton}
+          aria-label={tCommon('close')}
+          className={stylex.props(styles.close).className}
           type="button"
           onClick={() => setInstallConfirmMode(null)}
         >
-          <Icon icon={X} style={{ fontSize: 14 }} />
+          <Icon icon={X} size={14} />
         </button>
-      </div>
+      </Island>
     );
-  }
 
-  if (installConfirmMode === 'unconfirm')
+  if (view === 'app-ready' && updateInfo)
     return (
-      <div className={styles.installLaterToast}>
-        <span style={{ cursor: 'pointer' }} onClick={() => openUpdateDetailModal(updateInfo)}>
-          {tElectron('updater.updateReady')}
-          {isDevMode && updateInfo?.version ? ` · ${updateInfo.version}` : ''}
-        </span>
-        <BaseButton size={'small'} type={'text'} onClick={() => autoUpdateService.installLater()}>
-          {tElectron('updater.later')}
-        </BaseButton>
-        <BaseButton
-          loading={isInstalling}
-          size={'small'}
-          type={'primary'}
+      <Island>
+        <Status
+          label={withDevVersion(tElectron('updater.updateReady'), updateInfo.version, isDevMode)}
+          onClick={() => openUpdateDetailModal(updateInfo)}
+        />
+        <ActionButton
+          busy={isInstalling}
           onClick={() => {
             setIsInstalling(true);
             autoUpdateService.installNow();
           }}
         >
           {tElectron('updater.upgradeNow')}
-        </BaseButton>
-      </div>
+        </ActionButton>
+      </Island>
     );
 
   return null;

@@ -4,6 +4,17 @@ import { app } from 'electron';
 
 import * as electronIs from '@/utils/platform';
 
+/**
+ * Windows binds the toast notifier to the process AppUserModelID the first
+ * time `Notification` is touched. With nothing set, Electron invents
+ * `electron.app.<ProductName>`, which is not the Start menu shortcut
+ * electron-builder stamps (`appId`). Toasts are then created and dropped.
+ * This has to happen before `ready`, and before any `Notification` call.
+ */
+if (process.platform === 'win32') {
+  app.setAppUserModelId(process.env.DESKTOP_APP_ID || 'com.lobehub.lobot');
+}
+
 // Must run BEFORE any module captures `app.getPath('userData')` (e.g. `@/const/dir`
 // reads it at top level). Once a path is read, `setName` / `setPath` no-op for it.
 //
@@ -19,10 +30,7 @@ if (electronIs.dev()) {
   // absolute path via LOBE_DESKTOP_USER_DATA_DIR for multi-instance testing.
   app.setName('lobot-dev');
   const userDataOverride = process.env.LOBE_DESKTOP_USER_DATA_DIR;
-  app.setPath(
-    'userData',
-    userDataOverride || path.join(app.getPath('appData'), 'lobot-dev'),
-  );
+  app.setPath('userData', userDataOverride || path.join(app.getPath('appData'), 'lobot-dev'));
   // A launcher-managed instance with a test-account profile (`scripts/devInstance.mts`,
   // `mockKeychain`) encrypts tokens and cookies with Chromium's fixed mock key
   // instead of the macOS keychain. The keychain grants access per binary, and the

@@ -54,14 +54,17 @@ export default class NotificationCtr extends ControllerModule {
     logger.debug('Setting up desktop notifications');
 
     try {
-      if (!Notification.isSupported()) {
-        logger.warn('Desktop notifications are not supported on this platform');
-        return;
-      }
-
+      // `Notification.isSupported()` builds the Windows toast notifier and
+      // freezes whatever AppUserModelID is set at that moment. The shortcut
+      // id has to be in place first; see pre-app-init.
       if (electronIs.windows()) {
         app.setAppUserModelId(getDesktopEnv().DESKTOP_APP_ID || 'com.lobehub.lobot');
         logger.debug('Set Windows App User Model ID for notifications');
+      }
+
+      if (!Notification.isSupported()) {
+        logger.warn('Desktop notifications are not supported on this platform');
+        return;
       }
 
       logger.info('Desktop notifications setup completed');

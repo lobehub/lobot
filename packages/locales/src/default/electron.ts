@@ -148,9 +148,9 @@ export default {
   'updater.checkingUpdate': 'Checking for updates',
   'updater.checkingUpdateDesc': 'Retrieving version information...',
   'updater.downloadNewVersion': 'Download new version',
-  'updater.downloadingUpdate': 'Downloading update',
+  'updater.downloadingUpdate': 'Downloading',
   'updater.downloadingUpdateDesc': 'The update is downloading, please wait...',
-  'updater.installLater': 'Update on next launch',
+  'updater.installLater': 'Next launch',
   'updater.ignore': 'Ignore',
   'updater.isLatestVersion': 'You are using the latest version',
   'updater.isLatestVersionDesc':
@@ -159,22 +159,21 @@ export default {
   'updater.newVersionAvailable': 'New version available',
   'updater.newVersionAvailableDesc':
     'A new version {{version}} has been found, would you like to download it now?',
-  'updater.rendererReady': 'Version {{version}} is ready',
+  'updater.rendererReady': '{{version}} ready',
   'updater.confirmReloadTitle': 'Leave this page?',
   'updater.confirmReloadDescription':
     'You may have unsaved changes or work in progress. Continuing may lose that work.',
   'updater.confirmReloadContinue': 'Continue anyway',
-  'updater.rendererUpdateDeferred':
-    'A page prevented reloading. Finish your current work, then try updating again.',
-  'updater.rendererUpdated': 'Updated to version {{version}}',
-  'updater.rendererUpdateError': "Couldn't install the update. Try again.",
-  'updater.restartAndInstall': 'Install updates and restart',
+  'updater.rendererUpdateDeferred': 'Finish your work, then try again.',
+  'updater.rendererUpdated': 'Updated to {{version}}',
+  'updater.rendererUpdateError': 'Update failed. Try again.',
+  'updater.restartAndInstall': 'Restart',
   'updater.updateError': 'Update error',
-  'updater.updateReady': 'A new version is available',
+  'updater.updateReady': 'Update available',
   'updater.updateReadyDesc':
     'The new version {{version}} has been downloaded. Restart the application to complete the installation.',
-  'updater.upgradeNow': 'Update now',
-  'updater.willInstallLater': 'The update will be installed on the next launch',
+  'updater.upgradeNow': 'Update',
+  'updater.willInstallLater': 'On next launch',
   'waitingOAuth.cancel': 'Cancel',
   'waitingOAuth.description':
     'The browser has opened the authorization page, please complete the authorization in the browser',
