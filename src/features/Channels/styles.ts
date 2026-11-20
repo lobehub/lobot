@@ -15,6 +15,10 @@ export const styles = stylex.create({
     gap: 4,
     minWidth: 0,
   },
+  /** The failed reply's retry or handoff, a button on its own line under the reason. */
+  replyFailureAction: {
+    alignSelf: 'flex-start',
+  },
   /** The server's diagnostic can run long; it gives way first, whole on hover. */
   replyFailureReason: {
     minWidth: 0,
@@ -625,6 +629,8 @@ export const statusStyles = stylex.create({
    */
   state: {
     display: 'inline-flex',
+    // A state is a side note to the name beside it, so it stays a size below it.
+    fontSize: cssVar.fontSizeSM,
     gap: 4,
     alignItems: 'baseline',
     color: cssVar.colorTextSecondary,

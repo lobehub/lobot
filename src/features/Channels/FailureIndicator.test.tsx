@@ -4,9 +4,10 @@
 import type { ChannelDetail, ChannelPublicJob } from '@lobot/types';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { createElement } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FailureIndicator } from './FailureIndicator';
+import { useSeenFailureStore } from './seenFailures';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -67,7 +68,20 @@ const detail = {
   members: [{ agentId: null, id: 'mem_1', name: 'Dario' }],
 } as unknown as ChannelDetail;
 
+const mountMessage = (scrollIntoView = vi.fn()) => {
+  const target = document.createElement('div');
+  target.dataset.channelConversation = 'main';
+  const message = document.createElement('div');
+  message.dataset.messageId = 'msg_1';
+  message.scrollIntoView = scrollIntoView;
+  target.append(message);
+  document.body.append(target);
+  return { remove: () => target.remove(), scrollIntoView };
+};
+
 describe('FailureIndicator popover', () => {
+  beforeEach(() => useSeenFailureStore.setState({ seen: [] }));
+
   it('lists each failure as name and reason, without repeating the title’s state', () => {
     render(createElement(FailureIndicator, { detail }));
     expect(screen.getByText('Dario')).toBeTruthy();
@@ -84,18 +98,25 @@ describe('FailureIndicator popover', () => {
   });
 
   it('jumps to the failed request from an icon at the row’s end', () => {
-    const scrollIntoView = vi.fn();
-    const target = document.createElement('div');
-    target.dataset.channelConversation = 'main';
-    const message = document.createElement('div');
-    message.dataset.messageId = 'msg_1';
-    message.scrollIntoView = scrollIntoView;
-    target.append(message);
-    document.body.append(target);
-
+    const message = mountMessage();
     render(createElement(FailureIndicator, { detail }));
     fireEvent.click(screen.getByRole('button', { name: 'failure.locate' }));
-    expect(scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
-    target.remove();
+    expect(message.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'center' });
+    message.remove();
+  });
+
+  // Jumping to the failure left the indicator in the header, still nudging about it.
+  it('leaves the header once the person jumped to the failure', () => {
+    const message = mountMessage();
+    render(createElement(FailureIndicator, { detail }));
+    fireEvent.click(screen.getByRole('button', { name: 'failure.locate' }));
+    expect(screen.queryByRole('button', { name: 'failure.title' })).toBeNull();
+    message.remove();
+  });
+
+  it('keeps nudging when the failed request is not on the loaded page', () => {
+    render(createElement(FailureIndicator, { detail }));
+    fireEvent.click(screen.getByRole('button', { name: 'failure.locate' }));
+    expect(screen.getByRole('button', { name: 'failure.title' })).toBeTruthy();
   });
 });

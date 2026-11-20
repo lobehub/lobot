@@ -18,7 +18,8 @@ const AVATAR_SIZE = 36;
 
 /**
  * A reply that failed, posted in the feed by the Agent that owed it, after what it already said
- * about the request: the reason on one line, with a retry. It leaves once a newer reply settles it.
+ * about the request: the reason on one line, and under it a retry button. It leaves once a newer
+ * reply settles it.
  * A spent subscription offers no retry, which would only hit the limit again, but a handoff to
  * another Agent.
  */
@@ -89,26 +90,33 @@ export function ReplyFailureMessage({
               <span title={reason} {...stylex.props(styles.replyFailureReason)}>
                 {reason}
               </span>
-              {quotaFailure
-                ? onHandoff && (
-                    <Button size="small" style={{ flexShrink: 0 }} type="link" onClick={onHandoff}>
-                      {t('receipt.handoff')}
-                    </Button>
-                  )
-                : /* Whoever may stop a reply may retry it. A failed run still being released cannot. */
-                  job.canStop &&
-                  !job.writerHeld && (
-                    <Button
-                      loading={retrying}
-                      size="small"
-                      style={{ flexShrink: 0 }}
-                      type="link"
-                      onClick={() => void retry()}
-                    >
-                      {t('receipt.retry')}
-                    </Button>
-                  )}
             </div>
+            {quotaFailure
+              ? onHandoff && (
+                  <Button
+                    shape="round"
+                    size="small"
+                    type="fill"
+                    {...stylex.props(styles.replyFailureAction)}
+                    onClick={onHandoff}
+                  >
+                    {t('receipt.handoff')}
+                  </Button>
+                )
+              : /* Whoever may stop a reply may retry it. A failed run still being released cannot. */
+                job.canStop &&
+                !job.writerHeld && (
+                  <Button
+                    loading={retrying}
+                    shape="round"
+                    size="small"
+                    type="fill"
+                    {...stylex.props(styles.replyFailureAction)}
+                    onClick={() => void retry()}
+                  >
+                    {t('receipt.retry')}
+                  </Button>
+                )}
             {error !== undefined && <AsyncError error={error} variant="inline" />}
           </>
         }
