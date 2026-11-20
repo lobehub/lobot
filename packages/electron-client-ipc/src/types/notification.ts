@@ -32,9 +32,9 @@ export interface CompletionSoundPlayback {
 
 export interface DesktopNotificationSender {
   /**
-   * PNG data URL rendered by the caller. macOS styles the notification as a
-   * communication notification with this avatar. Windows shows it as the
-   * toast's circular sender image, in place of the app icon.
+   * PNG data URL rendered by the caller, clipped to a circle. macOS styles the
+   * notification as a communication notification with this avatar. Windows
+   * shows it in the small app-logo slot, in place of the app icon.
    */
   avatarDataUrl?: string;
   conversationId: string;

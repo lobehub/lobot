@@ -7,6 +7,10 @@ import {
 } from './notificationAvatar';
 
 const create2dContext = () => ({
+  arc: vi.fn(),
+  beginPath: vi.fn(),
+  clip: vi.fn(),
+  closePath: vi.fn(),
   drawImage: vi.fn(),
   fillRect: vi.fn(),
   fillStyle: '',
@@ -68,6 +72,7 @@ describe('renderAvatarToDataUrl', () => {
 
     expect(result).toBe('data:image/png;base64,CANVAS');
     expect(context2d.fillStyle).toBe('#123456');
+    expect(context2d.clip).toHaveBeenCalled();
     expect(context2d.fillRect).toHaveBeenCalled();
     expect(context2d.fillText).toHaveBeenCalledWith('🤖', expect.any(Number), expect.any(Number));
   });
@@ -78,6 +83,7 @@ describe('renderAvatarToDataUrl', () => {
     });
 
     expect(result).toBe('data:image/png;base64,CANVAS');
+    expect(context2d.clip).toHaveBeenCalled();
     expect(context2d.drawImage).toHaveBeenCalled();
   });
 

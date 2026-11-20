@@ -1,9 +1,3 @@
-import { createHash } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
-
 import type {
   DesktopNotificationResult,
   ShowDesktopNotificationParams,
@@ -13,7 +7,6 @@ import { nativeImage, Notification } from 'electron';
 
 import type { App } from '@/core/App';
 import { createLogger } from '@/utils/logger';
-import { windows } from '@/utils/platform';
 
 const logger = createLogger('controllers:NotificationCtr');
 
@@ -65,39 +58,7 @@ export const rememberNavigate = (
   if (oldest) map.delete(oldest);
 };
 
-const escapeXml = (value: string) =>
-  value
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;');
-
-/**
- * Windows draws the sender image in the app-icon slot and crops it to a circle, the way Discord's
- * toasts do. Electron's `icon` option uses the same slot but leaves the crop square, so an avatar
- * goes through toast XML instead. The XML replaces the other options; the click listener does not.
- */
-export const windowsAvatarToastXml = ({
-  body,
-  silent,
-  src,
-  title,
-}: {
-  body: string;
-  silent?: boolean;
-  src: string;
-  title: string;
-}) => {
-  const audio = silent ? '<audio silent="true"/>' : '';
-  return (
-    '<toast><visual><binding template="ToastGeneric">' +
-    `<text>${escapeXml(title)}</text>` +
-    `<text>${escapeXml(body)}</text>` +
-    `<image placement="appLogoOverride" hint-crop="circle" src="${escapeXml(src)}"/>` +
-    `</binding></visual>${audio}</toast>`
-  );
-};
-
+/** The sender portrait, shown in the small app-logo slot. */
 const notificationIcon = (dataUrl?: string): NativeImage | undefined => {
   if (!dataUrl) return undefined;
   try {
@@ -105,22 +66,6 @@ const notificationIcon = (dataUrl?: string): NativeImage | undefined => {
     return image.isEmpty() ? undefined : image;
   } catch (error) {
     logger.error('Failed to decode notification avatar:', error);
-    return undefined;
-  }
-};
-
-/** A file URL Windows can load after the toast is shown. The same avatar keeps one file. */
-const saveNotificationAvatar = async (image: NativeImage): Promise<string | undefined> => {
-  try {
-    const png = image.toPNG();
-    if (png.length === 0) return undefined;
-    const dir = path.join(tmpdir(), 'lobot-notification-avatars');
-    await mkdir(dir, { recursive: true });
-    const file = path.join(dir, `${createHash('sha1').update(png).digest('hex')}.png`);
-    await writeFile(file, png);
-    return pathToFileURL(file).href;
-  } catch (error) {
-    logger.error('Failed to prepare notification avatar:', error);
     return undefined;
   }
 };
@@ -177,37 +122,10 @@ const plainNotificationOptions = (
   urgency,
 });
 
-/**
- * Windows avatar toasts need the image on disk before the toast XML exists. That wait happens
- * only on this branch: the plain path stays synchronous so a banner without an avatar is shown
- * before the call returns to its caller.
- */
-const showWithWindowsAvatar = async (
-  args: ElectronNotificationArgs,
-): Promise<DesktopNotificationResult> => {
-  const icon = notificationIcon(args.params.sender?.avatarDataUrl);
-  const src = icon ? await saveNotificationAvatar(icon) : undefined;
-  if (!src) return presentNotification(plainNotificationOptions(args, icon), args.onClick);
-
-  return presentNotification(
-    {
-      toastXml: windowsAvatarToastXml({
-        body: args.params.body,
-        silent: args.params.silent,
-        src,
-        title: args.params.title,
-      }),
-    },
-    args.onClick,
-  );
-};
-
 export const showElectronNotification = (
   args: ElectronNotificationArgs,
 ): Promise<DesktopNotificationResult> =>
-  windows() && args.params.sender?.avatarDataUrl
-    ? showWithWindowsAvatar(args)
-    : presentNotification(
-        plainNotificationOptions(args, notificationIcon(args.params.sender?.avatarDataUrl)),
-        args.onClick,
-      );
+  presentNotification(
+    plainNotificationOptions(args, notificationIcon(args.params.sender?.avatarDataUrl)),
+    args.onClick,
+  );

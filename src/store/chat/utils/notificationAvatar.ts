@@ -54,10 +54,19 @@ const loadImage = (src: string) =>
     image.src = src;
   });
 
+/** Windows shows this PNG in the small app-logo slot; a circle keeps the portrait round there. */
+const clipCircle = (context: CanvasRenderingContext2D) => {
+  context.beginPath();
+  context.arc(AVATAR_SIZE / 2, AVATAR_SIZE / 2, AVATAR_SIZE / 2, 0, Math.PI * 2);
+  context.closePath();
+  context.clip();
+};
+
 const renderImageAvatar = async (avatar: string): Promise<string | undefined> => {
   const image = await loadImage(avatar);
   const { canvas, context } = createCanvas();
   if (!context) return undefined;
+  clipCircle(context);
   context.drawImage(image, 0, 0, AVATAR_SIZE, AVATAR_SIZE);
   return canvas.toDataURL('image/png');
 };
@@ -65,6 +74,7 @@ const renderImageAvatar = async (avatar: string): Promise<string | undefined> =>
 const renderEmojiAvatar = (avatar: string, backgroundColor?: string): string | undefined => {
   const { canvas, context } = createCanvas();
   if (!context) return undefined;
+  clipCircle(context);
   context.fillStyle = backgroundColor || FALLBACK_BACKGROUND;
   context.fillRect(0, 0, AVATAR_SIZE, AVATAR_SIZE);
   context.font = `${Math.round(AVATAR_SIZE * EMOJI_FONT_RATIO)}px sans-serif`;
