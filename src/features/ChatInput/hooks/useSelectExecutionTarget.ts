@@ -1,8 +1,8 @@
 'use client';
 
 import { isDesktop } from '@lobechat/const';
-import type { DeviceExecutionTarget } from '@lobot/types';
 import { toast } from '@lobehub/ui';
+import type { DeviceExecutionTarget } from '@lobot/types';
 import { t } from 'i18next';
 import { useCallback } from 'react';
 

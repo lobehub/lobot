@@ -1,5 +1,5 @@
-import type { MetaData } from '@lobot/types';
 import type { ItemType } from '@lobehub/ui';
+import type { MetaData } from '@lobot/types';
 
 import type { AgentTransferScope } from './useAgentTransferMenuItem';
 

@@ -210,6 +210,7 @@ function CreateChannel({ existing, onCreated }: CreateChannelProps) {
       exclude={existing?.agentIds}
       locked={busy}
       options={options}
+      people={{ channelId: existing?.id, onChange: setPeople, value: people }}
       value={agents}
       footer={
         <Flexbox gap={12} padding={16}>
@@ -267,7 +268,6 @@ function CreateChannel({ existing, onCreated }: CreateChannelProps) {
           />
         ) : undefined
       }
-      people={{ channelId: existing?.id, onChange: setPeople, value: people }}
       onChange={setAgents}
     />
   );

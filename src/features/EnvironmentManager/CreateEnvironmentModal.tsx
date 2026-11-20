@@ -1,6 +1,5 @@
 'use client';
 
-import type { EnvironmentVisibility } from '@lobot/types';
 import {
   Button,
   confirmModal,
@@ -11,6 +10,7 @@ import {
   Text,
   useModalContext,
 } from '@lobehub/ui';
+import type { EnvironmentVisibility } from '@lobot/types';
 import { t as translate } from 'i18next';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

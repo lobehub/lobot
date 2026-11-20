@@ -2,6 +2,7 @@
 import { isDesktop, isHeterogeneousAgentModelId, LOADING_FLAT } from '@lobechat/const';
 import { GoalIdentifier, isGoalPrompt } from '@lobechat/const/builtinTools';
 import { isRemoteHeterogeneousType } from '@lobechat/heterogeneous-agents';
+import { generateEntityId, nanoid } from '@lobechat/utils';
 import type {
   ChatAudioItem,
   ChatImageItem,
@@ -18,7 +19,6 @@ import {
   resolveAgentAgencyConfig,
   toComposerUserMessage,
 } from '@lobot/types';
-import { generateEntityId, nanoid } from '@lobechat/utils';
 import { t } from 'i18next';
 
 import { type ChatInputEditor } from '@/features/ChatInput';

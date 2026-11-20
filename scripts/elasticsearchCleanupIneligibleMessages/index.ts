@@ -7,8 +7,8 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import pg from 'pg';
 
 import { FtsSearchSyncOutboxRepository } from '../../packages/database/src/repositories/ftsSearchSyncOutbox';
-import { messages } from '../../packages/database/src/schemas';
 import * as schema from '../../packages/database/src/schemas';
+import { messages } from '../../packages/database/src/schemas';
 import type { LobeChatDatabase } from '../../packages/database/src/type';
 import { searchableMessage } from '../../packages/database/src/utils/searchableMessage';
 

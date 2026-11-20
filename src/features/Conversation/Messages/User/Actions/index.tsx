@@ -1,5 +1,5 @@
-import { type UIChatMessage } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
+import { type UIChatMessage } from '@lobot/types';
 import { memo, useMemo } from 'react';
 
 import { MESSAGE_ACTION_BAR_PORTAL_ATTRIBUTES } from '@/const/messageActionPortal';

@@ -1,7 +1,7 @@
 'use client';
 
-import type { MessageMcpAppSource } from '@lobot/types';
 import { cssVar, Flexbox, Icon, Text } from '@lobehub/ui';
+import type { MessageMcpAppSource } from '@lobot/types';
 import { AppWindowIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 

@@ -1,6 +1,6 @@
+import { confirmModal } from '@lobehub/ui';
 import type { WorkingDirConfig, WorkingDirEntry } from '@lobot/types';
 import { getWorkingDirEffectivePath, getWorkingDirSourcePath } from '@lobot/types';
-import { confirmModal } from '@lobehub/ui';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 

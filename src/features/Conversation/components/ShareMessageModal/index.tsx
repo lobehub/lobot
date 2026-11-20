@@ -1,5 +1,5 @@
-import { type UIChatMessage } from '@lobot/types';
 import { createModal } from '@lobehub/ui';
+import { type UIChatMessage } from '@lobot/types';
 import { t } from 'i18next';
 import { lazy, Suspense } from 'react';
 

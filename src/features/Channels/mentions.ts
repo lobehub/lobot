@@ -1,6 +1,6 @@
-import type { ChannelMemberActorType } from '@lobot/types';
 import type { UnknownRecord } from '@lobechat/utils/object';
 import { isRecord } from '@lobechat/utils/object';
+import type { ChannelMemberActorType } from '@lobot/types';
 import { $getSelection, $isRangeSelection, $isTextNode } from 'lexical';
 
 /** The editor's @ matcher requires a whitespace boundary, even after Chinese prose. */

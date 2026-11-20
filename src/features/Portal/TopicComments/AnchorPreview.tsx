@@ -1,5 +1,5 @@
-import type { TopicCommentItem } from '@lobot/types';
 import { Flexbox, Icon, Tag, Text } from '@lobehub/ui';
+import type { TopicCommentItem } from '@lobot/types';
 import { MessageSquareText } from 'lucide-react';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';

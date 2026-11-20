@@ -1,6 +1,6 @@
-import type { ChatContextContent } from '@lobot/types';
 import { Tag, Tooltip } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ChatContextContent } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { SquareDashedMousePointer } from 'lucide-react';
 import { memo } from 'react';

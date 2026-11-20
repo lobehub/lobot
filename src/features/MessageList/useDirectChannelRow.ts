@@ -2,12 +2,12 @@ import { type DropdownItem } from '@lobehub/ui';
 import type { ChannelListItem } from '@lobot/types';
 import { useCallback } from 'react';
 
+import { flattenChannelMenu } from '@/features/Channels/flattenChannelMenu';
 import {
   directAvatarState,
   replyAvatarState,
   workingConversationCount,
 } from '@/features/Channels/jobStatus';
-import { flattenChannelMenu } from '@/features/Channels/flattenChannelMenu';
 import { useChannelMenu } from '@/features/Channels/useChannelMenu';
 import { channelSelectors, useChannelStore } from '@/store/channel';
 

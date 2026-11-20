@@ -1,5 +1,5 @@
-import type { SidebarAgentItem } from '@lobot/types';
 import { type AgentAvatarColor, cssVar, getAgentAvatarTraits } from '@lobehub/ui';
+import type { SidebarAgentItem } from '@lobot/types';
 
 import { isDefaultAgentAvatar } from '@/components/AgentAvatar';
 import { remoteAvatarSrc } from '@/components/Avatar/fallback';

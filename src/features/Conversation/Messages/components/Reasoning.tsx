@@ -1,5 +1,5 @@
-import { type MessageContentPart, type ModelReasoning } from '@lobot/types';
 import { deserializeParts } from '@lobechat/utils';
+import { type MessageContentPart, type ModelReasoning } from '@lobot/types';
 import { memo } from 'react';
 
 import Thinking from '@/features/Conversation/components/Thinking';

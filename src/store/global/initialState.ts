@@ -226,13 +226,13 @@ export interface SystemStatus {
   contactListCollapsedSections?: string[];
   /** Order of the Contacts list; absent means by name. Device-local view setting. */
   contactListSortBy?: ContactListSortBy;
+  disabledModelProvidersSortType?: string;
+  disabledModelsSortType?: string;
   /**
    * Local agent types already offered by auto-discovery (imported or declined),
    * so a deleted or dismissed agent is not offered again on the next launch.
    */
   discoveredAgentTypes?: string[];
-  disabledModelProvidersSortType?: string;
-  disabledModelsSortType?: string;
   /**
    * IDs of banners/ads the user has dismissed. New banners use a new ID
    * so dismissing the current one does not hide future ones.

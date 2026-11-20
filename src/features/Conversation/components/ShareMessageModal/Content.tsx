@@ -1,5 +1,5 @@
-import { type UIChatMessage } from '@lobot/types';
 import { Flexbox, Tabs } from '@lobehub/ui';
+import { type UIChatMessage } from '@lobot/types';
 import { memo, useId, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

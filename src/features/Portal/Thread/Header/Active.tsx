@@ -1,5 +1,5 @@
-import { agentDisplayName } from '@lobot/types';
 import { cssVar, Flexbox, Icon, Tag, Text } from '@lobehub/ui';
+import { agentDisplayName } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { memo } from 'react';
 

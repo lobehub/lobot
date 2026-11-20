@@ -1,7 +1,7 @@
 'use client';
 
-import type { DeviceListItem } from '@lobot/types';
 import { Popover } from '@lobehub/ui';
+import type { DeviceListItem } from '@lobot/types';
 import type { ReactElement } from 'react';
 
 import DeviceHoverPanel from '@/features/DeviceManager/DeviceHoverPanel';

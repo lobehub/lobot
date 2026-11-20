@@ -1,5 +1,5 @@
-import { type ConversationContext, type UIChatMessage } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
+import { type ConversationContext, type UIChatMessage } from '@lobot/types';
 import { memo } from 'react';
 
 import { ConversationProvider } from '@/features/Conversation/ConversationProvider';

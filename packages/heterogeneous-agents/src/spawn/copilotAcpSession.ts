@@ -2,8 +2,8 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 
-import type { HeterogeneousAgentModel } from '@lobot/types';
 import { isRecord } from '@lobechat/utils/object';
+import type { HeterogeneousAgentModel } from '@lobot/types';
 
 import type { AskUserBridge, InterventionAnswer } from '../askUser/AskUserBridge';
 import type { AcpAgentSessionOptions } from './acpAgentSession';

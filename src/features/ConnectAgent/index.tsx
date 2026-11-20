@@ -7,8 +7,6 @@ import type {
   RemoteHeterogeneousAgentType,
 } from '@lobechat/heterogeneous-agents';
 import { isRemoteHeterogeneousType } from '@lobechat/heterogeneous-agents';
-import type { DeviceListItem } from '@lobot/types';
-import { agentDisplayName } from '@lobot/types';
 import {
   Alert,
   Button,
@@ -26,6 +24,8 @@ import {
   Tooltip,
   useModalContext,
 } from '@lobehub/ui';
+import type { DeviceListItem } from '@lobot/types';
+import { agentDisplayName } from '@lobot/types';
 import { t as i18nT } from 'i18next';
 import {
   ArrowLeft,

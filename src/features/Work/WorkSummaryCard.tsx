@@ -1,8 +1,8 @@
 'use client';
 
-import type { WorkSummaryItem } from '@lobot/types';
 import { formatUsageValue } from '@lobechat/utils';
 import { Center, createStaticStyles, cx, Flexbox, Icon as LobeIcon, Text } from '@lobehub/ui';
+import type { WorkSummaryItem } from '@lobot/types';
 import { CircleDollarSignIcon, CoinsIcon, GitBranchIcon } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';

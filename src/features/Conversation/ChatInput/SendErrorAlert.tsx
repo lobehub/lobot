@@ -1,5 +1,5 @@
-import { ChatErrorType } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
+import { ChatErrorType } from '@lobot/types';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 

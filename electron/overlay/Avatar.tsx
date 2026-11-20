@@ -17,7 +17,8 @@ const isUrl = (value: string) => URL_PATTERN.test(value);
 const firstGlyph = (value?: string | null) => {
   if (!value) return '?';
   const trimmed = value.trim();
-  return trimmed ? (Array.from(trimmed)[0] ?? '?') : '?';
+  const glyph = trimmed ? (Array.from(trimmed)[0] ?? '?') : '?';
+  return glyph.toLocaleUpperCase();
 };
 
 const OverlayAvatar = memo<OverlayAvatarProps>(({ avatar, background, size = 18, title }) => {

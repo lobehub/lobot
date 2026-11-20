@@ -1,5 +1,5 @@
-import { agentDisplayName } from '@lobot/types';
 import { ActionIcon, Flexbox, Text } from '@lobehub/ui';
+import { agentDisplayName } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { X } from 'lucide-react';
 import type { Dispatch, SetStateAction } from 'react';

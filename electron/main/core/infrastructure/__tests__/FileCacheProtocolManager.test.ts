@@ -2,7 +2,7 @@ import { mkdtemp, readdir, rm, utimes, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
 
 import { FileCacheProtocolManager } from '../FileCacheProtocolManager';
 
@@ -26,14 +26,16 @@ const imageResponse = (body: Buffer = PNG) =>
 const request = (fileId: string, src = SIGNED_URL) =>
   new Request(`lobe-file-cache://file/${fileId}/a.png?src=${encodeURIComponent(src)}`);
 
+type RemoteFetch = (url: string, init?: RequestInit) => Promise<Response>;
+
 describe('FileCacheProtocolManager', () => {
   let cacheDir: string;
-  let fetchRemote: ReturnType<typeof vi.fn>;
+  let fetchRemote: Mock<RemoteFetch>;
   let manager: FileCacheProtocolManager;
 
   beforeEach(async () => {
     cacheDir = await mkdtemp(path.join(tmpdir(), 'file-cache-'));
-    fetchRemote = vi.fn();
+    fetchRemote = vi.fn<RemoteFetch>();
     manager = new FileCacheProtocolManager({ cacheDir, fetch: fetchRemote });
   });
 

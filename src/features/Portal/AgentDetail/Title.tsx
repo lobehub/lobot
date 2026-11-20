@@ -1,7 +1,7 @@
 'use client';
 
-import { agentDisplayName } from '@lobot/types';
 import { Flexbox, Text } from '@lobehub/ui';
+import { agentDisplayName } from '@lobot/types';
 import { memo } from 'react';
 
 import AgentAvatar from '@/components/AgentAvatar';

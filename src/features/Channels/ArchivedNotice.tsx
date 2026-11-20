@@ -1,5 +1,5 @@
-import type { ChannelListItem } from '@lobot/types';
 import { Button, Flexbox, Icon } from '@lobehub/ui';
+import type { ChannelListItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { Archive } from 'lucide-react';
 import { useState } from 'react';

@@ -1,5 +1,5 @@
-import type { TopicCommentJson } from '@lobot/types';
 import { Editor, useEditor } from '@lobehub/editor/react';
+import type { TopicCommentJson } from '@lobot/types';
 import type { Ref } from 'react';
 import { memo, useCallback, useImperativeHandle } from 'react';
 

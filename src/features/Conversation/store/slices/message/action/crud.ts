@@ -1,3 +1,4 @@
+import { merge, nanoid, safeParseJSON } from '@lobechat/utils';
 import {
   type ChatImageItem,
   type ChatMessageError,
@@ -12,7 +13,6 @@ import {
   type UpdateMessageRAGParams,
 } from '@lobot/types';
 import { ChatErrorType } from '@lobot/types';
-import { merge, nanoid, safeParseJSON } from '@lobechat/utils';
 import isEqual from 'fast-deep-equal';
 import { type StateCreator } from 'zustand';
 

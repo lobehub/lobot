@@ -126,7 +126,7 @@ describe('ElectronIPCServer', () => {
 
   describe('connection and message handling', () => {
     let server: ElectronIPCServer;
-    let connectionHandler: Function;
+    let connectionHandler: (socket: typeof mockSocket) => void;
 
     beforeEach(() => {
       // Setup connection handler capture

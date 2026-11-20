@@ -1,9 +1,9 @@
 'use client';
 
 import { CHANNEL_URL } from '@lobechat/const';
-import type { ContactSearchResult } from '@lobot/types';
 import { Flexbox, Icon, Text, toast, useModalContext } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ContactSearchResult } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import type { LucideIcon } from 'lucide-react';
 import {

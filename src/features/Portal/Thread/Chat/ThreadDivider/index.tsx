@@ -1,5 +1,5 @@
-import { type IThreadType, ThreadType } from '@lobot/types';
 import { cssVar, Divider, Flexbox, Icon } from '@lobehub/ui';
+import { type IThreadType, ThreadType } from '@lobot/types';
 import { GitBranch } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';

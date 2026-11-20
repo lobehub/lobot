@@ -1,7 +1,7 @@
 'use client';
 
-import { agentDisplayName } from '@lobot/types';
 import { cx, Flexbox } from '@lobehub/ui';
+import { agentDisplayName } from '@lobot/types';
 import { memo } from 'react';
 
 import FollowUpChips from '../FollowUp/FollowUpChips';

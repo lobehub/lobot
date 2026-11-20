@@ -1,10 +1,10 @@
+import { generateEntityId } from '@lobechat/utils';
 import type {
   ConversationContext,
   CreateMessageParams,
   UploadFileItem,
   VoiceMessageRecording,
 } from '@lobot/types';
-import { generateEntityId } from '@lobechat/utils';
 import { produce } from 'immer';
 import type { StoreApi } from 'zustand';
 

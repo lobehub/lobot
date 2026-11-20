@@ -1,5 +1,5 @@
-import { agentDisplayName } from '@lobot/types';
 import { Tag } from '@lobehub/ui';
+import { agentDisplayName } from '@lobot/types';
 import { Command } from 'cmdk';
 import { ArrowLeft, X } from 'lucide-react';
 import { memo } from 'react';

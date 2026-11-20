@@ -1,8 +1,8 @@
 'use client';
 
-import type { EnvironmentConfiguration } from '@lobot/types';
 import { Button, Flexbox, Icon, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { EnvironmentConfiguration } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { PlusIcon, SettingsIcon } from 'lucide-react';
 import { memo } from 'react';

@@ -1,7 +1,7 @@
-import { type OpenAIChatMessage, type VoiceMessageRecording } from '@lobot/types';
 import { type IEditor, type SlashOptions } from '@lobehub/editor';
 import { type ChatInputProps } from '@lobehub/editor/react';
 import { type DropdownItem } from '@lobehub/ui';
+import { type OpenAIChatMessage, type VoiceMessageRecording } from '@lobot/types';
 
 import { type ActionKeys } from '@/features/ChatInput';
 

@@ -1,5 +1,5 @@
-import type { RemoteServerNetworkErrorType } from '@lobot/types';
 import { toast } from '@lobehub/ui';
+import type { RemoteServerNetworkErrorType } from '@lobot/types';
 import { t } from 'i18next';
 
 export const remoteServerErrorToast = (errorType: RemoteServerNetworkErrorType) => {

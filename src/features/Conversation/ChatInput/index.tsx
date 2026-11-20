@@ -1,12 +1,12 @@
 'use client';
 
-import { type VoiceMessageRecording } from '@lobot/types';
 import { type SlashOptions } from '@lobehub/editor';
 import {
   type ChatInputActionsProps,
   type ChatInputProps as EditorChatInputProps,
 } from '@lobehub/editor/react';
 import { type DropdownItem, Flexbox, toast } from '@lobehub/ui';
+import { type VoiceMessageRecording } from '@lobot/types';
 import { type ReactNode } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
@@ -469,7 +469,6 @@ const ChatInput = memo<ChatInputProps>(
       <WideScreenContainer
         style={{ position: 'relative', ...(skipScrollMarginWithList ? { marginTop: -12 } : null) }}
       >
-
         {/* Keep the chat input mounted while an intervention panel is showing —
             unmounting would wipe the Lexical editor's in-memory document. */}
         <div style={{ display: 'contents' }}>

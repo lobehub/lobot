@@ -1,5 +1,5 @@
-import { type ChatToolPayloadWithResult } from '@lobot/types';
 import { Accordion, ActionIcon, Block, cssVar, Flexbox, Icon, Spin, Text } from '@lobehub/ui';
+import { type ChatToolPayloadWithResult } from '@lobot/types';
 import { Check, HandIcon, Maximize2, Minimize2, X } from 'lucide-react';
 import { AnimatePresence } from 'motion/react';
 import * as motion from 'motion/react-m';

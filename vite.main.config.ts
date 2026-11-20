@@ -3,10 +3,10 @@ import path from 'node:path';
 import { defineConfig, type UserConfig } from 'vite';
 import zodCompiler from 'zod-compiler/vite';
 
-import { viteCompletionSounds } from './plugins/vite/completionSounds';
-import { viteOsPlatformResolve } from './plugins/vite/osPlatformResolve';
 import { externalRuntimeModules } from './external-runtime-deps.config.mjs';
 import { getNativeExternalDependencies } from './native-deps.config.mjs';
+import { viteCompletionSounds } from './plugins/vite/completionSounds';
+import { viteOsPlatformResolve } from './plugins/vite/osPlatformResolve';
 import {
   applyDesktopViteConfigExtension,
   isCloudDesktopBuild,
@@ -75,7 +75,7 @@ export default defineConfig(async (env) => {
           manualChunks(id: string) {
             const normalizedId = id.replaceAll('\\', '/').split('?')[0];
 
-            if (/apps\/desktop\/src\/main\/core\/App\.ts$/.test(normalizedId)) {
+            if (normalizedId.endsWith('apps/desktop/src/main/core/App.ts')) {
               return 'main-app';
             }
 

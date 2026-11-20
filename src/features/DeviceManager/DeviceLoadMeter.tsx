@@ -1,7 +1,7 @@
 'use client';
 
-import type { DeviceListItem } from '@lobot/types';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { DeviceListItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { useTranslation } from 'react-i18next';
 

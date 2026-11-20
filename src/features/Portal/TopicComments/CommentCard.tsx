@@ -1,4 +1,3 @@
-import type { TopicCommentItem } from '@lobot/types';
 import type { DropdownItem } from '@lobehub/ui';
 import {
   ActionIcon,
@@ -12,6 +11,7 @@ import {
   Text,
   toast,
 } from '@lobehub/ui';
+import type { TopicCommentItem } from '@lobot/types';
 import { MessageCircle, MoreHorizontal, Pencil, Trash } from 'lucide-react';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

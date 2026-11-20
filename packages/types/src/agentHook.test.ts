@@ -132,8 +132,8 @@ describe('flat tool response parser', () => {
   ])('ignores a notification response without a top-level decision %#', (body) => {
     expect(parseToolCallHookResponse(body)).toEqual({ status: 'ignored' });
   });
-  it.each([
-    ...[
+  it.each(
+    [
       { decision: 'block' },
       { decision: 'ask' },
       { decision: 'defer' },
@@ -142,7 +142,7 @@ describe('flat tool response parser', () => {
       { decision: 'deny', reason: 3 },
       { decision: 'deny', reason: null },
     ].map(response),
-  ])('rejects an explicitly invalid decision %#', (body) => {
+  )('rejects an explicitly invalid decision %#', (body) => {
     expect(parseToolCallHookResponse(body)).toEqual({ code: 'invalid_response', status: 'error' });
   });
   it.each(['allow', 'deny'])(

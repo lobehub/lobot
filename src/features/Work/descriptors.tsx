@@ -1,3 +1,5 @@
+import { Github } from '@lobehub/icons';
+import { cssVar, FileTypeIcon as FileTypeBadge } from '@lobehub/ui';
 import {
   type ExternalWorkResourceType,
   type ListedWorkType,
@@ -8,8 +10,6 @@ import {
   type WorkType,
   type WorkVersionMetadata,
 } from '@lobot/types';
-import { Github } from '@lobehub/icons';
-import { cssVar, FileTypeIcon as FileTypeBadge } from '@lobehub/ui';
 import type { LucideIcon } from 'lucide-react';
 import {
   CircleCheckIcon,

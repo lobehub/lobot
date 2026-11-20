@@ -1,6 +1,6 @@
-import type { TopicCommentJson } from '@lobot/types';
 import type { IEditor, ISlashMenuOption } from '@lobehub/editor';
 import { INSERT_MENTION_COMMAND } from '@lobehub/editor';
+import type { TopicCommentJson } from '@lobot/types';
 import { $getSelection, $isRangeSelection } from 'lexical';
 
 export interface MentionableWorkspaceMember {

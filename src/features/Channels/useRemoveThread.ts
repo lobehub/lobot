@@ -1,5 +1,5 @@
-import type { ChannelListItem } from '@lobot/types';
 import { confirmModal, toast } from '@lobehub/ui';
+import type { ChannelListItem } from '@lobot/types';
 import { useLatest } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 

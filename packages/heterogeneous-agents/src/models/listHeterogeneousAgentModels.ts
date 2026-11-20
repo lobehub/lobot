@@ -2,13 +2,13 @@ import { execFile } from 'node:child_process';
 import path from 'node:path';
 import { promisify } from 'node:util';
 
+import { isRecord } from '@lobechat/utils/object';
 import type {
   HeterogeneousAgentModel,
   HeterogeneousAgentModelCatalog,
   HeterogeneousAgentModelCatalogErrorCode,
   ListHeterogeneousAgentModelsParams,
 } from '@lobot/types';
-import { isRecord } from '@lobechat/utils/object';
 
 import { getHeterogeneousTypeLabel } from '../labels';
 import { AcpRpcResponseError } from '../spawn/acpStdioClient';

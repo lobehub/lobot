@@ -1,4 +1,3 @@
-import type { DeviceGitWorktreeListItem } from '@lobot/types';
 import {
   confirmModal,
   copyToClipboard,
@@ -17,6 +16,7 @@ import {
   Tooltip,
 } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { DeviceGitWorktreeListItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import {
   CheckIcon,

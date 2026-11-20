@@ -1,8 +1,6 @@
 'use client';
 
 import { DEFAULT_USER_AVATAR_URL } from '@lobechat/const';
-import type { SidebarAgentItem } from '@lobot/types';
-import { agentDisplayName, agentSecondaryDisplayName } from '@lobot/types';
 import {
   ActionIcon,
   Avatar,
@@ -15,6 +13,8 @@ import {
   Text,
   Tooltip,
 } from '@lobehub/ui';
+import type { SidebarAgentItem } from '@lobot/types';
+import { agentDisplayName, agentSecondaryDisplayName } from '@lobot/types';
 import dayjs from 'dayjs';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { memo, type MouseEvent, useCallback, useRef, useState } from 'react';

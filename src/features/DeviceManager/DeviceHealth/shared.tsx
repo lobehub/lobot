@@ -1,5 +1,5 @@
-import type { DeviceScope } from '@lobot/types';
 import { cssVar } from '@lobehub/ui';
+import type { DeviceScope } from '@lobot/types';
 
 import { deviceSelectors, useDeviceStore } from '@/store/device';
 

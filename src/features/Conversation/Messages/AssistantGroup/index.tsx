@@ -1,8 +1,8 @@
 'use client';
 
 import { findLatestWorkRootOperationId } from '@lobechat/conversation-flow';
-import type { AssistantContentBlock, EmojiReaction, UISignalCallbacksBlock } from '@lobot/types';
 import { Flexbox, Tag } from '@lobehub/ui';
+import type { AssistantContentBlock, EmojiReaction, UISignalCallbacksBlock } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import type { MouseEventHandler, ReactNode } from 'react';
 import { memo, Suspense, useCallback, useMemo } from 'react';

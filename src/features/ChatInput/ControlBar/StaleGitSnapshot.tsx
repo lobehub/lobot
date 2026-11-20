@@ -1,4 +1,3 @@
-import type { WorkingDirGitState } from '@lobot/types';
 import {
   DropdownMenuItem,
   DropdownMenuPopup,
@@ -9,6 +8,7 @@ import {
   Icon,
 } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { WorkingDirGitState } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { GitBranchIcon, GitForkIcon, GitPullRequest, RotateCcwIcon } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';

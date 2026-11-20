@@ -1,6 +1,6 @@
-import type { WorkingDirGitState } from '@lobot/types';
 import { Icon, toast, Tooltip } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { WorkingDirGitState } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { ArrowDownIcon, ArrowUpIcon, GitPullRequest } from 'lucide-react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';

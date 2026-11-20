@@ -1,7 +1,7 @@
 'use client';
 
-import type { UIChatMessage } from '@lobot/types';
 import { Flexbox, ScrollArea } from '@lobehub/ui';
+import type { UIChatMessage } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import type { RefObject } from 'react';
 import { memo, useMemo } from 'react';

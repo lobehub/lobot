@@ -1,7 +1,7 @@
-import type { BotNoReplyClaimedReason } from '@lobot/types';
-import { parseBotNoReplyToken } from '@lobot/types';
 import { Flexbox, Icon } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { BotNoReplyClaimedReason } from '@lobot/types';
+import { parseBotNoReplyToken } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { MessageCircleOffIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';

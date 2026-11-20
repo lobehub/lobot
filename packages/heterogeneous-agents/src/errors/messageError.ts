@@ -1,5 +1,5 @@
-import type { ChatErrorHeterogeneousContext, ChatMessageError } from '@lobot/types';
 import { isRecord } from '@lobechat/utils/object';
+import type { ChatErrorHeterogeneousContext, ChatMessageError } from '@lobot/types';
 
 import { isLocalHeterogeneousType } from '../config';
 import { classifyCliQuotaMessage } from './cliQuota';

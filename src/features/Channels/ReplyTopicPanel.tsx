@@ -1,6 +1,6 @@
 import { AGENT_CHAT_TOPIC_URL } from '@lobechat/const';
-import type { ConversationContext } from '@lobot/types';
 import { ActionIcon, Flexbox, Text } from '@lobehub/ui';
+import type { ConversationContext } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { ExternalLink, X } from 'lucide-react';
 import { Activity, useMemo, useState } from 'react';

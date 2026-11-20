@@ -1,7 +1,7 @@
 'use client';
 
-import type { WorkSummaryItem } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
+import type { WorkSummaryItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import isEqual from 'fast-deep-equal';
 import type { ComponentProps } from 'react';

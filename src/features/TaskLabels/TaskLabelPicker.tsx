@@ -1,6 +1,6 @@
-import { DEFAULT_TASK_LABEL_COLOR, type TaskLabel, type TaskLabelRef } from '@lobot/types';
 import { Button, cssVar, Flexbox, Icon, Popover, Text, Tooltip } from '@lobehub/ui';
 import { cssVar as sxVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import { DEFAULT_TASK_LABEL_COLOR, type TaskLabel, type TaskLabelRef } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { CheckIcon, PlusIcon } from 'lucide-react';
 import type { CSSProperties, KeyboardEvent, ReactNode } from 'react';

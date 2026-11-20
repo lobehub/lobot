@@ -1,5 +1,5 @@
-import { type ChatImageItem } from '@lobot/types';
 import { PreviewGroup } from '@lobehub/ui';
+import { type ChatImageItem } from '@lobot/types';
 import { memo } from 'react';
 
 import GalleyGrid from '@/components/GalleyGrid';

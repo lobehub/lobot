@@ -1,7 +1,7 @@
 declare module 'verification:component' {
   import type { AskUserQuestionViewProps } from '@lobechat/shared-tool-ui/ask-user';
-  import type { WorkSummaryItem } from '@lobot/types';
   import type { ListProps } from '@lobehub/ui';
+  import type { WorkSummaryItem } from '@lobot/types';
   import type { LucideIcon } from 'lucide-react';
   import type { ComponentType, CSSProperties, ReactNode } from 'react';
 

@@ -1,4 +1,3 @@
-import { deriveWorktreePath, type DeviceGitWorktreeListItem } from '@lobot/types';
 import {
   confirmModal,
   DropdownMenuItem,
@@ -14,6 +13,7 @@ import {
   Tooltip,
 } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import { deriveWorktreePath, type DeviceGitWorktreeListItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import {
   CheckIcon,

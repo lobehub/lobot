@@ -1,5 +1,5 @@
-import { type UIChatMessage } from '@lobot/types';
 import { Button, Center, createStaticStyles, Flexbox, Text, toast } from '@lobehub/ui';
+import { type UIChatMessage } from '@lobot/types';
 import { DownloadIcon, RotateCwIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

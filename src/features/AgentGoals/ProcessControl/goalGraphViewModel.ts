@@ -1,4 +1,6 @@
 import { GOAL_CLARIFICATION_TITLE, GOAL_MACHINE_GATE_TITLE } from '@lobechat/const/goal';
+import { experimentMembers } from '@lobechat/utils/goalGraph';
+import { isClosedByRetirement } from '@lobechat/utils/verify/acceptanceStatus';
 import type {
   GoalGraphDecision,
   GoalGraphEdge,
@@ -12,8 +14,6 @@ import type {
   GoalSpend,
   WorkType,
 } from '@lobot/types';
-import { experimentMembers } from '@lobechat/utils/goalGraph';
-import { isClosedByRetirement } from '@lobechat/utils/verify/acceptanceStatus';
 
 /**
  * Read model for the Goal process-control surface.

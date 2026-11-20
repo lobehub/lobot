@@ -1,6 +1,6 @@
 import { DEFAULT_INBOX_TITLE } from '@lobechat/const';
-import { agentDisplayName, type ConversationContext, type UIChatMessage } from '@lobot/types';
 import { cx, Flexbox, Markdown, Text } from '@lobehub/ui';
+import { agentDisplayName, type ConversationContext, type UIChatMessage } from '@lobot/types';
 import { memo } from 'react';
 
 import AgentAvatar from '@/components/AgentAvatar';

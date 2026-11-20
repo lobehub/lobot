@@ -1,5 +1,5 @@
-import { agentDisplayName } from '@lobot/types';
 import { Flexbox, Tag } from '@lobehub/ui';
+import { agentDisplayName } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { type MouseEventHandler } from 'react';
 import { memo, useCallback, useMemo } from 'react';

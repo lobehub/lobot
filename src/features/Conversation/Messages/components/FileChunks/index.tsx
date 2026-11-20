@@ -1,6 +1,6 @@
-import { type ChatFileChunk } from '@lobot/types';
 import { Flexbox, Icon } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import { type ChatFileChunk } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { BookOpenTextIcon, ChevronDown, ChevronRight } from 'lucide-react';
 import { memo, useState } from 'react';

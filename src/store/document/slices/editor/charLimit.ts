@@ -1,5 +1,5 @@
-import { DOCUMENT_CHAR_LIMIT_EXCEEDED, type DocumentCharLimitErrorData } from '@lobot/types';
 import { toast } from '@lobehub/ui';
+import { DOCUMENT_CHAR_LIMIT_EXCEEDED, type DocumentCharLimitErrorData } from '@lobot/types';
 import i18next, { t } from 'i18next';
 
 /** A save refused by the plan's per-document character limit. */

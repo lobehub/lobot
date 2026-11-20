@@ -1,7 +1,7 @@
 'use client';
 
-import type { MessageSubAgentCallback } from '@lobot/types';
 import { Button, Flexbox, Tag } from '@lobehub/ui';
+import type { MessageSubAgentCallback } from '@lobot/types';
 import { ListTree } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 

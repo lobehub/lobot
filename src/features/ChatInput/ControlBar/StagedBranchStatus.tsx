@@ -1,8 +1,8 @@
 'use client';
 
-import type { DeviceGitWorktreeListItem } from '@lobot/types';
 import { Icon, Tooltip } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { DeviceGitWorktreeListItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { GitBranchIcon } from 'lucide-react';
 import { memo, useCallback, useState } from 'react';

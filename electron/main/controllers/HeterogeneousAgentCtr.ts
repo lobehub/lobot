@@ -25,12 +25,12 @@ import {
   isSpawnableDirectory,
   resolveHeteroSpawnCwd,
 } from '@lobechat/heterogeneous-agents/workingDirectory';
+import { managedProcessEnvironment, spawnManaged } from '@lobechat/utils/managedProcess';
+import { sleep } from '@lobechat/utils/sleep';
 import type {
   HeterogeneousAgentModelCatalog,
   ListHeterogeneousAgentModelsParams,
 } from '@lobot/types';
-import { managedProcessEnvironment, spawnManaged } from '@lobechat/utils/managedProcess';
-import { sleep } from '@lobechat/utils/sleep';
 import { app as electronApp } from 'electron';
 
 import { HETERO_AGENT_TRACING_DIR } from '@/const/heteroAgent';

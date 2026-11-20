@@ -1,12 +1,12 @@
 import { BUILTIN_AGENT_SLUGS } from '@lobechat/const/builtinAgents';
+import { type DropdownItem } from '@lobehub/ui';
+import { confirmModal, Icon, toast } from '@lobehub/ui';
 import {
   agentRenameField,
   SessionDefaultGroup,
   type SidebarAgentLabel,
   type SidebarVisibility,
 } from '@lobot/types';
-import { type DropdownItem } from '@lobehub/ui';
-import { confirmModal, Icon, toast } from '@lobehub/ui';
 import isEqual from 'fast-deep-equal';
 import {
   Check,

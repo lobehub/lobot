@@ -1,7 +1,7 @@
 'use client';
 
-import { agentDisplayName } from '@lobot/types';
 import { Flexbox, Markdown, Text } from '@lobehub/ui';
+import { agentDisplayName } from '@lobot/types';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 

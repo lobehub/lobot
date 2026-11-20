@@ -1,4 +1,3 @@
-import { type ChatTranslate } from '@lobot/types';
 import {
   ActionIcon,
   copyToClipboard,
@@ -9,6 +8,7 @@ import {
   Tag,
   toast,
 } from '@lobehub/ui';
+import { type ChatTranslate } from '@lobot/types';
 import { ChevronDown, ChevronsRight, ChevronUp, CopyIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

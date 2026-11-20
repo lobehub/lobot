@@ -1,7 +1,7 @@
 'use client';
 
-import { type IThreadType, type UIChatMessage } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
+import { type IThreadType, type UIChatMessage } from '@lobot/types';
 import { memo, Suspense, useCallback, useMemo } from 'react';
 
 import { type ConversationContext, type ConversationHooks } from '@/features/Conversation';

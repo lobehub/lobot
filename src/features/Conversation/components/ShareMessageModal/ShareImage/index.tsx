@@ -1,6 +1,6 @@
-import { agentDisplayName, type UIChatMessage } from '@lobot/types';
 import { Button, Flexbox, Switch, Tabs } from '@lobehub/ui';
 import { Form, type FormFieldProps, useForm } from '@lobehub/ui/form';
+import { agentDisplayName, type UIChatMessage } from '@lobot/types';
 import { CopyIcon } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

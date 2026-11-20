@@ -1,6 +1,6 @@
 import { getConnectorCatalog } from '@lobechat/const';
-import { type AgentPluginEntry, parsePluginEntry } from '@lobot/types';
 import { toast } from '@lobehub/ui';
+import { type AgentPluginEntry, parsePluginEntry } from '@lobot/types';
 import { t } from 'i18next';
 
 import { agentSkillService, type EnsureMarketSkillResult } from '@/services/skill';

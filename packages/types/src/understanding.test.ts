@@ -8,8 +8,8 @@ import type {
 import {
   OnboardingUnderstandingMessageMetadataSchema,
   OnboardingUnderstandingSessionSchema,
-  UnderstandingCompositionItemSchema,
   projectOnboardingUnderstandingSessionStatus,
+  UnderstandingCompositionItemSchema,
 } from './understanding';
 
 const completedProvider: UnderstandingProviderState = {

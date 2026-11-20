@@ -1,7 +1,7 @@
 'use client';
 
-import type { EmojiReaction } from '@lobot/types';
 import { createStaticStyles, cx, Flexbox } from '@lobehub/ui';
+import type { EmojiReaction } from '@lobot/types';
 import { memo } from 'react';
 
 import { usePermission } from '@/hooks/usePermission';

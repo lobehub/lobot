@@ -1,8 +1,8 @@
 'use client';
 
-import { type UISignalCallbacksBlock } from '@lobot/types';
 import { Accordion, Block, Flexbox, Icon, Markdown, Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import { type UISignalCallbacksBlock } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { Radio } from 'lucide-react';
 import { memo, useState } from 'react';

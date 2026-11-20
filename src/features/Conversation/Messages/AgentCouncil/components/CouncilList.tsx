@@ -1,7 +1,7 @@
 'use client';
 
-import { type UIChatMessage } from '@lobot/types';
 import { Divider, Flexbox } from '@lobehub/ui';
+import { type UIChatMessage } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import { Fragment, memo } from 'react';
 

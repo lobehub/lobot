@@ -1,7 +1,7 @@
 /**
  * Generate or update PR comment with Docker build info
  */
-module.exports = async ({
+module.exports = async function dockerPrComment({
   github,
   context,
   dockerMetaJson,
@@ -9,7 +9,7 @@ module.exports = async ({
   version,
   dockerhubUrl,
   platforms,
-}) => {
+}) {
   const COMMENT_IDENTIFIER = '<!-- DOCKER-BUILD-COMMENT -->';
 
   const parseTags = () => {

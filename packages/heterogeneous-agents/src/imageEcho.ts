@@ -44,7 +44,7 @@ export const rewriteImagePlaceholders = (
   if (!matches || matches.length !== outcomes.length) return content;
 
   let i = 0;
-  return content.replace(IMAGE_PLACEHOLDER_RE, (original) => {
+  return content.replaceAll(IMAGE_PLACEHOLDER_RE, (original) => {
     const outcome = outcomes[i++];
     return outcome?.url ? imageMarkdown(outcome.mediaType, outcome.url) : original;
   });

@@ -3,7 +3,7 @@ import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import type { FileLoaderInterface } from '../../types';
-import { IpynbLoader, convertIpynbToMarkdown, scrubIpynbFallbackText } from './index';
+import { convertIpynbToMarkdown, IpynbLoader, scrubIpynbFallbackText } from './index';
 
 const fixturePath = (filename: string) => path.join(__dirname, `./fixtures/${filename}`);
 

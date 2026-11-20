@@ -1,5 +1,5 @@
-import { UserPreferenceSchema } from '@lobot/types';
 import { isRecord } from '@lobechat/utils/object';
+import { UserPreferenceSchema } from '@lobot/types';
 import type { PartialDeep } from 'type-fest';
 
 import { AppLocalStorage } from '@/libs/replica/storage';

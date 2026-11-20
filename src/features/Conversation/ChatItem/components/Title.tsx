@@ -1,6 +1,6 @@
-import { agentDisplayName } from '@lobot/types';
 import { Text } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import { agentDisplayName } from '@lobot/types';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -1,5 +1,5 @@
-import type { WorkspaceUserPreference } from '@lobot/types';
 import { mergeNotificationSettings } from '@lobechat/utils/mergeNotificationSettings';
+import type { WorkspaceUserPreference } from '@lobot/types';
 import isEqual from 'fast-deep-equal';
 import type { ReplicaSlice } from 'local-replica/zustand';
 import { useSyncExternalStore } from 'react';

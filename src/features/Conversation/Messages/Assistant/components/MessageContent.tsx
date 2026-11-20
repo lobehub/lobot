@@ -1,6 +1,6 @@
 import { LOADING_FLAT } from '@lobechat/const';
-import { type UIChatMessage } from '@lobot/types';
 import { Flexbox } from '@lobehub/ui';
+import { type UIChatMessage } from '@lobot/types';
 import { memo } from 'react';
 
 import { messageStateSelectors, useConversationStore } from '../../../store';

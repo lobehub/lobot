@@ -1,7 +1,7 @@
 import path from 'node:path';
 
-import type { CodexSpeedMode, HeterogeneousAgentModel } from '@lobot/types';
 import { isRecord } from '@lobechat/utils/object';
+import type { CodexSpeedMode, HeterogeneousAgentModel } from '@lobot/types';
 
 import { CodexAppServerClient, CodexAppServerRpcError } from '../codex/CodexAppServerClient';
 import { resolveHeteroSpawnCwd } from '../spawn/workingDirectory';

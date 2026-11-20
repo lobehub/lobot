@@ -1,7 +1,5 @@
 'use client';
 
-import type { TaskExecutionConfig, TaskLabelRef } from '@lobot/types';
-import { toTaskExecutionConfigPatch } from '@lobot/types';
 import { useEditor } from '@lobehub/editor/react';
 import {
   ActionIcon,
@@ -15,6 +13,8 @@ import {
   toast,
   useModalContext,
 } from '@lobehub/ui';
+import type { TaskExecutionConfig, TaskLabelRef } from '@lobot/types';
+import { toTaskExecutionConfigPatch } from '@lobot/types';
 import { Minimize2, Paperclip, TagIcon, X } from 'lucide-react';
 import { type KeyboardEvent, memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

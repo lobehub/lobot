@@ -1,4 +1,3 @@
-import { type AgentLabelListItem } from '@lobot/types';
 import {
   Button,
   createModal,
@@ -9,6 +8,7 @@ import {
   useModalContext,
 } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import { type AgentLabelListItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { t as translate } from 'i18next';
 import { memo, useState } from 'react';

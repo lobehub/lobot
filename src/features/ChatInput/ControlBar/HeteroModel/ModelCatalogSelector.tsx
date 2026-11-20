@@ -1,8 +1,6 @@
 'use client';
 
 import { getHeterogeneousTypeLabel } from '@lobechat/heterogeneous-agents';
-import type { ListHeterogeneousAgentModelsParams } from '@lobot/types';
-import { HETEROGENEOUS_AGENT_DEFAULT_SELECTION } from '@lobot/types';
 import {
   ActionIcon,
   Button,
@@ -29,6 +27,8 @@ import {
   Tooltip,
 } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
+import type { ListHeterogeneousAgentModelsParams } from '@lobot/types';
+import { HETEROGENEOUS_AGENT_DEFAULT_SELECTION } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import {
   CheckIcon,

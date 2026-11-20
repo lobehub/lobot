@@ -1,3 +1,11 @@
+import {
+  DropdownMenuPopup,
+  DropdownMenuPortal,
+  DropdownMenuPositioner,
+  DropdownMenuRoot,
+  DropdownMenuTrigger,
+  renderDropdownMenuItems,
+} from '@lobehub/ui';
 import type {
   HeterogeneousAgentMode,
   HeterogeneousProviderConfig,
@@ -8,14 +16,6 @@ import type {
   HeteroSelectorCapability,
   ListHeterogeneousAgentModelsParams,
 } from '@lobot/types';
-import {
-  DropdownMenuPopup,
-  DropdownMenuPortal,
-  DropdownMenuPositioner,
-  DropdownMenuRoot,
-  DropdownMenuTrigger,
-  renderDropdownMenuItems,
-} from '@lobehub/ui';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -1,5 +1,5 @@
-import { type ChatFileChunk } from '@lobot/types';
 import { Center, Flexbox, Text, Tooltip } from '@lobehub/ui';
+import { type ChatFileChunk } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
 import { memo } from 'react';
 

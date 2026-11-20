@@ -1,5 +1,5 @@
-import { agentDisplayName } from '@lobot/types';
 import { cssVar } from '@lobehub/ui';
+import { agentDisplayName } from '@lobot/types';
 import { useTranslation } from 'react-i18next';
 
 import { DEFAULT_INBOX_AVATAR } from '@/const/meta';
