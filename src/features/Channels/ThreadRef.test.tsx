@@ -4,7 +4,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { resolveThreadRef, ThreadRef } from './ThreadRef';
+import { resolveThreadRef, ThreadRef, ThreadRefText } from './ThreadRef';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -96,5 +96,22 @@ describe('ThreadRef', () => {
 
     expect(screen.queryByRole('button')).toBeNull();
     expect(screen.getByText('Login bug')).toBeTruthy();
+  });
+});
+
+describe('ThreadRefText', () => {
+  it('shows a quoted `<#cht_…>` as the thread’s title, not the raw token', () => {
+    views.current = { 'chn_1:main': mainView([thread({ title: 'Polish loading' })]) };
+    const { container } = render(
+      <ThreadRefText channelId="chn_1" text="Justin: carry on in <#cht_1> please" />,
+    );
+    expect(container.textContent).toBe('Justin: carry on in Polish loading please');
+    expect(container.querySelector('[data-thread-id="cht_1"]')).not.toBeNull();
+    expect(container.querySelector('button')).toBeNull();
+  });
+
+  it('keeps the text as is without a Channel to resolve against', () => {
+    const { container } = render(<ThreadRefText text="see <#cht_1>" />);
+    expect(container.textContent).toBe('see <#cht_1>');
   });
 });

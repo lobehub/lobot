@@ -8,6 +8,7 @@ import { channelSelectors, useChannelStore } from '@/store/channel';
 
 import { styles } from './styles';
 import { threadIcon } from './threadIcon';
+import { splitThreadRefs } from './threadRefMarkdown';
 import { threadTitle } from './threadTitle';
 
 export interface ThreadRefInfo {
@@ -89,5 +90,20 @@ export const ThreadRef = ({
     >
       {content}
     </button>
+  );
+};
+
+/**
+ * One line of plain message text, as a reply quote shows it, with its `<#cht_…>` references as
+ * the same (inert) chips the message body shows, not the raw token.
+ */
+export const ThreadRefText = ({ channelId, text }: { channelId?: string; text: string }) => {
+  if (!channelId) return text;
+  return splitThreadRefs(text).map((part, index) =>
+    typeof part === 'string' ? (
+      part
+    ) : (
+      <ThreadRef channelId={channelId} key={index} threadId={part.threadId} />
+    ),
   );
 };

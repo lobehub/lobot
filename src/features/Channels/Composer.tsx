@@ -45,6 +45,7 @@ import { COMPOSER_GUTTER, styles } from './styles';
 import { useAttachments } from './useAttachments';
 import { useCanUploadAttachments } from './useCanUploadAttachments';
 import { useComposerDraft } from './useComposerDraft';
+import { ThreadRefText } from './ThreadRef';
 import { useMentionInvites } from './useMentionInvites';
 import type { ChannelReplyTarget } from './useReplyTarget';
 
@@ -290,7 +291,11 @@ export function Composer({
                       <Text ellipsis fontSize={12} type="secondary">
                         {t('reply.to', { name: replyTarget.author.name || t('deletedMember') })}
                         {' · '}
-                        {replyTarget.content || t('reply.attachment')}
+                        {replyTarget.content ? (
+                          <ThreadRefText channelId={channel?.id} text={replyTarget.content} />
+                        ) : (
+                          t('reply.attachment')
+                        )}
                       </Text>
                     </Flexbox>
                     <ActionIcon
