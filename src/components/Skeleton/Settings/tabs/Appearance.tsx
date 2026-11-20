@@ -51,20 +51,14 @@ export const FontSectionSkeleton = () => {
 };
 
 /**
- * Chat appearance: four separate blocks (36px apart in the settings container):
- * transition preview, chat-behaviour switches, code and Mermaid theme previews.
+ * Chat appearance: three separate blocks (36px apart in the settings container):
+ * chat-behaviour switches, code and Mermaid theme previews.
  */
 export const ChatAppearanceSectionSkeleton = () => {
   const text = useSkeletonText('setting');
 
   return (
     <Flexbox gap={20} width={'100%'}>
-      <SettingsSurfaceGroup
-        extra={<SkeletonBar height={38} radius={8} width={151} />}
-        title={text('settingChatAppearance.transitionMode.title', 64)}
-      >
-        <SkeletonBar height={182} radius={8} />
-      </SettingsSurfaceGroup>
       <SettingsFormSkeleton
         groups={[
           {
