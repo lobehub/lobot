@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  Flexbox,
-  highlighterThemes,
-  mermaidThemes,
-  Segmented,
-  Select,
-  Switch,
-  Tabs,
-} from '@lobehub/ui';
+import { Flexbox, highlighterThemes, mermaidThemes, Segmented, Select, Switch } from '@lobehub/ui';
 import { useForm } from '@lobehub/ui/form';
 import isEqual from 'fast-deep-equal';
 import { memo, useState } from 'react';
@@ -22,7 +14,6 @@ import { useSaveState } from '@/hooks/useSaveState';
 import { useUserStore } from '@/store/user';
 import { settingsSelectors, userGeneralSettingsSelectors } from '@/store/user/selectors';
 
-import ChatTransitionPreview from './ChatTransitionPreview';
 import HighlighterPreview from './HighlighterPreview';
 import LinkIconPreview from './LinkIconPreview';
 import MermaidPreview from './MermaidPreview';
@@ -49,35 +40,6 @@ const ChatAppearance = memo(() => {
 
   return (
     <Flexbox gap={20} width={'100%'}>
-      <SettingsSurfaceGroup
-        title={t('settingChatAppearance.transitionMode.title')}
-        extra={
-          <Flexbox horizontal align={'center'} gap={8}>
-            {renderSaveHint('transitionMode')}
-            <Tabs
-              activeKey={general.transitionMode}
-              items={[
-                {
-                  key: 'none',
-                  label: t('settingChatAppearance.transitionMode.options.none.value'),
-                },
-                {
-                  key: 'fadeIn',
-                  label: t('settingChatAppearance.transitionMode.options.fadeIn'),
-                },
-                {
-                  key: 'smooth',
-                  label: t('settingChatAppearance.transitionMode.options.smooth'),
-                },
-              ]}
-              onChange={(key) => handleChange('transitionMode', key)}
-            />
-          </Flexbox>
-        }
-      >
-        <ChatTransitionPreview key={general.transitionMode} mode={general.transitionMode} />
-      </SettingsSurfaceGroup>
-
       <SettingsForm
         collapsible={false}
         form={form}
