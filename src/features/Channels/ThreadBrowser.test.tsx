@@ -13,7 +13,7 @@ import {
   relatedThreadIds,
   ThreadBrowser,
   ThreadsButton,
-  useThreadSortStore,
+  useThreadBrowserPrefs,
 } from './ThreadBrowser';
 import { useThreadReadStore } from './threadReads';
 
@@ -48,7 +48,6 @@ vi.mock('@lobehub/ui', () => ({
     createElement('div', {}, children as never, content as never),
   SearchBar: ({ onChange, placeholder, value }: any) =>
     createElement('input', { onChange, placeholder, value }),
-  Select: () => createElement('div'),
 }));
 
 const replied = (iso: string, content = '') => ({
@@ -106,7 +105,7 @@ beforeEach(() => {
   useThreadReadStore.setState({ readAt: {}, since: 0 });
   useChannelStore.setState({ listMap: {} } as never);
   // The tests below are about listing every thread; the filter has its own.
-  useThreadSortStore.setState({ relatedOnly: false, sort: 'activity' });
+  useThreadBrowserPrefs.setState({ relatedOnly: false });
 });
 
 describe('browseThreads', () => {
@@ -116,18 +115,6 @@ describe('browseThreads', () => {
       ['Unify Channel members', false],
       ['thread 3', true],
     ]);
-  });
-
-  it('orders by when threads were opened when asked to', () => {
-    const entries = browseThreads(detail, {
-      activeId: null,
-      fallbackTitle: (index) => `thread ${index + 1}`,
-      query: '',
-      sort: 'created',
-      unreadIds: new Set(),
-    });
-
-    expect(entries.map((entry) => entry.thread.id)).toEqual(['thr_1', 'thr_2', 'thr_3']);
   });
 
   it('never marks an archived thread unread', () => {
@@ -227,7 +214,7 @@ describe('relatedThreadIds', () => {
 
 describe('ThreadBrowser', () => {
   it('lists only the threads involving the person by default, and all of them once unticked', () => {
-    useThreadSortStore.setState({ relatedOnly: true });
+    useThreadBrowserPrefs.setState({ relatedOnly: true });
     render(createElement(ThreadBrowser, { activeId: null, detail, onOpen: vi.fn() }));
 
     const filter = screen.getByLabelText('threadBrowser.relatedOnly') as HTMLInputElement;
@@ -236,13 +223,13 @@ describe('ThreadBrowser', () => {
     expect(screen.queryByText('thread 3')).toBeNull();
 
     fireEvent.click(filter);
-    expect(useThreadSortStore.getState().relatedOnly).toBe(false);
+    expect(useThreadBrowserPrefs.getState().relatedOnly).toBe(false);
     expect(screen.getByText('threadBrowser.count:3')).toBeTruthy();
     expect(screen.getByText('thread 3')).toBeTruthy();
   });
 
   it('keeps the open thread listed even when it does not involve the person', () => {
-    useThreadSortStore.setState({ relatedOnly: true });
+    useThreadBrowserPrefs.setState({ relatedOnly: true });
     render(createElement(ThreadBrowser, { activeId: 'thr_3', detail, onOpen: vi.fn() }));
 
     expect(screen.getByText('thread 3')).toBeTruthy();
@@ -254,6 +241,15 @@ describe('ThreadBrowser', () => {
     expect(screen.getByText('threadBrowser.count:3')).toBeTruthy();
     expect(screen.getByText('Release fixed')).toBeTruthy();
     expect(screen.getAllByRole('img', { name: 'threadUnread' })).toHaveLength(2);
+  });
+
+  it('opens straight on the search and the filter, without a heading or a sort choice', () => {
+    render(createElement(ThreadBrowser, { activeId: null, detail, onOpen: vi.fn() }));
+
+    expect(screen.queryByText('threadList')).toBeNull();
+    expect(screen.queryByLabelText('threadBrowser.sort')).toBeNull();
+    expect(screen.getByPlaceholderText('threadBrowser.search')).toBeTruthy();
+    expect(screen.getByText('threadBrowser.relatedOnly')).toBeTruthy();
   });
 
   it('puts the red dot right after the title', () => {

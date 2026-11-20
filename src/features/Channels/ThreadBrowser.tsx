@@ -1,4 +1,4 @@
-import { ActionIcon, Checkbox, Icon, Popover, SearchBar, Select } from '@lobehub/ui';
+import { ActionIcon, Checkbox, Popover, SearchBar } from '@lobehub/ui';
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { ChannelDetail, ChannelPublicThread, ChannelThreadMention } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
@@ -46,14 +46,6 @@ const styles = stylex.create({
     borderBlockEndStyle: 'solid',
     borderBlockEndColor: cssVar.colorBorderSecondary,
   },
-  heading: {
-    display: 'inline-flex',
-    flexShrink: 0,
-    gap: 6,
-    alignItems: 'center',
-    fontSize: 14,
-    fontWeight: 600,
-  },
   search: { flex: '1', minWidth: 0 },
   count: {
     display: 'flex',
@@ -74,13 +66,6 @@ const styles = stylex.create({
     minHeight: 0,
   },
   countLabel: { whiteSpace: 'nowrap' },
-  // The filter and the order sit together at the row's end.
-  controls: {
-    display: 'flex',
-    flexShrink: 0,
-    gap: 8,
-    alignItems: 'center',
-  },
   empty: {
     paddingBlock: 24,
     fontSize: 13,
@@ -237,25 +222,21 @@ const oneLine = (text: string) => text.replaceAll(/\s+/g, ' ').trim();
 
 const time = (value?: Date | string | null) => (value ? new Date(value).getTime() : 0);
 
-/** How the panel orders threads: by their newest reply, or by when they were opened. */
-export type ThreadSort = 'activity' | 'created';
-
-const sortKey = (thread: ChannelPublicThread, sort: ThreadSort) =>
-  sort === 'created'
-    ? time(thread.createdAt)
-    : time(thread.lastReply?.createdAt) || time(thread.createdAt);
+/** A thread's newest activity: its last reply, or when it was opened if nobody replied yet. */
+const activityAt = (thread: ChannelPublicThread) =>
+  time(thread.lastReply?.createdAt) || time(thread.createdAt);
 
 /**
- * The person's chosen thread order, and whether the panel lists only the threads that involve
- * them (on until they turn it off), kept on this device across Channels.
+ * Whether the panel lists only the threads that involve the person (on until they turn it off),
+ * kept on this device across Channels.
  */
 interface ThreadBrowserPrefs {
   relatedOnly: boolean;
-  sort: ThreadSort;
 }
 
-export const useThreadSortStore = create<ThreadBrowserPrefs>()(
-  persist((): ThreadBrowserPrefs => ({ relatedOnly: true, sort: 'activity' }), {
+export const useThreadBrowserPrefs = create<ThreadBrowserPrefs>()(
+  persist((): ThreadBrowserPrefs => ({ relatedOnly: true }), {
+    // The key predates dropping the sort choice; kept so the person's filter setting survives.
     name: 'LOBE_CHANNEL_THREAD_SORT',
     storage: createJSONStorage(() => localStorage),
   }),
@@ -303,7 +284,7 @@ export interface BrowsedThread {
 /**
  * The Channel's threads as the panel lists them: live ones first, then the archived ones, filtered
  * by a search on the title and the last reply. Among live threads, the ones with unseen replies or
- * an unseen @mention come first; within each group the chosen order puts the newest first.
+ * an unseen @mention come first; within each group the newest activity comes first.
  */
 export const browseThreads = (
   detail: Pick<ChannelDetail, 'messages' | 'threads'>,
@@ -313,7 +294,6 @@ export const browseThreads = (
     mentionedIds = new Set(),
     query,
     relatedIds,
-    sort = 'activity',
     unreadIds,
   }: {
     activeId: string | null;
@@ -322,7 +302,6 @@ export const browseThreads = (
     query: string;
     /** When given, only these threads are listed, plus the open one. */
     relatedIds?: Set<string>;
-    sort?: ThreadSort;
     unreadIds: Set<string>;
   },
 ): BrowsedThread[] => {
@@ -357,7 +336,7 @@ export const browseThreads = (
       (a, b) =>
         Number(a.archived) - Number(b.archived) ||
         Number(b.unread || b.mentioned) - Number(a.unread || a.mentioned) ||
-        sortKey(b.thread, sort) - sortKey(a.thread, sort),
+        activityAt(b.thread) - activityAt(a.thread),
     );
 };
 
@@ -449,8 +428,7 @@ export const ThreadBrowser = ({
 }) => {
   const { t } = useTranslation('channel');
   const [query, setQuery] = useState('');
-  const sort = useThreadSortStore((state) => state.sort);
-  const relatedOnly = useThreadSortStore((state) => state.relatedOnly);
+  const relatedOnly = useThreadBrowserPrefs((state) => state.relatedOnly);
   const userId = useUserStore(userProfileSelectors.userId);
   const unreadIds = useUnreadThreadIds(detail.threads, detail.members);
   const threadMentions = useChannelStore(
@@ -463,7 +441,6 @@ export const ThreadBrowser = ({
     mentionedIds,
     query,
     relatedIds: relatedOnly ? relatedThreadIds(detail, userId, threadMentions) : undefined,
-    sort,
     unreadIds,
   });
   const archivedCount = entries.filter((entry) => entry.archived).length;
@@ -480,10 +457,6 @@ export const ThreadBrowser = ({
   return (
     <div {...stylex.props(styles.panel)}>
       <div {...stylex.props(styles.header)}>
-        <span {...stylex.props(styles.heading)}>
-          <Icon icon={threadIcon} size={18} />
-          {t('threadList')}
-        </span>
         <div {...stylex.props(styles.search)}>
           <SearchBar
             allowClear
@@ -501,34 +474,14 @@ export const ThreadBrowser = ({
             ? t('threadBrowser.matches', { count: entries.length })
             : t('threadBrowser.count', { count: entries.length })}
         </span>
-        <div {...stylex.props(styles.controls)}>
-          <Checkbox
-            checked={relatedOnly}
-            size={14}
-            textProps={{ fontSize: 12, type: 'secondary' }}
-            onChange={(checked) => useThreadSortStore.setState({ relatedOnly: checked })}
-          >
-            {t('threadBrowser.relatedOnly')}
-          </Checkbox>
-          <Select
-            aria-label={t('threadBrowser.sort')}
-            popupMatchSelectWidth={false}
-            size="small"
-            style={{ flex: 'none', width: 112 }}
-            variant="borderless"
-            // Sized to its longest option so it sits at the row's end instead of stretching across
-            // it; inline so it wins over the trigger's own full width.
-            value={sort}
-            options={[
-              { label: t('threadBrowser.sortActivity'), value: 'activity' },
-              { label: t('threadBrowser.sortCreated'), value: 'created' },
-            ]}
-            onChange={(value) => {
-              if (value === 'activity' || value === 'created')
-                useThreadSortStore.setState({ sort: value });
-            }}
-          />
-        </div>
+        <Checkbox
+          checked={relatedOnly}
+          size={14}
+          textProps={{ fontSize: 12, type: 'secondary' }}
+          onChange={(checked) => useThreadBrowserPrefs.setState({ relatedOnly: checked })}
+        >
+          {t('threadBrowser.relatedOnly')}
+        </Checkbox>
       </div>
       <div {...stylex.props(styles.list)}>
         {entries.length ? (
