@@ -10,6 +10,7 @@ import CliCtr from './CliCtr';
 import CompletionSoundCtr from './CompletionSoundCtr';
 import ConnectorOAuthCtr from './ConnectorOAuthCtr';
 import DevtoolsCtr from './DevtoolsCtr';
+import FileCacheCtr from './FileCacheCtr';
 import GatewayConnectionCtr from './GatewayConnectionCtr';
 import GitCtr from './GitCtr';
 import HeterogeneousAgentCtr from './HeterogeneousAgentCtr';
@@ -47,6 +48,7 @@ export const controllerIpcConstructors = [
   CompletionSoundCtr,
   ConnectorOAuthCtr,
   DevtoolsCtr,
+  FileCacheCtr,
   GatewayConnectionCtr,
   GitCtr,
   LocalDatabaseCtr,

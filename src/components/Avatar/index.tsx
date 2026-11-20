@@ -35,7 +35,9 @@ export interface AvatarProps extends LobeAvatarProps {
  * The source stays the profile URL. Routing it through the desktop file cache
  * 404s when that fetch cannot see the bytes (a cookie, or a main process that
  * does not know the cache yet), and a 404 here is recorded as "no avatar",
- * which replaces the photo with the generated fallback.
+ * which replaces the photo with the generated fallback. On desktop, an uploaded
+ * avatar's `/f/:id` URL is still cached by file id: the main process redirects
+ * that image load to the disk cache, and loads it uncached if it cannot keep it.
  */
 const Avatar = memo<AvatarProps>(
   ({ alt, avatar, background, brokenFallback, name, size = 48, title, unoptimized, ...rest }) => {

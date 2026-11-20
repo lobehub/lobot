@@ -209,4 +209,130 @@ describe('FileCacheProtocolManager', () => {
 
     expect(await readdir(cacheDir)).toEqual(['recent']);
   });
+
+  describe('the /f/ file proxy', () => {
+    const PROXY_URL = 'https://app.lobehub.com/f/file_Avatar';
+    const remote = async () => 'https://app.lobehub.com';
+    const imageLoad = {
+      method: 'GET',
+      resourceType: 'image' as const,
+      url: PROXY_URL,
+      webContentsId: 1 as number | undefined,
+    };
+
+    it('redirects an image load to the disk cache keyed by its file id', async () => {
+      const target = await manager.fileProxyRedirect(imageLoad, remote);
+
+      expect(target).toBe(
+        `lobe-file-cache://file/file_Avatar/file_Avatar?src=${encodeURIComponent(PROXY_URL)}`,
+      );
+    });
+
+    it('leaves the main process fetch, video, other hosts and non-ids alone', async () => {
+      // The cache's own download has no web contents; redirecting it would loop.
+      expect(
+        await manager.fileProxyRedirect({ ...imageLoad, webContentsId: undefined }, remote),
+      ).toBeNull();
+      expect(
+        await manager.fileProxyRedirect({ ...imageLoad, resourceType: 'media' as const }, remote),
+      ).toBeNull();
+      expect(
+        await manager.fileProxyRedirect(
+          { ...imageLoad, url: 'https://other.example.com/f/file_Avatar' },
+          remote,
+        ),
+      ).toBeNull();
+      expect(
+        await manager.fileProxyRedirect(
+          { ...imageLoad, url: 'https://app.lobehub.com/f/..%2Fescape' },
+          remote,
+        ),
+      ).toBeNull();
+      expect(await manager.fileProxyRedirect(imageLoad, async () => null)).toBeNull();
+    });
+
+    it('downloads a proxied avatar once across remounts', async () => {
+      fetchRemote.mockResolvedValueOnce(imageResponse());
+      const target = (await manager.fileProxyRedirect(imageLoad, remote))!;
+
+      const first = await manager.handleRequest(new Request(target));
+      const remounted = await manager.handleRequest(new Request(target));
+
+      expect(first.status).toBe(200);
+      expect(Buffer.from(await remounted.arrayBuffer())).toEqual(PNG);
+      expect(fetchRemote).toHaveBeenCalledTimes(1);
+      expect(fetchRemote).toHaveBeenCalledWith(PROXY_URL);
+    });
+
+    it('loads the image uncached when the disk copy cannot be kept', async () => {
+      // An image the proxy serves with a non-media type is refused by the cache.
+      fetchRemote
+        .mockResolvedValueOnce(
+          new Response(new Uint8Array(PNG), {
+            headers: { 'content-type': 'application/octet-stream' },
+            status: 200,
+          }),
+        )
+        .mockResolvedValueOnce(
+          new Response(new Uint8Array(PNG), {
+            headers: { 'content-type': 'application/octet-stream' },
+            status: 200,
+          }),
+        );
+      const target = (await manager.fileProxyRedirect(imageLoad, remote))!;
+
+      const response = await manager.handleRequest(new Request(target));
+
+      expect(response.status).toBe(200);
+      expect(Buffer.from(await response.arrayBuffer())).toEqual(PNG);
+      expect(await readdir(cacheDir)).toEqual([]);
+    });
+
+    it('passes a missing file through as an error', async () => {
+      fetchRemote.mockResolvedValueOnce(new Response('missing', { status: 404 }));
+      const target = (await manager.fileProxyRedirect(imageLoad, remote))!;
+
+      expect((await manager.handleRequest(new Request(target))).status).toBe(404);
+      expect(fetchRemote).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('releasing the pool', () => {
+    it('reports, evicts and clears cached files but keeps in-flight downloads', async () => {
+      fetchRemote.mockImplementation(async () => imageResponse());
+      await manager.handleRequest(request('file_1'));
+      await manager.handleRequest(request('file_2'));
+      await writeFile(path.join(cacheDir, 'file_3.1.2.tmp'), Buffer.alloc(1));
+
+      expect(await manager.stats()).toEqual({ bytes: PNG.length * 2, files: 2 });
+
+      await manager.evict('file_1');
+      expect(await manager.stats()).toEqual({ bytes: PNG.length, files: 1 });
+
+      expect(await manager.clear()).toEqual({ bytes: PNG.length, files: 1 });
+      expect(await readdir(cacheDir)).toEqual(['file_3.1.2.tmp']);
+
+      // Released, so the next load downloads again.
+      await manager.handleRequest(request('file_2'));
+      expect(fetchRemote).toHaveBeenCalledTimes(3);
+    });
+
+    it('keeps the partial file of a download still running when trimming', async () => {
+      let resolveDownload: (response: Response) => void = () => {};
+      fetchRemote.mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveDownload = resolve;
+        }),
+      );
+      const pending = manager.handleRequest(request('file_busy'));
+      await writeFile(path.join(cacheDir, 'file_busy.1.2.tmp'), Buffer.alloc(1));
+      await writeFile(path.join(cacheDir, 'file_dead.1.2.tmp'), Buffer.alloc(1));
+
+      await manager.prune();
+
+      expect(await readdir(cacheDir)).toEqual(['file_busy.1.2.tmp']);
+      resolveDownload(imageResponse());
+      expect((await pending).status).toBe(200);
+    });
+  });
 });
