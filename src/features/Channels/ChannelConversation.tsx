@@ -41,6 +41,7 @@ import { failureAnchors, replyEntries, type ReplyEntry } from './MessageReceipts
 import { presentOutgoingMessage, timelineTail } from './outgoing';
 import { OutgoingStatus } from './OutgoingStatus';
 import { channelTitle } from './peerTitle';
+import { channelReadUpTo, threadReadUpTo } from './readUpTo';
 import { ReplyActivity } from './ReplyActivity';
 import { withoutReplyErrorCards } from './replyError';
 import { ReplyFailureMessage } from './ReplyFailureMessage';
@@ -246,18 +247,32 @@ const Timeline = ({
     }
   }, [feedTail, before]);
 
+  // Read up to what the list already counts, so the badge clears on open instead of after the
+  // page refresh catches up with it.
+  const readUpTo = threadId ? undefined : channelReadUpTo(sequence, listed?.sequence);
   useEffect(() => {
-    if (threadId || sequence === undefined || before !== undefined) return;
+    if (threadId || readUpTo === undefined || before !== undefined) return;
     void channelActions
-      .markRead(channelId, sequence)
+      .markRead(channelId, readUpTo)
       .catch((error: unknown) => console.error('Failed to mark Channel read', error));
-  }, [channelId, threadId, sequence, before]);
+  }, [channelId, threadId, readUpTo, before]);
 
-  // The server's read position is per Channel, so an open thread records its own on this device.
-  const newestInThread = threadId && before === undefined ? detail?.messages.at(-1) : undefined;
+  // The server's read position is per Channel, so an open thread records its own on this device,
+  // up to the news the main view's thread list shows for it (where its unread dot comes from).
+  const listedThread = useChannelStore((state) =>
+    threadId
+      ? channelSelectors
+          .detail({ channelId, threadId: null })(state)
+          ?.threads.find((entry) => entry.id === threadId)
+      : undefined,
+  );
+  const threadReadAt =
+    threadId && before === undefined
+      ? threadReadUpTo(detail?.messages.at(-1)?.createdAt, listedThread)
+      : undefined;
   useEffect(() => {
-    if (threadId && newestInThread) markThreadRead(threadId, newestInThread.createdAt);
-  }, [threadId, newestInThread]);
+    if (threadId && threadReadAt !== undefined) markThreadRead(threadId, threadReadAt);
+  }, [threadId, threadReadAt]);
 
   const activeMembers = detail?.members.filter((member) => member.status === 'active') ?? [];
   const thread = threadId ? detail?.threads.find((entry) => entry.id === threadId) : undefined;
