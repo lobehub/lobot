@@ -249,7 +249,7 @@ describe('ReplyList name column', () => {
     ({ job: failedJob({ errorType: null, id, memberId, status: 'queued' }), name }) as ReplyEntry;
 
   // Names of different lengths pushed each row's state to a different place.
-  it('gives every name one width when several replies are listed', () => {
+  it('gives every name one width when replies of several Agents are listed', () => {
     render(
       createElement(ReplyList, {
         channelId: 'chn_1',
@@ -259,6 +259,17 @@ describe('ReplyList name column', () => {
     for (const name of ['Cook', 'Justin']) {
       expect(screen.getByText(name).style.width).toBe('80px');
     }
+  });
+
+  // One Agent's replies share a name: a fixed width only added a gap after it.
+  it('lets several replies of one Agent keep the name at its own width', () => {
+    render(
+      createElement(ReplyList, {
+        channelId: 'chn_1',
+        entries: [reply('a', 'mem_justin', 'Justin'), reply('b', 'mem_justin', 'Justin')],
+      }),
+    );
+    for (const name of screen.getAllByText('Justin')) expect(name.style.width).toBe('');
   });
 
   it('lets a lone reply keep its name at its own width', () => {

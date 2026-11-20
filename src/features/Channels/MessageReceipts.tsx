@@ -71,7 +71,7 @@ export const failureAnchors = (messages: ChannelPublicMessage[], entries: ReplyE
   return anchors;
 };
 
-/** Width of the name column when several replies are listed: room for a short name or two words. */
+/** Width of the name column when several Agents are listed: room for a short name or two words. */
 const NAME_COLUMN_WIDTH = 80;
 const NAME_FREE = { flex: '0 1 auto', minWidth: 0 } as const;
 const NAME_COLUMN = { flex: 'none', minWidth: 0, width: NAME_COLUMN_WIDTH } as const;
@@ -86,7 +86,7 @@ const NAME_COLUMN_BUTTON = { ...NAME_COLUMN, justifyContent: 'flex-start' } as c
  * its Agent. `manageable` viewers (Channel admins) also see that device and can change it.
  * `queue` holds the replies listed beside it, so one waiting behind an earlier reply of the same
  * Agent says so instead of typing. `nameColumn` gives the name a fixed width (cut off with an
- * ellipsis) so the states of several replies line up in one column.
+ * ellipsis) so the states of several Agents' replies line up in one column.
  */
 export function ReplyDetail({
   channelId,
@@ -315,8 +315,9 @@ export function ReplyList({
 }) {
   // The queue keeps the jobs' own order (newest first): a reply's place in it says what it waits on.
   const queue = entries.map((entry) => entry.job);
-  // With more than one reply the names take one width, so the states line up down the list.
-  const nameColumn = entries.length > 1;
+  // With replies of more than one Agent the names take one width, so the states line up down the
+  // list. One Agent's replies already share a name, so it keeps its own width.
+  const nameColumn = new Set(entries.map((entry) => entry.job.memberId)).size > 1;
   return (
     <Flexbox gap={16} {...stylex.props(statusStyles.popover, statusStyles.replyList)}>
       {groupReplyEntries(entries).map((group) => (
