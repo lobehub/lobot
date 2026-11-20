@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { app, isDev } = vi.hoisted(() => ({
@@ -35,6 +37,7 @@ describe('pre-app-init', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
+    isDev.mockReturnValue(true);
   });
 
   afterEach(() => {
@@ -60,13 +63,21 @@ describe('pre-app-init', () => {
     expect(app.commandLine.appendSwitch).not.toHaveBeenCalled();
   });
 
-  it('stamps the installer app id before Windows can create a toast notifier', async () => {
+  it('keeps a dev Windows build off the installed shortcut', async () => {
+    await load({ platform: 'win32' });
+
+    expect(app.setAppUserModelId).toHaveBeenCalledWith('com.lobehub.lobot.dev');
+  });
+
+  it('stamps the installer app id on a packaged Windows build', async () => {
+    isDev.mockReturnValue(false);
     await load({ platform: 'win32' });
 
     expect(app.setAppUserModelId).toHaveBeenCalledWith('com.lobehub.lobot');
   });
 
   it("stamps a distribution's app id when one is configured", async () => {
+    isDev.mockReturnValue(false);
     vi.stubEnv('DESKTOP_APP_ID', 'com.acme.work');
     await load({ platform: 'win32' });
 
@@ -81,7 +92,7 @@ describe('pre-app-init', () => {
 
   it('keeps the keychain for the shared dev profile and other platforms', async () => {
     await load({ platform: 'darwin' });
-    expect(app.setPath).toHaveBeenCalledWith('userData', '/app-data/lobehub-desktop-dev');
+    expect(app.setPath).toHaveBeenCalledWith('userData', path.join('/app-data', 'lobot-dev'));
 
     vi.resetModules();
     await load({ platform: 'linux', userData: '/checkout/.cache/desktop-user-data' });

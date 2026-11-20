@@ -54,6 +54,7 @@ vi.mock('electron', () => {
 
 // Mock platform detection
 vi.mock('@/utils/platform', () => ({
+  dev: vi.fn(() => false),
   linux: vi.fn(() => false),
   macOS: vi.fn(() => false),
   windows: vi.fn(() => false),

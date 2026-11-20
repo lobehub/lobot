@@ -7,6 +7,7 @@ import { app, Notification } from 'electron';
 import { getDesktopEnv } from '@/env';
 import { createLogger } from '@/utils/logger';
 import * as electronIs from '@/utils/platform';
+import { windowsAppUserModelId } from '@/utils/windowsAppUserModelId';
 
 import { ControllerModule, IpcMethod } from './index';
 import {
@@ -58,7 +59,7 @@ export default class NotificationCtr extends ControllerModule {
       // freezes whatever AppUserModelID is set at that moment. The shortcut
       // id has to be in place first; see pre-app-init.
       if (electronIs.windows()) {
-        app.setAppUserModelId(getDesktopEnv().DESKTOP_APP_ID || 'com.lobehub.lobot');
+        app.setAppUserModelId(windowsAppUserModelId(getDesktopEnv().DESKTOP_APP_ID));
         logger.debug('Set Windows App User Model ID for notifications');
       }
 

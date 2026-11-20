@@ -3,6 +3,7 @@ import path from 'node:path';
 import { app } from 'electron';
 
 import * as electronIs from '@/utils/platform';
+import { windowsAppUserModelId } from '@/utils/windowsAppUserModelId';
 
 /**
  * Windows binds the toast notifier to the process AppUserModelID the first
@@ -10,9 +11,10 @@ import * as electronIs from '@/utils/platform';
  * `electron.app.<ProductName>`, which is not the Start menu shortcut
  * electron-builder stamps (`appId`). Toasts are then created and dropped.
  * This has to happen before `ready`, and before any `Notification` call.
+ * Dev uses a separate id so the SDK binary cannot take over the installed shortcut.
  */
 if (process.platform === 'win32') {
-  app.setAppUserModelId(process.env.DESKTOP_APP_ID || 'com.lobehub.lobot');
+  app.setAppUserModelId(windowsAppUserModelId(process.env.DESKTOP_APP_ID));
 }
 
 // Must run BEFORE any module captures `app.getPath('userData')` (e.g. `@/const/dir`
