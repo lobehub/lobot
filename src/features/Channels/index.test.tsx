@@ -19,10 +19,6 @@ vi.mock('react-router', () => ({
   useParams: () => ({ channelId: mocks.channelId }),
   useSearchParams: () => [mocks.searchParams, mocks.setSearchParams],
 }));
-vi.mock('@/store/serverConfig', () => ({
-  serverConfigSelectors: { enableChannels: () => true },
-  useServerConfigStore: (selector: (s: object) => unknown) => selector({ serverConfigInit: true }),
-}));
 vi.mock('@/store/channel', () => ({
   channelActions: { useFetchDetail: () => ({ error: mocks.error }) },
   channelSelectors: {

@@ -29,7 +29,6 @@ import AsyncError from '@/components/AsyncError';
 import { resolveInboxAgentRouteId } from '@/features/AgentRoute/useResolvedAgentRouteId';
 import { matchChannel } from '@/features/Channels/paths';
 import { useChannelEvents } from '@/features/Channels/useChannelEvents';
-import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { suppressNextClick } from '@/features/HomeSidebar/Body/sortableRow';
 import SkeletonList from '@/features/NavPanel/components/SkeletonList';
 import { useActiveLocation } from '@/hooks/useActiveLocation';
@@ -100,7 +99,7 @@ const ConversationItem = memo<{
 
 ConversationItem.displayName = 'ConversationItem';
 
-/** Keeps the Channel list fresh while Channels are on; it has no row of its own. */
+/** Keeps the Channel list fresh; it has no row of its own. */
 const ChannelSync = memo(() => {
   const { error } = channelActions.useFetchList();
   // The person's own sections; a server without them leaves the list unsectioned.
@@ -121,10 +120,9 @@ const Body = memo(() => {
 
   const items = useHomeStore(homeAgentListSelectors.allAgents, isEqual);
   const activeRouteId = useActiveRouteId();
-  const channelsEnabled = useChannelsEnabled();
   const allChannels = useChannelStore(channelSelectors.list);
   const sections = useChannelStore(channelSelectors.sections);
-  useProjectStore((s) => s.useFetchProjectList)(channelsEnabled);
+  useProjectStore((s) => s.useFetchProjectList)(true);
   const projects = useCurrentProjectList();
   const projectMap = useMemo(
     () => new Map(projects.map((project) => [project.id, project] as const)),
@@ -136,24 +134,20 @@ const Body = memo(() => {
   const directChannels = useMemo(
     () =>
       new Map(
-        channelsEnabled
-          ? (allChannels ?? [])
-              .filter((channel) => channel.agentId && !channel.sharedAgent && !channel.projectId)
-              .map((channel) => [channel.agentId!, channel] as const)
-          : [],
+        (allChannels ?? [])
+          .filter((channel) => channel.agentId && !channel.sharedAgent && !channel.projectId)
+          .map((channel) => [channel.agentId!, channel] as const),
       ),
-    [allChannels, channelsEnabled],
+    [allChannels],
   );
   const channels = useMemo(() => {
     // Another person's shared Agent has no Agent row of mine, so its direct Channel lists like a
     // group; so does a conversation with another person.
-    const groups = channelsEnabled
-      ? (allChannels ?? []).filter((channel) => !channel.agentId || channel.sharedAgent)
-      : [];
+    const groups = (allChannels ?? []).filter((channel) => !channel.agentId || channel.sharedAgent);
     const isHidden = (channel: (typeof groups)[number]) =>
       channel.status === 'archived' && channel.id !== activeRouteId;
     return query.trim() ? groups : groups.filter((channel) => !isHidden(channel));
-  }, [activeRouteId, allChannels, channelsEnabled, query]);
+  }, [activeRouteId, allChannels, query]);
 
   const inboxAgentId = useAgentStore(builtinAgentSelectors.inboxAgentId);
   const inboxUpdatedAt = useAgentStore((s) =>
@@ -167,7 +161,7 @@ const Body = memo(() => {
   );
 
   const inboxChannel = inboxAgentId ? directChannels.get(inboxAgentId) : undefined;
-  const inboxDefaultPinned = channelsEnabled && !!allChannels && !inboxChannel;
+  const inboxDefaultPinned = !!allChannels && !inboxChannel;
   const userId = useUserStore(userProfileSelectors.userId);
   const pinnedLayout = useUserStore(userGeneralSettingsSelectors.pinnedConversationLayout);
 
@@ -228,10 +222,7 @@ const Body = memo(() => {
 
   // Pinned conversations lead the list as a card grid (or rows, when the person lists many that
   // way), then the person's own sections, then the rest.
-  const groups = useMemo(
-    () => groupBySection(entries, channelsEnabled ? sections : undefined),
-    [channelsEnabled, entries, sections],
-  );
+  const groups = useMemo(() => groupBySection(entries, sections), [entries, sections]);
 
   // A click on an already open Messages badge brings the next unread row into view.
   const listRef = useRef<HTMLDivElement>(null);
@@ -353,8 +344,8 @@ const Body = memo(() => {
           </div>
         )
       )}
-      {channelsEnabled && query.trim() && <NetworkSearchRow query={query.trim()} />}
-      {channelsEnabled && <ChannelSync />}
+      {query.trim() && <NetworkSearchRow query={query.trim()} />}
+      <ChannelSync />
     </Flexbox>
   );
 });

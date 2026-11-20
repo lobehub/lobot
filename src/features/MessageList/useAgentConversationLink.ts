@@ -6,7 +6,6 @@ import { type MouseEvent, useCallback, useRef } from 'react';
 
 import { useActiveWorkspaceSlug } from '@/business/client/hooks/useActiveWorkspaceSlug';
 import { resolveInboxAgentRouteId } from '@/features/AgentRoute/useResolvedAgentRouteId';
-import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { usePreservedAgentUrl } from '@/features/HomeSidebar/Body/Agent/List/usePreservedAgentUrl';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
 import { useActiveLocationReader } from '@/hooks/useActiveLocation';
@@ -18,7 +17,7 @@ import { channelActions, channelSelectors, useChannelStore } from '@/store/chann
 import { isPlainClick } from './conversations';
 
 /**
- * With Channels on, an agent row opens the person's direct Channel with the Agent. An Agent made
+ * An agent row opens the person's direct Channel with the Agent. An Agent made
  * before direct Channels has none yet, so the first click opens it. Lobot has no Agent page to
  * fall back to, so an Agent that cannot open one, or a failed open, keeps the person where they
  * are and says why. Without an id yet (the inbox Agent while it loads) the row links the Agent.
@@ -33,7 +32,7 @@ export const useAgentConversationLink = (
     pinOnOpen?: boolean;
   } = {},
 ) => {
-  const enabled = useChannelsEnabled() && !!agentId;
+  const enabled = !!agentId;
   const directChannelId = useChannelStore((s) =>
     enabled ? channelSelectors.directByAgent(agentId!)(s)?.id : undefined,
   );

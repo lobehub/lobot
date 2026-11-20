@@ -9,7 +9,6 @@ import { useAgentConversationLink, useInboxConversationLink } from './useAgentCo
 
 const state = vi.hoisted(() => ({
   directChannelId: undefined as string | undefined,
-  enabled: true,
   inboxAgentId: 'agt_inbox' as string | undefined,
   navigate: vi.fn(),
   toastError: vi.fn(),
@@ -43,9 +42,6 @@ vi.mock('@/store/agent', () => ({
 vi.mock('@/store/agent/selectors', () => ({
   builtinAgentSelectors: { inboxAgentId: () => state.inboxAgentId },
 }));
-vi.mock('@/features/Channels/useChannelsEnabled', () => ({
-  useChannelsEnabled: () => state.enabled,
-}));
 vi.mock('@/features/Workspace/useWorkspaceAwareNavigate', () => ({
   useWorkspaceAwareNavigate: () => state.navigate,
 }));
@@ -69,7 +65,6 @@ describe('useAgentConversationLink', () => {
     vi.clearAllMocks();
     vi.spyOn(console, 'error').mockImplementation(() => {});
     state.directChannelId = undefined;
-    state.enabled = true;
     state.inboxAgentId = 'agt_inbox';
     state.listLoaded = true;
     state.setPinned.mockResolvedValue(undefined);
@@ -122,11 +117,6 @@ describe('useAgentConversationLink', () => {
     await act(async () => result.current.onClick?.(click()));
 
     expect(state.setPinned).not.toHaveBeenCalled();
-  });
-
-  it('keeps the Agent page while Channels are off', () => {
-    state.enabled = false;
-    expect(render().result.current).toEqual({ onClick: undefined, url: '/agent/agt_nasa' });
   });
 
   it('opens a missing direct Channel on click and navigates into it', async () => {

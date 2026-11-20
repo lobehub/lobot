@@ -6,7 +6,6 @@ import { Settings, UsersCollaboration } from 'lucide-react';
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { useContactsTitle } from '@/features/ContactList/useContactsTitle';
 import {
   AVATAR_SIZE,
@@ -27,11 +26,9 @@ import { styles } from './style';
 import { useScopeMenuItem } from './useScopeMenuItem';
 
 /** Contacts' badge counts the friend requests waiting in its Requests group. */
-const useContactRequestsCount = (channelsEnabled: boolean) => {
-  contactActions.useFetchRequests(channelsEnabled);
-  return useContactStore((s) =>
-    channelsEnabled ? contactSelectors.incomingRequests(s).length : 0,
-  );
+const useContactRequestsCount = () => {
+  contactActions.useFetchRequests(true);
+  return useContactStore((s) => contactSelectors.incomingRequests(s).length);
 };
 
 /**
@@ -43,8 +40,7 @@ const useContactRequestsCount = (channelsEnabled: boolean) => {
 const NavTabBar = memo(() => {
   const { t } = useTranslation('common');
   const contactsTitle = useContactsTitle();
-  const channelsEnabled = useChannelsEnabled();
-  const contactRequests = useContactRequestsCount(channelsEnabled);
+  const contactRequests = useContactRequestsCount();
   const [nickname, username] = useUserStore((s) => [
     userProfileSelectors.nickName(s),
     userProfileSelectors.displayUserName(s),

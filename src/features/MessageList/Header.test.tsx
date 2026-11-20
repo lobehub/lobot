@@ -5,7 +5,6 @@ import Header from './Header';
 
 const mocks = vi.hoisted(() => ({
   addFriend: vi.fn(),
-  channelsEnabled: true,
   createAgent: vi.fn(),
   createGroupChat: vi.fn(),
 }));
@@ -44,7 +43,6 @@ vi.mock('@lobehub/ui', () => ({
 vi.mock('./useCreateActions', () => ({
   useCreateActions: () => ({
     addFriend: mocks.addFriend,
-    channelsEnabled: mocks.channelsEnabled,
     createAgent: mocks.createAgent,
     createGroupChat: mocks.createGroupChat,
     isLoading: false,
@@ -59,7 +57,6 @@ const menuKeys = () =>
 
 describe('MessageList Header create menu', () => {
   beforeEach(() => {
-    mocks.channelsEnabled = true;
     vi.clearAllMocks();
   });
 
@@ -86,11 +83,5 @@ describe('MessageList Header create menu', () => {
     fireEvent.click(screen.getByRole('button', { name: 'messageList.search' }));
 
     expect(screen.getByPlaceholderText('messageList.search')).toBeInTheDocument();
-  });
-
-  it('keeps the same three entries where Channels are off', () => {
-    mocks.channelsEnabled = false;
-    render(<Header />);
-    expect(menuKeys()).toEqual(['newAgent', 'newGroupChat', 'addFriend']);
   });
 });

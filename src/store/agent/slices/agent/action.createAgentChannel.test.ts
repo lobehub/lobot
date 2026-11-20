@@ -3,7 +3,7 @@ import { act, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { agentService } from '@/services/agent';
-import { refreshChannelListIfEnabled } from '@/store/channel/refreshIfEnabled';
+import { refreshChannelList } from '@/store/channel/refreshChannelList';
 
 import { useAgentStore } from '../../store';
 
@@ -21,7 +21,7 @@ vi.mock('@/services/agent', () => ({
   agentService: { createAgent: vi.fn() },
 }));
 
-vi.mock('@/store/channel/refreshIfEnabled', () => ({ refreshChannelListIfEnabled: vi.fn() }));
+vi.mock('@/store/channel/refreshChannelList', () => ({ refreshChannelList: vi.fn() }));
 
 vi.mock('@/store/electron', () => ({
   getElectronStoreState: () => ({ resolveGatewayDeviceId: mocks.resolveGatewayDeviceId }),
@@ -37,7 +37,7 @@ describe('createAgent direct Channel', () => {
 
   it("refetches Channels once the server created the Agent and its creator's direct Channel", async () => {
     vi.mocked(agentService.createAgent).mockImplementation(async () => {
-      expect(refreshChannelListIfEnabled).not.toHaveBeenCalled();
+      expect(refreshChannelList).not.toHaveBeenCalled();
       return { agentId: 'agent-new' };
     });
     const { result } = renderHook(() => useAgentStore());
@@ -46,7 +46,7 @@ describe('createAgent direct Channel', () => {
       await result.current.createAgent(params);
     });
 
-    expect(refreshChannelListIfEnabled).toHaveBeenCalledTimes(1);
+    expect(refreshChannelList).toHaveBeenCalledTimes(1);
   });
 
   // The direct Channel binds no device, so creating an Agent never asks for this desktop's id.
@@ -76,6 +76,6 @@ describe('createAgent direct Channel', () => {
       await expect(result.current.createAgent(params)).rejects.toThrow('forbidden');
     });
 
-    expect(refreshChannelListIfEnabled).not.toHaveBeenCalled();
+    expect(refreshChannelList).not.toHaveBeenCalled();
   });
 });

@@ -4,15 +4,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useScopeUnread } from './useScopeUnread';
 
 const mocks = vi.hoisted(() => ({
-  enabled: true,
   list: [] as Record<string, unknown>[],
   scopeLists: {} as Record<string, Record<string, unknown>[]>,
   useFetchScopeList: vi.fn(),
 }));
 
-vi.mock('@/features/Channels/useChannelsEnabled', () => ({
-  useChannelsEnabled: () => mocks.enabled,
-}));
 vi.mock('@/store/channel', () => ({
   channelActions: { useFetchScopeList: mocks.useFetchScopeList },
   channelSelectors: {
@@ -35,7 +31,6 @@ const syncedScopes = () =>
 
 describe('useScopeUnread', () => {
   beforeEach(() => {
-    mocks.enabled = true;
     mocks.list = [];
     mocks.scopeLists = {};
     mocks.useFetchScopeList.mockReset();
@@ -70,15 +65,5 @@ describe('useScopeUnread', () => {
 
     expect(result.current).toBe(1);
     expect(syncedScopes()).toEqual([null]);
-  });
-
-  it('shows nothing and polls nothing with Channels off', () => {
-    mocks.enabled = false;
-    mocks.list = [{ id: 'c1', status: 'active', unreadCount: 2 }];
-
-    const { result } = renderHook(() => useScopeUnread('ws-2', false));
-
-    expect(result.current).toBe(0);
-    expect(syncedScopes()).toEqual([]);
   });
 });

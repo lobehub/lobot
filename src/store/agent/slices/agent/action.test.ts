@@ -18,7 +18,8 @@ import { withSWR } from '~test-utils';
 import { useAgentStore } from '../../store';
 import { agentConfigResource } from './projection';
 
-// Mock agentService
+// Creating an Agent always refetches the Channel list; keep it off the network.
+vi.mock('@/store/channel/refreshChannelList', () => ({ refreshChannelList: vi.fn() }));
 vi.mock('@/services/agent', () => ({
   AVAILABLE_AGENTS_CONTEXT_QUERY_LIMIT: 12,
   agentService: {

@@ -26,7 +26,7 @@ import { getCacheScope } from '@/libs/swr/useCacheScope';
 import type { AvailableAgentItem, CreateAgentParams, CreateAgentResult } from '@/services/agent';
 import { agentService, AVAILABLE_AGENTS_CONTEXT_QUERY_LIMIT } from '@/services/agent';
 import { aiAgentService } from '@/services/aiAgent';
-import { refreshChannelListIfEnabled } from '@/store/channel/refreshIfEnabled';
+import { refreshChannelList } from '@/store/channel/refreshChannelList';
 import { refreshAgentDeviceBindings } from '@/store/device/agentDeviceBinding';
 import { useGlobalStore } from '@/store/global';
 import { globalGeneralSelectors } from '@/store/global/selectors';
@@ -292,7 +292,7 @@ class AgentSliceActionImpl {
     const result = await agentService.createAgent({ ...params, config });
     this.#get().invalidateAvailableAgents();
     // The server opened the creator's direct Channel to the new Agent alongside it.
-    refreshChannelListIfEnabled();
+    refreshChannelList();
 
     const userId = userProfileSelectors.userId(getUserStoreState());
 

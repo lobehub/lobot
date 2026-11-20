@@ -1,4 +1,3 @@
-import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { useScopeChannelList } from '@/features/Channels/useScopeChannelList';
 import { messagesUnreadCount } from '@/features/MessageList/conversations';
 import { channelSelectors, useChannelStore } from '@/store/channel';
@@ -9,12 +8,9 @@ import { channelSelectors, useChannelStore } from '@/store/channel';
  * mention in a workspace the user is not in still shows on its tile.
  */
 export const useScopeUnread = (scopeId: string | null, active: boolean): number => {
-  const enabled = useChannelsEnabled();
-
   const list = useChannelStore(channelSelectors.list);
 
-  const otherList = useScopeChannelList(scopeId, enabled && !active);
+  const otherList = useScopeChannelList(scopeId, !active);
 
-  if (!enabled) return 0;
   return messagesUnreadCount(active ? list : otherList);
 };

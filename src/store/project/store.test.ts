@@ -23,15 +23,9 @@ import { initialProjectState, useCurrentProjectList, useProjectStore } from './s
 
 const mocks = vi.hoisted(() => ({
   activeWorkspaceId: null as string | null,
-  enableChannels: false,
   refreshChannelList: vi.fn(),
   refreshProjectTopics: vi.fn(),
   syncFavoriteSnapshot: vi.fn(),
-}));
-
-vi.mock('@/store/serverConfig', async (importOriginal) => ({
-  ...(await importOriginal<object>()),
-  getServerConfigStoreState: () => ({ featureFlags: { enableChannels: mocks.enableChannels } }),
 }));
 
 vi.mock('@/store/channel', () => ({
@@ -105,7 +99,6 @@ describe('project store replicas', () => {
 
   beforeEach(() => {
     mocks.activeWorkspaceId = null;
-    mocks.enableChannels = false;
     useScope(`project-user-${randomUUID()}:personal`);
     act(() => useProjectStore.setState(initialProjectState));
   });
@@ -458,17 +451,13 @@ describe('project store replicas', () => {
       );
       expect(useProjectStore.getState().projectListMap.all[0].id).toBe('p3');
     });
-    it("refetches Channels for the new project's default Channel only while they are on", async () => {
+    it("refetches Channels for the new project's default Channel", async () => {
       seed();
       await waitSeeded();
       vi.mocked(projectService.create).mockResolvedValue(ok(project('p3', 'Launch')) as any);
       vi.mocked(projectService.listAll).mockImplementation(pending);
       mocks.refreshChannelList.mockResolvedValue(undefined);
 
-      await act(() => useProjectStore.getState().createProject({ name: 'Launch' }));
-      expect(mocks.refreshChannelList).not.toHaveBeenCalled();
-
-      mocks.enableChannels = true;
       await act(() => useProjectStore.getState().createProject({ name: 'Launch' }));
       await waitFor(() => expect(mocks.refreshChannelList).toHaveBeenCalledTimes(1));
     });

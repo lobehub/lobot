@@ -17,7 +17,7 @@ import {
   type ProjectKnowledgeBaseBindingPatch,
   projectService,
 } from '@/services/project';
-import { refreshChannelListIfEnabled } from '@/store/channel/refreshIfEnabled';
+import { refreshChannelList } from '@/store/channel/refreshChannelList';
 import { createDevtools } from '@/store/middleware/createDevtools';
 import { expose } from '@/store/middleware/expose';
 import { useProjectDirectoryStore } from '@/store/projectWorkingDirectory';
@@ -221,7 +221,7 @@ export const useProjectStore = createWithEqualityFn<ProjectStore>()(
           items && !items.some((item) => item.id === project.id) ? [project, ...items] : items,
         );
         void refreshList();
-        refreshChannelListIfEnabled();
+        refreshChannelList();
         return project;
       },
       deleteProject: async (id) => {

@@ -21,7 +21,6 @@ import { resolveAgentBadge } from '@/features/AgentViewAll/resolveAgentBadge';
 import SidebarItemAvatar from '@/features/AgentViewAll/SidebarItemAvatar';
 import { useAgentCoverColor } from '@/features/AgentViewAll/useAgentCoverColor';
 import { AgentSchedules } from '@/features/Channels/AgentSchedules';
-import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { useAgentConversationLink } from '@/features/MessageList/useAgentConversationLink';
 import NavHeader from '@/features/NavHeader';
 import { useWorkspaceAwareNavigate } from '@/features/Workspace/useWorkspaceAwareNavigate';
@@ -46,9 +45,6 @@ const ContactCard = memo<Extract<ContactCardState, { status: 'ready' }>>(
     const coverColor = useAgentCoverColor(item, badge.cover, !!badge.coverImage);
     const isGroup = item.type === 'group';
     const agentId = isGroup ? undefined : item.id;
-    // With Channels on, "Message" opens the direct Channel and "View" the Agent's own page;
-    // without them both would land on that page, so only "Message" is offered.
-    const channelsEnabled = useChannelsEnabled();
     const message = useAgentConversationLink(agentId, chatUrl);
     const copyIdItem = useCopyAgentIdMenuItem(agentId);
     const presence = useAgentPresence(agentId);
@@ -134,7 +130,7 @@ const ContactCard = memo<Extract<ContactCardState, { status: 'ready' }>>(
             >
               <TileContent icon={MessageCircleIcon} label={t('contacts.sendMessage')} />
             </WorkspaceLink>
-            {agentId && channelsEnabled && (
+            {agentId && (
               <a
                 href={manageUrl}
                 rel="noopener noreferrer"

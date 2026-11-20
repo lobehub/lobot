@@ -28,7 +28,6 @@ import AsyncError from '@/components/AsyncError';
 import { DESKTOP_HEADER_ICON_SMALL_SIZE } from '@/const/layoutTokens';
 import { openAddContactModal } from '@/features/AddContactModal';
 import { personName } from '@/features/AddContactModal/result';
-import { useChannelsEnabled } from '@/features/Channels/useChannelsEnabled';
 import { AVATAR_SIZE, ConversationRow, ListHeader } from '@/features/MessageList';
 import SkeletonList from '@/features/NavPanel/components/SkeletonList';
 import { NavPanelPortal } from '@/features/NavPanel/NavPanelPortal';
@@ -109,13 +108,11 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
     systemStatusSelectors.contactListCollapsedSections,
     isEqual,
   );
-  // People and other people's Agents belong to the Channel experience.
-  const channelsEnabled = useChannelsEnabled();
-  contactActions.useFetchList(channelsEnabled);
-  contactActions.useFetchRequests(channelsEnabled);
+  contactActions.useFetchList(true);
+  contactActions.useFetchRequests(true);
   const externals = useContactStore((s) => contactSelectors.externals(s) ?? [], isEqual);
   const people = useContactStore((s) => contactSelectors.people(s) ?? [], isEqual);
-  const sharedAgents = useContactStore((s) => contactSelectors.agents(s) ?? [], isEqual);
+  const shared = useContactStore((s) => contactSelectors.agents(s) ?? [], isEqual);
   const requests = useContactStore(contactSelectors.incomingRequests, isEqual);
   // In a workspace, its members can be messaged there without being contacts.
   const inWorkspace = !!useActiveWorkspaceId();
@@ -146,8 +143,6 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
   const visiblePeople = q ? people.filter((item) => match(personName(item.user))) : people;
   const visibleAgents = q ? agents.filter((item) => match(agentName(item))) : agents;
   const visibleExternals = q ? externals.filter((item) => match(personName(item.user))) : externals;
-  // Other people's Agents belong to the Channel experience, like the people around them.
-  const shared = channelsEnabled ? sharedAgents : [];
   const visibleShared = q ? shared.filter((item) => match(item.agent.title || untitled)) : shared;
   const visibleRequests = q ? requests.filter((item) => match(personName(item.user))) : requests;
   const visibleMembers = q
@@ -218,7 +213,7 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
         ]
       : []),
     // In the personal space, other people's Agents follow the people in the same section.
-    ...(channelsEnabled && !inWorkspace
+    ...(!inWorkspace
       ? [
           {
             count: visiblePeople.length + visibleShared.length,
@@ -233,7 +228,7 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
           },
         ]
       : []),
-    ...(channelsEnabled && inWorkspace
+    ...(inWorkspace
       ? [
           {
             count: visibleMembers.length,
@@ -251,7 +246,7 @@ const Body = memo<{ query?: string }>(({ query = '' }) => {
         ]
       : []),
     // People outside the workspace whom a member invited; left out until there is one.
-    ...(channelsEnabled && inWorkspace && visibleExternals.length > 0
+    ...(inWorkspace && visibleExternals.length > 0
       ? [
           {
             count: visibleExternals.length,
@@ -369,20 +364,17 @@ const Header = memo(() => {
   const { t } = useTranslation('common');
   const title = useContactsTitle();
   // Creating agents and groups lives in the home sidebar; here the header only finds new contacts.
-  const channelsEnabled = useChannelsEnabled();
 
   return (
     <ListHeader
       title={title}
       actions={
-        channelsEnabled && (
-          <ActionIcon
-            icon={UserRoundPlusIcon}
-            size={DESKTOP_HEADER_ICON_SMALL_SIZE}
-            title={t('contacts.add')}
-            onClick={() => openAddContactModal()}
-          />
-        )
+        <ActionIcon
+          icon={UserRoundPlusIcon}
+          size={DESKTOP_HEADER_ICON_SMALL_SIZE}
+          title={t('contacts.add')}
+          onClick={() => openAddContactModal()}
+        />
       }
     />
   );

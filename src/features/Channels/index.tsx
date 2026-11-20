@@ -5,15 +5,12 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useSearchParams } from 'react-router';
 
-import NotFound from '@/components/404';
-import { RouteLoading } from '@/components/Skeleton/RouteSegment';
 import { EntityLinkHostProvider } from '@/features/EntityLink/host';
 import { directCounterpart } from '@/features/MessageList/conversations';
 import NavHeader from '@/features/NavHeader';
 import { useCompactLayout } from '@/features/NavRail/useCompactLayout';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 import { useChatStore } from '@/store/chat';
-import { serverConfigSelectors, useServerConfigStore } from '@/store/serverConfig';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
@@ -44,7 +41,7 @@ import { channelBrowserSessionId, usePortalPanelOpen } from './usePortalPanel';
 import { useThreadPanel } from './useThreadPanel';
 
 /** One Channel: the main conversation, with a thread beside it, or one thread as the page. */
-function EnabledChannelPage() {
+export default function ChannelPage() {
   const { t } = useTranslation('channel');
   const { channelId } = useParams<{ channelId: string }>();
   const panel = useThreadPanel(channelId ?? '');
@@ -421,13 +418,4 @@ function EnabledChannelPage() {
       </EntityLinkHostProvider>
     </Flexbox>
   );
-}
-
-/** Do not mount subscriptions or conversations unless the `channel` flag is on for the user. */
-export default function ChannelPage() {
-  const ready = useServerConfigStore((s) => s.serverConfigInit);
-  const enabled = useServerConfigStore(serverConfigSelectors.enableChannels);
-  // Continue the route skeleton while the flag resolves instead of swapping to a spinner.
-  if (!ready) return <RouteLoading />;
-  return enabled ? <EnabledChannelPage /> : <NotFound />;
 }
