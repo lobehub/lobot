@@ -7,6 +7,9 @@ import { headerHoverMarker } from './markers.stylex';
 
 const HOVER = '@media (hover: hover)';
 
+/** Space between the conversation column's edges and the composer. */
+export const COMPOSER_GUTTER = 8;
+
 export const styles = stylex.create({
   /** A failed reply's body: its reason and a retry, on one line. */
   replyFailure: {
@@ -539,13 +542,14 @@ export const styles = stylex.create({
     'position': 'relative',
     'flexShrink': 0,
     'paddingBlockEnd': 12,
-    // The feed fades out into the composer instead of being cut at its top edge.
+    // The feed fades out into the composer instead of being cut at its top edge. The fade
+    // reaches past the gutter to the column's edges, where hovered and marked message rows end.
     '::before': {
       pointerEvents: 'none',
       content: '""',
       position: 'absolute',
       insetBlockEnd: '100%',
-      insetInline: 0,
+      insetInline: `-${COMPOSER_GUTTER}px`,
       height: 24,
       backgroundImage: `linear-gradient(to top, ${cssVar.colorBgContainer}, transparent)`,
     },

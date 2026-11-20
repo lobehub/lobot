@@ -41,7 +41,7 @@ import {
   channelMentionInvites,
 } from './mentions';
 import { createChannelSendRequest } from './sendRequest';
-import { styles } from './styles';
+import { COMPOSER_GUTTER, styles } from './styles';
 import { useAttachments } from './useAttachments';
 import { useCanUploadAttachments } from './useCanUploadAttachments';
 import { useComposerDraft } from './useComposerDraft';
@@ -263,7 +263,7 @@ export function Composer({
     />
   );
   return (
-    <WideScreenContainer fullWidth paddingInline={8}>
+    <WideScreenContainer fullWidth paddingInline={COMPOSER_GUTTER}>
       <Flexbox {...stylex.props(styles.composer)} gap={4}>
         {/* Without an activity line the input meets the feed directly, with no empty strip. */}
         {activity != null && (
