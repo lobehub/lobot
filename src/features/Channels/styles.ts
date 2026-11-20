@@ -145,9 +145,9 @@ export const styles = stylex.create({
     overflowY: 'auto',
     flex: '1',
     minHeight: 0,
-    // Room for the first message's toolbar, which floats above its row.
-    paddingBlockStart: 16,
-    paddingBlockEnd: 24,
+    // With the first row's own 6px, room for its toolbar, which floats above the row.
+    paddingBlockStart: 10,
+    paddingBlockEnd: 16,
   },
   /** Holds the scrolling feed so the jump-to-bottom button can float over its foot. */
   feedFrame: {
@@ -187,6 +187,13 @@ export const styles = stylex.create({
       [HOVER]: { 'default': 'transparent', ':hover': cssVar.colorFillQuaternary },
     },
   },
+  /**
+   * A message that shows its author opens a group: with the 2px under the previous message
+   * and its own 8px, 16px between authors against 4px between one author's messages.
+   */
+  groupStart: {
+    paddingBlockStart: 6,
+  },
   /** Someone mentioned you: a pale yellow row with a gold bar down its left edge. */
   mentionedMessage: {
     backgroundColor: cssVar.colorWarningBg,
@@ -209,7 +216,7 @@ export const styles = stylex.create({
     'display': 'flex',
     'alignItems': 'center',
     'maxWidth': 'calc(100% - 48px)',
-    'marginBlockStart': 12,
+    'marginBlockStart': 8,
     'marginInlineStart': 48,
     'padding': 0,
     'borderWidth': 0,
@@ -256,7 +263,7 @@ export const styles = stylex.create({
   },
   /** A continuation has no avatar; the curve still drops into the gutter beside the text. */
   replyQuoteCompact: {
-    '::before': { insetBlockEnd: -16 },
+    '::before': { insetBlockEnd: -12 },
   },
   /** The elbow drawn inside the measured box: down the gutter, then across to the card. */
   threadSpine: {
@@ -272,6 +279,13 @@ export const styles = stylex.create({
     borderBlockEndStyle: 'solid',
     borderBlockEndColor: cssVar.colorBorderSecondary,
     borderEndStartRadius: 8,
+  },
+  /**
+   * Cancels the 4px the markdown keeps above its first paragraph and below its last: inside a
+   * message they only pad the author name and the next message apart.
+   */
+  messageMarkdown: {
+    marginBlock: -4,
   },
   /** "(edited)" under a message's text: a quiet note, like its time. */
   messageEdited: {
@@ -291,7 +305,7 @@ export const styles = stylex.create({
   },
   continuationTime: {
     position: 'absolute',
-    insetBlockStart: 4,
+    insetBlockStart: 0,
     insetInlineStart: 4,
     width: 54,
     textAlign: 'center',
@@ -309,7 +323,9 @@ export const styles = stylex.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingBlock: 12,
+    // 16px each side once the messages' own 2px and 14px are added.
+    paddingBlockStart: 14,
+    paddingBlockEnd: 2,
     fontSize: cssVar.fontSizeSM,
     color: cssVar.colorTextSecondary,
   },
@@ -397,7 +413,8 @@ export const styles = stylex.create({
   },
   /** Inline system line in the timeline, such as who joined. */
   event: {
-    paddingBlock: 8,
+    paddingBlockStart: 10,
+    paddingBlockEnd: 2,
     // Starts where the welcome header and the avatars do, not indented to the message text.
     paddingInlineStart: 4,
     fontSize: cssVar.fontSizeSM,

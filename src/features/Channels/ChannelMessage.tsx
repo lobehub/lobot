@@ -254,6 +254,7 @@ const MessageText = ({
   return (
     <Markdown
       components={components}
+      {...stylex.props(styles.messageMarkdown)}
       rehypePlugins={fromAgent ? agentRehypePlugins : rehypePlugins}
       remarkPlugins={remarkPlugins}
     >
@@ -618,6 +619,7 @@ const ChannelMessageView = ({
       onPointerEnter={toolbarMounted ? undefined : mountToolbar}
       {...stylex.props(
         styles.messageRow,
+        !compact && styles.groupStart,
         mentionsMe && styles.mentionedMessage,
         highlighted && styles.highlightedMessage,
         pending && styles.pendingMessage,
@@ -633,12 +635,13 @@ const ChannelMessageView = ({
         agentId={agentAuthorId ?? undefined}
         avatarProps={{ shape: 'circle', size: AVATAR_SIZE }}
         belowMessage={below}
-        gap={4}
+        gap={2}
         id={message.id}
         paddingBlock={compact ? 2 : 8}
         placement="left"
         showHeader={!compact}
-        style={{ paddingInlineStart: 48 }}
+        // The space between authors sits above a group (groupStart); a message keeps 2px below.
+        style={{ paddingBlockEnd: 2, paddingInlineStart: 48 }}
         avatar={{
           avatar: authorAvatar(message.author),
           title: message.author.name || t('deletedMember'),
