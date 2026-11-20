@@ -586,6 +586,11 @@ export const styles = stylex.create({
   },
 });
 
+const spin = stylex.keyframes({
+  from: { transform: 'rotate(0deg)' },
+  to: { transform: 'rotate(360deg)' },
+});
+
 export const statusStyles = stylex.create({
   receipts: {
     alignSelf: 'flex-start',
@@ -596,6 +601,45 @@ export const statusStyles = stylex.create({
     display: 'inline-flex',
     gap: 4,
     alignItems: 'center',
+    color: cssVar.colorTextSecondary,
+  },
+  stateError: {
+    color: cssVar.colorError,
+  },
+  stateIcon: {
+    flex: 'none',
+  },
+  stateIconAttention: {
+    color: cssVar.colorWarning,
+  },
+  stateIconSpin: {
+    animationName: { 'default': spin, '@media (prefers-reduced-motion: reduce)': 'none' },
+    animationDuration: '1s',
+    animationTimingFunction: 'linear',
+    animationIterationCount: 'infinite',
+  },
+  /**
+   * A reply's open-topic and stop actions show while the pointer is on the reply or focus is in
+   * it, so a list of replies at work reads as states, not as a column of stop buttons.
+   */
+  replyActions: {
+    marginInlineStart: 'auto',
+    opacity: {
+      'default': 0,
+      [stylex.when.ancestor(':hover')]: 1,
+      [stylex.when.ancestor(':focus-within')]: 1,
+      '@media (hover: none)': 1,
+    },
+    transition: 'opacity 0.15s',
+  },
+  /** Kept in view while a stop is on its way, so the spinner does not vanish with the pointer. */
+  replyActionsBusy: {
+    opacity: 1,
+  },
+  /** A later reply of the same Agent: no avatar or name, its state lines up under the name. */
+  replyIndent: {
+    flex: 'none',
+    width: 24,
   },
   dot: {
     flex: 'none',

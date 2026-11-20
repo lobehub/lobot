@@ -75,15 +75,18 @@ export const failureAnchors = (messages: ChannelPublicMessage[], entries: ReplyE
  * One reply: its state, why it failed or what device it waits for, and how to stop it or open
  * its Agent. `manageable` viewers (Channel admins) also see that device and can change it.
  * `queue` holds the replies listed beside it, so one waiting behind an earlier reply of the same
- * Agent says so instead of typing.
+ * Agent says so instead of typing. `continued` marks a later reply of the Agent on the row above:
+ * it drops the avatar and name and lines its state up under that name.
  */
 export function ReplyDetail({
   channelId,
+  continued,
   entry: { agentId, avatar, job, member, name },
   manageable,
   queue,
 }: {
   channelId: string;
+  continued?: boolean;
   entry: ReplyEntry;
   manageable?: boolean;
   queue?: ChannelPublicJob[];
@@ -134,20 +137,24 @@ export function ReplyDetail({
     </Button>
   );
   return (
-    <Flexbox gap={8}>
+    <Flexbox gap={8} {...stylex.props(stylex.defaultMarker())}>
       <Flexbox horizontal align="center" gap={8}>
-        <AgentAvatar
-          agentId={agentId}
-          avatar={avatar}
-          name={name}
-          shape={'circle'}
-          size={24}
-          title={name}
-        />
+        {continued ? (
+          <span aria-hidden {...stylex.props(statusStyles.replyIndent)} />
+        ) : (
+          <AgentAvatar
+            agentId={agentId}
+            avatar={avatar}
+            name={name}
+            shape={'circle'}
+            size={24}
+            title={name}
+          />
+        )}
         {/* Name, then its state; the stop action sits at the far end of the same row. The name
             opens the Agent without an icon, keeps its own width and only shrinks (to an ellipsis)
             when the row runs out. */}
-        {agentId ? (
+        {continued ? null : agentId ? (
           <Button
             aria-label={t('openAgentNamed', { name })}
             outdent="start"
@@ -170,7 +177,12 @@ export function ReplyDetail({
         <span style={{ flexShrink: 0, whiteSpace: 'nowrap' }}>
           <ChannelStatus label={status.label} tone={status.tone} />
         </span>
-        <Flexbox horizontal align="center" gap={4} style={{ marginInlineStart: 'auto' }}>
+        <Flexbox
+          horizontal
+          align="center"
+          gap={4}
+          {...stylex.props(statusStyles.replyActions, stopping && statusStyles.replyActionsBusy)}
+        >
           {/* The member who runs the reply can watch it work in its topic on LobeHub. */}
           {agentId && job.topicId && (
             <ActionIcon
@@ -186,12 +198,11 @@ export function ReplyDetail({
           )}
           {job.canStop && isChannelJobActive(job) && (
             <Button
-              danger
               icon={Square}
               loading={stopping}
               size="small"
               style={{ flexShrink: 0 }}
-              type="text"
+              type="fill"
               onClick={() => void stop()}
             >
               {t('stopReply')}
@@ -249,7 +260,23 @@ export function ReplyDetail({
   );
 }
 
-/** Replies listed one after another, as popover content. */
+/**
+ * Replies grouped by the member that runs them, in the order each member first appears. Within a
+ * group the replies keep their order.
+ */
+export const groupReplyEntries = (entries: ReplyEntry[]): ReplyEntry[][] => {
+  const groups = new Map<string, ReplyEntry[]>();
+  for (const entry of entries) {
+    const key = entry.job.memberId;
+    groups.set(key, [...(groups.get(key) ?? []), entry]);
+  }
+  return [...groups.values()];
+};
+
+/**
+ * Replies as popover content, one group per Agent: the avatar and name head the group once, and
+ * each further reply of that Agent is just its state.
+ */
 export function ReplyList({
   channelId,
   entries,
@@ -259,17 +286,23 @@ export function ReplyList({
   entries: ReplyEntry[];
   manageable?: boolean;
 }) {
+  // The queue keeps the jobs' own order (newest first): a reply's place in it says what it waits on.
   const queue = entries.map((entry) => entry.job);
   return (
     <Flexbox gap={16} {...stylex.props(statusStyles.popover, statusStyles.replyList)}>
-      {entries.map((entry) => (
-        <ReplyDetail
-          channelId={channelId}
-          entry={entry}
-          key={entry.job.id}
-          manageable={manageable}
-          queue={queue}
-        />
+      {groupReplyEntries(entries).map((group) => (
+        <Flexbox gap={8} key={group[0].job.id}>
+          {group.map((entry, index) => (
+            <ReplyDetail
+              channelId={channelId}
+              continued={index > 0}
+              entry={entry}
+              key={entry.job.id}
+              manageable={manageable}
+              queue={queue}
+            />
+          ))}
+        </Flexbox>
       ))}
     </Flexbox>
   );

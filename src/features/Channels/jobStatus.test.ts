@@ -487,6 +487,13 @@ describe('replies queued behind an earlier one', () => {
     }
   });
 
+  it('stays quiet behind a reply that is itself held up, which says why on its own row', () => {
+    const jobs = [job({ id: 'later' }), job({ blockedCode: 'directory_locked', id: 'head' })];
+    expect(replyJobStatus(jobs[0], jobs)).toBe('blocked.member_busy');
+    expect(replyJobTone(jobs[1], jobs)).toBe('attention');
+    expect(replyJobTone(jobs[0], jobs)).toBe('quiet');
+  });
+
   it('keeps the reason of a reply the server already found blocked', () => {
     const jobs = [
       job({ blockedCode: 'directory_locked', id: 'later' }),

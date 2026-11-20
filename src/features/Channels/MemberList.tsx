@@ -136,7 +136,7 @@ const MemberState = ({
       {entry.tone === 'working' ? (
         <span {...stylex.props(statusStyles.memberWorking)}>{entry.label}</span>
       ) : (
-        <ChannelStatus hideDot label={entry.label} tone={entry.tone} />
+        <ChannelStatus hideIcon label={entry.label} tone={entry.tone} />
       )}
     </span>
   );
