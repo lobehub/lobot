@@ -108,6 +108,11 @@ interface AgentProfilePopupProps extends PropsWithChildren {
   open?: boolean;
   /** Overrides the default: above the trigger on hover, beside it on click. */
   placement?: 'left' | 'right' | 'top';
+  /**
+   * Where an Agent outside one's Contacts opens, such as the link share a contact card carries,
+   * so the reader can look at it and add it.
+   */
+  shareUrl?: string;
   trigger?: 'click' | 'hover';
 }
 
@@ -123,6 +128,7 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
     onOpenChange,
     open: openProp,
     placement,
+    shareUrl,
     trigger = 'click',
   }) => {
     const { t } = useTranslation('chat');
@@ -151,6 +157,7 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
     // An Agent in my Contacts, mine or one shared with me, opens its contact card.
     const contactAgent = useContactStore(contactSelectors.agentById(agentId));
     const contactUrl = listEntry || contactAgent ? CONTACT_URL(agentId) : undefined;
+    const profileUrl = contactUrl ?? shareUrl;
 
     const { detail: fetched, isLoading } = useAgentProfileDetail(agentId, open && !!canConfigure);
 
@@ -185,7 +192,7 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
 
     const handleHeaderClick = () => {
       setOpen(false);
-      navigate(contactUrl ?? `/agent/${agentId}/profile`);
+      navigate(profileUrl ?? `/agent/${agentId}/profile`);
     };
 
     const hasDisplay = Boolean(agentDisplayName(merged) || merged.avatar || merged.description);
@@ -324,15 +331,17 @@ const AgentProfilePopup = memo<AgentProfilePopupProps>(
             </Flexbox>
           ) : undefined
         }
-        onHeaderClick={contactUrl || canConfigure ? handleHeaderClick : undefined}
+        onHeaderClick={profileUrl || canConfigure ? handleHeaderClick : undefined}
       >
         {facts}
         {extra}
-        {/* Only an Agent the server opens a conversation with: one's own, or a contact. */}
-        {contactUrl && (
+        {/* "Send message" only for an Agent the server opens a conversation with: one's own, or a
+            contact. One reached through a share offers just its profile. */}
+        {profileUrl && (
           <AgentCardActions
             agentId={agentId}
-            profileUrl={contactUrl}
+            canMessage={!!contactUrl}
+            profileUrl={profileUrl}
             onDone={() => setOpen(false)}
           />
         )}

@@ -46,7 +46,12 @@ vi.mock('./index', () => ({
   ),
 }));
 vi.mock('./AgentCardActions', () => ({
-  AgentCardActions: ({ profileUrl }: { profileUrl: string }) => <span>actions:{profileUrl}</span>,
+  AgentCardActions: ({ canMessage, profileUrl }: { canMessage?: boolean; profileUrl: string }) => (
+    <span>
+      actions:{profileUrl}
+      {canMessage === false && ':profile-only'}
+    </span>
+  ),
 }));
 vi.mock('./useAgentProfileDetail', () => ({
   useAgentProfileDetail: () => ({ detail: detail.current, isLoading: false }),
@@ -109,6 +114,34 @@ describe('AgentProfilePopup', () => {
   it('offers message and profile actions for an Agent the person can talk to', () => {
     render(
       <AgentProfilePopup agentId={'agt_shared'} trigger={'hover'}>
+        <span />
+      </AgentProfilePopup>,
+    );
+
+    expect(screen.getByText('actions:/agents/agt_shared')).toBeTruthy();
+  });
+
+  // A contact card shares an Agent the reader may not have yet: its card leads to the share,
+  // where it can be added, and offers no conversation the server would refuse.
+  it('opens an Agent outside Contacts through its share, without messaging', () => {
+    render(
+      <AgentProfilePopup
+        agentId={'agt_stranger'}
+        shareUrl={'/agents/shared/shr_1'}
+        trigger={'hover'}
+      >
+        <span />
+      </AgentProfilePopup>,
+    );
+
+    expect(screen.getByText('actions:/agents/shared/shr_1:profile-only')).toBeTruthy();
+    fireEvent.click(screen.getByText('header'));
+    expect(navigate).toHaveBeenCalledWith('/agents/shared/shr_1');
+  });
+
+  it('keeps a contact Agent on its Contacts page even with a share', () => {
+    render(
+      <AgentProfilePopup agentId={'agt_shared'} shareUrl={'/agents/shared/shr_1'} trigger={'hover'}>
         <span />
       </AgentProfilePopup>,
     );
