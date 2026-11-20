@@ -90,12 +90,21 @@ export const stableMediaIdentity = (url: string): string | null => {
   return `${parsed.origin}${parsed.pathname}${query ? `?${query}` : ''}`;
 };
 
-/** The app's `/f/:id` proxy. It needs the session cookie, which the disk cache cannot send. */
-export const isFileProxyUrl = (url: string): boolean => {
+const FILE_PROXY_PATH = /^\/f\/([^/]+)(?:\/raw)?\/?$/;
+
+/**
+ * The app's `/f/:id` proxy. The renderer keeps loading it by URL; on desktop the main process
+ * intercepts image and video loads of it and answers from the disk cache by file id.
+ */
+export const isFileProxyUrl = (url: string): boolean => fileProxyId(url) !== null;
+
+/** File id of a `/f/:id` proxy URL, or `null` when `url` is not one. */
+export const fileProxyId = (url: string): string | null => {
   try {
-    return /^\/f\/[^/]+(?:\/raw)?\/?$/.test(new URL(url).pathname);
+    const match = FILE_PROXY_PATH.exec(new URL(url).pathname);
+    return match ? decodeURIComponent(match[1]) : null;
   } catch {
-    return false;
+    return null;
   }
 };
 

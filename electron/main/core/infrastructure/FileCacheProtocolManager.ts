@@ -17,9 +17,12 @@ import {
   FILE_CACHE_MEDIA_HOST,
   FILE_CACHE_PROTOCOL_HOST,
   FILE_CACHE_PROTOCOL_SCHEME,
+  fileProxyId,
+  isFileProxyUrl,
+  stableFileCacheUrl,
 } from '@lobechat/const/protocol';
 import { resolveMimeType } from '@lobechat/utils/mimeType';
-import { app, net, protocol } from 'electron';
+import { app, net, type OnBeforeRequestListenerDetails, protocol, type Session } from 'electron';
 
 import { createLogger } from '@/utils/logger';
 
@@ -44,6 +47,9 @@ const PRIME_WAIT_MS = 3000;
 const SNIFF_BYTES = 8192;
 const TEMP_SUFFIX = '.tmp';
 const META_SUFFIX = '.meta.json';
+const PRUNE_DELAY_MS = 30 * 1000;
+/** Failures of the disk copy, not of the file. A `/f/` image is then loaded without caching. */
+const UNCACHEABLE_STATUSES = new Set([413, 415, 502]);
 
 interface CacheMeta {
   etag?: string;
@@ -58,6 +64,11 @@ interface FileCacheProtocolManagerOptions {
   revalidateIntervalMs?: number;
 }
 
+export interface FileCacheStats {
+  bytes: number;
+  files: number;
+}
+
 /**
  * Custom `lobe-file-cache://` protocol that keeps a disk copy of remote media.
  *
@@ -70,6 +81,10 @@ interface FileCacheProtocolManagerOptions {
  * `?prime=1&src=` records the latest signed URL and downloads only on a miss, without sending
  * the body back to that fetch. The element that displays the media uses the stable URL, so a
  * new signature does not throw away the decoded image. Video is served with range requests.
+ *
+ * `/f/<file-id>` images on the remote server are redirected here by {@link interceptFileProxy},
+ * so an avatar or attachment that the renderer loads by its proxy URL is downloaded once per
+ * file id instead of after every 302 and every new signature.
  */
 export class FileCacheProtocolManager {
   private readonly cacheDir: string;
@@ -81,6 +96,8 @@ export class FileCacheProtocolManager {
   private readonly inFlight = new Map<string, Promise<Response | 'ready'>>();
 
   private readonly maxCacheBytes: number;
+
+  private pruneTimer: NodeJS.Timeout | null = null;
 
   private readonly revalidateIntervalMs: number;
 
@@ -161,10 +178,109 @@ export class FileCacheProtocolManager {
     if (!/^https?:\/\//i.test(src)) return new Response('Not Found', { status: 404 });
 
     const result = await this.joinDownload(fileId, filePath, src);
+    // The proxy URL is all a redirected `<img>` has; if the disk copy cannot be made, load the
+    // image uncached rather than show a broken avatar.
+    if (
+      result instanceof Response &&
+      UNCACHEABLE_STATUSES.has(result.status) &&
+      isFileProxyUrl(src)
+    ) {
+      return this.passthrough(src, request);
+    }
     // Each waiter gets its own response. One shared body can only be read once.
     if (result instanceof Response) return result.clone();
     if (prime) return this.empty(request);
     return this.respondFile(filePath, fileName, request, mutable);
+  }
+
+  /**
+   * Redirect the renderer's `/f/<file-id>` image loads on the remote server to the disk cache.
+   * The 302 behind `/f/` is not cacheable, so without this every new `<img>` (switching a
+   * conversation, remounting an avatar) went to the network, and a new signature downloaded
+   * the bytes again. The redirect target is keyed by the file id and keeps the proxy URL as
+   * `src`, so a miss is fetched by the main process, which follows the 302 itself.
+   *
+   * Only images from a page are redirected. The main process's own fetch has no web contents,
+   * so it is not redirected back here. Video keeps streaming from the proxy: the cache downloads
+   * a whole file before serving it. Electron keeps one `onBeforeRequest` listener per session,
+   * so this owns the main window session's listener.
+   */
+  interceptFileProxy(session: Session, getRemoteBaseUrl: () => Promise<string | null | undefined>) {
+    session.webRequest.onBeforeRequest({ urls: ['*://*/f/*'] }, (details, callback) => {
+      void this.fileProxyRedirect(details, getRemoteBaseUrl)
+        .catch((error) => {
+          logger.warn('Failed to redirect file proxy request:', error);
+          return null;
+        })
+        .then((redirectURL) => callback(redirectURL ? { redirectURL } : {}));
+    });
+  }
+
+  /** The cache address for an intercepted `/f/` image, or `null` to let it through unchanged. */
+  async fileProxyRedirect(
+    details: Pick<
+      OnBeforeRequestListenerDetails,
+      'method' | 'resourceType' | 'url' | 'webContentsId'
+    >,
+    getRemoteBaseUrl: () => Promise<string | null | undefined>,
+  ): Promise<string | null> {
+    if (!details.webContentsId || details.resourceType !== 'image' || details.method !== 'GET') {
+      return null;
+    }
+    const fileId = fileProxyId(details.url);
+    if (!fileId || !FILE_ID_PATTERN.test(fileId)) return null;
+
+    // The file id is the cache key, so only the server that issued it may fill that key.
+    const remoteBaseUrl = await getRemoteBaseUrl();
+    if (!remoteBaseUrl) return null;
+    try {
+      if (new URL(details.url).origin !== new URL(remoteBaseUrl).origin) return null;
+    } catch {
+      return null;
+    }
+
+    const target = new URL(stableFileCacheUrl({ id: fileId }));
+    target.searchParams.set('src', details.url);
+    return target.toString();
+  }
+
+  /** Total size and count of cached files, without partial downloads or validators. */
+  async stats(): Promise<FileCacheStats> {
+    const entries = await this.listEntries();
+    return {
+      bytes: entries.reduce((total, entry) => total + entry.size, 0),
+      files: entries.length,
+    };
+  }
+
+  /** Drop one file id's disk copy. The next load downloads it again. */
+  async evict(fileId: string) {
+    if (!FILE_ID_PATTERN.test(fileId)) return;
+    const filePath = path.join(this.cacheDir, fileId);
+    this.revalidatedAt.delete(fileId);
+    await rm(filePath, { force: true });
+    await rm(`${filePath}${META_SUFFIX}`, { force: true });
+  }
+
+  /**
+   * Release the whole pool. Downloads still in flight keep their partial file and land
+   * afterwards; leftovers from a crash are removed by {@link prune}.
+   */
+  async clear(): Promise<FileCacheStats> {
+    const released = await this.stats();
+    let names: string[];
+    try {
+      names = await readdir(this.cacheDir);
+    } catch {
+      return released;
+    }
+    await Promise.all(
+      names
+        .filter((name) => !name.endsWith(TEMP_SUFFIX))
+        .map((name) => rm(path.join(this.cacheDir, name), { force: true, recursive: true })),
+    );
+    this.revalidatedAt.clear();
+    return released;
   }
 
   /** Delete leftover partial downloads, then the least recently used files over the size cap. */
@@ -176,23 +292,12 @@ export class FileCacheProtocolManager {
       return;
     }
 
-    const entries: { mtimeMs: number; name: string; path: string; size: number }[] = [];
     for (const name of names) {
-      const entryPath = path.join(this.cacheDir, name);
-      if (name.endsWith(TEMP_SUFFIX) || name.endsWith(META_SUFFIX)) {
-        if (name.endsWith(TEMP_SUFFIX)) await rm(entryPath, { force: true });
-        continue;
-      }
-      const entryStat = await stat(entryPath).catch(() => null);
-      if (entryStat?.isFile()) {
-        entries.push({
-          mtimeMs: entryStat.mtimeMs,
-          name,
-          path: entryPath,
-          size: entryStat.size,
-        });
-      }
+      // `<file-id>.<pid>.<time>.tmp`. A download still running keeps its partial file.
+      if (!name.endsWith(TEMP_SUFFIX) || this.inFlight.has(name.split('.')[0])) continue;
+      await rm(path.join(this.cacheDir, name), { force: true });
     }
+    const entries = await this.listEntries();
 
     entries.sort((a, b) => b.mtimeMs - a.mtimeMs);
     const kept = new Set<string>();
@@ -212,6 +317,57 @@ export class FileCacheProtocolManager {
       const dataName = name.slice(0, -META_SUFFIX.length);
       if (!kept.has(dataName)) await rm(path.join(this.cacheDir, name), { force: true });
     }
+  }
+
+  /** Cached files with their size and last use, skipping partial downloads and validators. */
+  private async listEntries() {
+    let names: string[];
+    try {
+      names = await readdir(this.cacheDir);
+    } catch {
+      return [];
+    }
+
+    const entries: { mtimeMs: number; name: string; path: string; size: number }[] = [];
+    for (const name of names) {
+      if (name.endsWith(TEMP_SUFFIX) || name.endsWith(META_SUFFIX)) continue;
+      const entryPath = path.join(this.cacheDir, name);
+      const entryStat = await stat(entryPath).catch(() => null);
+      if (entryStat?.isFile()) {
+        entries.push({ mtimeMs: entryStat.mtimeMs, name, path: entryPath, size: entryStat.size });
+      }
+    }
+    return entries;
+  }
+
+  /**
+   * Keep the pool under its cap during a long session, not only at launch. One trim runs a
+   * while after a burst of downloads.
+   */
+  private schedulePrune() {
+    if (this.pruneTimer) return;
+    this.pruneTimer = setTimeout(() => {
+      this.pruneTimer = null;
+      void this.prune().catch((error) => logger.warn('Failed to prune file cache:', error));
+    }, PRUNE_DELAY_MS);
+    this.pruneTimer.unref?.();
+  }
+
+  /** Serve `src` straight from the network, for media the disk cache refused to keep. */
+  private async passthrough(src: string, request: Request) {
+    let response: Response;
+    try {
+      response = await this.fetchRemote(src);
+    } catch (error) {
+      logger.warn('Failed to load uncached file proxy media:', error);
+      return new Response('Bad Gateway', { status: 502 });
+    }
+    const headers = this.corsHeaders(request);
+    const contentType = response.headers.get('content-type');
+    if (contentType) headers.set('Content-Type', contentType);
+    headers.set('Content-Security-Policy', 'sandbox');
+    headers.set('X-Content-Type-Options', 'nosniff');
+    return new Response(response.body, { headers, status: response.status });
   }
 
   private async joinDownload(fileId: string, filePath: string, src: string) {
@@ -310,6 +466,7 @@ export class FileCacheProtocolManager {
       return new Response('Bad Gateway', { status: 502 });
     }
 
+    this.schedulePrune();
     return 'ready';
   }
 

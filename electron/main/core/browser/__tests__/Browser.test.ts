@@ -220,6 +220,9 @@ describe('Browser', () => {
       browserManager: {
         retrieveByIdentifier: vi.fn(),
       },
+      fileCacheProtocolManager: {
+        interceptFileProxy: vi.fn(),
+      },
       buildRendererUrl: vi.fn(async (path: string) => {
         const cleanPath = path.startsWith('/') ? path : `/${path}`;
         return `http://localhost:3000${cleanPath}`;
@@ -492,6 +495,10 @@ describe('Browser', () => {
 
     it('should setup CORS bypass', () => {
       expect(mockBrowserWindow.webContents.session.webRequest.onHeadersReceived).toHaveBeenCalled();
+      expect(mockApp.fileCacheProtocolManager.interceptFileProxy).toHaveBeenCalledWith(
+        mockBrowserWindow.webContents.session,
+        expect.any(Function),
+      );
     });
 
     it('should open devTools when devTools option is true', () => {

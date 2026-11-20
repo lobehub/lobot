@@ -819,16 +819,21 @@ export default class Browser {
     const targetSession = session || electronSession.defaultSession;
     if (!targetSession) return;
 
+    const getRemoteBaseUrl = async () => {
+      const config = await remoteServerConfigCtr.getRemoteServerConfig();
+      const remoteServerUrl = await remoteServerConfigCtr.getRemoteServerUrl(config);
+      return remoteServerUrl || null;
+    };
+
     backendProxyProtocolManager.registerWithRemoteBaseUrl(targetSession, {
       // Waits out a launch or wake refresh, so a lapsed token is not sent and read as signed out.
       getAccessToken: () =>
         authCtr ? authCtr.getRequestAccessToken() : remoteServerConfigCtr.getAccessToken(),
-      getRemoteBaseUrl: async () => {
-        const config = await remoteServerConfigCtr.getRemoteServerConfig();
-        const remoteServerUrl = await remoteServerConfigCtr.getRemoteServerUrl(config);
-        return remoteServerUrl || null;
-      },
+      getRemoteBaseUrl,
       source: this.identifier,
     });
+
+    // `/f/:id` avatars and attachments load from the disk cache by file id.
+    this.app.fileCacheProtocolManager.interceptFileProxy(targetSession, getRemoteBaseUrl);
   }
 }

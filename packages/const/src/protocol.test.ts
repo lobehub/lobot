@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildFileCacheUrl,
   buildLocalFileUrl,
+  fileProxyId,
   isFileProxyUrl,
   stableFileCacheUrl,
   stableMediaCacheUrl,
@@ -110,8 +111,12 @@ describe('stable cache urls', () => {
     expect(first).toMatch(/^lobe-file-cache:\/\/media\/[a-f0-9]{64}\/a\.png$/);
   });
 
-  it('recognises the file proxy, which the disk cache cannot fetch', () => {
+  it('recognises the file proxy and reads its file id', () => {
     expect(isFileProxyUrl('https://app.lobehub.com/f/file_V')).toBe(true);
     expect(isFileProxyUrl('https://s3.example.com/a.png?X-Amz-Signature=x')).toBe(false);
+    expect(fileProxyId('https://app.lobehub.com/f/file_V')).toBe('file_V');
+    expect(fileProxyId('https://app.lobehub.com/f/file_V/raw?download=1')).toBe('file_V');
+    expect(fileProxyId('https://app.lobehub.com/f/file_V/thumb')).toBeNull();
+    expect(fileProxyId('not a url')).toBeNull();
   });
 });

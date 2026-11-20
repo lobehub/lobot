@@ -14,8 +14,8 @@ import {
  * 404s is then treated as a missing avatar. The disk copy is reused for a key it already has, so
  * a new signature does not download the bytes again.
  *
- * The `/f/:id` proxy needs the session cookie, which the main process does not have, so it is
- * left for the renderer. Web keeps the original URL.
+ * The `/f/:id` proxy is left as is: the main process intercepts its image loads and serves them
+ * from the same cache by file id. Web keeps the original URL.
  */
 export const cachedMediaUrl = (
   url: string | undefined,
