@@ -187,6 +187,7 @@
   "muteNotifications": "Mute notifications",
   "muted": "Notifications muted",
   "nameOptional": "Channel name (optional)",
+  "newMessages": "New",
   "newProject.channelNameHint": "The channel is named after the project.",
   "newProject.discard": "Discard new project",
   "newProject.nameLabel": "Project name",

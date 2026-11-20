@@ -218,6 +218,7 @@ export default {
   'followers': 'Replies from: {{names}}',
   'olderMessages': 'Older messages',
   'latestMessages': 'Latest messages',
+  'newMessages': 'New',
   'search.placeholder': 'Search',
   'search.title': 'Search results',
   'search.close': 'Close search',

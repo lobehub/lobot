@@ -38,6 +38,7 @@ import {
   visibleChannelMessages,
 } from './messagePresentation';
 import { failureAnchors, replyEntries, type ReplyEntry } from './MessageReceipts';
+import { firstNewMessageId, unreadFromBeforeVisit } from './newMessages';
 import { presentOutgoingMessage, timelineTail } from './outgoing';
 import { OutgoingStatus } from './OutgoingStatus';
 import { channelTitle } from './peerTitle';
@@ -140,6 +141,15 @@ const Timeline = ({
   const readFrom = threadId || mentionsFrom ? null : readPositionBeforeVisit(listed);
   if (listed && readFrom !== null)
     setMentionsFrom({ readFrom, total: listed.mentionCount ?? 0, upTo: listed.sequence });
+  // The unread stretch this visit opened on, taken the same way before the read below; the 「新」
+  // divider goes above its first message. null once known to hold nothing.
+  const [newRange, setNewRange] = useState<{ readFrom: number; upTo: number } | null | undefined>(
+    threadId ? null : undefined,
+  );
+  if (newRange === undefined && listed) {
+    const newFrom = unreadFromBeforeVisit(listed);
+    setNewRange(newFrom === null ? null : { readFrom: newFrom, upTo: listed.sequence });
+  }
   const shell = showsListedShell({ before, error: sync.error, loaded: !!detail, threadId })
     ? listed
     : undefined;
@@ -345,6 +355,15 @@ const Timeline = ({
       )
     : new Map<string, ReplyEntry[]>();
   const presented = presentChannelTimeline(timeline);
+  const firstNewId = newRange
+    ? firstNewMessageId(
+        timeline.flatMap((entry) =>
+          entry.kind === 'message' && !outgoingById.has(entry.message.id) ? [entry.message] : [],
+        ),
+        newRange,
+        userId,
+      )
+    : undefined;
 
   return (
     <ChannelDropZone
@@ -458,6 +477,9 @@ const Timeline = ({
                         // A failed reply posted in between ends the run of the same author.
                         if (previous?.kind === 'message' && failures.has(previous.message.id))
                           continuation = false;
+                        const startsNew = item.kind === 'message' && item.message.id === firstNewId;
+                        // The first new message starts its own run, under the divider.
+                        if (startsNew) continuation = false;
                         return (
                           <Fragment key={item.kind === 'event' ? item.event.id : item.message.id}>
                             {startsDay && (
@@ -472,6 +494,17 @@ const Timeline = ({
                                 >
                                   {timeFormats.date.format(date)}
                                 </time>
+                              </div>
+                            )}
+                            {startsNew && (
+                              <div
+                                aria-label={t('newMessages')}
+                                role="separator"
+                                {...stylex.props(styles.newDivider)}
+                              >
+                                <span {...stylex.props(styles.newDividerLine)} />
+                                <span>{t('newMessages')}</span>
+                                <span {...stylex.props(styles.newDividerLine)} />
                               </div>
                             )}
                             {item.kind === 'event' ? (

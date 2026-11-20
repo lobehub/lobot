@@ -329,6 +329,24 @@ export const styles = stylex.create({
     fontSize: cssVar.fontSizeSM,
     color: cssVar.colorTextSecondary,
   },
+  /** Above the first message that was unread when the conversation opened: a thin line, 「新」 in its middle. */
+  newDivider: {
+    display: 'flex',
+    gap: 8,
+    alignItems: 'center',
+    paddingBlockStart: 14,
+    paddingBlockEnd: 2,
+    fontSize: cssVar.fontSizeSM,
+    fontWeight: 500,
+    lineHeight: 1,
+    color: cssVar.colorInfo,
+  },
+  newDividerLine: {
+    flex: '1',
+    height: 1,
+    backgroundColor: cssVar.colorInfo,
+    opacity: 0.5,
+  },
   /** Floats over the row's top-right corner while the row is hovered or focused. */
   /** A member row's "more" button: shown on row hover or focus where hover exists. */
   memberIdentity: {
