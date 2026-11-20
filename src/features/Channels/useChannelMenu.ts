@@ -159,7 +159,9 @@ export const useChannelMenu = () => {
 
   const channelItems = (channel: ChannelListItem) => [
     pinItem(channel),
-    muteItem(channel),
+    // An open project Channel read without joining notifies nobody, so there is nothing to mute;
+    // pinning it or filing it under a section joins it.
+    ...(channel.joined === false ? [] : [muteItem(channel)]),
     ...sectionItems(channel),
     // The person's own list settings up front; managing the Channel itself is rare, so it waits
     // one level down under More.

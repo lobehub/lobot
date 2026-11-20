@@ -13,6 +13,7 @@ import {
   Flexbox,
   Icon,
   Text,
+  toast,
 } from '@lobehub/ui';
 import { agentDisplayName, type SidebarAgentItem } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
@@ -35,6 +36,7 @@ import { NAV_PANEL_CONTACTS_KEY } from '@/features/NavPanel/railRouteKey';
 import SideBarLayout from '@/features/NavPanel/SideBarLayout';
 import { useActiveLocation } from '@/hooks/useActiveLocation';
 import { useFetchAgentList } from '@/hooks/useFetchAgentList';
+import { usePermission } from '@/hooks/usePermission';
 import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
 import { useGlobalStore } from '@/store/global';
 import { systemStatusSelectors } from '@/store/global/selectors';
@@ -45,6 +47,7 @@ import { userProfileSelectors } from '@/store/user/selectors';
 
 import { CONTACT_URL } from './const';
 import ContactAvatar from './ContactAvatar';
+import { canPinContact } from './contactPin';
 import { MemberRow, PersonRow, RequestRow, SharedAgentRow } from './ExternalRows';
 import { contactPreviewPath, useContactPreview } from './previewContext';
 import { CONTACT_SORT_BYS, groupContacts } from './sortContacts';
@@ -68,7 +71,18 @@ const Contact = memo<{ active: boolean; item: SidebarAgentItem }>(({ active, ite
   const { t } = useTranslation('chat');
   const { t: tCommon } = useTranslation('common');
   const [pinAgent, pinAgentGroup] = useHomeStore((s) => [s.pinAgent, s.pinAgentGroup]);
+  const inWorkspace = !!useActiveWorkspaceId();
+  const { allowed: canManageTeamPins } = usePermission('manage_settings');
+  const canPin = canPinContact({ canManageTeamPins, inWorkspace, visibility: item.visibility });
   const pinned = !!item.pinned;
+  const togglePin = async () => {
+    try {
+      await (item.type === 'group' ? pinAgentGroup : pinAgent)(item.id, !pinned);
+    } catch (error) {
+      console.error('Failed to pin contact', error);
+      toast.error(tCommon('operationFailed'));
+    }
+  };
   const title =
     item.type === 'group'
       ? item.title || t('untitledAgent')
@@ -81,15 +95,18 @@ const Contact = memo<{ active: boolean; item: SidebarAgentItem }>(({ active, ite
       avatar={<ContactAvatar item={item} name={title} size={AVATAR_SIZE} />}
       title={title}
       url={CONTACT_URL(item.id)}
-      contextMenuItems={() => [
-        {
-          icon: <Icon icon={pinned ? PinOff : Pin} />,
-          key: 'pin',
-          label: tCommon(pinned ? 'pinOff' : 'pin'),
-          onClick: () =>
-            item.type === 'group' ? pinAgentGroup(item.id, !pinned) : pinAgent(item.id, !pinned),
-        },
-      ]}
+      contextMenuItems={
+        canPin
+          ? () => [
+              {
+                icon: <Icon icon={pinned ? PinOff : Pin} />,
+                key: 'pin',
+                label: tCommon(pinned ? 'pinOff' : 'pin'),
+                onClick: () => void togglePin(),
+              },
+            ]
+          : undefined
+      }
     />
   );
 });

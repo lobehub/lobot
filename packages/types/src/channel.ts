@@ -427,6 +427,11 @@ export interface ChannelListItem {
   canDelete: boolean;
   createdAt: Date;
   id: string;
+  /**
+   * False for an open project Channel the caller reads without belonging to it; set by the Channel
+   * list. Pinning it or filing it under a section joins it.
+   */
+  joined?: boolean;
   /** The newest message, Threads included, cut for a preview; set by the Channel list. */
   lastMessage?: ChannelLastMessage | null;
   /**

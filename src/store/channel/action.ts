@@ -151,12 +151,17 @@ class ChannelActionImpl {
     );
   /**
    * Pins the conversation atop the caller's own list, or unpins it; the row moves before the
-   * server confirms. Re-pinning keeps the first pin time.
+   * server confirms. Re-pinning keeps the first pin time. Pinning an open project Channel the
+   * caller has not joined joins it.
    */
   setPinned = (channelId: string, pinned: boolean) =>
     this.#private.entity.optimistic(
       channelId,
-      (channel) => ({ ...channel, pinnedAt: pinned ? (channel.pinnedAt ?? new Date()) : null }),
+      (channel) => ({
+        ...channel,
+        pinnedAt: pinned ? (channel.pinnedAt ?? new Date()) : null,
+        ...(pinned && { joined: true }),
+      }),
       () => channelService.setPinned(channelId, pinned),
     );
   /** The caller's own list sections; a server without them leaves the list unsectioned. */
@@ -213,7 +218,8 @@ class ChannelActionImpl {
   moveToSection = (channelId: string, sectionId: string | null) =>
     this.#private.entity.optimistic(
       channelId,
-      (channel) => ({ ...channel, sectionId }),
+      // Filing an open project Channel joins it, like a pin.
+      (channel) => ({ ...channel, sectionId, ...(sectionId !== null && { joined: true }) }),
       () => channelService.moveToSection(channelId, sectionId),
     );
   /**

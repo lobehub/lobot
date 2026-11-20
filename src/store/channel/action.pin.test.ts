@@ -8,7 +8,7 @@ import { channelActions } from './action';
 import { useChannelStore } from './store';
 
 vi.mock('@/services/channel', () => ({
-  channelService: { list: vi.fn(), setPinned: vi.fn() },
+  channelService: { list: vi.fn(), moveToSection: vi.fn(), setPinned: vi.fn() },
 }));
 
 const channel: ChannelListItem = {
@@ -21,7 +21,8 @@ const channel: ChannelListItem = {
   title: 'Team',
   workspaceId: null,
 };
-const pinnedAt = () => useChannelStore.getState().listMap.all?.[0]?.pinnedAt;
+const row = () => useChannelStore.getState().listMap.all?.[0];
+const pinnedAt = () => row()?.pinnedAt;
 
 describe('pinning a Channel', () => {
   beforeEach(async () => {
@@ -59,5 +60,35 @@ describe('pinning a Channel', () => {
 
     await expect(channelActions.setPinned(channel.id, true)).rejects.toThrow('Not found');
     expect(pinnedAt()).toBeNull();
+  });
+
+  // An open project Channel the person reads without belonging to it: the server joins them.
+  it('shows an unjoined Channel as joined once pinned or filed, and unjoined again on failure', async () => {
+    vi.mocked(channelService.list).mockResolvedValue([{ ...channel, joined: false }]);
+    await channelActions.refreshList();
+
+    vi.mocked(channelService.setPinned).mockRejectedValue(new Error('Not found'));
+    await expect(channelActions.setPinned(channel.id, true)).rejects.toThrow('Not found');
+    expect(row()?.joined).toBe(false);
+
+    vi.mocked(channelService.moveToSection).mockResolvedValue({
+      data: 'sec_1',
+      success: true,
+    } as never);
+    await channelActions.moveToSection(channel.id, 'sec_1');
+    expect(row()).toMatchObject({ joined: true, sectionId: 'sec_1' });
+  });
+
+  it('marks an unjoined Channel joined when it is pinned', async () => {
+    vi.mocked(channelService.list).mockResolvedValue([{ ...channel, joined: false }]);
+    await channelActions.refreshList();
+    vi.mocked(channelService.setPinned).mockResolvedValue({
+      data: new Date(),
+      success: true,
+    } as never);
+
+    await channelActions.setPinned(channel.id, true);
+
+    expect(row()?.joined).toBe(true);
   });
 });
