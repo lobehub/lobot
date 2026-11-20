@@ -1,17 +1,17 @@
 import * as stylex from '@stylexjs/stylex';
 import type { LucideIcon } from 'lucide-react';
-import { Check, CircleAlert, CircleX, Clock, LoaderCircle } from 'lucide-react';
+import { Check, CircleX, Clock, Hand, LoaderCircle } from 'lucide-react';
 
 import type { ChannelStatusTone } from './jobStatus';
 import { statusStyles } from './styles';
 
 /**
- * Each state has its own glyph, so states tell apart by shape, not by a row of coloured dots. The
- * text stays one quiet colour. Only an error is red, and only the glyph of a reply that needs the
- * user is amber.
+ * Each state has its own glyph, so states tell apart by shape, not by a row of coloured dots; a
+ * reply that waits for someone to step in raises a hand. The text stays one quiet colour. Only an
+ * error is red, and only the hand is amber.
  */
 const TONE_ICONS: Record<ChannelStatusTone, LucideIcon> = {
-  attention: CircleAlert,
+  attention: Hand,
   done: Check,
   error: CircleX,
   quiet: Clock,
