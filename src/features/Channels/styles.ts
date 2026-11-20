@@ -621,6 +621,16 @@ export const statusStyles = stylex.create({
     alignItems: 'center',
     color: cssVar.colorTextSecondary,
   },
+  stateShrink: {
+    maxWidth: '100%',
+    minWidth: 0,
+  },
+  stateLabelEllipsis: {
+    overflow: 'hidden',
+    minWidth: 0,
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
   stateError: {
     color: cssVar.colorError,
   },

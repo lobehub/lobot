@@ -20,13 +20,15 @@ const TONE_ICONS: Record<ChannelStatusTone, LucideIcon> = {
 
 /**
  * A status line led by its state's glyph. `hideIcon` is for a line beside an avatar that already
- * wears the state as a dot.
+ * wears the state as a dot. `ellipsis` lets a long label (a topic's name) shrink to one line.
  */
 export function ChannelStatus({
+  ellipsis,
   hideIcon,
   label,
   tone,
 }: {
+  ellipsis?: boolean;
   hideIcon?: boolean;
   label: string;
   tone: ChannelStatusTone;
@@ -35,7 +37,12 @@ export function ChannelStatus({
   return (
     <span
       data-tone={tone}
-      {...stylex.props(statusStyles.state, tone === 'error' ? statusStyles.stateError : null)}
+      title={ellipsis ? label : undefined}
+      {...stylex.props(
+        statusStyles.state,
+        tone === 'error' ? statusStyles.stateError : null,
+        ellipsis && statusStyles.stateShrink,
+      )}
     >
       {!hideIcon && (
         <Icon
@@ -48,7 +55,7 @@ export function ChannelStatus({
           )}
         />
       )}
-      {label}
+      {ellipsis ? <span {...stylex.props(statusStyles.stateLabelEllipsis)}>{label}</span> : label}
     </span>
   );
 }
