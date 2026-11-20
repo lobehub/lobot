@@ -4,12 +4,27 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { WORKSPACE_RAIL_HINT_KEY, writeWorkspaceRailHint } from './railHint';
 import { useRailColumnShown } from './useRailColumnShown';
 
-const store = vi.hoisted(() => ({ available: false, loading: true, ready: true, show: true }));
+const store = vi.hoisted(() => ({
+  available: false,
+  listInit: false,
+  loading: true,
+  ready: true,
+  show: true,
+}));
 
 vi.mock('@/business/client/workspace/store', () => ({
   useWorkspaceStore: (
-    selector: (s: { isWorkspaceAvailable: boolean; isWorkspaceLoading: boolean }) => unknown,
-  ) => selector({ isWorkspaceAvailable: store.available, isWorkspaceLoading: store.loading }),
+    selector: (s: {
+      isWorkspaceAvailable: boolean;
+      isWorkspaceListInit: boolean;
+      isWorkspaceLoading: boolean;
+    }) => unknown,
+  ) =>
+    selector({
+      isWorkspaceAvailable: store.available,
+      isWorkspaceListInit: store.listInit,
+      isWorkspaceLoading: store.loading,
+    }),
 }));
 
 vi.mock('@/store/user', () => ({
@@ -23,6 +38,7 @@ vi.mock('@/store/user', () => ({
 
 beforeEach(() => {
   store.available = false;
+  store.listInit = false;
   store.loading = true;
   store.ready = true;
   store.show = true;
@@ -34,6 +50,11 @@ describe('useRailColumnShown', () => {
   it('takes the column once workspaces are available', () => {
     store.available = true;
     store.loading = false;
+    expect(renderHook(() => useRailColumnShown()).result.current).toBe(true);
+  });
+
+  it('takes the column from the saved list before the server answers', () => {
+    store.listInit = true;
     expect(renderHook(() => useRailColumnShown()).result.current).toBe(true);
   });
 

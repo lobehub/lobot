@@ -39,7 +39,11 @@ import { RAIL_AVATAR_SIZE, styles } from './style';
 import { useOpenScope } from './useOpenScope';
 import { useOrderedWorkspaces } from './useOrderedWorkspaces';
 import { usePersonalRequestCount } from './usePersonalRequestCount';
-import { useRailColumnShown, useWorkspaceRailSettingReady } from './useRailColumnShown';
+import {
+  useRailColumnShown,
+  useWorkspaceRailSettingReady,
+  workspaceRailListed,
+} from './useRailColumnShown';
 import { useScopeUnread } from './useScopeUnread';
 
 interface RailItemProps {
@@ -147,7 +151,7 @@ SortableWorkspaceItem.displayName = 'SortableWorkspaceItem';
 const WorkspaceRail = memo(() => {
   const { t } = useTranslation('common');
   const [available, loading] = useWorkspaceStore((s) => [
-    s.isWorkspaceAvailable,
+    workspaceRailListed(s),
     s.isWorkspaceLoading,
   ]);
   const showWorkspaceRail = useUserStore(userGeneralSettingsSelectors.showWorkspaceRail);
