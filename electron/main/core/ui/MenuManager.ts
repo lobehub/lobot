@@ -102,6 +102,14 @@ export class MenuManager {
   }
 
   /**
+   * Show the add-friend entry in the personal space only; rebuilds the app menu when it changes.
+   */
+  setAddFriendVisible(visible: boolean) {
+    if (this.platformImpl.setAddFriendVisible(visible)) this.platformImpl.buildAndSetAppMenu();
+    return { success: true };
+  }
+
+  /**
    * Rebuild and set application menu (e.g., when toggling dev menu visibility)
    */
   rebuildAppMenu(options?: MenuOptions) {

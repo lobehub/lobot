@@ -138,14 +138,7 @@ export class MacOSMenu extends BaseMenuPlatform implements IMenuPlatform {
             },
             label: t('create.newGroupChat'),
           },
-          {
-            click: () => {
-              const mainWindow = this.app.browserManager.getMainWindow();
-              mainWindow.show();
-              mainWindow.broadcast('openAddFriend');
-            },
-            label: t('create.addFriend'),
-          },
+          ...this.buildAddFriendMenuItems(t),
         ],
       },
       {

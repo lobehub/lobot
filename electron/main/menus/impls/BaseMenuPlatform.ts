@@ -13,9 +13,31 @@ const NON_APP_SHELL_PATH = /^\/(?:popup|desktop)(?:\/|$)/;
 export abstract class BaseMenuPlatform {
   protected app: App;
   private readonly devToolsWindows = new Map<BrowserWindow, BrowserWindow>();
+  // Friends belong to the personal space; the renderer turns this off while a workspace is active.
+  private addFriendVisible = true;
 
   constructor(app: App) {
     this.app = app;
+  }
+
+  setAddFriendVisible(visible: boolean): boolean {
+    if (this.addFriendVisible === visible) return false;
+    this.addFriendVisible = visible;
+    return true;
+  }
+
+  protected buildAddFriendMenuItems(t: (key: string) => string): MenuItemConstructorOptions[] {
+    if (!this.addFriendVisible) return [];
+    return [
+      {
+        click: () => {
+          const mainWindow = this.app.browserManager.getMainWindow();
+          mainWindow.show();
+          mainWindow.broadcast('openAddFriend');
+        },
+        label: t('create.addFriend'),
+      },
+    ];
   }
 
   protected buildZoomMenuItem(
