@@ -150,6 +150,25 @@ describe('browseThreads', () => {
     ]);
   });
 
+  it('puts threads with unseen replies or an unseen @mention first, then the rest by activity', () => {
+    expect(browse('', null, ['thr_1']).map((entry) => entry.thread.id)).toEqual([
+      'thr_1',
+      'thr_2',
+      'thr_3',
+    ]);
+    expect(browse('', null, [], ['thr_1']).map((entry) => entry.thread.id)).toEqual([
+      'thr_1',
+      'thr_2',
+      'thr_3',
+    ]);
+    // An archived thread stays at the bottom whatever it holds.
+    expect(browse('', null, ['thr_3']).map((entry) => entry.thread.id)).toEqual([
+      'thr_2',
+      'thr_1',
+      'thr_3',
+    ]);
+  });
+
   it('never marks the open thread unread', () => {
     const entries = browse('', 'thr_1', ['thr_1', 'thr_2']);
 
@@ -235,6 +254,14 @@ describe('ThreadBrowser', () => {
     expect(screen.getByText('threadBrowser.count:3')).toBeTruthy();
     expect(screen.getByText('Release fixed')).toBeTruthy();
     expect(screen.getAllByRole('img', { name: 'threadUnread' })).toHaveLength(2);
+  });
+
+  it('puts the red dot right after the title', () => {
+    render(createElement(ThreadBrowser, { activeId: null, detail, onOpen: vi.fn() }));
+
+    const title = screen.getByText('Fix the release flow');
+    expect(title.nextElementSibling?.getAttribute('aria-label')).toBe('threadUnread');
+    expect(title.previousElementSibling).toBeNull();
   });
 
   it('puts an @ pill on a thread whose mention of the person is unseen', () => {

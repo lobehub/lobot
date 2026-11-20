@@ -144,7 +144,7 @@ const styles = stylex.create({
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
   },
-  // Unread reads like Discord: the title turns bright and bold, with a red dot ahead of it.
+  // Unread reads like Discord: the title turns bright and bold, with a red dot right after it.
   unreadTitle: {
     fontWeight: 600,
     color: cssVar.colorText,
@@ -301,8 +301,9 @@ export interface BrowsedThread {
 }
 
 /**
- * The Channel's threads as the panel lists them: live ones first, then the archived ones, each
- * newest first by the chosen order, filtered by a search on the title and the last reply.
+ * The Channel's threads as the panel lists them: live ones first, then the archived ones, filtered
+ * by a search on the title and the last reply. Among live threads, the ones with unseen replies or
+ * an unseen @mention come first; within each group the chosen order puts the newest first.
  */
 export const browseThreads = (
   detail: Pick<ChannelDetail, 'messages' | 'threads'>,
@@ -355,6 +356,7 @@ export const browseThreads = (
     .sort(
       (a, b) =>
         Number(a.archived) - Number(b.archived) ||
+        Number(b.unread || b.mentioned) - Number(a.unread || a.mentioned) ||
         sortKey(b.thread, sort) - sortKey(a.thread, sort),
     );
 };
@@ -393,12 +395,12 @@ export const ThreadCard = ({
     >
       <span {...stylex.props(styles.body)}>
         <span {...stylex.props(styles.titleRow)}>
-          {bright && (
-            <span aria-label={t('threadUnread')} role="img" {...stylex.props(styles.dot)} />
-          )}
           <span title={title} {...stylex.props(styles.title, bright && styles.unreadTitle)}>
             {title}
           </span>
+          {bright && (
+            <span aria-label={t('threadUnread')} role="img" {...stylex.props(styles.dot)} />
+          )}
           {mentioned && (
             <span aria-label={t('threadMentioned')} role="img" {...stylex.props(styles.mention)}>
               @
