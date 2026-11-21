@@ -71,6 +71,7 @@ vi.mock('@/business/client/hooks/useActiveWorkspaceId', () => ({
 }));
 vi.mock('./ContactsPopup', () => ({ default: () => null }));
 vi.mock('./SettingsPopup', () => ({ default: () => null }));
+vi.mock('@/features/Market', () => ({ default: () => null }));
 vi.mock('./useScopeMenuItem', () => ({ useScopeMenuItem: () => menu.scopeItem }));
 vi.mock('@/features/Usage/useUsageMenuItems', () => ({
   useUsageMenuItems: () => menu.usageItems,
@@ -118,7 +119,7 @@ describe('NavTabBar', () => {
     expect(screen.queryByLabelText('tab.messages')).not.toBeInTheDocument();
   });
 
-  it('puts the personal usage and upgrade between the scope switch and settings', () => {
+  it('puts the personal usage and upgrade between the scope switch and the market', () => {
     menu.scopeItem = { key: 'scope' };
     menu.usageItems = [{ key: 'usage' }, { key: 'upgrade' }];
 
@@ -130,11 +131,12 @@ describe('NavTabBar', () => {
       'usage',
       'upgrade',
       'divider',
+      'market',
       'settings',
     ]);
   });
 
-  it('keeps only the scope switch and settings in the footer menu without usage', () => {
+  it('keeps only the scope switch, the market and settings in the footer menu without usage', () => {
     menu.scopeItem = { key: 'scope' };
 
     render(<NavTabBar />);
@@ -142,13 +144,14 @@ describe('NavTabBar', () => {
     expect(menu.items.map((item) => item.key ?? item.type)).toEqual([
       'scope',
       'divider',
+      'market',
       'settings',
     ]);
   });
 
-  it('shows only settings in the footer menu when there is no scope to switch', () => {
+  it('shows only the market and settings in the footer menu when there is no scope to switch', () => {
     render(<NavTabBar />);
 
-    expect(menu.items.map((item) => item.key ?? item.type)).toEqual(['settings']);
+    expect(menu.items.map((item) => item.key ?? item.type)).toEqual(['market', 'settings']);
   });
 });

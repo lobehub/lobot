@@ -404,6 +404,55 @@ class ComposioStoreActionImpl {
   };
 
   /**
+   * Drop a connection from the local list after it was removed on the server
+   * by another path (e.g. uninstalling it from the connector detail panel), so
+   * its row stops showing as connected. Recording the removal also cancels a
+   * pending add of the same identifier: the row was created but never echoed,
+   * so leaving it in `added` would re-append it the moment a response clears
+   * `removed`, resurrecting the deleted row for the rest of the session.
+   */
+  forgetComposioConnection = (identifier: string): void => {
+    this.setComposioServerError(identifier, undefined);
+    this.#localIntent().added.delete(identifier);
+    this.#localIntent().removed.add(identifier);
+    this.#servers.remove(identifier);
+    this.#markLocalWrite();
+  };
+
+  removeComposioConnection = async (identifier: string): Promise<void> => {
+    const { composioServers } = this.#get();
+    const server = composioServers.find((s) => s.identifier === identifier);
+    const scope = cacheScope.get();
+
+    // Drop the row locally first so the delete shows at once.
+    this.forgetComposioConnection(identifier);
+
+    if (server) {
+      try {
+        await lambdaClient.composio.deleteConnection.mutate({
+          connectedAccountId: server.connectedAccountId,
+          identifier,
+        });
+      } catch (error) {
+        console.error('[Composio] Failed to delete connection:', error);
+        // The server already tolerates a missing remote account, so a rejected
+        // call (permission, network) means the connection still exists. Put the
+        // row back with the reason, so the user sees it failed and can retry.
+        if (cacheScope.get() !== scope) return;
+        this.#localIntent().removed.delete(identifier);
+        this.#connections.update(COMPOSIO_SERVERS_KEY, (servers) => {
+          const list = servers ?? [];
+          return list.some((s) => s.identifier === identifier) ? list : [...list, server];
+        });
+        this.#markLocalWrite();
+        const actionError = toConnectorActionError('remove', error);
+        if (!this.#settlePermissionRejection(actionError))
+          this.setComposioServerError(identifier, actionError);
+      }
+    }
+  };
+
+  /**
    * A 403 means the cached connector policy is stale (an admin restricted
    * connectors after the page loaded). Refetch it so the row turns into the
    * disabled state with its hover reason, instead of a red "only admins can
