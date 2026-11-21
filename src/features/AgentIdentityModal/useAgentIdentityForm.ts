@@ -6,7 +6,10 @@ import { cacheScope } from '@/libs/replica';
 import { agentService } from '@/services/agent';
 import { useAgentStore } from '@/store/agent';
 import { agentSelectors } from '@/store/agent/selectors';
+import { useFileStore } from '@/store/file';
 import { useHomeStore } from '@/store/home';
+
+import { MAX_AVATAR_SIZE } from './useCreateAgentIdentityForm';
 
 interface UseAgentIdentityFormOptions {
   agentId: string;
@@ -18,7 +21,7 @@ const BUILTIN_SLUGS: ReadonlySet<string> = new Set<string>(Object.values(BUILTIN
 /**
  * Drives the identity fields of the agent form.
  *
- * `name`, `title` and `description` ride the ordinary meta patch; `slug` has its own validated
+ * `avatar`, `name`, `title` and `description` ride the ordinary meta patch; `slug` has its own validated
  * endpoint (see `updateAgentSlug`). The slug is committed FIRST so a rejected
  * one can keep the form open with its reason — saving the others first would
  * leave them persisted behind a form the user still has to fix.
@@ -31,13 +34,28 @@ export const useAgentIdentityForm = ({ agentId, onSaved }: UseAgentIdentityFormO
   const refreshAgentConfig = useAgentStore((s) => s.internal_refreshAgentConfig);
   const confirmAgentSlug = useAgentStore((s) => s.internal_confirmAgentSlug);
   const updateAgentMeta = useHomeStore((s) => s.updateAgentMeta);
+  const uploadWithProgress = useFileStore((s) => s.uploadWithProgress);
 
+  const [avatar, setAvatar] = useState<string | undefined>(meta.avatar || undefined);
   const [name, setName] = useState(meta.name || '');
   const [title, setTitle] = useState(meta.title || '');
   const [description, setDescription] = useState(meta.description || '');
   const [nextSlug, setNextSlug] = useState(slug || '');
   const [error, setError] = useState<string | undefined>();
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const uploadAvatar = async (file: File): Promise<'tooLarge' | void> => {
+    if (file.size > MAX_AVATAR_SIZE) return 'tooLarge';
+
+    setUploading(true);
+    try {
+      const result = await uploadWithProgress({ file });
+      if (result?.url) setAvatar(result.url);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   // A builtin agent IS its slug — `getBuiltinAgent` resolves it by that string,
   // so renaming one would mint a second, empty inbox / page agent. The server
@@ -46,6 +64,7 @@ export const useAgentIdentityForm = ({ agentId, onSaved }: UseAgentIdentityFormO
   const slugLocked = !!slug && BUILTIN_SLUGS.has(slug);
 
   const save = async () => {
+    if (saving || uploading) return;
     setSaving(true);
     try {
       const trimmedSlug = slugLocked ? slug : nextSlug.trim().toLowerCase();
@@ -64,6 +83,8 @@ export const useAgentIdentityForm = ({ agentId, onSaved }: UseAgentIdentityFormO
       }
 
       await updateAgentMeta(agentId, {
+        // Only a changed avatar is sent, so saving the text never rewrites the picture.
+        ...((avatar || null) !== (meta.avatar || null) && { avatar: avatar ?? null }),
         description: description.trim(),
         name: name.trim(),
         title: title.trim(),
@@ -77,11 +98,13 @@ export const useAgentIdentityForm = ({ agentId, onSaved }: UseAgentIdentityFormO
   };
 
   return {
+    avatar,
     description,
     error,
     name,
     save,
     saving,
+    setAvatar,
     setDescription,
     setName,
     setSlug: (value: string) => {
@@ -92,5 +115,7 @@ export const useAgentIdentityForm = ({ agentId, onSaved }: UseAgentIdentityFormO
     slug: nextSlug,
     slugLocked,
     title,
+    uploadAvatar,
+    uploading,
   };
 };
