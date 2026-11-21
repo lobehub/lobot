@@ -215,6 +215,20 @@ function CreateChannel({ existing, onCreated }: CreateChannelProps) {
       value={agents}
       footer={
         <Flexbox gap={12} padding={16}>
+          {(!existing || startsGroup) && (
+            <Input
+              aria-label={t('nameOptional')}
+              id="channel-title"
+              inert={busy}
+              maxLength={CHANNEL_LIMITS.titleLength}
+              placeholder={autoTitle}
+              prefix={<Icon icon={Hash} size={14} />}
+              value={title}
+              variant="filled"
+              onChange={(event) => setTitle(event.target.value)}
+              onPressEnter={() => void submit()}
+            />
+          )}
           {error !== undefined && (
             <AsyncError error={error} title={t(getChannelSaveErrorKey(error))} variant="inline" />
           )}
@@ -252,22 +266,6 @@ function CreateChannel({ existing, onCreated }: CreateChannelProps) {
             </Flexbox>
           </Flexbox>
         </Flexbox>
-      }
-      notice={
-        !existing || startsGroup ? (
-          <Input
-            aria-label={t('nameOptional')}
-            id="channel-title"
-            inert={busy}
-            maxLength={CHANNEL_LIMITS.titleLength}
-            placeholder={autoTitle}
-            prefix={<Icon icon={Hash} size={14} />}
-            value={title}
-            variant="filled"
-            onChange={(event) => setTitle(event.target.value)}
-            onPressEnter={() => void submit()}
-          />
-        ) : undefined
       }
       onChange={setAgents}
     />

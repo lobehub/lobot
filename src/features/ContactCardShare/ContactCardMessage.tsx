@@ -19,7 +19,7 @@ import { contactCardName } from './cardText';
 const AVATAR_SIZE = 48;
 
 const styles = stylex.create({
-  // A chat app's contact card: avatar and name over a hairline, then what kind of card it is.
+  // A chat app's contact card: a light filled block, avatar and name over what kind of card it is.
   card: {
     display: 'flex',
     flexDirection: 'column',
@@ -31,23 +31,22 @@ const styles = stylex.create({
     paddingBlockStart: 12,
     paddingBlockEnd: 8,
     paddingInline: 12,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderColor: {
-      'default': cssVar.colorBorderSecondary,
-      ':hover': cssVar.colorBorder,
-    },
+    borderWidth: 0,
     borderRadius: cssVar.borderRadiusLG,
     font: 'inherit',
     color: cssVar.colorText,
     textAlign: 'start',
-    backgroundColor: cssVar.colorBgContainer,
+    backgroundColor: {
+      'default': cssVar.colorFillTertiary,
+      ':hover': cssVar.colorFillSecondary,
+    },
     cursor: 'pointer',
-    transitionProperty: 'border-color',
+    transitionProperty: 'background-color',
     transitionDuration: '0.15s',
   },
   static: {
     alignSelf: 'stretch',
+    backgroundColor: cssVar.colorFillTertiary,
     cursor: 'default',
   },
   head: {
@@ -79,10 +78,6 @@ const styles = stylex.create({
     whiteSpace: 'nowrap',
   },
   footer: {
-    paddingBlockStart: 8,
-    borderBlockStartWidth: 1,
-    borderBlockStartStyle: 'solid',
-    borderBlockStartColor: cssVar.colorBorderSecondary,
     fontSize: 12,
     color: cssVar.colorTextTertiary,
   },
@@ -96,7 +91,7 @@ const useCardSecondary = (card: ContactCard) => {
     : card.ownerName && t('contactCard.agentOwner', { name: card.ownerName });
 };
 
-/** The card's face: avatar and name over a hairline, then what kind of card it is. */
+/** The card's face: avatar and name, then what kind of card it is. */
 const ContactCardFace = ({ card }: { card: ContactCard }) => {
   const { t } = useTranslation('channel');
   const name = contactCardName(card);

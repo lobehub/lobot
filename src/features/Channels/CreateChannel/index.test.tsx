@@ -61,15 +61,12 @@ vi.mock('../privateAgentJoin', () => ({
 vi.mock('./MemberSelection', () => ({
   MemberSelection: ({
     footer,
-    notice,
     people,
   }: {
     footer?: ReactNode;
-    notice?: ReactNode;
     people?: { onChange: (people: { userId: string }[]) => void };
   }) => (
     <div data-testid={'members'}>
-      {notice}
       {people && (
         <button type={'button'} onClick={() => people.onChange([{ userId: 'usr_3' }])}>
           pick person
@@ -133,9 +130,7 @@ describe('CreateChannel', () => {
   });
 
   it('goes straight to members when inviting into an existing Channel', () => {
-    renderDialog(() =>
-      openInviteMembers({ agentIds: [], id: 'chn_1', peopleCount: 1 }),
-    );
+    renderDialog(() => openInviteMembers({ agentIds: [], id: 'chn_1', peopleCount: 1 }));
     expect(screen.queryByTestId('channel-title')).toBeNull();
     expect(screen.getByTestId('members')).toBeInTheDocument();
   });

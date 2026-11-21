@@ -68,7 +68,6 @@ export const MemberSelection = ({
   exclude = [],
   footer,
   locked = false,
-  notice,
   options,
   people,
   title,
@@ -83,8 +82,6 @@ export const MemberSelection = ({
   footer?: ReactNode;
   /** Freeze the lists while a save is in flight. Actions stay clickable. */
   locked?: boolean;
-  /** Optional name, shown above the chosen members. */
-  notice?: ReactNode;
   onChange: Dispatch<SetStateAction<ChannelAgentDraft[]>>;
   options: ReturnType<typeof useChannelAgentOptions>;
   people?: PeopleSelection;
@@ -161,7 +158,7 @@ export const MemberSelection = ({
             autoFocus
             placeholder={t(people ? 'invite.search' : 'searchAgents')}
             value={search}
-            variant="filled"
+            variant="outlined"
             onChange={(event) => setSearch(event.target.value)}
           />
         </div>
@@ -202,7 +199,6 @@ export const MemberSelection = ({
             </Text>
           </Flexbox>
         )}
-        {notice && <div {...stylex.props(styles.search)}>{notice}</div>}
         <Flexbox gap={4} inert={locked} {...stylex.props(styles.selected)}>
           {!selectedCount && emptyHint && (
             <Text fontSize={12} type="secondary" {...stylex.props(styles.section)}>
