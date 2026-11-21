@@ -6,6 +6,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import { useWorkspaceMembers } from '@/business/client/hooks/useWorkspaceMembers';
 import AsyncBoundary from '@/components/AsyncBoundary';
 import UserAvatar from '@/components/UserAvatar';
@@ -57,6 +58,8 @@ const useLocalUserCandidates = (channelId: string | undefined, query: string) =>
 export const PeopleOptions = ({ people, search }: { people: PeopleSelection; search: string }) => {
   const { t } = useTranslation('channel');
   const nameOf = usePersonName();
+  // The personal space offers mutual contacts, not a workspace's members.
+  const peopleKey = useActiveWorkspaceId() ? 'people' : 'people.contacts';
   const query = useDebounce(search.trim(), { wait: 200 });
   const { error, revalidate } = channelActions.useFetchUserCandidates(people.channelId, query);
   const fetched = useChannelStore(
@@ -74,7 +77,7 @@ export const PeopleOptions = ({ people, search }: { people: PeopleSelection; sea
     );
 
   return (
-    <PickerSection title={t('invite.people')}>
+    <PickerSection title={t(peopleKey === 'people' ? 'invite.people' : 'invite.contacts')}>
       <AsyncBoundary
         data={data}
         error={error}
@@ -82,7 +85,7 @@ export const PeopleOptions = ({ people, search }: { people: PeopleSelection; sea
         isLoading={isLoading}
         empty={
           <Text fontSize={12} type="secondary" {...stylex.props(pickerStyles.section)}>
-            {t(query ? 'people.noMatches' : people.channelId ? 'people.empty' : 'people.noOthers')}
+            {t(`${peopleKey}.${query ? 'noMatches' : people.channelId ? 'empty' : 'noOthers'}`)}
           </Text>
         }
         onRetry={() => void revalidate()}
@@ -102,7 +105,7 @@ export const PeopleOptions = ({ people, search }: { people: PeopleSelection; sea
         })}
         {data?.length === CANDIDATE_LIMIT && (
           <Text fontSize={12} type="secondary" {...stylex.props(pickerStyles.section)}>
-            {t('people.searchMore')}
+            {t(`${peopleKey}.searchMore`)}
           </Text>
         )}
       </AsyncBoundary>
