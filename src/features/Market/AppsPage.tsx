@@ -19,6 +19,12 @@ const styles = stylex.create({
     height: 1,
     backgroundColor: cssVar.colorBorderSecondary,
   },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+    columnGap: 16,
+    rowGap: 4,
+  },
   more: {
     display: 'flex',
     alignItems: 'center',
@@ -38,7 +44,7 @@ const styles = stylex.create({
 
 /**
  * The Apps page: a search box over the connector catalog, grouped by category.
- * A long category shows its first rows and a "View all" link; a search lists
+ * Rows sit in two columns. A long category shows its first rows and a "View all" link; a search lists
  * every match.
  */
 const AppsPage = memo<{ connectors: MarketConnector[]; onOpen: (id: string) => void }>(
@@ -105,7 +111,7 @@ const AppsPage = memo<{ connectors: MarketConnector[]; onOpen: (id: string) => v
                     </button>
                   )}
                 </Flexbox>
-                <Flexbox gap={2}>
+                <div {...stylex.props(styles.grid)}>
                   {visible.map((connector) => (
                     <ConnectorRow
                       connector={connector}
@@ -113,7 +119,7 @@ const AppsPage = memo<{ connectors: MarketConnector[]; onOpen: (id: string) => v
                       onOpen={() => onOpen(connector.id)}
                     />
                   ))}
-                </Flexbox>
+                </div>
               </Flexbox>
             );
           })
