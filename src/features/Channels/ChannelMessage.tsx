@@ -67,7 +67,7 @@ import { connectorBox, retainConnectorBox } from './threadConnector';
 import type { ChannelThreadDraft } from './threadDraft';
 import { threadIcon } from './threadIcon';
 import { ThreadPreviewCard } from './ThreadPreviewCard';
-import { ThreadRef } from './ThreadRef';
+import { ThreadRef, ThreadRefText } from './ThreadRef';
 import { CHANNEL_THREAD_REF_TAG, remarkChannelThreadRefs } from './threadRefMarkdown';
 import type { ChannelReplyTarget } from './useReplyTarget';
 
@@ -499,7 +499,9 @@ const ChannelMessageView = ({
           <AuthorAvatar author={quoteAuthor} size={16} />
         </span>
       )}
-      <span {...stylex.props(styles.replyQuoteText)}>{replyQuoteText}</span>
+      <span {...stylex.props(styles.replyQuoteText)}>
+        <ThreadRefText channelId={detail.channel.id} text={replyQuoteText} />
+      </span>
     </button>
   );
   const attachments = message.fileIds.length > 0 && (
