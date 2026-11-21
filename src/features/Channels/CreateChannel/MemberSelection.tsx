@@ -6,6 +6,7 @@ import type { Dispatch, ReactNode, SetStateAction } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useActiveWorkspaceId } from '@/business/client/hooks/useActiveWorkspaceId';
 import AgentAvatar from '@/components/AgentAvatar';
 import AsyncBoundary from '@/components/AsyncBoundary';
 import AsyncError from '@/components/AsyncError';
@@ -92,6 +93,13 @@ export const MemberSelection = ({
   const { t } = useTranslation('channel');
   const { agents, projectAgentIds = [] } = options;
   const [search, setSearch] = useState('');
+  const workspaceId = useActiveWorkspaceId();
+  // The personal space searches mutual contacts, not a workspace's members.
+  const searchKey = people
+    ? workspaceId
+      ? 'invite.search'
+      : 'invite.searchContacts'
+    : 'searchAgents';
   const available = (agents ?? []).filter((agent) => !exclude.includes(agent.id));
   const filtered = available.filter((agent) =>
     `${agentDisplayName(agent, t('unnamedAgent'))} ${agent.description ?? ''}`
@@ -156,7 +164,7 @@ export const MemberSelection = ({
           <SearchBar
             allowClear
             autoFocus
-            placeholder={t(people ? 'invite.search' : 'searchAgents')}
+            placeholder={t(searchKey)}
             value={search}
             variant="outlined"
             onChange={(event) => setSearch(event.target.value)}
