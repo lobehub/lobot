@@ -148,11 +148,18 @@ export class App {
     this.fileCacheProtocolManager = new FileCacheProtocolManager({
       cacheDir: path.join(appStorageDir, FILE_CACHE_DIR),
     });
-    protocol.registerSchemesAsPrivileged([
+    // HarmonyOS port: passing more than one scheme in a single call aborts the
+    // process natively, so register them one by one (identical semantics).
+    const schemesToRegister = [
       this.rendererUrlManager.protocolScheme,
       this.localFileProtocolManager.protocolScheme,
       this.fileCacheProtocolManager.protocolScheme,
-    ]);
+    ];
+    if (process.platform === 'openharmony') {
+      for (const scheme of schemesToRegister) protocol.registerSchemesAsPrivileged([scheme]);
+    } else {
+      protocol.registerSchemesAsPrivileged(schemesToRegister);
+    }
 
     // load controllers
     const controllers: IControlModule[] = importAll(
@@ -215,8 +222,11 @@ export class App {
 
     // Unified handling of before-quit event
     app.on('before-quit', this.handleBeforeQuit);
-    process.on('SIGTERM', () => app.quit());
-    process.on('SIGINT', () => app.quit());
+    // HarmonyOS port: installing SIGTERM/SIGINT handlers aborts the process.
+    if (process.platform !== 'openharmony') {
+      process.on('SIGTERM', () => app.quit());
+      process.on('SIGINT', () => app.quit());
+    }
 
     // Initialize theme mode from store
     this.initializeThemeMode();

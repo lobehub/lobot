@@ -42,6 +42,10 @@ export default class BinaryCtr extends ControllerModule {
     params: DetectHeterogeneousAgentCommandParams,
   ): Promise<BinaryStatus> {
     logger.debug('Detecting heterogeneous agent command:', params);
+    // HarmonyOS: probing these CLIs shells out, which the HAP sandbox cannot do
+    // (and the port aborts the process on `child_process` use). Nothing an IM
+    // client needs — report unavailable and move on.
+    if (process.platform === 'openharmony') return { available: false } as BinaryStatus;
     if (isLocalRuntimeHeterogeneousType(params.agentType)) {
       // DeepSeek Harness is the user-installed `dsh` CLI. Probe it the way the
       // launch path does, so the wizard never offers an agent that cannot run;

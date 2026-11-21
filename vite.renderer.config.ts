@@ -8,6 +8,8 @@ import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 import { devLoadingProgress } from './plugins/vite/devLoadingProgress';
+import { harmonyHoverMedia } from './plugins/vite/harmonyHoverMedia';
+import { resolveOsPlatform } from './plugins/vite/osPlatformResolve';
 import {
   createSharedRolldownOutput,
   sharedModulePreload,
@@ -241,6 +243,7 @@ export default defineConfig(async (env) => {
     plugins: [
       isCloudDesktop && cloudTsconfigPathsPlugin(),
       isCloudDesktop && cloudDesktopBusinessConstPlugin(),
+      resolveOsPlatform() === 'harmony' && harmonyHoverMedia(),
       electronDesktopHtmlPlugin(),
       devLoadingProgress(),
       reactDevtoolsPlugin(),

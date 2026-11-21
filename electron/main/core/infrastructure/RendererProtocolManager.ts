@@ -5,6 +5,7 @@ import { tryGetMimeType } from '@lobechat/utils/mimeType';
 import { app, protocol } from 'electron';
 
 import { createLogger } from '@/utils/logger';
+import { harmonyRendererServer } from './HarmonyRendererServer';
 
 export type RendererFile = { filePath: string; name: string };
 
@@ -66,6 +67,10 @@ export class RendererProtocolManager {
   }
 
   getRendererUrl(): string {
+    // HarmonyOS: custom-scheme `fetch()` is unsupported on the OpenHarmony
+    // port, so the renderer is served from a real loopback origin instead.
+    if (process.platform === 'openharmony') return harmonyRendererServer.origin;
+
     return `${this.scheme}://${this.host}`;
   }
 
@@ -82,8 +87,33 @@ export class RendererProtocolManager {
     const logger = createLogger('core:RendererProtocolManager');
     logger.debug(`Registering ${this.scheme}:// handler for host ${this.host}`);
 
+    const pipeline = async (request: Request): Promise<Response> => {
+      const requestUrl = new URL(request.url);
+      // On HarmonyOS the renderer is served from a loopback HTTP origin, so the
+      // host is 127.0.0.1 rather than the custom scheme's host.
+      const hostMatches =
+        process.platform === 'openharmony' || requestUrl.hostname === this.host;
+      if (!hostMatches) {
+        return new Response('Not Found', { status: 404 });
+      }
+
+      for (const interceptor of this.interceptors) {
+        const response = await interceptor(request);
+        if (response) return response;
+      }
+
+      return this.fallback.handle(request, requestUrl);
+    };
+
     const register = () => {
       if (this.handlerRegistered) return;
+
+      if (process.platform === 'openharmony') {
+        this.handlerRegistered = true;
+        logger.info('HarmonyOS: serving the renderer over loopback HTTP (custom scheme fetch unsupported)');
+        harmonyRendererServer.start(pipeline);
+        return;
+      }
 
       protocol.handle(this.scheme, async (request) => {
         const url = new URL(request.url);
