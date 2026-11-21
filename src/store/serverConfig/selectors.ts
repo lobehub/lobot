@@ -11,6 +11,7 @@ export const serverConfigSelectors = {
   enableGatewayMode: (s: ServerConfigStore) => s.serverConfig.enableGatewayMode || false,
   /** Runtime flag `mcp_apps`: MCP Apps views in the conversation. */
   enableMcpApps: (s: ServerConfigStore) => s.featureFlags.enableMcpApps === true,
+  enableLobehubSkill: (s: ServerConfigStore) => s.serverConfig.enableLobehubSkill || false,
   enableMarketTrustedClient: (s: ServerConfigStore) =>
     s.serverConfig.enableMarketTrustedClient || false,
   oAuthSSOProviders: (s: ServerConfigStore) => s.serverConfig.oAuthSSOProviders,

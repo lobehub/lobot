@@ -1,4 +1,5 @@
 import { getLobehubSkillProviderById } from '@lobechat/const';
+import { produce } from 'immer';
 
 import {
   cacheScope,
@@ -6,11 +7,17 @@ import {
   linkReplicaEntity,
   recordLens,
   type ReplicaLens,
+  type ReplicaSyncResult,
 } from '@/libs/replica';
 import { toolsClient } from '@/libs/trpc/client';
 import { type StoreSetter } from '@/store/types';
+import { useUserStore } from '@/store/user';
+import { authSelectors } from '@/store/user/selectors';
+import { type ConnectorActionError, toConnectorActionError } from '@/utils/connectorActionError';
+import { setNamespace } from '@/utils/storeDebug';
 
 import { type ToolStore } from '../../store';
+import { type LobehubSkillStoreState } from './initialState';
 import {
   createLobehubSkillLocalIntent,
   LOBEHUB_SKILL_SERVERS_KEY,
@@ -23,6 +30,15 @@ import {
 } from './projection';
 import { type LobehubSkillServer, type LobehubSkillTool } from './types';
 import { LobehubSkillStatus } from './types';
+
+const n = setNamespace('lobehubSkillStore');
+
+/**
+ * LobeHub Skill Store Actions
+ */
+
+/** The connections list is one entry, so every sync shares these params. */
+const SERVERS_PARAMS = {} as Record<string, never>;
 
 /**
  * The connections list keeps its long-standing flat `lobehubSkillServers` field
@@ -37,11 +53,25 @@ const serversLens: ReplicaLens<ToolStore, LobehubSkillServer[]> = {
   set: (_state, _key, data) => ({ lobehubSkillServers: data }),
 };
 
+/** The connections sync, plus the `mutate` alias the skills surfaces call. */
+interface LobehubSkillConnectionsSyncResult extends ReplicaSyncResult {
+  /**
+   * Nothing has been painted yet (no persisted row, no response) and a sync is
+   * in flight. This is the `isLoading` the callers gated on before the replica
+   * — it must stay on the public surface: a caller that reads "un-loaded" as
+   * "empty" would flash a false state on a cold start (see `ToolAuthAlert`).
+   */
+  isLoading: boolean;
+  /** Alias of `revalidate`, kept for the existing "reload skills" control. */
+  mutate: () => Promise<unknown>;
+}
+
 type Setter = StoreSetter<ToolStore>;
 export const createLobehubSkillStoreSlice = (set: Setter, get: () => ToolStore, _api?: unknown) =>
   new LobehubSkillStoreActionImpl(set, get, _api);
 
 class LobehubSkillStoreActionImpl {
+  readonly #get: () => ToolStore;
   #intent = createLobehubSkillLocalIntent();
   #intentScope?: string;
   /**
@@ -50,9 +80,14 @@ class LobehubSkillStoreActionImpl {
    * on the row at once.
    */
   readonly #servers;
+  /** Entity handle so per-provider changes reach every place holding the row. */
+  readonly #server;
+  readonly #set: Setter;
 
   constructor(set: Setter, get: () => ToolStore, _api?: unknown) {
     void _api;
+    this.#set = set;
+    this.#get = get;
     this.#servers = createReplicaSlice(lobehubSkillServersResource, {
       actionPrefix: 'lobehubSkillServers',
       entity: lobehubSkillServersEntity,
@@ -69,7 +104,7 @@ class LobehubSkillStoreActionImpl {
       stateKey: 'lobehubSkillServersReplica',
       view: serversLens,
     });
-    linkReplicaEntity<LobehubSkillServer>([this.#servers]);
+    this.#server = linkReplicaEntity<LobehubSkillServer>([this.#servers]);
     createReplicaSlice(lobehubSkillProviderToolsResource, {
       actionPrefix: 'lobehubSkillProviderTools',
       fetcher: async (provider) => {
@@ -83,6 +118,186 @@ class LobehubSkillStoreActionImpl {
     });
   }
 
+  checkLobehubSkillStatus = async (provider: string): Promise<LobehubSkillServer | undefined> => {
+    this.#set(
+      produce((draft: LobehubSkillStoreState) => {
+        draft.lobehubSkillLoadingIds.add(provider);
+      }),
+      false,
+      n('checkLobehubSkillStatus/start'),
+    );
+
+    try {
+      const response = await toolsClient.market.connectGetStatus.query({ provider });
+      // Get provider config from local definition for correct display name
+      const providerConfig = getLobehubSkillProviderById(provider);
+
+      const server: LobehubSkillServer = {
+        cachedAt: Date.now(),
+        icon: response.icon,
+        identifier: provider,
+        isConnected: response.connected,
+        // Use local config label (e.g., "Linear") instead of API's providerName
+        name: providerConfig?.label || provider,
+        providerUsername: response.connection?.providerUsername,
+        scopes: response.connection?.scopes,
+        status: response.connected
+          ? LobehubSkillStatus.CONNECTED
+          : LobehubSkillStatus.NOT_CONNECTED,
+        tokenExpiresAt: response.connection?.tokenExpiresAt,
+      };
+
+      this.#upsertServer(server);
+
+      this.#set(
+        produce((draft: LobehubSkillStoreState) => {
+          draft.lobehubSkillLoadingIds.delete(provider);
+        }),
+        false,
+        n('checkLobehubSkillStatus/success'),
+      );
+
+      if (server.isConnected) {
+        this.#get().refreshLobehubSkillTools(provider);
+      }
+
+      return server;
+    } catch (error) {
+      console.error('[LobehubSkill] Failed to check status:', error);
+
+      this.#set(
+        produce((draft: LobehubSkillStoreState) => {
+          draft.lobehubSkillLoadingIds.delete(provider);
+        }),
+        false,
+        n('checkLobehubSkillStatus/error'),
+      );
+
+      return undefined;
+    }
+  };
+
+  getLobehubSkillAuthorizeUrl = async (
+    provider: string,
+    options?: { redirectUri?: string; scopes?: string[] },
+  ): Promise<{ authorizeUrl: string; code: string; expiresIn: number }> => {
+    const response = await toolsClient.market.connectGetAuthorizeUrl.query({
+      provider,
+      redirectUri: options?.redirectUri,
+      scopes: options?.scopes,
+    });
+
+    return {
+      authorizeUrl: response.authorizeUrl,
+      code: response.code,
+      expiresIn: response.expiresIn,
+    };
+  };
+
+  refreshLobehubSkillTools = async (provider: string): Promise<void> => {
+    try {
+      const response = await toolsClient.market.connectListTools.query({ provider });
+
+      this.#server.update(provider, (server) => ({
+        ...server,
+        tools: response.tools as LobehubSkillTool[],
+      }));
+    } catch (error) {
+      console.error('[LobehubSkill] Failed to refresh tools:', error);
+    }
+  };
+
+  revokeLobehubSkill = async (provider: string): Promise<void> => {
+    const scope = cacheScope.get();
+    this.#set(
+      produce((draft: LobehubSkillStoreState) => {
+        draft.lobehubSkillLoadingIds.add(provider);
+        delete draft.lobehubSkillErrors[provider];
+      }),
+      false,
+      n('revokeLobehubSkill/start'),
+    );
+
+    try {
+      await toolsClient.market.connectRevoke.mutate({ provider });
+
+      // Drop the row locally, and keep a list response that was already in
+      // flight from bringing the revoked provider back.
+      const intent = this.#localIntent();
+      intent.added.delete(provider);
+      intent.removed.add(provider);
+      this.#server.remove(provider);
+
+      this.#set(
+        produce((draft: LobehubSkillStoreState) => {
+          draft.lobehubSkillLoadingIds.delete(provider);
+        }),
+        false,
+        n('revokeLobehubSkill/success'),
+      );
+    } catch (error) {
+      console.error('[LobehubSkill] Failed to revoke:', error);
+
+      this.#set(
+        produce((draft: LobehubSkillStoreState) => {
+          draft.lobehubSkillLoadingIds.delete(provider);
+          // Kept on the row, so the failure stays visible after any toast is gone.
+          if (cacheScope.get() === scope)
+            draft.lobehubSkillErrors[provider] = {
+              ...toConnectorActionError('remove', error),
+              scope,
+            };
+        }),
+        false,
+        n('revokeLobehubSkill/error'),
+      );
+    }
+  };
+
+  /** Record (or clear, with `undefined`) the last failed write of a provider row. */
+  setLobehubSkillError = (provider: string, error: ConnectorActionError | undefined): void => {
+    if (!error && !this.#get().lobehubSkillErrors[provider]) return;
+
+    this.#set(
+      produce((draft: LobehubSkillStoreState) => {
+        if (error) draft.lobehubSkillErrors[provider] = { ...error, scope: cacheScope.get() };
+        else delete draft.lobehubSkillErrors[provider];
+      }),
+      false,
+      n('setLobehubSkillError'),
+    );
+  };
+
+  /**
+   * Fetch orchestration only; read the list through `lobehubSkillSelectors`.
+   * The persisted row paints the first frame, and a connect / revoke is folded
+   * into the same replica entry the surfaces already read.
+   */
+  useFetchLobehubSkillConnections = (enabled: boolean): LobehubSkillConnectionsSyncResult => {
+    const isSignedIn = useUserStore(authSelectors.isLogin);
+
+    const sync = this.#servers.useSync(SERVERS_PARAMS, {
+      enabled: enabled && isSignedIn,
+      onSuccess: (servers) => {
+        // The connections response carries no tools; fill each connected
+        // provider's catalog so the agent tool list can resolve them.
+        for (const server of servers) {
+          this.#get().refreshLobehubSkillTools(server.identifier);
+        }
+      },
+      revalidateOnFocus: false,
+    });
+
+    // `isLoading` in the pre-replica sense: the list has not been painted yet
+    // (neither the persisted row nor a response) and a sync is in flight. It is
+    // read through the view instead of `isHydrated`, because hydration resolves
+    // just after mount even when there is nothing stored — gating on it would
+    // re-open the cold-start false state this flag exists to prevent.
+    const isLoading = this.#get().lobehubSkillServers === undefined && sync.isValidating;
+
+    return { ...sync, isLoading, mutate: sync.revalidate };
+  };
+
   /**
    * Local intent of the active identity. Kept per scope: the intent is about
    * this user's unsynced writes, so a workspace / user switch starts clean
@@ -95,6 +310,24 @@ class LobehubSkillStoreActionImpl {
       this.#intent = createLobehubSkillLocalIntent();
     }
     return this.#intent;
+  };
+
+  /** Replace the row in place (by identifier) or append the new one. */
+  #upsertServer = (server: LobehubSkillServer): void => {
+    // The two intents are mutually exclusive per provider: a fresh write
+    // supersedes a pending revoke, so a re-connect inside the race window is
+    // never hidden by the previous revoke.
+    const intent = this.#localIntent();
+    intent.removed.delete(server.identifier);
+    // The row survives a list response that was already in flight when it was
+    // written (see `mergeLobehubSkillServers`).
+    intent.added.set(server.identifier, server);
+    this.#servers.update(LOBEHUB_SKILL_SERVERS_KEY, (servers) => {
+      const list = servers ?? [];
+      const index = list.findIndex((s) => s.identifier === server.identifier);
+      if (index < 0) return [...list, server];
+      return list.map((s, i) => (i === index ? { ...s, ...server } : s));
+    });
   };
 
   /** The user's connected providers (`connectListConnections`). */

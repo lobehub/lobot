@@ -732,6 +732,7 @@ export default {
   'tab.marketplace': 'Marketplace',
   'tab.me': 'Me',
   'tab.memory': 'Memory',
+  'tab.market': 'Market',
   'tab.pages': 'Pages',
   'tab.resource': 'Docs',
   'tab.search': 'Search',

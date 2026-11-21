@@ -1,3 +1,6 @@
+import { cacheScope } from '@/libs/replica';
+import { errorInScope } from '@/utils/connectorActionError';
+
 import { type ToolStoreState } from '../../initialState';
 import { type LobehubSkillServer } from './types';
 import { LobehubSkillStatus } from './types';
@@ -6,6 +9,16 @@ import { LobehubSkillStatus } from './types';
  * LobeHub Skill Store Selectors
  */
 export const lobehubSkillStoreSelectors = {
+  /**
+   * Get server by identifier
+   * @param identifier - Provider identifier (e.g., 'linear')
+   */
+  getServerByIdentifier: (identifier: string) => (s: ToolStoreState) =>
+    s.lobehubSkillServers?.find((server) => server.identifier === identifier),
+
+  getServerError: (identifier: string) => (s: ToolStoreState) =>
+    errorInScope(s.lobehubSkillErrors?.[identifier], cacheScope.get()),
+
   /**
    * Get all LobeHub Skill servers
    */
