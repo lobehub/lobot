@@ -2,7 +2,7 @@ import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import * as stylex from '@stylexjs/stylex';
 
 export const pickerStyles = stylex.create({
-  /** The dialog is the two panes. A line splits them; neither pane is another card. */
+  /** The dialog is the two panes: the candidates sit on a filled ground, no line between. */
   candidates: {
     flex: '1',
     // No title bar above the panes: each pane pads its own top edge.
@@ -10,9 +10,7 @@ export const pickerStyles = stylex.create({
     minWidth: 0,
     minHeight: 0,
     height: '100%',
-    borderInlineEndWidth: 1,
-    borderInlineEndStyle: 'solid',
-    borderInlineEndColor: cssVar.colorBorderSecondary,
+    backgroundColor: cssVar.colorFillQuaternary,
   },
   picker: {
     overflow: 'hidden',

@@ -9,6 +9,7 @@ import {
   createModal,
   Flexbox,
   Icon,
+  ScrollArea,
   SearchBar,
   Text,
   TextArea,
@@ -18,13 +19,13 @@ import {
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { ContactCard, ContactCardInput } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
-import { t as translate } from 'i18next';
 import { HashIcon, XIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentAvatar from '@/components/AgentAvatar';
 import UserAvatar from '@/components/UserAvatar';
+import { pickerStyles } from '@/features/Channels/CreateChannel/pickerStyles';
 import { openShareAgentModal } from '@/features/ContactList/ShareAgentModal';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
@@ -34,8 +35,6 @@ import { ContactCardPreview } from './ContactCardMessage';
 import { sendCardToChannels } from './shareSend';
 import { buildShareTargets, filterShareTargets, type ShareChannelTarget } from './shareTargets';
 
-/** Fixed so the window does not jump while the list filters down to nothing. */
-const BODY_HEIGHT = 480;
 const ROW_AVATAR = 32;
 const CHIP_AVATAR = 28;
 
@@ -48,47 +47,16 @@ export interface AgentCardPreview {
 }
 
 const styles = stylex.create({
-  pane: {
-    minWidth: 0,
-    paddingBlock: 16,
-    paddingInline: 16,
-  },
-  picker: {
-    flex: '1',
-    borderInlineEndWidth: 1,
-    borderInlineEndStyle: 'solid',
-    borderInlineEndColor: cssVar.colorBorderSecondary,
-  },
-  side: {
-    width: 320,
-    flexShrink: 0,
-  },
   row: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
     width: '100%',
-    paddingBlock: 8,
-    paddingInline: 8,
     borderWidth: 0,
-    borderRadius: cssVar.borderRadius,
     font: 'inherit',
     color: cssVar.colorText,
     textAlign: 'start',
-    backgroundColor: {
-      'default': 'transparent',
-      ':hover': cssVar.colorFillTertiary,
-    },
-    cursor: 'pointer',
   },
   name: {
     flex: '1',
     minWidth: 0,
-  },
-  scroll: {
-    flex: '1',
-    minHeight: 0,
-    overflowY: 'auto',
   },
 });
 
@@ -227,15 +195,18 @@ const ShareContactCardContent = ({
   };
 
   return (
-    <Flexbox horizontal height={BODY_HEIGHT}>
-      <Flexbox gap={8} {...stylex.props(styles.pane, styles.picker)}>
-        <SearchBar
-          allowClear
-          autoFocus
-          placeholder={t('contactCard.share.search')}
-          value={query}
-          onInputChange={setQuery}
-        />
+    <div {...stylex.props(pickerStyles.picker)}>
+      <Flexbox {...stylex.props(pickerStyles.candidates)}>
+        <div {...stylex.props(pickerStyles.search)}>
+          <SearchBar
+            allowClear
+            autoFocus
+            placeholder={t('contactCard.share.search')}
+            value={query}
+            variant={'outlined'}
+            onInputChange={setQuery}
+          />
+        </div>
         {channels && visible.length === 0 ? (
           <Center flex={1} paddingInline={16}>
             <Text fontSize={12} type={'secondary'}>
@@ -243,7 +214,12 @@ const ShareContactCardContent = ({
             </Text>
           </Center>
         ) : (
-          <div {...stylex.props(styles.scroll)}>
+          <ScrollArea
+            disableContentFit
+            scrollFade
+            className={stylex.props(pickerStyles.list).className}
+            contentProps={{ className: stylex.props(pickerStyles.listContent).className }}
+          >
             {visible.map((target) => {
               const checked = selected.includes(target.channel.id);
               return (
@@ -253,7 +229,7 @@ const ShareContactCardContent = ({
                   key={target.channel.id}
                   type={'button'}
                   onClick={() => toggle(target.channel.id)}
-                  {...stylex.props(styles.row)}
+                  {...stylex.props(pickerStyles.row, styles.row)}
                 >
                   <Checkbox checked={checked} shape={'circle'} style={{ pointerEvents: 'none' }} />
                   <TargetAvatar size={ROW_AVATAR} target={target} />
@@ -263,18 +239,30 @@ const ShareContactCardContent = ({
                 </button>
               );
             })}
-          </div>
+          </ScrollArea>
         )}
       </Flexbox>
-      <Flexbox gap={12} {...stylex.props(styles.pane, styles.side)}>
-        <Text weight={500}>{t('contactCard.share.sendTo')}</Text>
-        <div {...stylex.props(styles.scroll)}>
+      <Flexbox {...stylex.props(pickerStyles.aside)}>
+        <Flexbox
+          horizontal
+          align={'center'}
+          justify={'space-between'}
+          {...stylex.props(pickerStyles.header)}
+        >
+          <Text strong as={'h2'} fontSize={16} {...stylex.props(pickerStyles.heading)}>
+            {t(card.type === 'user' ? 'shareCard' : 'shareAgent')}
+          </Text>
+          {chosen.length > 0 && (
+            <Text fontSize={12} type={'secondary'}>
+              {t('invite.selected', { count: chosen.length })}
+            </Text>
+          )}
+        </Flexbox>
+        <Flexbox gap={4} {...stylex.props(pickerStyles.selected)}>
           {chosen.length === 0 ? (
-            <Center height={'100%'}>
-              <Text fontSize={12} type={'secondary'}>
-                {t('contactCard.share.noTarget')}
-              </Text>
-            </Center>
+            <Text fontSize={12} type={'secondary'} {...stylex.props(pickerStyles.section)}>
+              {t('contactCard.share.noTarget')}
+            </Text>
           ) : (
             chosen.map((target) => (
               <Flexbox
@@ -283,6 +271,7 @@ const ShareContactCardContent = ({
                 gap={10}
                 key={target.channel.id}
                 paddingBlock={6}
+                paddingInline={8}
               >
                 <TargetAvatar size={CHIP_AVATAR} target={target} />
                 <Text ellipsis {...stylex.props(styles.name)}>
@@ -298,44 +287,55 @@ const ShareContactCardContent = ({
               </Flexbox>
             ))
           )}
-        </div>
-        {preview && <ContactCardPreview card={preview} />}
-        <TextArea
-          autoSize={{ maxRows: 4, minRows: 2 }}
-          disabled={sending}
-          placeholder={t('contactCard.share.note')}
-          value={note}
-          onChange={(event) => setNote(event.target.value)}
-        />
-        <Flexbox horizontal gap={8} justify={'flex-end'}>
-          <Button disabled={sending} onClick={close}>
-            {t('contactCard.share.cancel')}
-          </Button>
-          <Button
-            disabled={chosen.length === 0}
-            loading={sending}
-            type={'primary'}
-            onClick={() => void send()}
-          >
-            {chosen.length > 1
-              ? t('contactCard.share.sendCount', { count: chosen.length })
-              : t('contactCard.share.send')}
-          </Button>
+        </Flexbox>
+        <Flexbox gap={12} padding={16}>
+          {preview && <ContactCardPreview card={preview} />}
+          <TextArea
+            autoSize={{ maxRows: 4, minRows: 2 }}
+            disabled={sending}
+            placeholder={t('contactCard.share.note')}
+            value={note}
+            variant={'filled'}
+            onChange={(event) => setNote(event.target.value)}
+          />
+          <Flexbox horizontal gap={8} justify={'flex-end'}>
+            <Button disabled={sending} type={'fill'} onClick={close}>
+              {t('contactCard.share.cancel')}
+            </Button>
+            <Button
+              disabled={chosen.length === 0}
+              loading={sending}
+              type={'primary'}
+              onClick={() => void send()}
+            >
+              {chosen.length > 1
+                ? t('contactCard.share.sendCount', { count: chosen.length })
+                : t('contactCard.share.send')}
+            </Button>
+          </Flexbox>
         </Flexbox>
       </Flexbox>
-    </Flexbox>
+    </div>
   );
 };
 
 const openShareContactCardModal = (card: ContactCardInput, agent?: AgentCardPreview) =>
   createModal({
+    // Laid out like starting a group chat: the heading sits atop the right pane, not over both.
+    closable: false,
     content: <ShareContactCardContent agent={agent} card={card} />,
     footer: null,
     maskClosable: true,
-    // The two panes bring their own padding and the line between them runs edge to edge.
-    styles: { content: { padding: 0 } },
-    title: translate(card.type === 'user' ? 'shareCard' : 'shareAgent', { ns: 'channel' }),
-    width: 'min(92%, 760px)',
+    // Longhands, not `padding: 0`, so the modal's own insets do not stay around the panes.
+    styles: {
+      content: {
+        overflow: 'hidden',
+        paddingBlockEnd: 0,
+        paddingBlockStart: 0,
+        paddingInline: 0,
+      },
+    },
+    width: 'min(90vw, 760px)',
   });
 
 /** "Share Agent": picks the sender's conversations and sends the Agent's card there. */
