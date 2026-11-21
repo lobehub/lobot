@@ -1,11 +1,7 @@
 'use client';
 
 import { CHANNEL_URL } from '@lobechat/const';
-import { Avatar, Icon } from '@lobehub/ui';
-import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { ChannelListItem } from '@lobot/types';
-import * as stylex from '@stylexjs/stylex';
-import { HashIcon } from 'lucide-react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -16,16 +12,15 @@ import { useClearedThrough } from '@/features/Channels/clearedChannels';
 import { withoutChannelMore } from '@/features/Channels/flattenChannelMenu';
 import { useHasUnreadThreadMention } from '@/features/Channels/threadReads';
 import { useChannelMenu } from '@/features/Channels/useChannelMenu';
-import GroupAvatar from '@/features/GroupAvatar';
-import ProjectAvatar from '@/features/Projects/ProjectAvatar';
 import { channelActions } from '@/store/channel';
 import { projectListItemSelector, useProjectStore } from '@/store/project';
 import { useUserStore } from '@/store/user';
 import { userProfileSelectors } from '@/store/user/selectors';
 
+import ChannelGroupAvatar from './ChannelGroupAvatar';
 import ConversationRow from './ConversationRow';
 import { channelPreview, channelPreviewThread, directCounterpart } from './conversations';
-import { conversationAvatarSize, styles } from './style';
+import { conversationAvatarSize } from './style';
 
 interface Props {
   active: boolean;
@@ -46,8 +41,6 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, tile, vari
   const channelMenu = useChannelMenu();
   // A row's menu keeps the person's own list settings; managing the Channel is in its header.
   const menuItems = (item: ChannelListItem) => withoutChannelMore(channelMenu(item));
-  // A Channel grouped under a project wears that project's logo; a standalone one pictures
-  // its members like a group chat, and keeps "#" until someone else joins.
   const project = useProjectStore(projectListItemSelector(channel.projectId));
   // A project's default "General" Channel goes by the project's name. One named on purpose leads
   // with its own name, the project muted after it, so a project's Channels stay apart.
@@ -55,12 +48,6 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, tile, vari
   const defaultChannel = isProjectDefaultChannel(channel, projectName);
   const title = defaultChannel ? projectName : channel.title;
   const tag = defaultChannel ? undefined : projectName;
-  const members = channel.memberAvatars ?? [];
-  const channelMark = (
-    <span {...stylex.props(styles.channelMark)}>
-      <Icon color={cssVar.colorTextSecondary} icon={HashIcon} size={9} />
-    </span>
-  );
 
   const counterpart = directCounterpart(channel);
   const userId = useUserStore(userProfileSelectors.userId);
@@ -119,6 +106,7 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, tile, vari
     <ConversationRow
       active={active}
       activeAt={activeAt}
+      avatar={<ChannelGroupAvatar channel={channel} size={avatarSize} />}
       contextMenuItems={menuItems(channel)}
       hideKey={channel.id}
       mentioned={mentioned}
@@ -129,40 +117,6 @@ const ChannelConversation = memo<Props>(({ active, activeAt, channel, tile, vari
       unread={channel.unreadCount}
       url={CHANNEL_URL(channel.id)}
       variant={variant}
-      avatar={
-        project ? (
-          <>
-            <ProjectAvatar
-              avatar={project.avatar}
-              id={project.id}
-              name={project.name}
-              size={avatarSize}
-            />
-            {channelMark}
-          </>
-        ) : members.length ? (
-          <>
-            <GroupAvatar
-              avatarShape={'circle'}
-              size={avatarSize}
-              avatars={members.map((member) => ({
-                avatar: member.avatar || (member.actorType === 'user' ? member.name : null),
-                background: member.backgroundColor ?? undefined,
-                seed: member.id,
-                title: member.name ?? undefined,
-              }))}
-            />
-            {channelMark}
-          </>
-        ) : (
-          <Avatar
-            avatar={<Icon color={cssVar.colorTextSecondary} icon={HashIcon} size={16} />}
-            background={cssVar.colorFillSecondary}
-            shape={'square'}
-            size={avatarSize}
-          />
-        )
-      }
       onIntent={warm}
       muted={!!channel.mutedAt}
       // A group names who said it; the viewer's own message reads "Me: …".
