@@ -10,10 +10,10 @@ const MODAL_WIDTH = 'min(90%, 460px)';
 // Wide enough for the device and agent lists of the third-party runtime step.
 const CREATE_MODAL_WIDTH = 'min(90%, 520px)';
 
-/** Open the identity form (name / role / description / slug) for a specific agent. */
-export const createAgentIdentityModal = (agentId: string) =>
+/** Open the identity form (avatar / name / role / description / slug) for a specific agent. */
+export const createAgentIdentityModal = (agentId: string, options?: { onSaved?: () => void }) =>
   createModal({
-    content: <AgentIdentityContent agentId={agentId} />,
+    content: <AgentIdentityContent agentId={agentId} onSaved={options?.onSaved} />,
     footer: null,
     styles: { content: { padding: 0 } },
     title: t('settingAgent.identity.edit', { ns: 'setting' }),

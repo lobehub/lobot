@@ -6,7 +6,7 @@ import { useAgentIdentityForm } from './useAgentIdentityForm';
 const mocks = vi.hoisted(() => ({
   agentMap: {} as Record<
     string,
-    { description?: string; name?: string; slug?: string; title?: string }
+    { avatar?: string; description?: string; name?: string; slug?: string; title?: string }
   >,
   confirmAgentSlug: vi.fn(),
   refreshAgentConfig: vi.fn(),
@@ -103,6 +103,30 @@ describe('useAgentIdentityForm', () => {
       name: 'Alice',
       title: 'Health Assistant',
     });
+  });
+
+  it('sends the avatar only once it is changed or cleared', async () => {
+    mocks.agentMap['agent-a'].avatar = '🤖';
+    const { result } = setup();
+    expect(result.current.avatar).toBe('🤖');
+
+    act(() => result.current.setAvatar('🦊'));
+    await act(async () => {
+      await result.current.save();
+    });
+    expect(mocks.updateAgentMeta).toHaveBeenLastCalledWith(
+      'agent-a',
+      expect.objectContaining({ avatar: '🦊' }),
+    );
+
+    act(() => result.current.setAvatar(undefined));
+    await act(async () => {
+      await result.current.save();
+    });
+    expect(mocks.updateAgentMeta).toHaveBeenLastCalledWith(
+      'agent-a',
+      expect.objectContaining({ avatar: null }),
+    );
   });
 
   it('clears the description when the field is emptied', async () => {
