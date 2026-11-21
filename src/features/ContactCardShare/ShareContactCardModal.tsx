@@ -2,13 +2,11 @@
 
 import {
   ActionIcon,
-  Avatar,
   Button,
   Center,
   Checkbox,
   createModal,
   Flexbox,
-  Icon,
   ScrollArea,
   SearchBar,
   Text,
@@ -19,7 +17,7 @@ import {
 import { cssVar } from '@lobehub/ui/stylex/cssVar.stylex';
 import type { ContactCard, ContactCardInput } from '@lobot/types';
 import * as stylex from '@stylexjs/stylex';
-import { HashIcon, XIcon } from 'lucide-react';
+import { XIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,6 +25,8 @@ import AgentAvatar from '@/components/AgentAvatar';
 import UserAvatar from '@/components/UserAvatar';
 import { pickerStyles } from '@/features/Channels/CreateChannel/pickerStyles';
 import { openShareAgentModal } from '@/features/ContactList/ShareAgentModal';
+import ChannelGroupAvatar from '@/features/MessageList/ChannelGroupAvatar';
+import { AVATAR_SIZE as LIST_AVATAR_SIZE } from '@/features/MessageList/style';
 import { channelActions, channelSelectors, useChannelStore } from '@/store/channel';
 import { contactActions, contactSelectors, useContactStore } from '@/store/contact';
 import { useCurrentProjectList } from '@/store/project';
@@ -35,7 +35,8 @@ import { ContactCardPreview } from './ContactCardMessage';
 import { sendCardToChannels } from './shareSend';
 import { buildShareTargets, filterShareTargets, type ShareChannelTarget } from './shareTargets';
 
-const ROW_AVATAR = 32;
+/** The same size the conversation list draws them at. */
+const ROW_AVATAR = LIST_AVATAR_SIZE;
 const CHIP_AVATAR = 28;
 
 /** What the card shows before the server snapshots it: the sharer's view of the Agent. */
@@ -47,6 +48,12 @@ export interface AgentCardPreview {
 }
 
 const styles = stylex.create({
+  /** Holds a group's "#" badge at its corner. */
+  avatar: {
+    position: 'relative',
+    display: 'inline-flex',
+    flex: 'none',
+  },
   row: {
     width: '100%',
     borderWidth: 0,
@@ -73,13 +80,11 @@ const TargetAvatar = ({ size, target }: { size: number; target: ShareChannelTarg
         size={size}
       />
     );
+  // A group wears its list avatar: the project's logo or its members, with the "#" badge.
   return (
-    <Avatar
-      avatar={<Icon color={cssVar.colorTextSecondary} icon={HashIcon} size={size / 2} />}
-      background={cssVar.colorFillSecondary}
-      shape={'circle'}
-      size={size}
-    />
+    <span {...stylex.props(styles.avatar)}>
+      <ChannelGroupAvatar channel={target.channel} size={size} />
+    </span>
   );
 };
 

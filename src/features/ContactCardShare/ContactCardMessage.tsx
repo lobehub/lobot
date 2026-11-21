@@ -44,8 +44,10 @@ const styles = stylex.create({
     transitionProperty: 'background-color',
     transitionDuration: '0.15s',
   },
+  // The dialog's preview spans its pane.
   static: {
     alignSelf: 'stretch',
+    maxWidth: 'none',
     backgroundColor: cssVar.colorFillTertiary,
     cursor: 'default',
   },
