@@ -11,8 +11,8 @@ export const MARKET_CATEGORIES: MarketCategory[] = [
   'other',
 ];
 
-/** A category shows this many rows until "View all" expands it. */
-export const CATEGORY_PREVIEW_COUNT = 6;
+/** A category shows this many apps (four two-column rows) until "View all" expands it. */
+export const CATEGORY_PREVIEW_COUNT = 8;
 
 const CATEGORY_BY_ID: Record<string, MarketCategory> = {
   'airtable': 'productivity',
